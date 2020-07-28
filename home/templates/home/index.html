@@ -1,0 +1,22 @@
+<html>
+    <head>
+        {% load static %}
+        <!-- CSS link -->
+    </head>
+
+    <body>
+        <!-- Navigation -->
+        <h1>Welcome</h1>
+        
+        <!-- Display top decks -->
+        {% if top_decks %}
+        <ul>
+            {% for deck in top_decks %}
+                <li>{{ deck }}</a></li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p>No decks. :(</p>
+        {% endif %}
+    </body>
+</html>
