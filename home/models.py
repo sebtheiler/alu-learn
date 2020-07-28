@@ -2,7 +2,12 @@ from django.db import models
 
 # Create your models here.
 class Deck(models.Model):
-    pass
+    title = models.CharField(max_length=128)
+
+    # starting difficulty, new cards per day, ...
+
+    def __str__(self):
+        return self.title
 
 
 class FlashCard(models.Model):

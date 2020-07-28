@@ -2,15 +2,16 @@ from django.test import TestCase
 from .models import Tag, FlashCard, Deck
 
 # Create your tests here.
-def create_deck():
-    return Deck.objects.create()
+def create_deck(deck_title):
+    return Deck.objects.create(title=deck_title)
 
 class DeckModelTests(TestCase):
-    pass
+    def test_string(self):
+        self.assertEqual(str(create_deck('My First Deck')), 'My First Deck')
 
 
 def create_flashcard(front_text, back_text):
-    deck = create_deck()
+    deck = create_deck('Deck')
     return FlashCard.objects.create(deck=deck, front_text=front_text, back_text=back_text)
 
 class FlashCardModelTests(TestCase):
