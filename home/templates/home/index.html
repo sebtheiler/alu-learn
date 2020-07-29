@@ -21,7 +21,7 @@ Home
         <form class='form' id='deck-create-form' method='POST' action='/createdeck'>
             {% csrf_token %}
             <input type='hidden' value='/' name='next' />
-            <input type='text' class='form-control' name='title' placeholder='My deck'></textarea>
+            <input type='text' required='required' class='form-control' name='title' placeholder='My deck'></textarea>
             <button type='submit' class='btn btn-primary'>Create</button>
         </form>
     </div>
@@ -48,7 +48,16 @@ deckCreateFormEl.addEventListener('submit', function() {
             const newDeckEl = formatDeckElement(newDeck);
             const ogHtml = decksContainerEl.innerHTML;
             decksContainerEl.innerHTML = newDeckEl + ogHtml;
+            myForm.reset();
+        } else if (xhr.status === 400) {
+            const errorJson = xhr.response;
+            console.log(errorJson);
+        } else if (xhr.status === 500) {
+            alert('A server error occured. Please contact me at ...');
         };
+    };
+    xhr.onerror = function() {
+        alert('An error occured. Please contact me at ...');
     };
     xhr.send(myFormData);
 });

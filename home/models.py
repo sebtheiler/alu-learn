@@ -5,6 +5,8 @@ class Deck(models.Model):
     title = models.CharField(max_length=128)
 
     # starting difficulty, new cards per day, ...
+    class Meta:
+        ordering = ['-id']
 
     def __str__(self):
         return self.title
