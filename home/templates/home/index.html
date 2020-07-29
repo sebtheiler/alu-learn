@@ -29,11 +29,11 @@ function handleEdit(deck_id) {
 };
 
 function EditButton(deck) {
-    return "<button class='btn btn-primary' onclick=handleEdit(deck.id)>Edit</button>";
+    return "<button class='btn btn-primary mb-4' onclick=handleEdit(deck.id)>Edit</button>";
 };
 
 function formatDeckElement(deck) {
-    var formattedDeck = "<div class='col-12 border py-3 mb-4 deck' id='" + deck.id + "'<p>" + deck.title + "</p><div class='btn-group'>" + EditButton(deck) + "</div>";
+    var formattedDeck = "<div class='col-12 border py-3 mb-1 deck' id='" + deck.id + "'<p>" + deck.title + "</div></p><div class='btn-group'>" + EditButton(deck) + "</div>";
     return formattedDeck;
 };
 

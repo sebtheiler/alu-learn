@@ -3,6 +3,7 @@ from django.views import generic
 from django.http import JsonResponse, Http404, HttpResponse
 
 from .models import Deck, FlashCard, Tag
+from .forms import DeckForm
 
 # Create your views here.
 class IndexView(generic.ListView):
@@ -11,6 +12,16 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         return ['Deck 1', 'Deck 2', 'Deck 3']
+
+
+def deck_create_view(request, *args, **kwargs):
+    form = DeckForm(request.POST or None)
+    if form.is_valid():
+        obj = form.save(commit=False)
+        # Other form logic
+        obj.save()
+        form = DeckForm()
+    return render(request, 'components/form.html', context={'form': form})
 
 
 def deck_list_view(request, *args, **kwargs):
