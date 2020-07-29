@@ -20,6 +20,7 @@ Home
     <div class='col-md-4 mx-auto col-10'>
         <form class='form' id='deck-create-form' method='POST' action='/createdeck'>
             {% csrf_token %}
+            <div class='d-none alert alert-danger' id='deck-create-form-error'></div>
             <input type='hidden' value='/' name='next' />
             <input type='text' required='required' class='form-control' name='title' placeholder='My deck'></textarea>
             <button type='submit' class='btn btn-primary'>Create</button>
@@ -28,6 +29,17 @@ Home
 </div>
 
 <script>
+
+function handleDeckCreateFormError(msg, display) {
+    var myErrorDiv = document.getElementById('deck-create-form-error');
+    if (display === true) {
+        myErrorDiv.setAttribute('class', 'd-block alert alert-danger');
+        myErrorDiv.innerText = msg;
+    } else {
+        myErrorDiv.setAttribute('class', 'd-none alert alert-danger');
+    };
+};
+
 const deckCreateFormEl = document.getElementById('deck-create-form');
 
 deckCreateFormEl.addEventListener('submit', function() {
@@ -51,6 +63,18 @@ deckCreateFormEl.addEventListener('submit', function() {
             myForm.reset();
         } else if (xhr.status === 400) {
             const errorJson = xhr.response;
+            const contentError = errorJson.title;
+            let contentErrorMsg;
+            if (contentError) {
+                contentErrorMsg = contentError[0];
+                if (contentErrorMsg) {
+                    handleDeckCreateFormError(contentErrorMsg, true);
+                } else {
+                    alert('An unknown error has occured. Please try again.');
+                };
+            } else {
+                alert('A weird error occured. Please try again.');
+            };
             console.log(errorJson);
         } else if (xhr.status === 500) {
             alert('A server error occured. Please contact me at ...');
