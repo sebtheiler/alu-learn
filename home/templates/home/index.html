@@ -101,7 +101,7 @@ function loadDecks(decksElement) {
     xhr.open(method, endpoint);
     xhr.onload = function() {
         const serverResponse = xhr.response;
-        const listedItems = serverResponse.response;
+        const listedItems = serverResponse;
         
         var finalDeckStr = "";
         for (deck of listedItems) {

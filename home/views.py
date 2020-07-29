@@ -3,7 +3,8 @@ from django.shortcuts import render, redirect
 from django.views import generic
 from django.http import JsonResponse, Http404, HttpResponse
 from django.utils.http import is_safe_url
-
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from .models import Deck, FlashCard, Tag
 from .forms import DeckForm
 from .serializers import DeckSerializer
@@ -19,12 +20,31 @@ class IndexView(generic.ListView):
         return ['Deck 1', 'Deck 2', 'Deck 3']
 
 
+@api_view(['POST'])
 def deck_create_view(request, *args, **kwargs):
-    serializer = DeckSerializer(data=request.POST or None)
-    if serializer.is_valid():
-        obj = serializer.save(user=request.user)
-        return JsonResponse(serializer.data, status=201)
-    return JsonResponse({}, status=400)
+    serializer = DeckSerializer(data=request.POST)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=201)
+    return Response({}, status=400)
+
+
+@api_view(['GET'])
+def deck_list_view(request, *args, **kwargs):
+    decks_qs = Deck.objects.all()
+    serializer = DeckSerializer(decks_qs, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def deck_detail_view(request, deck_id, *args, **kwargs):
+    decks_qs = Deck.objects.filter(pk=deck_id)
+    if not decks_qs.exists():
+        return Response({}, status=404)
+    obj = decks_qs.first()
+    serializer = DeckSerializer(decks_qs, many=True)
+    return Response(serializer.data)
+
 
 
 def deck_create_view_pure_django(request, *args, **kwargs):
@@ -52,7 +72,7 @@ def deck_create_view_pure_django(request, *args, **kwargs):
     return render(request, 'components/form.html', context={'form': form})
 
 
-def deck_list_view(request, *args, **kwargs):
+def deck_list_view_pure_django(request, *args, **kwargs):
     decks = Deck.objects.all()
     deck_list = [d.serialize() for d in decks]
     data = {
@@ -61,7 +81,7 @@ def deck_list_view(request, *args, **kwargs):
     return JsonResponse(data)
 
 
-def deck_detail_view(request, deck_id, *args, **kwargs):
+def deck_detail_view_pure_django(request, deck_id, *args, **kwargs):
     data = {
         "id": deck_id,
     }
