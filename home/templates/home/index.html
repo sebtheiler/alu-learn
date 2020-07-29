@@ -18,7 +18,7 @@ Home
 
 <div class='row mb-3'>
     <div class='col-md-4 mx-auto col-10'>
-        <form class='form' method='POST' action='/createdeck'>
+        <form class='form' id='deck-create-form' method='POST' action='/createdeck'>
             {% csrf_token %}
             <input type='hidden' value='/' name='next' />
             <input type='text' class='form-control' name='title' placeholder='My deck'></textarea>
@@ -28,12 +28,46 @@ Home
 </div>
 
 <script>
-const decksElement = document.getElementById('user_decks');
+const deckCreateFormEl = document.getElementById('deck-create-form');
 
-const xhr = new XMLHttpRequest();
-const method = 'GET';
-const url = '/decks';
-const responseType = 'json';
+deckCreateFormEl.addEventListener('submit', function() {
+    event.preventDefault();
+    const myForm = event.target;
+    const myFormData = new FormData(myForm);
+    const endpoint = myForm.getAttribute('action');
+    const method = myForm.getAttribute('method');
+    const xhr = new XMLHttpRequest();
+    xhr.open(method, endpoint);
+    xhr.onload = function() {
+        const serverResponse = xhr.response;
+        const decksEl = document.getElementById('user_decks');
+        loadDecks(decksEl)
+    };
+    xhr.send(myFormData);
+});
+
+const decksEl = document.getElementById('user_decks');
+
+function loadDecks(decksElement) {
+    const xhr = new XMLHttpRequest();
+    const method = 'GET';
+    const endpoint = '/decks';
+    const responseType = 'json';
+
+    xhr.responseType = responseType;
+    xhr.open(method, endpoint);
+    xhr.onload = function() {
+        const serverResponse = xhr.response;
+        const listedItems = serverResponse.response;
+        
+        var finalDeckStr = "";
+        for (deck of listedItems) {
+            finalDeckStr += formatDeckElement(deck);
+        };
+        decksElement.innerHTML = finalDeckStr;
+    };
+    xhr.send();
+};
 
 function handleEdit(deck_id) {
     console.log(deck)
@@ -48,19 +82,7 @@ function formatDeckElement(deck) {
     return formattedDeck;
 };
 
-xhr.responseType = responseType;
-xhr.open(method, url);
-xhr.onload = function() {
-    const serverResponse = xhr.response;
-    const listedItems = serverResponse.response;
-    
-    var finalDeckStr = "";
-    for (deck of listedItems) {
-        finalDeckStr += formatDeckElement(deck);
-    };
-    decksElement.innerHTML = finalDeckStr;
-};
-xhr.send();
+loadDecks(decksEl);
 
 </script>
 {% endblock content %}
