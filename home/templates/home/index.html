@@ -76,7 +76,7 @@ deckCreateFormEl.addEventListener('submit', function() {
                 alert('A weird error occured. Please try again.');
             };
             console.log(errorJson);
-        } else if (xhr.status === 401) {
+        } else if (xhr.status === 401 || xhr.status === 403) {
             alert('You must log in to create a deck');
             window.location.href = '/login';
         } else if (xhr.status === 500) {

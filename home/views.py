@@ -4,7 +4,9 @@ from django.views import generic
 from django.http import JsonResponse, Http404, HttpResponse
 from django.utils.http import is_safe_url
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from .models import Deck, FlashCard, Tag
 from .forms import DeckForm
 from .serializers import DeckSerializer
@@ -21,6 +23,8 @@ class IndexView(generic.ListView):
 
 
 @api_view(['POST'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
 def deck_create_view(request, *args, **kwargs):
     serializer = DeckSerializer(data=request.POST)
     if serializer.is_valid(raise_exception=True):
