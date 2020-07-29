@@ -8,6 +8,12 @@ class Deck(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+        }
 
 
 class FlashCard(models.Model):

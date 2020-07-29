@@ -37,16 +37,23 @@ deckCreateFormEl.addEventListener('submit', function() {
     const endpoint = myForm.getAttribute('action');
     const method = myForm.getAttribute('method');
     const xhr = new XMLHttpRequest();
+    const responseType = 'json';
+    xhr.responseType = responseType;
     xhr.open(method, endpoint);
+    xhr.setRequestHeader('HTTP_X_REQUESTED_WITH', 'XMLHttpRequest');
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.onload = function() {
-        const serverResponse = xhr.response;
-        const decksEl = document.getElementById('user_decks');
-        loadDecks(decksEl)
+        if (xhr.status === 201) {
+            const newDeck = xhr.response;
+            const newDeckEl = formatDeckElement(newDeck);
+            const ogHtml = decksContainerEl.innerHTML;
+            decksContainerEl.innerHTML = newDeckEl + ogHtml;
+        };
     };
     xhr.send(myFormData);
 });
 
-const decksEl = document.getElementById('user_decks');
+const decksContainerEl = document.getElementById('user_decks');
 
 function loadDecks(decksElement) {
     const xhr = new XMLHttpRequest();
@@ -82,7 +89,7 @@ function formatDeckElement(deck) {
     return formattedDeck;
 };
 
-loadDecks(decksEl);
+loadDecks(decksContainerEl);
 
 </script>
 {% endblock content %}

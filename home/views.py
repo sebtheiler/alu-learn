@@ -25,6 +25,9 @@ def deck_create_view(request, *args, **kwargs):
         obj = form.save(commit=False)
         # Other form logic
         obj.save()
+        if request.is_ajax():
+            return JsonResponse(obj.serialize(), status=201)
+
         if next_url is not None and is_safe_url(next_url, ALLOWED_HOSTS):
             return redirect(next_url)
         form = DeckForm()
@@ -33,7 +36,7 @@ def deck_create_view(request, *args, **kwargs):
 
 def deck_list_view(request, *args, **kwargs):
     decks = Deck.objects.all()
-    deck_list = [{'id': d.id, 'title': d.title} for d in decks]
+    deck_list = [d.serialize() for d in decks]
     data = {
         'response': deck_list,
     }
