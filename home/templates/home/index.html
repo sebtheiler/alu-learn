@@ -28,8 +28,16 @@ const method = 'GET';
 const url = '/decks';
 const responseType = 'json';
 
+function handleEdit(deck_id) {
+    console.log(deck)
+};
+
+function EditButton(deck) {
+    return "<button class='btn btn-primary' onclick=handleEdit(deck.id)>Edit</button>";
+};
+
 function formatDeckElement(deck) {
-    var formattedDeck = "<div class='mb-4 deck' id='" + deck.id + "<p>" + deck.title + "</p></div>";
+    var formattedDeck = "<div class='mb-4 deck' id='" + deck.id + "'<p>" + deck.title + "</p><div class='btn-group'>" + EditButton(deck) + "</div>";
     return formattedDeck;
 };
 
