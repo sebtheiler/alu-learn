@@ -19,11 +19,18 @@ class IndexView(generic.ListView):
 
 
 def deck_create_view(request, *args, **kwargs):
+    user = request.user
+    if not request.user.is_authenticated:
+        user = None
+        if request.is_ajax():
+            return JsonResponse({}, status=401)
+        return redirect(settings.LOGIN_URL)
     form = DeckForm(request.POST or None)
     next_url = request.POST.get("next") or None
     if form.is_valid():
         obj = form.save(commit=False)
         # Other form logic
+        obj.user = request.user
         obj.save()
         if request.is_ajax():
             return JsonResponse(obj.serialize(), status=201)
