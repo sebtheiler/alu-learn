@@ -16,6 +16,17 @@ Home
     Loading...
 </div>
 
+<div class='row mb-3'>
+    <div class='col-md-4 mx-auto col-10'>
+        <form class='form' method='POST' action='/createdeck'>
+            {% csrf_token %}
+            <input type='hidden' value='/' name='next' />
+            <input type='text' class='form-control' name='title' placeholder='My deck'></textarea>
+            <button type='submit' class='btn btn-primary'>Create</button>
+        </form>
+    </div>
+</div>
+
 <script>
 const decksElement = document.getElementById('user_decks');
 
@@ -42,7 +53,7 @@ xhr.open(method, url);
 xhr.onload = function() {
     const serverResponse = xhr.response;
     const listedItems = serverResponse.response;
-
+    
     var finalDeckStr = "";
     for (deck of listedItems) {
         finalDeckStr += formatDeckElement(deck);

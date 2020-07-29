@@ -1,9 +1,13 @@
-from django.shortcuts import render
+from django.conf import settings
+from django.shortcuts import render, redirect
 from django.views import generic
 from django.http import JsonResponse, Http404, HttpResponse
+from django.utils.http import is_safe_url
 
 from .models import Deck, FlashCard, Tag
 from .forms import DeckForm
+
+ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 
 # Create your views here.
 class IndexView(generic.ListView):
@@ -16,10 +20,13 @@ class IndexView(generic.ListView):
 
 def deck_create_view(request, *args, **kwargs):
     form = DeckForm(request.POST or None)
+    next_url = request.POST.get("next") or None
     if form.is_valid():
         obj = form.save(commit=False)
         # Other form logic
         obj.save()
+        if next_url is not None and is_safe_url(next_url, ALLOWED_HOSTS):
+            return redirect(next_url)
         form = DeckForm()
     return render(request, 'components/form.html', context={'form': form})
 
