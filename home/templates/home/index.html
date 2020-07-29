@@ -28,17 +28,20 @@ const method = 'GET';
 const url = '/decks';
 const responseType = 'json';
 
+function formatDeckElement(deck) {
+    var formattedDeck = "<div class='mb-4 deck' id='" + deck.id + "<p>" + deck.title + "</p></div>";
+    return formattedDeck;
+};
+
 xhr.responseType = responseType;
 xhr.open(method, url);
 xhr.onload = function() {
     const serverResponse = xhr.response;
     const listedItems = serverResponse.response;
+
     var finalDeckStr = "";
-    var i;
-    for (i = 0; i < listedItems.length; i++) {
-        console.log(i);
-        var currentItem = "<div class='mb-4'><h1>" + listedItems[i].id + "</h1>" + "<p>" + listedItems[i].title + "</p></div>";
-        finalDeckStr += currentItem;
+    for (deck of listedItems) {
+        finalDeckStr += formatDeckElement(deck);
     };
     decksElement.innerHTML = finalDeckStr;
 };
