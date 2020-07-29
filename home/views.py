@@ -6,6 +6,7 @@ from django.utils.http import is_safe_url
 
 from .models import Deck, FlashCard, Tag
 from .forms import DeckForm
+from .serializers import DeckSerializer
 
 ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 
@@ -19,6 +20,14 @@ class IndexView(generic.ListView):
 
 
 def deck_create_view(request, *args, **kwargs):
+    serializer = DeckSerializer(data=request.POST or None)
+    if serializer.is_valid():
+        obj = serializer.save(user=request.user)
+        return JsonResponse(serializer.data, status=201)
+    return JsonResponse({}, status=400)
+
+
+def deck_create_view_pure_django(request, *args, **kwargs):
     user = request.user
     if not request.user.is_authenticated:
         user = None
