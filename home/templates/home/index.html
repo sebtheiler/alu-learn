@@ -5,23 +5,19 @@ Home
 {% endblock head_title %}
 
 {% block content %}
-<h1>Welcome</h1>
+<div class='row text-center'>
+    <div class='col'>
+        <h1>Welcome</h1>
+    </div>
+</div>
 
-<div id='user_decks'>
-    {% if top_decks %}
-    <ul>
-        {% for deck in top_decks %}
-            <li>{{ deck }}</a></li>
-        {% endfor %}
-    </ul>
-    {% else %}
-        <p>No decks. :(</p>
-    {% endif %}
+
+<div class='row' id='user_decks'>
+    Loading...
 </div>
 
 <script>
 const decksElement = document.getElementById('user_decks');
-decksElement.innerHTML = 'Loading...';
 
 const xhr = new XMLHttpRequest();
 const method = 'GET';
@@ -37,7 +33,7 @@ function EditButton(deck) {
 };
 
 function formatDeckElement(deck) {
-    var formattedDeck = "<div class='mb-4 deck' id='" + deck.id + "'<p>" + deck.title + "</p><div class='btn-group'>" + EditButton(deck) + "</div>";
+    var formattedDeck = "<div class='col-12 border py-3 mb-4 deck' id='" + deck.id + "'<p>" + deck.title + "</p><div class='btn-group'>" + EditButton(deck) + "</div>";
     return formattedDeck;
 };
 
