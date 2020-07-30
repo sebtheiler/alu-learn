@@ -21,6 +21,6 @@ from decks import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.IndexView.as_view(), name='index'),
-    path('api/', include('decks.urls')),
+    path('api/decks/', include('decks.urls')),
     path('createdeck/', views.deck_create_view),
 ]

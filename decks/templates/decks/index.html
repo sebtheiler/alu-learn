@@ -95,7 +95,7 @@ const decksContainerEl = document.getElementById('user_decks');
 function loadDecks(decksElement) {
     const xhr = new XMLHttpRequest();
     const method = 'GET';
-    const endpoint = '/api/decks';
+    const endpoint = '/api/decks/decklist';
     const responseType = 'json';
 
     xhr.responseType = responseType;
