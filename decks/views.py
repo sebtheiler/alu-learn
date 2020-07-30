@@ -15,7 +15,7 @@ ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 
 # Create your views here.
 class IndexView(generic.ListView):
-    template_name = 'home/index.html'
+    template_name = 'decks/index.html'
     context_object_name = 'top_decks'
 
     def get_queryset(self):

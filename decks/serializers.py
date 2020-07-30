@@ -6,7 +6,7 @@ from .models import Deck, FlashCard, Tag
 class DeckSerializer(serializers.ModelSerializer):
     class Meta:
         model = Deck
-        fields = ['title']
+        fields = ['title', 'id']
     
     def validate_title(self, value):
         if len(value) > settings.MAX_DECK_TITLE_LENGTH:

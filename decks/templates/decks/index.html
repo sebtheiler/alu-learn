@@ -14,7 +14,7 @@ Home
 <div class='text-center'><p>Create a new deck</p></div>
 <div class='row mb-3'>
     <div class='col-md-4 mx-auto col-10'>
-        <form class='form' id='deck-create-form' method='POST' action='/createdeck'>
+        <form class='form' id='deck-create-form' method='POST' action='/createdeck/'>
             {% csrf_token %}
             <div class='d-none alert alert-danger' id='deck-create-form-error'></div>
             <input type='hidden' value='/' name='next' />
@@ -95,7 +95,7 @@ const decksContainerEl = document.getElementById('user_decks');
 function loadDecks(decksElement) {
     const xhr = new XMLHttpRequest();
     const method = 'GET';
-    const endpoint = '/decks';
+    const endpoint = '/api/decks';
     const responseType = 'json';
 
     xhr.responseType = responseType;
