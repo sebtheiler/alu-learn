@@ -50,6 +50,19 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
     return Response(serializer.data)
 
 
+@api_view(['DELETE', 'POST'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def deck_delete_view(request, deck_id, *args, **kwargs):
+    decks_qs = Deck.objects.filter(pk=deck_id)
+    if not decks_qs.exists():
+        return Response({}, status=404)
+    decks_qs = decks_qs.filter(user=request.user)
+    if not decks_qs.exists():
+        return Response({'message': 'You are not authorized to delete this deck.'}, 401)
+    obj = decks_qs.first()
+    return Response({'message': 'Deck deleted succesfully'}, status=200)
+
 
 def deck_create_view_pure_django(request, *args, **kwargs):
     user = request.user
