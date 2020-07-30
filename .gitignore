@@ -1,0 +1,4 @@
+alu/__pycache__/
+decks/__pycache__/
+decks/migrations/
+db.sqlite3
