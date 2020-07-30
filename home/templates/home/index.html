@@ -11,22 +11,23 @@ Home
     </div>
 </div>
 
-
-<div class='row' id='user_decks'>
-    Loading...
-</div>
-
+<div class='text-center'><p>Create a new deck</p></div>
 <div class='row mb-3'>
     <div class='col-md-4 mx-auto col-10'>
         <form class='form' id='deck-create-form' method='POST' action='/createdeck'>
             {% csrf_token %}
             <div class='d-none alert alert-danger' id='deck-create-form-error'></div>
             <input type='hidden' value='/' name='next' />
-            <input type='text' required='required' class='form-control' name='title' placeholder='My deck'></textarea>
-            <button type='submit' class='btn btn-primary'>Create</button>
+            <input type='text' required='required' class='form-control text-center' name='title' placeholder='My deck'></textarea>
+            <div class='text-center mt-1'><button type='submit' class='btn btn-primary'>Create</button></div>
         </form>
     </div>
 </div>
+
+<div class='row' id='user_decks'>
+    Loading...
+</div>
+
 
 <script>
 
@@ -112,16 +113,32 @@ function loadDecks(decksElement) {
     xhr.send();
 };
 
-function handleEdit(deck_id) {
-    console.log(deck)
+function handleEdit(deck) {
+    console.log('Editing', deck)
 };
 
 function EditButton(deck) {
-    return "<button class='btn btn-primary mb-4' onclick=handleEdit(deck.id)>Edit</button>";
+    return "<button class='btn btn-primary mb-4 mr-1' onclick=handleEdit(deck)>Edit</button>";
+};
+
+function handleAddFlashcards(deck) {
+    console.log('Adding flashcards to', deck)
+};
+
+function AddFlashcardsButton(deck) {
+    return "<button class='btn btn-primary mb-4 mr-1' onclick=handleAddFlashcards(deck)>Add Flash Cards</button>";
+};
+
+function handleDelete(deck) {
+    console.log('Deleting', deck)
+};
+
+function DeleteDeckButton(deck) {
+    return "<button class='btn btn-danger mb-4 mr-1' onclick=handleDelete(deck)>Delete</button>";
 };
 
 function formatDeckElement(deck) {
-    var formattedDeck = "<div class='col-12 border py-3 mb-1 deck' id='" + deck.id + "'<p>" + deck.title + "</div></p><div class='btn-group'>" + EditButton(deck) + "</div>";
+    var formattedDeck = "<div class='col-12 border py-3 mb-1 deck' id='" + deck.id + "'<p>" + deck.title + "</div></p><div class='btn-group'>" + EditButton(deck) + AddFlashcardsButton(deck) + DeleteDeckButton(deck) + "</div>";
     return formattedDeck;
 };
 

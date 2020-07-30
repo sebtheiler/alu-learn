@@ -61,6 +61,7 @@ def deck_delete_view(request, deck_id, *args, **kwargs):
     if not decks_qs.exists():
         return Response({'message': 'You are not authorized to delete this deck.'}, 401)
     obj = decks_qs.first()
+    obj.delete()
     return Response({'message': 'Deck deleted succesfully'}, status=200)
 
 
