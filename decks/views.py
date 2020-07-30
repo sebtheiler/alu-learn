@@ -34,6 +34,8 @@ def deck_create_view(request, *args, **kwargs):
 
 
 @api_view(['GET'])
+# @authentication_classes([SessionAuthentication])
+# @permission_classes([IsAuthenticated])
 def deck_list_view(request, *args, **kwargs):
     decks_qs = Deck.objects.all()
     serializer = DeckSerializer(decks_qs, many=True)
@@ -41,6 +43,8 @@ def deck_list_view(request, *args, **kwargs):
 
 
 @api_view(['GET'])
+# @authentication_classes([SessionAuthentication])
+# @permission_classes([IsAuthenticated])
 def deck_detail_view(request, deck_id, *args, **kwargs):
     decks_qs = Deck.objects.filter(pk=deck_id)
     if not decks_qs.exists():
