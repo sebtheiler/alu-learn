@@ -2,6 +2,14 @@ import React, {useEffect, useState, useCallback} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+function Deck(props) {
+  const {deck} = props;
+  const className = props.className ? props.className : 'col-10 mx-auto col-md-6';
+  return <div className={className}>
+    <p>{deck.id} - {deck.title}</p>
+  </div>;
+};
+
 function loadDecks(callback) {
   const xhr = new XMLHttpRequest();
   const method = 'GET';
@@ -40,11 +48,11 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <p>
+        <div>
           {decks.map((deck, index) => {
-            return <li>{deck.title}</li>;
+            return <Deck deck={deck} key={`${index}-${deck.id}`} className='my-5 py-5 border bg-white text-dark'/>;
           })}
-        </p>
+        </div>
         <a
           className="App-link"
           href="https://reactjs.org"
