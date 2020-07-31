@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {DecksList} from './decks';
+import {DecksComponent} from './decks';
 
 
 
@@ -15,7 +15,7 @@ function App() {
           Edit <code>src/App.js</code> and save to reload.
         </p>
         <div>
-          <DecksList />
+          <DecksComponent />
         </div>
         <a
           className="App-link"

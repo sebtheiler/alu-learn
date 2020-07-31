@@ -1,6 +1,32 @@
 import React, {useEffect, useState} from 'react';
 import {loadDecks} from '../lookup';
 
+export function DecksComponent(props) {
+  const inputTextRef = React.createRef();
+  const [newDecks, setNewDecks] = useState([]);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const textVal = inputTextRef.current.value;
+    let tempNewDecks = [...newDecks];
+    tempNewDecks.unshift({
+      title: textVal,
+      
+    });
+    setNewDecks(tempNewDecks);
+    inputTextRef.current.value = '';
+  };
+  
+  return <div className={props.className}>
+    <div className='col-12 mb-3'>
+      <form onSubmit={handleSubmit}>
+        <input type='text' required='required' className='form-control text-center' name='title' placeholder='My deck' ref={inputTextRef} />
+        <div className='text-center mt-1'><button type='submit' className='btn btn-primary my-3'>Create</button></div>
+      </form>
+    </div>
+  <DecksList newDecks={newDecks} />
+  </div>;
+};
+
 export function EditButton(props) {
   const {deck} = props;
   const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
@@ -35,13 +61,19 @@ export function Deck(props) {
 };
 
 export function DecksList(props) {
+  const [decksInit, setDecksInit] = useState([props.newDecks ? props.newDecks : []]);
   const [decks, setDecks] = useState([]);
-  
+  useEffect(() => {
+    const final = [...props.newDecks].concat(decksInit);
+    if (final.length !== decks.length) {
+      setDecks(final);
+    };
+  }, [props.newDecks, decksInit]);
   useEffect(() => {
     const myCallback = (response, status) => {
-      console.log(response, status)
+      const finalDecksInit = [...response].concat(decksInit);
       if (status === 200) {
-        setDecks(response);
+        setDecksInit(finalDecksInit);
       };
     };
     loadDecks(myCallback);
