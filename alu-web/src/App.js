@@ -2,11 +2,27 @@ import React, {useEffect, useState, useCallback} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+function EditButton(props) {
+  const {deck} = props;
+  const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
+  return <button className={className}>Edit</button>;
+};
+
+function RedirectButton(props) {
+  const {deck, link} = props;
+  const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
+  return <button className={className}>{link}</button>
+};
+
 function Deck(props) {
   const {deck} = props;
   const className = props.className ? props.className : 'col-10 mx-auto col-md-6';
   return <div className={className}>
     <p>{deck.id} - {deck.title}</p>
+    <div className='btn btn-group'>
+      <EditButton deck={deck} />
+      <RedirectButton deck={deck} link={'https://www.google.com'} />
+    </div>
   </div>;
 };
 
