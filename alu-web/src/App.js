@@ -1,13 +1,38 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+function loadDecks(callback) {
+  const xhr = new XMLHttpRequest();
+  const method = 'GET';
+  const endpoint = 'http://127.0.0.1:8000/api/decks/decklist/';
+  const responseType = 'json';
+
+  xhr.responseType = responseType;
+  xhr.open(method, endpoint);
+  xhr.onload = function() {
+      callback(xhr.response, xhr.status);
+  };
+  xhr.onerror = function(e) {
+    console.log(e);
+    callback({'message': 'The request was an error'}, 400);
+  };
+  xhr.send();
+};
+
 function App() {
   const [decks, setDecks] = useState([]);
+  
   useEffect(() => {
-    const deckItems = [{'title': 123}, {'title': 'hello'}]
-    setDecks(deckItems);
+    const myCallback = (response, status) => {
+      console.log(response, status)
+      if (status === 200) {
+        setDecks(response);
+      };
+    };
+    loadDecks(myCallback);
   }, []);
+
   return (
     <div className="App">
       <header className="App-header">
