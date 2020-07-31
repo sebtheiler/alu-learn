@@ -11,8 +11,10 @@ Home
     </div>
 </div>
 
-<div class='text-center'><p>Create a new deck</p></div>
-<div class='row mb-3'>
+<div class='row' id='user_decks'></div>
+
+<div class='text-center d-none'><p>Create a new deck</p></div>
+<div class='row mb-3 d-none'>
     <div class='col-md-4 mx-auto col-10'>
         <form class='form' id='deck-create-form' method='POST' action='/createdeck/'>
             {% csrf_token %}
@@ -24,7 +26,7 @@ Home
     </div>
 </div>
 
-<div class='row' id='user_decks'>
+<div class='row d-none' id='user_decks-old'>
     Loading...
 </div>
 
@@ -90,7 +92,7 @@ deckCreateFormEl.addEventListener('submit', function() {
     xhr.send(myFormData);
 });
 
-const decksContainerEl = document.getElementById('user_decks');
+const decksContainerEl = document.getElementById('user_decks-old');
 
 function loadDecks(decksElement) {
     const xhr = new XMLHttpRequest();
