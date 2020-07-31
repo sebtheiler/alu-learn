@@ -4,6 +4,9 @@ decks/__pycache__/
 decks/migrations/
 db.sqlite3
 
+static/
+static-root/
+
 # --- React ---
 
 # dependencies
