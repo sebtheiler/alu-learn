@@ -1,14 +1,24 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  const [decks, setDecks] = useState([]);
+  useEffect(() => {
+    const deckItems = [{'title': 123}, {'title': 'hello'}]
+    setDecks(deckItems);
+  }, []);
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
+        </p>
+        <p>
+          {decks.map((deck, index) => {
+            return <li>{deck.title}</li>;
+          })}
         </p>
         <a
           className="App-link"
@@ -21,6 +31,6 @@ function App() {
       </header>
     </div>
   );
-}
+};
 
 export default App;
