@@ -4,13 +4,21 @@ import {loadDecks} from '../lookup';
 export function EditButton(props) {
   const {deck} = props;
   const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
+
+  // const handleClick = (event) => {
+  //   event.preventDefault();
+  //   window.location.href = link.href;
+  // };
+
   return <button className={className}>Edit</button>;
 };
 
 export function RedirectButton(props) {
   const {deck, link} = props;
   const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
-  return <button className={className}>{link}</button>
+  const target = props.target ? props.target : '_blank';
+
+  return <a href={link.href} target={target} rel='noopener noreferrer'><button className={className}>{link.display}</button></a>;
 };
 
 export function Deck(props) {
@@ -20,7 +28,8 @@ export function Deck(props) {
     <p>{deck.id} - {deck.title}</p>
     <div className='btn btn-group'>
       <EditButton deck={deck} />
-      <RedirectButton deck={deck} link={'https://www.google.com'} />
+      <RedirectButton deck={deck} link={{href: 'https://www.google.com', display: 'Add Cards', target: '_blank'}} />
+      <RedirectButton deck={deck} link={{href: 'https://www.google.com', display: 'Browse', target: '_blank'}} />
     </div>
   </div>;
 };
