@@ -4,9 +4,7 @@ import './App.css';
 import {DecksComponent} from './decks';
 
 
-
 function App() {
-
   return (
     <div className="App">
       <header className="App-header">

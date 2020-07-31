@@ -3,6 +3,17 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import {DecksComponent, DecksList, Deck} from './decks';
+
+const decksEl = document.getElementById('user_decks');
+if (decksEl) {
+  ReactDOM.render(
+    <React.StrictMode>
+      <DecksComponent />
+    </React.StrictMode>,
+    decksEl
+  );
+};
 
 const appEl = document.getElementById('root');
 if (appEl) {
