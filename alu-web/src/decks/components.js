@@ -4,19 +4,22 @@ import {createDeck, loadDecks} from '../lookup';
 export function DecksComponent(props) {
   const inputTextRef = React.createRef();
   const [newDecks, setNewDecks] = useState([]);
+
+  const handleBackendUpdate = (response, status) => {
+    let tempNewDecks = [...newDecks];
+    if (status === 201) {
+      tempNewDecks.unshift(response);
+      setNewDecks(tempNewDecks);
+    } else {
+      console.log(response);
+      alert('A server error occured');
+    };
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const textVal = inputTextRef.current.value;
-    let tempNewDecks = [...newDecks];
-    createDeck(textVal, (response, status) => {
-      if (status === 201) {
-        tempNewDecks.unshift(response);
-      } else {
-        console.log(response);
-        alert('A server error occured');
-      };
-    });
-    setNewDecks(tempNewDecks);
+    createDeck(textVal, handleBackendUpdate);
     inputTextRef.current.value = '';
   };
   

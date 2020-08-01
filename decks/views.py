@@ -26,7 +26,7 @@ class IndexView(generic.ListView):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def deck_create_view(request, *args, **kwargs):
-    serializer = DeckSerializer(data=request.POST)
+    serializer = DeckSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
         return Response(serializer.data, status=201)

@@ -1,6 +1,5 @@
 # --- Django ---
-alu/__pycache__/
-decks/__pycache__/
+__pycache__/
 decks/migrations/
 db.sqlite3
 
@@ -30,3 +29,4 @@ static-root/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.vscode/
