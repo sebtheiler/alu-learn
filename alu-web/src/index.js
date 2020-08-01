@@ -7,6 +7,7 @@ import {DecksComponent, DecksList, Deck} from './decks';
 
 const decksEl = document.getElementById('user_decks');
 if (decksEl) {
+  console.log(decksEl.dataset)
   ReactDOM.render(
     <React.StrictMode>
       <DecksComponent />

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {apiDeckCreate, apiDeckList} from './lookup';
+import {apiDeckCreate, apiDeckList} from '../lookup';
 
 export function DecksComponent(props) {
   const inputTextRef = React.createRef();
@@ -38,12 +38,12 @@ export function EditButton(props) {
   const {deck} = props;
   const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
 
-  // const handleClick = (event) => {
-  //   event.preventDefault();
-  //   window.location.href = link.href;
-  // };
+  const handleClick = (event) => {
+    event.preventDefault();
+    console.log('TODO: Implement editing')
+  };
 
-  return <button className={className}>Edit</button>;
+  return <button onClick={handleClick} className={className}>Edit</button>;
 };
 
 export function RedirectButton(props) {

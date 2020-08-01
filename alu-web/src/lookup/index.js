@@ -1,6 +1,6 @@
-import {createDeck, loadDecks} from './components';
+import {apiDeckCreate, apiDeckList} from './lookup';
 
 export {
-    createDeck,
-    loadDecks,
+    apiDeckCreate,
+    apiDeckList,
 };

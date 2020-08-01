@@ -1,4 +1,4 @@
-import {backendLookup} from './lookup';
+import {backendLookup} from './components';
 
 export function apiDeckCreate(newDeck, callback) {
   backendLookup('POST', 'create/', callback, {title: newDeck});
