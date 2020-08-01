@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {loadDecks} from '../lookup';
+import {createDeck, loadDecks} from '../lookup';
 
 export function DecksComponent(props) {
   const inputTextRef = React.createRef();
@@ -8,9 +8,13 @@ export function DecksComponent(props) {
     event.preventDefault();
     const textVal = inputTextRef.current.value;
     let tempNewDecks = [...newDecks];
-    tempNewDecks.unshift({
-      title: textVal,
-      
+    createDeck(textVal, (response, status) => {
+      if (status === 201) {
+        tempNewDecks.unshift(response);
+      } else {
+        console.log(response);
+        alert('A server error occured');
+      };
     });
     setNewDecks(tempNewDecks);
     inputTextRef.current.value = '';
@@ -63,21 +67,27 @@ export function Deck(props) {
 export function DecksList(props) {
   const [decksInit, setDecksInit] = useState([props.newDecks ? props.newDecks : []]);
   const [decks, setDecks] = useState([]);
+  const [decksDidSet, setDecksDidSet] = useState(false);
+
   useEffect(() => {
     const final = [...props.newDecks].concat(decksInit);
     if (final.length !== decks.length) {
       setDecks(final);
     };
   }, [props.newDecks, decksInit]);
+
   useEffect(() => {
-    const myCallback = (response, status) => {
-      const finalDecksInit = [...response].concat(decksInit);
-      if (status === 200) {
-        setDecksInit(finalDecksInit);
+    if (decksDidSet === false) {
+      const myCallback = (response, status) => {
+        const finalDecksInit = [...response].concat(decksInit);
+        if (status === 200) {
+          setDecksInit(finalDecksInit); // ...(response)?
+          setDecksDidSet(true);
+        };
       };
+      loadDecks(myCallback);
     };
-    loadDecks(myCallback);
-  }, []);
+  }, [decksInit, decksDidSet, setDecksDidSet]);
 
   return decks.map((deck, index) => {
     return <Deck deck={deck} key={`${index}-${deck.id}`} className='my-5 py-5 border bg-white text-dark'/>;

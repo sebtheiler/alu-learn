@@ -1,5 +1,6 @@
-import {loadDecks} from './components';
+import {createDeck, loadDecks} from './components';
 
 export {
-    loadDecks
+    createDeck,
+    loadDecks,
 };
