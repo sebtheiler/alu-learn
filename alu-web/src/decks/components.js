@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {createDeck, loadDecks} from '../lookup';
+import {apiDeckCreate, apiDeckList} from './lookup';
 
 export function DecksComponent(props) {
   const inputTextRef = React.createRef();
@@ -19,7 +19,7 @@ export function DecksComponent(props) {
   const handleSubmit = (event) => {
     event.preventDefault();
     const textVal = inputTextRef.current.value;
-    createDeck(textVal, handleBackendUpdate);
+    apiDeckCreate(textVal, handleBackendUpdate);
     inputTextRef.current.value = '';
   };
   
@@ -81,14 +81,14 @@ export function DecksList(props) {
 
   useEffect(() => {
     if (decksDidSet === false) {
-      const myCallback = (response, status) => {
+      const handleDeckListLookup = (response, status) => {
         const finalDecksInit = [...response].concat(decksInit);
         if (status === 200) {
           setDecksInit(finalDecksInit); // ...(response)?
           setDecksDidSet(true);
         };
       };
-      loadDecks(myCallback);
+      apiDeckList(handleDeckListLookup);
     };
   }, [decksInit, decksDidSet, setDecksDidSet]);
 
