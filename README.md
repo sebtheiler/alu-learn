@@ -7,6 +7,5 @@ git clone https://github.com/EvolvedSquid/Alu.git
 cd alu-web
 npm install
 cd ..
+python build-react-into-django.py
 ```
-
-Generate/copy-paste `static` and `static-root` files.
