@@ -4,6 +4,7 @@ import {apiDeckCreate, apiDeckList} from '../lookup';
 export function DecksComponent(props) {
   const inputTextRef = React.createRef();
   const [newDecks, setNewDecks] = useState([]);
+  const canCreateDeck = props.canCreateDeck === 'false' ? false : true;
 
   const handleBackendUpdate = (response, status) => {
     let tempNewDecks = [...newDecks];
@@ -24,13 +25,13 @@ export function DecksComponent(props) {
   };
   
   return <div className={props.className}>
-    <div className='col-12 mb-3'>
+    {canCreateDeck === true && <div className='col-12 mb-3'>
       <form onSubmit={handleSubmit}>
         <input type='text' required='required' className='form-control text-center' name='title' placeholder='My deck' ref={inputTextRef} />
         <div className='text-center mt-1'><button type='submit' className='btn btn-primary my-3'>Create</button></div>
       </form>
-    </div>
-  <DecksList newDecks={newDecks} />
+    </div>}
+  <DecksList newDecks={newDecks} {...props}/>
   </div>;
 };
 
@@ -88,9 +89,9 @@ export function DecksList(props) {
           setDecksDidSet(true);
         };
       };
-      apiDeckList(handleDeckListLookup);
+      apiDeckList(props.username, handleDeckListLookup);
     };
-  }, [decksInit, decksDidSet, setDecksDidSet]);
+  }, [decksInit, decksDidSet, setDecksDidSet, props.username]);
 
   return decks.map((deck, index) => {
     return <Deck deck={deck} key={`${index}-${deck.id}`} className='my-5 py-5 border bg-white text-dark'/>;
