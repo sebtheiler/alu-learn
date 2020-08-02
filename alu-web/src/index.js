@@ -16,15 +16,6 @@ if (decksEl) {
   );
 };
 
-const appEl = document.getElementById('root');
-if (appEl) {
-  ReactDOM.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-    appEl
-  );
-};
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

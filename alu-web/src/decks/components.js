@@ -84,7 +84,7 @@ export function DecksList(props) {
       const handleDeckListLookup = (response, status) => {
         const finalDecksInit = [...response].concat(decksInit);
         if (status === 200) {
-          setDecksInit(finalDecksInit); // ...(response)?
+          setDecksInit(response);
           setDecksDidSet(true);
         };
       };
