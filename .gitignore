@@ -5,6 +5,8 @@ db.sqlite3
 
 static/
 static-root/
+decks/templates/react.html
+decks/templates/react/
 
 # --- React ---
 
