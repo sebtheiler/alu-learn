@@ -6,22 +6,27 @@ REACT_DIRECTORY = os.path.join(base_dir, 'alu-web/')
 PYTHON_PATH = '~/anaconda3/envs/webdev/bin/python'
 
 # Compile react
+print('Compiling React...')
 os.chdir(REACT_DIRECTORY)
 os.system('npm run build')
 os.chdir(base_dir)
 
 # Copy static files
+print('Copying static files...')
 if os.path.isdir(os.path.join(base_dir, 'static')):
     rmtree(os.path.join(base_dir, 'static'))
 copytree(os.path.join(REACT_DIRECTORY, 'build/static/'), os.path.join(base_dir, 'static/'))
 if os.path.isdir(os.path.join(base_dir, 'static-root')):
     rmtree(os.path.join(base_dir, 'static-root'))
-os.mkdir(os.path.join(base_dir, 'static-root'))
+os.mkdir(os.path.join(base_dir, 'static-root/'))
 
 os.system(f'{PYTHON_PATH} manage.py collectstatic')
 
 # Copy HTML files
+print('Copying HTML files...')
 copyfile(os.path.join(base_dir, 'alu-web/build/index.html'), os.path.join(base_dir, 'decks/templates/react.html'))
+if not os.path.isdir(os.path.join(base_dir, 'decks/templates/react/')):
+    os.mkdir(os.path.join(base_dir, 'decks/templates/react/'))
 
 with open(os.path.join(base_dir, 'decks/templates/react.html'), 'r') as f:
     contents = f.read()
@@ -41,3 +46,5 @@ def write_file(filename, contents):
 write_file('decks/templates/react/base_embed.html', base_embed_html)
 write_file('decks/templates/react/js.html', js_html)
 write_file('decks/templates/react/css.html', css_html)
+
+print('Finished')
