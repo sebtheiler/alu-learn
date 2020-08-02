@@ -7,13 +7,8 @@ import {DecksComponent, DecksList, Deck} from './decks';
 
 const decksEl = document.getElementById('user_decks');
 if (decksEl) {
-  console.log(decksEl.dataset)
-  ReactDOM.render(
-    <React.StrictMode>
-      <DecksComponent />
-    </React.StrictMode>,
-    decksEl
-  );
+  const e = React.createElement;
+  ReactDOM.render(e(DecksComponent, decksEl.dataset), decksEl);
 };
 
 

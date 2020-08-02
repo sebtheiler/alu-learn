@@ -38,6 +38,9 @@ def deck_create_view(request, *args, **kwargs):
 # @permission_classes([IsAuthenticated])
 def deck_list_view(request, *args, **kwargs):
     decks_qs = Deck.objects.all()
+    username = request.GET.get('username')
+    if username is not None: # theoretically shows every deck to anon user
+        decks_qs = decks_qs.filter(user__username__iexact=username)
     serializer = DeckSerializer(decks_qs, many=True)
     return Response(serializer.data)
 
