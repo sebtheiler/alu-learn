@@ -1,4 +1,4 @@
-import {DecksComponent} from './components';
+import {DecksComponent, DeckDetailComponent} from './components';
 import {Deck} from './detail';
 import {DecksList} from './list';
 import {DeckCreate} from './create';
@@ -10,5 +10,6 @@ export {
     Deck,
     DecksList,
     DecksComponent,
-    DeckCreate
+    DeckCreate,
+    DeckDetailComponent
 };

@@ -54,7 +54,7 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
         return Response({}, status=404)
     obj = decks_qs.first()
     serializer = DeckSerializer(decks_qs, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data[0])
 
 
 @api_view(['DELETE', 'POST'])

@@ -71,7 +71,7 @@ class DeckModelTests(TestCase):
         client = self.get_client()
         response = client.get('/api/decks/1/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()[0].get('id'), 1)
+        self.assertEqual(response.json().get('id'), 1)
     
     # def test_deck_detail_unauthorized_api_view(self):
     #     client = self.get_client(None)
