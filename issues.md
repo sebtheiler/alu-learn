@@ -34,6 +34,8 @@ Solution:
 Cleared browser cache (can also go incognito)
 https://stackoverflow.com/questions/28046422/django-cors-headers-not-work
 
+Removed the line `xhr.setRequestHeader('HTTP_X_REQUESTED_WITH', 'XMLHttpRequest');` from `alu-web/src/lookup/components.js`
+
 Date and Programmer:
 Tue Aug 04 2020, Sebastian Theiler
 ---
