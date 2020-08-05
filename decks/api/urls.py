@@ -1,6 +1,8 @@
 from django.urls import path
+
 from . import views
 
+# Base endpoint = /api/decks/
 app_names = 'decks'
 urlpatterns = [
     path('decklist/', views.deck_list_view),

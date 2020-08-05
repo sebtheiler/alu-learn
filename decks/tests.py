@@ -1,8 +1,10 @@
+import random
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework.test import APIClient
-from .models import Tag, FlashCard, Deck
-import random
+
+from .models import Deck, FlashCard, Tag
 
 # Create your tests here.
 User = get_user_model()

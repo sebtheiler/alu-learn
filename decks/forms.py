@@ -1,6 +1,8 @@
 from django import forms
-from .models import Deck, FlashCard, Tag
 from django.conf import settings
+
+from .models import Deck, FlashCard, Tag
+
 
 class DeckForm(forms.ModelForm):
     class Meta:
