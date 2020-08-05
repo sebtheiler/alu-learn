@@ -6,7 +6,6 @@ from django.urls import include, path
 from decks.views import (
     decks_list_view,
     decks_detail_view,
-    decks_profile_view,
 )
 from accounts.views import (
     login_view,
@@ -21,7 +20,7 @@ urlpatterns = [
     path('logout/', logout_view),
     path('register', register_view),
     path('<int:deck_id>/', decks_detail_view),
-    path('profile/<str:username>/', decks_profile_view),
+    path('profile/', include('profiles.urls')),
     path('api/decks/', include('decks.api.urls')),
 ]
 
