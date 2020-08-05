@@ -1,7 +1,6 @@
 import React from 'react';
 
 export function EditButton(props) {
-    const {deck} = props;
     const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
   
     const handleClick = (event) => {
@@ -13,7 +12,7 @@ export function EditButton(props) {
   };
   
   export function RedirectButton(props) {
-    const {deck, link} = props;
+    const {link} = props;
     const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
     const target = props.target ? props.target : '_blank';
   

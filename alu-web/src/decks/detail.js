@@ -21,7 +21,7 @@ export function Deck(props) {
       <EditButton deck={deck} />
       <RedirectButton deck={deck} link={{href: 'https://www.google.com', display: 'Add Cards', target: '_blank'}} />
       <RedirectButton deck={deck} link={{href: 'https://www.google.com', display: 'Browse', target: '_blank'}} />
-      {isDetail == true ? null : <button className='btn btn-outline-primary mb-4 mr-1' onClick={handleLink}>View</button>}
+      {isDetail === true ? null : <button className='btn btn-outline-primary mb-4 mr-1' onClick={handleLink}>View</button>}
     </div>
   </div>);
 };

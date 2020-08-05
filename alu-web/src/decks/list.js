@@ -12,7 +12,7 @@ export function DecksList(props) {
       if (final.length !== decks.length) {
         setDecks(final);
       };
-    }, [props.newDecks, decksInit]);
+    }, [props.newDecks, decksInit, decks.length]);
   
     useEffect(() => {
       if (decksDidSet === false) {
