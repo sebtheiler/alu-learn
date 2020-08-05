@@ -22,6 +22,18 @@ class IndexView(generic.ListView):
         return ['Deck 1', 'Deck 2', 'Deck 3']
 
 
+def local_decks_list_view(request, *args, **kwargs):
+    return render(request, 'decks/list.html')
+
+
+def local_decks_detail_view(request, deck_id, *args, **kwargs):
+    return render(request, 'decks/detail.html', context={'deck_id': deck_id})
+
+
+def local_decks_profile_view(request, username, *args, **kwargs):
+    return render(request, 'decks/profile.html', context={'profile_username': username})
+
+
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])

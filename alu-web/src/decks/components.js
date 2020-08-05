@@ -27,7 +27,6 @@ export function DeckDetailComponent(props) {
 
   const handleBackendLookup = (response, status) => {
     if (status === 200) {
-      console.log('resp', response)
       setDeck(response);
     } else {
       alert('Deck not found!');
@@ -40,6 +39,5 @@ export function DeckDetailComponent(props) {
       setDidLookup(true);
     };
   }, [deckId, didLookup, setDidLookup]);
-  console.log('42 comp', deck)
   return deck === null ? null : <Deck deck={deck} individual={true} className={props.className}/>;
 };

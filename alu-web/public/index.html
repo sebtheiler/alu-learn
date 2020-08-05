@@ -49,8 +49,8 @@
       var match = path.match(idRegex);
       if (match) {
         var deckId = match.groups.deckid;
-        var userDecksEl = document.getElementById('user_decks');
-        userDecksEl.className = 'd-none';
+        // var userDecksEl = document.getElementById('user_decks');
+        // userDecksEl.className = 'd-none';
         var deckEl = "<div class='deck-detail' data-deck-id='" + deckId + "' data-class-name='col-6 mx-auto'></div>";
         var mainContainer = document.getElementById('deck-container');
         mainContainer.innerHTML = deckEl;
