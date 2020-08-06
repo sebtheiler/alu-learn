@@ -1,15 +1,38 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 
 # Create your models here.
 User = settings.AUTH_USER_MODEL
 
+
+class DeckQuerySet(models.QuerySet):
+    def by_username(self, username):
+        return self.filter(user__username__iexact=username)
+    def feed(self, user):
+        # Order alphabetically, not by order added
+        feed_qs = self.filter(user__username=user.username).order_by('title')
+
+        # feed_qs = self.filter(
+        #     Q(user__username=user.username) | 
+        #     Q(...) # if shared with current user
+        # ).order_by('title')
+        return feed_qs
+
+class DeckManager(models.Manager):
+    def get_queryset(self, *args, **kwargs):
+        return DeckQuerySet(self.model, using=self._db)
+
+    def feed(self, user):
+        return self.get_queryset().feed(user)
 
 class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks') # todo: maybe allow this to become NULL?
     title = models.CharField(max_length=128)
 
     # starting difficulty, new cards per day, ...
+
+    objects = DeckManager()
     class Meta:
         ordering = ['-id']
 

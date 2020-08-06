@@ -1,5 +1,7 @@
 from django.http import JsonResponse
 from django.utils.http import is_safe_url
+from django.db.models import Q
+
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
@@ -23,20 +25,26 @@ def deck_create_view(request, *args, **kwargs):
 
 
 @api_view(['GET'])
-# @authentication_classes([SessionAuthentication])
-# @permission_classes([IsAuthenticated])
 def deck_list_view(request, *args, **kwargs):
     decks_qs = Deck.objects.all()
     username = request.GET.get('username')
     if username is not None: # theoretically shows every deck to anon user
-        decks_qs = decks_qs.filter(user__username__iexact=username)
+        decks_qs = decks_qs.by_username(username)
     serializer = DeckSerializer(decks_qs, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET'])
-# @authentication_classes([SessionAuthentication])
-# @permission_classes([IsAuthenticated])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def deck_feed_view(request, *args, **kwargs):
+    user = request.user
+    feed_qs = Deck.objects.feed(user)
+    serializer = DeckSerializer(feed_qs, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
 def deck_detail_view(request, deck_id, *args, **kwargs):
     decks_qs = Deck.objects.filter(pk=deck_id)
     if not decks_qs.exists():
