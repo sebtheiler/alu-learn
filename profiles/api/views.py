@@ -18,18 +18,25 @@ User = get_user_model()
 def user_friend_view(request, username, *args, **kwargs):
     current_user = request.user
     to_friend_user_qs = User.objects.filter(username=username)
+    if current_user.username == username:
+        return Response({'message': 'You cannot friend yourself'}, status=400)
+
     if not to_friend_user_qs.exists():
         return Response({}, status=404)
+
     to_friend_user = to_friend_user_qs.first()
     profile = to_friend_user.profile
     data = request.data or {}
     action = data.get('action')
-    if action == 'add_friend':
+    if action == 'friend':
         profile.friends.add(current_user)
-    elif action == 'remove_friend':
-        profile.friends.remove(current_user)
+    elif action == 'unfriend':
+        if current_user in profile.friends.all():
+            profile.friends.remove(current_user)
+        else:
+            return Response({'message': 'You cannot unfriend a user who is not your friend'})
     else:
-        pass
+        return Response({'message': 'Unknown action'}, status=400)
 
     current_followers_qs = profile.friends.all()
     return Response({'friend_count': current_followers_qs.count()}, status=200)

@@ -52,7 +52,7 @@ class DeckModelTests(TestCase):
     
     def test_decks_related_name(self):
         user = self.users[0]
-        self.assertEqual(user.deck_set.count(), 1)
+        self.assertEqual(user.decks.count(), 1)
     
     # def test_deck_unauthorized_list(self):
     #     client = self.get_client(None)

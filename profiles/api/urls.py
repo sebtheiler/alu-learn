@@ -7,5 +7,5 @@ from .views import (
 # Base endpoint = /api/profiles/
 app_names = 'decks'
 urlpatterns = [
-    path('<str:username>/follow/', user_friend_view),
+    path('<str:username>/friend/', user_friend_view),
 ]
