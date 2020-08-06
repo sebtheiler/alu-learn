@@ -16,11 +16,13 @@ def create_deck(deck_title, user=None):
 
 class DeckModelTests(TestCase):
     def setUp(self):
+        # Create random users
         self.num_users = 5
         self.users = []
         for i in range(self.num_users):
             self.users.append(User.objects.create_user(username='User - ' + str(i), password='p@ssword'))
 
+        # Create a deck for each user
         self.num_decks = 5
         self.decks = []
         for i in range(self.num_decks):
@@ -47,6 +49,10 @@ class DeckModelTests(TestCase):
         response = client.get('/api/decks/decklist/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.json()), self.num_decks)
+    
+    def test_decks_related_name(self):
+        user = self.users[0]
+        self.assertEqual(user.deck_set.count(), 1)
     
     # def test_deck_unauthorized_list(self):
     #     client = self.get_client(None)
