@@ -15,3 +15,10 @@ class ProfileTestCase(TestCase):
     def test_profile_created_via_signal(self):
         profile_qs = Profile.objects.all()
         self.assertEqual(profile_qs.count(), self.num_users)
+
+    def test_following(self):
+        # User0 and User1 are now friends
+        self.users[0].profile.friends.add(self.users[1])
+
+        self.assertEqual(self.users[0].profile.friends.count(), 1)
+        self.assertEqual(self.users[1].friends.count(), 1)
