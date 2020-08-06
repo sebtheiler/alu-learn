@@ -1,13 +1,14 @@
 from django.conf import settings
 from rest_framework import serializers
-
+from profiles.serializers import PublicProfileSerializer
 from .models import Deck, FlashCard, Tag
 
 
 class DeckSerializer(serializers.ModelSerializer):
+    author = PublicProfileSerializer(source='user.profile', read_only=True)
     class Meta:
         model = Deck
-        fields = ['title', 'id']
+        fields = ['author', 'title', 'id']
     
     def validate_title(self, value):
         if len(value) > settings.MAX_DECK_TITLE_LENGTH:
