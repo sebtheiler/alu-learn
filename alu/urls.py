@@ -20,8 +20,9 @@ urlpatterns = [
     path('logout/', logout_view),
     path('register', register_view),
     path('<int:deck_id>/', decks_detail_view),
-    path('profile/', include('profiles.urls')),
     path('api/decks/', include('decks.api.urls')),
+    path('profiles/', include('profiles.urls')),
+    path('api/profiles/', include('profiles.api.urls')),
 ]
 
 if settings.DEBUG:
