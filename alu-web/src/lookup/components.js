@@ -21,7 +21,7 @@ export function backendLookup(method, endpoint, callback, data) {
     jsonData = JSON.stringify(data);
   };
   const xhr = new XMLHttpRequest();
-  const endpointUrl = `http://127.0.0.1:8000/api/decks/${endpoint}`;
+  const endpointUrl = `http://127.0.0.1:8000/api/${endpoint}`;
   
   xhr.responseType = 'json';
   const csrftoken = getCookie('csrftoken');

@@ -1,17 +1,21 @@
 import {backendLookup} from './components';
 
 export function apiDeckCreate(newDeck, callback) {
-  backendLookup('POST', 'create/', callback, {title: newDeck});
+  backendLookup('POST', 'decks/create/', callback, {title: newDeck});
 };
 
 export function apiDeckDetail(deckId, callback) {
-  backendLookup('GET', `${deckId}/`, callback);
+  backendLookup('GET', `decks/${deckId}/`, callback);
 };
 
-export function apiDeckList(username, callback) {
-  let endpoint = 'decklist/';
+export function apiDeckList(username, callback, nextUrl) {
+  let endpoint = 'decks/decklist/';
   if (username) {
-    endpoint = `decklist/?username=${username}`;
+    endpoint = `decks/decklist/?username=${username}`;
+  };
+  if (nextUrl !== null && nextUrl !== undefined) {
+    // TODO: The replace system will need to be redone
+    endpoint = nextUrl.replace('http://127.0.0.1:8000/api/', '');
   };
   backendLookup('GET', endpoint, callback);
 };
