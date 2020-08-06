@@ -48,7 +48,7 @@ class DeckModelTests(TestCase):
         client = self.get_client()
         response = client.get('/api/decks/decklist/')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), self.num_decks)
+        self.assertEqual(len(response.json().get('results')), self.num_decks)
     
     def test_decks_related_name(self):
         user = self.users[0]

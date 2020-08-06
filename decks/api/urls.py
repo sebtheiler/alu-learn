@@ -9,4 +9,5 @@ urlpatterns = [
     path('create/', views.deck_create_view),
     path('<int:deck_id>/delete/', views.deck_delete_view),
     path('<int:deck_id>/', views.deck_detail_view),
+    path('feed/', views.deck_feed_view),
 ]

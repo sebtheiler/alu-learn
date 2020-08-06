@@ -5,6 +5,7 @@ from django.db.models import Q
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -24,14 +25,22 @@ def deck_create_view(request, *args, **kwargs):
     return Response({}, status=400)
 
 
+def get_paginated_queryset_response(qs, request, Serializer):
+    paginator = PageNumberPagination()
+    paginator.page_size = 50
+    user = request.user
+    paginated_qs = paginator.paginate_queryset(qs, request)
+    serializer = Serializer(paginated_qs, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+
 @api_view(['GET'])
 def deck_list_view(request, *args, **kwargs):
     decks_qs = Deck.objects.all()
     username = request.GET.get('username')
     if username is not None: # theoretically shows every deck to anon user
-        decks_qs = decks_qs.by_username(username)
-    serializer = DeckSerializer(decks_qs, many=True)
-    return Response(serializer.data)
+        decks_qs = decks_qs.by_username(username)    
+    return get_paginated_queryset_response(decks_qs, request, DeckSerializer)
 
 
 @api_view(['GET'])
@@ -40,8 +49,7 @@ def deck_list_view(request, *args, **kwargs):
 def deck_feed_view(request, *args, **kwargs):
     user = request.user
     feed_qs = Deck.objects.feed(user)
-    serializer = DeckSerializer(feed_qs, many=True)
-    return Response(serializer.data)
+    return get_paginated_queryset_response(feed_qs, request, DeckSerializer)
 
 
 @api_view(['GET'])
