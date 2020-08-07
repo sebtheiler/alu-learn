@@ -7,7 +7,7 @@ export function UserLink(props) {
 
   const handleUserLink = (event) => {
     event.preventDefault();
-    window.location.href = `/profile/${user.username}`;
+    window.location.href = `/profiles/u/${user.username}`;
   };
 
   return (<React.Fragment>
