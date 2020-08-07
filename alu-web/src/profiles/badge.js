@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {apiProfileDetail, apiProfileFriendToggle} from '../lookup/lookup';
 import {UserLink, UserPicture} from './components';
+import {DisplayCount} from './utils';
 
 function ProfileBadge(props) {
     const {user, didFriendToggle, profileLoading} = props;
@@ -17,6 +18,9 @@ function ProfileBadge(props) {
     return user ? (<div>
         <UserPicture user={user} />
         <p><UserLink user={user} includeFullName noLink /></p>
+        <p>{user.follower_count === 1 ? "Friend" : "Friends"}: <DisplayCount>{user.follower_count}</DisplayCount></p>
+        <p>{user.location}</p>
+        <p>{user.bio}</p>
         <button onClick={handleFriendToggle} className='btn btn-primary'>{currentVerb}</button>
     </div>) : null;
 };
@@ -29,7 +33,6 @@ export function ProfileBadgeComponent(props) {
 
     const handleBackendLookup = (response, status) => {
         if (status === 200) {
-            console.log(response, status)
             setProfile(response);
         } else {
             alert('Deck not found!');
@@ -44,7 +47,6 @@ export function ProfileBadgeComponent(props) {
     }, [username, didLookup, setDidLookup]);
 
     const handleNewFriend = (actionVerb) => {
-        console.log(actionVerb)
         setProfileLoading(true);
         apiProfileFriendToggle(username, actionVerb, (response, status) => {
             if (status === 200) {
