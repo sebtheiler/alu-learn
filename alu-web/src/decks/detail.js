@@ -1,6 +1,6 @@
 import React from 'react';
 import {EditButton, RedirectButton} from './buttons';
-import default_profile_pic from '../images/default_profile_pic.jpg';
+import {UserPicture, UserLink} from '../profiles';
 
 export function Deck(props) {
   const {deck} = props;
@@ -25,14 +25,11 @@ export function Deck(props) {
   return (<div className={className}>
     <div className='d-flex'>
       <div className='mx-1'>
-        {/* {TODO: Load real profile picture, downscale static file to consume less bandwith} */}
-        <img alt={deck.author.first_name + "'s profile picture"} src={default_profile_pic} height='40' width='40'></img>
+        <UserPicture user={deck.author} />
       </div>
       <div className='col-11'>
         <p>
-          {deck.author.first_name}{' '}
-          {deck.author.last_name}{' '}
-          @{deck.author.username}{' '}
+          <UserLink user={deck.author} includeFullName />
         </p>
         <p>{deck.title}</p>
         <div className='btn btn-group px-0'>
