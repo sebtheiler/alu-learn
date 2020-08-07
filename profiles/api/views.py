@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Profile
+from ..serializers import PublicProfileSerializer
 
 
 User = get_user_model()
@@ -40,3 +41,12 @@ def user_friend_view(request, username, *args, **kwargs):
 
     current_followers_qs = profile.friends.all()
     return Response({'friend_count': current_followers_qs.count()}, status=200)
+
+@api_view(['GET'])
+def profile_detail_api_view(request, username, *args, **kwargs):
+    profile_qs = Profile.objects.filter(user__username=username)
+    if not profile_qs.exists():
+        return Response({'message': 'User not found'}, status=404)
+    profile_obj = profile_qs.first()
+    context = PublicProfileSerializer(instance=profile_obj).data
+    return Response(context, status=200)
