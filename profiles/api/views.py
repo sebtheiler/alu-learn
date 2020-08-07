@@ -48,5 +48,5 @@ def profile_detail_api_view(request, username, *args, **kwargs):
     if not profile_qs.exists():
         return Response({'message': 'User not found'}, status=404)
     profile_obj = profile_qs.first()
-    context = PublicProfileSerializer(instance=profile_obj).data
+    context = PublicProfileSerializer(instance=profile_obj, context={'request': request}).data
     return Response(context, status=200)

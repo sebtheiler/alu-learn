@@ -17,6 +17,12 @@ class Profile(models.Model):
     updated = models.DateTimeField(auto_now=True)
     friends = models.ManyToManyField(User, related_name='friends', blank=True)
 
+    def __str__(self):
+        if self.user.first_name and self.user.last_name:
+            return f'{self.user.first_name} {self.user.last_name} - @{self.user.username}'
+        else:
+            return f'@{self.user.username}'
+
 
 def user_did_save(sender, instance, created, *args, **kwargs):
     if created:

@@ -9,18 +9,25 @@ class PublicProfileSerializer(serializers.ModelSerializer):
     last_name = serializers.SerializerMethodField(read_only=True)
     username = serializers.SerializerMethodField(read_only=True)
     friend_count = serializers.SerializerMethodField(read_only=True)
+    is_friend = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Profile
         fields = [
             'first_name',
             'last_name',
+            'username',
             'id',
             'bio',
             'location',
             'friend_count',
-            'username',
+            'is_friend',
         ]
+
+    def get_is_friend(self, obj):
+        request = self.context.get('request')
+        is_following = request.user in obj.friends.all() if request else None
+        return is_following
 
     def get_first_name(self, obj):
         return obj.user.first_name

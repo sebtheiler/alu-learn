@@ -39,8 +39,14 @@ def profile_detail_view(request, username, *args, **kwargs):
     if not profile_qs.exists():
         raise Http404()
     profile_obj = profile_qs.first()
+
+    is_following = None
+    if request.user.is_authenticated:
+        is_following = request.user in profile_obj.friends.all()
+
     context = {
         'username': username,
         'profile': profile_obj,
+        'is_following': is_following,
     }
     return render(request, 'profiles/detail.html', context)
