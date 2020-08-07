@@ -19,3 +19,12 @@ export function apiDeckList(username, callback, nextUrl) {
   };
   backendLookup('GET', endpoint, callback);
 };
+
+export function apiDeckFeed(callback, nextUrl) {
+  let endpoint = 'decks/feed/';
+  if (nextUrl !== null && nextUrl !== undefined) {
+    // TODO: The replace system will need to be redone
+    endpoint = nextUrl.replace('http://127.0.0.1:8000/api/', '');
+  };
+  backendLookup('GET', endpoint, callback);
+};

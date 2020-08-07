@@ -3,6 +3,23 @@ import {DeckCreate,} from './create';
 import {DecksList} from './list';
 import {Deck} from './detail';
 import {apiDeckDetail} from '../lookup/lookup';
+import {DecksFeedList} from './feed';
+
+export function DecksFeedComponent(props) {
+  const [newDecks, setNewDecks] = useState([]);
+  const canCreateDeck = props.canCreateDeck === 'false' ? false : true;
+
+  const handleNewDeck = (newDeck) => {
+    let tempNewDecks = [...newDecks];
+    tempNewDecks.unshift(newDeck);
+    setNewDecks(tempNewDecks);
+  };
+  
+  return (<div className={props.className}>
+      {canCreateDeck === true && <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mb-3' />}
+    <DecksFeedList newDecks={newDecks} {...props}/>
+  </div>);
+};
 
 export function DecksComponent(props) {
   const [newDecks, setNewDecks] = useState([]);

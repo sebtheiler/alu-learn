@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import {DecksComponent, DeckDetailComponent} from './decks';
+import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
 
 const e = React.createElement;
 
@@ -15,6 +15,12 @@ const deckDetailElements = document.querySelectorAll('.deck-detail');
 deckDetailElements.forEach(container => {
   ReactDOM.render(e(DeckDetailComponent, container.dataset), container);
 });
+
+const deckFeedElements = document.getElementById('decks-feed');
+console.log(deckFeedElements)
+if (deckFeedElements) {
+  ReactDOM.render(e(DecksFeedComponent, deckFeedElements.dataset), deckFeedElements);
+};
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
