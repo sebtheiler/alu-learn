@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.views import generic
 
+def decks_feed_view(request, *args, **kwargs):
+    return render(request, 'pages/feed.html', status=200)
 
 def decks_list_view(request, *args, **kwargs):
     return render(request, 'decks/list.html')

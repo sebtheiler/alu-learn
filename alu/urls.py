@@ -6,6 +6,7 @@ from django.urls import include, path
 from decks.views import (
     decks_list_view,
     decks_detail_view,
+    decks_feed_view,
 )
 from accounts.views import (
     login_view,
@@ -15,7 +16,7 @@ from accounts.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', decks_list_view),
+    path('', decks_feed_view),
     path('login/', login_view),
     path('logout/', logout_view),
     path('register', register_view),
