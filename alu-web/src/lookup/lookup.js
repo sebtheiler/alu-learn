@@ -28,3 +28,7 @@ export function apiDeckFeed(callback, nextUrl) {
   };
   backendLookup('GET', endpoint, callback);
 };
+
+export function apiProfileDetail(username, callback) {
+  backendLookup('GET', `profiles/${username}/detail/`, callback);
+};

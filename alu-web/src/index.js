@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
+import {ProfileBadgeComponent} from './profiles';
 import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
 
 const e = React.createElement;
@@ -16,8 +17,12 @@ deckDetailElements.forEach(container => {
   ReactDOM.render(e(DeckDetailComponent, container.dataset), container);
 });
 
+const userProfileBadgeElements = document.querySelectorAll('.profile-badge');
+userProfileBadgeElements.forEach(container => {
+  ReactDOM.render(e(ProfileBadgeComponent, container.dataset), container);
+});
+
 const deckFeedElements = document.getElementById('decks-feed');
-console.log(deckFeedElements)
 if (deckFeedElements) {
   ReactDOM.render(e(DecksFeedComponent, deckFeedElements.dataset), deckFeedElements);
 };
