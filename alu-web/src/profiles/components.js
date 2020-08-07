@@ -2,7 +2,7 @@ import React from 'react';
 import default_profile_pic from '../images/default_profile_pic.jpg';
 
 export function UserLink(props) {
-  const {user, includeFullName} = props;
+  const {user, includeFullName, noLink} = props;
   const nameDisplay = includeFullName === true ? `${user.first_name} ${user.last_name} ` : null;
 
   const handleUserLink = (event) => {
@@ -12,7 +12,7 @@ export function UserLink(props) {
 
   return (<React.Fragment>
     {nameDisplay}
-    <span onClick={handleUserLink}>@{user.username}</span>
+    <span onClick={noLink ? null : handleUserLink}>@{user.username}</span>
   </React.Fragment>);
 };
 

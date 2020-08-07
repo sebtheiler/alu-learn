@@ -32,3 +32,7 @@ export function apiDeckFeed(callback, nextUrl) {
 export function apiProfileDetail(username, callback) {
   backendLookup('GET', `profiles/${username}/detail/`, callback);
 };
+
+export function apiProfileFriendToggle(username, action, callback) {
+  backendLookup('POST', `profiles/${username}/friend/`, callback, {action: `${action && action}`.toLowerCase()});
+};

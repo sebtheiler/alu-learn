@@ -39,8 +39,8 @@ def user_friend_view(request, username, *args, **kwargs):
     else:
         return Response({'message': 'Unknown action'}, status=400)
 
-    current_followers_qs = profile.friends.all()
-    return Response({'friend_count': current_followers_qs.count()}, status=200)
+    context = PublicProfileSerializer(instance=profile_obj, context={'request': request}).data
+    return Response(context, status=200)
 
 @api_view(['GET'])
 def profile_detail_api_view(request, username, *args, **kwargs):
