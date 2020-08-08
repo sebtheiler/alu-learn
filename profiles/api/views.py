@@ -51,16 +51,29 @@ def profile_detail_api_view(request, username, *args, **kwargs):
     profile_obj = profile_qs.first()
     if request.method == 'POST':
         if profile_obj.user != request.user:
+            data = request.data or {}
+            action = data.get('action')
             if action == 'friend':
-                profile_obj.friends.add(current_user)
-            elif action == 'unfriend':
-                if current_user in profile_obj.friends.all():
-                    profile_obj.friends.remove(current_user)
+                print('Adding friend')
+                if not request.user in profile_obj.friends.all():
+                    profile_obj.friends.add(request.user)
+                    request.user.profile.friends.add(profile_obj.user)
                 else:
+                    print('Already a friend')
+                    return Response({'message': 'You are already friends with this user'}, status=400)
+            elif action == 'unfriend':
+                print('Removing friend')
+                if request.user in profile_obj.friends.all():
+                    profile_obj.friends.remove(request.user)
+                    request.user.profile.friends.remove(profile_obj.user)
+                else:
+                    print('Not friend')
                     return Response({'message': 'You cannot unfriend a user who is not your friend'}, status=400)
             else:
+                print('Unknown action', action)
                 return Response({'message': 'Unknown action'}, status=400)
         else:
+            print('Self-friend')
             return Response({'message': 'You cannot friend yourself'}, status=400)
 
     context = PublicProfileSerializer(instance=profile_obj, context={'request': request}).data

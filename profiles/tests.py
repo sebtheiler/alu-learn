@@ -26,7 +26,7 @@ class ProfileTestCase(TestCase):
         profile_qs = Profile.objects.all()
         self.assertEqual(profile_qs.count(), self.num_users)
 
-    def test_following(self):
+    def test_friending(self):
         # User0 and User1 are now friends
         self.users[0].profile.friends.add(self.users[1])
 

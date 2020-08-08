@@ -40,13 +40,13 @@ def profile_detail_view(request, username, *args, **kwargs):
         raise Http404()
     profile_obj = profile_qs.first()
 
-    is_following = None
+    is_friend = None
     if request.user.is_authenticated:
-        is_following = request.user in profile_obj.friends.all()
+        is_friend = request.user in profile_obj.friends.all()
 
     context = {
         'username': username,
         'profile': profile_obj,
-        'is_following': is_following,
+        'is_friend': is_friend,
     }
     return render(request, 'profiles/detail.html', context)

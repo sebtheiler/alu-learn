@@ -26,8 +26,8 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
     def get_is_friend(self, obj):
         request = self.context.get('request')
-        is_following = request.user in obj.friends.all() if request else None
-        return is_following
+        is_friend = request.user in obj.friends.all() if request else None
+        return is_friend
 
     def get_first_name(self, obj):
         return obj.user.first_name

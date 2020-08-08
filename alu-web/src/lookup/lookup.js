@@ -34,5 +34,5 @@ export function apiProfileDetail(username, callback) {
 };
 
 export function apiProfileFriendToggle(username, action, callback) {
-  backendLookup('POST', `profiles/${username}/friend/`, callback, {action: `${action && action}`.toLowerCase()});
+  backendLookup('POST', `profiles/${username}/friend/`, callback, {action: action.toLowerCase()});
 };

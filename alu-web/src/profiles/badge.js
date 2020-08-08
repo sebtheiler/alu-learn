@@ -6,19 +6,22 @@ import {DisplayCount} from './utils';
 function ProfileBadge(props) {
     const {user, didFriendToggle, profileLoading} = props;
     
-    let currentVerb = (user && user.is_following) ? "Remove Friend" : "Add Friend";
+    let currentVerb = (user && user.is_friend) ? "Remove Friend" : "Add Friend";
     currentVerb = profileLoading ? 'Loading...' : currentVerb;
     const handleFriendToggle = (event) => {
         event.preventDefault();
         if (didFriendToggle && !profileLoading) {
-            didFriendToggle(currentVerb);
+            const action = currentVerb === "Remove Friend" ? "unfriend" : "friend";
+            didFriendToggle(action);
         };
     };
+
+    console.log(user)
 
     return user ? (<div>
         <UserPicture user={user} />
         <p><UserLink user={user} includeFullName noLink /></p>
-        <p>{user.follower_count === 1 ? "Friend" : "Friends"}: <DisplayCount>{user.follower_count}</DisplayCount></p>
+        <p><DisplayCount>{user.friend_count}</DisplayCount> {user.friend_count === 1 ? "friend" : "friends"}</p>
         <p>{user.location}</p>
         <p>{user.bio}</p>
         <button onClick={handleFriendToggle} className='btn btn-primary'>{currentVerb}</button>
