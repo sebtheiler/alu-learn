@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class='profile-badge' data-username='{{ username }}'></div>
+<div class='profile-badge' data-username='{{ username }}' data-current-user-username='{{ current_user_username }}'></div>
 <div id='user_decks'
      data-username="{{ username }}"
      data-can-Create-Deck="false">

@@ -50,27 +50,26 @@ def profile_detail_api_view(request, username, *args, **kwargs):
 
     # Logic for adding/removing friends
     if request.method == 'POST':
-        if profile_obj.user != request.user:
-            data = request.data or {}
-            action = data.get('action')
-            if action == 'friend':
-                if not request.user in profile_obj.friends.all():
-                    # Add eachother as friends
-                    profile_obj.friends.add(request.user)
-                    request.user.profile.friends.add(profile_obj.user)
-                else:
-                    return Response({'message': 'You are already friends with this user'}, status=400)
-            elif action == 'unfriend':
-                if request.user in profile_obj.friends.all():
-                    # Remove eachother as friends
-                    profile_obj.friends.remove(request.user)
-                    request.user.profile.friends.remove(profile_obj.user)
-                else:
-                    return Response({'message': 'You cannot unfriend a user who is not your friend'}, status=400)
+        data = request.data or {}
+        action = data.get('action')
+        if action == 'friend':
+            if profile_obj.user == request.user:
+                return Response({'message': 'You cannot friend yourself'}, status=400)
+            if not request.user in profile_obj.friends.all():
+                # Add eachother as friends
+                profile_obj.friends.add(request.user)
+                request.user.profile.friends.add(profile_obj.user)
             else:
-                return Response({'message': 'Unknown action'}, status=400)
+                return Response({'message': 'You are already friends with this user'}, status=400)
+        elif action == 'unfriend':
+            if request.user in profile_obj.friends.all():
+                # Remove eachother as friends
+                profile_obj.friends.remove(request.user)
+                request.user.profile.friends.remove(profile_obj.user)
+            else:
+                return Response({'message': 'You cannot unfriend a user who is not your friend'}, status=400)
         else:
-            return Response({'message': 'You cannot friend yourself'}, status=400)
+            return Response({'message': 'Unknown action'}, status=400)
 
     context = PublicProfileSerializer(instance=profile_obj, context={'request': request}).data
     return Response(context, status=200)

@@ -7,16 +7,18 @@ import {DisplayCount} from './utils';
 // Function for displaying user information such as bio, friendcount, location, etc.
 // as well as an 'Add/Remove Friend' button
 function ProfileBadge(props) {
-  const {user, didFriendToggle, profileLoading} = props;
+  const {user, didFriendToggle, profileLoading, showFriendButton} = props;
 
-  // Updates the front-end display and calls the callback `didFriendToggle`
-  let currentVerb = (user && user.is_friend) ? "Remove Friend" : "Add Friend";
-  currentVerb = profileLoading ? 'Loading...' : currentVerb;
-  const handleFriendToggle = (event) => {
-    event.preventDefault();
-    if (didFriendToggle && !profileLoading) {
-      const action = currentVerb === "Remove Friend" ? "unfriend" : "friend";
-      didFriendToggle(action);
+  if (showFriendButton) {
+    // Updates the front-end display and calls the callback `didFriendToggle`
+    var currentVerb = (user && user.is_friend) ? "Remove Friend" : "Add Friend";
+    currentVerb = profileLoading ? 'Loading...' : currentVerb;
+    var handleFriendToggle = (event) => {
+      event.preventDefault();
+      if (didFriendToggle && !profileLoading) {
+        const action = currentVerb === "Remove Friend" ? "unfriend" : "friend";
+        didFriendToggle(action);
+      };
     };
   };
 
@@ -26,7 +28,7 @@ function ProfileBadge(props) {
     <p><DisplayCount>{user.friend_count}</DisplayCount> {user.friend_count === 1 ? "friend" : "friends"}</p>
     <p>{user.location}</p>
     <p>{user.bio}</p>
-    <button onClick={handleFriendToggle} className='btn btn-primary'>{currentVerb}</button>
+    {showFriendButton === true ? <button onClick={handleFriendToggle} className='btn btn-primary'>{currentVerb}</button> : null}
   </div>) : null;
 };
 
@@ -34,7 +36,7 @@ function ProfileBadge(props) {
 // Component for profile badge
 // This will need to be updated when friending requires consent from both parties
 export function ProfileBadgeComponent(props) {
-  const {username} = props;
+  const {username, currentUserUsername} = props;
   const [didLookup, setDidLookup] = useState(false);
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -68,8 +70,14 @@ export function ProfileBadgeComponent(props) {
     });
   };
 
+  // If the user is viewing their own profile, don't show the 'Add Friend' button
+  let showFriendButton = true;
+  if (username === currentUserUsername) {
+    showFriendButton = false;
+  };
+
   return didLookup === false ? 'Loading...' :
     (profile ?
-      <ProfileBadge user={profile} didFriendToggle={handleNewFriend} profileLoading={profileLoading} />
+      <ProfileBadge user={profile} showFriendButton={showFriendButton} didFriendToggle={handleNewFriend} profileLoading={profileLoading} />
     : null);
 };

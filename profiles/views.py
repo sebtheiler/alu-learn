@@ -47,6 +47,7 @@ def profile_detail_view(request, username, *args, **kwargs):
         is_friend = request.user in profile_obj.friends.all()
 
     context = {
+        'current_user_username': request.user.username,
         'username': username,
         'profile': profile_obj,
         'is_friend': is_friend,
