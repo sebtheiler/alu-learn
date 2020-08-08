@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from ..forms import DeckForm
 from ..models import Deck, FlashCard, Tag
-from ..serializers import DeckSerializer
+from ..serializers import DeckSerializer, FlashCardSerializer
 
 
 @api_view(['POST'])
@@ -23,7 +23,7 @@ def deck_create_view(request, *args, **kwargs):
 
     Required information:
         `title`: (Data) Title of the deck to create
-    
+
     Returns:
         Author of the deck (PublicProfileSerializer): 'author'
         Title of the deck: 'title'
@@ -34,6 +34,103 @@ def deck_create_view(request, *args, **kwargs):
         serializer.save(user=request.user)
         return Response(serializer.data, status=201)
     return Response({}, status=400)
+
+
+@api_view(['GET', 'POST'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def flashcard_create_view(request, deck_id, *args, **kwargs):
+    """
+    Create a flashcard to a deck - GET/POST
+
+    Required information:
+        `deck_id`: (URL) ID of the deck to create a flashcard in
+        `front`: (Data) Text to go on the front of the flashcard
+        `back`: (Data) Text to go on the back of the flashcard
+    
+    Possible errors:
+        Deck ID does not exist: 400, {message: 'Unknown deck ID'}
+        Front/back text is None: 400, {message: 'Front and back text must not be None'}
+    """
+    deck_qs = Deck.objects.filter(pk=deck_id)
+    if deck_qs.exists():
+        deck = deck_qs.first()
+    else:
+        return Response({'message': 'Unknown deck ID'}, 400)
+
+    front_text = request.data.get('front_text')
+    back_text = request.data.get('back_text')
+    if front_text is not None and back_text is not None:
+        created = FlashCard.objects.create(deck=deck, front_text=front_text, back_text=back_text)
+        return Response(FlashCardSerializer(instance=created).data, 201)
+    return Response({'message': 'Front and back text must not be None'}, 400)
+
+
+@api_view(['DELETE', 'POST'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def flashcard_delete_view(request, deck_id, flashcard_id, *args, **kwargs):
+    """
+    Deletes a flashcard - DELETE/POST
+
+    Required information:
+        `deck_id`: (URL) The ID of the deck in which the flashcard is located
+        `flashcard_id`: (URL) The ID of the flashcard to delete
+    
+    Returns:
+        `message`: Flashcard deleted successfully
+        `status`: 200
+    
+    Possible errors:
+        Deck does not exist: 404, {message: 'Deck not found'}
+        Current user does not own deck: 401, {message: 'You are not authorized to delete this deck'}
+        Flashcard does not exist: 404, {message: 'Flashcard not found'}
+    """
+    # Get the deck
+    decks_qs = Deck.objects.filter(pk=deck_id)
+    if not decks_qs.exists():
+        return Response({'message': 'Deck not found'}, status=404)
+    decks_qs = decks_qs.filter(user=request.user)
+    if not decks_qs.exists():
+        return Response({'message': 'You are not authorized to delete this flashcard'}, status=401)
+    deck = decks_qs.first()
+    # Get the flashcard
+    flashcard_qs = deck.flashcards.filter(pk=flashcard_id)
+    if not flashcard_qs.exists():
+        return Response({'message': 'Flashcard not found'}, status=404)
+    # Delete the flashcard
+    obj = flashcard_qs.first()
+    obj.delete()
+    return Response({'message': 'Flashcard deleted succesfully'}, status=200)
+
+
+@api_view(['GET'])
+def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
+    """
+    Get specific information about a deck - GET
+
+    Required information:
+        `deck_id`: (URL) The ID of the deck
+        `flashcard_id`: (URL) The ID of the flashcard
+
+    Returns:
+        Front text of the flashcard: 'front_text'
+        Back text of the flashcard: 'back_text'
+        ID of the flashcard: 'id'
+    
+    Possible errors:
+        Invalid deck: 404, {message: 'Deck not found'}
+        Invalid flashcard: 404, {message: 'Flashcard not found'}
+    """
+    decks_qs = Deck.objects.filter(pk=deck_id)
+    if not decks_qs.exists():
+        return Response({'message': 'Deck not found'}, status=404)
+    deck = decks_qs.first()
+    flashcard_qs = deck.flashcards.filter(pk=flashcard_id)
+    if not flashcard_qs.exists():
+        return Response({'message': 'Flashcard not found'}, status=404)
+    serializer = FlashCardSerializer(flashcard_qs.first())
+    return Response(serializer.data)
 
 
 # Helper function for pagination
@@ -91,10 +188,13 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
         Author of the deck (PublicProfileSerializer): 'author'
         Title of the deck: 'title'
         ID of the deck: 'id'
+    
+    Possible errors:
+        Invalid deck: 404, {message: 'Deck not found'}
     """
     decks_qs = Deck.objects.filter(pk=deck_id)
     if not decks_qs.exists():
-        return Response({}, status=404)
+        return Response({'message': 'Deck not found'}, status=404)
     obj = decks_qs.first()
     serializer = DeckSerializer(decks_qs, many=True)
     return Response(serializer.data[0])
@@ -108,7 +208,7 @@ def deck_delete_view(request, deck_id, *args, **kwargs):
     Deletes a deck - DELETE/POST
 
     Required information:
-        `deck_id`: (URL) The id of the deck to be deleted
+        `deck_id`: (URL) The ID of the deck to be deleted
     
     Returns:
         `message`: Deck deleted successfully
@@ -119,10 +219,10 @@ def deck_delete_view(request, deck_id, *args, **kwargs):
     """
     decks_qs = Deck.objects.filter(pk=deck_id)
     if not decks_qs.exists():
-        return Response({}, status=404)
+        return Response({'message': 'Deck not found'}, status=404)
     decks_qs = decks_qs.filter(user=request.user)
     if not decks_qs.exists():
-        return Response({'message': 'You are not authorized to delete this deck.'}, 401)
+        return Response({'message': 'You are not authorized to delete this deck.'}, status=401)
     obj = decks_qs.first()
     obj.delete()
     return Response({'message': 'Deck deleted succesfully'}, status=200)

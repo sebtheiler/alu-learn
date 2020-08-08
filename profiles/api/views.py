@@ -33,7 +33,7 @@ def profile_detail_api_view(request, username, *args, **kwargs):
         Bio of the given user: 'bio'
         Location of the given user: 'location'
         Number of friends of the given user: 'friend_count'
-        Whether the current user is a friend of the given user: 'is_friend'
+        Whether the current user is a friend of the given user, None/null if the current user is the user: 'is_friend'
 
     Possible errors:
         Unknown username: 404, {message: 'User not found'}

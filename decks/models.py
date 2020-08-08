@@ -53,7 +53,7 @@ class Deck(models.Model):
 
 
 class FlashCard(models.Model):
-    deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
+    deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='flashcards')
 
     front_text = models.TextField()
     back_text = models.TextField()
