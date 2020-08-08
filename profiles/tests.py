@@ -57,12 +57,6 @@ class ProfileTestCase(TestCase):
         )
         self.assertEqual(response.json().get('message'), 'You cannot friend yourself')
 
-        # Attempt to unfriend self
-        response = client.post(f'/api/profiles/{self.users[0].username}/friend/', 
-            {'action': 'unfriend'}
-        )
-        self.assertEqual(response.json().get('message'), 'You cannot friend yourself')
-
     def test_bad_action(self):
         client = self.get_client(0)
 
