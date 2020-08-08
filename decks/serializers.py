@@ -8,7 +8,11 @@ class DeckSerializer(serializers.ModelSerializer):
     author = PublicProfileSerializer(source='user.profile', read_only=True)
     class Meta:
         model = Deck
-        fields = ['author', 'title', 'id']
+        fields = [
+                  'author',
+                  'title',
+                  'id',
+    ]
     
     def validate_title(self, value):
         if len(value) > settings.MAX_DECK_TITLE_LENGTH:

@@ -4,6 +4,7 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
+# Rendered when updating one's own profile
 def profile_update_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/login?next=/profile/update')
@@ -34,6 +35,7 @@ def profile_update_view(request, *args, **kwargs):
     return render(request, 'profiles/form.html', context)
     
 
+# Renders when viewing a persons profile
 def profile_detail_view(request, username, *args, **kwargs):
     profile_qs = Profile.objects.filter(user__username=username)
     if not profile_qs.exists():

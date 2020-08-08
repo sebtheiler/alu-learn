@@ -4,6 +4,8 @@ from django.conf import settings
 from .models import Deck, FlashCard, Tag
 
 
+# Backend of form for creating deck
+# This is displayed at the top of the home page
 class DeckForm(forms.ModelForm):
     class Meta:
         model = Deck

@@ -12,6 +12,7 @@ class PublicProfileSerializer(serializers.ModelSerializer):
     is_friend = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
+        # Don't forget to update documentation in profiles/api/views.py!
         model = Profile
         fields = [
             'first_name',

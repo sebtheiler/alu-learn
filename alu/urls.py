@@ -8,11 +8,13 @@ from decks.views import (
     decks_detail_view,
     decks_feed_view,
 )
+
 from accounts.views import (
     login_view,
     logout_view,
     register_view,
 )
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

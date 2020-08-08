@@ -18,6 +18,17 @@ from ..serializers import DeckSerializer
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def deck_create_view(request, *args, **kwargs):
+    """
+    Create a deck - POST
+
+    Required information:
+        `title`: (Data) Title of the deck to create
+    
+    Returns:
+        Author of the deck (PublicProfileSerializer): 'author'
+        Title of the deck: 'title'
+        ID of the deck: 'id'
+    """
     serializer = DeckSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
@@ -25,6 +36,7 @@ def deck_create_view(request, *args, **kwargs):
     return Response({}, status=400)
 
 
+# Helper function for pagination
 def get_paginated_queryset_response(qs, request, Serializer):
     paginator = PageNumberPagination()
     paginator.page_size = 50
@@ -36,9 +48,18 @@ def get_paginated_queryset_response(qs, request, Serializer):
 
 @api_view(['GET'])
 def deck_list_view(request, *args, **kwargs):
+    """
+    Get a list of all decks from a username - GET
+
+    Required information:
+        `username`: (Data) Username of the user to get decks from.  If None, returns all decks.
+    
+    Returns:
+        A list of decks (DeckSerializer)
+    """
     decks_qs = Deck.objects.all()
     username = request.GET.get('username')
-    if username is not None: # theoretically shows every deck to anon user
+    if username is not None:
         decks_qs = decks_qs.by_username(username)    
     return get_paginated_queryset_response(decks_qs, request, DeckSerializer)
 
@@ -47,6 +68,12 @@ def deck_list_view(request, *args, **kwargs):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def deck_feed_view(request, *args, **kwargs):
+    """
+    Gets a feed/homepage list of decks for a logged-in user - GET
+
+    Returns:
+        A list of decks (DeckSerializer)
+    """
     user = request.user
     feed_qs = Deck.objects.feed(user)
     return get_paginated_queryset_response(feed_qs, request, DeckSerializer)
@@ -54,6 +81,17 @@ def deck_feed_view(request, *args, **kwargs):
 
 @api_view(['GET'])
 def deck_detail_view(request, deck_id, *args, **kwargs):
+    """
+    Get specific information about a deck - GET
+
+    Required information:
+        `deck_id`: (URL) The ID of the deck
+
+    Returns:
+        Author of the deck (PublicProfileSerializer): 'author'
+        Title of the deck: 'title'
+        ID of the deck: 'id'
+    """
     decks_qs = Deck.objects.filter(pk=deck_id)
     if not decks_qs.exists():
         return Response({}, status=404)
@@ -66,6 +104,19 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def deck_delete_view(request, deck_id, *args, **kwargs):
+    """
+    Deletes a deck - DELETE/POST
+
+    Required information:
+        `deck_id`: (URL) The id of the deck to be deleted
+    
+    Returns:
+        `message`: Deck deleted successfully
+        `status`: 200
+    
+    Possible errors:
+        Current user does not own deck: 401, {message: 'You are not authorized to delete this deck.'}
+    """
     decks_qs = Deck.objects.filter(pk=deck_id)
     if not decks_qs.exists():
         return Response({}, status=404)

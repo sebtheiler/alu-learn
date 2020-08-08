@@ -1,20 +1,24 @@
+// Adapted from http://www.quirksmode.org/js/cookies.html
 function getCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
+  const name = cname + "=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
     while (c.charAt(0) === ' ') {
       c = c.substring(1);
-    }
+    };
     if (c.indexOf(name) === 0) {
       return c.substring(name.length, c.length);
-    }
-  }
+    };
+  };
   return "";
-}
+};
 
 
+// Function for getting and receiving data from the backend
+// This is used in all api-lookup functions, and should not be
+// changed unless there is a very good reason.
 export function backendLookup(method, endpoint, callback, data) {
   let jsonData;
   if (data) {
@@ -39,7 +43,7 @@ export function backendLookup(method, endpoint, callback, data) {
             window.location.href = '/login?showLoginRequired=true';
           };
         };
-      } else { // this else may need to be removed
+      } else {
         callback(xhr.response, xhr.status);
       };
   };

@@ -9,6 +9,7 @@ class FriendRelation(models.Model):
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     location = models.CharField(max_length=220, null=True, blank=True)
@@ -24,6 +25,7 @@ class Profile(models.Model):
             return f'@{self.user.username}'
 
 
+# When a user is saved, create a corresponding Profile object
 def user_did_save(sender, instance, created, *args, **kwargs):
     if created:
         Profile.objects.get_or_create(user=instance)

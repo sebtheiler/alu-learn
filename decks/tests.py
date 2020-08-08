@@ -54,11 +54,6 @@ class DeckModelTests(TestCase):
         user = self.users[0]
         self.assertEqual(user.decks.count(), 1)
     
-    # def test_deck_unauthorized_list(self):
-    #     client = self.get_client(None)
-    #     response = client.get('/api/decks/decklist/')
-    #     self.assertEqual(response.status_code, 403)
-
     def test_deck_created_api_view(self):
         previous_deck_count = Deck.objects.count()
         request_data = {'title': 'My deck'}

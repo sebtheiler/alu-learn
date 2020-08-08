@@ -7,17 +7,22 @@ User = settings.AUTH_USER_MODEL
 
 
 class DeckQuerySet(models.QuerySet):
+    # Get all decks owned by a username (case insensitive)
     def by_username(self, username):
         return self.filter(user__username__iexact=username)
+
+    # Get the feed for a user
     def feed(self, user):
         # Order alphabetically, not by order added
         feed_qs = self.filter(user__username=user.username).order_by('title')
 
+        # This will be used in the future, once sharing is created
         # feed_qs = self.filter(
         #     Q(user__username=user.username) | 
         #     Q(...) # if shared with current user
         # ).order_by('title')
         return feed_qs
+
 
 class DeckManager(models.Manager):
     def get_queryset(self, *args, **kwargs):
@@ -25,6 +30,7 @@ class DeckManager(models.Manager):
 
     def feed(self, user):
         return self.get_queryset().feed(user)
+
 
 class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks') # todo: maybe allow this to become NULL?
