@@ -21,6 +21,8 @@ export function DeckCreate(props) {
   };
 
   // Called when the user presses the 'Create' button
+  // Sends a request to the backend to create a deck
+  // with the title of the text in the text ref
   const handleSubmit = (event) => {
     event.preventDefault();
     const textVal = inputTextRef.current.value;

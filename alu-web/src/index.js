@@ -4,6 +4,7 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {ProfileBadgeComponent} from './profiles';
 import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
+import {FlashCardCreateComponent} from './flashcards';
 
 const e = React.createElement;
 
@@ -22,9 +23,14 @@ userProfileBadgeElements.forEach(container => {
   ReactDOM.render(e(ProfileBadgeComponent, container.dataset), container);
 });
 
-const deckFeedElements = document.getElementById('decks-feed');
-if (deckFeedElements) {
-  ReactDOM.render(e(DecksFeedComponent, deckFeedElements.dataset), deckFeedElements);
+const deckFeedElement = document.getElementById('decks-feed');
+if (deckFeedElement) {
+  ReactDOM.render(e(DecksFeedComponent, deckFeedElement.dataset), deckFeedElement);
+};
+
+const flashcardCreateElement = document.getElementById('create-flashcard');
+if (flashcardCreateElement) {
+  ReactDOM.render(e(FlashCardCreateComponent, flashcardCreateElement.dataset), flashcardCreateElement);
 };
 
 // If you want your app to work offline and load faster, you can change

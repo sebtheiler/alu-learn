@@ -7,6 +7,12 @@ export function apiDeckCreate(newDeck, callback) {
 };
 
 
+// Creates a flashcard in a deck
+export function apiFlashCardCreate(deckId, frontText, backText, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/create/`, callback, {front_text: frontText, back_text: backText})
+};
+
+
 // Gets detail information on a deck with ID `deckId`
 export function apiDeckDetail(deckId, callback) {
   backendLookup('GET', `decks/${deckId}/`, callback);

@@ -45,8 +45,8 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 
     Required information:
         `deck_id`: (URL) ID of the deck to create a flashcard in
-        `front`: (Data) Text to go on the front of the flashcard
-        `back`: (Data) Text to go on the back of the flashcard
+        `front_text`: (Data) Text to go on the front of the flashcard
+        `back_text`: (Data) Text to go on the back of the flashcard
     
     Possible errors:
         Deck ID does not exist: 400, {message: 'Unknown deck ID'}

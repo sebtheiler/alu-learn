@@ -15,3 +15,8 @@ def decks_list_view(request, *args, **kwargs):
 # Renders information on a specific deck
 def decks_detail_view(request, deck_id, *args, **kwargs):
     return render(request, 'decks/detail.html', context={'deck_id': deck_id})
+
+
+# Renders the flashcard create view
+def flashcard_create_view(request, deck_id, *args, **kwargs):
+    return render(request, 'flashcards/create.html', context={'deck_id': deck_id})

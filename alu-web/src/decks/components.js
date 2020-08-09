@@ -20,7 +20,7 @@ export function DecksFeedComponent(props) {
   };
 
   return (<div className={props.className}>
-            {canCreateDeck === true && <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mb-3' />}
+            {canCreateDeck === true && <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mt-3' />}
             <DecksFeedList newDecks={newDecks} {...props}/>
           </div>);
 };
