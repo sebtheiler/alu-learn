@@ -1,5 +1,6 @@
 import os
 from shutil import copytree, copyfile, rmtree
+import re
 
 base_dir = os.getcwd()
 REACT_DIRECTORY = os.path.join(base_dir, 'alu-web/')
@@ -30,14 +31,17 @@ if not os.path.isdir(os.path.join(base_dir, 'decks/templates/react/')):
 
 with open(os.path.join(base_dir, 'decks/templates/react.html'), 'r') as f:
     contents = f.read()
-    split = contents.split('</script>')
-    base_embed_html = split[0][split[0].find('<script>'):] + '</script>'
-    js_html = split[1] + '</script>' + split[2] + '</script>'
 
-    split = contents.split('<link')
-    for line in split:
-        if '/static/css/main.' in line and '.chunk.css' in line:
-            css_html = '<link' + line[:line.find('stylesheet') + 12]
+    # <script>var path=window.location.pathname ...... ;var p=f;t()}([])</script>
+    base_embed_html = '<script>v' + re.findall(r"(?<=<script>v).*?(?=\)</script>)", contents)[0] + ')</script>'
+
+    # <script src="/static/js/?.????????.chunk.js"></script><script src="/static/js/main.????????.chunk.js">
+    js_html = re.findall(r"<script src=\"/static/js/.{10,13}.chunk.js\"></script>", contents)
+    js_html = js_html[0] + js_html[1]
+
+    # <link href="/static/css/main.????????.chunk.css" rel="stylesheet">
+    css_html = re.findall(r"<link href=\".*\" rel=\"stylesheet\">", contents)[0]
+
 
 def write_file(filename, contents):
     with open(os.path.join(base_dir, filename), 'w+') as f:
