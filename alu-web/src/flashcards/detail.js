@@ -3,7 +3,9 @@ import React from 'react';
 
 // Display an individual flashcard
 export function FlashCard(props) {
-  const {flashcard, number} = props; // JSON object
+  // `flashcard` is a JSON object
+  // `handleSuspend` and `handleDelete` are callback functions
+  const {flashcard, number, handleSuspend, handleDelete} = props;
 
   return (<div className='container-fluid border my-3'>
             <div className='row mt-3 text-center'>
@@ -19,12 +21,11 @@ export function FlashCard(props) {
                 <p className='text-center'>{flashcard.back_text}</p>
               </div>
             </div>
-            <div className='col-md-12 mb-3 text-right'>
+            <div className='col-md-12 mb-3 text-center'>
               <div className="btn-group">
-                <button className='btn btn-primary'>Edit</button>
-                <button className='btn btn-danger mx-1'>Delete</button>
-                {/* <button className='btn btn-outline-primary mx-1'>Text</button>
-                <button className='btn btn-outline-primary mx-1'>Text</button> */}
+                <a href={`${flashcard.id}/edit/`}><button className='btn btn-primary'>Edit</button></a>
+                <button onClick={handleSuspend} className='btn btn-primary ml-1'>Suspend</button>
+                <button onClick={handleDelete} className='btn btn-danger ml-1'>Delete</button>
               </div>
             </div>
           </div>)

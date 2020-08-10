@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail} from '../lookup';
+import {apiDeckDetail, apiFlashCardDelete} from '../lookup';
 import {FlashCard} from './detail';
 
 export function FlashCardsList(props) {
@@ -22,8 +22,26 @@ export function FlashCardsList(props) {
   });
 
   return (<div className={props.className}>
+           <a href='create/' className='text-decoration-none'><button className='btn btn-primary btn-block'>Create a new Flash Card</button></a>
            {flashcards.map((flashcard, index) => {
-             return <FlashCard flashcard={flashcard} key={index} number={index} />;
+             // Functions for handling button presses
+             const handleSuspend = (event) => {
+              console.log('Suspending NOT IMPLEMENTED', flashcard.id, event)
+              // TODO: api Suspending
+             };
+
+             const handleDelete = (_event) => {
+              // TODO: Modal pop-up for confirmation?
+              apiFlashCardDelete(deckId, flashcard.id);
+              setFlashCardsDidSet(false);
+             };
+             return <FlashCard
+                      flashcard={flashcard}
+                      key={index}
+                      number={index}
+                      handleSuspend={handleSuspend}
+                      handleDelete={handleDelete}
+                    />;
            })}
           </div>);
 };

@@ -177,6 +177,7 @@ def deck_feed_view(request, *args, **kwargs):
 
 
 @api_view(['GET'])
+# TODO: require permission/authentication
 def deck_detail_view(request, deck_id, *args, **kwargs):
     """
     Get specific information about a deck - GET

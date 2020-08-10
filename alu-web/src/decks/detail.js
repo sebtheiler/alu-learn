@@ -35,8 +35,8 @@ export function Deck(props) {
         <p>{deck.title}</p>
         <div className='btn btn-group px-0'>
           <EditButton deck={deck} />
-          <RedirectButton deck={deck} link={{href: 'https://www.google.com', display: 'Add Cards', target: '_blank'}} />
-          <RedirectButton deck={deck} link={{href: 'https://www.google.com', display: 'Browse', target: '_blank'}} />
+          <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/create/' : `${deck.id}/flashcards/create/`, display: 'Add Cards'}} />
+          <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/' : `${deck.id}/flashcards/`, display: 'Browse'}} />
           {isDetail === true ? null : <a href={`/${deck.id}`}>
                                         <button className='btn btn-outline-primary mb-4 mr-1'>View</button>
                                       </a>}

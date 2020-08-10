@@ -20,7 +20,7 @@ export function EditButton(props) {
 export function RedirectButton(props) {
   const {link} = props;
   const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
-  const target = props.target ? props.target : '_blank'; // _blank = new tab, _self = same tab
+  const target = props.target ? props.target : '_self'; // _blank = new tab, _self = same tab
 
   return (<a href={link.href} target={target} rel='noopener noreferrer'>
             <button className={className}>{link.display}</button>

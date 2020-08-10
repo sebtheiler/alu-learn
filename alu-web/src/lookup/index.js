@@ -1,6 +1,7 @@
 import {
         apiDeckCreate,
         apiFlashCardCreate,
+        apiFlashCardDelete,
         apiDeckDetail,
         apiDeckList,
         apiDeckFeed,
@@ -11,6 +12,7 @@ import {
 export {
     apiDeckCreate,
     apiFlashCardCreate,
+    apiFlashCardDelete,
     apiDeckDetail,
     apiDeckList,
     apiDeckFeed,
