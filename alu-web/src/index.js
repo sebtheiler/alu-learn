@@ -4,7 +4,7 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {ProfileBadgeComponent} from './profiles';
 import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
-import {FlashCardCreateComponent} from './flashcards';
+import {FlashCardCreateComponent, FlashCardsList} from './flashcards';
 
 const e = React.createElement;
 
@@ -32,6 +32,11 @@ const flashcardCreateElement = document.getElementById('create-flashcard');
 if (flashcardCreateElement) {
   ReactDOM.render(e(FlashCardCreateComponent, flashcardCreateElement.dataset), flashcardCreateElement);
 };
+
+const flashcardListElement = document.querySelectorAll('.flashcard-list');
+flashcardListElement.forEach(container => {
+  ReactDOM.render(e(FlashCardsList, container.dataset), container);
+});
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
