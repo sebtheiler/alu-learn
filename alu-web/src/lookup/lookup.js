@@ -6,17 +6,24 @@ export function apiDeckCreate(newDeck, callback) {
   backendLookup('POST', 'decks/create/', callback, {title: newDeck});
 };
 
-
 // Creates a flashcard in a deck
 export function apiFlashCardCreate(deckId, frontText, backText, callback) {
   backendLookup('POST', `decks/${deckId}/flashcards/create/`, callback, {front_text: frontText, back_text: backText})
 };
 
 // Deletes a flashcard in a deck
-export function apiFlashCardDelete(deckId, flashcardId) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/delete/`);
+export function apiFlashCardDelete(deckId, flashcardId, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/delete/`, callback);
 };
 
+// Edit a flashcard
+export function apiFlashCardEdit(deckId, flashcardId, frontText, backText, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {front_text: frontText, back_text: backText})
+};
+
+export function apiFlashCardDetail(deckId, flashcardId, callback) {
+  backendLookup('GET', `decks/${deckId}/flashcards/${flashcardId}/`, callback)
+};
 
 // Gets detail information on a deck with ID `deckId`
 export function apiDeckDetail(deckId, callback) {

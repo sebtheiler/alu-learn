@@ -66,6 +66,46 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     return Response({'message': 'Front and back text must not be None'}, 400)
 
 
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
+    """
+    Edit a flashcard - POST
+
+    Required information:
+        `deck_id`: (URL) ID of the deck in which we are editing the flashcard
+        `flashcard_id`: (URL) ID of the flashcard we are editing
+        `front_text`: (Data) What to set the front text to
+        `back_text`: (Data) What to set the back text to
+
+    Possible errors:
+        Deck does not exist: 404, {message: 'Deck not found'}
+        Current user does not own deck: 401, {message: 'You are not authorized to edit this flashcard'}
+        Flashcard does not exist: 404, {message: 'Flashcard not found'}
+    """
+    # Get the deck
+    decks_qs = Deck.objects.filter(pk=deck_id)
+    if not decks_qs.exists():
+        return Response({'message': 'Deck not found'}, status=404)
+    decks_qs = decks_qs.filter(user=request.user)
+    if not decks_qs.exists():
+        return Response({'message': 'You are not authorized to edit this flashcard'}, status=401)
+    deck = decks_qs.first()
+
+    # Get the flashcard
+    flashcard_qs = deck.flashcards.filter(pk=flashcard_id)
+    if not flashcard_qs.exists():
+        return Response({'message': 'Flashcard not found'}, status=404)
+
+    # Edit the flashcard
+    obj = flashcard_qs.first()
+    obj.front_text = request.data.get('front_text')
+    obj.back_text = request.data.get('back_text')
+    obj.save()
+    return Response(FlashCardSerializer(instance=obj).data, 200)
+
+
 @api_view(['DELETE', 'POST'])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])

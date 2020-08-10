@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2 class='text-center mt-3'>Create a new flashcard</h2>
+<h2 class='text-center mt-3'>{{ desc }}</h2>
 <div
     id='create-flashcard'
     data-deck-id='{{ deck_id }}'
+    data-flashcard-id='{{ flashcard_id }}'
+    data-redirect-url='{{ redirect_url }}'
     data-class-name='col-6 mx-auto'>
 </div>
 {% endblock content %}

@@ -9,6 +9,7 @@ from decks.views import (
     decks_feed_view,
     flashcard_create_view,
     flashcard_list_view,
+    flashcard_edit_view,
 )
 
 from accounts.views import (
@@ -27,6 +28,7 @@ urlpatterns = [
     path('<int:deck_id>/', decks_detail_view),
     path('<int:deck_id>/flashcards/', flashcard_list_view),
     path('<int:deck_id>/flashcards/create/', flashcard_create_view),
+    path('<int:deck_id>/flashcards/<int:flashcard_id>/edit/', flashcard_edit_view),
     path('api/decks/', include('decks.api.urls')),
     path('profiles/', include('profiles.urls')),
     path('api/profiles/', include('profiles.api.urls')),

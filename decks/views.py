@@ -19,7 +19,23 @@ def decks_detail_view(request, deck_id, *args, **kwargs):
 
 # Renders the flashcard create view
 def flashcard_create_view(request, deck_id, *args, **kwargs):
-    return render(request, 'flashcards/create.html', context={'deck_id': deck_id})
+    context = {
+        'deck_id': deck_id,
+        'flashcard_id': None,
+        'desc': 'Create a new flashcard',
+    }
+    return render(request, 'flashcards/create.html', context=context)
+
+
+# Renders the flashcard edit view
+def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
+    context = {
+        'deck_id': deck_id,
+        'flashcard_id': flashcard_id,
+        'redirect_url': f'/{deck_id}/flashcards/',
+        'desc': 'Edit your flashcard',
+    }
+    return render(request, 'flashcards/create.html', context=context)
 
 
 # Renders a list of flashcards in a deck (used in browsing)

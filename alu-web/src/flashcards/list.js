@@ -32,8 +32,9 @@ export function FlashCardsList(props) {
 
              const handleDelete = (_event) => {
               // TODO: Modal pop-up for confirmation?
-              apiFlashCardDelete(deckId, flashcard.id);
-              setFlashCardsDidSet(false);
+              apiFlashCardDelete(deckId, flashcard.id, () => {
+                setFlashCardsDidSet(false);
+              });
              };
              return <FlashCard
                       flashcard={flashcard}
