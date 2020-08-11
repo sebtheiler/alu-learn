@@ -11,8 +11,8 @@ export function FlashCardsList(props) {
     if (flashcardsDidSet === false) {
       const handleFlashCardListLookup = (response, status) => {
         if (status === 200) {
-          setFlashCards(response.flashcards);
           setFlashCardsDidSet(true);
+          setFlashCards(response.flashcards);
         } else {
           alert('There was an error');
         };
@@ -22,7 +22,10 @@ export function FlashCardsList(props) {
   });
 
   return (<div className={props.className}>
-           <a href='create/' className='text-decoration-none'><button className='btn btn-primary btn-block'>Create a new Flash Card</button></a>
+           <div className='text-center'>
+             <a href='create/' className='text-decoration-none'><button className='btn btn-primary mx-1'>Create a new flash card</button></a>
+             <a href={`/${deckId}/study/`} className='text-decoration-none'><button className='btn btn-primary mx-1'>Study this deck</button></a>
+           </div>
            {flashcards.map((flashcard, index) => {
              // Functions for handling button presses
              const handleSuspend = (event) => {

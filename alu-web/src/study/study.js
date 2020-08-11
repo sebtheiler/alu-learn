@@ -99,8 +99,9 @@ export function StudyComponent(props) {
   }, [showAnswer]);
 
   return <div>
-           <div className={finishedStudying ? '' : 'd-none'}>
-             <p className='text-center'>Congratulations! You've finished studying this deck!</p>
+           <div className={'text-center' + (finishedStudying ? '' : ' d-none')}>
+             <p>Congratulations! You've finished studying this deck!</p>
+             <a href={`/${deckId}/flashcards/create/`} className='text-decoration-none'><button className='btn btn-primary'>Create a new Flash Card</button></a>
            </div>
            <div className={finishedStudying ? 'd-none' : ''}>
             <div className='col-md-12 text-center'style={{minWidth: '200px'}}>

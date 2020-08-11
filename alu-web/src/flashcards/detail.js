@@ -6,11 +6,12 @@ export function FlashCard(props) {
   // `flashcard` is a JSON object
   // `handleSuspend` and `handleDelete` are callback functions
   const {flashcard, number, handleSuspend, handleDelete} = props;
-
+  
+  let date = new Date(flashcard.next_review)
   return (<div className='container-fluid border my-3'>
             <div className='row mt-3 text-center'>
               <div className='col-md-12'>
-                <p><strong>Flashcard - #{number + 1}</strong></p>
+                <p><strong>Flashcard - #{number + 1}</strong> | Due {date.toString().substring(0, 10)}</p>
               </div>
             </div>
             <div className='row'>

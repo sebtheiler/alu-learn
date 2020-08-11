@@ -41,3 +41,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
 # Renders a list of flashcards in a deck (used in browsing)
 def flashcard_list_view(request, deck_id, *args, **kwargs):
     return render(request, 'flashcards/list.html', context={'deck_id': deck_id})
+
+
+def deck_study_view(request, deck_id, *args, **kwargs):
+    return render(request, 'decks/study.html', context={'deck_id': deck_id})
