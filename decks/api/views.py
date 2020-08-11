@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.utils.http import is_safe_url
+from django.utils import timezone
 from django.db.models import Q
 
 from rest_framework.authentication import SessionAuthentication
@@ -61,7 +62,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     front_text = request.data.get('front_text')
     back_text = request.data.get('back_text')
     if front_text is not None and back_text is not None:
-        created = FlashCard.objects.create(deck=deck, front_text=front_text, back_text=back_text)
+        created = FlashCard.objects.create(deck=deck, front_text=front_text, back_text=back_text, next_review=timezone.now())
         return Response(FlashCardSerializer(instance=created).data, 201)
     return Response({'message': 'Front and back text must not be None'}, 400)
 
@@ -104,6 +105,45 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     obj.back_text = request.data.get('back_text')
     obj.save()
     return Response(FlashCardSerializer(instance=obj).data, 200)
+
+
+@api_view(['POST'])
+# @authentication_classes([SessionAuthentication])
+# @permission_classes([IsAuthenticated])
+def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
+    """
+    Edit a flashcard - POST
+
+    Required information:
+        `deck_id`: (URL) ID of the deck in which we are editing the flashcard
+        `flashcard_id`: (URL) ID of the flashcard we are editing
+        `date`: (Data) ISO string date for next review
+
+    Possible errors:
+        Deck does not exist: 404, {message: 'Deck not found'}
+        Current user does not own deck: 401, {message: 'You are not authorized to edit this flashcard'}
+        Flashcard does not exist: 404, {message: 'Flashcard not found'}
+    """
+    # Get the deck
+    decks_qs = Deck.objects.filter(pk=deck_id)
+    if not decks_qs.exists():
+        return Response({'message': 'Deck not found'}, status=404)
+    # decks_qs = decks_qs.filter(user=request.user)
+    # if not decks_qs.exists():
+    #     return Response({'message': 'You are not authorized to edit this flashcard'}, status=401)
+    deck = decks_qs.first()
+
+    # Get the flashcard
+    flashcard_qs = deck.flashcards.filter(pk=flashcard_id)
+    if not flashcard_qs.exists():
+        return Response({'message': 'Flashcard not found'}, status=404)
+
+    # Edit the flashcard
+    obj = flashcard_qs.first()
+    obj.next_review = request.data.get('date')
+    obj.save()
+    return Response(FlashCardSerializer(instance=obj).data, 200)
+
 
 
 @api_view(['DELETE', 'POST'])
@@ -237,8 +277,8 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
     if not decks_qs.exists():
         return Response({'message': 'Deck not found'}, status=404)
     obj = decks_qs.first()
-    serializer = DeckSerializer(decks_qs, many=True)
-    return Response(serializer.data[0])
+    serializer = DeckSerializer(obj)
+    return Response(serializer.data)
 
 
 @api_view(['DELETE', 'POST'])

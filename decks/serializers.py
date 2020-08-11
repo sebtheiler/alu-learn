@@ -10,6 +10,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
         fields = [
             'front_text',
             'back_text',
+            'next_review',
             'id',
         ]
 

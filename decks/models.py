@@ -45,7 +45,7 @@ class Deck(models.Model):
     def __str__(self):
         return self.title
     
-    def serialize(self):
+    def serialize(self): # TODO: is this needed?
         return {
             'id': self.id,
             'title': self.title,
@@ -61,6 +61,7 @@ class FlashCard(models.Model):
     # image (front/back)
 
     # intervals, dificulty, ...
+    next_review = models.DateTimeField()
 
     def __str__(self):
         return self.front_text + '  ---  ' + self.back_text

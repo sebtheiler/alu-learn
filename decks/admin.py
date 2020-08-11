@@ -20,3 +20,4 @@ class DeckAdmin(admin.ModelAdmin):
         model = Deck
 
 admin.site.register(Deck, DeckAdmin)
+admin.site.register(FlashCard)

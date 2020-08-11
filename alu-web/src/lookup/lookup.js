@@ -21,6 +21,11 @@ export function apiFlashCardEdit(deckId, flashcardId, frontText, backText, callb
   backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {front_text: frontText, back_text: backText})
 };
 
+// Update a flashcard's review date
+export function apiFlashCardDateUpdate(deckId, flashcardId, date, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/changedate/`, callback, {date: date})
+};
+
 export function apiFlashCardDetail(deckId, flashcardId, callback) {
   backendLookup('GET', `decks/${deckId}/flashcards/${flashcardId}/`, callback)
 };
