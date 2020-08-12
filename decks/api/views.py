@@ -249,6 +249,7 @@ def deck_list_view(request, *args, **kwargs):
 
 
 @api_view(['GET'])
+# TODO: maybe we don't need SessionAuthentication?
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def deck_feed_view(request, *args, **kwargs):
@@ -259,6 +260,7 @@ def deck_feed_view(request, *args, **kwargs):
         A list of decks (DeckSerializer)
     """
     user = request.user
+    print(request.user)
     feed_qs = Deck.objects.feed(user)
     return get_paginated_queryset_response(feed_qs, request, DeckSerializer)
 

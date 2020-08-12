@@ -52,9 +52,12 @@ export function DecksFeedList(props) {
     };
   };
 
-  return (<React.Fragment>{decks.map((deck, index) => {
-    return <Deck deck={deck} key={`${index}-${deck.id}`} className='my-5 py-5 border bg-white text-dark'/>;
-  })}
-  { nextUrl !== null && <button onClick={handleLoadNext} className='btn btn-outline-primary'>Load more decks</button>}
-  </React.Fragment>);
+  return (
+    <div className='card-deck text-center mx-auto justify-content-center'>
+      <React.Fragment>{decks.map((deck, index) => {
+        return <Deck deck={deck} key={`${index}-${deck.id}`} className='mb-3 mx-1 border bg-white text-dark'/>;
+      })}
+      { nextUrl !== null && <button onClick={handleLoadNext} className='btn btn-outline-primary'>Load more decks</button>}
+      </React.Fragment>
+    </div>);
 };

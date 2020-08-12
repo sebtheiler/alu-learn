@@ -11,7 +11,7 @@ export function getInterval(card, grade) {
   const now = new Date();
   const intervalModifier = 1.0;
   const maximumInterval = 180; // 6 months
-  const lapseInterval = 0.0;
+  // const lapseInterval = 0.0;
   const easyBonus = 1.50;
   var interval, minute;
   var ease = card.ease;
