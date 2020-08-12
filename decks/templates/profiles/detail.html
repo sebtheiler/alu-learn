@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ username }}'s profile at{% endblock title %}
+
+
 {% block content %}
 <div class='profile-badge' data-username='{{ username }}' data-current-user-username='{{ current_user_username }}'></div>
 <div id='user_decks'

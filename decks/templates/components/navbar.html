@@ -4,7 +4,11 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <span class="navbar-text white">
-      Welcome {{ request.user.first_name }}!
+      {% if request.user.first_name %}
+        Welcome {{ request.user.first_name }}!
+      {% else %}
+        Welcome!
+      {% endif %}
     </span>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ml-auto">
