@@ -11,6 +11,9 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'front_text',
             'back_text',
             'next_review',
+            'graduated',
+            'ease',
+            'interval',
             'id',
         ]
 

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {apiDeckDetail, apiFlashCardDateUpdate} from '../lookup';
 import {StudyElement} from './study';
+import {getInterval} from './algorithm'
 
 export function StudyComponent(props) {
   const {deckId} = props;
@@ -68,24 +69,19 @@ export function StudyComponent(props) {
     console.log(grade)
 
     // Calculate when the card should be next seen
-    const now = new Date();
-    var nextReviewDate;
-    if (grade > 1) {
-      // Tomorrow morning
-      nextReviewDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-    } else {
-      // 1 minute from now
-      nextReviewDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 1, now.getSeconds());
-    };
+    const {nextReviewDate, interval, ease, minute, graduated} = getInterval(currentCard, grade);
 
     // Update date in database
-    apiFlashCardDateUpdate(deckId, currentCard.id, nextReviewDate.toISOString(), () => {
+    apiFlashCardDateUpdate(deckId, currentCard.id, nextReviewDate.toISOString(), minute ? 0 : interval, ease, graduated, () => {
       setCurrentCardDidSet(true);
     });
     // Update date locally
     const deckCopy = deck;
     const index = deckCopy.flashcards.map(e => e.id).indexOf(currentCard.id);
     deckCopy.flashcards[index].next_review = nextReviewDate.toISOString();
+    deckCopy.flashcards[index].interval = minute ? 0 : interval;
+    deckCopy.flashcards[index].ease = ease;
+    deckCopy.flashcards[index].graduated = graduated;
     setDeck(deckCopy);
   };
 

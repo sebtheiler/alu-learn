@@ -18,16 +18,21 @@ export function apiFlashCardDelete(deckId, flashcardId, callback) {
 
 // Edit a flashcard
 export function apiFlashCardEdit(deckId, flashcardId, frontText, backText, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {front_text: frontText, back_text: backText})
+  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {front_text: frontText, back_text: backText});
 };
 
 // Update a flashcard's review date
-export function apiFlashCardDateUpdate(deckId, flashcardId, date, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/changedate/`, callback, {date: date})
+export function apiFlashCardDateUpdate(deckId, flashcardId, date, interval, ease, graduated, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/changedate/`, callback, {
+    date: date,
+    interval: interval,
+    ease: ease,
+    graduated: graduated,
+  });
 };
 
 export function apiFlashCardDetail(deckId, flashcardId, callback) {
-  backendLookup('GET', `decks/${deckId}/flashcards/${flashcardId}/`, callback)
+  backendLookup('GET', `decks/${deckId}/flashcards/${flashcardId}/`, callback);
 };
 
 // Gets detail information on a deck with ID `deckId`

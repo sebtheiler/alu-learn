@@ -110,6 +110,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
 @api_view(['POST'])
 # @authentication_classes([SessionAuthentication])
 # @permission_classes([IsAuthenticated])
+# TODO: rename and readd permissins
 def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
     Edit a flashcard - POST
@@ -118,6 +119,9 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
         `deck_id`: (URL) ID of the deck in which we are editing the flashcard
         `flashcard_id`: (URL) ID of the flashcard we are editing
         `date`: (Data) ISO string date for next review
+        `graduated`: (Data) if the card is graduated
+        `ease` Ease of card
+        `interval`: next interval TODO make doc better
 
     Possible errors:
         Deck does not exist: 404, {message: 'Deck not found'}
@@ -141,6 +145,9 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
     # Edit the flashcard
     obj = flashcard_qs.first()
     obj.next_review = request.data.get('date')
+    obj.graduated = request.data.get('graduated')
+    obj.ease = request.data.get('ease')
+    obj.interval = request.data.get('interval')
     obj.save()
     return Response(FlashCardSerializer(instance=obj).data, 200)
 

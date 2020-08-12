@@ -62,6 +62,10 @@ class FlashCard(models.Model):
 
     # intervals, dificulty, ...
     next_review = models.DateTimeField()
+    graduated = models.BooleanField(default=False)
+    ease = models.IntegerField(default=250) # divided by 100 in calculations TODO: Make 250 customizable
+    interval = models.IntegerField(default=0)
+
 
     def __str__(self):
         return self.front_text + '  ---  ' + self.back_text
