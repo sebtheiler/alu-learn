@@ -26,6 +26,7 @@ export function DecksFeedList(props) {
         if (status === 200) {
           setNextUrl(response.next);
           setDecksInit(response.results);
+          setDecks(response.results);
           setDecksDidSet(true);
         } else {
           alert('There was an error');
@@ -53,11 +54,15 @@ export function DecksFeedList(props) {
   };
 
   return (
-    <div className='card-deck text-center mx-auto justify-content-center'>
-      <React.Fragment>{decks.map((deck, index) => {
+    <React.Fragment>
+      <div className='card-deck text-center mx-auto justify-content-center'>
+        {decks.map((deck, index) => {
         return <Deck deck={deck} key={`${index}-${deck.id}`} className='mb-3 mx-1 border bg-white text-dark'/>;
       })}
-      { nextUrl !== null && <button onClick={handleLoadNext} className='btn btn-outline-primary'>Load more decks</button>}
-      </React.Fragment>
-    </div>);
+      </div>
+      <div className='text-center'>
+        { nextUrl !== null && <button onClick={handleLoadNext} className='btn btn-outline-primary btn-lg'>Load more decks</button>}
+      </div>
+    </React.Fragment>
+    );
 };
