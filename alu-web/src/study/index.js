@@ -1,4 +1,4 @@
-import {StudyComponent} from './study';
+import {StudyComponent} from './components';
 
 export {
     StudyComponent,
