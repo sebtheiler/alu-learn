@@ -1,18 +1,48 @@
-import React from 'react';
+import React, {useState} from 'react';
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 
 // Button for editing the properties of a deck
 // This may be renamed to option in the future
 // This will eventually create a pop-up modal
 export function EditButton(props) {
-  const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
+  // const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
-  const handleClick = (event) => {
-    event.preventDefault();
-    console.log('TODO: Implement editing')
+  const openModal = () => {
+    setModalIsOpen(true);
   };
 
-  return <button onClick={handleClick} className={className}>Edit</button>;
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  const saveHandler = () => {
+    // Save
+    closeModal();
+  };
+
+  return (
+    <div>
+      <Button onClick={openModal} variant='primary' className='mr-1'>Edit</Button>
+      <Modal show={modalIsOpen} onHide={closeModal}>
+        <Modal.Header>
+          <Modal.Title>
+            Edit Deck
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Body text
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={closeModal} variant='danger'>Cancel</Button>
+          <Button onClick={saveHandler} variant='primary'>Save</Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
+  );
 };
 
 

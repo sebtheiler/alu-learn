@@ -28,7 +28,7 @@ export function Deck(props) {
       <div className='card-body'>
         <h3 className='card-title'>{deck.title}</h3>
         <div className='btn btn-group px-0'>
-          <a href='#'><EditButton deck={deck} /></a>
+          <EditButton deck={deck} />
           <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/create/' : `${deck.id}/flashcards/create/`, display: 'Add Cards'}} />
           <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/' : `${deck.id}/flashcards/`, display: 'Browse'}} />
           <RedirectButton deck={deck} link={{href: isDetail ? 'study/' : `${deck.id}/study/`, display: 'Study'}} />
