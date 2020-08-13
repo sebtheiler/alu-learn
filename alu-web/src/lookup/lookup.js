@@ -44,9 +44,10 @@ export function apiDeckDelete(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/delete/`, callback);
 };
 
-export function apiDeckEdit(deckId, newTitle, isPublic, callback) {
+export function apiDeckEdit(deckId, newTitle, newDescription, isPublic, callback) {
   backendLookup('POST', `decks/${deckId}/edit/`, callback, {
     new_title: newTitle,
+    description: newDescription,
     public: isPublic,
   });
 };

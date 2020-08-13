@@ -328,6 +328,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     Required information:
         `deck_id`: (URL) ID of the deck in which we are editing the flashcard
         `new_title`: (Data) New title of the deck
+        `description`: (Data) New description of the deck
         `public`: (Data) Whether the deck should be public (not implemented)
 
     Possible errors:
@@ -345,6 +346,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
 
     # Edit the flashcard
     deck.title = request.data.get('new_title')
+    deck.description = request.data.get('description')
     # deck.public = request.data.get('public')
     deck.save()
     return Response(DeckSerializer(instance=deck).data, 200)

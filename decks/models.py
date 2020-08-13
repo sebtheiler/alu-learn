@@ -35,6 +35,7 @@ class DeckManager(models.Manager):
 class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks') # todo: maybe allow this to become NULL?
     title = models.CharField(max_length=128)
+    description = models.TextField(default='')
 
     # starting difficulty, new cards per day, ...
 

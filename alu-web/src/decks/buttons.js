@@ -22,11 +22,11 @@ export function EditButton(props) {
   const saveHandler = (event) => {
     event.preventDefault();
     let form = event.target;
-    if (form.elements.title.value === deck.title /* && (form.elements.isPublic.value === 'on') === deck.isPublic */) {
+    if (form.elements.title.value === deck.title && form.elements.description.value === deck.description /* && (form.elements.isPublic.value === 'on') === deck.isPublic */) {
       return;
     };
 
-    apiDeckEdit(deck.id, form.elements.title.value, form.elements.isPublic.value === 'on', (response, status) => {
+    apiDeckEdit(deck.id, form.elements.title.value, form.elements.description.value, form.elements.isPublic.value === 'on', (response, status) => {
       if (status === 200) {
         window.location.reload();
       } else {
@@ -40,7 +40,6 @@ export function EditButton(props) {
     apiDeckDelete(deck.id, (response, status) => {
       if (status === 200) {
         window.location.reload();
-        console.log('Deleting...')
       } else if (status === 403) {
         alert('You must log in!')
       } else {
@@ -56,13 +55,16 @@ export function EditButton(props) {
       <Modal show={modalIsOpen} onHide={closeModal}>
         <Modal.Header>
           <Modal.Title>
-            Edit Deck
+            Edit "{deck.title}"
           </Modal.Title>
         </Modal.Header>
         <Form onSubmit={saveHandler}>
           <Modal.Body>
             <Form.Group>
               <Form.Control type='text' placeholder='Deck title' name='title' defaultValue={deck.title} />
+            </Form.Group>
+            <Form.Group>
+              <Form.Control as='textarea' rows='3' placeholder='Description' name='description' defaultValue={deck.description} />
             </Form.Group>
             <Form.Group>
               <Form.Check type='checkbox' label='Make public?' name='isPublic' checked={deck.isPublic} />

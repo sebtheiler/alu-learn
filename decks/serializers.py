@@ -26,6 +26,7 @@ class DeckSerializer(serializers.ModelSerializer):
         fields = [
             'author',
             'title',
+            'description',
             'flashcards',
             'id',
         ]
