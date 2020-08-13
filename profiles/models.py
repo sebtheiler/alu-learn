@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 
 User = settings.AUTH_USER_MODEL
 
+# TODO: Is this needed?
 class FriendRelation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     profile = models.ForeignKey('Profile', on_delete=models.CASCADE)
@@ -23,6 +24,17 @@ class Profile(models.Model):
             return f'{self.user.first_name} {self.user.last_name} - @{self.user.username}'
         else:
             return f'@{self.user.username}'
+
+
+class Notification(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    category = models.CharField(max_length=32, default='basic')
+    title = models.CharField(max_length=128)
+    description = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.title}: {self.description} | {self.category}'
 
 
 # When a user is saved, create a corresponding Profile object

@@ -7,8 +7,8 @@ from rest_framework.decorators import (api_view, authentication_classes,
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import Profile
-from ..serializers import PublicProfileSerializer
+from ..models import Profile, Notification
+from ..serializers import PublicProfileSerializer, NotificationSerializer
 
 
 User = get_user_model()
@@ -74,32 +74,48 @@ def profile_detail_api_view(request, username, *args, **kwargs):
     context = PublicProfileSerializer(instance=profile_obj, context={'request': request}).data
     return Response(context, status=200)
 
-# Old view, should be deleted soon
-# @api_view(['GET', 'POST'])
-# @authentication_classes([SessionAuthentication])
-# @permission_classes([IsAuthenticated])
-# def user_friend_view(request, username, *args, **kwargs):
-#     current_user = request.user
-#     to_friend_user_qs = User.objects.filter(username=username)
-#     if current_user.username == username:
-#         return Response({'message': 'You cannot friend yourself'}, status=400)
 
-#     if not to_friend_user_qs.exists():
-#         return Response({}, status=404)
+@api_view(['GET', 'POST'])
+def notification_api_view(request, username, *args, **kwargs):
+    """
+    Get notifications for a user, or create notifications - GET/POST
 
-#     to_friend_user = to_friend_user_qs.first()
-#     profile = to_friend_user.profile
-#     data = request.data or {}
-#     action = data.get('action')
-#     if action == 'friend':
-#         profile.friends.add(current_user)
-#     elif action == 'unfriend':
-#         if current_user in profile.friends.all():
-#             profile.friends.remove(current_user)
-#         else:
-#             return Response({'message': 'You cannot unfriend a user who is not your friend'})
-#     else:
-#         return Response({'message': 'Unknown action'}, status=400)
+    To get list of notifications, use request method GET
+    
+    To add a notification,
+        Use request method POST
+        Request data must have attributes:
+            `title`: Title of the notification
+            `description`: Description/content of the notification
 
-#     context = PublicProfileSerializer(instance=profile_obj, context={'request': request}).data
-#     return Response(context, status=200)
+    Returns:
+        `profile`: The serialized profile the notification belongs to
+        `title`: Title of the newly created notification
+        `description`: Description of the newly created notification
+
+    Possible errors:
+        Unknown username: 404, {message: 'User not found'}
+    """
+    # Get user
+    user_qs = User.objects.filter(username=username) # TODO: turn this common snippet of getting user into function
+    if not user_qs.exists():
+        return Response({'message': 'User not found'}, status=404)
+    user = user_qs.first()
+
+    if request.method == 'POST':
+        # Create notification object
+        notif = Notification.objects.create(
+            profile=user.profile,
+            title=request.data.get('title'),
+            description=request.data.get('description'),
+            category=request.data.get('category'),
+        )
+        return Response(NotificationSerializer(instance=notif).data, status=201)
+    elif request.method == 'GET':
+        # List all notifications
+        return Response(NotificationSerializer(
+            Notification.objects.filter(profile__user=user),
+            many=True,
+        ).data, status=200)
+    else:
+        return Response({'message': f'Method {request.method} not allowed'}, status=400)

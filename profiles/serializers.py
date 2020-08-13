@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
 
-from .models import Profile
+from .models import Profile, Notification
 
 
 class PublicProfileSerializer(serializers.ModelSerializer):
@@ -41,3 +41,25 @@ class PublicProfileSerializer(serializers.ModelSerializer):
     
     def get_friend_count(self, obj):
         return obj.user.friends.count()
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    profile = PublicProfileSerializer(read_only=True)
+    title = serializers.SerializerMethodField(read_only=True)
+    description = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Notification
+        fields = [
+            'profile',
+            'title',
+            'description',
+            'category',
+        ]
+    
+    def get_title(self, obj):
+        return obj.title
+    
+    
+    def get_description(self, obj):
+        return obj.description
