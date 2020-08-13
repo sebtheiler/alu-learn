@@ -87,3 +87,18 @@ export function apiProfileDetail(username, callback) {
 export function apiProfileFriendToggle(username, action, callback) {
   backendLookup('POST', `profiles/${username}/friend/`, callback, {action: action.toLowerCase()});
 };
+
+
+// Creates a notification
+export function apiNotificationCreate(username, title, description, category, callback) {
+  backendLookup('POST', `profiles/${username}/notifications/`, callback, {
+    title: title,
+    description: description,
+    category: category,
+  });
+};
+
+// Gets list of notifications for a user
+export function apiNotificationList(username, callback) {
+  backendLookup('GET', `profiles/${username}/notifications/`, callback);
+};

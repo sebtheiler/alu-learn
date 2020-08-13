@@ -6,6 +6,7 @@ import {ProfileBadgeComponent} from './profiles';
 import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
 import {FlashCardCreateComponent, FlashCardsList} from './flashcards';
 import {StudyComponent} from './study';
+import {NotificationComponent} from './notifications';
 
 const e = React.createElement;
 
@@ -42,6 +43,11 @@ flashcardListElement.forEach(container => {
 const flashcardStudyElement = document.getElementById('study-component');
 if (flashcardStudyElement) {
   ReactDOM.render(e(StudyComponent, flashcardStudyElement.dataset), flashcardStudyElement);
+};
+
+const notificationElement = document.getElementById('notification-component');
+if (notificationElement) {
+  ReactDOM.render(e(NotificationComponent, notificationElement.dataset), notificationElement);
 };
 
 // If you want your app to work offline and load faster, you can change

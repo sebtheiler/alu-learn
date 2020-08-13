@@ -55,6 +55,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'category',
+            'id',
         ]
     
     def get_title(self, obj):

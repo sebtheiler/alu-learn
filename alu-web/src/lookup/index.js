@@ -12,6 +12,8 @@ import {
         apiDeckFeed,
         apiProfileDetail,
         apiProfileFriendToggle,
+        apiNotificationCreate,
+        apiNotificationList,
 } from './lookup';
 
 export {
@@ -28,4 +30,6 @@ export {
     apiDeckFeed,
     apiProfileDetail,
     apiProfileFriendToggle,
+    apiNotificationCreate,
+    apiNotificationList,
 };
