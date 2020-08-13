@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+import {apiDeckDelete, apiDeckEdit} from '../lookup';
+import {Modal, Button, Form} from 'react-bootstrap';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // This may be renamed to option in the future
 // This will eventually create a pop-up modal
 export function EditButton(props) {
-  // const className = props.className ? props.className : 'btn btn-primary mb-4 mr-1';
+  const {deck} = props;
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   const openModal = () => {
@@ -19,9 +19,35 @@ export function EditButton(props) {
     setModalIsOpen(false);
   };
 
-  const saveHandler = () => {
-    // Save
-    closeModal();
+  const saveHandler = (event) => {
+    event.preventDefault();
+    let form = event.target;
+    if (form.elements.title.value === deck.title /* && (form.elements.isPublic.value === 'on') === deck.isPublic */) {
+      return;
+    };
+
+    apiDeckEdit(deck.id, form.elements.title.value, form.elements.isPublic.value === 'on', (response, status) => {
+      if (status === 200) {
+        window.location.reload();
+      } else {
+        console.log(response, status);
+        alert('Error saving your deck');
+      };
+    });
+  };
+
+  const deleteHandler = () => {
+    apiDeckDelete(deck.id, (response, status) => {
+      if (status === 200) {
+        window.location.reload();
+        console.log('Deleting...')
+      } else if (status === 403) {
+        alert('You must log in!')
+      } else {
+        console.log(response, status);
+        alert('Error deleting your deck!');
+      }
+    });
   };
 
   return (
@@ -33,13 +59,21 @@ export function EditButton(props) {
             Edit Deck
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          Body text
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={closeModal} variant='danger'>Cancel</Button>
-          <Button onClick={saveHandler} variant='primary'>Save</Button>
-        </Modal.Footer>
+        <Form onSubmit={saveHandler}>
+          <Modal.Body>
+            <Form.Group>
+              <Form.Control type='text' placeholder='Deck title' name='title' defaultValue={deck.title} />
+            </Form.Group>
+            <Form.Group>
+              <Form.Check type='checkbox' label='Make public?' name='isPublic' checked={deck.isPublic} />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={deleteHandler} variant='danger' className='text-left mr-auto'>Delete Deck</Button>
+            <Button onClick={closeModal} variant='secondary'>Cancel</Button>
+            <Button type='submit' variant='primary'>Save</Button>
+          </Modal.Footer>
+        </Form>
       </Modal>
     </div>
   );

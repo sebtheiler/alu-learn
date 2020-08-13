@@ -40,6 +40,16 @@ export function apiDeckDetail(deckId, callback) {
   backendLookup('GET', `decks/${deckId}/`, callback);
 };
 
+export function apiDeckDelete(deckId, callback) {
+  backendLookup('POST', `decks/${deckId}/delete/`, callback);
+};
+
+export function apiDeckEdit(deckId, newTitle, isPublic, callback) {
+  backendLookup('POST', `decks/${deckId}/edit/`, callback, {
+    new_title: newTitle,
+    public: isPublic,
+  });
+};
 
 // Gets a list of decks owned by a user with username `username`
 export function apiDeckList(username, callback, nextUrl) {

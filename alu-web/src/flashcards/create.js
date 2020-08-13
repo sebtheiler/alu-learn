@@ -30,7 +30,6 @@ export function FlashCardCreate(props) {
   const handleBackendUpdate = (response, status) => {
     if (status === 201 || status === 200) {
       // If the user should be redirected, redirect them
-      console.log(redirectUrl)
       if (redirectUrl) {
         window.location.href = redirectUrl;
       };
@@ -60,6 +59,7 @@ export function FlashCardCreate(props) {
       );
     } else {
       // This implies we are creating a card
+      // TODO: set focus back to top input area
       apiFlashCardCreate(
         deckId,
         frontTextRef.current.value,

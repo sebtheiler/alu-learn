@@ -316,3 +316,35 @@ def deck_delete_view(request, deck_id, *args, **kwargs):
     obj = decks_qs.first()
     obj.delete()
     return Response({'message': 'Deck deleted succesfully'}, status=200)
+
+
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def deck_edit_view(request, deck_id, *args, **kwargs):
+    """
+    Edit a flashcard - POST
+
+    Required information:
+        `deck_id`: (URL) ID of the deck in which we are editing the flashcard
+        `new_title`: (Data) New title of the deck
+        `public`: (Data) Whether the deck should be public (not implemented)
+
+    Possible errors:
+        Deck does not exist: 404, {message: 'Deck not found'}
+        Current user does not own deck: 401, {message: 'You are not authorized to edit this flashcard'}
+    """
+    # Get the deck
+    decks_qs = Deck.objects.filter(pk=deck_id)
+    if not decks_qs.exists():
+        return Response({'message': 'Deck not found'}, status=404)
+    decks_qs = decks_qs.filter(user=request.user)
+    if not decks_qs.exists():
+        return Response({'message': 'You are not authorized to edit this flashcard'}, status=401)
+    deck = decks_qs.first()
+
+    # Edit the flashcard
+    deck.title = request.data.get('new_title')
+    # deck.public = request.data.get('public')
+    deck.save()
+    return Response(DeckSerializer(instance=deck).data, 200)
