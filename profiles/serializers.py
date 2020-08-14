@@ -10,6 +10,7 @@ class PublicProfileSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField(read_only=True)
     friend_count = serializers.SerializerMethodField(read_only=True)
     is_friend = serializers.SerializerMethodField(read_only=True)
+    you_are_pending = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         # Don't forget to update documentation in profiles/api/views.py!
@@ -23,12 +24,18 @@ class PublicProfileSerializer(serializers.ModelSerializer):
             'location',
             'friend_count',
             'is_friend',
+            'you_are_pending',
         ]
 
     def get_is_friend(self, obj):
         request = self.context.get('request')
         is_friend = request.user in obj.friends.all() if request else None
         return is_friend
+
+    def get_you_are_pending(self, obj):
+        request = self.context.get('request')
+        is_pending = request.user.profile in obj.pending_friends.all() if request else None
+        return is_pending
 
     def get_first_name(self, obj):
         return obj.user.first_name
