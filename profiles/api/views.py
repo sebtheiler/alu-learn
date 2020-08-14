@@ -59,6 +59,13 @@ def profile_detail_api_view(request, username, *args, **kwargs):
                 # Add eachother as friends
                 profile_obj.friends.add(request.user)
                 request.user.profile.friends.add(profile_obj.user)
+
+                # Remove eachother as pending friends
+                # Technical note: only one user will have the other as
+                # a pending friend, however it is simply easier to do this
+                # to both of them.  This may reduce efficiency, TODO:
+                profile_obj.pending_friends.remove(request.user.profile)
+                request.user.profile.pending_friends.remove(profile_obj)
             else:
                 return Response({'message': 'You are already friends with this user'}, status=400)
         elif action == 'unfriend':
@@ -95,12 +102,20 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
     # Get sending user 
     sending_user = request.user
 
+    # Create notification
     Notification.objects.create(
         profile=recipient_user.profile,
         category='friend_request',
         title=f'{sending_user.first_name} wants to be your friend!',
-        description=f'{sending_user.first_name} {sending_user.last_name} @{sending_user.username} wants to be your friend!'
+        description=f'{sending_user.first_name} {sending_user.last_name} @{sending_user.username} wants to be your friend!',
     )
+
+    # Put user in the profile's pending friends
+    recipient_user.profile.pending_friends.add(
+        sending_user.profile,
+    )
+    recipient_user.save()
+
     return Response({}, status=201)
 
 

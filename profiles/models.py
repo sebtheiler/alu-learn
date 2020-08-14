@@ -18,6 +18,7 @@ class Profile(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     friends = models.ManyToManyField(User, related_name='friends', blank=True)
+    pending_friends = models.ManyToManyField('self', blank=True)
 
     def __str__(self):
         if self.user.first_name and self.user.last_name:
