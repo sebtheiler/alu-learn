@@ -92,6 +92,7 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
     
     Possible errors:
         Unknown username: 404, {message: 'User "`username`" not found'}
+        Cannot self-friend: 400, {message: 'You cannot friend yourself'}
     """
     # Get recipient user
     user_qs = User.objects.filter(username=recipient_username) # TODO: turn this common snippet of getting user into function
@@ -101,6 +102,9 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
 
     # Get sending user 
     sending_user = request.user
+
+    if sending_user == recipient_user:
+        return Response({'message': 'You cannot friend yourself'}, status=400)
 
     # Create notification
     Notification.objects.create(
