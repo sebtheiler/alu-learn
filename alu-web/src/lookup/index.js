@@ -14,6 +14,8 @@ import {
         apiProfileFriendToggle,
         apiNotificationCreate,
         apiNotificationList,
+        apiUnreadNotificationList,
+        apiNotificationRead,
 } from './lookup';
 
 export {
@@ -32,4 +34,6 @@ export {
     apiProfileFriendToggle,
     apiNotificationCreate,
     apiNotificationList,
+    apiUnreadNotificationList,
+    apiNotificationRead,
 };

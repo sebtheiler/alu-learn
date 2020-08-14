@@ -31,6 +31,7 @@ class Notification(models.Model):
     category = models.CharField(max_length=32, default='basic')
     title = models.CharField(max_length=128)
     description = models.TextField()
+    read = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

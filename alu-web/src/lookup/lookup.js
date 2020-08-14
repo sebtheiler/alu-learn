@@ -102,3 +102,13 @@ export function apiNotificationCreate(username, title, description, category, ca
 export function apiNotificationList(username, callback) {
   backendLookup('GET', `profiles/${username}/notifications/`, callback);
 };
+
+// Gets list of unread notifications for a user
+export function apiUnreadNotificationList(username, callback) {
+  backendLookup('GET', `profiles/${username}/notifications/read/`, callback);
+};
+
+// Marks a user's notification as read
+export function apiNotificationRead(username, notificationId, callback) {
+  backendLookup('POST', `profiles/${username}/notifications/read/`, callback, {notification_id: notificationId});
+};

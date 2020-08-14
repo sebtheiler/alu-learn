@@ -54,6 +54,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             'profile',
             'title',
             'description',
+            'read',
             'category',
             'id',
         ]

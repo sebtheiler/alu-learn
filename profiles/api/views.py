@@ -118,4 +118,53 @@ def notification_api_view(request, username, *args, **kwargs):
             many=True,
         ).data, status=200)
     else:
-        return Response({'message': f'Method {request.method} not allowed'}, status=400)
+        return Response({'message': f'Method {request.method} not allowed'}, status=405)
+
+
+@api_view(['GET', 'POST'])
+def notification_read_api_view(request, username, *args, **kwargs):
+    """
+    Get unread notifications for a user, or mark notifications as read - GET/POST
+
+    To get list of notifications, use request method GET
+    
+    To mark a notification as read,
+        Use request method POST
+        Request data must have attributes:
+            `notification_id`
+
+    Returns:
+        `profile`: The serialized profile the notification belongs to
+        `title`: Title of the newly created notification
+        `description`: Description of the newly created notification
+
+    Possible errors:
+        Unknown username: 404, {message: 'User not found'}
+    """
+    # Get user
+    user_qs = User.objects.filter(username=username) # TODO: turn this common snippet of getting user into function
+    if not user_qs.exists():
+        return Response({'message': 'User not found'}, status=404)
+    user = user_qs.first()
+
+    if request.method == 'POST':
+        # Get notification
+        pk = request.data.get('notification_id')
+        if not pk:
+            return Response({'message': 'Please specify a notification ID'}, status=400)
+        notif_qs = Notification.objects.filter(profile__user=user, pk=pk)
+        if not notif_qs.exists():
+            return Response({'message': 'Please specify a valid notification ID'}, status=400)
+        notif = notif_qs.first()
+        # Mark notification as read
+        notif.read = True
+        notif.save()
+        return Response(NotificationSerializer(instance=notif).data, status=200)
+    elif request.method == 'GET':
+        # List all unread notifications
+        return Response(NotificationSerializer(
+            Notification.objects.filter(profile__user=user, read=False),
+            many=True,
+        ).data, status=200)
+    else:
+        return Response({'message': f'Method {request.method} not allowed'}, status=405)
