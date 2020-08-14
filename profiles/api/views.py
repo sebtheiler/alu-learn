@@ -99,7 +99,7 @@ def notification_api_view(request, username, *args, **kwargs):
     # Get user
     user_qs = User.objects.filter(username=username) # TODO: turn this common snippet of getting user into function
     if not user_qs.exists():
-        return Response({'message': 'User not found'}, status=404)
+        return Response({'message': f'User "{username}" not found'}, status=404)
     user = user_qs.first()
 
     if request.method == 'POST':

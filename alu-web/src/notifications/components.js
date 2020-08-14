@@ -78,7 +78,8 @@ export function NotificationComponent(props) {
       <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover}>
         <Button
           onClick={(event) => {event.preventDefault(); setViewedNotifs(true); setHasUnreadNotifs(false);}}
-          variant={hasUnreadNotifs ? 'success' : 'outline-success'}
+          variant={hasUnreadNotifs ? 'success' : 'secondary'}
+          size='sm'
         >
           Notifications
         </Button>
