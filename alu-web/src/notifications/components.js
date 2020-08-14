@@ -12,23 +12,38 @@ export function NotificationComponent(props) {
   const [hasUnreadNotifs, setHasUnreadNotifs] = useState(false);
   // Lookup notifications in API
   if (didGetNotifs === false) {
-    apiNotificationList(username, (response, status) => {
-      if (status === 200) {
-        setNotifList(response.slice(0, 10).reverse());
-        setDidGetNotifs(true);
-        
-        // Check if there are any unread notifications
-        const unread = response.filter((notif) => {
-          return notif.read === false;
-        });
-        if (unread.length > 0) {
-          setHasUnreadNotifs(true);
+    if (username === '') {
+      // If the user is not logged in make a fake notification
+      setNotifList([{
+        title: 'Hey there!',
+        description: 'Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study most effectively. Learn more at TODO',
+        read: false,
+        category: 'basic',
+        timestamp: (new Date()).toISOString(),
+        id: -1,
+      }]);
+      setDidGetNotifs(true);
+      setHasUnreadNotifs(true);
+    } else {
+      // If the user is logged in, get notifications
+      apiNotificationList(username, (response, status) => {
+        if (status === 200) {
+          setNotifList(response.slice(0, 10).reverse());
+          setDidGetNotifs(true);
+          
+          // Check if there are any unread notifications
+          const unread = response.filter((notif) => {
+            return notif.read === false;
+          });
+          if (unread.length > 0) {
+            setHasUnreadNotifs(true);
+          };
+        } else {
+          console.log(response, status);
+          alert('Error displaying notifications');
         };
-      } else {
-        console.log(response, status);
-        alert('Error displaying notifications');
-      };
-    });
+      });
+    };
   };
 
   useEffect(() => {
