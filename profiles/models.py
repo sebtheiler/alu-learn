@@ -30,7 +30,7 @@ class Notification(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     category = models.CharField(max_length=32, default='basic')
     title = models.CharField(max_length=128)
-    description = models.TextField()
+    description = models.TextField(default='')
     read = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 

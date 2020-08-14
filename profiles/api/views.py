@@ -75,6 +75,38 @@ def profile_detail_api_view(request, username, *args, **kwargs):
     return Response(context, status=200)
 
 
+@api_view(['POST'])
+def friend_request_api_view(request, recipient_username, *args, **kwargs):
+    """
+    Send a friend request to a user with username `recipient_username`
+
+    Required information:
+        `recipient_username`: (URL) Username of the user to send a friend request to
+        `sender_username`: (Data) Username of the user sending the friend request
+    
+    Possible errors:
+        Unknown username: 404, {message: 'User "`username`" not found'}
+    """
+    # Get recipient user
+    user_qs = User.objects.filter(username=recipient_username) # TODO: turn this common snippet of getting user into function
+    if not user_qs.exists():
+        return Response({'message': f'User "{recipient_username}" not found'}, status=404)
+    recipient_user = user_qs.first()
+
+    # Get sending user 
+    user_qs = User.objects.filter(username=request.data.get('sender_username')) # TODO: turn this common snippet of getting user into function
+    if not user_qs.exists():
+        return Response({'message': f'User "{sender_username}" not found'}, status=404)
+    sending_user = user_qs.first()
+
+    Notification.objects.create(
+        profile=recipient_user.profile,
+        category='friend_request',
+        title=f'{sending_user.first_name} {sending_user.last_name} wants to be your friend!',
+    )
+    return Response({}, status=201)
+
+
 @api_view(['GET', 'POST'])
 def notification_api_view(request, username, *args, **kwargs):
     """
@@ -94,7 +126,7 @@ def notification_api_view(request, username, *args, **kwargs):
         `description`: Description of the newly created notification
 
     Possible errors:
-        Unknown username: 404, {message: 'User not found'}
+        Unknown username: 404, {message: 'User "`username`" not found'}
     """
     # Get user
     user_qs = User.objects.filter(username=username) # TODO: turn this common snippet of getting user into function
