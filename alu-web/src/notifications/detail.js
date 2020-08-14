@@ -1,8 +1,50 @@
-import React from 'react';
+import React, {useState} from 'react';
+import {Button} from 'react-bootstrap';
 import {timeSince} from './utils';
+import {apiProfileFriendToggle, apiProfileDetail} from '../lookup';
 
 export function Notification(props) {
   const {notif, read} = props;
+  const [friendBtnLabel, setFriendBtnLabel] = useState('Add Friend');
+  const [acceptedFriendReq, setAcceptedFriendReq] = useState(false);
+
+  if (notif.category === 'friend_request') {
+    // Get anything in the description starting with @
+    const match = notif.description.match(/(@[a-z]+)/gm)[0];
+    const senderUsername = match.substring(1, match.length);
+
+    // Check if you are already friends
+    apiProfileDetail(senderUsername, (response, status) => {
+      if (status === 200) {
+        if (response.is_friend) {
+          setFriendBtnLabel('Friends')
+        };
+      } else {
+        console.log(response, status);
+        alert('Error accepting friend!') // TODO: turn this else statement into reusuable function
+      };
+    });
+  };
+
+  const handleFriendAccepted = (event) => {
+    event.preventDefault();
+    if (acceptedFriendReq === false) {
+      setAcceptedFriendReq(true);
+      // Get anything in the description starting with @
+      const match = notif.description.match(/(@[a-z]+)/gm)[0];
+      const senderUsername = match.substring(1, match.length);
+  
+      // Accept friend request
+      apiProfileFriendToggle(senderUsername, 'friend', (response, status) => {
+        if (status === 200) {
+          setFriendBtnLabel('Friends')
+        } else {
+          console.log(response, status);
+          alert('Error accepting friend!');
+        };
+      });
+    };
+  };
 
   return (
     <div className='mb-3'>
@@ -12,7 +54,7 @@ export function Notification(props) {
         {notif.title}
       </h4>
       <p className='mb-0'>{notif.description}</p>
-      {/* <button className='btn btn-primary btn-sm '>Add Friend</button> */}
+      {notif.category === 'friend_request' ? <Button onClick={handleFriendAccepted} size='sm' className='mt-2'>{friendBtnLabel}</Button> : ''}
     </div>
   );
 };

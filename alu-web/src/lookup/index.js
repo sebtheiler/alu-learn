@@ -16,6 +16,7 @@ import {
         apiNotificationList,
         apiUnreadNotificationList,
         apiNotificationRead,
+        apiSendFriendReq,
 } from './lookup';
 
 export {
@@ -36,4 +37,5 @@ export {
     apiNotificationList,
     apiUnreadNotificationList,
     apiNotificationRead,
+    apiSendFriendReq,
 };

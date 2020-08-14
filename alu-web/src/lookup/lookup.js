@@ -88,6 +88,10 @@ export function apiProfileFriendToggle(username, action, callback) {
   backendLookup('POST', `profiles/${username}/friend/`, callback, {action: action.toLowerCase()});
 };
 
+// Send a friend request
+export function apiSendFriendReq(recipientUsername, callback) {
+  backendLookup('POST', `profiles/${recipientUsername}/friendrequest`, callback);
+};
 
 // Creates a notification
 export function apiNotificationCreate(username, title, description, category, callback) {

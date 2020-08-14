@@ -82,7 +82,6 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
 
     Required information:
         `recipient_username`: (URL) Username of the user to send a friend request to
-        `sender_username`: (Data) Username of the user sending the friend request
     
     Possible errors:
         Unknown username: 404, {message: 'User "`username`" not found'}
@@ -94,15 +93,13 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
     recipient_user = user_qs.first()
 
     # Get sending user 
-    user_qs = User.objects.filter(username=request.data.get('sender_username')) # TODO: turn this common snippet of getting user into function
-    if not user_qs.exists():
-        return Response({'message': f'User "{sender_username}" not found'}, status=404)
-    sending_user = user_qs.first()
+    sending_user = request.user
 
     Notification.objects.create(
         profile=recipient_user.profile,
         category='friend_request',
-        title=f'{sending_user.first_name} {sending_user.last_name} wants to be your friend!',
+        title=f'{sending_user.first_name} wants to be your friend!',
+        description=f'{sending_user.first_name} {sending_user.last_name} @{sending_user.username} wants to be your friend!'
     )
     return Response({}, status=201)
 
