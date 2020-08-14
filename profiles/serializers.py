@@ -56,6 +56,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             'description',
             'read',
             'category',
+            'timestamp',
             'id',
         ]
     

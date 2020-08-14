@@ -9,12 +9,21 @@ export function NotificationComponent(props) {
   const [notifList, setNotifList] = useState([]);
   const [didGetNotifs, setDidGetNotifs] = useState(false);
   const [viewedNotifs, setViewedNotifs] = useState(false);
+  const [hasUnreadNotifs, setHasUnreadNotifs] = useState(false);
   // Lookup notifications in API
   if (didGetNotifs === false) {
     apiNotificationList(username, (response, status) => {
       if (status === 200) {
         setNotifList(response.slice(0, 10).reverse());
         setDidGetNotifs(true);
+        
+        // Check if there are any unread notifications
+        const unread = response.filter((notif) => {
+          return notif.read === false;
+        });
+        if (unread.length > 0) {
+          setHasUnreadNotifs(true);
+        };
       } else {
         console.log(response, status);
         alert('Error displaying notifications');
@@ -23,6 +32,11 @@ export function NotificationComponent(props) {
   };
 
   useEffect(() => {
+    // If the user has opened their notifications,
+    // then when they leave the page mark all the
+    // notifications as read.
+    // Ideally this would be done when the popover
+    // is closed, but I'm not sure how to do that.
     if (viewedNotifs) {
       const markAllAsRead = (event) => {
         event.preventDefault();
@@ -45,7 +59,7 @@ export function NotificationComponent(props) {
         window.removeEventListener('beforeunload', markAllAsRead)
       };
     };
-  });
+  }, [viewedNotifs, notifList]);
 
   const notifPopover = (
     <Popover id='notification-popover'>
@@ -62,7 +76,12 @@ export function NotificationComponent(props) {
   return (
     <div>
       <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover}>
-        <Button onClick={(event) => {event.preventDefault(); setViewedNotifs(true);}} variant='primary'>Notifications</Button>
+        <Button
+          onClick={(event) => {event.preventDefault(); setViewedNotifs(true); setHasUnreadNotifs(false);}}
+          variant={hasUnreadNotifs ? 'success' : 'outline-success'}
+        >
+          Notifications
+        </Button>
       </OverlayTrigger>
     </div>
   );
