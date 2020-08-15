@@ -11,13 +11,12 @@ function ProfileBadge(props) {
 
   if (showFriendButton) {
     // Updates the front-end display and calls the callback `didFriendToggle`
-    console.log(user)
-    // var currentVerb = (user && user.is_friend) ? "Remove Friend" : "Add Friend";
+
     var currentVerb;
     if (user && user.is_friend) {
       currentVerb = 'Remove Friend';
     } else if (user.you_are_pending) {
-      currentVerb = 'Pending';
+      currentVerb = 'Requested';
     } else {
       currentVerb = 'Add Friend';
     };
@@ -25,21 +24,23 @@ function ProfileBadge(props) {
 
     var handleFriendToggle = (event) => {
       event.preventDefault();
-      if (didFriendToggle && !profileLoading) {
+      if (currentVerb !== 'Requested' && currentVerb !== 'Loading...' && !profileLoading) {
         const action = currentVerb === "Remove Friend" ? "unfriend" : "friend";
         didFriendToggle(action);
       };
     };
   };
 
-  return user ? (<div>
-    <UserPicture user={user} />
-    <p><UserLink user={user} includeFullName noLink /></p>
-    <p><DisplayCount>{user.friend_count}</DisplayCount> {user.friend_count === 1 ? "friend" : "friends"}</p>
-    <p>{user.location}</p>
-    <p>{user.bio}</p>
-    {showFriendButton === true ? <button onClick={handleFriendToggle} className='btn btn-primary'>{currentVerb}</button> : null}
-  </div>) : null;
+  return user ? (
+    <div>
+      <UserPicture user={user} />
+      <p><UserLink user={user} includeFullName noLink /></p>
+      <p><DisplayCount>{user.friend_count}</DisplayCount> {user.friend_count === 1 ? "friend" : "friends"}</p>
+      <p>{user.location}</p>
+      <p>{user.bio}</p>
+      {showFriendButton === true ? <button onClick={handleFriendToggle} className='btn btn-primary'>{currentVerb}</button> : null}
+    </div>
+  ) : null;
 };
 
 
@@ -73,6 +74,7 @@ export function ProfileBadgeComponent(props) {
   const handleNewFriend = (actionVerb) => {
     setProfileLoading(true);
     if (actionVerb === 'unfriend') {
+      // Unfriend the user instantly
       apiProfileFriendToggle(username, 'unfriend', (response, status) => {
         if (status === 200) {
           setProfile(response);
@@ -80,14 +82,16 @@ export function ProfileBadgeComponent(props) {
         setProfileLoading(false);
       });
     } else {
+      // Send a friend request
       apiSendFriendReq(username, (response, status) => {
-        setProfileLoading(false);
+        setProfileLoading(true);
         if (status === 201) {
-          // pass
+          profile.you_are_pending = true;
         } else {
           console.log(response, status);
           alert('Error sending friend request');
         };
+        setProfileLoading(false);
       });
     };
   };
