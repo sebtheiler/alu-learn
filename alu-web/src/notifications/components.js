@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {Popover, OverlayTrigger, Button} from 'react-bootstrap';
 
 import {Notification} from './detail';
@@ -8,8 +8,8 @@ export function NotificationComponent(props) {
   const {username} = props;
   const [notifList, setNotifList] = useState([]);
   const [didGetNotifs, setDidGetNotifs] = useState(false);
-  const [viewedNotifs, setViewedNotifs] = useState(false);
   const [hasUnreadNotifs, setHasUnreadNotifs] = useState(false);
+
   // Lookup notifications in API
   if (didGetNotifs === false) {
     if (username === '') {
@@ -28,11 +28,12 @@ export function NotificationComponent(props) {
       // If the user is logged in, get notifications
       apiNotificationList(username, (response, status) => {
         if (status === 200) {
-          setNotifList(response.slice(0, 10).reverse());
+          const numNotifs = 10;
+          setNotifList(response.slice(0, numNotifs).reverse());
           setDidGetNotifs(true);
           
           // Check if there are any unread notifications
-          const unread = response.filter((notif) => {
+          const unread = response.slice(0, numNotifs).reverse().filter((notif) => {
             return notif.read === false;
           });
           if (unread.length > 0) {
@@ -46,35 +47,20 @@ export function NotificationComponent(props) {
     };
   };
 
-  useEffect(() => {
-    // If the user has opened their notifications,
-    // then when they leave the page mark all the
-    // notifications as read.
-    // Ideally this would be done when the popover
-    // is closed, but I'm not sure how to do that.
-    if (viewedNotifs) {
-      const markAllAsRead = (event) => {
-        event.preventDefault();
-        for (let notif of notifList) {
-          if (notif.read === false) {
-            apiNotificationRead(notif.profile.username, notif.id, (response, status) => {
-              if (status === 200) {
-                // ...
-              } else {
-                console.log(response, status);
-                alert('Error in notifications!')
-              }
-            });
+  const markAllAsRead = (_event) => {
+    for (let notif of notifList) {
+      if (notif.read === false) {
+        apiNotificationRead(notif.profile.username, notif.id, (response, status) => {
+          if (status === 200) {
+            // ...
+          } else {
+            console.log(response, status);
+            alert('Error in notifications!')
           };
-        };
-      };
-  
-      window.addEventListener('beforeunload', markAllAsRead);
-      return () => {
-        window.removeEventListener('beforeunload', markAllAsRead)
+        });
       };
     };
-  }, [viewedNotifs, notifList]);
+  };
 
   const notifPopover = (
     <Popover id='notification-popover'>
@@ -90,9 +76,9 @@ export function NotificationComponent(props) {
 
   return (
     <div>
-      <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover}>
+      <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
         <Button
-          onClick={(event) => {event.preventDefault(); setViewedNotifs(true); setHasUnreadNotifs(false);}}
+          onClick={(event) => {event.preventDefault(); setHasUnreadNotifs(false);}}
           variant={hasUnreadNotifs ? 'success' : 'secondary'}
           size='sm'
         >
