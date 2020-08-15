@@ -53,3 +53,9 @@ def profile_detail_view(request, username, *args, **kwargs):
         'is_friend': is_friend,
     }
     return render(request, 'profiles/detail.html', context)
+
+
+# Display a list of the user's notifications
+# TODO: Make paginated
+def notifications_list_view(request, *args, **kwargs):
+    return render(request, 'profiles/notifications.html', {'username': request.user.username})

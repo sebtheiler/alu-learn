@@ -45,10 +45,10 @@ if (flashcardStudyElement) {
   ReactDOM.render(e(StudyComponent, flashcardStudyElement.dataset), flashcardStudyElement);
 };
 
-const notificationElement = document.getElementById('notification-component');
-if (notificationElement) {
-  ReactDOM.render(e(NotificationComponent, notificationElement.dataset), notificationElement);
-};
+const notificationElements = document.querySelectorAll('.notification-component');
+notificationElements.forEach(container => {
+  ReactDOM.render(e(NotificationComponent, container.dataset), container);
+});
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
