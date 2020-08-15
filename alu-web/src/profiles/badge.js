@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiProfileDetail, apiProfileFriendToggle} from '../lookup';
+import {apiProfileDetail, apiProfileFriendToggle, apiSendFriendReq} from '../lookup';
 import {UserLink, UserPicture} from './components';
 import {DisplayCount} from './utils';
 
@@ -11,8 +11,18 @@ function ProfileBadge(props) {
 
   if (showFriendButton) {
     // Updates the front-end display and calls the callback `didFriendToggle`
-    var currentVerb = (user && user.is_friend) ? "Remove Friend" : "Add Friend";
+    console.log(user)
+    // var currentVerb = (user && user.is_friend) ? "Remove Friend" : "Add Friend";
+    var currentVerb;
+    if (user && user.is_friend) {
+      currentVerb = 'Remove Friend';
+    } else if (user.you_are_pending) {
+      currentVerb = 'Pending';
+    } else {
+      currentVerb = 'Add Friend';
+    };
     currentVerb = profileLoading ? 'Loading...' : currentVerb;
+
     var handleFriendToggle = (event) => {
       event.preventDefault();
       if (didFriendToggle && !profileLoading) {
@@ -62,12 +72,24 @@ export function ProfileBadgeComponent(props) {
   // and make the button say 'Loading...' as it waits
   const handleNewFriend = (actionVerb) => {
     setProfileLoading(true);
-    apiProfileFriendToggle(username, actionVerb, (response, status) => {
-      if (status === 200) {
-        setProfile(response);
-      };
-      setProfileLoading(false);
-    });
+    if (actionVerb === 'unfriend') {
+      apiProfileFriendToggle(username, 'unfriend', (response, status) => {
+        if (status === 200) {
+          setProfile(response);
+        };
+        setProfileLoading(false);
+      });
+    } else {
+      apiSendFriendReq(username, (response, status) => {
+        setProfileLoading(false);
+        if (status === 201) {
+          // pass
+        } else {
+          console.log(response, status);
+          alert('Error sending friend request');
+        };
+      });
+    };
   };
 
   // If the user is viewing their own profile, don't show the 'Add Friend' button
