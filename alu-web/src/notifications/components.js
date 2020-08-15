@@ -28,7 +28,7 @@ export function NotificationComponent(props) {
       // If the user is logged in, get notifications
       apiNotificationList(username, (response, status) => {
         if (status === 200) {
-          const numNotifs = 10;
+          const numNotifs = 5;
           setNotifList(response.slice(0, numNotifs).reverse());
           setDidGetNotifs(true);
           
@@ -66,9 +66,15 @@ export function NotificationComponent(props) {
     <Popover id='notification-popover'>
       <Popover.Title as='h3'>Notifications</Popover.Title>
       <Popover.Content>
-        {notifList.map((notif, index) => {
-          return <Notification notif={notif} read={notif.read} key={index} />
-        })}
+        <div>
+          {notifList.map((notif, index) => {
+            return <Notification notif={notif} read={notif.read} key={index} />
+          })}
+        </div>
+        <hr></hr>
+        <div>
+          <Button href='/notifications/' variant='primary' size='sm'>See older notifications</Button>
+        </div>
       </Popover.Content>
     </Popover>
   );
