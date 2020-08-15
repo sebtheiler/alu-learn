@@ -90,7 +90,7 @@ export function apiProfileFriendToggle(username, action, callback) {
 
 // Send a friend request
 export function apiSendFriendReq(recipientUsername, callback) {
-  backendLookup('POST', `profiles/${recipientUsername}/friendrequest`, callback);
+  backendLookup('POST', `profiles/${recipientUsername}/friendrequest/`, callback);
 };
 
 // Creates a notification
