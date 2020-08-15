@@ -5,7 +5,7 @@ import {Notification} from './detail';
 import {apiNotificationList, apiNotificationRead} from '../lookup';
 
 export function NotificationComponent(props) {
-  const {username} = props;
+  const {username, isPopup} = props;
   const [notifList, setNotifList] = useState([]);
   const [didGetNotifs, setDidGetNotifs] = useState(false);
   const [hasUnreadNotifs, setHasUnreadNotifs] = useState(false);
@@ -28,7 +28,9 @@ export function NotificationComponent(props) {
       // If the user is logged in, get notifications
       apiNotificationList(username, (response, status) => {
         if (status === 200) {
-          const numNotifs = 5;
+          // TODO: It would be nice if this was paginated, but since that
+          // requires a whole new class I'm just setting it to 500 notifications
+          const numNotifs = isPopup ? 5 : 500;
           setNotifList(response.slice(0, numNotifs).reverse());
           setDidGetNotifs(true);
           
@@ -79,18 +81,28 @@ export function NotificationComponent(props) {
     </Popover>
   );
 
-
-  return (
-    <div>
-      <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
-        <Button
-          onClick={(event) => {event.preventDefault(); setHasUnreadNotifs(false);}}
-          variant={hasUnreadNotifs ? 'success' : 'secondary'}
-          size='sm'
-        >
-          Notifications
-        </Button>
-      </OverlayTrigger>
-    </div>
-  );
+  if (isPopup) {
+    return (
+      <div>
+        <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
+          <Button
+            onClick={(event) => {event.preventDefault(); setHasUnreadNotifs(false);}}
+            variant={hasUnreadNotifs ? 'success' : 'secondary'}
+            size='sm'
+          >
+            Notifications
+          </Button>
+        </OverlayTrigger>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <h2>All Notifications</h2>
+        {notifList.map((notif, index) => {
+          return <Notification notif={notif} read={notif.read} key={index} />
+        })}
+      </div>
+    );
+  };
 };

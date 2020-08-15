@@ -4,7 +4,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class='nav-item mr-3'>
-      <div id="notification-component" data-username='{{ request.user.username }}'></div>
+      <div id="notification-component" data-username='{{ request.user.username }}' data-is-popup='true'></div>
     </div>
     <span class="navbar-text white">
       {% if request.user.first_name %}
