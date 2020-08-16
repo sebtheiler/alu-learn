@@ -318,7 +318,7 @@ def deck_delete_view(request, deck_id, *args, **kwargs):
 
 
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication])
+# @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def deck_edit_view(request, deck_id, *args, **kwargs):
     """
@@ -351,13 +351,13 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     if sharing_setting and sharing_setting not in ('PRIVATE', 'FRIENDS', 'PUBLIC'):
         return Response({'message': 'Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`'}, status=400)
 
-    if title:
+    if title is not None:
         deck.title = title
 
-    if description:
+    if description is not None:
         deck.description = description
 
-    if sharing_setting:
+    if sharing_setting is not None:
         deck.sharing_setting = sharing_setting
 
     deck.save()

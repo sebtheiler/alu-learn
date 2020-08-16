@@ -22,11 +22,18 @@ export function EditButton(props) {
   const saveHandler = (event) => {
     event.preventDefault();
     let form = event.target;
-    if (form.elements.title.value === deck.title && form.elements.description.value === deck.description /* && (form.elements.isPublic.value === 'on') === deck.isPublic */) {
+
+    // If nothing has changed, prevent the user from saving
+    if (
+        form.elements.title.value === deck.title &&
+        form.elements.description.value === deck.description &&
+        form.elements.sharingSetting.value === deck.sharing_setting
+    ) {
       return;
     };
 
-    apiDeckEdit(deck.id, form.elements.title.value, form.elements.description.value, form.elements.isPublic.value === 'on', (response, status) => {
+    // Tell the API to update the deck
+    apiDeckEdit(deck.id, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
       if (status === 200) {
         window.location.reload();
       } else {
@@ -61,13 +68,25 @@ export function EditButton(props) {
         <Form onSubmit={saveHandler}>
           <Modal.Body>
             <Form.Group>
-              <Form.Control type='text' placeholder='Deck title' name='title' defaultValue={deck.title} />
+              <Form.Label>Title</Form.Label>
+              <Form.Control type='text' placeholder='My deck' name='title' defaultValue={deck.title} />
             </Form.Group>
             <Form.Group>
-              <Form.Control as='textarea' rows='3' placeholder='Description' name='description' defaultValue={deck.description} />
+              <Form.Label>Description</Form.Label>
+              <Form.Control as='textarea' rows='3' placeholder="My deck's description" name='description' defaultValue={deck.description} />
             </Form.Group>
             <Form.Group>
-              <Form.Check type='checkbox' label='Make public?' name='isPublic' checked={deck.isPublic} />
+              <Form.Label>Sharing Setting</Form.Label>
+              <Form.Control
+                as='select'
+                name='sharingSetting'
+                defaultValue={deck.sharing_setting}
+                custom
+              >
+                <option value='PRIVATE'>Private</option>
+                <option value='FRIENDS'>Friends only</option>
+                <option value='PUBLIC'>Public</option>
+              </Form.Control>
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>
