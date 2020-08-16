@@ -1,5 +1,9 @@
 import React from 'react';
 import {EditButton, RedirectButton} from './buttons';
+import {
+  Card, CardText, CardBody,
+  CardTitle, ButtonGroup
+} from 'reactstrap';
 
 
 // Display an individual deck
@@ -22,21 +26,20 @@ export function Deck(props) {
     return null;
   };
 
-  // TODO: Rewrite this in Reactstrap
   return (
     <div className={className}>
-      <div className='card border-0'>
-        <div className='card-body'>
-          <h3 className='card-title'>{deck.title}</h3>
-          <p>{deck.description}</p>
-          <div className='btn btn-group px-0'>
+      <Card className='border-0'>
+        <CardBody>
+          <CardTitle>{deck.title}</CardTitle>
+          <CardText>{deck.description}</CardText>
+          <ButtonGroup>
             <EditButton deck={deck} />
             <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/create/' : `${deck.id}/flashcards/create/`, display: 'Add Cards'}} />
             <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/' : `${deck.id}/flashcards/`, display: 'Browse'}} />
             <RedirectButton deck={deck} link={{href: isDetail ? 'study/' : `${deck.id}/study/`, display: 'Study'}} />
-          </div>
-        </div>
-      </div>
+          </ButtonGroup>
+        </CardBody>
+      </Card>
     </div>
   );
 };
