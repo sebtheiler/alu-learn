@@ -8,7 +8,7 @@ Title
 Issue:
 
 
-Occured Where:
+Occured Where (optional):
 
 
 Solution:
@@ -20,8 +20,22 @@ Date and Programmer:
 
 
 
+---
+No such column after adding field
+---
 
+Issue:
+`django.db.utils.OperationalError: no such column:`
 
+Solution:
+Removed field, ran `./manage.py makemigrations <app_name>`, `./manage.py migrate <app_name>`
+Readded field, ran `./manage.py makemigrations <app_name>`, `./manage.py migrate <app_name>`
+https://stackoverflow.com/a/36053139/13984903
+
+Date and Programmer:
+Sun Aug 16 2020, Sebastian Theiler
+
+---
 XHR Request Blocked by CORS
 ---
 Issue:

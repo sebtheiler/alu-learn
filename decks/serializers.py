@@ -28,6 +28,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'flashcards',
+            'sharing_setting',
             'id',
         ]
     

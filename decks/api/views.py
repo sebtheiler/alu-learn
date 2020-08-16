@@ -260,7 +260,6 @@ def deck_feed_view(request, *args, **kwargs):
         A list of decks (DeckSerializer)
     """
     user = request.user
-    print(request.user)
     feed_qs = Deck.objects.feed(user)
     return get_paginated_queryset_response(feed_qs, request, DeckSerializer)
 
@@ -329,11 +328,12 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         `deck_id`: (URL) ID of the deck in which we are editing the flashcard
         `new_title`: (Data) New title of the deck
         `description`: (Data) New description of the deck
-        `public`: (Data) Whether the deck should be public (not implemented)
+        `sharing_setting`: (Data) PRIVATE, FRIENDS, or PUBLIC
 
     Possible errors:
         Deck does not exist: 404, {message: 'Deck not found'}
         Current user does not own deck: 401, {message: 'You are not authorized to edit this flashcard'}
+        Invalid sharing setting (if specified): 400, {message: 'Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`'}
     """
     # Get the deck
     decks_qs = Deck.objects.filter(pk=deck_id)
@@ -345,8 +345,20 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     deck = decks_qs.first()
 
     # Edit the flashcard
-    deck.title = request.data.get('new_title')
-    deck.description = request.data.get('description')
-    # deck.public = request.data.get('public')
+    title = request.data.get('new_title')
+    description = request.data.get('description')
+    sharing_setting = request.data.get('sharing_setting')
+    if sharing_setting and sharing_setting not in ('PRIVATE', 'FRIENDS', 'PUBLIC'):
+        return Response({'message': 'Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`'}, status=400)
+
+    if title:
+        deck.title = title
+
+    if description:
+        deck.description = description
+
+    if sharing_setting:
+        deck.sharing_setting = sharing_setting
+
     deck.save()
     return Response(DeckSerializer(instance=deck).data, 200)

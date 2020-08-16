@@ -37,6 +37,17 @@ class Deck(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(default='')
 
+    SHARING_OPTIONS = [
+        ('PRIVATE', 'Private'),
+        ('FRIENDS', 'Friends only'),
+        ('PUBLIC', 'Public'),
+    ]
+    sharing_setting = models.CharField(
+        max_length=7,
+        choices=SHARING_OPTIONS,
+        default='PRIVATE',
+    )
+
     # starting difficulty, new cards per day, ...
 
     objects = DeckManager()
