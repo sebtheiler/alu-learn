@@ -1,9 +1,6 @@
 import React from 'react';
 import {EditButton, RedirectButton} from './buttons';
-import {
-  Card, CardText, CardBody,
-  CardTitle, ButtonGroup
-} from 'reactstrap';
+import {Card, ButtonGroup} from 'react-bootstrap';
 
 
 // Display an individual deck
@@ -29,16 +26,16 @@ export function Deck(props) {
   return (
     <div className={className}>
       <Card className='border-0'>
-        <CardBody>
-          <CardTitle>{deck.title}</CardTitle>
-          <CardText>{deck.description}</CardText>
+        <Card.Body>
+          <Card.Title>{deck.title}</Card.Title>
+          <Card.Text>{deck.description}</Card.Text>
           <ButtonGroup>
             <EditButton deck={deck} />
             <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/create/' : `${deck.id}/flashcards/create/`, display: 'Add Cards'}} />
             <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/' : `${deck.id}/flashcards/`, display: 'Browse'}} />
             <RedirectButton deck={deck} link={{href: isDetail ? 'study/' : `${deck.id}/study/`, display: 'Study'}} />
           </ButtonGroup>
-        </CardBody>
+        </Card.Body>
       </Card>
     </div>
   );
