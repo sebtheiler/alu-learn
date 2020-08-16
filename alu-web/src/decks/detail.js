@@ -1,6 +1,5 @@
 import React from 'react';
 import {EditButton, RedirectButton} from './buttons';
-// import {UserPicture, UserLink} from '../profiles';
 
 
 // Display an individual deck
@@ -23,18 +22,21 @@ export function Deck(props) {
     return null;
   };
 
-  return (<div className={className}>
-    <div className='card'>
-      <div className='card-body'>
-        <h3 className='card-title'>{deck.title}</h3>
-        <p>{deck.description}</p>
-        <div className='btn btn-group px-0'>
-          <EditButton deck={deck} />
-          <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/create/' : `${deck.id}/flashcards/create/`, display: 'Add Cards'}} />
-          <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/' : `${deck.id}/flashcards/`, display: 'Browse'}} />
-          <RedirectButton deck={deck} link={{href: isDetail ? 'study/' : `${deck.id}/study/`, display: 'Study'}} />
+  // TODO: Rewrite this in Reactstrap
+  return (
+    <div className={className}>
+      <div className='card border-0'>
+        <div className='card-body'>
+          <h3 className='card-title'>{deck.title}</h3>
+          <p>{deck.description}</p>
+          <div className='btn btn-group px-0'>
+            <EditButton deck={deck} />
+            <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/create/' : `${deck.id}/flashcards/create/`, display: 'Add Cards'}} />
+            <RedirectButton deck={deck} link={{href: isDetail ? 'flashcards/' : `${deck.id}/flashcards/`, display: 'Browse'}} />
+            <RedirectButton deck={deck} link={{href: isDetail ? 'study/' : `${deck.id}/study/`, display: 'Study'}} />
+          </div>
         </div>
       </div>
     </div>
-  </div>);
+  );
 };
