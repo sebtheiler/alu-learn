@@ -17,11 +17,12 @@ export function Notification(props) {
     apiProfileDetail(senderUsername, (response, status) => {
       if (status === 200) {
         if (response.is_friend) {
-          setFriendBtnLabel('Friends')
+          setFriendBtnLabel('Friends');
+          setAcceptedFriendReq(true);
         };
       } else {
         console.log(response, status);
-        alert('Error accepting friend!') // TODO: turn this else statement into reusuable function
+        alert('Error accepting friend!'); // TODO: turn this else statement into reusuable function
       };
     });
   };

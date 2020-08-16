@@ -75,7 +75,7 @@ export function NotificationComponent(props) {
         </div>
         <hr></hr>
         <div>
-          <Button href='/notifications/' variant='primary' size='sm'>See older notifications</Button>
+          <Button href='/profiles/notifications/' variant='primary' size='sm'>See older notifications</Button>
         </div>
       </Popover.Content>
     </Popover>
