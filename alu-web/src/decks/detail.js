@@ -4,8 +4,6 @@ import {Card, ButtonGroup} from 'react-bootstrap';
 
 
 // Display an individual deck
-// This will be heavily revamped in the future
-// to look more like a deck and less like a Tweet
 export function Deck(props) {
   const {deck} = props; // JSON data with attributes such as `id` and `author`
   const className = props.className ? props.className : 'col-10 mx-auto col-md-6';

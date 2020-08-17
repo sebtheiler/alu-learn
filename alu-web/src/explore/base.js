@@ -1,10 +1,28 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from 'react-slick';
+import {Deck} from '../decks';
+import {apiDeckSharedList} from '../lookup';
 
 
 export function ExploreComponent(props) {
+  const [decks, setDecks] = useState([]);
+  const [decksDidSet, setDecksDidSet] = useState(false);
+
+  useEffect(() => {
+    if (decksDidSet === false) {
+      apiDeckSharedList('evolvedsquid', (response, status) => {
+        if (status === 200) {
+          setDecks(response);
+          setDecksDidSet(true);
+        } else {
+          console.log(response, status);
+          alert('Error');
+        };
+      });
+    };
+  }, [setDecks, decksDidSet, setDecksDidSet]);
 
   var settings = {
     arrows: true,
@@ -14,6 +32,7 @@ export function ExploreComponent(props) {
     slidesToShow: 3,
     slidesToScroll: 1,
     initialSlide: 0,
+    centerMode: true,
     responsive: [
       {
         breakpoint: 1024,
@@ -38,26 +57,16 @@ export function ExploreComponent(props) {
 
   return (
     <div className='text-center'>
-      <Slider {...settings}
-      >
-        <div>
-          <p>Item 1</p>
-        </div>
-        <div>
-          <p>Item 2</p>
-        </div>
-        <div>
-          <p>Item 3</p>
-        </div>
-        <div>
-          <p>Item 4</p>
-        </div>
-        <div>
-          <p>Item 5</p>
-        </div>
-        <div>
-          <p>Item 6</p>
-        </div>
+      <Slider {...settings}>
+        {decks.map((deck, index) => {
+          console.log(deck, index)
+          return (
+            <div key={`${index}-editorpicks`}>
+              <h4>{deck.title}</h4>
+              <p>{deck.description.substring(0, 128) + (deck.description.length > 128 ? '...' : '')}</p>
+            </div>
+          );
+        })}
       </Slider>
     </div>
   );
