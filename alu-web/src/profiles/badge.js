@@ -2,14 +2,15 @@ import React, {useState, useEffect} from 'react';
 import {apiProfileDetail, apiProfileFriendToggle, apiSendFriendReq} from '../lookup';
 import {UserLink, UserPicture} from './components';
 import {DisplayCount} from './utils';
+import {Button} from 'react-bootstrap';
 
 
 // Function for displaying user information such as bio, friendcount, location, etc.
 // as well as an 'Add/Remove Friend' button
 function ProfileBadge(props) {
-  const {user, didFriendToggle, profileLoading, showFriendButton} = props;
+  const {user, didFriendToggle, profileLoading, viewingOwnProfile} = props;
 
-  if (showFriendButton) {
+  if (viewingOwnProfile === false) {
     // Updates the front-end display and calls the callback `didFriendToggle`
 
     var currentVerb;
@@ -38,7 +39,10 @@ function ProfileBadge(props) {
       <p><DisplayCount>{user.friend_count}</DisplayCount> {user.friend_count === 1 ? "friend" : "friends"}</p>
       <p>{user.location}</p>
       <p>{user.bio}</p>
-      {showFriendButton === true ? <button onClick={handleFriendToggle} className='btn btn-primary'>{currentVerb}</button> : null}
+      {viewingOwnProfile === false ?
+        <Button onClick={handleFriendToggle} variant='primary'>{currentVerb}</Button> :
+        <Button href='/profiles/edit/' variant='primary'>Edit Profile</Button>
+      }
     </div>
   ) : null;
 };
@@ -96,14 +100,16 @@ export function ProfileBadgeComponent(props) {
     };
   };
 
-  // If the user is viewing their own profile, don't show the 'Add Friend' button
-  let showFriendButton = true;
-  if (username === currentUserUsername) {
-    showFriendButton = false;
-  };
+  // If the user is viewing their own profile, don't show the 'Add Friend' button and show a button for editing
+  let viewingOwnProfile = username === currentUserUsername;
 
   return didLookup === false ? 'Loading...' :
     (profile ?
-      <ProfileBadge user={profile} showFriendButton={showFriendButton} didFriendToggle={handleNewFriend} profileLoading={profileLoading} />
+      <ProfileBadge
+        user={profile}
+        viewingOwnProfile={viewingOwnProfile}
+        didFriendToggle={handleNewFriend}
+        profileLoading={profileLoading}
+      />
     : null);
 };
