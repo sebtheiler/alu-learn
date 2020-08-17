@@ -65,6 +65,11 @@ export function apiDeckList(username, callback, nextUrl) {
   backendLookup('GET', endpoint, callback);
 };
 
+// Gets a list of decks owned by a user with username `username` that are shared with the given user
+export function apiDeckSharedList(username, callback) {
+  backendLookup('GET', `decks/detail/${username}/`, callback);
+};
+
 
 // Gets a feed of decks from the API
 export function apiDeckFeed(callback, nextUrl) {
