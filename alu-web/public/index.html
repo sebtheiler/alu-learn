@@ -27,10 +27,17 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <title>React App</title>
+
+    <!-- Slick CSS -->
+    <link rel="stylesheet" type="text/css" charset="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" /> 
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="static/slick/slick.css" />
+    <link rel="stylesheet" type="text/css" href="static/slick/slick-theme.css" />
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
 
+    <div id='explore-component'></div>
     <!-- <div class='notification-component' data-username='testuser' data-is-popup='true'></div> -->
     <!-- <div id='study-component' data-deck-id=1></div> -->
     <!-- <div class='flashcard-list' data-deck-id=1></div> -->
@@ -38,8 +45,25 @@
     <!-- <div class='profile-badge' data-username='evolvedsquid' data-current-user-username='evolvedsquid'></div> -->
     <!-- <div id='decks-feed'></div> -->
     <!-- <div id='deck-container'></div> -->
-    <div id="user_decks" data-username="testuser" data-can-Create-Deck="false"></div>
+    <!-- <div id="user_decks" data-username="testuser" data-can-Create-Deck="false"></div> -->
 
+    <style>
+      .slick-prev:before {
+        color: skyblue;
+        font-size: 30px;
+      }
+
+      .slick-next:before {
+        color: skyblue;
+        font-size: 30px;
+      }
+
+      #explore-component {
+        width: 50%;
+        margin-right: auto;
+        margin-left: auto;
+      };
+    </style>
     <!-- TODO: Remove this, will require updates in `build-react-into-django.py` -->
     <script>
       var path = window.location.pathname;

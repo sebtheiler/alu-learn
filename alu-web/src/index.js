@@ -7,6 +7,7 @@ import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
 import {FlashCardCreateComponent, FlashCardsList} from './flashcards';
 import {StudyComponent} from './study';
 import {NotificationComponent} from './notifications';
+import {ExploreComponent} from './explore';
 
 const e = React.createElement;
 
@@ -49,6 +50,11 @@ const notificationElements = document.querySelectorAll('.notification-component'
 notificationElements.forEach(container => {
   ReactDOM.render(e(NotificationComponent, container.dataset), container);
 });
+
+const exploreElement = document.getElementById('explore-component')
+if (exploreElement) {
+  ReactDOM.render(e(ExploreComponent, exploreElement.dataset), exploreElement);
+};
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
