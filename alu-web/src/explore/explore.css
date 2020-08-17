@@ -1,0 +1,9 @@
+.slick-prev:before {
+  color: skyblue;
+  font-size: 30px;
+}
+
+.slick-next:before {
+  color: skyblue;
+  font-size: 30px;
+}

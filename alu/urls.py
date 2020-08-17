@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/decks/', include('decks.api.urls')),
     path('profiles/', include('profiles.urls')),
     path('api/profiles/', include('profiles.api.urls')),
+    path('explore/', include('explore.urls')),
 ]
 
 if settings.DEBUG:
