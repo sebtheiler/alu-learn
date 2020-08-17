@@ -7,6 +7,7 @@ app_names = 'decks'
 urlpatterns = [
     path('decklist/', views.deck_list_view),
     path('create/', views.deck_create_view),
+    path('detail/<str:username>/', views.deck_shared_view),
     path('<int:deck_id>/', views.deck_detail_view),
     path('<int:deck_id>/delete/', views.deck_delete_view),
     path('<int:deck_id>/edit/', views.deck_edit_view),

@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from ..forms import DeckForm
 from ..models import Deck, FlashCard, Tag
 from ..serializers import DeckSerializer, FlashCardSerializer
+from profiles.models import Profile
 
 
 @api_view(['POST'])
@@ -236,7 +237,7 @@ def deck_list_view(request, *args, **kwargs):
     Get a list of all decks from a username - GET
 
     Required information:
-        `username`: (Data) Username of the user to get decks from.  If None, returns all decks.
+        `username`: (GET) Username of the user to get decks from.  If None, returns all decks.
     
     Returns:
         A list of decks (DeckSerializer)
@@ -244,8 +245,44 @@ def deck_list_view(request, *args, **kwargs):
     decks_qs = Deck.objects.all()
     username = request.GET.get('username')
     if username is not None:
-        decks_qs = decks_qs.by_username(username)    
+        decks_qs = decks_qs.by_username(username)
     return get_paginated_queryset_response(decks_qs, request, DeckSerializer)
+
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# TODO: should this be merged with deck_list_view?
+def deck_shared_view(request, username, *args, **kwargs):
+    """
+    Gets decks from a user that are either shared with the requester or public - GET
+
+    Required information:
+        `username`: (URL) Username of the user to get decks from
+
+    Returns:
+        A list of decks (DeckSerializer)
+    """
+    # Get user
+    profile_qs = Profile.objects.filter(user__username=username)
+    if not profile_qs.exists():
+        return Response({'message': f'Invalid username "{username}"'}, status=404)
+    profile = profile_qs.first()
+
+    # Get user's decks
+    decks_qs = Deck.objects.filter(user=profile.user)
+
+    # Get user's decks that are either public or shared
+    if profile.user == request.user:
+        # If the user is viewing their own decks, just return everything
+        return Response(DeckSerializer(decks_qs, many=True).data, status=200)
+
+    is_friend = request.user in profile.friends.all()
+    if is_friend:
+        decks_qs = decks_qs.filter(Q(sharing_setting='PUBLIC') | Q(sharing_setting='FRIENDS'))
+    else:
+        decks_qs = decks_qs.filter(sharing_setting='PUBLIC')
+
+    return Response(DeckSerializer(decks_qs, many=True).data, status=200)
 
 
 @api_view(['GET'])
