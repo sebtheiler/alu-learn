@@ -1,38 +1,38 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="/">Alu</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class='nav-item mr-3'>
-      <div class="notification-component" data-username='{{ request.user.username }}' data-is-popup='true'></div>
-    </div>
-    <span class="navbar-text white">
-      {% if request.user.first_name %}
-        Welcome {{ request.user.first_name }}!
-      {% else %}
-        Welcome!
-      {% endif %}
-    </span>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto">
+  <a class="navbar-brand" href="/">Alu</a>
+  <div class='nav-item mr-3'>
+    <div class="notification-component" data-username='{{ request.user.username }}' data-is-popup='true'></div>
+  </div>
+  <span class="navbar-text white">
+    {% if request.user.first_name %}
+      Welcome {{ request.user.first_name }}!
+    {% else %}
+      Welcome!
+    {% endif %}
+  </span>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/explore">Explore <span class="sr-only">(current)</span></a>
+      </li>
+      {% if request.user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="/logout">Logout</a>
         </li>
-        {% if request.user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/profiles/edit">Edit Profile</a>
-          </li>
-        {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="/login">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/register">Register</a>
-          </li>
-        {% endif %}
-      </ul>
-    </div>
-  </nav>
+        <li class="nav-item">
+          <a class="nav-link" href="/profiles/edit">Edit Profile</a>
+        </li>
+      {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="/login">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/register">Register</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
