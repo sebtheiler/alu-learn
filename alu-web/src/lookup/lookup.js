@@ -121,3 +121,8 @@ export function apiUnreadNotificationList(username, callback) {
 export function apiNotificationRead(username, notificationId, callback) {
   backendLookup('POST', `profiles/${username}/notifications/read/`, callback, {notification_id: notificationId});
 };
+
+// Gets decks for explore component
+export function apiExploreLists(callback) {
+  backendLookup('GET', 'explore/lists/', callback);
+};

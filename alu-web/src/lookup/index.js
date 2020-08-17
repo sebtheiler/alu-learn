@@ -18,6 +18,7 @@ import {
         apiUnreadNotificationList,
         apiNotificationRead,
         apiSendFriendReq,
+        apiExploreLists,
 } from './lookup';
 
 export {
@@ -40,4 +41,5 @@ export {
     apiUnreadNotificationList,
     apiNotificationRead,
     apiSendFriendReq,
+    apiExploreLists,
 };

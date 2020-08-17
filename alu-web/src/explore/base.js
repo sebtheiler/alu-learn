@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckSharedList} from '../lookup';
+import {apiExploreLists} from '../lookup';
 import {DeckSlider} from './components';
 
 
@@ -10,7 +10,7 @@ export function ExploreComponent(props) {
   useEffect(() => {
     if (decksDidSet === false) {
       // TODO: replace with actual explore function
-      apiDeckSharedList('evolvedsquid', (response, status) => {
+      apiExploreLists((response, status) => {
         if (status === 200) {
           setDecks(response);
           setDecksDidSet(true);
@@ -31,15 +31,15 @@ export function ExploreComponent(props) {
       <hr />
       <div className='mb-5'>
         <h3>Editor's picks</h3>
-        <DeckSlider decks={decks} loading={!decksDidSet} />
+        <DeckSlider decks={decks.EDITOR} loading={!decksDidSet} />
       </div>
       <div className='mb-5'>
         <h3>Hottest weekly decks</h3>
-        <DeckSlider decks={decks} loading={!decksDidSet} />
+        <DeckSlider decks={decks.HOT} loading={!decksDidSet} />
       </div>
       <div className='mb-5'>
         <h3>Top decks of all time</h3>
-        <DeckSlider decks={decks} loading={!decksDidSet} />
+        <DeckSlider decks={decks.TOP} loading={!decksDidSet} />
       </div>
     </div>
   );
