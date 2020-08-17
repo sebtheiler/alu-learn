@@ -1,9 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider from 'react-slick';
-import {Deck} from '../decks';
 import {apiDeckSharedList} from '../lookup';
+import {DeckSlider} from './components';
 
 
 export function ExploreComponent(props) {
@@ -12,6 +9,7 @@ export function ExploreComponent(props) {
 
   useEffect(() => {
     if (decksDidSet === false) {
+      // TODO: replace with actual explore function
       apiDeckSharedList('evolvedsquid', (response, status) => {
         if (status === 200) {
           setDecks(response);
@@ -24,50 +22,25 @@ export function ExploreComponent(props) {
     };
   }, [setDecks, decksDidSet, setDecksDidSet]);
 
-  var settings = {
-    arrows: true,
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    initialSlide: 0,
-    centerMode: true,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
-  };
-
   return (
-    <div className='text-center'>
-      <Slider {...settings}>
-        {decks.map((deck, index) => {
-          console.log(deck, index)
-          return (
-            <div key={`${index}-editorpicks`}>
-              <h4>{deck.title}</h4>
-              <p>{deck.description.substring(0, 128) + (deck.description.length > 128 ? '...' : '')}</p>
-            </div>
-          );
-        })}
-      </Slider>
+    <div>
+      <div>
+        <h1>Explore</h1>
+        <p>Find the top decks to study.</p>
+      </div>
+      <hr />
+      <div className='mb-5'>
+        <h3>Editor's picks</h3>
+        <DeckSlider decks={decks} loading={!decksDidSet} />
+      </div>
+      <div className='mb-5'>
+        <h3>Hottest weekly decks</h3>
+        <DeckSlider decks={decks} loading={!decksDidSet} />
+      </div>
+      <div className='mb-5'>
+        <h3>Top decks of all time</h3>
+        <DeckSlider decks={decks} loading={!decksDidSet} />
+      </div>
     </div>
   );
 };
