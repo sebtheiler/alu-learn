@@ -14,6 +14,8 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'graduated',
             'ease',
             'interval',
+            'is_suspended',
+            'is_leech',
             'id',
         ]
 

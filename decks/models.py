@@ -78,6 +78,9 @@ class FlashCard(models.Model):
     ease = models.IntegerField(default=250) # divided by 100 in calculations TODO: Make 250 customizable
     interval = models.IntegerField(default=0)
 
+    is_suspended = models.BooleanField(default=False)
+    is_leech = models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.front_text + '  ---  ' + self.back_text
