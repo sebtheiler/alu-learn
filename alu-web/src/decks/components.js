@@ -39,10 +39,12 @@ export function DecksComponent(props) {
     setNewDecks(tempNewDecks);
   };
   
-  return (<div className={props.className}>
-            {canCreateDeck === true && <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mb-3' />}
-            <DecksList newDecks={newDecks} {...props}/>
-          </div>);
+  return (
+    <div className={props.className}>
+      {canCreateDeck === true ? <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mb-3' /> : null}
+      <DecksList newDecks={newDecks} {...props}/>
+    </div>
+  );
 };
 
 

@@ -7,22 +7,23 @@ import {Deck} from './detail';
 // This is NOT used on the user's home page
 // TODO: clean up this function
 export function DecksList(props) {
-  const [decksInit, setDecksInit] = useState([props.newDecks ? props.newDecks : []]);
+  const {newDecks, username, currentUsername} = props;
+  const [decksInit, setDecksInit] = useState([newDecks ? newDecks : []]);
   const [decks, setDecks] = useState([]);
   const [decksDidSet, setDecksDidSet] = useState(false);
 
   // If there are any new decks, add them
   useEffect(() => {
-    const final = [...props.newDecks].concat(decksInit);
+    const final = [...newDecks].concat(decksInit);
     if (final.length !== decks.length) {
       setDecks(final);
     };
-  }, [props.newDecks, decksInit, decks.length]);
+  }, [newDecks, decksInit, decks.length]);
 
   // Send request to the API to get decks and URLs for pagination
   useEffect(() => {
     if (decksDidSet === false) {
-      apiDeckSharedList(props.username, (response, status) => {
+      apiDeckSharedList(username, (response, status) => {
         if (status === 200) {
           setDecksInit(response);
           setDecks(response);
@@ -33,12 +34,17 @@ export function DecksList(props) {
         };
       });
     };
-  }, [decksInit, decksDidSet, setDecksDidSet, props.username]);
+  }, [decksInit, decksDidSet, setDecksDidSet, username]);
 
   return (
     <React.Fragment>
       {decks.map((deck, index) => {
-        return <Deck deck={deck} key={`${index}-${deck.id}`} className='my-5 py-5 border bg-white text-dark'/>;
+        return <Deck
+                  deck={deck}
+                  key={`${index}-${deck.id}`}
+                  currentUsername={currentUsername}
+                  className='my-5 py-5 border bg-white text-dark'
+                />;
       })}
     </React.Fragment>);
 };
