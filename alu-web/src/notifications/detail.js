@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Button} from 'react-bootstrap';
 import {timeSince} from './utils';
 import {apiProfileFriendToggle, apiProfileDetail} from '../lookup';
+import ReactMarkdown from 'react-markdown';
 
 export function Notification(props) {
   const {notif, read} = props;
@@ -54,7 +55,7 @@ export function Notification(props) {
         <span style={{color: 'green'}}>{read ? '' : '• '}</span>
         {notif.title}
       </h4>
-      <p className='mb-0'>{notif.description}</p>
+      <ReactMarkdown source={notif.description} />
       {notif.category === 'friend_request' ? <Button onClick={handleFriendAccepted} size='sm' className='mt-2'>{friendBtnLabel}</Button> : ''}
     </div>
   );
