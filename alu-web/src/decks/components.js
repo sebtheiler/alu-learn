@@ -71,5 +71,5 @@ export function DeckDetailComponent(props) {
     };
   }, [deckId, didLookup, setDidLookup]);
 
-  return deck === null ? null : <Deck deck={deck} individual={true} className={props.className}/>;
+  return deck === null ? null : <Deck deck={deck} individual={true} showUsername={true} className={props.className}/>;
 };

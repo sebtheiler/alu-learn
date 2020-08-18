@@ -53,16 +53,23 @@ export function DeckSlider(props) {
       <Slider {...settings}>
         {decks.map((deck, index) => {
           return (
-            <a href={`/${deck.id}/`} key={`${index}-editorpicks`}>
-              <div style={{color: 'black'}}>
-                <h4 style={{textDecoration: 'underline'}}>
+            <div style={{outline: 'none'}} key={`${index}-${deck.id}`}>
+              <a href={`/${deck.id}/`}>
+                <h4 className='mb-0' style={{outline: 'none', color: 'black'}}>
                   {deck.title}
                 </h4>
-                <p style={{textDecoration: 'none'}}>
+              </a>
+              <a href={`/profiles/u/${deck.author.username}/`}>
+                <small className='mt-0 text-secondary'>
+                  {deck.author.first_name} {deck.author.last_name} - @{deck.author.username}
+                </small>
+              </a>
+              <a href={`/${deck.id}/`}>
+                <p className='deck-description mt-2' style={{outline: 'none', color: 'black'}}>
                   {deck.description.substring(0, 128) + (deck.description.length > 128 ? '...' : '')}
                 </p>
-              </div>
-            </a>
+              </a>
+            </div>
           );
         })}
       </Slider>

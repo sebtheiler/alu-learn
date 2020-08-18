@@ -5,7 +5,7 @@ import {Card, ButtonGroup} from 'react-bootstrap';
 
 // Display an individual deck
 export function Deck(props) {
-  const {deck} = props; // JSON data with attributes such as `id` and `author`
+  const {deck, showUsername} = props; // JSON data with attributes such as `id` and `author`
   const className = props.className ? props.className : 'col-10 mx-auto col-md-6';
   
   // If this is a detail view, i.e., we are not looking at a list of other decks,
@@ -25,7 +25,14 @@ export function Deck(props) {
     <div className={className}>
       <Card className='border-0'>
         <Card.Body>
-          <Card.Title>{deck.title}</Card.Title>
+          <Card.Title className='mb-0'>{deck.title}</Card.Title>
+          {!showUsername ? null :
+            <a href={`/profiles/u/${deck.author.username}`}>
+              <small className='text-secondary'>
+              {deck.author.first_name} {deck.author.last_name} - @{deck.author.username}
+              </small>
+            </a>
+          }
           <Card.Text>{deck.description}</Card.Text>
           <ButtonGroup>
             <EditButton deck={deck} />
