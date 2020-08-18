@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {apiDeckDelete, apiDeckEdit} from '../lookup';
+import {apiDeckDelete, apiDeckEdit, apiDeckCopy} from '../lookup';
 import {Modal, Button, Form} from 'react-bootstrap';
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -134,17 +134,26 @@ export function DeckEditModal(props) {
 // Buttons displayed when a user that does not own the deck views a deck
 export function DeckForeignUserButtonGroup(props) {
   const {deck} = props;
+  const [copyState, setCopyState] = useState('Copy deck');
 
   const handleCopyDeck = (event) => {
     event.preventDefault();
-    // Send API call to copy deck
-    console.log(deck.id)
+    setCopyState('Loading...');
+    apiDeckCopy(deck.id, (response, status) => {
+      if (status === 200) {
+        setCopyState('Copied');
+      } else {
+        setCopyState('Copy');
+        console.log(response, status);
+        alert('Error copying deck!');
+      }
+    });
   };
 
   return (
     <div>
       <Button onClick={handleCopyDeck} variant='primary'>
-        Copy deck
+        {copyState}
       </Button>
     </div>
   );
