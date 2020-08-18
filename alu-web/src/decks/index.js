@@ -2,11 +2,10 @@ import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './compone
 import {Deck} from './detail';
 import {DecksList} from './list';
 import {DeckCreate} from './create';
-import {EditButton, RedirectButton} from './buttons';
+import {DeckDefaultButtonGroup} from './buttons';
 
 export {
-    EditButton,
-    RedirectButton,
+    DeckDefaultButtonGroup,
     Deck,
     DecksList,
     DecksComponent,

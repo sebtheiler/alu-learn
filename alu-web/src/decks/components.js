@@ -48,7 +48,7 @@ export function DecksComponent(props) {
 
 // Component for displaying an individual deck
 export function DeckDetailComponent(props) {
-  const {deckId} = props;
+  const {deckId, currentUsername} = props;
   const [didLookup, setDidLookup] = useState(false);
   const [deck, setDeck] = useState(null);
 
@@ -71,5 +71,12 @@ export function DeckDetailComponent(props) {
     };
   }, [deckId, didLookup, setDidLookup]);
 
-  return deck === null ? null : <Deck deck={deck} individual={true} showUsername={true} className={props.className}/>;
+  return deck === null ? null :
+    <Deck
+      deck={deck}
+      individual={true}
+      showUsername={true}
+      currentUsername={currentUsername}
+      className={props.className}
+    />;
 };
