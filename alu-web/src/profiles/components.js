@@ -7,10 +7,11 @@ export function UserLink(props) {
   const {user, includeFullName, noLink} = props;
   const nameDisplay = includeFullName === true ? `${user.first_name} ${user.last_name} ` : null;
 
-  return (<React.Fragment>
-    {nameDisplay}
-    {noLink === true ? `@${user.username}` : <a href={`/profiles/u/${user.username}`}>@{user.username}</a>}
-  </React.Fragment>);
+  return (
+    <React.Fragment>
+      {nameDisplay}
+      {noLink === true ? `@${user.username}` : <a href={`/profiles/u/${user.username}`}>@{user.username}</a>}
+    </React.Fragment>);
 };
 
 

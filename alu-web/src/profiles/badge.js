@@ -35,10 +35,14 @@ function ProfileBadge(props) {
   return user ? (
     <div>
       <UserPicture user={user} />
-      <p><UserLink user={user} includeFullName noLink /></p>
-      <p><DisplayCount>{user.friend_count}</DisplayCount> {user.friend_count === 1 ? "friend" : "friends"}</p>
-      <p>{user.location}</p>
-      <p>{user.bio}</p>
+      <p className='mb-0'><UserLink user={user} includeFullName noLink /></p>
+      <small className='mt-0 text-secondary'><DisplayCount>{user.friend_count}</DisplayCount> {user.friend_count === 1 ? "friend" : "friends"}</small>
+      <div className={'mt-3' + (user.location ? '' : 'd-none')}>
+        <h5 className='mb-0'>Location</h5>
+        <p>{user.location}</p>
+      </div>
+      <h5 className='mb-0'>Bio</h5>
+      <p>{user.bio ? user.bio : "This user hasn't set a bio yet..."}</p>
       {viewingOwnProfile === false ?
         <Button onClick={handleFriendToggle} variant='primary'>{currentVerb}</Button> :
         <Button href='/profiles/edit/' variant='primary'>Edit Profile</Button>
