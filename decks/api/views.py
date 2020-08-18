@@ -438,3 +438,52 @@ def deck_copy_view(request, deck_id, *args, **kwargs):
     deck.title = 'Copy of ' + deck.title
     deck.save()
     return Response(DeckSerializer(deck).data, status=200)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs):
+    """
+    Set a flashcard as suspended or unsuspended - POST
+
+    Required information:
+        `deck_id`: (URL) ID of the deck in which the card is located
+        `flashcard_id`: (URL) ID of the flashcard to (un)suspend/leech
+        `action`: (Data) Either 'suspend', 'unsuspend', 'leech', or 'unleech'
+    
+    Possible errors:
+        No action specified: 400, {'message': 'Please specify an action'}
+        Invalid deck ID: 404, {'message': 'Deck not found'}
+        Invalid flashcard ID: 404, {'message': 'Flashcard not found'}
+        User attempts to suspend a deck they don't own: 403, {'message': 'You are not authorized to (un)suspend/leech this deck'}
+        User not authenticated: 403
+    """
+    # Check action is specified
+    if not request.data.get('action'):
+        return Response({'message': 'Please specify an action'}, status=400)
+    # Get deck
+    decks_qs = Deck.objects.filter(pk=deck_id)
+    if not decks_qs.exists():
+        return Response({'message': 'Deck not found'}, status=404)
+    decks_qs = decks_qs.filter(user=request.user)
+    if not decks_qs.exists():
+        return Response({'message': 'You are not authorized to (un)suspend/leech this deck'}, status=401)
+    deck = decks_qs.first()
+
+    # Get the flashcard
+    flashcard_qs = deck.flashcards.filter(pk=flashcard_id)
+    if not flashcard_qs.exists():
+        return Response({'message': 'Flashcard not found'}, status=404)
+    flashcard = flashcard_qs.first()
+
+    # Set flashcard as (un)suspended/leeched
+    if request.data.get('action') == 'suspend':
+        flashcard.is_suspended = True
+    elif request.data.get('action') == 'unsuspend':
+        flashcard.is_suspended = False
+    elif request.data.get('action') == 'leech':
+        flashcard.is_leech = True
+    elif request.data.get('action') == 'unleech':
+        flashcard.is_leech = False
+    flashcard.save()
+    
+    return Response(FlashCardSerializer(flashcard).data, status=200)
