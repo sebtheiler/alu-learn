@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {apiDeckDetail, apiFlashCardDateUpdate} from '../lookup';
 import {StudyElement} from './study';
 import {getInterval} from './algorithm'
+import {Button} from 'react-bootstrap';
 
 export function StudyComponent(props) {
   const {deckId} = props;
@@ -99,15 +100,17 @@ export function StudyComponent(props) {
             <div className={'text-center' + (finishedStudying ? '' : ' d-none')}>
               <p>Congratulations! You've finished studying this deck!</p>
               <a href={`/${deckId}/flashcards/create/`} className='text-decoration-none'>
-                <button className='btn btn-primary'>Create a new flash card</button>
+                <Button variant='primary'>Create a new flash card</Button>
               </a>
             </div>
-            {!finishedStudying && <StudyElement
-              currentCard={currentCard}
-              showAnswer={showAnswer}
-              showAnswerHandler={showAnswerHandler}
-              backendGradeUpdate={backendGradeUpdate}
-              handleKeyDown={handleKeyDown}
-            />}
+            {finishedStudying ? null :
+              <StudyElement
+                currentCard={currentCard}
+                showAnswer={showAnswer}
+                showAnswerHandler={showAnswerHandler}
+                backendGradeUpdate={backendGradeUpdate}
+                handleKeyDown={handleKeyDown}
+              />
+            }
           </div>
 };

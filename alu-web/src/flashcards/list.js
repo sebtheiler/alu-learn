@@ -21,6 +21,7 @@ export function FlashCardsList(props) {
     };
   });
 
+  // TODO: revamp in react-bootstrap
   return (<div className={props.className}>
            <div className='text-center'>
              <a href='create/' className='text-decoration-none'><button className='btn btn-primary mx-1'>Create a new flash card</button></a>

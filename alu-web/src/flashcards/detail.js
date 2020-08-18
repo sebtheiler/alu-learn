@@ -8,6 +8,7 @@ export function FlashCard(props) {
   const {flashcard, number, handleSuspend, handleDelete} = props;
   
   let date = new Date(flashcard.next_review)
+  // TODO: revamp in react-bootstrap
   return (<div className='container-fluid border my-3'>
             <div className='row mt-3 text-center'>
               <div className='col-md-12'>

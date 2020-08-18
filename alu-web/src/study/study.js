@@ -24,7 +24,7 @@ export function StudyElement(props) {
   const interval2 = getInterval(currentCard, 2)
   const interval3 = getInterval(currentCard, 3)
   const interval4 = getInterval(currentCard, 4)
-  
+  // TODO: revamp in react-bootstrap
   return (<div>
             <div className='col-md-12 text-center'style={{minWidth: '200px'}}>
               <p>{currentCard ? currentCard.front_text : null}</p>

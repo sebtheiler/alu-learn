@@ -69,6 +69,7 @@ export function FlashCardCreate(props) {
     };
   };
 
+  // TODO: Revamp in React-bootstrap
   return (<div className={props.className}>
             <form onSubmit={handleSubmit}>
               <div className='form-group blue-border-focus'>

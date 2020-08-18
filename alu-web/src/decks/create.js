@@ -32,7 +32,7 @@ export function DeckCreate(props) {
 
   // In the future, this may be a modal
   // Furthermore, it may also have more options such as sharing
-  // setting, and so forth
+  // setting, and so forth TODO:
   return (<div className={props.className}>
             <form onSubmit={handleSubmit}>
               <input type='text' required='required' className='form-control text-center' name='title' placeholder='My deck' ref={inputTextRef} />
