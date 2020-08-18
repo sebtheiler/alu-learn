@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail, apiFlashCardDelete} from '../lookup';
+import {apiDeckDetail, apiFlashCardDelete, apiFlashCardSuspendLeech} from '../lookup';
 import {FlashCard} from './detail';
 
 export function FlashCardsList(props) {
@@ -30,8 +30,17 @@ export function FlashCardsList(props) {
            {flashcards.map((flashcard, index) => {
              // Functions for handling button presses
              const handleSuspend = (event) => {
-              console.log('Suspending NOT IMPLEMENTED', flashcard.id, event)
-              // TODO: api Suspending
+              event.preventDefault();
+              const action = flashcard.is_suspended ? 'unsuspend' : 'suspend';
+              apiFlashCardSuspendLeech(deckId, flashcard.id, action, (response, status) => {
+                if (status === 200) {
+                  // TODO: This might cause *slight* performance issues
+                  setFlashCardsDidSet(false);
+                } else {
+                  console.log(response, status);
+                  alert('Error suspending/leeching flashcard');
+                }
+              });
              };
 
              const handleDelete = (_event) => {

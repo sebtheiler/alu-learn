@@ -35,7 +35,7 @@ export function StudyComponent(props) {
         const now = new Date();
         const review = new Date(card.next_review);
         // This is done weirdly so that you don't have to wait for 1min/10min cards
-        return new Date(review.getFullYear(), review.getMonth(), review.getDate()) < now;
+        return new Date(review.getFullYear(), review.getMonth(), review.getDate()) < now && card.is_suspended === false;
       });
 
       // If there are no more cards, we've finished
@@ -76,6 +76,7 @@ export function StudyComponent(props) {
     apiFlashCardDateUpdate(deckId, currentCard.id, nextReviewDate.toISOString(), minute ? 0 : interval, ease, graduated, () => {
       setCurrentCardDidSet(true);
     });
+
     // Update date locally
     const deckCopy = deck;
     const index = deckCopy.flashcards.map(e => e.id).indexOf(currentCard.id);

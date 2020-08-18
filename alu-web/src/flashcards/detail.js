@@ -19,7 +19,7 @@ export function FlashCard(props) {
   };
   
   return (
-    <div className={'container-fluid border my-3 ' + (flashcard.is_suspended ? 'suspended' : '') + (flashcard.is_leech ? 'leech' : '')}>
+    <div className={'container-fluid border my-3' + (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : '')}>
       <div className='row mt-3 text-center'>
         <div className='col-md-12'>
           <p className='mb-0'>
@@ -35,7 +35,7 @@ export function FlashCard(props) {
               placement='right'
               delay={{ show: 20, hide: 800 }}
             >
-              <em>{flashcard.is_leech ? '⚠️ This flash card is a leech ⚠️' : ''}</em>
+              <em>{flashcard.is_leech ? '⚠️ This flash card is a leech ⚠️ ' : ''}</em>
             </OverlayTrigger>
             <OverlayTrigger
               overlay={generateTooltip(
@@ -44,7 +44,7 @@ export function FlashCard(props) {
               placement='right'
               delay={{ show: 20, hide: 800 }}
             >
-              <em>{flashcard.is_suspended ? '⚠️ This flash card is suspended ⚠️' : ''}</em>
+              <em>{flashcard.is_suspended ? ' ⚠️ This flash card is suspended ⚠️' : ''}</em>
             </OverlayTrigger>
           </p>
         </div>

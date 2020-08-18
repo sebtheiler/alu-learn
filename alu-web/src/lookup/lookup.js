@@ -31,8 +31,14 @@ export function apiFlashCardDateUpdate(deckId, flashcardId, date, interval, ease
   });
 };
 
+// Gets specific information about a flashcard
 export function apiFlashCardDetail(deckId, flashcardId, callback) {
   backendLookup('GET', `decks/${deckId}/flashcards/${flashcardId}/`, callback);
+};
+
+// Marks a flashcard as suspended or as a leech
+export function apiFlashCardSuspendLeech(deckId, flashcardId, action, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/suspend_or_leech/`, callback, {action: action});
 };
 
 // Gets detail information on a deck with ID `deckId`
