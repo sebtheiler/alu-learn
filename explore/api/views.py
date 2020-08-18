@@ -17,6 +17,9 @@ def get_decks_from_ids(id_list, public_only=False):
 
 @api_view(['GET'])
 def api_explore_lists_view(request, *args, **kwargs):
+    """
+    Get decks to display in explore list - GET
+    """
     data = {
         'EDITOR': get_decks_from_ids(EDITOR_PICKS_DECK_IDS, public_only=True),
         'TOP': get_decks_from_ids(TOP_DECK_IDS, public_only=True),

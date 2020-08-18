@@ -378,7 +378,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         return Response({'message': 'Deck not found'}, status=404)
     decks_qs = decks_qs.filter(user=request.user)
     if not decks_qs.exists():
-        return Response({'message': 'You are not authorized to edit this flashcard'}, status=401)
+        return Response({'message': 'You are not authorized to edit this deck'}, status=401)
     deck = decks_qs.first()
 
     # Edit the flashcard
@@ -399,3 +399,42 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
 
     deck.save()
     return Response(DeckSerializer(instance=deck).data, 200)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deck_copy_view(request, deck_id, *args, **kwargs):
+    """
+    Copy a deck to a user's own list of decks - POST
+
+    Required information:
+        `deck_id`: (URL): ID of the deck to copy
+    
+    Possible errors:
+        Invalid deck ID: 404, {'message': 'Deck not found'}
+        User attempts to copy their own deck: 400, {'message': 'You cannot copy your own deck'}
+        User attempts to copy a deck they don't have access to: 403, {'message': 'You cannot copy a private deck'}
+        User not authenticated: 403
+    """
+    # Get deck
+    decks_qs = Deck.objects.filter(pk=deck_id)
+    if not decks_qs.exists():
+        return Response({'message': 'Deck not found'}, status=404)
+    deck = decks_qs.first()
+    
+    # Check if the user is trying to copy their own deck
+    if deck.user.username == request.user.username:
+        return Response({'message': 'You cannot copy your own deck'}, status=400)
+    
+    # Check if the user has permission to copy the deck
+    if deck.sharing_setting == 'PRIVATE':
+        return Response({'message': 'You cannot copy a private deck'}, status=403)
+    elif deck.sharing_setting == 'FRIENDS' and request.user not in deck.user.profile.friends.all():
+        return Response({'message': 'You cannot copy a private deck'}, status=403)
+    
+    # Copy deck
+    deck.pk = None
+    deck.user = request.user
+    deck.sharing_setting = 'PRIVATE'
+    deck.title = 'Copy of ' + deck.title
+    deck.save()
+    return Response(DeckSerializer(deck).data, status=200)
