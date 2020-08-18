@@ -107,11 +107,22 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
         return Response({'message': 'You cannot friend yourself'}, status=400)
 
     # Create notification
+    title = f'{sending_user.first_name} wants to be your friend!' if sending_user.first_name else 'Someone wants to be your friend!'
+    if sending_user.first_name:
+        if sending_user.last_name:
+            description = f'{sending_user.first_name} {sending_user.last_name}'
+        else:
+            description = f'{sending_user.first_name}'
+        description += ' '
+    else:
+        description = ''
+    description += f'[@{sending_user.username}](/profiles/u/{sending_user.username}) wants to be your friend'
+
     Notification.objects.create(
         profile=recipient_user.profile,
         category='friend_request',
-        title=f'{sending_user.first_name} wants to be your friend!',
-        description=f'{sending_user.first_name} {sending_user.last_name} @{sending_user.username} wants to be your friend!',
+        title=title,
+        description=description,
     )
 
     # Put user in the profile's pending friends
