@@ -8,7 +8,9 @@ import {generateTooltip} from './utils';
 export function FlashCardCreate(props) {
   const frontTextRef = React.createRef();
   const backTextRef = React.createRef();
-  const tagRef = React.createRef();
+  const tagsRef = React.createRef();
+  // const markdownRef = React.createRef();
+  // const latexRef = React.createRef();
   // `deckId`: ID of the deck in which to create flashcard
   // `redirectUrl`: If not null/undefined, where to redirect the user upon completion
   // `flashcardId`: If not null/undefined, the ID of the flashcard to EDIT
@@ -22,7 +24,7 @@ export function FlashCardCreate(props) {
       if (status === 200) {
         frontTextRef.current.value = response.front_text;
         backTextRef.current.value = response.back_text;
-        tagRef.current.value = response.tags;
+        tagsRef.current.value = response.tags;
       } else {
         console.log(response, status);
         alert('Something went wrong editing your flashcard');
@@ -41,7 +43,7 @@ export function FlashCardCreate(props) {
       frontTextRef.current.focus();
       frontTextRef.current.value = '';
       backTextRef.current.value = '';
-      tagRef.current.value = '';
+      tagsRef.current.value = '';
     } else if (status === 403) {
       alert('You must log in before you create a flashcard')
     } else {
@@ -61,7 +63,7 @@ export function FlashCardCreate(props) {
         flashcardId,
         frontTextRef.current.value,
         backTextRef.current.value,
-        tagRef.current.value,
+        tagsRef.current.value,
         handleBackendUpdate,
       );
     } else {
@@ -71,7 +73,7 @@ export function FlashCardCreate(props) {
         deckId,
         frontTextRef.current.value,
         backTextRef.current.value,
-        tagRef.current.value,
+        tagsRef.current.value,
         handleBackendUpdate,
       );
     };
@@ -80,6 +82,28 @@ export function FlashCardCreate(props) {
   return (
     <div className={props.className}>
       <Form onSubmit={handleSubmit}>
+        {/* TODO: Re-enable and fi these editing options */}
+        {/* <Form.Group className='mb-0'>
+          <Form.Check
+            type='checkbox'
+            label='Enable MarkDown editing'
+            name='enableMarkdown'
+            id='enableMarkdown'
+            value={true}
+            inline
+            defaultChecked
+            ref={markdownRef}
+          />
+          <Form.Check
+            type='checkbox'
+            label='Enable LaTeX editing'
+            name='enableLatex'
+            id='enableLatex'
+            inline
+            defaultChecked
+            ref={latexRef}
+          />
+        </Form.Group> */}
         <Form.Group className='blue-border-focus'>
           <Form.Label className='mb-0 mt-3'>
             <small className='text-secondary'>Front</small>
@@ -119,7 +143,7 @@ export function FlashCardCreate(props) {
           <Form.Control
             type="text"
             placeholder='Calculus, Integrals, Exponentials, ...'
-            ref={tagRef}
+            ref={tagsRef}
             maxLength='1024'
           />
         </Form.Group>

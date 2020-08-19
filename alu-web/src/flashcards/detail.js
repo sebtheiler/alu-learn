@@ -2,6 +2,10 @@ import React from 'react';
 import {Button, OverlayTrigger} from 'react-bootstrap';
 import {generateTooltip} from './utils';
 import './detail.css';
+import ReactMarkdown from 'react-markdown';
+import RemarkMathPlugin from 'remark-math';
+import {BlockMath, InlineMath} from 'react-katex';
+import 'katex/dist/katex.min.css';
 
 
 // Display an individual flashcard
@@ -44,10 +48,28 @@ export function FlashCard(props) {
       </div>
       <div className='row'>
         <div className='col-md-6'>
-          <p className='text-center'>{flashcard.front_text}</p>
+          <p className='text-center'>
+            <ReactMarkdown
+              source={flashcard.front_text}
+              plugins={[RemarkMathPlugin]}
+              renderers={{
+                math: ({ value }) => <BlockMath>{value}</BlockMath>,
+                inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
+              }}
+            />
+          </p>
         </div>
         <div className='col-md-6'>
-          <p className='text-center'>{flashcard.back_text}</p>
+          <p className='text-center'>
+            <ReactMarkdown
+              source={flashcard.back_text}
+              plugins={[RemarkMathPlugin]}
+              renderers={{
+                math: ({ value }) => <BlockMath>{value}</BlockMath>,
+                inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
+            }}
+            />
+          </p>
         </div>
       </div>
       <div className='text-center mx-auto w-50' style={{wordWrap: 'break-word'}}>
