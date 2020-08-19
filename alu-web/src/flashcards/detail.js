@@ -50,8 +50,18 @@ export function FlashCard(props) {
           <p className='text-center'>{flashcard.back_text}</p>
         </div>
       </div>
+      <div className='text-center mx-auto w-50' style={{wordWrap: 'break-word'}}>
+        <p>
+          {flashcard.tags ? 
+            <div>
+              Tags: <br />
+              {flashcard.tags}
+            </div>
+          : null}
+        </p>
+      </div>
       <div className='col-md-12 mb-3 text-center'>
-        <div className="btn-group">
+        <div className='btn-group'>
           <Button href={`${flashcard.id}/edit/`} variant='primary'>Edit</Button>
           <Button onClick={handleSuspend} variant='primary' className='ml-1'>{flashcard.is_suspended ? 'Unsuspend' : 'Suspend'}</Button>
           <Button onClick={handleDelete} variant='danger' className='ml-1'>Delete</Button>

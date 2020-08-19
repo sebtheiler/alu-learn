@@ -120,6 +120,7 @@ export function FlashCardCreate(props) {
             type="text"
             placeholder='Calculus, Integrals, Exponentials, ...'
             ref={tagRef}
+            maxLength='1024'
           />
         </Form.Group>
         <Form.Group className='text-center mt-1'>
