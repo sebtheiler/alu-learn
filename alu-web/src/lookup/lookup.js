@@ -41,6 +41,20 @@ export function apiFlashCardSuspendLeech(deckId, flashcardId, action, callback) 
   backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/suspend_or_leech/`, callback, {action: action});
 };
 
+// Search for flashcards
+export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, graduated, min_ease, max_ease, callback) {
+  backendLookup('POST', `decks/flashcards/search/`, callback, {
+    deck_ids: deckIds,
+    tags: tags,
+    contains: contains,
+    suspended: suspended,
+    leech: leech,
+    graduated: graduated,
+    min_ease: min_ease,
+    max_ease: max_ease,
+  });
+};
+
 // Gets detail information on a deck with ID `deckId`
 export function apiDeckDetail(deckId, callback) {
   backendLookup('GET', `decks/${deckId}/`, callback);

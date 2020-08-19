@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Form, Button} from 'react-bootstrap';
-import {apiDeckSharedList} from '../lookup';
+import {apiDeckSharedList, apiFlashCardSearch} from '../lookup';
+import {FlashCardsList} from '../flashcards';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css'; // or include from a CDN
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
@@ -8,6 +9,9 @@ import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 export function SearchComponent(props) {
   const {username} = props;
   const [decks, setDecks] = useState([]);
+  const [searchedFlashcards, setSearchedFlashcards] = useState([]);
+  const [didSearch, setDidSearch] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [decksDidSet, setDecksDidSet] = useState(false);
   const [minEaseValue, setMinEaseValue] = useState(130);
   const [maxEaseValue, setMaxEaseValue] = useState(350);
@@ -34,21 +38,33 @@ export function SearchComponent(props) {
   const minEaseSelectRef = React.createRef();
   const maxEaseSelectRef = React.createRef();
 
-  // Get all of the needed information in the correct format
   const handleSubmit = (event) => {
     event.preventDefault();
-    const options = document.querySelectorAll('.deck-selection');
-    const deckIds = Array.from(options).filter(option => option.selected).map(deck => parseInt(deck.value));
-    console.log(
-      deckIds.length > 0 ? deckIds : null,
-      tagSelectRef.current.value ? tagSelectRef.current.value.split(',').map(tag => tag.trim()) : null,
-      containsSelectRef.current.value ? containsSelectRef.current.value : null,
-      suspendedSelectRef.current.value !== 'ANY' ? suspendedSelectRef.current.value === 'SUSPENDED' : null,
-      leechSelectRef.current.value !== 'ANY' ? leechSelectRef.current.value === 'LEECH' : null,
-      graduatedSelectRef.current.value !== 'ANY' ? graduatedSelectRef.current.value === 'GRADUATED' : null,
-      parseInt(minEaseSelectRef.current.value),
-      parseInt(maxEaseSelectRef.current.value),
-    );
+    if (searchLoading === false) {
+      setSearchLoading(true);
+      // Get all of the needed information in the correct format
+      const options = document.querySelectorAll('.deck-selection');
+      const deckIds = Array.from(options).filter(option => option.selected).map(deck => parseInt(deck.value));
+      apiFlashCardSearch(
+        deckIds.length > 0 ? deckIds : null,
+        tagSelectRef.current.value ? tagSelectRef.current.value.split(',').map(tag => tag.trim()) : null,
+        containsSelectRef.current.value ? containsSelectRef.current.value : null,
+        suspendedSelectRef.current.value !== 'ANY' ? suspendedSelectRef.current.value === 'SUSPENDED' : null,
+        leechSelectRef.current.value !== 'ANY' ? leechSelectRef.current.value === 'LEECH' : null,
+        graduatedSelectRef.current.value !== 'ANY' ? graduatedSelectRef.current.value === 'GRADUATED' : null,
+        parseInt(minEaseSelectRef.current.value),
+        parseInt(maxEaseSelectRef.current.value),
+        (response, status) => {
+          if (status === 200) {
+            setSearchedFlashcards(response);
+            setDidSearch(true);
+          } else {
+            console.log(response, status);
+            alert('Error searching!');
+          };
+          setSearchLoading(false);
+      });
+    };
   };
 
   return (
@@ -64,14 +80,17 @@ export function SearchComponent(props) {
             }
           </Form.Control>
         </Form.Group>
+        <hr />
         <Form.Group>
           <Form.Label as='h5'>List of tags to search in (seperate with commas)</Form.Label>
           <Form.Control type='text' ref={tagSelectRef} placeholder='Calculus, Integrals, Exponentials, ...'></Form.Control>
         </Form.Group>
+        <hr />
         <Form.Group>
           <Form.Label as='h5'>Front or back text contains...</Form.Label>
           <Form.Control type='text' ref={containsSelectRef} placeholder='When was the Roman Empire...'></Form.Control>
         </Form.Group>
+        <hr />
         <Form.Group>
           <Form.Label as='h5'>Is the card suspended?</Form.Label>
           <Form.Control as='select' ref={suspendedSelectRef}>
@@ -80,6 +99,7 @@ export function SearchComponent(props) {
             <option value='NOTSUSPENDED'>Not suspended</option>
           </Form.Control>
         </Form.Group>
+        <hr />
         <Form.Group>
           <Form.Label as='h5'>Is the card a leech?</Form.Label>
           <Form.Control as='select' ref={leechSelectRef}>
@@ -88,6 +108,7 @@ export function SearchComponent(props) {
             <option value='NOTLEECH'>Not a leech</option>
           </Form.Control>
         </Form.Group>
+        <hr />
         <Form.Group>
           <Form.Label as='h5'>Is the card graduated?</Form.Label>
           <Form.Control as='select' ref={graduatedSelectRef}>
@@ -96,6 +117,7 @@ export function SearchComponent(props) {
             <option value='NOTGRADUATED'>Not graduated</option>
           </Form.Control>
         </Form.Group>
+        <hr />
         <Form.Group>
           <Form.Label as='h5'>Minimum Ease Factor</Form.Label>
           <RangeSlider
@@ -107,6 +129,7 @@ export function SearchComponent(props) {
             ref={minEaseSelectRef}
             />
         </Form.Group>
+        <hr />
         <Form.Group>
           <Form.Label as='h5'>Maximum Ease Factor</Form.Label>
           <RangeSlider
@@ -119,9 +142,23 @@ export function SearchComponent(props) {
           />
         </Form.Group>
         <Form.Group>
-          <Button type='submit' block>Search!</Button>
+          <Button type='submit' block>{searchLoading ? 'Loading...' : 'Search!'}</Button>
         </Form.Group>
       </Form>
+      <div className='text-center'>
+        {searchedFlashcards.length === 0 ? null : 
+          <div>
+            <hr />
+            <h1>Results</h1>
+            <Button href='#'>Study these flashcards (Custom Study) TODO:</Button>
+          </div>
+        }
+        {didSearch ? (
+          searchedFlashcards.length > 1 ?
+            <FlashCardsList flashcardList={searchedFlashcards} /> 
+          : <h5>No results! Maybe try a less specific search, or check your parameters?</h5>
+        ) : null}
+      </div>
     </div>
   );
 };
