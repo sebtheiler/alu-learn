@@ -8,6 +8,7 @@ import {generateTooltip} from './utils';
 export function FlashCardCreate(props) {
   const frontTextRef = React.createRef();
   const backTextRef = React.createRef();
+  const tagRef = React.createRef();
   // `deckId`: ID of the deck in which to create flashcard
   // `redirectUrl`: If not null/undefined, where to redirect the user upon completion
   // `flashcardId`: If not null/undefined, the ID of the flashcard to EDIT
@@ -21,6 +22,7 @@ export function FlashCardCreate(props) {
       if (status === 200) {
         frontTextRef.current.value = response.front_text;
         backTextRef.current.value = response.back_text;
+        tagRef.current.value = response.tags;
       } else {
         console.log(response, status);
         alert('Something went wrong editing your flashcard');
@@ -36,8 +38,10 @@ export function FlashCardCreate(props) {
         window.location.href = redirectUrl;
       };
       // Make the textareas empty
+      frontTextRef.current.focus();
       frontTextRef.current.value = '';
       backTextRef.current.value = '';
+      tagRef.current.value = '';
     } else if (status === 403) {
       alert('You must log in before you create a flashcard')
     } else {
@@ -57,7 +61,7 @@ export function FlashCardCreate(props) {
         flashcardId,
         frontTextRef.current.value,
         backTextRef.current.value,
-        '', // TODO: tags value
+        tagRef.current.value,
         handleBackendUpdate,
       );
     } else {
@@ -67,7 +71,7 @@ export function FlashCardCreate(props) {
         deckId,
         frontTextRef.current.value,
         backTextRef.current.value,
-        '', // TODO: tags value
+        tagRef.current.value,
         handleBackendUpdate,
       );
     };
@@ -86,6 +90,7 @@ export function FlashCardCreate(props) {
             name='frontText'
             placeholder='Front Text'
             ref={frontTextRef}
+            autoFocus
           />
           <Form.Label className='mb-0 mt-3'>
             <small className='text-secondary'>Back</small>
@@ -114,6 +119,7 @@ export function FlashCardCreate(props) {
           <Form.Control
             type="text"
             placeholder='Calculus, Integrals, Exponentials, ...'
+            ref={tagRef}
           />
         </Form.Group>
         <Form.Group className='text-center mt-1'>

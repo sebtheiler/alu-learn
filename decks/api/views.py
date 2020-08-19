@@ -39,7 +39,7 @@ def deck_create_view(request, *args, **kwargs):
 
 
 @api_view(['GET', 'POST'])
-@authentication_classes([SessionAuthentication])
+# @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def flashcard_create_view(request, deck_id, *args, **kwargs):
     """
@@ -77,7 +77,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 
 
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication])
+# @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
