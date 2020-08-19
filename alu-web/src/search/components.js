@@ -82,13 +82,13 @@ export function SearchComponent(props) {
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label as='h5'>List of tags to search in (seperate with commas)</Form.Label>
-          <Form.Control type='text' ref={tagSelectRef} placeholder='Calculus, Integrals, Exponentials, ...'></Form.Control>
+          <Form.Label as='h5'>Front or back text contains...</Form.Label>
+          <Form.Control type='text' ref={containsSelectRef} placeholder='When was the Roman Empire...'></Form.Control>
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label as='h5'>Front or back text contains...</Form.Label>
-          <Form.Control type='text' ref={containsSelectRef} placeholder='When was the Roman Empire...'></Form.Control>
+          <Form.Label as='h5'>List of tags to search in (seperate with commas)</Form.Label>
+          <Form.Control type='text' ref={tagSelectRef} placeholder='Calculus, Integrals, Exponentials, ...'></Form.Control>
         </Form.Group>
         <hr />
         <Form.Group>

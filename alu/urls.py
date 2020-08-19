@@ -11,6 +11,7 @@ from decks.views import (
     flashcard_create_view,
     flashcard_list_view,
     flashcard_edit_view,
+    flashcard_search_view,
 )
 
 from accounts.views import (
@@ -26,6 +27,7 @@ urlpatterns = [
     path('login/', login_view),
     path('logout/', logout_view),
     path('register', register_view),
+    path('flashcards/search/', flashcard_search_view),
     path('<int:deck_id>/', decks_detail_view),
     path('<int:deck_id>/study/', deck_study_view),
     path('<int:deck_id>/flashcards/', flashcard_list_view),

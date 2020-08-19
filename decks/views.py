@@ -47,6 +47,10 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
 def flashcard_list_view(request, deck_id, *args, **kwargs):
     return render(request, 'flashcards/list.html', context={'deck_id': deck_id})
 
+# Renders the flashcard search tool
+def flashcard_search_view(request, *args, **kwargs):
+    return render(request, 'flashcards/search.html', context={'username': request.user.username})
 
+# Renders when studying an individual deck
 def deck_study_view(request, deck_id, *args, **kwargs):
     return render(request, 'decks/study.html', context={'deck_id': deck_id})

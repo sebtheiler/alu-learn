@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Searching Flashcards at{% endblock title %}
+
+{% block content %}
+<div class='text-center'>
+    <h2 class='mt-3'>Searching Flashcards</h2>
+    <p>
+        Leaving an element blank will give you results from all possible values of that element.
+    </br>
+        Leave everything blank to get a list of all your flashcards.
+    </p>
+</div>
+<div id='search-component' data-username='{{ username }}'></div>
+{% endblock content %}

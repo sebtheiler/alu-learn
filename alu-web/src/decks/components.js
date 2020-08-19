@@ -4,6 +4,7 @@ import {DecksList} from './list';
 import {Deck} from './detail';
 import {apiDeckDetail} from '../lookup';
 import {DecksFeedList} from './feed';
+import {Button} from 'react-bootstrap';
 
 
 // Component for the decks shown on the user's homepage
@@ -19,10 +20,16 @@ export function DecksFeedComponent(props) {
     setNewDecks(tempNewDecks);
   };
 
-  return (<div className={props.className}>
-            {canCreateDeck === true && <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mt-3' />}
-            <DecksFeedList newDecks={newDecks} {...props}/>
-          </div>);
+  return (
+    <div className={props.className}>
+      <div classname='text-center'>
+        {/* TODO: center better or choose new location */}
+        <Button href='/flashcards/search/' className='text-center mt-1'>Search for flashcards</Button>
+      </div>
+      {canCreateDeck === true && <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mt-3' />}
+      <DecksFeedList newDecks={newDecks} {...props}/>
+    </div>
+  );
 };
 
 
