@@ -1,15 +1,10 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Deck, FlashCard, Tag
-
-# class TagAdmin(admin.TabularInline):
-#     model = Tag
-
+from .models import Deck, FlashCard
 
 class FlashCardAdmin(admin.TabularInline):
     model = FlashCard
-    # inlines = [TagAdmin]
 
 
 class DeckAdmin(admin.ModelAdmin):

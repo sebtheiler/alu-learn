@@ -1,7 +1,7 @@
 from django import forms
 from django.conf import settings
 
-from .models import Deck, FlashCard, Tag
+from .models import Deck, FlashCard
 
 
 # Backend of form for creating deck

@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from .models import Deck, FlashCard, Tag
+from .models import Deck, FlashCard
 
 # Create your tests here.
 User = get_user_model()
@@ -105,12 +105,3 @@ def create_flashcard(front_text, back_text):
 class FlashCardModelTests(TestCase):
     def test_string(self):
         self.assertEqual(str(create_flashcard('Powerhouse of the cell', 'Mitochondria')), 'Powerhouse of the cell  ---  Mitochondria')
-
-
-def create_tag(text):
-    flashcard = create_flashcard('26th President', 'Teddy Roosevelt')
-    return Tag.objects.create(flashcard=flashcard, tag_text=text)
-
-class TagModelTests(TestCase):
-    def test_string(self):
-        self.assertEqual(str(create_tag('Presidents')), 'Presidents')

@@ -48,7 +48,7 @@ class Deck(models.Model):
         default='PRIVATE',
     )
 
-    # starting difficulty, new cards per day, ...
+    # TODO: starting difficulty, new cards per day, ...
 
     objects = DeckManager()
     class Meta:
@@ -66,13 +66,13 @@ class Deck(models.Model):
 
 class FlashCard(models.Model):
     deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='flashcards')
+    tags = models.CharField(default='', max_length=1024)
 
     front_text = models.TextField()
     back_text = models.TextField()
     # audio (front/back)
     # image (front/back)
 
-    # intervals, dificulty, ...
     next_review = models.DateTimeField()
     graduated = models.BooleanField(default=False)
     ease = models.IntegerField(default=250) # divided by 100 in calculations TODO: Make 250 customizable
@@ -85,10 +85,3 @@ class FlashCard(models.Model):
     def __str__(self):
         return self.front_text + '  ---  ' + self.back_text
 
-
-class Tag(models.Model):
-    flashcard = models.ForeignKey(FlashCard, on_delete=models.CASCADE)
-    tag_text = models.CharField(max_length=64)
-
-    def __str__(self):
-        return self.tag_text

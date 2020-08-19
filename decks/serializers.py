@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
 from profiles.serializers import PublicProfileSerializer
-from .models import Deck, FlashCard, Tag
+from .models import Deck, FlashCard
 
 
 class FlashCardSerializer(serializers.ModelSerializer):
@@ -10,6 +10,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
         fields = [
             'front_text',
             'back_text',
+            'tags',
             'next_review',
             'graduated',
             'ease',

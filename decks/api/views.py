@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..forms import DeckForm
-from ..models import Deck, FlashCard, Tag
+from ..models import Deck, FlashCard
 from ..serializers import DeckSerializer, FlashCardSerializer
 from profiles.models import Profile
 
