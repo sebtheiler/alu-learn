@@ -8,6 +8,7 @@ import {FlashCardCreateComponent, FlashCardsList} from './flashcards';
 import {StudyComponent} from './study';
 import {NotificationComponent} from './notifications';
 import {ExploreComponent} from './explore';
+import {SearchComponent} from './search';
 
 const e = React.createElement;
 
@@ -54,6 +55,11 @@ notificationElements.forEach(container => {
 const exploreElement = document.getElementById('explore-component')
 if (exploreElement) {
   ReactDOM.render(e(ExploreComponent, exploreElement.dataset), exploreElement);
+};
+
+const searchElement = document.getElementById('search-component')
+if (searchElement) {
+  ReactDOM.render(e(SearchComponent, searchElement.dataset), searchElement);
 };
 
 // If you want your app to work offline and load faster, you can change

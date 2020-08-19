@@ -87,7 +87,7 @@ export function apiDeckFeed(callback, nextUrl) {
   backendLookup('GET', endpoint, callback);
 };
 
-// Copys a deck
+// Copies a deck
 export function apiDeckCopy(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/copy/`, callback);
 };
