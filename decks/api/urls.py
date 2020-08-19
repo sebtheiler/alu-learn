@@ -18,5 +18,6 @@ urlpatterns = [
     path('<int:deck_id>/flashcards/<int:flashcard_id>/delete/', views.flashcard_delete_view),
     path('<int:deck_id>/flashcards/<int:flashcard_id>/changedate/', views.flashcard_changedate_view),
     path('<int:deck_id>/flashcards/<int:flashcard_id>/suspend_or_leech/', views.flashcard_suspend_leech_view),
+    path('flashcards/search/', views.flashcard_search_view),
     path('feed/', views.deck_feed_view),
 ]

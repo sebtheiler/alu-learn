@@ -498,3 +498,89 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
     flashcard.save()
     
     return Response(FlashCardSerializer(flashcard).data, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def flashcard_search_view(request, *args, **kwargs):
+    """
+    Searches for flashcards based on some parameters - POST
+
+    Required information:
+        `deck_ids`: (Data) IDs (plural) of decks to search in. If None, searches in all the user's decks
+        `tags`: (Data) Tags of flashcards to get
+        `contains`: (Data) Front/back of card contains these words
+        `suspended`: (Data) Whether or not the card is suspended
+        `leech`: (Data) Whether or not the card is a leech
+        `graduated`: (Data) Whether or not the card is graduated
+        `min_ease`: (Data) Minimum ease factor of the card
+        `max_ease`: (Data) Maximum ease factor of the card
+    
+    Returns:
+        A list of decks (DeckSerializer)
+    """
+    # Get list of decks to search in
+    deck_qs = request.user.decks.all()
+    deck_ids = request.data.get('deck_ids')
+    if deck_ids:
+        deck_qs = deck_qs.filter(pk__in=deck_ids)
+
+    if not deck_qs.exists():
+        return Response({}, status=200)
+    
+    # Get flashcards
+    flashcard_qs = deck_qs.first().flashcards.all()
+    for deck in deck_qs[1:]:
+        flashcard_qs |= deck.flashcards.all()
+
+    # Filter by tags
+    tags = request.data.get('tags')
+    if tags:
+        if isinstance(tags, str):
+            tag_list = [tag.strip() for tag in tags.split(',')]
+        else:
+            tag_list = tags
+
+        # THIS IS THE WORST LINE OF CODE I'VE EVER WRITTEN
+        # TODO: HEAL THE MONSTROSITY THAT THIS LINE HAS BECOME
+        # For reference, it gets a list of flashcard IDs, if the
+        # flashcard has a tag that is in `tag_list`
+        flashcard_ids = [
+            flashcard.id for flashcard in flashcard_qs if len( # each flash card if...
+                set(
+                    [ # (set form of all tags in a card)
+                        tag.strip() for tag in flashcard.tags.split(',')
+                    ] # Has any shared elements in `tag_list`
+                ).intersection(set(tag_list))) > 0
+        ] 
+        flashcard_qs = flashcard_qs.filter(id__in=flashcard_ids)
+
+    # Filter by contains
+    contains = request.data.get('contains')
+    if contains:
+        flashcard_qs = flashcard_qs.filter(Q(front_text__icontains=contains) | Q(back_text__icontains=contains))
+
+    # Filter by suspended, leech, and graduated
+    suspended = request.data.get('suspended')
+    if suspended is not None:
+        flashcard_qs = flashcard_qs.filter(is_suspended=suspended)
+    
+    leech = request.data.get('leech')
+    if leech is not None:
+        flashcard_qs = flashcard_qs.filter(is_leech=leech)
+    
+    graduated = request.data.get('graduated')
+    if graduated is not None:
+        flashcard_qs = flashcard_qs.filter(graduated=graduated)
+
+    # Filter by min/max ease
+    min_ease = request.data.get('min_ease')
+    if min_ease is not None:
+        flashcard_qs = flashcard_qs.filter(ease__gte=min_ease)
+    
+    max_ease = request.data.get('max_ease')
+    if max_ease is not None:
+        flashcard_qs = flashcard_qs.filter(ease__lte=max_ease)
+
+    # Return
+    return Response(FlashCardSerializer(flashcard_qs, many=True).data, status=200)
