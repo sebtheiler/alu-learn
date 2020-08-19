@@ -1,5 +1,6 @@
 import React from 'react';
-import {Button, Tooltip, OverlayTrigger} from 'react-bootstrap';
+import {Button, OverlayTrigger} from 'react-bootstrap';
+import {generateTooltip} from './utils';
 import './detail.css';
 
 
@@ -9,14 +10,6 @@ export function FlashCard(props) {
   // `handleSuspend` and `handleDelete` are callback functions
   const {flashcard, number, handleSuspend, handleDelete} = props;
   let date = new Date(flashcard.next_review)
-
-  const generateTooltip = (text) => {
-    return (props) => (
-      <Tooltip className='button-tooltip' {...props}>
-        {text}
-      </Tooltip>
-    );
-  };
   
   return (
     <div className={'container-fluid border my-3' + (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : '')}>

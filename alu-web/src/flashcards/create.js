@@ -1,5 +1,7 @@
 import React from 'react';
 import {apiFlashCardCreate, apiFlashCardEdit, apiFlashCardDetail} from '../lookup';
+import {Button, Form, OverlayTrigger} from 'react-bootstrap';
+import {generateTooltip} from './utils';
 
 
 // Function for card create form
@@ -55,6 +57,7 @@ export function FlashCardCreate(props) {
         flashcardId,
         frontTextRef.current.value,
         backTextRef.current.value,
+        // TODO: tags value
         handleBackendUpdate,
       );
     } else {
@@ -64,21 +67,59 @@ export function FlashCardCreate(props) {
         deckId,
         frontTextRef.current.value,
         backTextRef.current.value,
+        // TODO: tags value
         handleBackendUpdate,
       );
     };
   };
 
-  // TODO: Revamp in React-bootstrap
-  return (<div className={props.className}>
-            <form onSubmit={handleSubmit}>
-              <div className='form-group blue-border-focus'>
-                <textarea required='required' className='form-control mt-3' name='frontText' placeholder='Front Text' ref={frontTextRef} rows='10' />
-                <textarea required='required' className='form-control mt-3 ' name='backText' placeholder='Back Text' ref={backTextRef} rows='10' />
-              </div>
-              <div className='text-center mt-1'>
-                <button type='submit' className='btn btn-primary btn-block'>{btn_label}</button>
-              </div>
-            </form>
-          </div>);
+  return (
+    <div className={props.className}>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className='blue-border-focus'>
+          <Form.Label className='mb-0 mt-3'>
+            <small className='text-secondary'>Front</small>
+          </Form.Label>
+          <Form.Control
+            as='textarea'
+            rows='10'
+            name='frontText'
+            placeholder='Front Text'
+            ref={frontTextRef}
+          />
+          <Form.Label className='mb-0 mt-3'>
+            <small className='text-secondary'>Back</small>
+          </Form.Label>
+          <Form.Control
+            as='textarea'
+            rows='10'
+            name='backText'
+            placeholder='Back Text'
+            ref={backTextRef}
+          />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label className='mb-0'>
+            <OverlayTrigger
+              overlay={generateTooltip(
+                `You can give your flashcards tags to group them together.
+                Learn more here TODO`
+              )}
+              placement='right'
+              delay={{ show: 20, hide: 800 }}
+            >
+              <small className='text-secondary'>Tags (separate with commas)</small>
+            </OverlayTrigger>
+          </Form.Label>
+          <Form.Control
+            type="text"
+            placeholder='Calculus, Integrals, Exponentials, ...'
+          />
+        </Form.Group>
+        <Form.Group className='text-center mt-1'>
+          <Button type='submit' variant='primary' block>{btn_label}</Button>
+        </Form.Group>
+      </Form>
+    </div>
+  );
 };
