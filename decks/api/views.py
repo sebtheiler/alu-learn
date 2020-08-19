@@ -49,6 +49,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
         `deck_id`: (URL) ID of the deck to create a flashcard in
         `front_text`: (Data) Text to go on the front of the flashcard
         `back_text`: (Data) Text to go on the back of the flashcard
+        `tags`: (Data) Raw string of tags, seperated by commas
     
     Possible errors:
         Deck ID does not exist: 400, {message: 'Unknown deck ID'}
@@ -62,8 +63,15 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 
     front_text = request.data.get('front_text')
     back_text = request.data.get('back_text')
+    tags = request.data.get('tags')
     if front_text is not None and back_text is not None:
-        created = FlashCard.objects.create(deck=deck, front_text=front_text, back_text=back_text, next_review=timezone.now())
+        created = FlashCard.objects.create(
+            deck=deck,
+            front_text=front_text,
+            back_text=back_text,
+            tags=tags if tags else '',
+            next_review=timezone.now(),
+        )
         return Response(FlashCardSerializer(instance=created).data, 201)
     return Response({'message': 'Front and back text must not be None'}, 400)
 
@@ -80,6 +88,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
         `flashcard_id`: (URL) ID of the flashcard we are editing
         `front_text`: (Data) What to set the front text to
         `back_text`: (Data) What to set the back text to
+        `tags`: (Data) Raw string of tags, seperated by commas
 
     Possible errors:
         Deck does not exist: 404, {message: 'Deck not found'}
@@ -104,6 +113,8 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     obj = flashcard_qs.first()
     obj.front_text = request.data.get('front_text')
     obj.back_text = request.data.get('back_text')
+    tags = request.data.get('tags')
+    obj.tags = tags if tags else ''
     obj.save()
     return Response(FlashCardSerializer(instance=obj).data, 200)
 

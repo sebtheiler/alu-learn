@@ -57,7 +57,7 @@ export function FlashCardCreate(props) {
         flashcardId,
         frontTextRef.current.value,
         backTextRef.current.value,
-        // TODO: tags value
+        '', // TODO: tags value
         handleBackendUpdate,
       );
     } else {
@@ -67,7 +67,7 @@ export function FlashCardCreate(props) {
         deckId,
         frontTextRef.current.value,
         backTextRef.current.value,
-        // TODO: tags value
+        '', // TODO: tags value
         handleBackendUpdate,
       );
     };

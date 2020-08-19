@@ -7,8 +7,8 @@ export function apiDeckCreate(newDeck, callback) {
 };
 
 // Creates a flashcard in a deck
-export function apiFlashCardCreate(deckId, frontText, backText, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/create/`, callback, {front_text: frontText, back_text: backText})
+export function apiFlashCardCreate(deckId, frontText, backText, tags, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/create/`, callback, {front_text: frontText, back_text: backText, tags: tags})
 };
 
 // Deletes a flashcard in a deck
@@ -17,8 +17,8 @@ export function apiFlashCardDelete(deckId, flashcardId, callback) {
 };
 
 // Edit a flashcard
-export function apiFlashCardEdit(deckId, flashcardId, frontText, backText, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {front_text: frontText, back_text: backText});
+export function apiFlashCardEdit(deckId, flashcardId, frontText, backText, tags, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {front_text: frontText, back_text: backText, tags: tags});
 };
 
 // Update a flashcard's review date
