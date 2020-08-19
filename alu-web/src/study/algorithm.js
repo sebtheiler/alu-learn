@@ -69,7 +69,7 @@ export function getInterval(card, grade) {
     nextReviewDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + interval);
   };
 
-  ease = Math.max(ease, 0);
+  ease = Math.max(ease, 130);
 
   return {
     nextReviewDate: nextReviewDate,
