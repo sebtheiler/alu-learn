@@ -9,20 +9,30 @@ export function FlashCardsList(props) {
   const [flashcardsDidSet, setFlashCardsDidSet] = useState(false);
 
   useEffect(() => {
-    if (flashcardsDidSet === false && !flashcardList) {
-      // API lookup if given deck ID
-      apiDeckDetail(deckId, (response, status) => {
-        if (status === 200) {
-          setFlashCardsDidSet(true);
-          setFlashCards(response.flashcards);
-        } else {
-          alert('There was an error');
-        };
-      });
-    } else if (flashcardList) {
-      // If flashcards were directly passed
-      setFlashCardsDidSet(true);
-      setFlashCards(flashcardList);
+    // Re-renders flashcardList whenever updated, if specified
+    // Does not re-render when browsing list
+    if (flashcardList) {
+      setFlashCardsDidSet(false);
+    };
+  }, [flashcardList, setFlashCardsDidSet]);
+
+  useEffect(() => {
+    if (flashcardsDidSet === false) {
+      if (!flashcardList) {
+        // API lookup if given deck ID
+        apiDeckDetail(deckId, (response, status) => {
+          if (status === 200) {
+            setFlashCardsDidSet(true);
+            setFlashCards(response.flashcards);
+          } else {
+            alert('There was an error');
+          };
+        });
+      } else {
+        // If flashcards were directly passed
+        setFlashCardsDidSet(true);
+        setFlashCards(flashcardList);
+      };
     };
   }, [flashcardsDidSet, flashcardList, deckId]);
 
@@ -41,9 +51,10 @@ export function FlashCardsList(props) {
         const handleSuspend = (event) => {
           event.preventDefault();
           const action = flashcard.is_suspended ? 'unsuspend' : 'suspend';
-          apiFlashCardSuspendLeech(deckId, flashcard.id, action, (response, status) => {
+          apiFlashCardSuspendLeech(flashcard.parent_deck_id, flashcard.id, action, (response, status) => {
             if (status === 200) {
               // TODO: This might cause *slight* performance issues
+              flashcard.is_suspended = action === 'suspend';
               setFlashCardsDidSet(false);
             } else {
               console.log(response, status);
@@ -55,8 +66,14 @@ export function FlashCardsList(props) {
         const handleDelete = (event) => {
           // TODO: Modal pop-up for confirmation?
           event.preventDefault();
-          apiFlashCardDelete(deckId, flashcard.id, () => {
-            setFlashCardsDidSet(false);
+          apiFlashCardDelete(flashcard.parent_deck_id, flashcard.id, (response, status) => {
+            if (status === 200) {
+              flashcards.splice(index);
+              setFlashCardsDidSet(false);
+            } else {
+              console.log(response, status);
+              alert('Error deleting flashcard!');
+            }
           });
         };
         return <FlashCard

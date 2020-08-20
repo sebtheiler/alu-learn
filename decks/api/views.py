@@ -502,6 +502,7 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+# TODO: BUG: Bugs with leech searching????
 def flashcard_search_view(request, *args, **kwargs):
     """
     Searches for flashcards based on some parameters - POST

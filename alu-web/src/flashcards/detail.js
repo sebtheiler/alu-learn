@@ -14,6 +14,10 @@ export function FlashCard(props) {
   // `handleSuspend` and `handleDelete` are callback functions
   const {flashcard, number, handleSuspend, handleDelete} = props;
   let date = new Date(flashcard.next_review)
+
+  if (!flashcard) {
+    return null;
+  };
   
   return (
     <div className={'container-fluid border my-3' + (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : '')}>

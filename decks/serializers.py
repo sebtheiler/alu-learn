@@ -5,6 +5,8 @@ from .models import Deck, FlashCard
 
 
 class FlashCardSerializer(serializers.ModelSerializer):
+    parent_deck_id = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = FlashCard
         fields = [
@@ -17,8 +19,12 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'interval',
             'is_suspended',
             'is_leech',
+            'parent_deck_id',
             'id',
         ]
+    
+    def get_parent_deck_id(self, obj):
+        return obj.deck.id
 
 
 class DeckSerializer(serializers.ModelSerializer):
