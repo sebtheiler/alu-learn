@@ -24,7 +24,7 @@ export function DecksFeedComponent(props) {
     <div className={props.className}>
       <div classname='text-center'>
         {/* TODO: center better or choose new location */}
-        <Button href='/flashcards/search/' className='text-center mt-1'>Search for flashcards</Button>
+        <Button href='/flashcards/search/' className='text-center mt-1'>Search for Flashcards / Custom Study</Button>
       </div>
       {canCreateDeck === true && <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mt-3' />}
       <DecksFeedList newDecks={newDecks} {...props}/>

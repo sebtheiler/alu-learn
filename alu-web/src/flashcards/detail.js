@@ -51,40 +51,34 @@ export function FlashCard(props) {
         </div>
       </div>
       <div className='row'>
-        <div className='col-md-6'>
-          <p className='text-center'>
-            <ReactMarkdown
-              source={flashcard.front_text}
-              plugins={[RemarkMathPlugin]}
-              renderers={{
-                math: ({ value }) => <BlockMath>{value}</BlockMath>,
-                inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
-              }}
-            />
-          </p>
-        </div>
-        <div className='col-md-6'>
-          <p className='text-center'>
-            <ReactMarkdown
-              source={flashcard.back_text}
-              plugins={[RemarkMathPlugin]}
-              renderers={{
-                math: ({ value }) => <BlockMath>{value}</BlockMath>,
-                inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
+        <div className='col-md-6 text-center'>
+          <ReactMarkdown
+            source={flashcard.front_text}
+            plugins={[RemarkMathPlugin]}
+            renderers={{
+              math: ({ value }) => <BlockMath>{value}</BlockMath>,
+              inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
             }}
-            />
-          </p>
+          />
+        </div>
+        <div className='col-md-6 text-center'>
+          <ReactMarkdown
+            source={flashcard.back_text}
+            plugins={[RemarkMathPlugin]}
+            renderers={{
+              math: ({ value }) => <BlockMath>{value}</BlockMath>,
+              inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
+            }}
+          />
         </div>
       </div>
       <div className='text-center mx-auto w-50' style={{wordWrap: 'break-word'}}>
-        <p>
-          {flashcard.tags ? 
-            <div>
-              Tags: <br />
-              {flashcard.tags}
-            </div>
-          : null}
-        </p>
+        {flashcard.tags ? 
+          <div>
+            Tags: <br />
+            {flashcard.tags}
+          </div>
+        : null}
       </div>
       <div className='col-md-12 mb-3 text-center'>
         <div className='btn-group'>
