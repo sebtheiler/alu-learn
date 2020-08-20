@@ -114,6 +114,9 @@ export function StudyComponent(props) {
     };
   };
 
+  console.log(deck)
+  console.log(currentCard)
+
   return (
     <div>
       <div className={'text-center' + (finishedStudying ? '' : ' d-none')}>
@@ -146,14 +149,14 @@ export function CustomStudyComponent(props) {
     if (gotFlashcards === false) {
       // Handle props data and send request to API
       apiFlashCardSearch(
-        deckIds ? deckIds : null,
-        tags ? tags : null,
-        contains ? contains : null,
-        suspended ? suspended === 'true' : null,
-        leech ? leech === 'true' : null,
-        graduated ? graduated === 'true' : null,
-        min_ease ? parseInt(min_ease) : null,
-        max_ease ? parseInt(max_ease) : null,
+        deckIds && deckIds !== 'None' ? deckIds.split(',').map(id => parseInt(id)) : null,
+        tags && tags !== 'None' ? tags.split(',') : null,
+        contains && contains !== 'None' ? contains : null,
+        suspended && suspended !== 'None' ? suspended === 'true' : null,
+        leech && leech !== 'None' ? leech === 'true' : null,
+        graduated && graduated !== 'None' ? graduated === 'true' : null,
+        min_ease && min_ease !== 'None' ? parseInt(min_ease) : null,
+        max_ease && max_ease !== 'None' ? parseInt(max_ease) : null,
         (response, status) => {
           if (status === 200) {
             setFlashcards(response);
@@ -171,8 +174,8 @@ export function CustomStudyComponent(props) {
     return (
       <StudyComponent
         flashcardList={{flashcards: flashcards}}
-        studySuspendedCards={true}
-        futureReviewDays={1}
+        // studySuspendedCards={true}
+        // futureReviewDays={1}
       />
     );
   };

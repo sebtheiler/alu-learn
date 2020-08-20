@@ -54,3 +54,18 @@ def flashcard_search_view(request, *args, **kwargs):
 # Renders when studying an individual deck
 def deck_study_view(request, deck_id, *args, **kwargs):
     return render(request, 'decks/study.html', context={'deck_id': deck_id})
+
+# Studies flashcards based on a set of criteria
+def custom_study_view(request, *args, **kwargs):
+    context = {
+        'deck_ids': request.GET.get('deckIds'),
+        'tags': request.GET.get('tags'),
+        'contains': request.GET.get('contains'),
+        'suspended': request.GET.get('suspended'),
+        'leech': request.GET.get('leech'),
+        'graduated': request.GET.get('graduated'),
+        'min_ease': request.GET.get('minEase'),
+        'max_ease': request.GET.get('maxEase'),
+    }
+
+    return render(request, 'decks/custom-study.html', context=context)
