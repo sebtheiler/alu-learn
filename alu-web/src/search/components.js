@@ -6,6 +6,8 @@ import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css'; // or include from a CDN
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 
+// TODO: split this component in multiple components
+// It is a horrible piece of code
 export function SearchComponent(props) {
   const {username} = props;
   const [decks, setDecks] = useState([]);
@@ -15,6 +17,7 @@ export function SearchComponent(props) {
   const [decksDidSet, setDecksDidSet] = useState(false);
   const [minEaseValue, setMinEaseValue] = useState(130);
   const [maxEaseValue, setMaxEaseValue] = useState(350);
+  const [customStudyLink, setCustomStudyLink] = useState('#');
 
   // Get the user's decks
   useEffect(() => {
@@ -45,19 +48,38 @@ export function SearchComponent(props) {
       // Get all of the needed information in the correct format
       const options = document.querySelectorAll('.deck-selection');
       const deckIds = Array.from(options).filter(option => option.selected).map(deck => parseInt(deck.value));
+
+      const tagSelectRefCurrentValue = tagSelectRef.current.value;
+      const containsSelectRefCurrentValue = containsSelectRef.current.value;
+      const suspendedSelectRefCurrentValue = suspendedSelectRef.current.value;
+      const leechSelectRefCurrentValue = leechSelectRef.current.value;
+      const graduatedSelectRefCurrentValue = graduatedSelectRef.current.value;
+      const minEaseSelectRefCurrentValue = minEaseSelectRef.current.value;
+      const maxEaseSelectRefCurrentValue = maxEaseSelectRef.current.value;
       apiFlashCardSearch(
         deckIds.length > 0 ? deckIds : null,
-        tagSelectRef.current.value ? tagSelectRef.current.value.split(',').map(tag => tag.trim()) : null,
-        containsSelectRef.current.value ? containsSelectRef.current.value : null,
-        suspendedSelectRef.current.value !== 'ANY' ? suspendedSelectRef.current.value === 'SUSPENDED' : null,
-        leechSelectRef.current.value !== 'ANY' ? leechSelectRef.current.value === 'LEECH' : null,
-        graduatedSelectRef.current.value !== 'ANY' ? graduatedSelectRef.current.value === 'GRADUATED' : null,
-        parseInt(minEaseSelectRef.current.value),
-        parseInt(maxEaseSelectRef.current.value),
+        tagSelectRefCurrentValue ? tagSelectRefCurrentValue.split(',').map(tag => tag.trim()) : null,
+        containsSelectRefCurrentValue ? containsSelectRefCurrentValue : null,
+        suspendedSelectRefCurrentValue !== 'ANY' ? suspendedSelectRefCurrentValue === 'SUSPENDED' : null,
+        leechSelectRefCurrentValue !== 'ANY' ? leechSelectRefCurrentValue === 'LEECH' : null,
+        graduatedSelectRefCurrentValue !== 'ANY' ? graduatedSelectRefCurrentValue === 'GRADUATED' : null,
+        parseInt(minEaseSelectRefCurrentValue),
+        parseInt(maxEaseSelectRefCurrentValue),
         (response, status) => {
           if (status === 200) {
             setSearchedFlashcards(response);
             setDidSearch(true);
+
+            // Update link for custom study button
+            setCustomStudyLink(generateCustomStudyLink(
+              tagSelectRefCurrentValue,
+              containsSelectRefCurrentValue,
+              suspendedSelectRefCurrentValue,
+              leechSelectRefCurrentValue,
+              graduatedSelectRefCurrentValue,
+              minEaseSelectRefCurrentValue,
+              maxEaseSelectRefCurrentValue,
+            ));
           } else {
             console.log(response, status);
             alert('Error searching!');
@@ -65,6 +87,37 @@ export function SearchComponent(props) {
           setSearchLoading(false);
       });
     };
+  };
+
+  const generateCustomStudyLink = (
+      tagSelectRefCurrentValue,
+      containsSelectRefCurrentValue,
+      suspendedSelectRefCurrentValue,
+      leechSelectRefCurrentValue,
+      graduatedSelectRefCurrentValue,
+      minEaseSelectRefCurrentValue,
+      maxEaseSelectRefCurrentValue,
+    ) => {
+    const options = document.querySelectorAll('.deck-selection');
+    const deckIds = Array.from(options).filter(option => option.selected).map(deck => parseInt(deck.value)).toString();
+    const tags = (tagSelectRefCurrentValue ? tagSelectRefCurrentValue.split(',').map(tag => tag.trim()) : '').toString();
+    const suspended = suspendedSelectRefCurrentValue !== 'ANY' ? (suspendedSelectRefCurrentValue === 'SUSPENDED').toString() : '';
+    const leech = leechSelectRefCurrentValue !== 'ANY' ? (leechSelectRefCurrentValue === 'LEECH').toString() : '';
+    const graduated = graduatedSelectRefCurrentValue !== 'ANY' ? (graduatedSelectRefCurrentValue === 'GRADUATED').toString() : '';
+
+    const returnUrl = (
+      '/customstudy/?' +
+      (deckIds ? '&deckIds=' + deckIds : '') +
+      (tags ? '&tags=' + tags : '') +
+      (containsSelectRefCurrentValue ? '&contains=' + containsSelectRefCurrentValue : '') +
+      (suspended ? '&suspended=' + suspended : '') +
+      (leech ? '&leech=' + leech : '') +
+      (graduated ? '&graduated=' + graduated : '') +
+      (minEaseSelectRefCurrentValue ? '&minEase=' + minEaseSelectRefCurrentValue : '') +
+      (maxEaseSelectRefCurrentValue ? '&maxEase=' + maxEaseSelectRefCurrentValue : '')
+    ).replace('&', ''); // removes first, arbitrary '&'
+
+    return returnUrl;
   };
 
   return (
@@ -150,7 +203,9 @@ export function SearchComponent(props) {
           <div>
             <hr />
             <h1>Results</h1>
-            <Button href='#'>Study these flashcards (Custom Study) TODO:</Button>
+            <Button href={customStudyLink} id='custom-study-link' target='_blank'>
+              Study these flashcards (Custom Study)
+            </Button>
           </div>
         }
         {didSearch ? (

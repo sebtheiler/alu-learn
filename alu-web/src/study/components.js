@@ -114,9 +114,6 @@ export function StudyComponent(props) {
     };
   };
 
-  console.log(deck)
-  console.log(currentCard)
-
   return (
     <div>
       <div className={'text-center' + (finishedStudying ? '' : ' d-none')}>
