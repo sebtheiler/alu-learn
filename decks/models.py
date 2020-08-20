@@ -15,12 +15,6 @@ class DeckQuerySet(models.QuerySet):
     def feed(self, user):
         # Order alphabetically, not by order added
         feed_qs = self.filter(user__username=user.username).order_by('title')
-
-        # This will be used in the future, once sharing is created
-        # feed_qs = self.filter(
-        #     Q(user__username=user.username) | 
-        #     Q(...) # if shared with current user
-        # ).order_by('title')
         return feed_qs
 
 
@@ -66,7 +60,7 @@ class Deck(models.Model):
 
 class FlashCard(models.Model):
     deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='flashcards')
-    tags = models.CharField(default='', max_length=1024)
+    tags = models.CharField(default='', max_length=1024, blank=True)
 
     front_text = models.TextField()
     back_text = models.TextField()
