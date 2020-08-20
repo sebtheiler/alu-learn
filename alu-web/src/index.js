@@ -5,7 +5,7 @@ import * as serviceWorker from './serviceWorker';
 import {ProfileBadgeComponent} from './profiles';
 import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
 import {FlashCardCreateComponent, FlashCardsList} from './flashcards';
-import {StudyComponent} from './study';
+import {StudyComponent, CustomStudyComponent} from './study';
 import {NotificationComponent} from './notifications';
 import {ExploreComponent} from './explore';
 import {SearchComponent} from './search';
@@ -45,6 +45,11 @@ flashcardListElement.forEach(container => {
 const flashcardStudyElement = document.getElementById('study-component');
 if (flashcardStudyElement) {
   ReactDOM.render(e(StudyComponent, flashcardStudyElement.dataset), flashcardStudyElement);
+};
+
+const customFlashcardStudyElement = document.getElementById('custom-study-component');
+if (customFlashcardStudyElement) {
+  ReactDOM.render(e(CustomStudyComponent, customFlashcardStudyElement.dataset), customFlashcardStudyElement);
 };
 
 const notificationElements = document.querySelectorAll('.notification-component');

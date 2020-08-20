@@ -518,7 +518,7 @@ def flashcard_search_view(request, *args, **kwargs):
         `max_ease`: (Data) Maximum ease factor of the card
     
     Returns:
-        A list of decks (DeckSerializer)
+        A list of flashcards (FlashcardSerializer)
     """
     # Get list of decks to search in
     deck_qs = request.user.decks.all()

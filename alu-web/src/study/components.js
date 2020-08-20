@@ -1,11 +1,12 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail, apiFlashCardDateUpdate} from '../lookup';
+import {apiDeckDetail, apiFlashCardDateUpdate, apiFlashCardSearch} from '../lookup';
 import {StudyElement} from './study';
 import {getInterval} from './algorithm'
 import {Button} from 'react-bootstrap';
 
 export function StudyComponent(props) {
-  const {deckId, flashcardList} = props;
+  const {deckId, flashcardList, studySuspendedCards} = props;
+  const futureReviewDays = props.futureReviewDays ? parseInt(props.futureReviewDays) : 0;
   // Either specify `deckId`, the ID of the deck to study
   // or `flashcardList`, a raw list of flashcards
   // Do NOT specify both
@@ -43,12 +44,17 @@ export function StudyComponent(props) {
   useEffect(() => {
     if (deck && currentCardDidSet === false) {
       setCurrentCardDidSet(true);
-      // Only get cards that were due previously
+      // Only get cards that were due previously (or if we are studying ahead)
       const toReview = deck.flashcards.filter((card) => {
-        const now = new Date();
+        var now = new Date();
+        // If we are reviewing ahead, change when "now" is
+        now.setDate(now.getDate() + futureReviewDays);
+
+        // Date the card should be reviewed
         const review = new Date(card.next_review);
+
         // This is done weirdly so that you don't have to wait for 1min/10min cards
-        return new Date(review.getFullYear(), review.getMonth(), review.getDate()) < now && card.is_suspended === false;
+        return new Date(review.getFullYear(), review.getMonth(), review.getDate()) < now && (!card.is_suspended || studySuspendedCards);
       });
 
       // If there are no more cards, we've finished
@@ -65,7 +71,7 @@ export function StudyComponent(props) {
       setCurrentCard(card);
       setShowAnswer(false);
     };
-  }, [currentCardDidSet, setCurrentCardDidSet, deck]);
+  }, [currentCardDidSet, setCurrentCardDidSet, deck, studySuspendedCards, futureReviewDays]);
 
   // Called when spacebar is pressed or "Show Answer" is clicked
   const showAnswerHandler = (event) => {
@@ -84,7 +90,7 @@ export function StudyComponent(props) {
     const {nextReviewDate, interval, ease, minute, graduated} = getInterval(currentCard, grade);
 
     // Update date in database
-    apiFlashCardDateUpdate(deckId, currentCard.id, nextReviewDate.toISOString(), minute ? 0 : interval, ease, graduated, () => {
+    apiFlashCardDateUpdate(currentCard.parent_deck_id, currentCard.id, nextReviewDate.toISOString(), minute ? 0 : interval, ease, graduated, () => {
       setCurrentCardDidSet(true);
     });
 
@@ -129,4 +135,45 @@ export function StudyComponent(props) {
       </div>
     </div>
   );
+};
+
+export function CustomStudyComponent(props) {
+  const {deckIds, tags, contains, suspended, leech, graduated, min_ease, max_ease} = props;
+  const [flashcards, setFlashcards] = useState([]);
+  const [gotFlashcards, setGotFlashcards] = useState(false);
+
+  useEffect(() => {
+    if (gotFlashcards === false) {
+      // Handle props data and send request to API
+      apiFlashCardSearch(
+        deckIds ? deckIds : null,
+        tags ? tags : null,
+        contains ? contains : null,
+        suspended ? suspended === 'true' : null,
+        leech ? leech === 'true' : null,
+        graduated ? graduated === 'true' : null,
+        min_ease ? parseInt(min_ease) : null,
+        max_ease ? parseInt(max_ease) : null,
+        (response, status) => {
+          if (status === 200) {
+            setFlashcards(response);
+          } else {
+            console.log(response, status);
+            alert('Error in custom study!');
+          };
+      });
+    };
+  }, [setFlashcards, gotFlashcards, setGotFlashcards, deckIds, tags, contains, suspended, leech, graduated, min_ease, max_ease]);
+
+  if (flashcards.length === 0) {
+    return null;
+  } else {
+    return (
+      <StudyComponent
+        flashcardList={{flashcards: flashcards}}
+        studySuspendedCards={true}
+        futureReviewDays={1}
+      />
+    );
+  };
 };
