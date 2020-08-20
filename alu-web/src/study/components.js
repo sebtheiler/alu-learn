@@ -5,27 +5,40 @@ import {getInterval} from './algorithm'
 import {Button} from 'react-bootstrap';
 
 export function StudyComponent(props) {
-  const {deckId} = props;
+  const {deckId, flashcardList} = props;
+  // Either specify `deckId`, the ID of the deck to study
+  // or `flashcardList`, a raw list of flashcards
+  // Do NOT specify both
 
   // Get deck to study from API
   const [deck, setDeck] = useState(null);
   const [gotDeck, setGotDeck] = useState(false);
-  if (gotDeck === false) {
-    setGotDeck(true);
-    apiDeckDetail(deckId, (response, status) => {
-      if (status === 200) {
-        setDeck(response);
-      } else {
-        alert('Error');
-      };
-    });
-  };
-
+  
   const [currentCard, setCurrentCard] = useState(null);
   const [currentCardDidSet, setCurrentCardDidSet] = useState(false);
-
+  
   const [showAnswer, setShowAnswer] = useState(false);
   const [finishedStudying, setFinishedStudying] = useState(false);
+  
+  useEffect(() => {
+    if (gotDeck === false) {
+      if (!flashcardList) {
+        // Get deck from ID
+        setGotDeck(true);
+        apiDeckDetail(deckId, (response, status) => {
+          if (status === 200) {
+            setDeck(response);
+          } else {
+            alert('Error');
+          };
+        });
+      } else {
+        // Get deck from raw list of flashcards
+        setGotDeck(true);
+        setDeck(flashcardList);
+      };
+    };
+  }, [deckId, flashcardList, gotDeck, setGotDeck, deck, setDeck]);
 
   useEffect(() => {
     if (deck && currentCardDidSet === false) {
@@ -67,8 +80,6 @@ export function StudyComponent(props) {
     };
     setCurrentCardDidSet(false);
 
-    console.log(grade)
-
     // Calculate when the card should be next seen
     const {nextReviewDate, interval, ease, minute, graduated} = getInterval(currentCard, grade);
 
@@ -97,21 +108,25 @@ export function StudyComponent(props) {
     };
   };
 
-  return <div>
-            <div className={'text-center' + (finishedStudying ? '' : ' d-none')}>
-              <p>Congratulations! You've finished studying this deck!</p>
-              <a href={`/${deckId}/flashcards/create/`} className='text-decoration-none'>
-                <Button variant='primary'>Create a new flash card</Button>
-              </a>
-            </div>
-            {finishedStudying ? null :
-              <StudyElement
-                currentCard={currentCard}
-                showAnswer={showAnswer}
-                showAnswerHandler={showAnswerHandler}
-                backendGradeUpdate={backendGradeUpdate}
-                handleKeyDown={handleKeyDown}
-              />
-            }
-          </div>
+  return (
+    <div>
+      <div className={'text-center' + (finishedStudying ? '' : ' d-none')}>
+        <p>Congratulations! You've finished studying this deck!</p>
+        {flashcardList ? null :
+          <Button href={`/${deckId}/flashcards/create/`}>Create a new flash card</Button>
+        }
+      </div>
+      <div>
+        {finishedStudying ? null :
+          <StudyElement
+            currentCard={currentCard}
+            showAnswer={showAnswer}
+            showAnswerHandler={showAnswerHandler}
+            backendGradeUpdate={backendGradeUpdate}
+            handleKeyDown={handleKeyDown}
+          />
+        }
+      </div>
+    </div>
+  );
 };
