@@ -133,7 +133,7 @@ export function DeckEditModal(props) {
 
 // Buttons displayed when a user that does not own the deck views a deck
 export function DeckForeignUserButtonGroup(props) {
-  const {deck, thanked} = props;
+  const {deck, handleThankDeck, thankBtnLabel} = props;
   const [copyState, setCopyState] = useState('Copy deck');
 
   const handleCopyDeck = (event) => {
@@ -150,10 +150,6 @@ export function DeckForeignUserButtonGroup(props) {
     });
   };
 
-  const handleThankDeck = (event) => {
-    event.preventDefault();
-  };
-
   return (
     <div className='text-center'>
       <ButtonGroup>
@@ -161,7 +157,7 @@ export function DeckForeignUserButtonGroup(props) {
           {copyState}
         </Button>
         <Button onClick={handleThankDeck} className='ml-1'>
-          {thanked ? "Thanked!" : "Thank"}
+          {thankBtnLabel}
         </Button>
       </ButtonGroup>
     </div>

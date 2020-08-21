@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {DeckDefaultButtonGroup, DeckForeignUserButtonGroup} from './buttons';
 import {FlashCardsList} from '../flashcards';
+import {apiDeckThank} from '../lookup';
 import {Card, ButtonGroup, Button} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import RemarkMathPlugin from 'remark-math';
@@ -55,11 +56,30 @@ export function Deck(props) {
 export function DeckDetail(props) {
   const {deck, currentUsername} = props;
   const [browsingState, setBrowsingState] = useState('FLASHCARDS');
+  const [thankBtnLabel, setThankBtnLabel] = useState(deck.you_have_thanked ? 'Thanked' : 'Thank');
   console.log(deck, currentUsername);
 
   const handleBrowseSwitch = (event) => {
     event.preventDefault();
     setBrowsingState(browsingState === 'FLASHCARDS' ? 'COMMENTS' : 'FLASHCARDS');
+  };
+
+  const handleThankDeck = (event) => {
+    event.preventDefault();
+    if (deck.you_have_thanked === false) {
+      setThankBtnLabel('Loading...');
+      apiDeckThank(deck.id, (response, status) => {
+        if (status === 201) {
+          deck.you_have_thanked = true;
+          deck.num_thanks++;
+          setThankBtnLabel('Thanked');
+        } else {
+          console.log(response, status);
+          alert('Error thanking deck');
+          setThankBtnLabel('Thank');
+        };
+      });
+    };
   };
 
   return (
@@ -69,7 +89,7 @@ export function DeckDetail(props) {
         Created by {`${deck.author.first_name} ${deck.author.last_name} | @${deck.author.username}`}
       </a>
       <p className='text-secondary mb-3'>
-        {`${deck.num_thanks} thank` + (deck.num_thanks > 1 ? 's' : '')}
+        {`${deck.num_thanks} thank` + (deck.num_thanks !== 1 ? 's' : '')}
       </p>
       <ReactMarkdown
         source={deck.description}
@@ -104,7 +124,9 @@ export function DeckDetail(props) {
         <div className='text-center'>
           <h2>Example flashcards</h2>
           <h5>{`(${deck.flashcards.length} in total, ${Math.min(deck.flashcards.length, 10)} displayed)`}</h5>
-          {currentUsername === deck.author.username ? null : <DeckForeignUserButtonGroup deck={deck} />}
+          {currentUsername === deck.author.username ? null :
+            <DeckForeignUserButtonGroup deck={deck} handleThankDeck={handleThankDeck} thankBtnLabel={thankBtnLabel} />
+          }
           <div>
             <FlashCardsList flashcardList={deck.flashcards.slice(0, 10)} foreignUser={true} />
           </div>

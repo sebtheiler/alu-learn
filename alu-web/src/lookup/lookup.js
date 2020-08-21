@@ -106,6 +106,11 @@ export function apiDeckCopy(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/copy/`, callback);
 };
 
+// Creates a thank for a deck
+export function apiDeckThank(deckId, callback) {
+  backendLookup('POST', `decks/${deckId}/thank/`, callback);
+};
+
 // Gets detail information about a profile, such as bio, name, username, etc.
 export function apiProfileDetail(username, callback) {
   backendLookup('GET', `profiles/${username}/detail/`, callback);
