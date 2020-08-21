@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
+from profiles.models import Profile
 
 # Create your models here.
 User = settings.AUTH_USER_MODEL
@@ -79,3 +80,12 @@ class FlashCard(models.Model):
     def __str__(self):
         return self.front_text + '  ---  ' + self.back_text
 
+
+# Used to like/thank a person for making a deck
+class DeckThank(models.Model):
+    deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='thanks')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='thanks')
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return 'Thank from @' + self.profile.user.username

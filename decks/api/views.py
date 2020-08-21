@@ -11,8 +11,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..forms import DeckForm
-from ..models import Deck, FlashCard
-from ..serializers import DeckSerializer, FlashCardSerializer
+from ..models import Deck, FlashCard, DeckThank
+from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer
 from profiles.models import Profile
 
 
@@ -333,8 +333,8 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
     if not decks_qs.exists():
         return Response({'message': 'Deck not found'}, status=404)
     obj = decks_qs.first()
-    serializer = DeckSerializer(obj)
-    return Response(serializer.data)
+    serializer = DeckSerializer(obj, context={'request': request})
+    return Response(serializer.data, status=200)
 
 
 @api_view(['DELETE', 'POST'])
@@ -411,6 +411,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     deck.save()
     return Response(DeckSerializer(instance=deck).data, 200)
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def deck_copy_view(request, deck_id, *args, **kwargs):
@@ -449,6 +450,35 @@ def deck_copy_view(request, deck_id, *args, **kwargs):
     deck.title = 'Copy of ' + deck.title
     deck.save()
     return Response(DeckSerializer(deck).data, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deck_thank_view(request, deck_id, *args, **kwargs):
+    """
+    Create a thank object for a deck - POST
+
+    Required information:
+        `deck_id`: (URL) ID of the get to thank
+
+    Possible errors:
+        Invalid deck ID: 404, {'message': 'Deck not found'}
+        Already thanked: 400, {'message': 'You have already thanked this deck'}
+    """
+    # Get Deck
+    deck_qs = Deck.objects.filter(pk=deck_id)
+    if not deck_qs.exists():
+        return Response({'message': 'Deck not found'}, status=404)
+    deck = deck_qs.first()
+
+    # Create thank object
+    new_thank, created = DeckThank.objects.get_or_create(deck=deck, profile=request.user.profile)
+    if not created:
+        return Response({'message': 'You have already thanked this deck'})
+
+    return Response(DeckThankSerializer(new_thank).data, status=201)
+    
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
