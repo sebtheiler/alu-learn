@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {DeckCreate,} from './create';
 import {DecksList} from './list';
-import {Deck} from './detail';
+import {DeckDetail} from './detail';
 import {apiDeckDetail} from '../lookup';
 import {DecksFeedList} from './feed';
 import {Button} from 'react-bootstrap';
@@ -80,12 +80,10 @@ export function DeckDetailComponent(props) {
     };
   }, [deckId, didLookup, setDidLookup]);
 
-  return deck === null ? null :
-    <Deck
+  return deck === null ? null : (
+    <DeckDetail
       deck={deck}
-      individual={true}
-      showUsername={true}
       currentUsername={currentUsername}
-      className={props.className}
-    />;
+    />
+  );
 };

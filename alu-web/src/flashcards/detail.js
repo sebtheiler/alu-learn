@@ -12,7 +12,7 @@ import 'katex/dist/katex.min.css';
 export function FlashCard(props) {
   // `flashcard` is a JSON object
   // `handleSuspend` and `handleDelete` are callback functions
-  const {flashcard, number, handleSuspend, handleDelete} = props;
+  const {flashcard, number, handleSuspend, handleDelete, foreignUser} = props;
   let date = new Date(flashcard.next_review)
 
   if (!flashcard) {
@@ -20,13 +20,13 @@ export function FlashCard(props) {
   };
   
   return (
-    <div className={'container-fluid border my-3' + (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : '')}>
+    <div className={'container-fluid border my-3' + (foreignUser ? '' : (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : ''))}>
       <div className='row mt-3 text-center'>
         <div className='col-md-12'>
           <p className='mb-0'>
             <strong>Flashcard - #{number + 1}</strong> | Due {date.toString().substring(0, 10)}
           </p>
-          <p>
+          <p className={foreignUser ? 'd-none' : ''}>
             <OverlayTrigger
               overlay={generateTooltip(
                 `A leech is a card that you've repeatedly struggled to learn.
@@ -80,13 +80,15 @@ export function FlashCard(props) {
           </div>
         : null}
       </div>
-      <div className='col-md-12 mb-3 text-center'>
-        <div className='btn-group'>
-          <Button href={`${flashcard.id}/edit/`} variant='primary'>Edit</Button>
-          <Button onClick={handleSuspend} variant='primary' className='ml-1'>{flashcard.is_suspended ? 'Unsuspend' : 'Suspend'}</Button>
-          <Button onClick={handleDelete} variant='danger' className='ml-1'>Delete</Button>
+      {foreignUser ? null : 
+        <div className='col-md-12 mb-3 text-center'>
+          <div className='btn-group'>
+            <Button href={`${flashcard.id}/edit/`} variant='primary'>Edit</Button>
+            <Button onClick={handleSuspend} variant='primary' className='ml-1'>{flashcard.is_suspended ? 'Unsuspend' : 'Suspend'}</Button>
+            <Button onClick={handleDelete} variant='danger' className='ml-1'>Delete</Button>
+          </div>
         </div>
-      </div>
+      }
     </div>
   );
 };

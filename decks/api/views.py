@@ -454,6 +454,7 @@ def deck_copy_view(request, deck_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+# TODO: should the user be able to thank themselves????
 def deck_thank_view(request, deck_id, *args, **kwargs):
     """
     Create a thank object for a deck - POST

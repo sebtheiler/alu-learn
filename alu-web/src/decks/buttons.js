@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import {apiDeckDelete, apiDeckEdit, apiDeckCopy} from '../lookup';
-import {Modal, Button, Form} from 'react-bootstrap';
+import {Modal, Button, Form, ButtonGroup} from 'react-bootstrap';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
 // Buttons for when an owner views their deck
 export function DeckDefaultButtonGroup(props) {
-  const {deck} = props;
+  const {deck, vertical} = props;
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   const openModal = () => {
@@ -55,7 +55,7 @@ export function DeckDefaultButtonGroup(props) {
   };
 
   return (
-    <div>
+    <ButtonGroup vertical={vertical} style={vertical ? {display: 'block', margin: '0 auto', 'text-align': 'center', width: '50%'} : {}}>
       {/* Edit Button and Modal */}
       <Button
         onClick={openModal}
@@ -82,7 +82,7 @@ export function DeckDefaultButtonGroup(props) {
       <Button href={`/${deck.id}/study/`} className='mr-1'>
         Study
       </Button>
-    </div>
+    </ButtonGroup>
   );
 };
 
@@ -133,7 +133,7 @@ export function DeckEditModal(props) {
 
 // Buttons displayed when a user that does not own the deck views a deck
 export function DeckForeignUserButtonGroup(props) {
-  const {deck} = props;
+  const {deck, thanked} = props;
   const [copyState, setCopyState] = useState('Copy deck');
 
   const handleCopyDeck = (event) => {
@@ -150,11 +150,20 @@ export function DeckForeignUserButtonGroup(props) {
     });
   };
 
+  const handleThankDeck = (event) => {
+    event.preventDefault();
+  };
+
   return (
-    <div>
-      <Button onClick={handleCopyDeck} variant='primary'>
-        {copyState}
-      </Button>
+    <div className='text-center'>
+      <ButtonGroup>
+        <Button onClick={handleCopyDeck}>
+          {copyState}
+        </Button>
+        <Button onClick={handleThankDeck} className='ml-1'>
+          {thanked ? "Thanked!" : "Thank"}
+        </Button>
+      </ButtonGroup>
     </div>
   );
 };

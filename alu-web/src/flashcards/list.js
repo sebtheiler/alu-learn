@@ -4,7 +4,7 @@ import {FlashCard} from './detail';
 import {Button, ButtonGroup} from 'react-bootstrap';
 
 export function FlashCardsList(props) {
-  const {deckId, flashcardList} = props;
+  const {deckId, flashcardList, foreignUser} = props;
   const [flashcards, setFlashCards] = useState([]);
   const [flashcardsDidSet, setFlashCardsDidSet] = useState(false);
 
@@ -39,7 +39,7 @@ export function FlashCardsList(props) {
   return (
     <div className={props.className}>
       <div className='text-center'>
-        {flashcardList ? null :
+        {flashcardList || foreignUser ? null :
         <ButtonGroup>
           <Button href='create/' className='mx-1'>Create a new flash card</Button>
           <Button href={`/${deckId}/study/`} className='mx-1'>Study this deck</Button>
@@ -82,6 +82,7 @@ export function FlashCardsList(props) {
                 number={index}
                 handleSuspend={handleSuspend}
                 handleDelete={handleDelete}
+                foreignUser={foreignUser}
               />;
       })}
     </div>
