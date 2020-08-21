@@ -88,4 +88,4 @@ class DeckThank(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return 'Thank from @' + self.profile.user.username
+        return f'Thank from @{self.profile.user.username} for Deck #{self.deck.id}'

@@ -475,7 +475,7 @@ def deck_thank_view(request, deck_id, *args, **kwargs):
     # Create thank object
     new_thank, created = DeckThank.objects.get_or_create(deck=deck, profile=request.user.profile)
     if not created:
-        return Response({'message': 'You have already thanked this deck'})
+        return Response({'message': 'You have already thanked this deck'}, status=400)
 
     return Response(DeckThankSerializer(new_thank).data, status=201)
     
