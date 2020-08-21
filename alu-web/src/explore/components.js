@@ -65,7 +65,7 @@ export function DeckSlider(props) {
                 </small>
               </a>
               <a href={`/${deck.id}/`}>
-                <p className='deck-description mt-2' style={{outline: 'none', color: 'black'}}>
+                <p className='deck-description mt-2 w-75' style={{outline: 'none', color: 'black'}}>
                   {deck.description.substring(0, 128) + (deck.description.length > 128 ? '...' : '')}
                 </p>
               </a>
