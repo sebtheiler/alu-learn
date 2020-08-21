@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {DeckDefaultButtonGroup, DeckForeignUserButtonGroup} from './buttons';
 import {FlashCardsList} from '../flashcards';
 import {apiDeckThank} from '../lookup';
+import {DisplayCount} from '../utils';
 import {Card, ButtonGroup, Button} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import RemarkMathPlugin from 'remark-math';
@@ -43,7 +44,7 @@ export function Deck(props) {
           <ButtonGroup>
             {currentUsername === deck.author.username ?
               <DeckDefaultButtonGroup deck={deck} />
-            : <DeckForeignUserButtonGroup deck={deck} />
+            : <Button href={`/${deck.id}/`}>View</Button>
             }
           </ButtonGroup>
         </Card.Body>
@@ -89,7 +90,7 @@ export function DeckDetail(props) {
         Created by {`${deck.author.first_name} ${deck.author.last_name} | @${deck.author.username}`}
       </a>
       <p className='text-secondary mb-3'>
-        {`${deck.num_thanks} thank` + (deck.num_thanks !== 1 ? 's' : '')}
+        <DisplayCount>{deck.num_thanks}</DisplayCount> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
       </p>
       <ReactMarkdown
         source={deck.description}
