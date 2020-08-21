@@ -37,7 +37,7 @@ function ProfileBadge(props) {
       <UserPicture user={user} />
       <p className='mb-0'><UserLink user={user} includeFullName noLink /></p>
       <small className='mt-0 text-secondary'>
-        <DisplayCount>{user.friend_count}</DisplayCount> {user.friend_count === 1 ? "friend" : "friends"}
+        <DisplayCount>{user.total_thanks_recieved}</DisplayCount> thank{user.total_thanks_recieved === 1 ? '' : 's'} recieved
       </small>
       <div className={'mt-3' + (user.location ? '' : 'd-none')}>
         <h5 className='mb-0'>Location</h5>

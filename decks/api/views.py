@@ -477,6 +477,9 @@ def deck_thank_view(request, deck_id, *args, **kwargs):
     if not created:
         return Response({'message': 'You have already thanked this deck'}, status=400)
 
+    # Increment total thanks of the deck's author
+    deck.user.profile.increment_total_thanks_recieved()
+
     return Response(DeckThankSerializer(new_thank).data, status=201)
     
 

@@ -25,6 +25,7 @@ class PublicProfileSerializer(serializers.ModelSerializer):
             'friend_count',
             'is_friend',
             'you_are_pending',
+            'total_thanks_recieved',
         ]
 
     def get_is_friend(self, obj):

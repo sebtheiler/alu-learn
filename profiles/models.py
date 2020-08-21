@@ -13,12 +13,20 @@ class Profile(models.Model):
     updated = models.DateTimeField(auto_now=True)
     friends = models.ManyToManyField(User, related_name='friends', blank=True)
     pending_friends = models.ManyToManyField('self', blank=True)
+    total_thanks_recieved = models.IntegerField(default=0)
 
     def __str__(self):
         if self.user.first_name and self.user.last_name:
             return f'{self.user.first_name} {self.user.last_name} - @{self.user.username}'
         else:
             return f'@{self.user.username}'
+    
+    def increment_total_thanks_recieved(self):
+        # Do not use this method if you need to make other changes to the profile obj
+        # Only use this method if the `total_thanks_recieved` is the only attr that needs to be changed
+        self.total_thanks_recieved += 1
+        self.save()
+        return self.total_thanks_recieved
 
 
 class Notification(models.Model):
