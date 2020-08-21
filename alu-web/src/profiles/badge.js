@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {apiProfileDetail, apiProfileFriendToggle, apiSendFriendReq} from '../lookup';
 import {UserLink, UserPicture} from './components';
-import {DisplayCount} from './utils';
+import {DisplayCount} from '../utils';
 import {Button} from 'react-bootstrap';
 
 
@@ -36,7 +36,9 @@ function ProfileBadge(props) {
     <div>
       <UserPicture user={user} />
       <p className='mb-0'><UserLink user={user} includeFullName noLink /></p>
-      <small className='mt-0 text-secondary'><DisplayCount>{user.friend_count}</DisplayCount> {user.friend_count === 1 ? "friend" : "friends"}</small>
+      <small className='mt-0 text-secondary'>
+        <DisplayCount>{user.friend_count}</DisplayCount> {user.friend_count === 1 ? "friend" : "friends"}
+      </small>
       <div className={'mt-3' + (user.location ? '' : 'd-none')}>
         <h5 className='mb-0'>Location</h5>
         <p>{user.location}</p>

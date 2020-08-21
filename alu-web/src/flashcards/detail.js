@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button, OverlayTrigger} from 'react-bootstrap';
-import {generateTooltip} from './utils';
+import {generateTooltip} from '../utils';
 import './detail.css';
 import ReactMarkdown from 'react-markdown';
 import RemarkMathPlugin from 'remark-math';
