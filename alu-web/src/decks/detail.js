@@ -55,7 +55,8 @@ export function Deck(props) {
 
 // This is used on pages displaying a single deck
 export function DeckDetail(props) {
-  const {deck, currentUsername} = props;
+  const {deck, currentUsername, hideExtras, titleLink} = props;
+  const textAlign = props.textAlign ? props.textAlign : 'center';
   const [browsingState, setBrowsingState] = useState('FLASHCARDS');
   const [thankBtnLabel, setThankBtnLabel] = useState(deck.you_have_thanked ? 'Thanked' : 'Thank');
   console.log(deck, currentUsername);
@@ -84,10 +85,12 @@ export function DeckDetail(props) {
   };
 
   return (
-    <div className='text-center'>
-      <h1 className='mb-0'>{deck.title}</h1>
+    <div className={`link-${textAlign}`}>
+      <a href={titleLink ? `/${deck.id}/` : '#'}>
+        <h1 className='mb-0 text-dark'>{deck.title}</h1>
+      </a>
       <a href={`/profiles/u/${deck.author.username}/`} className='text-secondary mb-0'>
-        Created by {`${deck.author.first_name} ${deck.author.last_name} | @${deck.author.username}`}
+        Created by {`${deck.author.first_name} ${deck.author.last_name} @${deck.author.username}`}
       </a>
       <p className='text-secondary mb-3'>
         <DisplayCount>{deck.num_thanks}</DisplayCount> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
@@ -100,39 +103,41 @@ export function DeckDetail(props) {
           inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
         }}
       />
-      <div className='mb-1'>
-        <ButtonGroup>
-          <Button onClick={handleBrowseSwitch}>
-            {browsingState === 'FLASHCARDS' ? 'Display Comments' : 'Display Flashcards'}
-          </Button>
-        </ButtonGroup>
-      </div>
-      <div className={browsingState !== 'COMMENTS' ? 'd-none' : ''}>
+      {hideExtras ? null : <div>
+        <div className='mb-1'>
+          <ButtonGroup>
+            <Button onClick={handleBrowseSwitch}>
+              {browsingState === 'FLASHCARDS' ? 'Display Comments' : 'Display Flashcards'}
+            </Button>
+          </ButtonGroup>
+        </div>
+        <div className={browsingState !== 'COMMENTS' ? 'd-none' : ''}>
+            <hr />
+            <div>
+              <h2>Comments</h2>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map((comment, index) => {
+                return (
+                  <div key={`comment-${index}`}>
+                    <p>Comment #{index}</p>
+                  </div>
+                );
+              })}
+            </div>
+        </div>
+        <div className={browsingState !== 'FLASHCARDS' ? 'd-none' : ''}>
           <hr />
-          <div>
-            <h2>Comments</h2>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map((comment, index) => {
-              return (
-                <div key={`comment-${index}`}>
-                  <p>Comment #{index}</p>
-                </div>
-              );
-            })}
-          </div>
-      </div>
-      <div className={browsingState !== 'FLASHCARDS' ? 'd-none' : ''}>
-        <hr />
-        <div className='text-center'>
-          <h2>Example flashcards</h2>
-          <h5>{`(${deck.flashcards.length} in total, ${Math.min(deck.flashcards.length, 10)} displayed)`}</h5>
-          {currentUsername === deck.author.username ? null :
-            <DeckForeignUserButtonGroup deck={deck} handleThankDeck={handleThankDeck} thankBtnLabel={thankBtnLabel} />
-          }
-          <div>
-            <FlashCardsList flashcardList={deck.flashcards.slice(0, 10)} foreignUser={true} />
+          <div className='text-center'>
+            <h2>Example flashcards</h2>
+            <h5>{`(${deck.flashcards.length} in total, ${Math.min(deck.flashcards.length, 10)} displayed)`}</h5>
+            {currentUsername === deck.author.username ? null :
+              <DeckForeignUserButtonGroup deck={deck} handleThankDeck={handleThankDeck} thankBtnLabel={thankBtnLabel} />
+            }
+            <div>
+              <FlashCardsList flashcardList={deck.flashcards.slice(0, 10)} foreignUser={true} />
+            </div>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

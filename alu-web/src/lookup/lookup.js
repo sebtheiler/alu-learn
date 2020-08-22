@@ -111,6 +111,11 @@ export function apiDeckThank(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/thank/`, callback);
 };
 
+// Searches for decks based on a query
+export function apiDeckSearch(query, callback) {
+  backendLookup('GET', `decks/search/?q=${query}/`, callback);
+};
+
 // Gets detail information about a profile, such as bio, name, username, etc.
 export function apiProfileDetail(username, callback) {
   backendLookup('GET', `profiles/${username}/detail/`, callback);
