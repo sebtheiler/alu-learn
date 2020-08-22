@@ -1,7 +1,19 @@
 from django.conf import settings
 from rest_framework import serializers
 
-from .models import Profile, Notification
+from .models import Profile, Notification, ProfileBadge
+
+
+class ProfileBadgeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfileBadge
+        fields = [
+            'choosen',
+            'full_title',
+            'short_title',
+            'color',
+            'id',
+        ]
 
 
 class PublicProfileSerializer(serializers.ModelSerializer):
@@ -11,6 +23,7 @@ class PublicProfileSerializer(serializers.ModelSerializer):
     friend_count = serializers.SerializerMethodField(read_only=True)
     is_friend = serializers.SerializerMethodField(read_only=True)
     you_are_pending = serializers.SerializerMethodField(read_only=True)
+    badges = ProfileBadgeSerializer(read_only=True, many=True)
 
     class Meta:
         # Don't forget to update documentation in profiles/api/views.py!
@@ -25,6 +38,7 @@ class PublicProfileSerializer(serializers.ModelSerializer):
             'friend_count',
             'is_friend',
             'you_are_pending',
+            'badges',
             'total_thanks_recieved',
         ]
 

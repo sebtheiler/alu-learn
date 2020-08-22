@@ -41,6 +41,14 @@ class Notification(models.Model):
         return f'{self.title}: {self.description} | {self.category}'
 
 
+class ProfileBadge(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='badges')
+    choosen = models.BooleanField(default=False)
+    full_title = models.CharField(max_length=32)
+    short_title = models.CharField(max_length=16)
+    color = models.CharField(max_length=32)
+
+
 # When a user is saved, create a corresponding Profile object
 def user_did_save(sender, instance, created, *args, **kwargs):
     if created:
