@@ -4,11 +4,10 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {ProfileBadgeComponent} from './profiles';
 import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
-import {FlashCardCreateComponent, FlashCardsList} from './flashcards';
+import {FlashCardCreateComponent, FlashCardsList, FlashCardSearchComponent} from './flashcards';
 import {StudyComponent, CustomStudyComponent} from './study';
 import {NotificationComponent} from './notifications';
-import {ExploreComponent} from './explore';
-import {SearchComponent} from './search';
+import {ExploreComponent, DeckSearchComponent} from './explore';
 
 const e = React.createElement;
 
@@ -62,9 +61,14 @@ if (exploreElement) {
   ReactDOM.render(e(ExploreComponent, exploreElement.dataset), exploreElement);
 };
 
-const searchElement = document.getElementById('search-component')
-if (searchElement) {
-  ReactDOM.render(e(SearchComponent, searchElement.dataset), searchElement);
+const flashcardSearchElement = document.getElementById('flashcard-search-component')
+if (flashcardSearchElement) {
+  ReactDOM.render(e(FlashCardSearchComponent, flashcardSearchElement.dataset), flashcardSearchElement);
+};
+
+const deckSearchElement = document.getElementById('deck-search-component')
+if (deckSearchElement) {
+  ReactDOM.render(e(DeckSearchComponent, deckSearchElement.dataset), deckSearchElement);
 };
 
 // If you want your app to work offline and load faster, you can change

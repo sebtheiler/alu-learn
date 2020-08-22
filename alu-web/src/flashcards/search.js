@@ -1,14 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import {Form, Button} from 'react-bootstrap';
 import {apiDeckSharedList, apiFlashCardSearch} from '../lookup';
-import {FlashCardsList} from '../flashcards';
+import {FlashCardsList} from '.';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css'; // or include from a CDN
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 
 // TODO: split this component in multiple components
 // It is a horrible piece of code
-export function SearchComponent(props) {
+export function FlashCardSearchComponent(props) {
   const {username} = props;
   const [decks, setDecks] = useState([]);
   const [searchedFlashcards, setSearchedFlashcards] = useState([]);
