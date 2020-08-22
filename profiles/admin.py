@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, Notification
+from .models import Profile, Notification, ProfileBadge
 
 # class ProfileAdmin(admin.ModelAdmin):
 
@@ -57,3 +57,4 @@ from .models import Profile, Notification
 
 admin.site.register(Profile)
 admin.site.register(Notification)
+admin.site.register(ProfileBadge)

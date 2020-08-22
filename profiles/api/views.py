@@ -7,8 +7,8 @@ from rest_framework.decorators import (api_view, authentication_classes,
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import Profile, Notification
-from ..serializers import PublicProfileSerializer, NotificationSerializer
+from ..models import Profile, Notification, ProfileBadge
+from ..serializers import PublicProfileSerializer, NotificationSerializer, ProfileBadgeSerializer
 
 
 User = get_user_model()
@@ -225,5 +225,29 @@ def notification_read_api_view(request, username, *args, **kwargs):
             Notification.objects.filter(profile__user=user, read=False),
             many=True,
         ).data, status=200)
-    else:
-        return Response({'message': f'Method {request.method} not allowed'}, status=405)
+
+
+@api_view(['POST'])
+def profile_badge_create_api_view(request, username, *args, **kwargs):
+    """
+    Give a profile a badge - POST
+
+    Requried information:
+        `username`: (URL) Username of the profile to give a badge to
+        `identifier`: (Data) Identifier of the badge to give. This is from a given list in `alu-web/badges/identifiers.js`, however is not verified upon creation.
+    
+    Possible errors:
+        Unknown username: 404, User not found
+        Not identifier specified: 400, Identifier not specified
+    """
+    identifier = request.data.get('identifier')
+    if identifier is None:
+        return Response({'message': 'Identifier not specified'}, status=400)
+
+    profiles_qs = Profile.objects.filter(user__username=username)
+    if not profiles_qs.exists():
+        return Response({'message': 'User not found'}, status=404)
+    profile = profiles_qs.first()
+
+    new_badge = ProfileBadge.objects.create(profile=profile, identifier=identifier)
+    return Response(ProfileBadgeSerializer(new_badge).data, status=201)

@@ -44,14 +44,16 @@ class Notification(models.Model):
 class ProfileBadge(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='badges')
     choosen = models.BooleanField(default=False)
-    full_title = models.CharField(max_length=32)
-    short_title = models.CharField(max_length=16)
-    color = models.CharField(max_length=32)
+    identifier = models.CharField(max_length=32)
+
+    def __str__(self):
+        return f'"{self.identifier}" badge for @{profile.username}'
 
 
 # When a user is saved, create a corresponding Profile object
 def user_did_save(sender, instance, created, *args, **kwargs):
     if created:
         Profile.objects.get_or_create(user=instance)
+        # TODO: create welcoming notification
 
 post_save.connect(user_did_save, sender=User)
