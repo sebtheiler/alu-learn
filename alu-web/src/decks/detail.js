@@ -86,31 +86,33 @@ export function DeckDetail(props) {
 
   return (
     <div className={`text-${textAlign}`}>
-      <a href={titleLink ? `/${deck.id}/` : '#'}>
-        <h1 className='mb-0 text-dark'>{deck.title}</h1>
-      </a>
-      <a href={`/profiles/u/${deck.author.username}/`} className='text-secondary mb-0'>
-        Created by {`${deck.author.first_name} ${deck.author.last_name} @${deck.author.username}`}
-      </a>
-      <p className='text-secondary mb-3'>
-        <DisplayCount>{deck.num_thanks}</DisplayCount> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
-      </p>
-      <ReactMarkdown
-        source={deck.description}
-        plugins={[RemarkMathPlugin]}
-        renderers={{
-          math: ({ value }) => <BlockMath>{value}</BlockMath>,
-          inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
-        }}
-      />
-      {hideExtras ? null : <div>
-        <div className='mb-1'>
+      <div>
+        <a href={titleLink ? `/${deck.id}/` : null}>
+          <h1 className='mb-0 text-dark'>{deck.title}</h1>
+        </a>
+        <a href={`/profiles/u/${deck.author.username}/`} className='text-secondary mb-0'>
+          Created by {`${deck.author.first_name} ${deck.author.last_name} @${deck.author.username}`}
+        </a>
+        <p className='text-secondary mb-3'>
+          <DisplayCount>{deck.num_thanks}</DisplayCount> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
+        </p>
+        <ReactMarkdown
+          source={deck.description}
+          plugins={[RemarkMathPlugin]}
+          renderers={{
+            math: ({ value }) => <BlockMath>{value}</BlockMath>,
+            inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
+          }}
+        />
+        <div className={'mb-1' + (hideExtras ? ' d-none' : '')}>
           <ButtonGroup>
             <Button onClick={handleBrowseSwitch}>
               {browsingState === 'FLASHCARDS' ? 'Display Comments' : 'Display Flashcards'}
             </Button>
           </ButtonGroup>
         </div>
+      </div>
+      {hideExtras ? null : <div>
         <div className={browsingState !== 'COMMENTS' ? 'd-none' : ''}>
             <hr />
             <div>

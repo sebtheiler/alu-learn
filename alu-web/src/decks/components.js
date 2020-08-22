@@ -84,7 +84,7 @@ export function DeckDetailComponent(props) {
     <DeckDetail
       deck={deck}
       currentUsername={currentUsername}
-      textAlign='center'
+      textAlign='left'
     />
   );
 };
