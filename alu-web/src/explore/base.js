@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {apiExploreLists} from '../lookup';
 import {DeckSlider} from './components';
+import {ExploreButtonGroup} from './buttons';
 
 
 export function ExploreComponent(props) {
@@ -26,8 +27,9 @@ export function ExploreComponent(props) {
     <div>
       <div>
         <h1>Explore</h1>
-        <p>Find the top decks to study.</p>
+        <p>Find decks of flashcards created by others to help you study.</p>
       </div>
+      <ExploreButtonGroup />
       <hr />
       <div className='mb-5'>
         <h3>Editor's picks</h3>
