@@ -9,9 +9,7 @@ class ProfileBadgeSerializer(serializers.ModelSerializer):
         model = ProfileBadge
         fields = [
             'choosen',
-            'full_title',
-            'short_title',
-            'color',
+            'identifier',
             'id',
         ]
 
