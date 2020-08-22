@@ -15,6 +15,10 @@ from ..models import Deck, FlashCard, DeckThank
 from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer
 from profiles.models import Profile
 
+# For calculating advanced string similarities (used in searching)
+# pip install fuzzywuzzy
+# pip install fuzzywuzzy[speedup]
+from fuzzywuzzy import process, fuzz
 
 @api_view(['POST'])
 @authentication_classes([SessionAuthentication])
@@ -536,7 +540,8 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-# TODO: BUG: Bugs with leech searching????
+# TODO: this should probably be moved to a GET
+# It can also probably be optimized with the number of SQL operations
 def flashcard_search_view(request, *args, **kwargs):
     """
     Searches for flashcards based on some parameters - POST
@@ -619,3 +624,33 @@ def flashcard_search_view(request, *args, **kwargs):
 
     # Return
     return Response(FlashCardSerializer(flashcard_qs, many=True).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def deck_search_view(request, *args, **kwargs):
+    """
+    Searches for decks based on a query - GET
+
+    Required information:
+        `q`: (GET) Query for searching
+    
+    Possible errors:
+        No query {'message': 'Please specify a query'}
+
+    Returns:
+        A list of decks (DeckSerializer)
+    """
+    query = request.GET.get('q')
+    if query is None:
+        return Response({'message': 'Please specify a query'}, status=400)
+
+    deck_qs = Deck.objects.filter(sharing_setting='PUBLIC')
+
+    # This is horribly inefficient
+    # TODO: Custom SQL??
+    # TODO: caching???
+    sorting_function = lambda deck: -fuzz.token_set_ratio(query, deck.description)*(deck.thanks.count() + 1)
+    sorted_qs = sorted(deck_qs, key=sorting_function)
+
+    return Response(DeckSerializer(sorted_qs, many=True).data, status=200)
