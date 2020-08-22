@@ -85,7 +85,7 @@ export function DeckDetail(props) {
   };
 
   return (
-    <div className={`link-${textAlign}`}>
+    <div className={`text-${textAlign}`}>
       <a href={titleLink ? `/${deck.id}/` : '#'}>
         <h1 className='mb-0 text-dark'>{deck.title}</h1>
       </a>
