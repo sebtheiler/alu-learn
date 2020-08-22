@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.http import JsonResponse
 from django.utils.http import is_safe_url
 from django.utils import timezone
@@ -650,7 +651,11 @@ def deck_search_view(request, *args, **kwargs):
     # This is horribly inefficient
     # TODO: Custom SQL??
     # TODO: caching???
-    sorting_function = lambda deck: -fuzz.token_set_ratio(query, deck.description)*(deck.thanks.count() + 1)
-    sorted_qs = sorted(deck_qs, key=sorting_function)
+    sorting_function = lambda deck: -(
+        +fuzz.token_set_ratio(query, deck.description)*1.0
+        +fuzz.token_set_ratio(query, deck.title)      *2.0
+        +(deck.thanks.count() + 1)                    *0.005
+    )
+    sorted_qs = sorted(deck_qs, key=sorting_function)[:settings.DECK_SEARCH_RESULT_LIMIT]
 
     return Response(DeckSerializer(sorted_qs, many=True).data, status=200)
