@@ -24,7 +24,7 @@ export function ExploreComponent(props) {
   }, [setDecks, decksDidSet, setDecksDidSet]);
 
   return (
-    <div>
+    <>
       <div>
         <h1>Explore</h1>
         <p>Find decks of flashcards created by others to help you study.</p>
@@ -43,6 +43,6 @@ export function ExploreComponent(props) {
         <h3>Top decks of all time</h3>
         <DeckSlider decks={decks.TOP} loading={!decksDidSet} />
       </div>
-    </div>
+    </>
   );
 };

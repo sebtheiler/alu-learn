@@ -121,7 +121,7 @@ export function FlashCardSearchComponent(props) {
   };
 
   return (
-    <div>
+    <>
       <Form className='text-center mx-auto w-75' onSubmit={handleSubmit}>
         <Form.Group>
           <Form.Label as='h5'>Search in the following decks (use control/command to select multiple)</Form.Label>
@@ -214,6 +214,6 @@ export function FlashCardSearchComponent(props) {
           : <h5>No results! Maybe try a less specific search, or check your parameters?</h5>
         ) : null}
       </div>
-    </div>
+    </>
   );
 };

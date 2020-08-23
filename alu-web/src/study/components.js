@@ -115,7 +115,7 @@ export function StudyComponent(props) {
   };
 
   return (
-    <div>
+    <>
       <div className={'text-center' + (finishedStudying ? '' : ' d-none')}>
         <p>Congratulations! You've finished studying this deck!</p>
         {flashcardList ? null :
@@ -133,7 +133,7 @@ export function StudyComponent(props) {
           />
         }
       </div>
-    </div>
+    </>
   );
 };
 

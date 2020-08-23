@@ -24,7 +24,7 @@ export function DeckSearchComponent(props) {
   };
 
   return (
-    <div>
+    <>
       <div className='text-center'>
         <h2>Search for Decks</h2>
         <Form onSubmit={handleSubmit}>
@@ -43,7 +43,7 @@ export function DeckSearchComponent(props) {
         {
           retrievedDecks.map((deck, index) => {
             return (
-              <div>
+              <>
                 <DeckDetail
                   deck={deck}
                   key={`deck-${index}`}
@@ -52,11 +52,11 @@ export function DeckSearchComponent(props) {
                   textAlign='left'
                 />
                 <hr />
-              </div>
+              </>
             );
           })
         }
       </div>
-    </div>
+    </>
   );
 }

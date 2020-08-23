@@ -83,7 +83,7 @@ export function NotificationComponent(props) {
 
   if (isPopup) {
     return (
-      <div>
+      <>
         <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
           <Button
             onClick={(event) => {event.preventDefault(); setHasUnreadNotifs(false);}}
@@ -93,16 +93,16 @@ export function NotificationComponent(props) {
             Notifications
           </Button>
         </OverlayTrigger>
-      </div>
+      </>
     );
   } else {
     return (
-      <div>
+      <>
         <h2>All Notifications</h2>
         {notifList.map((notif, index) => {
           return <Notification notif={notif} read={notif.read} key={index} />
         })}
-      </div>
+      </>
     );
   };
 };

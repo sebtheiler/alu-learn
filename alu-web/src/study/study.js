@@ -31,7 +31,7 @@ export function StudyElement(props) {
   const interval4 = getInterval(currentCard, 4)
 
   return (
-    <div>
+    <>
       <div className='col-md-12 text-center'style={{minWidth: '200px'}}>
         <ReactMarkdown
           source={currentCard ? currentCard.front_text : null}
@@ -90,6 +90,6 @@ export function StudyElement(props) {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 };

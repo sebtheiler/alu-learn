@@ -33,7 +33,7 @@ function ProfileBadge(props) {
   };
 
   return user ? (
-    <div>
+    <>
       <UserPicture user={user} />
       <p className='mb-0'><UserLink user={user} includeFullName noLink /></p>
       <small className='mt-0 text-secondary'>
@@ -49,7 +49,7 @@ function ProfileBadge(props) {
         <Button onClick={handleFriendToggle} variant='primary'>{currentVerb}</Button> :
         <Button href='/profiles/edit/' variant='primary'>Edit Profile</Button>
       }
-    </div>
+    </>
   ) : null;
 };
 

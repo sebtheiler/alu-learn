@@ -29,11 +29,11 @@ export function BadgeComponent(props) {
   };
 
   return (
-    <span>
+    <>
       {showAll
         ? profile.badges.map(badge => (badge.chosen ? individualBadge(identifierDict[badge.identifier], profile.username) : null))
         : individualBadge(identifierDict[profile.badges.filter(badge => badge.chosen)[0].identifier])
       }
-    </span>
+    </>
   );
 };

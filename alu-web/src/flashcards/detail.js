@@ -74,10 +74,10 @@ export function FlashCard(props) {
       </div>
       <div className='text-center mx-auto w-50' style={{wordWrap: 'break-word'}}>
         {flashcard.tags ? 
-          <div>
+          <>
             Tags: <br />
             {flashcard.tags}
-          </div>
+          </>
         : null}
       </div>
       {foreignUser ? null : 
