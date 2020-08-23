@@ -70,7 +70,7 @@ class FlashCard(models.Model):
 
     next_review = models.DateTimeField()
     graduated = models.BooleanField(default=False)
-    ease = models.IntegerField(default=250) # divided by 100 in calculations TODO: Make 250 customizable
+    ease = models.IntegerField(default=250) # in percent TODO: Make 250 customizable
     interval = models.IntegerField(default=0)
 
     is_suspended = models.BooleanField(default=False)
