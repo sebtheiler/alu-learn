@@ -12,7 +12,7 @@ export function BadgeComponent(props) {
         overlay={generateTooltip(badge.description)}
         placement='right'
         delay={{ show: 20, hide: 200 }}
-        key={username ? `${badge.identifier}-${username}` : null}
+        key={username ? `${badge.shortTitle}-${username}` : null}
       >
         <Badge
           style={{
@@ -28,12 +28,19 @@ export function BadgeComponent(props) {
     );
   };
 
-  return (
-    <>
-      {showAll
-        ? profile.badges.map(badge => (badge.chosen ? individualBadge(identifierDict[badge.identifier], profile.username) : null))
-        : individualBadge(identifierDict[profile.badges.filter(badge => badge.chosen)[0].identifier])
-      }
-    </>
-  );
+  const chosenBadge = profile.badges.filter(badge => badge.chosen)[0];
+  if (chosenBadge) {
+    return (
+      <>
+        {showAll
+          ? profile.badges.map(badge => (badge.chosen ? individualBadge(identifierDict[badge.identifier], profile.username) : null))
+          : individualBadge(identifierDict[chosenBadge.identifier])
+        }
+      </>
+    );
+  } else {
+    // I don't know why this happens
+    // TODO:
+    return null;
+  };
 };

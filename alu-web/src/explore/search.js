@@ -3,8 +3,7 @@ import {Button, Form} from 'react-bootstrap';
 import {apiDeckSearch} from '../lookup';
 import {DeckDetail} from '../decks';
 
-export function DeckSearchComponent(props) {
-  // const {} = props;
+export function DeckSearchComponent(_props) {
   const searchQueryRef = React.createRef();
   const [searchBtnLabel, setSearchBtnLabel] = useState('Search!');
   const [retrievedDecks, setRetrievedDecks] = useState([]);
@@ -43,20 +42,19 @@ export function DeckSearchComponent(props) {
         {
           retrievedDecks.map((deck, index) => {
             return (
-              <>
+              <React.Fragment key={`deck-${index}`}>
                 <DeckDetail
                   deck={deck}
-                  key={`deck-${index}`}
                   hideExtras={true}
                   titleLink={true}
                   textAlign='left'
                 />
                 <hr />
-              </>
+              </React.Fragment>
             );
           })
         }
       </div>
     </>
   );
-}
+};

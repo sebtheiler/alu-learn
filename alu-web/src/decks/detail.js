@@ -3,7 +3,7 @@ import {DeckDefaultButtonGroup, DeckForeignUserButtonGroup} from './buttons';
 import {FlashCardsList} from '../flashcards';
 import {apiDeckThank} from '../lookup';
 import {DisplayCount} from '../utils';
-import {BadgeComponent} from '../profile-badges';
+import {UserLink} from '../profiles';
 import {Card, ButtonGroup, Button} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import RemarkMathPlugin from 'remark-math';
@@ -13,7 +13,7 @@ import 'katex/dist/katex.min.css';
 // Display an individual deck
 // This is used on pages displaying multiple decks
 export function Deck(props) {
-  const {deck, showUsername, currentUsername} = props; // JSON data with attributes such as `id` and `author`
+  const {deck, currentUsername} = props; // JSON data with attributes such as `id` and `author`
   const className = props.className ? props.className : 'col-10 mx-auto col-md-6';
   
   // If this is a detail view, i.e., we are not looking at a list of other decks,
@@ -34,13 +34,6 @@ export function Deck(props) {
       <Card className='border-0'>
         <Card.Body>
           <Card.Title className='mb-0'>{deck.title}</Card.Title>
-          {!showUsername ? null :
-            <a href={`/profiles/u/${deck.author.username}`}>
-              <small className='text-secondary'>
-              {deck.author.first_name} {deck.author.last_name} - @{deck.author.username} <BadgeComponent profile={deck.author} />
-              </small>
-            </a>
-          }
           <Card.Text>{deck.description}</Card.Text>
           <ButtonGroup>
             {currentUsername === deck.author.username ?
@@ -60,7 +53,6 @@ export function DeckDetail(props) {
   const textAlign = props.textAlign ? props.textAlign : 'center';
   const [browsingState, setBrowsingState] = useState('FLASHCARDS');
   const [thankBtnLabel, setThankBtnLabel] = useState(deck.you_have_thanked ? 'Thanked' : 'Thank');
-  console.log(deck, currentUsername);
 
   const handleBrowseSwitch = (event) => {
     event.preventDefault();
@@ -91,9 +83,7 @@ export function DeckDetail(props) {
         <a href={titleLink ? `/${deck.id}/` : null}>
           <h1 className='mb-0 text-dark'>{deck.title}</h1>
         </a>
-        <a href={`/profiles/u/${deck.author.username}/`} className='text-secondary mb-0'>
-          Created by {`${deck.author.first_name} ${deck.author.last_name} @${deck.author.username}`}
-        </a> <BadgeComponent profile={deck.author} />
+        <UserLink user={deck.author} />
         <p className='text-secondary mb-3'>
           <DisplayCount>{deck.num_thanks}</DisplayCount> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
         </p>
