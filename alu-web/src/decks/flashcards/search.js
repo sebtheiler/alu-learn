@@ -37,7 +37,7 @@ export function FlashCardSearchComponent(props) {
   const containsSelectRef = React.createRef();
   const suspendedSelectRef = React.createRef();
   const leechSelectRef = React.createRef();
-  const graduatedSelectRef = React.createRef();
+  const learningStatusSelectRef = React.createRef();
   const minEaseSelectRef = React.createRef();
   const maxEaseSelectRef = React.createRef();
 
@@ -53,7 +53,7 @@ export function FlashCardSearchComponent(props) {
       const containsSelectRefCurrentValue = containsSelectRef.current.value;
       const suspendedSelectRefCurrentValue = suspendedSelectRef.current.value;
       const leechSelectRefCurrentValue = leechSelectRef.current.value;
-      const graduatedSelectRefCurrentValue = graduatedSelectRef.current.value;
+      const learningStatusSelectRefCurrentValue = learningStatusSelectRef.current.value;
       const minEaseSelectRefCurrentValue = minEaseSelectRef.current.value;
       const maxEaseSelectRefCurrentValue = maxEaseSelectRef.current.value;
       apiFlashCardSearch(
@@ -62,7 +62,7 @@ export function FlashCardSearchComponent(props) {
         containsSelectRefCurrentValue ? containsSelectRefCurrentValue : null,
         suspendedSelectRefCurrentValue !== 'ANY' ? suspendedSelectRefCurrentValue === 'SUSPENDED' : null,
         leechSelectRefCurrentValue !== 'ANY' ? leechSelectRefCurrentValue === 'LEECH' : null,
-        graduatedSelectRefCurrentValue !== 'ANY' ? graduatedSelectRefCurrentValue === 'GRADUATED' : null,
+        learningStatusSelectRefCurrentValue !== 'ANY' ? learningStatusSelectRefCurrentValue : null,
         parseInt(minEaseSelectRefCurrentValue),
         parseInt(maxEaseSelectRefCurrentValue),
         (response, status) => {
@@ -76,7 +76,7 @@ export function FlashCardSearchComponent(props) {
               containsSelectRefCurrentValue,
               suspendedSelectRefCurrentValue,
               leechSelectRefCurrentValue,
-              graduatedSelectRefCurrentValue,
+              learningStatusSelectRefCurrentValue,
               minEaseSelectRefCurrentValue,
               maxEaseSelectRefCurrentValue,
             ));
@@ -94,7 +94,7 @@ export function FlashCardSearchComponent(props) {
       containsSelectRefCurrentValue,
       suspendedSelectRefCurrentValue,
       leechSelectRefCurrentValue,
-      graduatedSelectRefCurrentValue,
+      learningStatusSelectRefCurrentValue,
       minEaseSelectRefCurrentValue,
       maxEaseSelectRefCurrentValue,
     ) => {
@@ -103,7 +103,7 @@ export function FlashCardSearchComponent(props) {
     const tags = (tagSelectRefCurrentValue ? tagSelectRefCurrentValue.split(',').map(tag => tag.trim()) : '').toString();
     const suspended = suspendedSelectRefCurrentValue !== 'ANY' ? (suspendedSelectRefCurrentValue === 'SUSPENDED').toString() : '';
     const leech = leechSelectRefCurrentValue !== 'ANY' ? (leechSelectRefCurrentValue === 'LEECH').toString() : '';
-    const graduated = graduatedSelectRefCurrentValue !== 'ANY' ? (graduatedSelectRefCurrentValue === 'GRADUATED').toString() : '';
+    const learningStatus = learningStatusSelectRefCurrentValue !== 'ANY' ? learningStatusSelectRefCurrentValue : '';
 
     const returnUrl = (
       '/customstudy/?' +
@@ -112,7 +112,7 @@ export function FlashCardSearchComponent(props) {
       (containsSelectRefCurrentValue ? '&contains=' + containsSelectRefCurrentValue : '') +
       (suspended ? '&suspended=' + suspended : '') +
       (leech ? '&leech=' + leech : '') +
-      (graduated ? '&graduated=' + graduated : '') +
+      (learningStatus ? '&learningStatus=' + learningStatus : '') +
       (minEaseSelectRefCurrentValue ? '&minEase=' + minEaseSelectRefCurrentValue : '') +
       (maxEaseSelectRefCurrentValue ? '&maxEase=' + maxEaseSelectRefCurrentValue : '')
     ).replace('&', ''); // removes first, arbitrary '&'
@@ -163,11 +163,12 @@ export function FlashCardSearchComponent(props) {
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label as='h5'>Is the card graduated?</Form.Label>
-          <Form.Control as='select' ref={graduatedSelectRef}>
+          <Form.Label as='h5'>What is the card's learning status?</Form.Label>
+          <Form.Control as='select' ref={learningStatusSelectRef}>
             <option value='ANY'>Any</option>
-            <option value='GRADUATED'>Graduated</option>
-            <option value='NOTGRADUATED'>Not graduated</option>
+            <option value='LEARNED'>Learned</option>
+            <option value='LEARNING'>Learning</option>
+            <option value='RELEARNING'>Re-learning</option>
           </Form.Control>
         </Form.Group>
         <hr />

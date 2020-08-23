@@ -68,10 +68,17 @@ class FlashCard(models.Model):
     # audio (front/back)
     # image (front/back)
 
-    next_review = models.DateTimeField()
-    graduated = models.BooleanField(default=False)
+    LEARNING_STATUS_CHOICES = [
+        ('LEARNING', 'Learning'),
+        ('LEARNED', 'Learned'),
+        ('RELEARNING', 'Relearning'),
+    ]
+
+    learning_status = models.CharField(max_length=10, choices=LEARNING_STATUS_CHOICES, default='LEARNING')
+    steps_index = models.IntegerField(default=0)
     ease = models.IntegerField(default=250) # in percent TODO: Make 250 customizable
-    interval = models.IntegerField(default=0)
+    next_review = models.DateTimeField()
+    interval = models.IntegerField(default=0) # in days
 
     is_suspended = models.BooleanField(default=False)
     is_leech = models.BooleanField(default=False)

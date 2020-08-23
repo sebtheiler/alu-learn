@@ -22,10 +22,12 @@ class FlashCardAdmin(admin.ModelAdmin):
             'next_review',
         )}),
         ('Advanced options', {'fields': (
-            'graduated',
+            'learning_status',
             'ease',
             'is_suspended',
             'is_leech',
+            'interval',
+            'steps_index',
         ), 'classes': ('collapse',)})
     ]
     class Meta:
