@@ -14,7 +14,7 @@ export function UserLink(props) {
       {nameDisplay}
       {/* eslint-disable-next-line */ /* This is so it doesn't complain about a null href*/}
       <a href={noLink ? null : `/profiles/u/${user.username}`}>@{user.username}</a>{' '}
-      <BadgeComponent profile={user} />
+      <BadgeComponent profile={user} showAll={true} />
     </React.Fragment>);
 };
 
