@@ -8,7 +8,7 @@ class ProfileBadgeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileBadge
         fields = [
-            'choosen',
+            'chosen',
             'identifier',
             'id',
         ]

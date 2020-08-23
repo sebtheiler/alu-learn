@@ -3,6 +3,7 @@ import {DeckDefaultButtonGroup, DeckForeignUserButtonGroup} from './buttons';
 import {FlashCardsList} from '../flashcards';
 import {apiDeckThank} from '../lookup';
 import {DisplayCount} from '../utils';
+import {BadgeComponent} from '../profile-badges';
 import {Card, ButtonGroup, Button} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import RemarkMathPlugin from 'remark-math';
@@ -92,7 +93,7 @@ export function DeckDetail(props) {
         </a>
         <a href={`/profiles/u/${deck.author.username}/`} className='text-secondary mb-0'>
           Created by {`${deck.author.first_name} ${deck.author.last_name} @${deck.author.username}`}
-        </a>
+        </a> <BadgeComponent profile={deck.author} />
         <p className='text-secondary mb-3'>
           <DisplayCount>{deck.num_thanks}</DisplayCount> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
         </p>

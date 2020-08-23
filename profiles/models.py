@@ -43,7 +43,7 @@ class Notification(models.Model):
 
 class ProfileBadge(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='badges')
-    choosen = models.BooleanField(default=False)
+    chosen = models.BooleanField(default=False)
     identifier = models.CharField(max_length=32)
 
     def __str__(self):
