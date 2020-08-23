@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import {ProfileBadgeComponent} from './profiles';
+import {ProfileInformationComponent} from './profiles';
 import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
 import {FlashCardCreateComponent, FlashCardsList, FlashCardSearchComponent} from './flashcards';
 import {StudyComponent, CustomStudyComponent} from './study';
@@ -21,9 +21,9 @@ deckDetailElements.forEach(container => {
   ReactDOM.render(e(DeckDetailComponent, container.dataset), container);
 });
 
-const userProfileBadgeElements = document.querySelectorAll('.profile-badge');
-userProfileBadgeElements.forEach(container => {
-  ReactDOM.render(e(ProfileBadgeComponent, container.dataset), container);
+const userProfileInfoElements = document.querySelectorAll('.profile-info');
+userProfileInfoElements.forEach(container => {
+  ReactDOM.render(e(ProfileInformationComponent, container.dataset), container);
 });
 
 const deckFeedElement = document.getElementById('decks-feed');

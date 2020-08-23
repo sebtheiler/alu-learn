@@ -1,7 +1,7 @@
 import {UserLink} from './components';
-import {ProfileBadgeComponent} from './badge';
+import {ProfileInformationComponent} from './information';
 
 export {
     UserLink,
-    ProfileBadgeComponent,
+    ProfileInformationComponent,
 }

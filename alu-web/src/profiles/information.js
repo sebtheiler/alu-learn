@@ -7,7 +7,7 @@ import {Button} from 'react-bootstrap';
 
 // Function for displaying user information such as bio, friendcount, location, etc.
 // as well as an 'Add/Remove Friend' button
-function ProfileBadge(props) {
+function ProfileInformation(props) {
   const {user, didFriendToggle, profileLoading, viewingOwnProfile} = props;
 
   if (viewingOwnProfile === false) {
@@ -53,9 +53,8 @@ function ProfileBadge(props) {
 };
 
 
-// Component for profile badge
-// This will need to be updated when friending requires consent from both parties
-export function ProfileBadgeComponent(props) {
+// Component for profile information
+export function ProfileInformationComponent(props) {
   const {username, currentUserUsername} = props;
   const [didLookup, setDidLookup] = useState(false);
   const [profile, setProfile] = useState(null);
@@ -110,7 +109,7 @@ export function ProfileBadgeComponent(props) {
 
   return didLookup === false ? 'Loading...' :
     (profile ?
-      <ProfileBadge
+      <ProfileInformation
         user={profile}
         viewingOwnProfile={viewingOwnProfile}
         didFriendToggle={handleNewFriend}
