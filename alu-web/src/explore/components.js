@@ -2,6 +2,7 @@ import React from 'react';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './explore.css';
+import {BadgeComponent} from '../profile-badges';
 import Slider from 'react-slick';
 
 export function DeckSlider(props) {
@@ -61,7 +62,7 @@ export function DeckSlider(props) {
               </a>
               <a href={`/profiles/u/${deck.author.username}/`}>
                 <small className='mt-0 text-secondary'>
-                  {deck.author.first_name} {deck.author.last_name} - @{deck.author.username}
+                  {deck.author.first_name} {deck.author.last_name} - @{deck.author.username} <BadgeComponent profile={deck.author} />
                 </small>
               </a>
               <a href={`/${deck.id}/`}>

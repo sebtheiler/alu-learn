@@ -37,7 +37,7 @@ export function Deck(props) {
           {!showUsername ? null :
             <a href={`/profiles/u/${deck.author.username}`}>
               <small className='text-secondary'>
-              {deck.author.first_name} {deck.author.last_name} - @{deck.author.username}
+              {deck.author.first_name} {deck.author.last_name} - @{deck.author.username} <BadgeComponent profile={deck.author} />
               </small>
             </a>
           }
