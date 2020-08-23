@@ -1,7 +1,7 @@
 import React from 'react';
-import {apiFlashCardCreate, apiFlashCardEdit, apiFlashCardDetail} from '../lookup';
+import {apiFlashCardCreate, apiFlashCardEdit, apiFlashCardDetail} from '../../lookup';
 import {Button, Form, OverlayTrigger} from 'react-bootstrap';
-import {generateTooltip} from '../utils';
+import {generateTooltip} from '../../utils';
 
 
 // Function for card create form

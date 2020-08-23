@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Popover, OverlayTrigger, Button} from 'react-bootstrap';
 
 import {Notification} from './detail';
-import {apiNotificationList, apiNotificationRead} from '../lookup';
+import {apiNotificationList, apiNotificationRead} from '../../lookup';
 
 export function NotificationComponent(props) {
   const {username, isPopup} = props;

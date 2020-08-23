@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail, apiFlashCardDateUpdate, apiFlashCardSearch} from '../lookup';
+import {apiDeckDetail, apiFlashCardDateUpdate, apiFlashCardSearch} from '../../lookup';
 import {StudyElement} from './study';
 import {getInterval} from './algorithm'
 import {Button} from 'react-bootstrap';

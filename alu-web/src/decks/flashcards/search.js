@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Form, Button} from 'react-bootstrap';
-import {apiDeckSharedList, apiFlashCardSearch} from '../lookup';
+import {apiDeckSharedList, apiFlashCardSearch} from '../../lookup';
 import {FlashCardsList} from '.';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css'; // or include from a CDN

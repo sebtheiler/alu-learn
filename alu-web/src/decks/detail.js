@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {DeckDefaultButtonGroup, DeckForeignUserButtonGroup} from './buttons';
-import {FlashCardsList} from '../flashcards';
+import {FlashCardsList} from './flashcards';
 import {apiDeckThank} from '../lookup';
 import {DisplayCount} from '../utils';
 import {UserLink} from '../profiles';

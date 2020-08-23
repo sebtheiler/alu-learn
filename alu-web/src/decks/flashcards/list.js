@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail, apiFlashCardDelete, apiFlashCardSuspendLeech} from '../lookup';
+import {apiDeckDetail, apiFlashCardDelete, apiFlashCardSuspendLeech} from '../../lookup';
 import {FlashCard} from './detail';
 import {Button, ButtonGroup} from 'react-bootstrap';
 

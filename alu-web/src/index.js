@@ -4,9 +4,9 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {ProfileInformationComponent} from './profiles';
 import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
-import {FlashCardCreateComponent, FlashCardsList, FlashCardSearchComponent} from './flashcards';
-import {StudyComponent, CustomStudyComponent} from './study';
-import {NotificationComponent} from './notifications';
+import {FlashCardCreateComponent, FlashCardsList, FlashCardSearchComponent} from './decks/flashcards';
+import {StudyComponent, CustomStudyComponent} from './decks/study';
+import {NotificationComponent} from './profiles/notifications';
 import {ExploreComponent, DeckSearchComponent} from './explore';
 
 const e = React.createElement;

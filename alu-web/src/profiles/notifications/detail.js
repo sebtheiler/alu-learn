@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Button} from 'react-bootstrap';
-import {timeSince} from '../utils';
-import {apiProfileFriendToggle, apiProfileDetail} from '../lookup';
+import {timeSince} from '../../utils';
+import {apiProfileFriendToggle, apiProfileDetail} from '../../lookup';
 import ReactMarkdown from 'react-markdown';
 
 export function Notification(props) {

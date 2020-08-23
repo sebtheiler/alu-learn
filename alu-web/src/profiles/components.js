@@ -1,5 +1,5 @@
 import React from 'react';
-import {BadgeComponent} from '../profile-badges';
+import {BadgeComponent} from './badges';
 
 
 // Component for displaying a user's first and last name, and a clickable username

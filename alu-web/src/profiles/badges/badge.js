@@ -1,6 +1,6 @@
 import React from 'react';
 import {identifierDict} from './identifiers';
-import {generateTooltip} from '../utils';
+import {generateTooltip} from '../../utils';
 import {Badge, OverlayTrigger} from 'react-bootstrap';
 
 export function BadgeComponent(props) {
