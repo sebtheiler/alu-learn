@@ -32,8 +32,8 @@ if not os.path.isdir(os.path.join(base_dir, 'decks/templates/react/')):
 with open(os.path.join(base_dir, 'decks/templates/react.html'), 'r') as f:
     contents = f.read()
 
-    # <script>var path=window.location.pathname ...... ;var p=f;t()}([])</script>
-    base_embed_html = '<script>v' + re.findall(r"(?<=<script>v).*?(?=\)</script>)", contents)[0] + ')</script>'
+    # <script>!function(e){function r(r) .......... r(a[i]);var p=f;t()}([])</script>
+    base_embed_html = '<script>!' + re.findall(r"(?<=<script>!).*?(?=</script>)", contents)[0] + '</script>'
 
     # <script src="/static/js/?.????????.chunk.js"></script><script src="/static/js/main.????????.chunk.js">
     js_html = re.findall(r"<script src=\"/static/js/.{10,13}.chunk.js\"></script>", contents)
