@@ -63,7 +63,7 @@ def custom_study_view(request, *args, **kwargs):
         'contains': request.GET.get('contains'),
         'suspended': request.GET.get('suspended'),
         'leech': request.GET.get('leech'),
-        'graduated': request.GET.get('graduated'),
+        'learning_status': request.GET.get('learning_status'),
         'min_ease': request.GET.get('minEase'),
         'max_ease': request.GET.get('maxEase'),
     }

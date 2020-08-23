@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {getInterval} from './algorithm';
+import {getAnkiInterval} from './algorithm';
 import {Button} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import RemarkMathPlugin from 'remark-math';
@@ -25,10 +25,10 @@ export function StudyElement(props) {
     };
   };
 
-  const interval1 = getInterval(currentCard, 1)
-  const interval2 = getInterval(currentCard, 2)
-  const interval3 = getInterval(currentCard, 3)
-  const interval4 = getInterval(currentCard, 4)
+  const interval1 = getAnkiInterval(currentCard, 1)
+  const interval2 = getAnkiInterval(currentCard, 2)
+  const interval3 = getAnkiInterval(currentCard, 3)
+  const interval4 = getAnkiInterval(currentCard, 4)
 
   return (
     <>
@@ -61,31 +61,31 @@ export function StudyElement(props) {
           <div className={'col-md-12 text-center btn-group mb-5' + (!showAnswer ? ' d-none' : '')}>
             <Button
               onClick={buttonIntervalWrapper(1)}
-              className='mx-1'
+              className={'mx-1' + (interval1.interval === -1 ? ' d-none' : '')}
               variant='danger'
             >
-              Again {interval1.interval.toString() + (interval1.minute ? 'm' : 'd')}
+              Again {interval1.interval.toString() + (interval1.isMinute ? 'm' : 'd')}
             </Button>
             <Button
               onClick={buttonIntervalWrapper(2)}
-              className='mx-1'
+              className={'mx-1' + (interval2.interval === -1 ? ' d-none' : '')}
               variant='warning'
             >
-              Hard {interval2.interval.toString() + (interval2.minute ? 'm' : 'd')}
+              Hard {interval2.interval.toString() + (interval2.isMinute ? 'm' : 'd')}
             </Button>
             <Button
               onClick={buttonIntervalWrapper(3)}
-              className='mx-1'
+              className={'mx-1' + (interval3.interval === -1 ? ' d-none' : '')}
               variant='success'
             >
-              Good {interval3.interval.toString() + (interval3.minute ? 'm' : 'd')}
+              Good {interval3.interval.toString() + (interval3.isMinute ? 'm' : 'd')}
             </Button>
             <Button
               onClick={buttonIntervalWrapper(4)}
-              className='mx-1'
+              className={'mx-1' + (interval4.interval === -1 ? ' d-none' : '')}
               variant='primary'
             >
-              Easy {interval4.interval.toString() + (interval4.minute ? 'm' : 'd')}
+              Easy {interval4.interval.toString() + (interval4.isMinute ? 'm' : 'd')}
             </Button>
           </div>
         </div>

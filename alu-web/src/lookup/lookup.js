@@ -22,12 +22,13 @@ export function apiFlashCardEdit(deckId, flashcardId, frontText, backText, tags,
 };
 
 // Update a flashcard's review date
-export function apiFlashCardDateUpdate(deckId, flashcardId, date, interval, ease, graduated, callback) {
+export function apiFlashCardDateUpdate(deckId, flashcardId, date, interval, ease, learningStatus, stepsIndex, callback) {
   backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/changedate/`, callback, {
     date: date,
     interval: interval,
     ease: ease,
-    graduated: graduated,
+    learning_status: learningStatus,
+    steps_index: stepsIndex,
   });
 };
 
@@ -42,14 +43,14 @@ export function apiFlashCardSuspendLeech(deckId, flashcardId, action, callback) 
 };
 
 // Search for flashcards
-export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, graduated, min_ease, max_ease, callback) {
+export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, learningStatus, min_ease, max_ease, callback) {
   backendLookup('POST', `decks/flashcards/search/`, callback, {
     deck_ids: deckIds,
     tags: tags,
     contains: contains,
     suspended: suspended,
     leech: leech,
-    graduated: graduated,
+    learning_status: learningStatus,
     min_ease: min_ease,
     max_ease: max_ease,
   });

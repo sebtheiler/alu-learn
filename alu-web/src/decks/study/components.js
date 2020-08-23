@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {apiDeckDetail, apiFlashCardDateUpdate, apiFlashCardSearch} from '../../lookup';
 import {StudyElement} from './study';
-import {getInterval} from './algorithm'
+import {getAnkiInterval} from './algorithm'
 import {Button} from 'react-bootstrap';
 
 export function StudyComponent(props) {
@@ -87,21 +87,28 @@ export function StudyComponent(props) {
     setCurrentCardDidSet(false);
 
     // Calculate when the card should be next seen
-    const {nextReviewDate, interval, ease, minute, graduated} = getInterval(currentCard, grade);
+    const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex} = getAnkiInterval(currentCard, grade);
 
-    // Update date in database
-    apiFlashCardDateUpdate(currentCard.parent_deck_id, currentCard.id, nextReviewDate.toISOString(), minute ? 0 : interval, ease, graduated, () => {
-      setCurrentCardDidSet(true);
-    });
-
-    // Update date locally
-    const deckCopy = deck;
-    const index = deckCopy.flashcards.map(e => e.id).indexOf(currentCard.id);
-    deckCopy.flashcards[index].next_review = nextReviewDate.toISOString();
-    deckCopy.flashcards[index].interval = minute ? 0 : interval;
-    deckCopy.flashcards[index].ease = ease;
-    deckCopy.flashcards[index].graduated = graduated;
-    setDeck(deckCopy);
+    if (interval !== -1) {
+      // Update date in database
+      apiFlashCardDateUpdate(currentCard.parent_deck_id, currentCard.id, nextReviewDate.toISOString(), isMinute ? 0 : interval, easeFactor, learningStatus, stepsIndex, (response, status) => {
+        if (status === 200) {
+          setCurrentCardDidSet(true);
+        } else {
+          console.log(response, status);
+          alert('Error updating card!');
+        };
+      });
+      // Update date locally
+      const deckCopy = deck;
+      const index = deckCopy.flashcards.map(e => e.id).indexOf(currentCard.id);
+      deckCopy.flashcards[index].next_review = nextReviewDate.toISOString();
+      deckCopy.flashcards[index].interval = isMinute ? 0 : interval;
+      deckCopy.flashcards[index].ease = easeFactor;
+      deckCopy.flashcards[index].learning_status = learningStatus;
+      deckCopy.flashcards[index].steps_index = stepsIndex;
+      setDeck(deckCopy);
+    };
   };
 
   const handleKeyDown = (event) => {
@@ -116,14 +123,15 @@ export function StudyComponent(props) {
 
   return (
     <>
-      <div className={'text-center' + (finishedStudying ? '' : ' d-none')}>
-        <p>Congratulations! You've finished studying this deck!</p>
-        {flashcardList ? null :
-          <Button href={`/${deckId}/flashcards/create/`}>Create a new flash card</Button>
-        }
-      </div>
-      <div>
-        {finishedStudying ? null :
+      {finishedStudying ?
+        <div className='text-center'>
+          <p>Congratulations! You've finished studying this deck!</p>
+          {flashcardList ? null :
+            <Button href={`/${deckId}/flashcards/create/`}>Create a new flash card</Button>
+          }
+        </div>
+        :
+        <div>
           <StudyElement
             currentCard={currentCard}
             showAnswer={showAnswer}
@@ -131,14 +139,14 @@ export function StudyComponent(props) {
             backendGradeUpdate={backendGradeUpdate}
             handleKeyDown={handleKeyDown}
           />
-        }
-      </div>
+        </div>
+      }
     </>
   );
 };
 
 export function CustomStudyComponent(props) {
-  const {deckIds, tags, contains, suspended, leech, graduated, min_ease, max_ease} = props;
+  const {deckIds, tags, contains, suspended, leech, learningStatus, min_ease, max_ease} = props;
   const [flashcards, setFlashcards] = useState([]);
   const [gotFlashcards, setGotFlashcards] = useState(false);
 
@@ -151,7 +159,7 @@ export function CustomStudyComponent(props) {
         contains && contains !== 'None' ? contains : null,
         suspended && suspended !== 'None' ? suspended === 'true' : null,
         leech && leech !== 'None' ? leech === 'true' : null,
-        graduated && graduated !== 'None' ? graduated === 'true' : null,
+        learningStatus && learningStatus !== 'None' ? learningStatus === 'true' : null,
         min_ease && min_ease !== 'None' ? parseInt(min_ease) : null,
         max_ease && max_ease !== 'None' ? parseInt(max_ease) : null,
         (response, status) => {
@@ -163,7 +171,7 @@ export function CustomStudyComponent(props) {
           };
       });
     };
-  }, [setFlashcards, gotFlashcards, setGotFlashcards, deckIds, tags, contains, suspended, leech, graduated, min_ease, max_ease]);
+  }, [setFlashcards, gotFlashcards, setGotFlashcards, deckIds, tags, contains, suspended, leech, learningStatus, min_ease, max_ease]);
 
   if (flashcards.length === 0) {
     return null;

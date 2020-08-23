@@ -136,7 +136,7 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
         `deck_id`: (URL) ID of the deck in which we are editing the flashcard
         `flashcard_id`: (URL) ID of the flashcard we are editing
         `date`: (Data) ISO string date for next review
-        `graduated`: (Data) if the card is graduated
+        `learning_status`: (Data) Learning status of the card, either 'LEARNING', 'LEARNED', or 'RELEARNING'
         `ease` Ease of card
         `interval`: next interval TODO make doc better
 
@@ -162,9 +162,10 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
     # Edit the flashcard
     obj = flashcard_qs.first()
     obj.next_review = request.data.get('date')
-    obj.graduated = request.data.get('graduated')
+    obj.learning_status = request.data.get('learning_status')
     obj.ease = request.data.get('ease')
     obj.interval = request.data.get('interval')
+    obj.steps_index = request.data.get('steps_index')
     obj.save()
     return Response(FlashCardSerializer(instance=obj).data, 200)
 
@@ -553,7 +554,7 @@ def flashcard_search_view(request, *args, **kwargs):
         `contains`: (Data) Front/back of card contains these words
         `suspended`: (Data) Whether or not the card is suspended
         `leech`: (Data) Whether or not the card is a leech
-        `graduated`: (Data) Whether or not the card is graduated
+        `learning_status`: (Data) Learning status of the card
         `min_ease`: (Data) Minimum ease factor of the card
         `max_ease`: (Data) Maximum ease factor of the card
     
@@ -601,7 +602,7 @@ def flashcard_search_view(request, *args, **kwargs):
     if contains:
         flashcard_qs = flashcard_qs.filter(Q(front_text__icontains=contains) | Q(back_text__icontains=contains))
 
-    # Filter by suspended, leech, and graduated
+    # Filter by suspended, leech, and learning status
     suspended = request.data.get('suspended')
     if suspended is not None:
         flashcard_qs = flashcard_qs.filter(is_suspended=suspended)
@@ -610,9 +611,9 @@ def flashcard_search_view(request, *args, **kwargs):
     if leech is not None:
         flashcard_qs = flashcard_qs.filter(is_leech=leech)
     
-    graduated = request.data.get('graduated')
-    if graduated is not None:
-        flashcard_qs = flashcard_qs.filter(graduated=graduated)
+    learning_status = request.data.get('learning_status')
+    if learning_status is not None:
+        flashcard_qs = flashcard_qs.filter(learning_status=learning_status)
 
     # Filter by min/max ease
     min_ease = request.data.get('min_ease')
