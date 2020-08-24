@@ -36,7 +36,7 @@ export function FlashCard(props) {
               placement='right'
               delay={{ show: 20, hide: 800 }}
             >
-              <em>{flashcard.is_leech ? '⚠️ This flash card is a leech ⚠️ ' : ''}</em>
+              <em>{flashcard.is_leech ? '⚠️ This flashcard is a leech ⚠️ ' : ''}</em>
             </OverlayTrigger>
             <OverlayTrigger
               overlay={generateTooltip(
@@ -45,7 +45,7 @@ export function FlashCard(props) {
               placement='right'
               delay={{ show: 20, hide: 800 }}
             >
-              <em>{flashcard.is_suspended ? ' ⚠️ This flash card is suspended ⚠️' : ''}</em>
+              <em>{flashcard.is_suspended ? ' ⚠️ This flashcard is suspended ⚠️' : ''}</em>
             </OverlayTrigger>
           </p>
         </div>

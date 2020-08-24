@@ -115,6 +115,7 @@ export function FlashCardCreate(props) {
             placeholder='Front Text'
             ref={frontTextRef}
             autoFocus
+            required
           />
           <Form.Label className='mb-0 mt-3'>
             <small className='text-secondary'>Back</small>
@@ -125,6 +126,7 @@ export function FlashCardCreate(props) {
             name='backText'
             placeholder='Back Text'
             ref={backTextRef}
+            required
           />
         </Form.Group>
         <Form.Group>

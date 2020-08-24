@@ -144,7 +144,7 @@ export function StudyComponent(props) {
         <div className='text-center'>
           <p>Congratulations! You've finished studying this deck!</p>
           {flashcardList ? null :
-            <Button href={`/${deckId}/flashcards/create/`}>Create a new flash card</Button>
+            <Button href={`/${deckId}/flashcards/create/`}>Create a new flashcard</Button>
           }
         </div>
         :

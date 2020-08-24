@@ -588,7 +588,7 @@ def flashcard_search_view(request, *args, **kwargs):
         # For reference, it gets a list of flashcard IDs, if the
         # flashcard has a tag that is in `tag_list`
         flashcard_ids = [
-            flashcard.id for flashcard in flashcard_qs if len( # each flash card if...
+            flashcard.id for flashcard in flashcard_qs if len( # each flashcard if...
                 set(
                     [ # (set form of all tags in a card)
                         tag.strip() for tag in flashcard.tags.split(',')

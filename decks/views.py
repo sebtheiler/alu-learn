@@ -28,6 +28,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
         'deck_id': deck_id,
         'flashcard_id': None,
         'desc': 'Create a new flashcard',
+        'sub_desc': 'Use "Tab" to cycle through steps, and use enter to press create once it is selected',
     }
     return render(request, 'flashcards/create.html', context=context)
 

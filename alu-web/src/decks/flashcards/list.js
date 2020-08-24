@@ -41,7 +41,7 @@ export function FlashCardsList(props) {
       <div className='text-center'>
         {flashcardList || foreignUser ? null :
         <ButtonGroup>
-          <Button href='create/' className='mx-1'>Create a new flash card</Button>
+          <Button href='create/' className='mx-1'>Create a new flashcard</Button>
           <Button href={`/${deckId}/study/`} className='mx-1'>Study this deck</Button>
         </ButtonGroup>
         }
