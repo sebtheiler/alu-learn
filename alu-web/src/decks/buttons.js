@@ -25,19 +25,26 @@ export function DeckDefaultButtonGroup(props) {
     if (
         form.elements.title.value === deck.title &&
         form.elements.description.value === deck.description &&
-        form.elements.sharingSetting.value === deck.sharing_setting
+        form.elements.sharingSetting.value === deck.sharing_setting &&
+        form.elements.schedulingAlgo.value === deck.scheduling_algorithm
     ) {
       return;
     };
 
     // Tell the API to update the deck
-    apiDeckEdit(deck.id, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
-      if (status === 200) {
-        window.location.reload();
-      } else {
-        console.log(response, status);
-        alert('Error saving your deck');
-      };
+    apiDeckEdit(
+      deck.id,
+      form.elements.title.value,
+      form.elements.description.value,
+      form.elements.sharingSetting.value,
+      form.elements.schedulingAlgo.value,
+      (response, status) => {
+        if (status === 200) {
+          window.location.reload();
+        } else {
+          console.log(response, status);
+          alert('Error saving your deck');
+        };
     });
   };
 
@@ -118,6 +125,18 @@ export function DeckEditModal(props) {
               <option value='PRIVATE'>Private</option>
               <option value='FRIENDS'>Friends only</option>
               <option value='PUBLIC'>Public</option>
+            </Form.Control>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Scheduling Algorithm (Advanced)</Form.Label>
+            <Form.Control
+              as='select'
+              name='schedulingAlgo'
+              defaultValue={deck.scheduling_algorithm}
+              custom
+            >
+              <option value='ANKI'>Default Anki Settings</option>
+              <option value='ANKING'>Optimized Anki Settings by "Anking"</option>schedulingAlgo
             </Form.Control>
           </Form.Group>
         </Modal.Body>

@@ -383,6 +383,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         `new_title`: (Data) New title of the deck
         `description`: (Data) New description of the deck
         `sharing_setting`: (Data) PRIVATE, FRIENDS, or PUBLIC
+        `scheduling_algorithm`: (Data) Which scheduling algorithm to use, ANKI or ANKING
 
     Possible errors:
         Deck does not exist: 404, {message: 'Deck not found'}
@@ -402,8 +403,11 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     title = request.data.get('new_title')
     description = request.data.get('description')
     sharing_setting = request.data.get('sharing_setting')
+    scheduling_algorithm = request.data.get('scheduling_algorithm')
     if sharing_setting and sharing_setting not in ('PRIVATE', 'FRIENDS', 'PUBLIC'):
         return Response({'message': 'Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`'}, status=400)
+    if scheduling_algorithm and scheduling_algorithm not in ('ANKI', 'ANKING'):
+        return Response({'message': 'Invalid `scheduling_algorithm`.  Must be `ANKI` or `ANKING`'}, status=400)
 
     if title is not None:
         deck.title = title
@@ -413,6 +417,9 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
 
     if sharing_setting is not None:
         deck.sharing_setting = sharing_setting
+    
+    if scheduling_algorithm is not None:
+        deck.scheduling_algorithm = scheduling_algorithm
 
     deck.save()
     return Response(DeckSerializer(instance=deck).data, 200)

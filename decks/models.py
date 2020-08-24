@@ -52,7 +52,7 @@ class Deck(models.Model):
     scheduling_algorithm = models.CharField(
         max_length=10,
         choices=ALGORITHM_OPTIONS,
-        default='ANKING',
+        default='ANKI',
     )
 
     # TODO: starting difficulty, new cards per day, ...
