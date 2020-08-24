@@ -20,6 +20,8 @@ export function StudyComponent(props) {
   
   const [showAnswer, setShowAnswer] = useState(false);
   const [finishedStudying, setFinishedStudying] = useState(false);
+
+  const [canceledBtns, setCanceledBtns] = useState([]);
   
   useEffect(() => {
     if (gotDeck === false) {
@@ -89,6 +91,7 @@ export function StudyComponent(props) {
     // Calculate when the card should be next seen
     const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex} = getAnkiInterval(currentCard, grade);
 
+    // This checks that the interval is valid
     if (interval !== -1) {
       // Update date in database
       apiFlashCardDateUpdate(currentCard.parent_deck_id, currentCard.id, nextReviewDate.toISOString(), isMinute ? 0 : interval, easeFactor, learningStatus, stepsIndex, (response, status) => {
@@ -117,7 +120,21 @@ export function StudyComponent(props) {
       setShowAnswer(true);
     } else if (isNaN(event.key) === false && showAnswer) {
       // Shortcuts for clicking 'Again', 'Hard', ...
-      backendGradeUpdate(Number(event.key));
+      let grade = parseInt(event.key);
+      if (canceledBtns.toString() === 'Hard') {
+        if (grade === 2) {
+          grade = 3;
+        } else if (grade === 3) {
+          grade = 4;
+        } else if (grade > 3) {
+          return;
+        };
+      } else if (canceledBtns.toString() === 'Good,Easy') {
+        if (grade > 2) {
+          return;
+        };
+      };
+      backendGradeUpdate(grade);
     };
   };
 
@@ -138,6 +155,7 @@ export function StudyComponent(props) {
             showAnswerHandler={showAnswerHandler}
             backendGradeUpdate={backendGradeUpdate}
             handleKeyDown={handleKeyDown}
+            getCanceledBtns={setCanceledBtns}
           />
         </div>
       }

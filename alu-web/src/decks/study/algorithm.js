@@ -1,6 +1,6 @@
 // Adapted from https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
 export function getAnkiInterval(card, grade) {
-  const nullResponse = {
+  const errorResponse = {
     message: 'ERROR',
     nextReviewDate: new Date(),
     easeFactor: -1,
@@ -10,7 +10,16 @@ export function getAnkiInterval(card, grade) {
     stepsIndex: -1,
   };
   if (!card) {
-    return nullResponse;
+    // TODO: there has to be a better way to do this
+    return {
+      message: 'NULL',
+      nextReviewDate: new Date(),
+      easeFactor: -1,
+      interval: -1,
+      isMinute: false,
+      learningStatus: '',
+      stepsIndex: -1,
+    };
   };
 
   // "New Cards" tab
@@ -58,7 +67,7 @@ export function getAnkiInterval(card, grade) {
       learningStatus = 'learned';
       interval = EASY_INTERVAL;
     } else {
-      return nullResponse;
+      return errorResponse;
     };
   } else if (learningStatus === 'learned') {
     if (grade === 1) {
@@ -85,7 +94,7 @@ export function getAnkiInterval(card, grade) {
       interval = interval * easeFactor/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100;
       interval = Math.min(MAXIMUM_INTERVAL, interval);
     } else {
-      return nullResponse;
+      return errorResponse;
     };
   } else if (learningStatus === 'relearning') {
     // "Hard" and "Easy" are not allowed
@@ -95,7 +104,6 @@ export function getAnkiInterval(card, grade) {
       interval = LAPSES_STEPS[0];
       isMinute = true;
     } else if (grade === 2) {
-      console.log('relearning - good')
       // Good
       stepsIndex++;
       if (stepsIndex < LAPSES_STEPS.length) {
@@ -107,7 +115,7 @@ export function getAnkiInterval(card, grade) {
         interval = Math.max(MINIMUM_INTERVAL, interval * NEW_INTERVAL/100);
       };
     } else {
-      return nullResponse;
+      return errorResponse;
     };
   };
 
@@ -138,6 +146,7 @@ export function getAnkiInterval(card, grade) {
     isMinute: isMinute,
     learningStatus: learningStatus,
     stepsIndex: stepsIndex,
+    message: 'SUCCESS',
   };
 };
 

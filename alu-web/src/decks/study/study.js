@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {getAnkiInterval} from './algorithm';
 import {Button} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
@@ -7,7 +7,9 @@ import {BlockMath, InlineMath} from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 export function StudyElement(props) {
-  const {currentCard, showAnswer, showAnswerHandler, backendGradeUpdate, handleKeyDown} = props;
+  const {currentCard, showAnswer, showAnswerHandler, backendGradeUpdate, handleKeyDown, getCanceledBtns} = props;
+  const [gotCanceledBtns, setGotCanceledBtns] = useState(false);
+
   
   // Used for handling keypresses
   useEffect(() => {
@@ -16,7 +18,7 @@ export function StudyElement(props) {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [showAnswer, handleKeyDown]);
-
+  
   // Allows the buttons to use the same function
   // as is used when handling keypressess for 1,2,3,4
   const buttonIntervalWrapper = (grade) => {
@@ -24,15 +26,37 @@ export function StudyElement(props) {
       backendGradeUpdate(grade);
     };
   };
-
+  
   const interval1 = getAnkiInterval(currentCard, 1)
   const interval2 = getAnkiInterval(currentCard, 2)
   const interval3 = getAnkiInterval(currentCard, 3)
   const interval4 = getAnkiInterval(currentCard, 4)
 
+  // Get canceled buttons to handle keyboard presses correctly
+  useEffect(() => {
+    if (gotCanceledBtns === false && interval1.message !== 'NULL' && interval2.message !== 'NULL' && interval3.message !== 'NULL' && interval4.message !== 'NULL') {
+      var canceledButtons = [];
+      if (interval1.interval === -1) {
+        canceledButtons.push('Again');
+      };
+      if (interval2.interval === -1) {
+        canceledButtons.push('Hard');
+      };
+      if (interval3.interval === -1) {
+        canceledButtons.push('Good');
+      };
+      if (interval4.interval === -1) {
+        canceledButtons.push('Easy');
+      };
+
+      getCanceledBtns(canceledButtons);
+      setGotCanceledBtns(true);
+    };
+  }, [gotCanceledBtns, getCanceledBtns, setGotCanceledBtns, interval1, interval2, interval3, interval4]);
+  
   return (
     <>
-      <div className='col-md-12 text-center'style={{minWidth: '200px'}}>
+      <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
         <ReactMarkdown
           source={currentCard ? currentCard.front_text : null}
           plugins={[RemarkMathPlugin]}
