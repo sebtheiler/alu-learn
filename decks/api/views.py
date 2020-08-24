@@ -419,7 +419,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         deck.sharing_setting = sharing_setting
     
     if scheduling_algorithm is not None:
-        deck.scheduling_algorithm = scheduling_algorithm
+        deck.scheduling_algorithm = scheduling_algorithm.upper()
 
     deck.save()
     return Response(DeckSerializer(instance=deck).data, 200)
@@ -620,7 +620,7 @@ def flashcard_search_view(request, *args, **kwargs):
     
     learning_status = request.data.get('learning_status')
     if learning_status is not None:
-        flashcard_qs = flashcard_qs.filter(learning_status=learning_status)
+        flashcard_qs = flashcard_qs.filter(learning_status__iexact=learning_status)
 
     # Filter by min/max ease
     min_ease = request.data.get('min_ease')
