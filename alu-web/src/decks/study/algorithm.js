@@ -6,6 +6,8 @@ function generateConfig(method='ANKI') {
   if (method === 'ANKI') {
     // Default Anki settings
     return {
+      // General
+      NEW_CARDS_PER_DAY: 20,
       // "New Cards" tab
       NEW_STEPS: [1, 10], // in minutes
       GRADUATING_INTERVAL: 1, // in days
@@ -19,10 +21,13 @@ function generateConfig(method='ANKI') {
       LAPSES_STEPS: [10], // in minutes
       NEW_INTERVAL: 70, // in percent
       MINIMUM_INTERVAL: 1, // in days
+      LEECH_THRESHOLD: 8, // number wrong
     };
   } else if (method === 'ANKING') {
     // Optimized Anki settings from https://www.youtube.com/watch?v=wvF5Y2101Lk
     return {
+      // General
+      NEW_CARDS_PER_DAY: 20,
       // "New Cards" tab
       NEW_STEPS: [25, 1440], // in minutes
       GRADUATING_INTERVAL: 3, // in days
@@ -36,6 +41,7 @@ function generateConfig(method='ANKI') {
       LAPSES_STEPS: [30, 1440], // in minutes
       NEW_INTERVAL: 20, // in percent
       MINIMUM_INTERVAL: 1, // in days
+      LEECH_THRESHOLD: 8, // number wrong
     };
   };
 };
@@ -53,20 +59,12 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
     stepsIndex: -1,
   };
   if (!card || settingsAlgorithm === null) {
-    // TODO: there has to be a better way to do this
-    return {
-      message: 'NULL',
-      nextReviewDate: new Date(),
-      easeFactor: -1,
-      interval: -1,
-      isMinute: false,
-      learningStatus: '',
-      stepsIndex: -1,
-    };
+    return {...errorResponse, message: 'NULL'};
   };
-  
+
   // eslint-disable-next-line
-  const {NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, STARTING_EASE, EASY_BONUS, INTERVAL_MODIFIER, MAXIMUM_INTERVAL, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL} = generateConfig(settingsAlgorithm);
+  const {NEW_CARDS_PER_DAY, NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, STARTING_EASE, EASY_BONUS, INTERVAL_MODIFIER, MAXIMUM_INTERVAL, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL, LEECH_THRESHOLD}
+    = generateConfig(settingsAlgorithm);
 
   // Get variables we will be editing and returning
   var isMinute = false; // specifies that the interval is in minutes, not days

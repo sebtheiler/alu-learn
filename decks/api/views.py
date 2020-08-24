@@ -76,6 +76,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             back_text=back_text,
             tags=tags if tags else '',
             next_review=timezone.now(),
+            last_review=timezone.now(),
         )
         return Response(FlashCardSerializer(instance=created).data, 201)
     return Response({'message': 'Front and back text must not be None'}, 400)

@@ -87,13 +87,16 @@ class FlashCard(models.Model):
     ]
 
     learning_status = models.CharField(max_length=10, choices=LEARNING_STATUS_CHOICES, default='LEARNING')
-    steps_index = models.IntegerField(default=0)
-    ease = models.IntegerField(default=250) # in percent TODO: Make 250 customizable
+    steps_index = models.PositiveSmallIntegerField(default=0)
+    ease = models.PositiveSmallIntegerField(default=250) # in percent TODO: Make 250 customizable
     next_review = models.DateTimeField()
-    interval = models.IntegerField(default=0) # in days
+    last_review = models.DateTimeField()
+    interval = models.PositiveSmallIntegerField(default=0) # in days
 
     is_suspended = models.BooleanField(default=False)
     is_leech = models.BooleanField(default=False)
+
+    leech_index = models.PositiveSmallIntegerField(default=0)
 
 
     def __str__(self):
