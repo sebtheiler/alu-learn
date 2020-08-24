@@ -1,3 +1,7 @@
+function minutesToDays(minutes) {
+  return minutes / (60*24);
+};
+
 function generateConfig(method='default') {
   if (method === 'default') {
     return {
@@ -11,7 +15,7 @@ function generateConfig(method='default') {
       INTERVAL_MODIFIER: 100, // in percent
       MAXIMUM_INTERVAL: 36500, // in days
       // "Lapses" tab
-      LAPSES_STEPS: [10], // in days
+      LAPSES_STEPS: [10], // in minutes
       NEW_INTERVAL: 70, // in percent
       MINIMUM_INTERVAL: 1, // in days
     };
@@ -28,7 +32,7 @@ function generateConfig(method='default') {
       INTERVAL_MODIFIER: 100, // in percent
       MAXIMUM_INTERVAL: 180, // in days
       // "Lapses" tab
-      LAPSES_STEPS: [30, 1440], // in days
+      LAPSES_STEPS: [30, 1440], // in minutes
       NEW_INTERVAL: 20, // in percent
       MINIMUM_INTERVAL: 1, // in days
     };
@@ -37,7 +41,7 @@ function generateConfig(method='default') {
 
 
 // Adapted from https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
-export function getAnkiInterval(card, grade) {
+export function getAnkiInterval(card, grade, settingsAlgorithm='default') {
   const errorResponse = {
     message: 'ERROR',
     nextReviewDate: new Date(),
@@ -61,7 +65,7 @@ export function getAnkiInterval(card, grade) {
   };
   
   // eslint-disable-next-line
-  const {NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, STARTING_EASE, EASY_BONUS, INTERVAL_MODIFIER, MAXIMUM_INTERVAL, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL} = generateConfig('default');
+  const {NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, STARTING_EASE, EASY_BONUS, INTERVAL_MODIFIER, MAXIMUM_INTERVAL, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL} = generateConfig(settingsAlgorithm);
 
   // Get variables we will be editing and returning
   var isMinute = false; // specifies that the interval is in minutes, not days
@@ -128,7 +132,7 @@ export function getAnkiInterval(card, grade) {
       stepsIndex = 0;
       interval = LAPSES_STEPS[0];
       isMinute = true;
-    } else if (grade === 2) {
+    } else if (grade === 3) {
       // Good
       stepsIndex++;
       if (stepsIndex < LAPSES_STEPS.length) {
@@ -142,6 +146,12 @@ export function getAnkiInterval(card, grade) {
     } else {
       return errorResponse;
     };
+  };
+
+  // If the minutes setting is like days, use that
+  if (isMinute && interval >= 1440) {
+    interval = minutesToDays(interval);
+    isMinute = false;
   };
 
   // Put next review date into numbers
@@ -167,7 +177,7 @@ export function getAnkiInterval(card, grade) {
   return {
     nextReviewDate: nextReviewDate,
     easeFactor: easeFactor,
-    interval: interval,
+    interval: Math.floor(interval),
     isMinute: isMinute,
     learningStatus: learningStatus,
     stepsIndex: stepsIndex,

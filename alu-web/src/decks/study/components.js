@@ -129,8 +129,10 @@ export function StudyComponent(props) {
         } else if (grade > 3) {
           return;
         };
-      } else if (canceledBtns.toString() === 'Good,Easy') {
-        if (grade > 2) {
+      } else if (canceledBtns.toString() === 'Hard,Easy') {
+        if (grade === 2) {
+          grade = 3;
+        } else if (grade > 2) {
           return;
         };
       };
