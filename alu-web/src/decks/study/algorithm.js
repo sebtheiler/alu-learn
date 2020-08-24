@@ -57,6 +57,8 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
     isMinute: false,
     learningStatus: '',
     stepsIndex: -1,
+    leechIndex: -1,
+    isLeech: false,
   };
   if (!card || settingsAlgorithm === null) {
     return {...errorResponse, message: 'NULL'};
@@ -68,7 +70,7 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
 
   // Get variables we will be editing and returning
   var isMinute = false; // specifies that the interval is in minutes, not days
-  var {learning_status: learningStatus, steps_index: stepsIndex, ease: easeFactor, interval} = card;
+  var {learning_status: learningStatus, steps_index: stepsIndex, ease: easeFactor, interval, is_leech: isLeech, leech_index: leechIndex} = card;
   learningStatus = learningStatus.toLowerCase();
 
   // Algorithm
@@ -103,6 +105,14 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
       learningStatus = 'relearning';
       stepsIndex = 0;
       easeFactor = Math.max(130, easeFactor - 20);
+
+      // The reason we don't need to check that if the card has already
+      // been done that day, is because this automatically sets it to
+      // 'relearning', which doesn't increase the leech index
+      leechIndex++;
+      if (leechIndex >= LEECH_THRESHOLD) {
+        isLeech = true;
+      };
       // TODO: the Anki manual says "the current interval is multiplied by the
       // value of new interval", but I have no clue what the "new interval" is
       interval = LAPSES_STEPS[0];
@@ -180,6 +190,8 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
     isMinute: isMinute,
     learningStatus: learningStatus,
     stepsIndex: stepsIndex,
+    leechIndex: leechIndex,
+    isLeech: isLeech,
     message: 'SUCCESS',
   };
 };

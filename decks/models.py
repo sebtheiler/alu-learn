@@ -90,7 +90,6 @@ class FlashCard(models.Model):
     steps_index = models.PositiveSmallIntegerField(default=0)
     ease = models.PositiveSmallIntegerField(default=250) # in percent TODO: Make 250 customizable
     next_review = models.DateTimeField()
-    last_review = models.DateTimeField()
     interval = models.PositiveSmallIntegerField(default=0) # in days
 
     is_suspended = models.BooleanField(default=False)

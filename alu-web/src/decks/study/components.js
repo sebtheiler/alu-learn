@@ -89,18 +89,28 @@ export function StudyComponent(props) {
     setCurrentCardDidSet(false);
 
     // Calculate when the card should be next seen
-    const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex} = getAnkiInterval(currentCard, grade, deck.scheduling_algorithm);
+    const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex, leechIndex, isLeech} = getAnkiInterval(currentCard, grade, deck.scheduling_algorithm);
 
     // This checks that the interval is valid
     if (interval !== -1) {
       // Update date in database
-      apiFlashCardDateUpdate(currentCard.parent_deck_id, currentCard.id, nextReviewDate.toISOString(), isMinute ? 0 : interval, easeFactor, learningStatus, stepsIndex, (response, status) => {
-        if (status === 200) {
-          setCurrentCardDidSet(true);
-        } else {
-          console.log(response, status);
-          alert('Error updating card!');
-        };
+      apiFlashCardDateUpdate(
+        currentCard.parent_deck_id,
+        currentCard.id,
+        nextReviewDate.toISOString(),
+        isMinute ? 0 : interval,
+        easeFactor,
+        learningStatus,
+        stepsIndex,
+        leechIndex,
+        isLeech,
+        (response, status) => {
+          if (status === 200) {
+            setCurrentCardDidSet(true);
+          } else {
+            console.log(response, status);
+            alert('Error updating card!');
+          };
       });
       // Update date locally
       const deckCopy = deck;

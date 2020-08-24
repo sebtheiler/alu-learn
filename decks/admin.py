@@ -26,6 +26,7 @@ class FlashCardAdmin(admin.ModelAdmin):
             'ease',
             'is_suspended',
             'is_leech',
+            'leech_index',
             'interval',
             'steps_index',
         ), 'classes': ('collapse',)})

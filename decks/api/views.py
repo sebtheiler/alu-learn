@@ -76,7 +76,6 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             back_text=back_text,
             tags=tags if tags else '',
             next_review=timezone.now(),
-            last_review=timezone.now(),
         )
         return Response(FlashCardSerializer(instance=created).data, 201)
     return Response({'message': 'Front and back text must not be None'}, 400)
@@ -161,12 +160,38 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
         return Response({'message': 'Flashcard not found'}, status=404)
 
     # Edit the flashcard
+    # TODO: there must be a way to optimize this
+    next_review = request.data.get('next_review')
+    learning_status = request.data.get('learning_status')
+    ease = request.data.get('ease')
+    interval = request.data.get('interval')
+    steps_index = request.data.get('steps_index')
+    leech_index = request.data.get('leech_index')
+    is_leech = request.data.get('is_leech')
+    print(
+        next_review,
+        learning_status,
+        ease,
+        interval,
+        steps_index,
+        leech_index,
+        is_leech,
+    )
     obj = flashcard_qs.first()
-    obj.next_review = request.data.get('date')
-    obj.learning_status = request.data.get('learning_status')
-    obj.ease = request.data.get('ease')
-    obj.interval = request.data.get('interval')
-    obj.steps_index = request.data.get('steps_index')
+    if next_review is not None:
+        obj.next_review = next_review
+    if learning_status is not None:
+        obj.learning_status = learning_status.upper()
+    if ease is not None:
+        obj.ease = ease
+    if interval is not None:
+        obj.interval = interval
+    if steps_index is not None:
+        obj.steps_index = steps_index
+    if leech_index is not None:
+        obj.leech_index = leech_index
+    if is_leech is not None:
+        obj.is_leech = is_leech
     obj.save()
     return Response(FlashCardSerializer(instance=obj).data, 200)
 

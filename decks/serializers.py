@@ -33,7 +33,6 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'back_text',
             'tags',
             'next_review',
-            'last_review',
             'steps_index',
             'learning_status',
             'ease',
