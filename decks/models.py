@@ -43,6 +43,18 @@ class Deck(models.Model):
         default='PRIVATE',
     )
 
+    ALGORITHM_OPTIONS = [
+        ('ANKI', 'Default Anki Settings'),
+        ('ANKING', 'Optimized Anki Settings'),
+        # ('SM-18', 'SuperMemo-18'),
+        # ('CUSTOM', 'Custom'),
+    ]
+    scheduling_algorithm = models.CharField(
+        max_length=10,
+        choices=ALGORITHM_OPTIONS,
+        default='ANKING',
+    )
+
     # TODO: starting difficulty, new cards per day, ...
 
     objects = DeckManager()

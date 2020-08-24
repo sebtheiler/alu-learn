@@ -89,7 +89,7 @@ export function StudyComponent(props) {
     setCurrentCardDidSet(false);
 
     // Calculate when the card should be next seen
-    const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex} = getAnkiInterval(currentCard, grade);
+    const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex} = getAnkiInterval(currentCard, grade, deck.scheduling_algorithm);
 
     // This checks that the interval is valid
     if (interval !== -1) {
@@ -158,6 +158,7 @@ export function StudyComponent(props) {
             backendGradeUpdate={backendGradeUpdate}
             handleKeyDown={handleKeyDown}
             getCanceledBtns={setCanceledBtns}
+            schedulingAlgorithm={deck ? deck.scheduling_algorithm : null}
           />
         </div>
       }

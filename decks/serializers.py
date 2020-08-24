@@ -63,6 +63,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'sharing_setting',
             'num_thanks',
             'you_have_thanked',
+            'scheduling_algorithm',
             'id',
         ]
     

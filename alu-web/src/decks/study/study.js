@@ -7,7 +7,7 @@ import {BlockMath, InlineMath} from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 export function StudyElement(props) {
-  const {currentCard, showAnswer, showAnswerHandler, backendGradeUpdate, handleKeyDown, getCanceledBtns} = props;
+  const {currentCard, showAnswer, showAnswerHandler, backendGradeUpdate, handleKeyDown, getCanceledBtns, schedulingAlgorithm} = props;
   const [gotCanceledBtns, setGotCanceledBtns] = useState(false);
 
   
@@ -27,10 +27,11 @@ export function StudyElement(props) {
     };
   };
   
-  const interval1 = getAnkiInterval(currentCard, 1)
-  const interval2 = getAnkiInterval(currentCard, 2)
-  const interval3 = getAnkiInterval(currentCard, 3)
-  const interval4 = getAnkiInterval(currentCard, 4)
+  // TODO: optimize this
+  const interval1 = getAnkiInterval(currentCard, 1, schedulingAlgorithm)
+  const interval2 = getAnkiInterval(currentCard, 2, schedulingAlgorithm)
+  const interval3 = getAnkiInterval(currentCard, 3, schedulingAlgorithm)
+  const interval4 = getAnkiInterval(currentCard, 4, schedulingAlgorithm)
 
   // Get canceled buttons to handle keyboard presses correctly
   useEffect(() => {

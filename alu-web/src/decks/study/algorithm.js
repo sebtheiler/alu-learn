@@ -2,8 +2,9 @@ function minutesToDays(minutes) {
   return minutes / (60*24);
 };
 
-function generateConfig(method='default') {
-  if (method === 'default') {
+function generateConfig(method='ANKI') {
+  if (method === 'ANKI') {
+    // Default Anki settings
     return {
       // "New Cards" tab
       NEW_STEPS: [1, 10], // in minutes
@@ -19,8 +20,8 @@ function generateConfig(method='default') {
       NEW_INTERVAL: 70, // in percent
       MINIMUM_INTERVAL: 1, // in days
     };
-  } else if (method === 'anking') {
-    // https://www.youtube.com/watch?v=wvF5Y2101Lk
+  } else if (method === 'ANKING') {
+    // Optimized Anki settings from https://www.youtube.com/watch?v=wvF5Y2101Lk
     return {
       // "New Cards" tab
       NEW_STEPS: [25, 1440], // in minutes
@@ -41,7 +42,7 @@ function generateConfig(method='default') {
 
 
 // Adapted from https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
-export function getAnkiInterval(card, grade, settingsAlgorithm='default') {
+export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
   const errorResponse = {
     message: 'ERROR',
     nextReviewDate: new Date(),
@@ -51,7 +52,7 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='default') {
     learningStatus: '',
     stepsIndex: -1,
   };
-  if (!card) {
+  if (!card || settingsAlgorithm === null) {
     // TODO: there has to be a better way to do this
     return {
       message: 'NULL',
