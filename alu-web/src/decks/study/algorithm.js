@@ -1,3 +1,41 @@
+function generateConfig(method='default') {
+  if (method === 'default') {
+    return {
+      // "New Cards" tab
+      NEW_STEPS: [1, 10], // in minutes
+      GRADUATING_INTERVAL: 1, // in days
+      EASY_INTERVAL: 4, // in days
+      STARTING_EASE: 250, // in percent
+      // "Reviews" tab
+      EASY_BONUS: 130, // in percent
+      INTERVAL_MODIFIER: 100, // in percent
+      MAXIMUM_INTERVAL: 36500, // in days
+      // "Lapses" tab
+      LAPSES_STEPS: [10], // in days
+      NEW_INTERVAL: 70, // in percent
+      MINIMUM_INTERVAL: 1, // in days
+    };
+  } else if (method === 'anking') {
+    // https://www.youtube.com/watch?v=wvF5Y2101Lk
+    return {
+      // "New Cards" tab
+      NEW_STEPS: [25, 1440], // in minutes
+      GRADUATING_INTERVAL: 3, // in days
+      EASY_INTERVAL: 4, // in days
+      STARTING_EASE: 250, // in percent
+      // "Reviews" tab
+      EASY_BONUS: 150, // in percent
+      INTERVAL_MODIFIER: 100, // in percent
+      MAXIMUM_INTERVAL: 180, // in days
+      // "Lapses" tab
+      LAPSES_STEPS: [30, 1440], // in days
+      NEW_INTERVAL: 20, // in percent
+      MINIMUM_INTERVAL: 1, // in days
+    };
+  };
+};
+
+
 // Adapted from https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
 export function getAnkiInterval(card, grade) {
   const errorResponse = {
@@ -21,22 +59,9 @@ export function getAnkiInterval(card, grade) {
       stepsIndex: -1,
     };
   };
-
-  // "New Cards" tab
-  const NEW_STEPS = [1, 10]; // in minutes
-  const GRADUATING_INTERVAL = 1; // in days
-  const EASY_INTERVAL = 4; // in days
-  // const STARTING_EASE = 250; // in percent
-
-  // "Reviews" tab
-  const EASY_BONUS = 130; // in percent
-  const INTERVAL_MODIFIER = 100; // in percent
-  const MAXIMUM_INTERVAL = 36500; // in days
-
-  // "Lapses" tab
-  const LAPSES_STEPS = [10]; // in days
-  const NEW_INTERVAL = 70; // in percent
-  const MINIMUM_INTERVAL = 1; // in days
+  
+  // eslint-disable-next-line
+  const {NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, STARTING_EASE, EASY_BONUS, INTERVAL_MODIFIER, MAXIMUM_INTERVAL, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL} = generateConfig('default');
 
   // Get variables we will be editing and returning
   var isMinute = false; // specifies that the interval is in minutes, not days
@@ -149,85 +174,3 @@ export function getAnkiInterval(card, grade) {
     message: 'SUCCESS',
   };
 };
-
-// export function getInterval(card, grade) {
-//   if (!card) {
-//     return {
-//       nextReviewDate: null,
-//       ease: -1,
-//       interval: -1,
-//       minute: -1,
-//       graduated: -1,
-//     };
-//   };
-//   const now = new Date();
-//   const intervalModifier = 1.0;
-//   const maximumInterval = 180; // 6 months
-//   // const lapseInterval = 0.0;
-//   const easyBonus = 1.50;
-//   var interval, minute;
-//   var ease = card.ease;
-//   var graduated = card.graduated;
-
-//   if (grade === 1) {
-//     // Again
-//     if (card.graduated) {
-//       ease -= 20;
-//       interval = 10; // card.interval * lapseInterval * intervalModifier;
-//       minute = true;
-//       graduated = false;
-//     } else {
-//       // 1 minute from now
-//       interval = 1;
-//       minute = true;
-//     };
-//   } else if (grade === 2) {
-//     // Hard
-//     if (card.graduated) {
-//       ease -= 15;
-//       interval = card.interval * 1.2 * intervalModifier;
-//     } else {
-//       // 10 minute from now
-//       // TODO: make customizable
-//       interval = 10;
-//       minute = true;
-//     };
-//   } else if (grade === 3) {
-//     // Good
-//     if (card.graduated) {
-//       interval = card.interval * (card.ease/100) * intervalModifier;
-//     } else {
-//       // 1 day from now
-//       interval = 1;
-//       graduated = true;
-//     };
-//   } else if (grade === 4) {
-//     // Easy
-//     if (card.graduated) {
-//       ease += 15;
-//       interval = card.interval * (card.ease/100) * easyBonus * intervalModifier;
-//     } else {
-//       // 2 days from now
-//       interval = 2;
-//       graduated = true;
-//     };
-//   };
-
-//   var nextReviewDate;
-//   if (minute) {
-//     nextReviewDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + interval, now.getSeconds());
-//   } else {
-//     interval = Math.ceil(Math.min(interval, maximumInterval));
-//     nextReviewDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + interval);
-//   };
-
-//   ease = Math.min(Math.max(ease, 130), 350);
-
-//   return {
-//     nextReviewDate: nextReviewDate,
-//     ease: ease,
-//     interval: interval,
-//     minute: minute,
-//     graduated: graduated,
-//   };
-// };
