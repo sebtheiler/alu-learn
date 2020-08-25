@@ -166,6 +166,7 @@ export function FlashCardSearchComponent(props) {
           <Form.Label as='h5'>What is the card's learning status?</Form.Label>
           <Form.Control as='select' ref={learningStatusSelectRef}>
             <option value='ANY'>Any</option>
+            <option value='UNSEEN'>Unseen/New</option>
             <option value='LEARNED'>Learned</option>
             <option value='LEARNING'>Learning</option>
             <option value='RELEARNING'>Re-learning</option>

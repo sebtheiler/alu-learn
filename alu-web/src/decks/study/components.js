@@ -23,10 +23,13 @@ export function StudyComponent(props) {
 
   const [canceledBtns, setCanceledBtns] = useState([]);
   
+  // Get flashcard list (either from raw list, `flashcardList` or
+  // indirectly from sending an API call)
   useEffect(() => {
     if (gotDeck === false) {
       if (!flashcardList) {
-        // Get deck from ID
+        // If `deckId` is specified (and `flashcardList` isn't) then
+        // get the list of flashcards from the API
         setGotDeck(true);
         apiDeckDetail(deckId, (response, status) => {
           if (status === 200) {
@@ -43,6 +46,7 @@ export function StudyComponent(props) {
     };
   }, [deckId, flashcardList, gotDeck, setGotDeck, deck, setDeck]);
 
+  // Get which card should appear
   useEffect(() => {
     if (deck && currentCardDidSet === false) {
       setCurrentCardDidSet(true);
@@ -54,6 +58,13 @@ export function StudyComponent(props) {
 
         // Date the card should be reviewed
         const review = new Date(card.next_review);
+
+        // If the card is unseen, and we have surpassed the new cards limit
+        // do not show the card
+        deck.new_cards_limit = 5; // TODO: make customizable
+        if (card.learning_status === 'UNSEEN' && deck.new_cards_done_today >= deck.new_cards_limit) {
+          return false;
+        };
 
         // This is done weirdly so that you don't have to wait for 1min/10min cards
         // TODO: change to just allow for futureReviewDays to be minutes
@@ -98,7 +109,7 @@ export function StudyComponent(props) {
     };
   }, [currentCardDidSet, setCurrentCardDidSet, deck, studySuspendedCards, futureReviewDays]);
 
-  // Called when spacebar is pressed or "Show Answer" is clicked
+  // Shows answer when spacebar is pressed or "Show Answer" is clicked
   const showAnswerHandler = (event) => {
     event.preventDefault();
     setShowAnswer(true);
@@ -127,6 +138,7 @@ export function StudyComponent(props) {
         stepsIndex,
         leechIndex,
         isLeech,
+        currentCard.learning_status === 'UNSEEN', // incrementNewCardsDoneToday
         (response, status) => {
           if (status === 200) {
             setCurrentCardDidSet(true);
@@ -154,7 +166,10 @@ export function StudyComponent(props) {
     } else if (isNaN(event.key) === false && showAnswer) {
       // Shortcuts for clicking 'Again', 'Hard', ...
       let grade = parseInt(event.key);
+
       if (canceledBtns.toString() === 'Hard') {
+        // If we are first learning the card
+        // and the Hard button is obscured...
         if (grade === 2) {
           grade = 3;
         } else if (grade === 3) {
@@ -163,6 +178,8 @@ export function StudyComponent(props) {
           return;
         };
       } else if (canceledBtns.toString() === 'Hard,Easy') {
+        // If we are relearning the card and the Hard
+        // and Easy buttons are obscured...
         if (grade === 2) {
           grade = 3;
         } else if (grade > 2) {
@@ -199,7 +216,11 @@ export function StudyComponent(props) {
   );
 };
 
+// Instead of taking in a specific deck id, this component takes in a number of
+// attributes, searches for all flashcards with those attributes and studies those
+// cards.
 export function CustomStudyComponent(props) {
+  // TODO: make snake_casing and camelCasing consistent
   const {deckIds, tags, contains, suspended, leech, learningStatus, min_ease, max_ease} = props;
   const [flashcards, setFlashcards] = useState([]);
   const [gotFlashcards, setGotFlashcards] = useState(false);

@@ -138,9 +138,10 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
         `deck_id`: (URL) ID of the deck in which we are editing the flashcard
         `flashcard_id`: (URL) ID of the flashcard we are editing
         `date`: (Data) ISO string date for next review
-        `learning_status`: (Data) Learning status of the card, either 'LEARNING', 'LEARNED', or 'RELEARNING'
+        `learning_status`: (Data) Learning status of the card, either 'UNSEEN', 'LEARNING', 'LEARNED', or 'RELEARNING'
         `ease` Ease of card
         `interval`: next interval TODO make doc better
+        `increment_new_cards_done_today`: Whether or not to increment the parent deck's new_cards_done_today` attribute
 
     Possible errors:
         Deck does not exist: 404, {message: 'Deck not found'}
@@ -170,15 +171,8 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
     steps_index = request.data.get('steps_index')
     leech_index = request.data.get('leech_index')
     is_leech = request.data.get('is_leech')
-    print(
-        next_review,
-        learning_status,
-        ease,
-        interval,
-        steps_index,
-        leech_index,
-        is_leech,
-    )
+    increment_new_cards_done_today = request.data.get('increment_new_cards_done_today')
+
     obj = flashcard_qs.first()
     if next_review is not None:
         obj.next_review = next_review
@@ -194,6 +188,9 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
         obj.leech_index = leech_index
     if is_leech is not None:
         obj.is_leech = is_leech
+    if increment_new_cards_done_today:
+        obj.deck.new_cards_done_today += 1
+        obj.deck.save()
     obj.save()
     return Response(FlashCardSerializer(instance=obj).data, 200)
 

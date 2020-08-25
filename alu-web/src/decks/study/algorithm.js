@@ -48,6 +48,7 @@ function generateConfig(method='ANKI') {
 
 
 // Adapted from https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
+// TODO: implement caching
 export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
   const errorResponse = {
     message: 'ERROR',
@@ -74,7 +75,7 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
   learningStatus = learningStatus.toLowerCase();
 
   // Algorithm
-  if (learningStatus === 'learning') {
+  if (learningStatus === 'learning' || learningStatus === 'unseen') {
     // For learning cards, there is no "hard" response available
     if (grade === 1) {
       // Again
@@ -98,6 +99,9 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
       interval = EASY_INTERVAL;
     } else {
       return errorResponse;
+    };
+    if (learningStatus === 'unseen') {
+      learningStatus = 'learning';
     };
   } else if (learningStatus === 'learned') {
     if (grade === 1) {

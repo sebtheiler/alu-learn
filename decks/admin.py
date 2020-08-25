@@ -37,11 +37,28 @@ class FlashCardAdmin(admin.ModelAdmin):
 
 
 class DeckAdmin(admin.ModelAdmin):
-    inlines = [FlashCardTabAdmin]
+    # TODO: cleanup
+    # inlines = [FlashCardTabAdmin]
     list_display = ['__str__', 'user']
     search_fields = ['title', 'user__username', 'user__email']
+    # fieldsets = [
+    #     (None, {'fields': (
+    #         'title',
+    #         'description',
+    #         'shuffle_unseen_cards',
+    #         'sharing_setting',
+    #         'scheduling_algorithm',
+    #         'new_cards_done_today',
+    #     )}),
+    #     ('Flashcards', {'fields': (
+    #         'flashcards',
+    #     ), 'classes': ('collapse',)})
+    # ]
     class Meta:
         model = Deck
+    
+    # def get_flashcards(self, obj):
+    #     return obj.flashcards
 
 admin.site.register(Deck, DeckAdmin)
 admin.site.register(FlashCard, FlashCardAdmin)

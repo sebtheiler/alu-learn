@@ -23,7 +23,7 @@ export function DecksFeedComponent(props) {
   return (
     <div className={props.className}>
       <div className='text-center'>
-        {/* TODO: center better or choose new location */}
+        {/* TODO: Combine with create new deck button */}
         <Button href='/flashcards/search/' className='text-center mt-1'>Search for Flashcards / Custom Study</Button>
       </div>
       {canCreateDeck === true && <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mt-3' />}

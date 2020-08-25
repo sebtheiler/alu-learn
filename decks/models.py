@@ -58,6 +58,7 @@ class Deck(models.Model):
     )
 
     # TODO: starting difficulty, new cards per day, ...
+    new_cards_done_today = models.PositiveSmallIntegerField(default=0)
 
     objects = DeckManager()
     class Meta:
@@ -83,12 +84,13 @@ class FlashCard(models.Model):
     # image (front/back)
 
     LEARNING_STATUS_CHOICES = [
+        ('UNSEEN', 'Unseen/New'),
         ('LEARNING', 'Learning'),
         ('LEARNED', 'Learned'),
         ('RELEARNING', 'Relearning'),
     ]
 
-    learning_status = models.CharField(max_length=10, choices=LEARNING_STATUS_CHOICES, default='LEARNING')
+    learning_status = models.CharField(max_length=10, choices=LEARNING_STATUS_CHOICES, default='UNSEEN')
     steps_index = models.PositiveSmallIntegerField(default=0)
     ease = models.PositiveSmallIntegerField(default=250) # in percent TODO: Make 250 customizable
     next_review = models.DateTimeField()

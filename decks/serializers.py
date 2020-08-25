@@ -66,6 +66,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'you_have_thanked',
             'scheduling_algorithm',
             'shuffle_unseen_cards',
+            'new_cards_done_today',
             'id',
         ]
     

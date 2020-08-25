@@ -18,12 +18,14 @@ def txt_file_upload(request, *args, **kwargs):
     user = Profile.objects.all().first().user # TODO: change to request.user
     deck, created = Deck.objects.get_or_create(user=user, title=deck_title)
 
+    now = timezone.now()
+    this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
     flashcards = [
         FlashCard(
             deck=deck,
             front_text=front,
             back_text=back,
-            next_review=timezone.now(),
+            next_review=this_morning,
         )
         for front, back in front_and_back
     ]
