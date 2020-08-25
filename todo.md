@@ -1,9 +1,8 @@
 Fixes and patches
 * Fix bugs for Anonymous users
-* Make sure even if a hacker has access to the API, they cannot do anything they would normally be able to do
+* Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
 
 Spaced repitition
-* Add leech taggings and thresholds
 * Add daily new cards limit
 
 Improvements
