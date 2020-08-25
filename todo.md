@@ -4,7 +4,6 @@ Fixes and patches
 
 Spaced repitition
 * Add daily new cards limit
-* When creating flashcards, make their due date 0000, not the current time
 
 Improvements
 * Add pagination for deck search

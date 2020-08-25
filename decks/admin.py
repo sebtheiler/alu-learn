@@ -14,6 +14,7 @@ class FlashCardTabAdmin(admin.TabularInline):
 
 
 class FlashCardAdmin(admin.ModelAdmin):
+    search_fields = ['front_text', 'back_text', 'deck__title']
     fieldsets = [
         (None, {'fields': (
             'front_text',
