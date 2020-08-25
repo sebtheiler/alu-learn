@@ -67,6 +67,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'scheduling_algorithm',
             'shuffle_unseen_cards',
             'new_cards_done_today',
+            'daily_new_card_limit',
             'id',
         ]
     

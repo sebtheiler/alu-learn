@@ -32,8 +32,6 @@ class Deck(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(default='')
 
-    shuffle_unseen_cards = models.BooleanField(default=True)
-
     SHARING_OPTIONS = [
         ('PRIVATE', 'Private'),
         ('FRIENDS', 'Friends only'),
@@ -57,8 +55,11 @@ class Deck(models.Model):
         default='ANKI',
     )
 
-    # TODO: starting difficulty, new cards per day, ...
+    # Customizable settings
+    daily_new_card_limit = models.PositiveSmallIntegerField(default=20)
     new_cards_done_today = models.PositiveSmallIntegerField(default=0)
+    shuffle_unseen_cards = models.BooleanField(default=True)
+
 
     objects = DeckManager()
     class Meta:

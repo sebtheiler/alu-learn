@@ -27,7 +27,8 @@ export function DeckDefaultButtonGroup(props) {
         form.elements.description.value === deck.description &&
         form.elements.sharingSetting.value === deck.sharing_setting &&
         form.elements.schedulingAlgo.value === deck.scheduling_algorithm &&
-        form.elements.shuffleUnseenCards.checked === deck.shuffle_unseen_cards
+        form.elements.shuffleUnseenCards.checked === deck.shuffle_unseen_cards &&
+        parseInt(form.elements.dailyNewCardLimit.value) === deck.daily_new_card_limit
     ) {
       return;
     };
@@ -40,6 +41,7 @@ export function DeckDefaultButtonGroup(props) {
       form.elements.sharingSetting.value,
       form.elements.schedulingAlgo.value,
       form.elements.shuffleUnseenCards.checked,
+      parseInt(form.elements.dailyNewCardLimit.value),
       (response, status) => {
         if (status === 200) {
           window.location.reload();
@@ -135,6 +137,16 @@ export function DeckEditModal(props) {
               label='Shuffle Unseen Cards'
               name='shuffleUnseenCards'
               defaultChecked={deck.shuffle_unseen_cards}
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Daily new card limit</Form.Label>
+            <Form.Control
+              type='number'
+              name='dailyNewCardLimit'
+              defaultValue={deck.daily_new_card_limit}
+              min='1'
+              required
             />
           </Form.Group>
           <Form.Group>

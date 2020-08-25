@@ -24,7 +24,8 @@ export function FlashCard(props) {
       <div className='row mt-3 text-center'>
         <div className='col-md-12'>
           <p className='mb-0'>
-            <strong>Flashcard - #{number + 1}</strong> | Due {date.toString().substring(0, 10)}
+            <strong>Flashcard - #{number + 1}</strong>
+            {flashcard.learning_status !== 'UNSEEN' ? <>| Due {date.toString().substring(0, 10)}</> : null}
           </p>
           <p className={foreignUser ? 'd-none' : ''}>
             <OverlayTrigger

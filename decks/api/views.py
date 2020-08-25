@@ -431,6 +431,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     sharing_setting = request.data.get('sharing_setting')
     scheduling_algorithm = request.data.get('scheduling_algorithm')
     shuffle_unseen_cards = request.data.get('shuffle_unseen_cards')
+    daily_new_card_limit = request.data.get('daily_new_card_limit')
 
     if sharing_setting and sharing_setting not in ('PRIVATE', 'FRIENDS', 'PUBLIC'):
         return Response({'message': 'Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`'}, status=400)
@@ -452,6 +453,9 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     
     if shuffle_unseen_cards is not None:
         deck.shuffle_unseen_cards = shuffle_unseen_cards
+
+    if daily_new_card_limit is not None:
+        deck.daily_new_card_limit = daily_new_card_limit
 
     deck.save()
     return Response(DeckSerializer(instance=deck).data, 200)

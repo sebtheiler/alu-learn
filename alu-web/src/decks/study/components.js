@@ -61,8 +61,7 @@ export function StudyComponent(props) {
 
         // If the card is unseen, and we have surpassed the new cards limit
         // do not show the card
-        deck.new_cards_limit = 5; // TODO: make customizable
-        if (card.learning_status === 'UNSEEN' && deck.new_cards_done_today >= deck.new_cards_limit) {
+        if (card.learning_status === 'UNSEEN' && deck.new_cards_done_today >= deck.daily_new_card_limit) {
           return false;
         };
 

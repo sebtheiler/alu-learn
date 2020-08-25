@@ -3,7 +3,6 @@ Fixes and patches
 * Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
 
 Spaced repitition
-* Add daily new cards limit
 * In custom study: allow min and max ease to go to +- infinity
 * Make sure that the same card is never displayed twice in a row
 
@@ -18,3 +17,6 @@ Features
 * Pop-up dictionary?
 * Review heatmap
 * Speed focus mode
+
+Accesibility
+* Add for='' tags for labels
