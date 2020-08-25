@@ -4,7 +4,7 @@ Fixes and patches
 
 Spaced repitition
 * In custom study: allow min and max ease to go to +- infinity
-* Make sure that the same card is never displayed twice in a row
+* Make the leech tag removable / auto-remove it
 
 Improvements
 * Add pagination for deck search

@@ -17,6 +17,7 @@ export function StudyComponent(props) {
   
   const [currentCard, setCurrentCard] = useState(null);
   const [currentCardDidSet, setCurrentCardDidSet] = useState(false);
+  const [previousCard, setPreviousCard] = useState(null);
   
   const [showAnswer, setShowAnswer] = useState(false);
   const [finishedStudying, setFinishedStudying] = useState(false);
@@ -51,7 +52,7 @@ export function StudyComponent(props) {
     if (deck && currentCardDidSet === false) {
       setCurrentCardDidSet(true);
       // Only get cards that were due previously (or if we are studying ahead)
-      const toReview = deck.flashcards.filter((card) => {
+      const cardsDueNow = deck.flashcards.filter((card) => {
         let now = new Date();
         // If we are reviewing ahead, change when "now" is
         now.setDate(now.getDate() + futureReviewDays);
@@ -71,9 +72,14 @@ export function StudyComponent(props) {
       });
 
       // If there are no more cards, we've finished
-      if (toReview.length === 0) {
+      if (cardsDueNow.length === 0) {
         setFinishedStudying(true);
+        return;
       };
+
+      const toReview = cardsDueNow.length > 1 && previousCard ?
+        cardsDueNow.filter(card => card.id !== previousCard.id) :
+        cardsDueNow;
 
       // Sort cards in order of due date
       const sortedCards = toReview.sort((a, b) => {
@@ -82,7 +88,7 @@ export function StudyComponent(props) {
 
       // If there are multiple cards that have the same due date, pick randomly from them
       var card;
-      if (deck.shuffle_unseen_cards) {
+      if (deck.shuffle_unseen_cards && sortedCards.length > 2) {
         const earliestCards = sortedCards.filter(card => {
           let earliestReview = new Date(sortedCards[0].next_review);
           let nextReview = new Date(card.next_review);
@@ -101,12 +107,13 @@ export function StudyComponent(props) {
       } else {
         card = sortedCards[0];
       };
+      
 
       // Set current card to studying card
       setCurrentCard(card);
       setShowAnswer(false);
     };
-  }, [currentCardDidSet, setCurrentCardDidSet, deck, studySuspendedCards, futureReviewDays]);
+  }, [currentCardDidSet, setCurrentCardDidSet, deck, studySuspendedCards, futureReviewDays, previousCard]);
 
   // Shows answer when spacebar is pressed or "Show Answer" is clicked
   const showAnswerHandler = (event) => {
@@ -119,6 +126,7 @@ export function StudyComponent(props) {
     if (grade > 4) {
       return;
     };
+    setPreviousCard(currentCard);
     setCurrentCardDidSet(false);
 
     // Calculate when the card should be next seen
