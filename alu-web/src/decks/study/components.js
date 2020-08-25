@@ -48,7 +48,7 @@ export function StudyComponent(props) {
       setCurrentCardDidSet(true);
       // Only get cards that were due previously (or if we are studying ahead)
       const toReview = deck.flashcards.filter((card) => {
-        var now = new Date();
+        let now = new Date();
         // If we are reviewing ahead, change when "now" is
         now.setDate(now.getDate() + futureReviewDays);
 
@@ -56,6 +56,7 @@ export function StudyComponent(props) {
         const review = new Date(card.next_review);
 
         // This is done weirdly so that you don't have to wait for 1min/10min cards
+        // TODO: change to just allow for futureReviewDays to be minutes
         return new Date(review.getFullYear(), review.getMonth(), review.getDate()) < now && (!card.is_suspended || studySuspendedCards);
       });
 
@@ -64,10 +65,33 @@ export function StudyComponent(props) {
         setFinishedStudying(true);
       };
 
-      // Get which card we should study
-      const card = toReview.sort((a, b) => {
+      // Sort cards in order of due date
+      const sortedCards = toReview.sort((a, b) => {
         return new Date(a.next_review) - new Date(b.next_review);
-      })[0];
+      });
+
+      // If there are multiple cards that have the same due date, pick randomly from them
+      deck.shuffle_cards = true; // TODO: make this customizeable
+      var card;
+      if (deck.shuffle_cards) {
+        const earliestCards = sortedCards.filter(card => {
+          let earliestReview = new Date(sortedCards[0].next_review);
+          let nextReview = new Date(card.next_review);
+
+          // Miliseconds may vary based on how the card was created
+          // which is why we don't check that they are equal
+          return (
+            earliestReview.getFullYear() === nextReview.getFullYear() &&
+            earliestReview.getMonth() === nextReview.getMonth() &&
+            earliestReview.getDate() === nextReview.getDate() &&
+            earliestReview.getMinutes() === nextReview.getMinutes() &&
+            earliestReview.getSeconds() === nextReview.getSeconds()
+          );
+        });
+        card = earliestCards[Math.floor(Math.random() * earliestCards.length)];
+      } else {
+        card = sortedCards[0];
+      };
 
       // Set current card to studying card
       setCurrentCard(card);
