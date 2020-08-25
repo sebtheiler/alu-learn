@@ -4,9 +4,11 @@ Fixes and patches
 
 Spaced repitition
 * Add daily new cards limit
+* Add random order option
 
 Improvements
 * Add pagination for deck search
+* Infinite scroll for browsing flashcards
 * Make numeric ids into string ids like "dad2Xadw#1"
 * Fix navbar on mobile
 
