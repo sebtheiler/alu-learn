@@ -67,12 +67,13 @@ export function apiDeckDelete(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/delete/`, callback);
 };
 
-export function apiDeckEdit(deckId, newTitle, newDescription, sharingSetting, schedulingAlgo, callback) {
+export function apiDeckEdit(deckId, newTitle, newDescription, sharingSetting, schedulingAlgo, shuffleUnseenCards, callback) {
   backendLookup('POST', `decks/${deckId}/edit/`, callback, {
     new_title: newTitle,
     description: newDescription,
     sharing_setting: sharingSetting,
     scheduling_algorithm: schedulingAlgo,
+    shuffle_unseen_cards: shuffleUnseenCards,
   });
 };
 

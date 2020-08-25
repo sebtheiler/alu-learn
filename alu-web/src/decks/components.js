@@ -22,7 +22,7 @@ export function DecksFeedComponent(props) {
 
   return (
     <div className={props.className}>
-      <div classname='text-center'>
+      <div className='text-center'>
         {/* TODO: center better or choose new location */}
         <Button href='/flashcards/search/' className='text-center mt-1'>Search for Flashcards / Custom Study</Button>
       </div>

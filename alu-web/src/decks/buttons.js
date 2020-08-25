@@ -26,7 +26,8 @@ export function DeckDefaultButtonGroup(props) {
         form.elements.title.value === deck.title &&
         form.elements.description.value === deck.description &&
         form.elements.sharingSetting.value === deck.sharing_setting &&
-        form.elements.schedulingAlgo.value === deck.scheduling_algorithm
+        form.elements.schedulingAlgo.value === deck.scheduling_algorithm &&
+        form.elements.shuffleUnseenCards.checked === deck.shuffle_unseen_cards
     ) {
       return;
     };
@@ -38,6 +39,7 @@ export function DeckDefaultButtonGroup(props) {
       form.elements.description.value,
       form.elements.sharingSetting.value,
       form.elements.schedulingAlgo.value,
+      form.elements.shuffleUnseenCards.checked,
       (response, status) => {
         if (status === 200) {
           window.location.reload();
@@ -53,11 +55,11 @@ export function DeckDefaultButtonGroup(props) {
       if (status === 200) {
         window.location.reload();
       } else if (status === 403) {
-        alert('You must log in!')
+        alert('You must log in!');
       } else {
         console.log(response, status);
         alert('Error deleting your deck!');
-      }
+      };
     });
   };
 
@@ -126,6 +128,14 @@ export function DeckEditModal(props) {
               <option value='FRIENDS'>Friends only</option>
               <option value='PUBLIC'>Public</option>
             </Form.Control>
+          </Form.Group>
+          <Form.Group>
+            <Form.Check
+              type='checkbox'
+              label='Shuffle Unseen Cards'
+              name='shuffleUnseenCards'
+              defaultChecked={deck.shuffle_unseen_cards}
+            />
           </Form.Group>
           <Form.Group>
             <Form.Label>Scheduling Algorithm (Advanced)</Form.Label>

@@ -410,6 +410,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         `description`: (Data) New description of the deck
         `sharing_setting`: (Data) PRIVATE, FRIENDS, or PUBLIC
         `scheduling_algorithm`: (Data) Which scheduling algorithm to use, ANKI or ANKING
+        `shufle_unseen_cards`: (Data) Whether or not to shuffle unseen cards
 
     Possible errors:
         Deck does not exist: 404, {message: 'Deck not found'}
@@ -425,16 +426,19 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         return Response({'message': 'You are not authorized to edit this deck'}, status=401)
     deck = decks_qs.first()
 
-    # Edit the flashcard
+    # Get data
     title = request.data.get('new_title')
     description = request.data.get('description')
     sharing_setting = request.data.get('sharing_setting')
     scheduling_algorithm = request.data.get('scheduling_algorithm')
+    shuffle_unseen_cards = request.data.get('shuffle_unseen_cards')
+
     if sharing_setting and sharing_setting not in ('PRIVATE', 'FRIENDS', 'PUBLIC'):
         return Response({'message': 'Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`'}, status=400)
     if scheduling_algorithm and scheduling_algorithm not in ('ANKI', 'ANKING'):
         return Response({'message': 'Invalid `scheduling_algorithm`.  Must be `ANKI` or `ANKING`'}, status=400)
 
+    # Edit the deck
     if title is not None:
         deck.title = title
 
@@ -446,6 +450,9 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     
     if scheduling_algorithm is not None:
         deck.scheduling_algorithm = scheduling_algorithm.upper()
+    
+    if shuffle_unseen_cards is not None:
+        deck.shuffle_unseen_cards = shuffle_unseen_cards
 
     deck.save()
     return Response(DeckSerializer(instance=deck).data, 200)

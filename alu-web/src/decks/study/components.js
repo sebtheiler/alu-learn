@@ -71,9 +71,8 @@ export function StudyComponent(props) {
       });
 
       // If there are multiple cards that have the same due date, pick randomly from them
-      deck.shuffle_cards = true; // TODO: make this customizeable
       var card;
-      if (deck.shuffle_cards) {
+      if (deck.shuffle_unseen_cards) {
         const earliestCards = sortedCards.filter(card => {
           let earliestReview = new Date(sortedCards[0].next_review);
           let nextReview = new Date(card.next_review);

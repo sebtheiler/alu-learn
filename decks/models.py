@@ -32,6 +32,8 @@ class Deck(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(default='')
 
+    shuffle_unseen_cards = models.BooleanField(default=True)
+
     SHARING_OPTIONS = [
         ('PRIVATE', 'Private'),
         ('FRIENDS', 'Friends only'),
