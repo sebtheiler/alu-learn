@@ -1,6 +1,7 @@
 Fixes and patches
 * Fix bugs for Anonymous users
 * Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
+* Protect API
 
 Spaced repitition
 * In custom study: allow min and max ease to go to +- infinity
@@ -16,6 +17,3 @@ Features
 * Pop-up dictionary?
 * Review heatmap
 * Speed focus mode
-
-Accesibility
-* Add for='' tags for labels

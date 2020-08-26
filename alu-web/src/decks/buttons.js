@@ -111,15 +111,15 @@ export function DeckEditModal(props) {
       <Form onSubmit={saveHandler}>
         <Modal.Body>
           <Form.Group>
-            <Form.Label>Title</Form.Label>
+            <Form.Label htmlFor='title'>Title</Form.Label>
             <Form.Control type='text' placeholder='My deck' name='title' defaultValue={deck.title} />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Description</Form.Label>
+            <Form.Label htmlFor='description'>Description</Form.Label>
             <Form.Control as='textarea' rows='3' placeholder="My deck's description" name='description' defaultValue={deck.description} />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Sharing Setting</Form.Label>
+            <Form.Label htmlFor='sharingSetting'>Sharing Setting</Form.Label>
             <Form.Control
               as='select'
               name='sharingSetting'
@@ -140,7 +140,7 @@ export function DeckEditModal(props) {
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Daily new card limit</Form.Label>
+            <Form.Label htmlFor='dailyNewCardLimit'>Daily new card limit</Form.Label>
             <Form.Control
               type='number'
               name='dailyNewCardLimit'
@@ -150,7 +150,7 @@ export function DeckEditModal(props) {
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Scheduling Algorithm (Advanced)</Form.Label>
+            <Form.Label htmlFor='schedulingAlgo'>Scheduling Algorithm (Advanced)</Form.Label>
             <Form.Control
               as='select'
               name='schedulingAlgo'

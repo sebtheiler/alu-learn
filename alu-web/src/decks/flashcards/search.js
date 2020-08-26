@@ -124,8 +124,8 @@ export function FlashCardSearchComponent(props) {
     <>
       <Form className='text-center mx-auto w-75' onSubmit={handleSubmit}>
         <Form.Group>
-          <Form.Label as='h5'>Search in the following decks (use control/command to select multiple)</Form.Label>
-          <Form.Control as='select' multiple ref={deckSelectRef}>
+          <Form.Label htmlFor='deckSelect' as='h5'>Search in the following decks (use control/command to select multiple)</Form.Label>
+          <Form.Control as='select' multiple ref={deckSelectRef} name='deckSelect'>
             {
               decks.map((deck, index) => {
                 return <option className='deck-selection' value={deck.id} key={`deck-#${index}`}>{deck.title}</option>
@@ -135,37 +135,37 @@ export function FlashCardSearchComponent(props) {
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label as='h5'>Front or back text contains...</Form.Label>
-          <Form.Control type='text' ref={containsSelectRef} placeholder='When was the Roman Empire...'></Form.Control>
+          <Form.Label htmlFor='contains' as='h5'>Front or back text contains...</Form.Label>
+          <Form.Control type='text' ref={containsSelectRef} placeholder='When was the Roman Empire...' name='contains' />
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label as='h5'>List of tags to search in (seperate with commas)</Form.Label>
-          <Form.Control type='text' ref={tagSelectRef} placeholder='Calculus, Integrals, Exponentials, ...'></Form.Control>
+          <Form.Label  htmlFor='tags' as='h5'>List of tags to search in (seperate with commas)</Form.Label>
+          <Form.Control type='text' ref={tagSelectRef} placeholder='Calculus, Integrals, Exponentials, ...' name='tags' />
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label as='h5'>Is the card suspended?</Form.Label>
-          <Form.Control as='select' ref={suspendedSelectRef}>
-            <option value='ANY'>Any</option>
+          <Form.Label as='h5' htmlFor='isSuspended'>Is the card suspended?</Form.Label>
+          <Form.Control as='select' ref={suspendedSelectRef} name='isSuspended'>
+            <option value='ANY'>---------</option>
             <option value='SUSPENDED'>Suspended</option>
             <option value='NOTSUSPENDED'>Not suspended</option>
           </Form.Control>
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label as='h5'>Is the card a leech?</Form.Label>
-          <Form.Control as='select' ref={leechSelectRef}>
-            <option value='ANY'>Any</option>
+          <Form.Label htmlFor='isLeech' as='h5'>Is the card a leech?</Form.Label>
+          <Form.Control as='select' ref={leechSelectRef} name='isLeech'>
+            <option value='ANY'>---------</option>
             <option value='LEECH'>Leech</option>
             <option value='NOTLEECH'>Not a leech</option>
           </Form.Control>
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label as='h5'>What is the card's learning status?</Form.Label>
-          <Form.Control as='select' ref={learningStatusSelectRef}>
-            <option value='ANY'>Any</option>
+          <Form.Label htmlFor='learningStatus' as='h5'>What is the card's learning status?</Form.Label>
+          <Form.Control as='select' ref={learningStatusSelectRef} name='learningStatus'>
+            <option value='ANY'>---------</option>
             <option value='UNSEEN'>Unseen/New</option>
             <option value='LEARNED'>Learned</option>
             <option value='LEARNING'>Learning</option>
@@ -174,7 +174,7 @@ export function FlashCardSearchComponent(props) {
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label as='h5'>Minimum Ease Factor</Form.Label>
+          <Form.Label htmlFor='minEase' as='h5'>Minimum Ease Factor</Form.Label>
           <RangeSlider
             value={minEaseValue}
             onChange={changeEvent => setMinEaseValue(changeEvent.target.value)}
@@ -182,11 +182,12 @@ export function FlashCardSearchComponent(props) {
             max={350}
             step={5}
             ref={minEaseSelectRef}
+            name='minEase'
             />
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label as='h5'>Maximum Ease Factor</Form.Label>
+          <Form.Label htmlFor='maxEase' as='h5'>Maximum Ease Factor</Form.Label>
           <RangeSlider
             value={maxEaseValue}
             onChange={changeEvent => setMaxEaseValue(changeEvent.target.value)}
@@ -194,6 +195,7 @@ export function FlashCardSearchComponent(props) {
             max={350}
             step={5}
             ref={maxEaseSelectRef}
+            name='maxEase'
           />
         </Form.Group>
         <Form.Group>

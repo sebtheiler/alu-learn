@@ -105,7 +105,7 @@ export function FlashCardCreate(props) {
           />
         </Form.Group> */}
         <Form.Group className='blue-border-focus'>
-          <Form.Label className='mb-0 mt-3'>
+          <Form.Label htmlFor='frontText' className='mb-0 mt-3'>
             <small className='text-secondary'>Front</small>
           </Form.Label>
           <Form.Control
@@ -117,7 +117,7 @@ export function FlashCardCreate(props) {
             autoFocus
             required
           />
-          <Form.Label className='mb-0 mt-3'>
+          <Form.Label htmlFor='backText' className='mb-0 mt-3'>
             <small className='text-secondary'>Back</small>
           </Form.Label>
           <Form.Control
@@ -130,7 +130,7 @@ export function FlashCardCreate(props) {
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label className='mb-0'>
+          <Form.Label htmlFor='tags' className='mb-0'>
             <OverlayTrigger
               overlay={generateTooltip(
                 `You can give your flashcards tags to group them together.
@@ -146,6 +146,7 @@ export function FlashCardCreate(props) {
             type="text"
             placeholder='Calculus, Integrals, Exponentials, ...'
             ref={tagsRef}
+            name='tags'
             maxLength='1024'
           />
         </Form.Group>
