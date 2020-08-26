@@ -98,14 +98,31 @@ class FlashCard(models.Model):
     interval = models.PositiveSmallIntegerField(default=0) # in days
 
     is_suspended = models.BooleanField(default=False)
-    is_leech = models.BooleanField(default=False)
 
     leech_index = models.PositiveSmallIntegerField(default=0)
 
 
     def __str__(self):
         return self.front_text + '  ---  ' + self.back_text
-
+    
+    def is_leech(self):
+        # Get whether the card is a leech or not, based on whether
+        # it has the tag 'leech'
+        # The split is required so that the tag 'daoijdaleechadajda' is not
+        # marked as a leech.
+        return 'leech' in [tag.strip() for tag in self.tags.split(',')]
+    
+    def set_is_leech(self, is_leech):
+        if is_leech:
+            if self.is_leech():
+                return
+            if self.tags.strip() == '':
+                self.tags = 'leech'
+            else:
+                self.tags += ', leech'
+        else:
+            self.tags = self.tags.replace(', leech', '')
+        self.save()
 
 # Used to like/thank a person for making a deck
 class DeckThank(models.Model):

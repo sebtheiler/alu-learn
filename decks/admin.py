@@ -26,7 +26,6 @@ class FlashCardAdmin(admin.ModelAdmin):
             'learning_status',
             'ease',
             'is_suspended',
-            'is_leech',
             'leech_index',
             'interval',
             'steps_index',

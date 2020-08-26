@@ -187,7 +187,7 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
     if leech_index is not None:
         obj.leech_index = leech_index
     if is_leech is not None:
-        obj.is_leech = is_leech
+        obj.set_is_leech(is_leech)
     if increment_new_cards_done_today:
         obj.deck.new_cards_done_today += 1
         obj.deck.save()
@@ -570,14 +570,11 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
     flashcard = flashcard_qs.first()
 
     # Set flashcard as (un)suspended/leeched
-    if request.data.get('action') == 'suspend':
-        flashcard.is_suspended = True
-    elif request.data.get('action') == 'unsuspend':
-        flashcard.is_suspended = False
-    elif request.data.get('action') == 'leech':
-        flashcard.is_leech = True
-    elif request.data.get('action') == 'unleech':
-        flashcard.is_leech = False
+    action = request.data.get('action')
+    if action in ('suspend', 'unsuspend'):
+        flashcard.is_suspended = action == 'suspend'
+    elif action in ('leech', 'unleech'):
+        flashcard.set_is_leech(action == 'leech')
     flashcard.save()
     
     return Response(FlashCardSerializer(flashcard).data, status=200)
@@ -635,7 +632,7 @@ def flashcard_search_view(request, *args, **kwargs):
                 set(
                     [ # (set form of all tags in a card)
                         tag.strip() for tag in flashcard.tags.split(',')
-                    ] # Has any shared elements in `tag_list`
+                    ] # ...has any shared elements in `tag_list`
                 ).intersection(set(tag_list))) > 0
         ] 
         flashcard_qs = flashcard_qs.filter(id__in=flashcard_ids)
@@ -652,7 +649,8 @@ def flashcard_search_view(request, *args, **kwargs):
     
     leech = request.data.get('leech')
     if leech is not None:
-        flashcard_qs = flashcard_qs.filter(is_leech=leech)
+        flashcard_ids = [flashcard.id for flashcard in flashcard_qs if flashcard.is_leech()]
+        flashcard_qs = flashcard_qs.filter(id__in=flashcard_ids)
     
     learning_status = request.data.get('learning_status')
     if learning_status is not None:

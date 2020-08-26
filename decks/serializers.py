@@ -25,6 +25,7 @@ class DeckThankSerializer(serializers.ModelSerializer):
 
 class FlashCardSerializer(serializers.ModelSerializer):
     parent_deck_id = serializers.SerializerMethodField(read_only=True)
+    is_leech = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FlashCard
@@ -46,6 +47,9 @@ class FlashCardSerializer(serializers.ModelSerializer):
     
     def get_parent_deck_id(self, obj):
         return obj.deck.id
+    
+    def get_is_leech(self, obj):
+        return obj.is_leech()
 
 
 class DeckSerializer(serializers.ModelSerializer):

@@ -4,7 +4,6 @@ Fixes and patches
 
 Spaced repitition
 * In custom study: allow min and max ease to go to +- infinity
-* Make the leech tag removable / auto-remove it
 
 Improvements
 * Add pagination for deck search
