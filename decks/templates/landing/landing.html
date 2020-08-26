@@ -3,7 +3,8 @@
 {% block title %}{{ title }} at{% endblock title %}
 
 {% block content %}
-<script src="https://kit.fontawesome.com/11201b2070.js" crossorigin="anonymous" media="print" onload="this.media='all'"></script>
+<!-- TODO: this is very slow -->
+<!-- <script src="https://kit.fontawesome.com/11201b2070.js" crossorigin="anonymous" media="print" onload="this.media='all'"></script> -->
 
 <div class='row'>
 </div>
@@ -50,19 +51,79 @@
 <div class='row'>
   <div class='col-12 text-center'>
     <h2>Here's how it works</h2>
-    {% load static %}
-    <img
-      src='{% static "images/alu-flow.jpg" %}'
-      alt='Take Notes: Easily take powerful notes using systems such as Cornell and Hierarchical notes.
-           Make Flashcards: Quickly turn your notes into flashcards.
-           Find Flashcards: Find decks of flashcards made by others to improve your studying experience.
-           Study and Review: Our spaced repetition algorithm will give you the flashcards you need to focus on most.
-           Share with Others: Made a deck of flashcards you think others will like? Share it, and people from around the world will thank you!'
-    >
-    <h3>Convinced?</h3>
-    <form class='btn-group-vertical'>
-      <!-- {% csrf_token %} -->
-      <button class='btn btn-primary mb-1 px-3'>Register for the Alpha</button>
+    <div class='text-center mx-auto mt-5'>
+      <div class='row mb-5'>
+        <div class='card w-33 mx-auto'>
+          <div class='card-header'>
+            <h5>Take Notes</h5>
+          </div>
+          <img
+            class='card-img-top'
+            src='https://www.wordtemplatesonline.net/wp-content/uploads/Cornell-Notetaking-Template-24.jpg'
+            alt='The Cornell note-taking system'>
+          <div class='card-body'>
+            Easily take powerful notes using <strong>Cornell</strong> and <strong>Hierarchical</strong> note systems
+          </div>
+        </div>
+      </div>
+      <div class='row mb-5'>
+        <div class='card w-33 mx-auto'>
+          <div class='card-header'>
+            <h5>Make Flashcards</h5>
+          </div>
+          <img
+            class='card-img-top'
+            src='/static/images/create-flashcard.png'
+            alt='The page for creating flashcards'>
+          <div class='card-body'>
+            Quickly turn your notes into flashcards
+          </div>
+        </div>
+        <div class='card w-33 mx-auto'>
+          <div class='card-header'>
+            <h5>Find Flashcards</h5>
+          </div>
+          <img
+            class='card-img-top'
+            src='/static/images/explore-decks.png'
+            alt='The "Explore" page, with lists of decks made by others'>
+          <div class='card-body'>
+            Find decks of flashcards made by others to improve your studying experience
+          </div>
+        </div>
+      </div>
+      <div class='row mb-5'>
+        <div class='card w-33 mx-auto'>
+          <div class='card-header'>
+            <h5>Study and Review</h5>
+          </div>
+          <img
+            class='card-img-top'
+            src='/static/images/studying-flashcard.png'
+            alt='Studying an individual flashcard'>
+          <div class='card-body'>
+            Our spaced repetition algorithm will give you the flashcards you need <strong>to focus on most</strong>
+          </div>
+        </div>
+      </div>
+      <div class='row mb-5'>
+        <div class='card w-33 mx-auto'>
+          <div class='card-header'>
+            <h5>Share with Others!</h5>
+          </div>
+          <img
+            class='card-img-top'
+            src='/static/images/explore-decks.png'
+            alt='The "Explore" page, with lists of decks made by others'>
+          <div class='card-body'>
+            Made a deck of flashcards you think others will like? Share it, and people from around the world will thank you!
+          </div>
+        </div>
+      </div>
+    </div>
+    <h3>Ready to start learning?</h3>
+    <form class='btn-group-vertical mb-5'>
+      <button class='btn btn-primary mb-5 px-3'>Register for the Alpha</button>
     </form>
   </div>
 </div>
@@ -70,6 +131,10 @@
 <style>
 .vertical-center {
   margin-top: 50px;
+}
+
+.w-33 {
+  width: 33%;
 }
 </style>
 {% endblock content %}
