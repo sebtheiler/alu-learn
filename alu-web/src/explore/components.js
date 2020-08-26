@@ -55,13 +55,13 @@ export function DeckSlider(props) {
         {decks.map((deck, index) => {
           return (
             <div style={{outline: 'none'}} key={`${index}-${deck.id}`}>
-              <a href={`/${deck.id}/`}>
+              <a href={`/decks/${deck.id}/`}>
                 <h4 className='mb-0' style={{outline: 'none', color: 'black'}}>
                   {deck.title}
                 </h4>
               </a>
               <UserLink user={deck.author} small />
-              <a href={`/${deck.id}/`}>
+              <a href={`/decks/${deck.id}/`}>
                 <p className='deck-description mt-2 w-75' style={{outline: 'none', color: 'black'}}>
                   {deck.description.substring(0, 128) + (deck.description.length > 128 ? '...' : '')}
                 </p>

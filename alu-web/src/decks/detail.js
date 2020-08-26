@@ -38,7 +38,7 @@ export function Deck(props) {
           <ButtonGroup>
             {currentUsername === deck.author.username ?
               <DeckDefaultButtonGroup deck={deck} />
-            : <Button href={`/${deck.id}/`}>View</Button>
+            : <Button href={`/decks/${deck.id}/`}>View</Button>
             }
           </ButtonGroup>
         </Card.Body>
@@ -80,7 +80,7 @@ export function DeckDetail(props) {
   return (
     <div className={`text-${textAlign}`}>
       <div>
-        <a href={titleLink ? `/${deck.id}/` : null}>
+        <a href={titleLink ? `/decks/${deck.id}/` : null}>
           <h1 className='mb-0 text-dark'>{deck.title}</h1>
         </a>
         <UserLink user={deck.author} />

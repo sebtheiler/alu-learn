@@ -84,13 +84,13 @@ export function DeckDefaultButtonGroup(props) {
       />
 
       {/* Other buttons */}
-      <Button href={`/${deck.id}/flashcards/create/`} className='mr-1'>
+      <Button href={`/decks/${deck.id}/flashcards/create/`} className='mr-1'>
         Add Cards
       </Button>
-      <Button href={`/${deck.id}/flashcards/`} className='mr-1'>
+      <Button href={`/decks/${deck.id}/flashcards/`} className='mr-1'>
         Browse
       </Button>
-      <Button href={`/${deck.id}/study/`} className='mr-1'>
+      <Button href={`/decks/${deck.id}/study/`} className='mr-1'>
         Study
       </Button>
     </ButtonGroup>

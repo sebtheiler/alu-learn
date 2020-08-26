@@ -203,7 +203,7 @@ export function StudyComponent(props) {
         <div className='text-center'>
           <p>Congratulations! You've finished studying this deck!</p>
           {flashcardList ? null :
-            <Button href={`/${deckId}/flashcards/create/`}>Create a new flashcard</Button>
+            <Button href={`/decks/${deckId}/flashcards/create/`}>Create a new flashcard</Button>
           }
         </div>
         :
