@@ -46,7 +46,26 @@
     </div>
   </div>
 </div>
-
+<hr />
+<div class='row'>
+  <div class='col-12 text-center'>
+    <h2>Here's how it works</h2>
+    {% load static %}
+    <img
+      src='{% static "images/alu-flow.jpg" %}'
+      alt='Take Notes: Easily take powerful notes using systems such as Cornell and Hierarchical notes.
+           Make Flashcards: Quickly turn your notes into flashcards.
+           Find Flashcards: Find decks of flashcards made by others to improve your studying experience.
+           Study and Review: Our spaced repetition algorithm will give you the flashcards you need to focus on most.
+           Share with Others: Made a deck of flashcards you think others will like? Share it, and people from around the world will thank you!'
+    >
+    <h3>Convinced?</h3>
+    <form class='btn-group-vertical'>
+      <!-- {% csrf_token %} -->
+      <button class='btn btn-primary mb-1 px-3'>Register for the Alpha</button>
+    </form>
+  </div>
+</div>
 
 <style>
 .vertical-center {
