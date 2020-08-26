@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Alu Flashcards helps you take notes and study all in one place">
+
+    <!-- 
+      TODO: css.html could look like this for faster loading
+      <link href="/static/css/2.585d198b.chunk.css" rel="stylesheet" media="print" onload="this.media='all'">
+      <link href="/static/css/main.bd18a722.chunk.css" rel="stylesheet" media="print" onload="this.media='all'">
+    -->
+    {% include 'react/css.html' %}
+    <title>Alu Flashcards</title>
+  </head>
+  <body>
+    <!-- <noscript>
+      For full functionality of this site it is necessary to enable JavaScript.
+      Here are the <a href="https://www.enable-javascript.com/">
+      instructions how to enable JavaScript in your web browser</a>.
+    </noscript> -->
+
+    {% include "landing/navbar.html" %}
+    <div class='container'>
+      {% block content %}
+      {% endblock content %}
+    </div>
+    <!-- {% include 'react/base_embed.html' %}
+    {% include 'react/js.html' %} -->
+  </body>
+</html>

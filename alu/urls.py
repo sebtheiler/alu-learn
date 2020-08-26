@@ -21,9 +21,14 @@ from accounts.views import (
     register_view,
 )
 
+from landing.views import (
+    landing_page,
+)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', landing_page),
     path('home/', decks_feed_view),
     path('login/', login_view),
     path('logout/', logout_view),
