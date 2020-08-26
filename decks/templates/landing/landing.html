@@ -3,13 +3,54 @@
 {% block title %}{{ title }} at{% endblock title %}
 
 {% block content %}
+<script src="https://kit.fontawesome.com/11201b2070.js" crossorigin="anonymous" media="print" onload="this.media='all'"></script>
 
-<h1>Want to learn something new?</h1>
-<p>
-  Whether you're a <strong>student, life-long learner</strong>,
-  or both, Alu can help you takes notes and study.
-</p>
+<div class='row'>
+</div>
+<div class='row'>
+  <div class='col-6 vertical-center'>
+    <div class='text-center mt-5' style='height: 500px;'>
+      <h1 class='mt-5'>Want to learn something new?</h1>
+      <p>
+        Whether you're a <strong>student, life-long learner,</strong>
+        or <strong>both</strong>, Alu can help you takes notes and study.
+      </p>
+      
+      <form class='btn-group-vertical'>
+        <!-- {% csrf_token %} -->
+        <button class='btn btn-primary mb-1 px-3'>Register for the Alpha</button>
+        <button class='btn btn-outline-primary px-3'>Log-in</button>
+      </form>
+      <p class='text-secondary mt-3'><strong>
+        Only {{ alpha_spots_remaining }} spots remaining in the Alpha! <br>
+        Register soon!
+      </strong></p>
+    </div>
+  </div>
+  <div class='col-6 vertical-center'>
+    <div class='mt-5'>
+      <ul class='list-group' style='width: 75%;'>
+        <li class='list-group-item py-5 px-5'>
+          <i class="fas fa-brain" style='width: 20px; color: #E292C0;'></i>
+          Take digital notes
+        </li>
+        <li class='list-group-item py-5 px-5'>
+          <i class="fas fa-chess-knight" class='mr-1' style='width: 20px; color: #82C91E;'></i>
+          Focus on what you need most with powerful <em>spaced repitition</em>
+        </li>
+        <li class='list-group-item py-5 px-5'>
+          <i class="fas fa-users" class='mr-1' style='width: 20px; color: #FBA129;'></i>
+          Interact with a community of dedicated learners
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
 
-<button>Sign up for the closed Alpha</button>
 
+<style>
+.vertical-center {
+  margin-top: 50px;
+}
+</style>
 {% endblock content %}

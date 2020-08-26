@@ -12,6 +12,9 @@
       <link href="/static/css/2.585d198b.chunk.css" rel="stylesheet" media="print" onload="this.media='all'">
       <link href="/static/css/main.bd18a722.chunk.css" rel="stylesheet" media="print" onload="this.media='all'">
     -->
+
+    <!-- TODO: this is slow -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" media="print" onload="this.media='all'">
     {% include 'react/css.html' %}
     <title>Alu Flashcards</title>
   </head>
@@ -23,7 +26,7 @@
     </noscript> -->
 
     {% include "landing/navbar.html" %}
-    <div class='container'>
+    <div class='container-fluid'>
       {% block content %}
       {% endblock content %}
     </div>
