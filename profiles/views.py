@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 # Rendered when updating one's own profile
 def profile_update_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
-        return redirect('/login?next=/profile/update')
+        return redirect('/')
     user = request.user
     my_profile = user.profile
     user_data = {
@@ -58,4 +58,6 @@ def profile_detail_view(request, username, *args, **kwargs):
 # Display a list of the user's notifications
 # TODO: Make paginated
 def notifications_list_view(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
     return render(request, 'profiles/notifications.html', {'username': request.user.username})

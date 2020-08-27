@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect
 
 
 def landing_page(request, *args, **kwargs):
-    # if request.user.is_authenticated:
-    #     return redirect('/home/')
+    if request.user.is_authenticated:
+        return redirect('/home/')
     context = {
         'alpha_spots_remaining': 200,
     }

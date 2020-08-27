@@ -1,9 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import generic
 
 
 # Render the home-page feed view
 def decks_feed_view(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
     return render(request, 'pages/feed.html', status=200)
 
 
@@ -24,6 +26,8 @@ def decks_detail_view(request, deck_id, *args, **kwargs):
 
 # Renders the flashcard create view
 def flashcard_create_view(request, deck_id, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
     context = {
         'deck_id': deck_id,
         'flashcard_id': None,
@@ -35,6 +39,8 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 
 # Renders the flashcard edit view
 def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
     context = {
         'deck_id': deck_id,
         'flashcard_id': flashcard_id,
@@ -50,14 +56,20 @@ def flashcard_list_view(request, deck_id, *args, **kwargs):
 
 # Renders the flashcard search tool
 def flashcard_search_view(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
     return render(request, 'flashcards/search.html', context={'username': request.user.username})
 
 # Renders when studying an individual deck
 def deck_study_view(request, deck_id, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
     return render(request, 'decks/study.html', context={'deck_id': deck_id})
 
 # Studies flashcards based on a set of criteria
 def custom_study_view(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
     context = {
         'deck_ids': request.GET.get('deckIds'),
         'tags': request.GET.get('tags'),
