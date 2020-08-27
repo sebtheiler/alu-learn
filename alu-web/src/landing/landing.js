@@ -3,8 +3,6 @@ import {MainHook, CoolFeaturesList, RegisterForm} from './components';
 import {HowItWorks} from './cards';
 
 // TODO:
-// Fix for mobile
-// Build into Django
 // Add A/B testing
 // Add statistic tracking
 
@@ -23,14 +21,13 @@ export function LandingComponent(props) {
   return (
     <>
       <div className='row text-center'>
-        <div className='col-6'>
+        <div className={screenWidth < 770 ? 'col-12' : 'col-6'}>
           <MainHook
             alphaSpotsRemaining={alphaSpotsRemaining}
             callback={redirectToRegister}
-            isMobile={screenWidth < 770}
           />
         </div>
-        <div className='col-6'>
+        <div className={screenWidth < 770 ? 'col-12 mt-4' : 'col-6'}>
           <CoolFeaturesList />
         </div>
       </div>
