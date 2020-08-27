@@ -1,5 +1,6 @@
 import React from 'react';
-import {Form, Button, ListGroup} from 'react-bootstrap';
+import {Form, Button, ListGroup, OverlayTrigger} from 'react-bootstrap';
+import {generateTooltip} from '../utils';
 
 export function RegisterForm(props) {
   const {callback, hideNoSpam} = props;
@@ -15,9 +16,21 @@ export function RegisterForm(props) {
     <Form onSubmit={onSubmit}>
       <Form.Group>
         {hideNoSpam ? null :
-          <Form.Label className='mb-0 mt-2'><small className='text-secondary text-left'>
-            No spam! We promise.
-          </small></Form.Label>
+          <Form.Label className='mb-0 mt-2'>
+            <small className='text-secondary text-left'>
+              No spam! We promise.{' '}
+              <OverlayTrigger
+                overlay={generateTooltip(
+                  `We promse not to spam, sell/rent, or share
+                  your email address without your EXPLICIT permission.`
+                )}
+                placement='right'
+                delay={{ show: 20, hide: 800 }}
+              >
+                  <i class="fas fa-info-circle"></i>
+              </OverlayTrigger>
+            </small>
+          </Form.Label>
         }
         <Form.Control
           type='email'

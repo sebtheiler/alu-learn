@@ -28,26 +28,34 @@ export function FlashCard(props) {
             {flashcard.learning_status !== 'UNSEEN' ? <>| Due {date.toString().substring(0, 10)}</> : null}
           </p>
           <p className={foreignUser ? 'd-none' : ''}>
-            <OverlayTrigger
-              overlay={generateTooltip(
-                `A leech is a card that you've repeatedly struggled to learn.
-                You should give this card special attention, such as rewording the question, or reviewing the material.
-                You can learn more here TODO`
-              )}
-              placement='right'
-              delay={{ show: 20, hide: 800 }}
-            >
-              <em>{flashcard.is_leech ? '⚠️ This flashcard is a leech ⚠️ ' : ''}</em>
-            </OverlayTrigger>
-            <OverlayTrigger
-              overlay={generateTooltip(
-                `A suspended card will not be shown to you when you study this deck. Learn more here TODO.`
-              )}
-              placement='right'
-              delay={{ show: 20, hide: 800 }}
-            >
-              <em>{flashcard.is_suspended ? ' ⚠️ This flashcard is suspended ⚠️' : ''}</em>
-            </OverlayTrigger>
+            <em className={flashcard.is_leech ? '' : 'd-none'}>
+              This flashcard is a leech{' '}
+              <OverlayTrigger
+                overlay={generateTooltip(
+                  `A leech is a card that you've repeatedly struggled to learn.
+                  You should give this card special attention, such as rewording the question, or reviewing the material.
+                  You can learn more here TODO`
+                )}
+                placement='right'
+                delay={{ show: 20, hide: 800 }}
+              >
+                <i class="fas fa-question-circle"></i>
+              </OverlayTrigger>
+              <br />
+            </em>
+            <em className={flashcard.is_leech ? '' : 'd-none'}>
+              This flashcard is suspended{' '}
+              <OverlayTrigger
+                overlay={generateTooltip(
+                  `A suspended card will not be shown to you when you study this deck. Learn more here TODO.`
+                )}
+                placement='right'
+                delay={{ show: 20, hide: 800 }}
+                >
+                  <i class="fas fa-question-circle"></i>
+              </OverlayTrigger>
+              <br />
+            </em>
           </p>
         </div>
       </div>

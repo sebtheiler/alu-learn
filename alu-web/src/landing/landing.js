@@ -2,6 +2,12 @@ import React from 'react';
 import {MainHook, CoolFeaturesList, RegisterForm} from './components';
 import {HowItWorks} from './cards';
 
+// TODO:
+// Fix for mobile
+// Build into Django
+// Add A/B testing
+// Add statistic tracking
+
 export function LandingComponent(props) {
   const {alphaSpotsRemaining} = props;
 

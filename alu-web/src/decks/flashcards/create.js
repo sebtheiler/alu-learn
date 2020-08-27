@@ -131,16 +131,19 @@ export function FlashCardCreate(props) {
         </Form.Group>
         <Form.Group>
           <Form.Label htmlFor='tags' className='mb-0'>
-            <OverlayTrigger
-              overlay={generateTooltip(
-                `You can give your flashcards tags to group them together.
-                Learn more here TODO`
-              )}
-              placement='right'
-              delay={{ show: 20, hide: 800 }}
-            >
-              <small className='text-secondary'>Tags (separate with commas)</small>
-            </OverlayTrigger>
+            <small className='text-secondary'>
+              Tags (separate with commas){' '}
+              <OverlayTrigger
+                overlay={generateTooltip(
+                  `You can give your flashcards tags to group them together.
+                  Learn more here TODO`
+                  )}
+                  placement='right'
+                  delay={{ show: 20, hide: 800 }}
+                  >
+                <i class="fas fa-question-circle"></i>
+              </OverlayTrigger>
+            </small>
           </Form.Label>
           <Form.Control
             type="text"
