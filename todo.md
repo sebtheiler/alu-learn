@@ -5,7 +5,6 @@ Fixes and patches
 
 Landing:
 * A/B/(c) testing
-* Fix layout on mobile
 
 Spaced repitition
 * In custom study: allow min and max ease to go to +- 

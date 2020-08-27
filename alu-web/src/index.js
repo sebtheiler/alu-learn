@@ -8,6 +8,7 @@ import {FlashCardCreateComponent, FlashCardsList, FlashCardSearchComponent} from
 import {StudyComponent, CustomStudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
 import {ExploreComponent, DeckSearchComponent} from './explore';
+import {LandingComponent} from './landing';
 
 const e = React.createElement;
 
@@ -70,6 +71,11 @@ const deckSearchElement = document.getElementById('deck-search-component')
 if (deckSearchElement) {
   ReactDOM.render(e(DeckSearchComponent, deckSearchElement.dataset), deckSearchElement);
 };
+
+const landingComponents = document.querySelectorAll('.landing-component');
+landingComponents.forEach(container => {
+  ReactDOM.render(e(LandingComponent, container.dataset), container);
+});
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
