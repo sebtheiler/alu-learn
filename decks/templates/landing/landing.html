@@ -7,7 +7,7 @@
 <script src="https://kit.fontawesome.com/11201b2070.js" crossorigin="anonymous" media="print" onload="this.media='all'"></script>
 
 <div class='row'>
-  <div class='col-6 vertical-center'>
+  <div class='col-6 vertical-center content-desktop'>
     <div class='text-center mt-5' style='height: 500px;'>
       <h1 class='mt-5'>Want to learn something new?</h1>
       <p>
@@ -23,7 +23,7 @@
           class='form-control mb-1 px-3 py-3'
           id='email-input'
         />
-        <button class='btn btn-outline-primary mt-1 px-3 form-control'>Register for the Alpha</button>
+        <button class='btn btn-primary mt-1 px-3 form-control'>Register for the Alpha</button>
         <script>
           const form = document.getElementById('register-form');
           const submitForm = (event) => {
@@ -38,11 +38,70 @@
         Only {{ alpha_spots_remaining }} spots remaining in the Alpha! <br>
         Register soon!
       </strong></p>
+      <div class='mt-5'>
+        <p class='text-secondary mb-1'>Already have an account? Log-in instead</p>
+        <a class='btn btn-outline-primary' href='/login/'>Login</a>
+      </div>
     </div>
   </div>
-  <div class='col-6 vertical-center'>
+  <div class='col-6 vertical-center content-desktop'>
     <div class='mt-5'>
       <ul class='list-group' style='width: 75%;'>
+        <li class='list-group-item py-5 px-5'>
+          <i class="fas fa-brain" style='width: 20px; color: #E292C0;'></i>
+          Take digital notes
+        </li>
+        <li class='list-group-item py-5 px-5'>
+          <i class="fas fa-chess-knight" class='mr-1' style='width: 20px; color: #82C91E;'></i>
+          Focus on what you need most with powerful <em>spaced repetition</em>
+        </li>
+        <li class='list-group-item py-5 px-5'>
+          <i class="fas fa-users" class='mr-1' style='width: 20px; color: #FBA129;'></i>
+          Interact with a community of dedicated learners
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class='col-12 vertical-center content-mobile'>
+    <div class='text-center mt-5'>
+      <h1 class='mt-5'>Want to learn something new?</h1>
+      <p>
+        Whether you're a <strong>student, life-long learner,</strong>
+        or <strong>both</strong>, Alu can help you takes notes and study.
+      </p>
+      
+      <form class='btn-group-vertical' id='register-form'>
+        {% csrf_token %}
+        <input
+          type='email'
+          placeholder='Enter your email'
+          class='form-control mb-1 px-3 py-3'
+          id='email-input'
+        />
+        <button class='btn btn-primary mt-1 px-3 form-control'>Register for the Alpha</button>
+        <script>
+          const form = document.getElementById('register-form');
+          const submitForm = (event) => {
+            event.preventDefault();
+            const emailValue = document.getElementById('email-input').value;
+            window.location.href = '/register/' + (emailValue ? `?email=${emailValue}` : '');
+          };
+          form.addEventListener('submit', submitForm);
+        </script>
+      </form>
+      <p class='text-secondary mt-3'><strong>
+        Only {{ alpha_spots_remaining }} spots remaining in the Alpha! <br>
+        Register soon!
+      </strong></p>
+      <div class='mt-5'>
+        <p class='text-secondary mb-1'>Already have an account? Log-in instead</p>
+        <a class='btn btn-outline-primary' href='/login/'>Login</a>
+      </div>
+    </div>
+  </div>
+  <div class='col-12 text-center vertical-center content-mobile'>
+    <div class='mx-auto'>
+      <ul class='list-group' style='display: flex; justify-content: center;'>
         <li class='list-group-item py-5 px-5'>
           <i class="fas fa-brain" style='width: 20px; color: #E292C0;'></i>
           Take digital notes
@@ -65,7 +124,19 @@
     <h2>Here's how it works</h2>
     <div class='text-center mx-auto mt-5'>
       <div class='row mb-5'>
-        <div class='card w-33 mx-auto'>
+        <div class='card w-33 mx-auto content-desktop'>
+          <div class='card-header'>
+            <h5><i class="fas fa-pencil-alt"></i> Take Notes</h5>
+          </div>
+          <img
+            class='card-img-top'
+            src='https://www.wordtemplatesonline.net/wp-content/uploads/Cornell-Notetaking-Template-24.jpg'
+            alt='The Cornell note-taking system'>
+          <div class='card-footer'>
+            Easily take powerful notes using <strong>Cornell</strong> and <strong>Hierarchical</strong> note systems
+          </div>
+        </div>
+        <div class='card w-90 mx-auto content-mobile'>
           <div class='card-header'>
             <h5><i class="fas fa-pencil-alt"></i> Take Notes</h5>
           </div>
@@ -78,7 +149,7 @@
           </div>
         </div>
       </div>
-      <div class='row mb-5'>
+      <div class='row mb-5 content-desktop'>
         <div class='card w-33 mx-auto' style='background: #F7F7F7;'>
           <div class='card-header'>
             <h5><i class="far fa-plus-square"></i> Make Flashcards</h5>
@@ -104,8 +175,48 @@
           </div>
         </div>
       </div>
+      <div class='row content-mobile'>
+        <div class='card w-90 mx-auto mb-5'>
+          <div class='card-header'>
+            <h5><i class="far fa-plus-square"></i> Make Flashcards</h5>
+          </div>
+          <img
+            class='card-img-top'
+            src='/static/images/create-flashcard.png'
+            alt='The page for creating flashcards'>
+          <div class='card-body' style='border-top: 1px solid rgba(0,0,0,.125);'>
+            Quickly turn your notes into flashcards
+          </div>
+        </div>
+      </div>
+      <div class='row content-mobile'>
+        <div class='card w-90 mx-auto'>
+          <div class='card-header'>
+            <h5><i class="fas fa-search"></i> Find Flashcards</h5>
+          </div>
+          <img
+            class='card-img-top'
+            src='/static/images/explore-decks.png'
+            alt='The "Explore" page, with lists of decks made by others'>
+          <div class='card-footer align-bottom mt-auto' style='background-color: #F7F7F7FF; margin-top: auto;'>
+            Find decks of flashcards made by others to improve your studying experience
+          </div>
+        </div>
+      </div>
       <div class='row mb-5'>
-        <div class='card w-33 mx-auto'>
+        <div class='card w-33 mx-auto content-desktop'>
+          <div class='card-header'>
+            <h5><i class="fas fa-graduation-cap"></i> Study and Review</h5>
+          </div>
+          <img
+            class='card-img-top'
+            src='/static/images/studying-flashcard.png'
+            alt='Studying an individual flashcard'>
+          <div class='card-footer'>
+            Our spaced repetition algorithm will give you the flashcards you need <strong>to focus on most</strong>
+          </div>
+        </div>
+        <div class='card w-90 mx-auto content-mobile'>
           <div class='card-header'>
             <h5><i class="fas fa-graduation-cap"></i> Study and Review</h5>
           </div>
@@ -119,7 +230,19 @@
         </div>
       </div>
       <div class='row mb-5'>
-        <div class='card w-33 mx-auto'>
+        <div class='card w-33 mx-auto content-desktop'>
+          <div class='card-header'>
+            <h5><i class="fas fa-share"></i> Share with Others!</h5>
+          </div>
+          <img
+            class='card-img-top'
+            src='/static/images/explore-decks.png'
+            alt='The "Explore" page, with lists of decks made by others'>
+          <div class='card-footer'>
+            Made a deck of flashcards you think others will like? Share it, and people from around the world will thank you!
+          </div>
+        </div>
+        <div class='card w-90 mx-auto content-mobile'>
           <div class='card-header'>
             <h5><i class="fas fa-share"></i> Share with Others!</h5>
           </div>
@@ -183,6 +306,18 @@
 
 .w-33 {
   width: 33%;
+}
+
+.w-90 {
+  width: 90%;
+}
+
+.content-desktop {display: block;}
+.content-mobile {display: none;}
+
+@media screen and (max-width: 768px) {
+  .content-desktop {display: none;}
+  .content-mobile {display: block;}
 }
 </style>
 {% endblock content %}

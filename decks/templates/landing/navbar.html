@@ -2,7 +2,7 @@
 <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" media="print" onload="this.media='all'"> -->
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary navbar-desktop">  <!-- content-desktop -->
   <a class="navbar-brand" href="/">Alu Flashcards</a>
   <span class="text-white">|</span>
   <span class="nav-item">
@@ -23,3 +23,61 @@
     </ul>
   </div>
 </nav>
+<nav class="navbar navbar-inverse navbar-static-top navbar-dark bg-primary navbar-mobile" role="navigation">
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"> -->
+  <div class="container">
+    <a class="navbar-brand text-white" href="/">Alu Flashcards</a>
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="navbar-toggler-icon"></span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="/explore/">
+            <i class="fa fa-book"></i> Explore
+          </a>
+          <a class="dropdown-item" href="/explore/decks/search/">
+            <i class="fa fa-search"></i> Search
+          </a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="/register/">
+            Register
+          </a>
+          <a class="dropdown-item" href="/login/">
+            Log-in
+          </a>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="index.php">Home</a></li>
+        <li><a href="about.php">About</a></li>
+        <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="contact.php">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<style>
+.navbar-desktop {display: flex;}
+.navbar-mobile {display: none;}
+
+@media screen and (max-width: 768px) {
+  .navbar-desktop {display: none;}
+  .navbar-mobile {display: flex;}
+}
+
+.navbar-toggle {
+  border: none;
+  background-color: #337BFF!important;
+}
+
+.navbar-collapse {
+  border-top: none!important;
+}
+</style>
