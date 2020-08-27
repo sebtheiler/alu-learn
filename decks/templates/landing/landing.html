@@ -15,23 +15,23 @@
         or <strong>both</strong>, Alu can help you takes notes and study.
       </p>
       
-      <form class='btn-group-vertical' id='register-form'>
+      <form class='btn-group-vertical' id='desktop-register-form'>
         {% csrf_token %}
         <input
           type='email'
           placeholder='Enter your email'
           class='form-control mb-1 px-3 py-3'
-          id='email-input'
+          id='desktop-email-input'
         />
         <button class='btn btn-primary mt-1 px-3 form-control'>Register for the Alpha</button>
         <script>
-          const form = document.getElementById('register-form');
-          const submitForm = (event) => {
+          const desktopForm = document.getElementById('desktop-register-form');
+          const submitDesktopForm = (event) => {
             event.preventDefault();
-            const emailValue = document.getElementById('email-input').value;
+            const emailValue = document.getElementById('desktop-email-input').value;
             window.location.href = '/register/' + (emailValue ? `?email=${emailValue}` : '');
           };
-          form.addEventListener('submit', submitForm);
+          desktopForm.addEventListener('submit', submitDesktopForm);
         </script>
       </form>
       <p class='text-secondary mt-3'><strong>
@@ -70,23 +70,23 @@
         or <strong>both</strong>, Alu can help you takes notes and study.
       </p>
       
-      <form class='btn-group-vertical' id='register-form'>
+      <form class='btn-group-vertical' id='mobile-register-form'>
         {% csrf_token %}
         <input
           type='email'
           placeholder='Enter your email'
           class='form-control mb-1 px-3 py-3'
-          id='email-input'
+          id='mobile-email-input'
         />
         <button class='btn btn-primary mt-1 px-3 form-control'>Register for the Alpha</button>
         <script>
-          const form = document.getElementById('register-form');
-          const submitForm = (event) => {
+          const mobileForm = document.getElementById('mobile-register-form');
+          const submitMobileForm = (event) => {
             event.preventDefault();
-            const emailValue = document.getElementById('email-input').value;
+            const emailValue = document.getElementById('mobile-email-input').value;
             window.location.href = '/register/' + (emailValue ? `?email=${emailValue}` : '');
           };
-          form.addEventListener('submit', submitForm);
+          mobileForm.addEventListener('submit', submitMobileForm);
         </script>
       </form>
       <p class='text-secondary mt-3'><strong>
@@ -312,12 +312,12 @@
   width: 90%;
 }
 
-.content-desktop {display: block;}
+.content-desktop {display: flex;}
 .content-mobile {display: none;}
 
 @media screen and (max-width: 768px) {
   .content-desktop {display: none;}
-  .content-mobile {display: block;}
+  .content-mobile {display: flex;}
 }
 </style>
 {% endblock content %}
