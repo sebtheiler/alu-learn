@@ -14,10 +14,23 @@ os.chdir(base_dir)
 
 # Copy static files
 print('Copying static files...')
-if os.path.isdir(os.path.join(base_dir, 'static')):
-    rmtree(os.path.join(base_dir, 'static'))
-copytree(os.path.join(REACT_DIRECTORY, 'build/static/'), os.path.join(base_dir, 'static/'))
+sub_directories = [ # NOT IMAGES!!!
+    'css',
+    'js',
+    'media',
+]
+django_static_dir = os.path.join(base_dir, 'static')
+react_static_dir = os.path.join(REACT_DIRECTORY, 'build/static/')
+for sub_dir in sub_directories:
+    # For each directory...
+    if os.path.isdir(os.path.join(django_static_dir, sub_dir)):
+        # If it exists, remove it
+        rmtree(os.path.join(django_static_dir, sub_dir))
+    # Then copy it from React
+    copytree(os.path.join(react_static_dir, sub_dir), os.path.join(django_static_dir, sub_dir))
+
 if os.path.isdir(os.path.join(base_dir, 'static-root')):
+    # Remove the 'static-root' folder
     rmtree(os.path.join(base_dir, 'static-root'))
 os.mkdir(os.path.join(base_dir, 'static-root/'))
 
