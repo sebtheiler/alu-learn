@@ -4,7 +4,9 @@ Fixes and patches
 * Protect API
 
 Landing:
-* A/B/(c) testing
+* Add A/B testing
+* Add statistic tracking
+* Prettify registration and sign-in page
 
 Spaced repitition
 * In custom study: allow min and max ease to go to +- 
@@ -15,6 +17,9 @@ Improvements
 * Infinite scroll for browsing flashcards
 * Make numeric ids into string ids like "dad2Xadw#1"
 * Fix navbar on mobile
+* Make NavBar 100% React
+* Improve notification icon
+* Make 'base-landing.html' and 'base.html' the same file
 
 Features
 * Freeze field in create

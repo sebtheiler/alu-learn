@@ -2,13 +2,11 @@ import React, {useState} from 'react';
 import {MainHook, CoolFeaturesList, RegisterForm} from './components';
 import {HowItWorks} from './cards';
 
-// TODO:
-// Add A/B testing
-// Add statistic tracking
-
 export function LandingComponent(props) {
-  const {alphaSpotsRemaining} = props;
+  const {alphaSpotsRemaining, experimentId} = props;
   const [screenWidth, setScreenWidth] = useState(document.documentElement.clientWidth);
+
+  console.log(experimentId)
 
   window.addEventListener("resize", (_event) => {
     setScreenWidth(document.documentElement.clientWidth);
