@@ -21,7 +21,7 @@ export function RegisterForm(props) {
               No spam! We promise.{' '}
               <OverlayTrigger
                 overlay={generateTooltip(
-                  `We promse not to spam, sell/rent, or share
+                  `We promse not to spam, sell, rent, or share
                   your email address without your EXPLICIT permission.`
                 )}
                 placement='right'
