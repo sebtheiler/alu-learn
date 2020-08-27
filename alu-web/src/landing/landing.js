@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {MainHook, CoolFeaturesList, RegisterForm} from './components';
 import {HowItWorks} from './cards';
 
@@ -10,6 +10,11 @@ import {HowItWorks} from './cards';
 
 export function LandingComponent(props) {
   const {alphaSpotsRemaining} = props;
+  const [screenWidth, setScreenWidth] = useState(document.documentElement.clientWidth);
+
+  window.addEventListener("resize", (_event) => {
+    setScreenWidth(document.documentElement.clientWidth);
+  });
 
   const redirectToRegister = (email) => {
     window.location.href = '/register/' + (email ? `?email=${email}` : '');
@@ -22,6 +27,7 @@ export function LandingComponent(props) {
           <MainHook
             alphaSpotsRemaining={alphaSpotsRemaining}
             callback={redirectToRegister}
+            isMobile={screenWidth < 770}
           />
         </div>
         <div className='col-6'>
@@ -31,7 +37,7 @@ export function LandingComponent(props) {
       <div className='row' style={{marginTop: '100px'}}>
         <div className='text-center mx-auto'>
           <h2>Here's how it works</h2>
-          <HowItWorks />
+          <HowItWorks isMobile={screenWidth < 770} />
 
           <h2>Start Learning</h2>
           <RegisterForm callback={redirectToRegister} hideNoSpam />

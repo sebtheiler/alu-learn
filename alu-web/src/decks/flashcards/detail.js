@@ -39,7 +39,7 @@ export function FlashCard(props) {
                 placement='right'
                 delay={{ show: 20, hide: 800 }}
               >
-                <i class="fas fa-question-circle"></i>
+                <i className="fas fa-question-circle"></i>
               </OverlayTrigger>
               <br />
             </em>
@@ -52,7 +52,7 @@ export function FlashCard(props) {
                 placement='right'
                 delay={{ show: 20, hide: 800 }}
                 >
-                  <i class="fas fa-question-circle"></i>
+                  <i className="fas fa-question-circle"></i>
               </OverlayTrigger>
               <br />
             </em>

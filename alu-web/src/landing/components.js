@@ -27,7 +27,7 @@ export function RegisterForm(props) {
                 placement='right'
                 delay={{ show: 20, hide: 800 }}
               >
-                  <i class="fas fa-info-circle"></i>
+                  <i className="fas fa-info-circle"></i>
               </OverlayTrigger>
             </small>
           </Form.Label>

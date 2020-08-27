@@ -3,9 +3,10 @@ import {Card, CardDeck} from 'react-bootstrap';
 
 export function CustomCard(props) {
   const {faName, headerText, imageUrl, imageAlt, bodyText, className} = props;
+  const width = props.width ? props.width + '%': '33%';
 
   return (
-    <Card className={'text-center mb-5 ' + className} style={{width: '33%'}}>
+    <Card className={'text-center mb-5 ' + className} style={{width: width}}>
       <Card.Header>
         <h2>
           <i className={`fas fa-${faName}`} />{' '}
@@ -24,6 +25,31 @@ export function CustomCard(props) {
 };
 
 export function HowItWorks(props) {
+  const {isMobile} = props;
+  const width = isMobile ? 90 : 33; // in percent
+
+  // These two prop dicts are required for less repeated-code
+  // when supporting adjacent (for desktop) and non-adjacent (for mobile)
+  const adjCard1Props = {
+    faName: 'plus',
+    headerText: 'Create Flashcards',
+    imageUrl: 'http://127.0.0.1:8000/static/images/create-flashcard.png',
+    imageAlt: 'The page for creating flashcards',
+    className: 'ml-4',
+    width: width,
+    bodyText: <>Quickly turn your notes into flashcards</>,
+  }
+
+  const adjCard2Props = {
+    faName: 'search',
+    headerText: 'Find Flashcards',
+    imageUrl: 'http://127.0.0.1:8000/static/images/explore-decks.png',
+    imageAlt: 'The "Explore" page, with lists of decks made by others',
+    className: 'mr-4',
+    width: width,
+    bodyText: <>Find decks of flashcards made by others to improve your studying experience</>,
+  }
+
   return (
     <>
       <CustomCard
@@ -32,39 +58,33 @@ export function HowItWorks(props) {
         imageUrl='https://www.wordtemplatesonline.net/wp-content/uploads/Cornell-Notetaking-Template-24.jpg'
         imageAlt='The Cornell note-taking system'
         className='mx-auto'
+        width={width}
         bodyText={<>
           Take powerful notes using <strong>Cornell</strong>{' '}
           and <strong>Hierarchical</strong> note systems
         </>}
       />
-      <CardDeck className='mx-auto' style={{width: '66%'}}>
-        <CustomCard
-          faName='plus'
-          headerText='Create Flashcards'
-          imageUrl='http://127.0.0.1:8000/static/images/create-flashcard.png'
-          imageAlt='The page for creating flashcards'
-          className='ml-4'
-          bodyText={<>
-            Quickly turn your notes into flashcards
-          </>}
-        />
-        <CustomCard
-          faName='search'
-          headerText='Find Flashcards'
-          imageUrl='http://127.0.0.1:8000/static/images/explore-decks.png'
-          imageAlt='The "Explore" page, with lists of decks made by others'
-          className='mr-4'
-          bodyText={<>
-            Find decks of flashcards made by others to improve your studying experience
-          </>}
-        />
-      </CardDeck>
+      {
+        isMobile ?
+          <>
+            {/* Don't display adjacently */}
+            <CustomCard {...adjCard1Props} className='mx-auto' />
+            <CustomCard {...adjCard2Props} className='mx-auto' />
+          </>
+          :
+          <CardDeck className='mx-auto' style={{width: width*2.2 + '%'}}>
+            {/* Display adjacently */}
+            <CustomCard {...adjCard1Props} />
+            <CustomCard {...adjCard2Props} />
+          </CardDeck>
+      }
       <CustomCard
         faName='graduation-cap'
         headerText='Study and Review'
         imageUrl='http://127.0.0.1:8000/static/images/studying-flashcard.png'
         imageAlt='Studying an individual flashcard'
         className='mx-auto'
+        width={width}
         bodyText={<>
           Our spaced repetition algorithm will give you the{' '}
           flashcards you need <strong>to focus on most</strong>
@@ -76,6 +96,7 @@ export function HowItWorks(props) {
         imageUrl='http://127.0.0.1:8000/static/images/explore-decks.png'
         imageAlt='The "Explore" page, with lists of decks made by others'
         className='mx-auto'
+        width={width}
         bodyText={<>
           Made a deck of flashcards you think others will like?{' '}
           Share it, and people from around the world can thank you!
