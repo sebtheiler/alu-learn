@@ -60,7 +60,7 @@ export function MainHook(props) {
     <>
       <h1>
         {
-          experimentId[5] === '1' ? (
+          experimentId[5] === '0' ? (
             experimentId[6] === '1'
             ? 'Want to learn something new?'
             : 'Need help learning something new?'

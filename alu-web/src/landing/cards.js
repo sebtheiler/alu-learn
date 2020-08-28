@@ -25,7 +25,7 @@ export function CustomCard(props) {
 };
 
 export function HowItWorks(props) {
-  const {isMobile} = props;
+  const {isMobile, experimentId} = props;
   const width = isMobile ? 90 : 33; // in percent
 
   // These two prop dicts are required for less repeated-code
@@ -37,6 +37,7 @@ export function HowItWorks(props) {
     imageAlt: 'The page for creating flashcards',
     className: 'ml-4',
     width: width,
+    experimentId: experimentId,
     bodyText: <>Quickly turn your notes into flashcards</>,
   }
 
@@ -47,6 +48,7 @@ export function HowItWorks(props) {
     imageAlt: 'The "Explore" page, with lists of decks made by others',
     className: 'mr-4',
     width: width,
+    experimentId: experimentId,
     bodyText: <>Find decks of flashcards made by others to improve your studying experience</>,
   }
 
@@ -59,6 +61,7 @@ export function HowItWorks(props) {
         imageAlt='The Cornell note-taking system'
         className='mx-auto'
         width={width}
+        experimentId={experimentId}
         bodyText={<>
           Take powerful notes using <strong>Cornell</strong>{' '}
           and <strong>Hierarchical</strong> note systems
@@ -85,6 +88,7 @@ export function HowItWorks(props) {
         imageAlt='Studying an individual flashcard'
         className='mx-auto'
         width={width}
+        experimentId={experimentId}
         bodyText={<>
           Our spaced repetition algorithm will give you the{' '}
           flashcards you need <strong>to focus on most</strong>
@@ -97,6 +101,7 @@ export function HowItWorks(props) {
         imageAlt='The "Explore" page, with lists of decks made by others'
         className='mx-auto'
         width={width}
+        experimentId={experimentId}
         bodyText={<>
           Made a deck of flashcards you think others will like?{' '}
           Share it, and people from around the world can thank you!

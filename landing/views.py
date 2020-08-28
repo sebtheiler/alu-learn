@@ -2,16 +2,26 @@ from django_user_agents.utils import get_user_agent
 from django.shortcuts import render, redirect
 import random
 
-NUM_EXPERIMENTS = 10
+EXPERIMENT_PROBABILITIES = [
+    0, # Apply button color
+    0, # Order of 'main hook' and 'cool features'
+    0.5, # Join us vs apply for alpha
+    0.5, # Disable enter email field
+    0, # It's free! instead of Register soon!
+    0, # Main title control #1
+    0.5, # Main title control #2
+    0, # Remove Boldface in description
+    0, # Hide FA icons
+]
 
 def landing_page(request, *args, **kwargs):
     if request.user.is_authenticated:
         return redirect('/home/')
 
     experiment_id = request.session.get('experiment_id')
-    if not experiment_id:
-        experiment_id = ''.join(['0' if random.random() > 0.5 else '1' for _ in range(NUM_EXPERIMENTS)])
-        request.session['experiment_id'] = experiment_id
+    # if not experiment_id:
+    experiment_id = ''.join(['1' if random.random() < prob else '0' for prob in EXPERIMENT_PROBABILITIES])
+    request.session['experiment_id'] = experiment_id
     print(experiment_id)
 
     ua = request.user_agent
