@@ -134,6 +134,11 @@ export function apiProfileFriendToggle(username, action, callback) {
   backendLookup('POST', `profiles/${username}/friend/`, callback, {action: action.toLowerCase()});
 };
 
+// Checks if a username is available
+export function apiCheckUsernameAvailable(username, callback) {
+  backendLookup('GET', `profiles/available/?username=${username}`, callback);
+};
+
 // Send a friend request
 export function apiSendFriendReq(recipientUsername, callback) {
   backendLookup('POST', `profiles/${recipientUsername}/friendrequest/`, callback);

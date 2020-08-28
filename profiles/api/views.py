@@ -232,7 +232,7 @@ def profile_badge_create_api_view(request, username, *args, **kwargs):
     """
     Give a profile a badge - POST
 
-    Requried information:
+    Required information:
         `username`: (URL) Username of the profile to give a badge to
         `identifier`: (Data) Identifier of the badge to give. This is from a given list in `alu-web/badges/identifiers.js`, however is not verified upon creation.
     
@@ -251,3 +251,22 @@ def profile_badge_create_api_view(request, username, *args, **kwargs):
 
     new_badge = ProfileBadge.objects.create(profile=profile, identifier=identifier)
     return Response(ProfileBadgeSerializer(new_badge).data, status=201)
+
+@api_view(['GET'])
+def check_username_available_api_view(request, *args, **kwargs):
+    """
+    Check if a username is available - GET
+
+    Required information:
+        `username`: (GET) Username to check
+    
+    Possible errors:
+        Username not specified: 400, {'message': 'Please specify username'}
+    """
+    username = request.GET.get('username')
+    if username is None:
+        return Response({'message': 'Please specify username'}, status=400)
+    
+    all_usernames = [user.username for user in User.objects.all()]
+    is_available = username not in all_usernames
+    return Response({'is_available': is_available}, status=200)

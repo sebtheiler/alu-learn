@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {Modal, Form, Button} from 'react-bootstrap';
 import {isAlphaNumeric} from '../../utils';
+import {apiCheckUsernameAvailable} from '../../lookup';
 
 export function RegisterLoginModal(props) {
   const {defaultEmail, modalIsOpen, closeModal} = props;
@@ -43,19 +44,19 @@ export function RegisterLoginModal(props) {
 
     // Check that first and last names are valid
     if (!isChild && (
-      form.elements.registerFirstName.length > 50 ||
-      form.elements.registerLastName.length > 50)) {
+      form.elements.registerFirstName.value.length > 50 ||
+      form.elements.registerLastName.value.length > 50)) {
         document.getElementById('nameError').innerText =
         'Your name must be less than 50 characters.'
         error = true;
-    } else {
+    } else if (!isChild) {
       document.getElementById('nameError').innerText = '';
     };
 
     // Check is username is alphanumeric
     if (
-      form.elements.registerUsername.length > 20 ||
-      !isAlphaNumeric(form.elements.registerUsername.value)) { // check unique
+      form.elements.registerUsername.value.length > 20 ||
+      !isAlphaNumeric(form.elements.registerUsername.value)) {
         document.getElementById('registerUsernameError').innerText =
         `Your username must be less than 20 characters and only include
         alphanumeric characters, such as abcd1234`
@@ -63,6 +64,24 @@ export function RegisterLoginModal(props) {
     } else {
       document.getElementById('registerUsernameError').innerText = '';
     };
+
+    // Check if username is available
+    apiCheckUsernameAvailable(form.elements.registerUsername.value, (response, status) => {
+      console.log(response, status)
+      if (status === 200) {
+        const usernameAvailable = response.is_available;
+        if (!usernameAvailable) {
+          document.getElementById('registerUsernameTakenError').innerText =
+          'That username is already taken!'
+          error = true;
+        } else {
+          document.getElementById('registerUsernameTakenError').innerText = '';
+        };
+      } else {
+        console.log(response, status);
+        alert('Error checking username availability!');
+      };
+    });
 
     // Check if password meets security requirements
     if (
@@ -187,6 +206,7 @@ export function RegisterLoginModal(props) {
               {isChild ? <small className='text-secondary'>Don't use your real name!</small> : null}
             </Form.Label>
             <p id='registerUsernameError' className='text-danger mb-0'></p>
+            <p id='registerUsernameTakenError' className='text-danger mb-0'></p>
             <Form.Control
               type='text'
               name='registerUsername'
