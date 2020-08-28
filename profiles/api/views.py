@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from ..models import Profile, Notification, ProfileBadge
 from ..serializers import PublicProfileSerializer, NotificationSerializer, ProfileBadgeSerializer
 
+import datetime
 
 User = get_user_model()
 
@@ -270,3 +271,61 @@ def check_username_available_api_view(request, *args, **kwargs):
     all_usernames = [user.username for user in User.objects.all()]
     is_available = username not in all_usernames
     return Response({'is_available': is_available}, status=200)
+
+@api_view(['POST'])
+def create_profile_api_view(request, *args, **kwargs):
+    """
+    Create a profile - POST
+
+    Requried information:
+        `birthdate`: Birthdate. Must have date, month, and year
+        `first_name`: First name of profile, None if the user is a child
+        `last_name`: (Optional) Last name of profile
+        `username`: Username of profile
+        `email`: Email of profile. Email of parent if user is child.
+        `password`: Password of user
+    """
+    birthdate = request.data.get('birthdate')
+    last_name = request.data.get('last_name')
+    first_name = request.data.get('first_name')
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    birthdate = datetime.date(
+        year=birthdate.get('year'),
+        month=months.index(birthdate.get('month').lower()),
+        day=birthdate.get('day'),
+    )
+
+    user = User.objects.create_user(
+        first_name=first_name,
+        last_name=last_name,
+        username=username,
+        password=password,
+        email=email,
+    )
+    user.profile.update(**{
+        'birthdate': birthdate,
+    })
+
+    return Response(PublicProfileSerializer(user.profile).data, status=200)
+
+# from django.core.mail import send_mail
+# from django.conf import settings
+# @api_view(['GET'])
+# def test_my_email_api_view(request, *args, **kwargs):
+#     subject = 'Thank you for registering to our site'
+#     message = 'Body text Body text Body text Body text Body text'
+#     email_from = settings.EMAIL_HOST_USER
+#     recipient_list = ['sebastiantk9@gmail.com',]
+
+#     return Response(
+#         send_mail(
+#             subject,
+#             message,
+#             email_from,
+#             recipient_list,
+#             fail_silently=False,
+#         ))

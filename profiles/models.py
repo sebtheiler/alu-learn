@@ -9,6 +9,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     location = models.CharField(max_length=220, null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
+    birthdate = models.DateField()
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     friends = models.ManyToManyField(User, related_name='friends', blank=True)
