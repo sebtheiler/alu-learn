@@ -9,7 +9,7 @@ export function RegisterForm(props) {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    callback(emailRef.current.value);
+    callback(emailRef.current ? emailRef.current.value : '');
   };
 
   return (

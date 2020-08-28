@@ -3,6 +3,7 @@ import {
   timeSince,
   DisplayCount,
   lightOrDark,
+  isAlphaNumeric,
 } from './utils';
 
 export {
@@ -10,4 +11,5 @@ export {
   timeSince,
   DisplayCount,
   lightOrDark,
+  isAlphaNumeric,
 };

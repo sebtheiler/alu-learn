@@ -4,7 +4,6 @@ Fixes and patches
 * Protect API
 
 Landing:
-* Add A/B testing
 * Add statistic tracking
 * Prettify registration and sign-in page
 
@@ -26,3 +25,52 @@ Features
 * Pop-up dictionary?
 * Review heatmap
 * Speed focus mode
+* Deck comments
+
+
+# Current Plan
+Aug 28
+* Make log-in/register modal
+* Make global JS API request error handler
+    * Show log-in/register modal on 403
+* Fix bugs for anon users
+Aug 29
+* Make analytics tracked DJ app
+* Integrate analytics tracking with landing page
+Aug 30
+* Add real home page
+    * Move decks "feed" to sub-page
+    * Rename "feed" to better name
+* Add "Golden Rules"
+Aug 31
+* Make navbar in React
+    * Fix for mobile
+    * Improve notification icon + fix bugs
+* Make 'base.html' and 'base-landing.html' the same file
+Sep 01
+* Add pagination for deck search
+    * Limimt # of results with fuzzywuzzy threshold
+* Add flashcard browsing infinite scroll?
+    * Force load all button?
+Sep 02
+* In custom study:
+    * Allow min/max ease to go to +/- infinity
+    * Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
+* Freeze field for creating flashcards
+Sep 03
+* Review heatmap?
+Show deck of flashcard when searching for flashcards
+Sep 04
+* Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
+* Protect API
+* Make numeric ids into string ids like "dad2Xadw#1"
+Sep 05
+* Add ToS
+* Add Privacy Policy
+* Flesh out legal structure
+Sep 06
+* Test deployment on Heroku
+Sep 07
+* Final deployment system
+Sep 09
+* Spread the word

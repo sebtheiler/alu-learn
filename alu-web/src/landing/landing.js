@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {MainHook, CoolFeaturesList, RegisterForm} from './components';
 import {HowItWorks} from './cards';
+import {RegisterLoginModal} from './forms';
 
 // Experiments:
 // (1) Apply button color
@@ -21,22 +22,42 @@ export function LandingComponent(props) {
   const {alphaSpotsRemaining, experimentId} = props;
   const userAgent = props.userAgent.replace(/'/g, '"').replace(/False/g, 'false').replace(/True/g, 'true')
   const [screenWidth, setScreenWidth] = useState(document.documentElement.clientWidth);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [currentEmail, setCurrentEmail] = useState('');
 
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+  
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+  
   console.log(experimentId)
   console.log(userAgent)
   console.log(JSON.parse(userAgent))
-
+  
   window.addEventListener("resize", (_event) => {
     setScreenWidth(document.documentElement.clientWidth);
   });
-
+  
   const redirectToRegister = (email) => {
-    window.location.href = '/register/' + (email ? `?email=${email}` : '');
+    // window.location.href = '/register/' + (email ? `?email=${email}` : '');
+    setCurrentEmail(email);
+    openModal();
   };
+
 
   return (
     <>
       <div className='row text-center'>
+        <RegisterLoginModal
+          defaultEmail={currentEmail}
+          modalIsOpen={modalIsOpen}
+          closeModal={closeModal}
+          // saveHandler={saveHandler}
+          // deleteHandler={deleteHandler}
+        />
         <div className={screenWidth < 770 ? 'col-12' : 'col-6'}>
           {
             experimentId[1] === '1' ? 
