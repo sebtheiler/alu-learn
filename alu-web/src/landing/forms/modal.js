@@ -15,9 +15,9 @@ export function RegisterLoginModal(props) {
     const year = yearRef.value;
     const now = new Date();
 
-    if (month !== 'UNSELECTED' && date !== 'UNSELECTED' && year !== 'UNSELECTED' &&
-        (now.getFullYear() - 13 <= new Date(year, month, date) ||
-         now.getFullYear() - 13 < year)) {
+    if ((month !== 'UNSELECTED' && date !== 'UNSELECTED' && year !== 'UNSELECTED' &&
+        now.getFullYear() - 13 <= new Date(year, month, date)) ||
+        now.getFullYear() - 13 < year) {
       setIsChild(true);
     } else {
       setIsChild(false);
@@ -28,38 +28,68 @@ export function RegisterLoginModal(props) {
     event.preventDefault();
     const form = event.target;
 
+    var error = false;
+    // Check that birthdate is specified
     if (
       monthRef.value === 'UNSELECTED' ||
       dateRef.value === 'UNSELECTED' ||
       yearRef.value === 'UNSELECTED') {
         document.getElementById('dateError').innerText =
         'You must select your birthdate. Don\'t worry, this isn\'t public.'
+      error = true;
+    } else {
+      document.getElementById('dateError').innerText = '';
     };
-    if (
+
+    // Check that first and last names are valid
+    if (!isChild && (
       form.elements.registerFirstName.length > 50 ||
-      form.elements.registerLastName.length > 50) {
+      form.elements.registerLastName.length > 50)) {
         document.getElementById('nameError').innerText =
         'Your name must be less than 50 characters.'
+        error = true;
+    } else {
+      document.getElementById('nameError').innerText = '';
     };
+
+    // Check is username is alphanumeric
     if (
       form.elements.registerUsername.length > 20 ||
-      !isAlphaNumeric(form.elements.registerUsername)) { // check unique
+      !isAlphaNumeric(form.elements.registerUsername.value)) { // check unique
         document.getElementById('registerUsernameError').innerText =
         `Your username must be less than 20 characters and only include
         alphanumeric characters, such as abcd1234`
+        error = true;
+    } else {
+      document.getElementById('registerUsernameError').innerText = '';
     };
+
+    // Check if password meets security requirements
     if (
       isAlphaNumeric(form.elements.registerPassword.value) ||
       form.elements.registerPassword.value.length < 8 ) {
         document.getElementById('registerPasswordLengthError').innerText =
         `Your password must be at least 8 characters and include
         special characters such as @, $, or !.`
+        error = true;
+    } else {
+      document.getElementById('registerPasswordLengthError').innerText = '';
     };
+
+    // Check that passwords are the same
     if (
-      form.elements.registerPasswordConfirm !== form.elements.registerPassword.value.length) {
+      form.elements.registerPasswordConfirm.value !== form.elements.registerPassword.value) {
         document.getElementById('registerPasswordMatchError').innerText =
         'Your passwords don\'t match.'
+        error = true;
+    } else {
+      document.getElementById('registerPasswordMatchError').innerText = '';
     };
+
+    if (error) {
+      return;
+    };
+  
     console.log(
       monthRef.value,
       dateRef.value,
