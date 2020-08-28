@@ -2,14 +2,14 @@ import React from 'react';
 import {Card, CardDeck} from 'react-bootstrap';
 
 export function CustomCard(props) {
-  const {faName, headerText, imageUrl, imageAlt, bodyText, className} = props;
+  const {faName, headerText, imageUrl, imageAlt, bodyText, className, experimentId} = props;
   const width = props.width ? props.width + '%': '33%';
 
   return (
     <Card className={'text-center mb-5 ' + className} style={{width: width}}>
       <Card.Header>
         <h2>
-          <i className={`fas fa-${faName}`} />{' '}
+          {experimentId[8] === '1' ? null : <><i className={`fas fa-${faName}`} />{' '}</>}
           {headerText}
         </h2>
       </Card.Header>

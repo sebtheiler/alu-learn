@@ -3,7 +3,7 @@ import {Form, Button, ListGroup, OverlayTrigger} from 'react-bootstrap';
 import {generateTooltip} from '../utils';
 
 export function RegisterForm(props) {
-  const {callback, hideNoSpam} = props;
+  const {callback, experimentId, hideNoSpam} = props;
 
   const emailRef = React.createRef();
 
@@ -13,8 +13,9 @@ export function RegisterForm(props) {
   };
 
   return (
-    <Form onSubmit={onSubmit}>
-      <Form.Group>
+    <Form onSubmit={onSubmit} className='mb-0'>
+      {experimentId[3] === '1' ? null :
+      <>
         {hideNoSpam ? null :
           <Form.Label className='mb-0 mt-2'>
             <small className='text-secondary text-left'>
@@ -22,7 +23,7 @@ export function RegisterForm(props) {
               <OverlayTrigger
                 overlay={generateTooltip(
                   `We promse not to spam, sell, rent, or share
-                  your email address without your EXPLICIT permission.`
+                  your email address without your explicit permission.`
                 )}
                 placement='right'
                 delay={{ show: 20, hide: 800 }}
@@ -39,33 +40,58 @@ export function RegisterForm(props) {
           style={{width: '250px'}}
           ref={emailRef}
         />
-        <Button
-          type='submit'
-          variant='primary'
-          className='mt-1'
-          style={{width: '250px'}}
-        >
-          Apply for the Alpha
-        </Button>
-      </Form.Group>
+      </>}
+      <Button
+        type='submit'
+        variant={experimentId[0] === '1' ? 'success' : 'primary'}
+        className='mt-1'
+        style={{width: '250px'}}
+      >
+        {experimentId[2] === '1' ? 'Join Us' : 'Apply for the Alpha'}
+      </Button>
     </Form>
   );
 };
 
 export function MainHook(props) {
-  const {alphaSpotsRemaining, callback} = props;
+  const {alphaSpotsRemaining, callback, experimentId} = props;
 
   return (
     <>
-      <h1>Want to learn something new?</h1>
+      <h1>
+        {
+          experimentId[5] === '1' ? (
+            experimentId[6] === '1'
+            ? 'Want to learn something new?'
+            : 'Need help learning something new?'
+            ) : (
+            experimentId[6] === '1'
+            ? 'Want a new way to study?'
+            : 'Need some new studying partners?'
+          )
+        }
+      </h1>
       <p>
-        Whether you're a <strong>student, life-long learner,</strong>{' '}
-        or <strong>both</strong>, Alu can help you takes notes and study.
+        {
+          experimentId[7] === '1'
+            ? <>Whether you're a student, life-long learner,{' '}
+              or both, Alu can help you takes notes and study.</>
+            : <>Whether you're a <strong>student, life-long learner,</strong>{' '}
+              or <strong>both</strong>, Alu can help you takes notes and study.</>
+        }
       </p>
-      <RegisterForm callback={callback} />
-      <p className='text-secondary mt-3'>
-        Only {alphaSpotsRemaining} spots remaining in the Alpha!<br />
-        Register soon!
+      <RegisterForm callback={callback} experimentId={experimentId} />
+      <p className='text-secondary mt-1'>
+        {experimentId[4] === '1' ?
+          <>
+            It's free
+          </>
+          :
+          <>
+            Only {alphaSpotsRemaining} spots remaining in the Alpha!<br />
+            Register soon!
+          </>
+        }
       </p>
       <div className='mt-5'>
         <p className='text-secondary mb-1'>Already have an account? Log-in instead</p>
