@@ -4,9 +4,12 @@ import {HowItWorks} from './cards';
 
 export function LandingComponent(props) {
   const {alphaSpotsRemaining, experimentId} = props;
+  const userAgent = props.userAgent.replace(/'/g, '"').replace(/False/g, 'false').replace(/True/g, 'true')
   const [screenWidth, setScreenWidth] = useState(document.documentElement.clientWidth);
 
   console.log(experimentId)
+  console.log(userAgent)
+  console.log(JSON.parse(userAgent))
 
   window.addEventListener("resize", (_event) => {
     setScreenWidth(document.documentElement.clientWidth);
