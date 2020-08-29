@@ -9,6 +9,7 @@ from .views import (
     check_username_available_api_view,
     create_profile_api_view,
     login_api_view,
+    logout_api_view,
     # test_my_email_api_view,
 )
 
@@ -24,5 +25,6 @@ urlpatterns = [
     path('available/', check_username_available_api_view),
     path('create/', create_profile_api_view),
     path('login/', login_api_view),
+    path('logout/', logout_api_view),
     # path('emailtest/', test_my_email_api_view)
 ]

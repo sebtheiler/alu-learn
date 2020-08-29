@@ -344,6 +344,20 @@ def login_api_view(request, *args, **kwargs):
     return Response({'message': 'Successfully authenticated user'}, status=200)
 
 
+@api_view(['POST'])
+def logout_api_view(request, *args, **kwargs):
+    """
+    Logs out a user - POST
+
+    Possible errors:
+        User is not logged in: 400, {'message': 'User is not logged in'}
+    """
+    if not request.user.is_authenticated:
+        return Response({'message': 'User is not logged in'}, status=400)
+    logout(request)
+    return Response({'message': 'Successfully unauthenticated user'}, status=200)
+
+
 # from django.core.mail import send_mail
 # from django.conf import settings
 # @api_view(['GET'])

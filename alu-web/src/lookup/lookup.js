@@ -160,6 +160,11 @@ export function apiProfileLogin(username, password, callback) {
   backendLookup('POST', 'profiles/login/', callback, {username: username, password: password});
 };
 
+// Logs a user out
+export function apiProfileLogout(callback) {
+  backendLookup('POST', 'profiles/logout', callback);
+};
+
 // Send a friend request
 export function apiSendFriendReq(recipientUsername, callback) {
   backendLookup('POST', `profiles/${recipientUsername}/friendrequest/`, callback);
