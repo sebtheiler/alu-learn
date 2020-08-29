@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Modal, Form, Button} from 'react-bootstrap';
-// import {apiAuthenticateCredentials} from '../../lookup';
+import {apiProfileLogin} from '../../lookup';
 
 export function LoginForm(_props) {
   // const {} = props;
@@ -9,18 +9,37 @@ export function LoginForm(_props) {
 
   const loginHandler = (event) => {
     event.preventDefault();
-
+    if (isLoading) {
+      return;
+    };
+    setIsLoading(true);
     const form = event.target;
 
     console.log(
       form.elements.loginUsername.value,
       form.elements.loginPassword.value,
     )
+    apiProfileLogin(
+      form.elements.loginUsername.value,
+      form.elements.loginPassword.value,
+      (response, status) => {
+        if (status === 200) {
+          window.location.reload();
+        } else if (response.message === 'Invalid credentials') {
+          document.getElementById('loginAuthFail').innerText =
+            `We don't recognize your username and password.  Maybe try typing it again?`
+        } else {
+          console.log(response, status);
+          alert('Error signing you in');
+        };
+        setIsLoading(false);
+      },
+    );
   };
 
   return (
     <Form onSubmit={loginHandler}>
-      <p id='registerUsernameError' className='text-danger mb-0'></p>
+      <p id='loginAuthFail' className='text-danger mb-0'></p>
       <Form.Group>
         <Form.Label className='mb-0'>Username</Form.Label>
         <Form.Control
@@ -54,6 +73,9 @@ export function LoginForm(_props) {
           Privacy Policy</a>.
         </label>
       </Form.Group>
+      <div>
+        <p>Forgot your password? Click <a href='/TODO:/'>TODO: here</a> to reset it</p>
+      </div>
       <Modal.Footer>
         <Button type='submit' variant='primary' block>
           {isLoading ? 'Loading...' : 'Log-in'}

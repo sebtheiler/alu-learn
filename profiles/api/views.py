@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.utils.http import is_safe_url
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate, login, logout
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
@@ -311,6 +311,35 @@ def create_profile_api_view(request, *args, **kwargs):
     user.profile.save()
 
     return Response(PublicProfileSerializer(user.profile).data, status=201)
+
+
+@api_view(['POST'])
+def login_api_view(request, *args, **kwargs):
+    """
+    Logs a user in - POST
+
+    Required information:
+        `username`: Username of user
+        `password`: Raw password of user
+    
+    Possible errors:
+        User is already authenticated: 400, {'message': 'User is already authenticated'}
+        `username` or `password` not supplied: 400, {'message': 'Please specify a username and password'}
+        Invalid credentials: 401, {'message': 'Invalid credentials'}
+    """
+    if request.user.is_authenticated:
+        return Response({'message': 'User is already authenticated'}, status=400)
+
+    username = request.data.get('username')
+    password = request.data.get('password')
+    if username is None or password is None:
+        return Response({'message': 'Please specify a username and password'}, status=400)
+
+    user = authenticate(request, username=username, password=password)
+    if user is None:
+        return Response({'message': 'Invalid credentials'}, status=401)
+    return Response({'message': 'Successfully authenticated user'}, status=200)
+
 
 # from django.core.mail import send_mail
 # from django.conf import settings

@@ -3,7 +3,7 @@ import {Form, Button, ListGroup, OverlayTrigger} from 'react-bootstrap';
 import {generateTooltip} from '../utils';
 
 export function RegisterForm(props) {
-  const {callback, experimentId, hideNoSpam} = props;
+  const {callback, experimentId, hideNoSpam, autoFocus} = props;
 
   const emailRef = React.createRef();
 
@@ -39,6 +39,7 @@ export function RegisterForm(props) {
           className='mx-auto'
           style={{width: '250px'}}
           ref={emailRef}
+          autoFocus={autoFocus}
         />
       </>}
       <Button
@@ -66,7 +67,7 @@ export function MainHook(props) {
             : 'Need help learning something new?'
             ) : (
             experimentId[6] === '1'
-            ? 'Want a new way to study?'
+            ? 'Looking for a new way to study?'
             : 'Need some new studying partners?'
           )
         }
@@ -80,7 +81,7 @@ export function MainHook(props) {
               or <strong>both</strong>, Alu can help you takes notes and study.</>
         }
       </p>
-      <RegisterForm callback={callback} experimentId={experimentId} />
+      <RegisterForm callback={callback} experimentId={experimentId} autoFocus={true} />
       <p className='text-secondary mt-1'>
         {experimentId[4] === '1' ?
           <>

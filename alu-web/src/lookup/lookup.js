@@ -155,6 +155,11 @@ export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, la
   });
 };
 
+// Logs a user in
+export function apiProfileLogin(username, password, callback) {
+  backendLookup('POST', 'profiles/login/', callback, {username: username, password: password});
+};
+
 // Send a friend request
 export function apiSendFriendReq(recipientUsername, callback) {
   backendLookup('POST', `profiles/${recipientUsername}/friendrequest/`, callback);

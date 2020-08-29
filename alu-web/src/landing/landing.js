@@ -12,7 +12,7 @@ import {RegisterLoginModal} from './forms';
 // (6)(7)
 //   FF: Want to learn something new? 
 //   FT: Need help learning something new?
-//   TT: Want a new way to study?
+//   TT: Looking for a new way to study?
 //   TF: Need some new studying partners?
 // (8) Remove Boldface in description
 // (9) Hide FA icons
@@ -20,7 +20,7 @@ import {RegisterLoginModal} from './forms';
 
 export function LandingComponent(props) {
   const {alphaSpotsRemaining, experimentId} = props;
-  const userAgent = props.userAgent.replace(/'/g, '"').replace(/False/g, 'false').replace(/True/g, 'true')
+
   const [screenWidth, setScreenWidth] = useState(document.documentElement.clientWidth);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [currentEmail, setCurrentEmail] = useState('');
@@ -33,20 +33,15 @@ export function LandingComponent(props) {
     setModalIsOpen(false);
   };
   
-  console.log(experimentId)
-  console.log(userAgent)
-  console.log(JSON.parse(userAgent))
-  
-  window.addEventListener("resize", (_event) => {
-    setScreenWidth(document.documentElement.clientWidth);
-  });
-  
-  const redirectToRegister = (email) => {
-    // window.location.href = '/register/' + (email ? `?email=${email}` : '');
+  const openModalCallback = (email) => {
     setCurrentEmail(email);
     openModal();
   };
 
+  // Used for dynamically changing object positioning
+  window.addEventListener("resize", (_event) => {
+    setScreenWidth(document.documentElement.clientWidth);
+  });
 
   return (
     <>
@@ -55,8 +50,6 @@ export function LandingComponent(props) {
           defaultEmail={currentEmail}
           modalIsOpen={modalIsOpen}
           closeModal={closeModal}
-          // saveHandler={saveHandler}
-          // deleteHandler={deleteHandler}
         />
         <div className={screenWidth < 770 ? 'col-12' : 'col-6'}>
           {
@@ -65,7 +58,7 @@ export function LandingComponent(props) {
             :
             <MainHook
               alphaSpotsRemaining={alphaSpotsRemaining}
-              callback={redirectToRegister}
+              callback={openModalCallback}
               experimentId={experimentId}
             />
           }
@@ -75,7 +68,7 @@ export function LandingComponent(props) {
             experimentId[1] === '1' ? 
             <MainHook
               alphaSpotsRemaining={alphaSpotsRemaining}
-              callback={redirectToRegister}
+              callback={openModalCallback}
               experimentId={experimentId}
             />
             :
@@ -90,8 +83,9 @@ export function LandingComponent(props) {
 
           <h2>Start Learning</h2>
           <RegisterForm
-            callback={redirectToRegister}
+            callback={openModalCallback}
             experimentId={experimentId}
+            autoFocus={false}
             hideNoSpam
           />
         </div>

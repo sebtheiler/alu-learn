@@ -26,6 +26,7 @@ import {
         apiSendFriendReq,
         apiExploreLists,
         apiProfileCreate,
+        apiProfileLogin,
 } from './lookup';
 
 export {
@@ -56,4 +57,5 @@ export {
     apiSendFriendReq,
     apiExploreLists,
     apiProfileCreate,
+    apiProfileLogin,
 };
