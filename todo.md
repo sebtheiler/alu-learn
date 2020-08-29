@@ -46,6 +46,7 @@ Aug 31
 * Make navbar in React
     * Fix for mobile
     * Improve notification icon + fix bugs
+    * Fix old and broken login/logout/register links
 * Make 'base.html' and 'base-landing.html' the same file
 Sep 01
 * Add pagination for deck search

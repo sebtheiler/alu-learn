@@ -15,12 +15,6 @@ from decks.views import (
     flashcard_search_view,
 )
 
-from accounts.views import (
-    login_view,
-    logout_view,
-    register_view,
-)
-
 from landing.views import (
     landing_page,
 )
@@ -30,9 +24,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', landing_page),
     path('home/', decks_feed_view),
-    path('login/', login_view),
-    path('logout/', logout_view),
-    path('register/', register_view),
     path('customstudy/', custom_study_view),
     path('flashcards/search/', flashcard_search_view),
     path('decks/<int:deck_id>/', decks_detail_view),
