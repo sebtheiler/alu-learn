@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {apiDeckFeed} from '../lookup';
 import {Deck} from './detail';
 import {Button} from 'react-bootstrap';
+import { errorHandler } from '../utils';
 
 
 // Paginated function for decks that should appear
@@ -24,17 +25,17 @@ export function DecksFeedList(props) {
   // Send request to the API to get decks and URLs for pagination
   useEffect(() => {
     if (decksDidSet === false) {
-      const handleDeckListLookup = (response, status) => {
+      apiDeckFeed((response, status) => {
         if (status === 200) {
           setNextUrl(response.next);
           setDecksInit(response.results);
           setDecks(response.results);
           setDecksDidSet(true);
         } else {
-          alert('There was an error');
+          // Error getting deck
+          errorHandler(response, status, 1006);
         };
-      };
-      apiDeckFeed(handleDeckListLookup);
+      });
     };
   }, [decksInit, decksDidSet, setDecksDidSet, username]);
 
@@ -49,7 +50,8 @@ export function DecksFeedList(props) {
           setDecksInit(newDecks);
           setDecks(newDecks);
         } else {
-          alert('There was an error');
+          // Error handling next set of decks (pagination)
+          errorHandler(response, status, 1007);
         };
       }, nextUrl);
     };

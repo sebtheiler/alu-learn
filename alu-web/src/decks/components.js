@@ -5,6 +5,7 @@ import {DeckDetail} from './detail';
 import {apiDeckDetail} from '../lookup';
 import {DecksFeedList} from './feed';
 import {Button} from 'react-bootstrap';
+import { errorHandler } from '../utils';
 
 
 // Component for the decks shown on the user's homepage
@@ -61,21 +62,18 @@ export function DeckDetailComponent(props) {
   const [didLookup, setDidLookup] = useState(false);
   const [deck, setDeck] = useState(null);
 
-  // Function for updating the deck's display with the server response
-  // This is called after the server sends back a response
-  const handleBackendLookup = (response, status) => {
-    if (status === 200) {
-      setDeck(response);
-    } else {
-      alert('An error occured displaying a deck!');
-    };
-  };
-
   // Send a request to the API to get information about the given deck
   // `didLookup` is required so that this doesn't infinitely run
   useEffect(() => {
     if (didLookup === false) {
-      apiDeckDetail(deckId, handleBackendLookup);
+      apiDeckDetail(deckId, (response, status) => {
+        if (status === 200) {
+          setDeck(response);
+        } else {
+          // Error getting deck detail
+          errorHandler(response, status, 1003);
+        };
+      });
       setDidLookup(true);
     };
   }, [deckId, didLookup, setDidLookup]);

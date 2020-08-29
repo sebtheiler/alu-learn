@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {apiExploreLists} from '../lookup';
 import {DeckSlider} from './components';
 import {ExploreButtonGroup} from './buttons';
+import { errorHandler } from '../utils';
 
 
 export function ExploreComponent(props) {
@@ -16,8 +17,8 @@ export function ExploreComponent(props) {
           setDecks(response);
           setDecksDidSet(true);
         } else {
-          console.log(response, status);
-          alert('Error');
+          // Error getting explore deck lists
+          errorHandler(response, status, 1010);
         };
       });
     };

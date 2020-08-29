@@ -3,6 +3,7 @@ import {apiDeckDetail, apiFlashCardDateUpdate, apiFlashCardSearch} from '../../l
 import {StudyElement} from './study';
 import {getAnkiInterval} from './algorithm'
 import {Button} from 'react-bootstrap';
+import { errorHandler } from '../../utils';
 
 export function StudyComponent(props) {
   const {deckId, flashcardList, studySuspendedCards} = props;
@@ -36,7 +37,8 @@ export function StudyComponent(props) {
           if (status === 200) {
             setDeck(response);
           } else {
-            alert('Error');
+            // Error getting deck to study
+            errorHandler(response, status, 1009);
           };
         });
       } else {
@@ -150,8 +152,8 @@ export function StudyComponent(props) {
           if (status === 200) {
             setCurrentCardDidSet(true);
           } else {
-            console.log(response, status);
-            alert('Error updating card!');
+            // Error updating flashcard with information returned from studying
+            errorHandler(response, status, 2006);
           };
       });
       // Update date locally
@@ -248,8 +250,8 @@ export function CustomStudyComponent(props) {
           if (status === 200) {
             setFlashcards(response);
           } else {
-            console.log(response, status);
-            alert('Error in custom study!');
+            // Error searching for flashcards in custom study
+            errorHandler(response, status, 2007);
           };
       });
     };

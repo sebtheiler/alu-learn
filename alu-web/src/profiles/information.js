@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {apiProfileDetail, apiProfileFriendToggle, apiSendFriendReq} from '../lookup';
 import {UserLink} from './components';
-import {DisplayCount} from '../utils';
+import {DisplayCount, errorHandler} from '../utils';
 import {Button} from 'react-bootstrap';
 
 
@@ -60,19 +60,17 @@ export function ProfileInformationComponent(props) {
   const [profile, setProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
 
-  // Update the profile on the front-end
-  const handleBackendLookup = (response, status) => {
-    if (status === 200) {
-      setProfile(response);
-    } else {
-      alert('Error handling the profile!');
-    };
-  };
-
   // Set the profile for the first time
   useEffect(() => {
     if (didLookup === false) {
-      apiProfileDetail(username, handleBackendLookup);
+      apiProfileDetail(username, (response, status) => {
+        if (status === 200) {
+          setProfile(response);
+        } else {
+          // Error getting profile details
+          errorHandler(response, status, 3000);
+        };
+      });
       setDidLookup(true);
     };
   }, [username, didLookup, setDidLookup]);
@@ -96,8 +94,8 @@ export function ProfileInformationComponent(props) {
         if (status === 201) {
           profile.you_are_pending = true;
         } else {
-          console.log(response, status);
-          alert('Error sending friend request');
+          // Error sending friend request
+          errorHandler(response, status, 3001);
         };
         setProfileLoading(false);
       });

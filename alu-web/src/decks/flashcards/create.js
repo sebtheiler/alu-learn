@@ -1,7 +1,7 @@
 import React from 'react';
 import {apiFlashCardCreate, apiFlashCardEdit, apiFlashCardDetail} from '../../lookup';
 import {Button, Form, OverlayTrigger} from 'react-bootstrap';
-import {generateTooltip} from '../../utils';
+import {generateTooltip, errorHandler} from '../../utils';
 
 
 // Function for card create form
@@ -26,8 +26,8 @@ export function FlashCardCreate(props) {
         backTextRef.current.value = response.back_text;
         tagsRef.current.value = response.tags;
       } else {
-        console.log(response, status);
-        alert('Something went wrong editing your flashcard');
+        // Error getting flashcard detail
+        errorHandler(response, status, 2000);
       };
     });
   };
@@ -44,11 +44,9 @@ export function FlashCardCreate(props) {
       frontTextRef.current.value = '';
       backTextRef.current.value = '';
       tagsRef.current.value = '';
-    } else if (status === 403) {
-      alert('You must log in before you create a flashcard')
     } else {
-      console.log(response, status);
-      alert('An error occured creating the flashcard');
+      // Error creating/editing flashcard
+      errorHandler(response, status, 2001);
     };
   };
 

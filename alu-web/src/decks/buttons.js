@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {apiDeckDelete, apiDeckEdit, apiDeckCopy} from '../lookup';
+import {errorHandler} from '../utils';
 import {Modal, Button, Form, ButtonGroup} from 'react-bootstrap';
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -46,8 +47,8 @@ export function DeckDefaultButtonGroup(props) {
         if (status === 200) {
           window.location.reload();
         } else {
-          console.log(response, status);
-          alert('Error saving your deck');
+          // Error updating deck
+          errorHandler(response, status, 1000);
         };
     });
   };
@@ -56,11 +57,9 @@ export function DeckDefaultButtonGroup(props) {
     apiDeckDelete(deck.id, (response, status) => {
       if (status === 200) {
         window.location.reload();
-      } else if (status === 403) {
-        alert('You must log in!');
       } else {
-        console.log(response, status);
-        alert('Error deleting your deck!');
+        // Error deleting deck
+        errorHandler(response, status, 1001);
       };
     });
   };
@@ -184,10 +183,10 @@ export function DeckForeignUserButtonGroup(props) {
       if (status === 200) {
         setCopyState('Copied');
       } else {
+        // Error copying deck
         setCopyState('Copy');
-        console.log(response, status);
-        alert('Error copying deck!');
-      }
+        errorHandler(response, status, 1002)
+      };
     });
   };
 

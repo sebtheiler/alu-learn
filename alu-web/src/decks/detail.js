@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {DeckDefaultButtonGroup, DeckForeignUserButtonGroup} from './buttons';
 import {FlashCardsList} from './flashcards';
 import {apiDeckThank} from '../lookup';
-import {DisplayCount} from '../utils';
+import {DisplayCount, errorHandler} from '../utils';
 import {UserLink} from '../profiles';
 import {Card, ButtonGroup, Button} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
@@ -69,9 +69,9 @@ export function DeckDetail(props) {
           deck.num_thanks++;
           setThankBtnLabel('Thanked');
         } else {
-          console.log(response, status);
-          alert('Error thanking deck');
+          // Error thanking deck
           setThankBtnLabel('Thank');
+          errorHandler(response, status, 1005);
         };
       });
     };

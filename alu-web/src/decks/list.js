@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {apiDeckSharedList} from '../lookup';
 import {Deck} from './detail';
+import { errorHandler } from '../utils';
 
 
 // Paginated list of function for loading raw-list of decks
@@ -29,8 +30,8 @@ export function DecksList(props) {
           setDecks(response);
           setDecksDidSet(true);
         } else {
-          console.log(response, status);
-          alert('Error getting decks');
+          // Error getting shared decks
+          errorHandler(response, status, 1008);
         };
       });
     };

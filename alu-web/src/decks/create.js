@@ -1,5 +1,6 @@
 import React from 'react';
 import {apiDeckCreate} from '../lookup';
+import { errorHandler } from '../utils';
 
 
 // Component for the deck create form displayed at
@@ -10,23 +11,20 @@ export function DeckCreate(props) {
   // the API's response to creating a new deck
   const {didCreateDeck} = props;
 
-  // Called with the API's response and status after creating a new deck
-  const handleBackendUpdate = (response, status) => {
-    if (status === 201) {
-      didCreateDeck(response);
-    } else {
-      console.log(response);
-      alert('A server error occured');
-    };
-  };
-
   // Called when the user presses the 'Create' button
   // Sends a request to the backend to create a deck
   // with the title of the text in the text ref
   const handleSubmit = (event) => {
     event.preventDefault();
     const textVal = inputTextRef.current.value;
-    apiDeckCreate(textVal, handleBackendUpdate);
+    apiDeckCreate(textVal, (response, status) => {
+      if (status === 201) {
+        didCreateDeck(response);
+      } else {
+        // Error creating deck
+        errorHandler(response, status, 1004);
+      };
+    });
     inputTextRef.current.value = '';
   };
 

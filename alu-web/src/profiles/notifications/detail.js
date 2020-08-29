@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Button} from 'react-bootstrap';
-import {timeSince} from '../../utils';
+import {timeSince, errorHandler} from '../../utils';
 import {apiProfileFriendToggle, apiProfileDetail} from '../../lookup';
 import ReactMarkdown from 'react-markdown';
 
@@ -22,8 +22,8 @@ export function Notification(props) {
           setAcceptedFriendReq(true);
         };
       } else {
-        console.log(response, status);
-        alert('Error accepting friend!'); // TODO: turn this else statement into reusuable function
+        // Error getting profile detail for checking if friends
+        errorHandler(response, status, 3004);
       };
     });
   };
@@ -41,8 +41,8 @@ export function Notification(props) {
         if (status === 200) {
           setFriendBtnLabel('Friends')
         } else {
-          console.log(response, status);
-          alert('Error accepting friend!');
+          // Error accepting friend request
+          errorHandler(response, status, 3005);
         };
       });
     };

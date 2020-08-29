@@ -6,10 +6,13 @@ import {
   isAlphaNumeric,
 } from './utils';
 
+import {errorHandler} from './errorHandler';
+
 export {
   generateTooltip,
   timeSince,
   DisplayCount,
   lightOrDark,
   isAlphaNumeric,
+  errorHandler,
 };

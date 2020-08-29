@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Button, Form} from 'react-bootstrap';
 import {apiDeckSearch} from '../lookup';
 import {DeckDetail} from '../decks';
+import { errorHandler } from '../utils';
 
 export function DeckSearchComponent(_props) {
   const searchQueryRef = React.createRef();
@@ -15,8 +16,8 @@ export function DeckSearchComponent(_props) {
       if (status === 200) {
         setRetrievedDecks(response);
       } else {
-        console.log(response, status);
-        alert('Error searching for decks!');
+        // Error performing deck search
+        errorHandler(response, status, 1011);
       }
     });
     setSearchBtnLabel('Search!');

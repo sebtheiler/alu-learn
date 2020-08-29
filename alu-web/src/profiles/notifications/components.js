@@ -3,6 +3,7 @@ import {Popover, OverlayTrigger, Button} from 'react-bootstrap';
 
 import {Notification} from './detail';
 import {apiNotificationList, apiNotificationRead} from '../../lookup';
+import { errorHandler } from '../../utils';
 
 export function NotificationComponent(props) {
   const {username, isPopup} = props;
@@ -42,8 +43,8 @@ export function NotificationComponent(props) {
             setHasUnreadNotifs(true);
           };
         } else {
-          console.log(response, status);
-          alert('Error displaying notifications');
+          // Error getting notification list
+          errorHandler(response, status, 3002);
         };
       });
     };
@@ -56,8 +57,8 @@ export function NotificationComponent(props) {
           if (status === 200) {
             // ...
           } else {
-            console.log(response, status);
-            alert('Error in notifications!')
+            // Error marking notification as read
+            errorHandler(response, status, 3003);
           };
         });
       };

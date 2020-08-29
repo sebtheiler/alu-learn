@@ -5,6 +5,7 @@ import {FlashCardsList} from '.';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css'; // or include from a CDN
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
+import { errorHandler } from '../../utils';
 
 // TODO: split this component in multiple components
 // It is a horrible piece of code
@@ -81,8 +82,8 @@ export function FlashCardSearchComponent(props) {
               maxEaseSelectRefCurrentValue,
             ));
           } else {
-            console.log(response, status);
-            alert('Error searching!');
+            // Error searching for flashcards
+            errorHandler(response, status, 2005);
           };
           setSearchLoading(false);
       });

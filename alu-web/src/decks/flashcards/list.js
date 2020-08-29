@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {apiDeckDetail, apiFlashCardDelete, apiFlashCardSuspendLeech} from '../../lookup';
 import {FlashCard} from './detail';
 import {Button, ButtonGroup} from 'react-bootstrap';
+import { errorHandler } from '../../utils';
 
 export function FlashCardsList(props) {
   const {deckId, flashcardList, foreignUser} = props;
@@ -25,7 +26,8 @@ export function FlashCardsList(props) {
             setFlashCardsDidSet(true);
             setFlashCards(response.flashcards);
           } else {
-            alert('There was an error');
+            // Error looking up deck
+            errorHandler(response, status, 2002);
           };
         });
       } else {
@@ -57,9 +59,9 @@ export function FlashCardsList(props) {
               flashcard.is_suspended = action === 'suspend';
               setFlashCardsDidSet(false);
             } else {
-              console.log(response, status);
-              alert('Error suspending/leeching flashcard');
-            }
+              // Error suspending/leeching flashcard
+              errorHandler(response, status, 2003);
+            };
           });
         };
 
@@ -71,9 +73,9 @@ export function FlashCardsList(props) {
               flashcards.splice(index);
               setFlashCardsDidSet(false);
             } else {
-              console.log(response, status);
-              alert('Error deleting flashcard!');
-            }
+              // Error deleting flashcard
+              errorHandler(response, status, 2004);
+            };
           });
         };
         return <FlashCard

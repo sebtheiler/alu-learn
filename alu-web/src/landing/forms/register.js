@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Modal, Form, Button} from 'react-bootstrap';
-import {isAlphaNumeric} from '../../utils';
+import {isAlphaNumeric, errorHandler} from '../../utils';
 import {apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin} from '../../lookup';
 
 export function RegisterForm(props) {
@@ -43,7 +43,6 @@ export function RegisterForm(props) {
     // Everything has to be done in the callback because of async
     setIsLoading(true);
     apiCheckUsernameAvailable(form.elements.registerUsername.value, (response, status) => {
-      console.log(response, status)
       if (status === 200) {
         var error = false;
         // Check if username is available
@@ -134,19 +133,25 @@ export function RegisterForm(props) {
               apiProfileLogin(
                 form.elements.registerUsername.value,
                 form.elements.registerPassword.value,
-                (_response, _status) => {
-                  window.location.reload();
+                (response, status) => {
+                  if (status === 200) {
+                    window.location.reload();
+                  } else {
+                    // Error logging-in the user
+                    errorHandler(response, status, 3009);
+                  };
                 },
               );
             } else {
-              console.log(response, status);
+              // Error creating the user profile
+              errorHandler(response, status, 3008);
             };
             setIsLoading(false);
           },
         );
       } else {
-        console.log(response, status);
-        alert('Error checking username availability!');
+        // Error checking username availability
+        errorHandler(response, status, 3007);
       };
     });
   };

@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
 import {Modal, Form, Button} from 'react-bootstrap';
 import {apiProfileLogin} from '../../lookup';
+import { errorHandler } from '../../utils';
 
 export function LoginForm(_props) {
-  // const {} = props;
-
   const [isLoading, setIsLoading] = useState(false);
 
   const loginHandler = (event) => {
@@ -15,10 +14,6 @@ export function LoginForm(_props) {
     setIsLoading(true);
     const form = event.target;
 
-    console.log(
-      form.elements.loginUsername.value,
-      form.elements.loginPassword.value,
-    )
     apiProfileLogin(
       form.elements.loginUsername.value,
       form.elements.loginPassword.value,
@@ -29,8 +24,8 @@ export function LoginForm(_props) {
           document.getElementById('loginAuthFail').innerText =
             `We don't recognize your username and password.  Maybe try typing it again?`
         } else {
-          console.log(response, status);
-          alert('Error signing you in');
+          // Error logging-in the user
+          errorHandler(response, status, 3006);
         };
         setIsLoading(false);
       },
