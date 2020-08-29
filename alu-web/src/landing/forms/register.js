@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Modal, Form, Button} from 'react-bootstrap';
 import {isAlphaNumeric} from '../../utils';
-import {apiCheckUsernameAvailable, apiProfileCreate} from '../../lookup';
+import {apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin} from '../../lookup';
 
 export function RegisterForm(props) {
   const {defaultEmail} = props;
@@ -130,8 +130,14 @@ export function RegisterForm(props) {
           form.elements.registerPassword.value,
           (response, status) => {
             if (status === 201) {
-              console.log(response, status);
-              // ...
+              // TODO: email authentication
+              apiProfileLogin(
+                form.elements.registerUsername.value,
+                form.elements.registerPassword.value,
+                (_response, _status) => {
+                  window.location.reload();
+                },
+              );
             } else {
               console.log(response, status);
             };

@@ -254,6 +254,7 @@ def profile_badge_create_api_view(request, username, *args, **kwargs):
     return Response(ProfileBadgeSerializer(new_badge).data, status=201)
 
 @api_view(['GET'])
+# TODO: make another view for checking emails
 def check_username_available_api_view(request, *args, **kwargs):
     """
     Check if a username is available - GET
@@ -338,6 +339,8 @@ def login_api_view(request, *args, **kwargs):
     user = authenticate(request, username=username, password=password)
     if user is None:
         return Response({'message': 'Invalid credentials'}, status=401)
+    login(request, user)
+
     return Response({'message': 'Successfully authenticated user'}, status=200)
 
 

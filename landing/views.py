@@ -19,10 +19,10 @@ def landing_page(request, *args, **kwargs):
         return redirect('/home/')
 
     experiment_id = request.session.get('experiment_id')
-    # if not experiment_id:
-    experiment_id = ''.join(['1' if random.random() < prob else '0' for prob in EXPERIMENT_PROBABILITIES])
-    request.session['experiment_id'] = experiment_id
-    print(experiment_id)
+    # TODO: experiment_id not staying consistent
+    if not experiment_id:
+        experiment_id = ''.join(['1' if random.random() < prob else '0' for prob in EXPERIMENT_PROBABILITIES])
+        request.session['experiment_id'] = experiment_id
 
     ua = request.user_agent
     context = {
