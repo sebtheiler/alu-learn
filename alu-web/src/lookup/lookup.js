@@ -139,6 +139,22 @@ export function apiCheckUsernameAvailable(username, callback) {
   backendLookup('GET', `profiles/available/?username=${username}`, callback);
 };
 
+// Creates a profile & user
+export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, lastName, username, email, password, callback) {
+  backendLookup('POST', 'profiles/create/', callback, {
+    birthdate: {
+      year: parseInt(birthYear),
+      month: birthMonth,
+      day: parseInt(birthDate),
+    },
+    first_name: firstName,
+    last_name: lastName,
+    username: username,
+    email: email,
+    password: password,
+  });
+};
+
 // Send a friend request
 export function apiSendFriendReq(recipientUsername, callback) {
   backendLookup('POST', `profiles/${recipientUsername}/friendrequest/`, callback);

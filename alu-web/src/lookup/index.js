@@ -25,6 +25,7 @@ import {
         apiNotificationRead,
         apiSendFriendReq,
         apiExploreLists,
+        apiProfileCreate,
 } from './lookup';
 
 export {
@@ -54,4 +55,5 @@ export {
     apiNotificationRead,
     apiSendFriendReq,
     apiExploreLists,
+    apiProfileCreate,
 };

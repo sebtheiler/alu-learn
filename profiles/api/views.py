@@ -286,6 +286,7 @@ def create_profile_api_view(request, *args, **kwargs):
         `password`: Password of user
     """
     birthdate = request.data.get('birthdate')
+    print(birthdate)
     last_name = request.data.get('last_name')
     first_name = request.data.get('first_name')
     username = request.data.get('username')
@@ -306,11 +307,11 @@ def create_profile_api_view(request, *args, **kwargs):
         password=password,
         email=email,
     )
-    user.profile.update(**{
-        'birthdate': birthdate,
-    })
 
-    return Response(PublicProfileSerializer(user.profile).data, status=200)
+    user.profile.birthdate = birthdate
+    user.profile.save()
+
+    return Response(PublicProfileSerializer(user.profile).data, status=201)
 
 # from django.core.mail import send_mail
 # from django.conf import settings

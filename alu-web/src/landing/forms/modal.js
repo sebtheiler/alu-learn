@@ -1,13 +1,17 @@
 import React, {useState} from 'react';
 import {Modal, Form, Button} from 'react-bootstrap';
 import {isAlphaNumeric} from '../../utils';
-import {apiCheckUsernameAvailable} from '../../lookup';
+import {apiCheckUsernameAvailable, apiProfileCreate} from '../../lookup';
 
 export function RegisterLoginModal(props) {
   const {defaultEmail, modalIsOpen, closeModal} = props;
   var monthRef, dateRef, yearRef;
 
   const [isChild, setIsChild] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [birthMonth, setBirthMonth] = useState('UNSELECTED');
+  const [birthDate, setBirthDate] = useState('UNSELECTED');
+  const [birthYear, setBirthYear] = useState('UNSELECTED');
 
   const onBirthChangeHandler = (_event) => {
     // Check if the age is < 13 years old
@@ -15,6 +19,10 @@ export function RegisterLoginModal(props) {
     const date = dateRef.value;
     const year = yearRef.value;
     const now = new Date();
+
+    setBirthMonth(month);
+    setBirthDate(date);
+    setBirthYear(year);
 
     if ((month !== 'UNSELECTED' && date !== 'UNSELECTED' && year !== 'UNSELECTED' &&
         now.getFullYear() - 13 <= new Date(year, month, date)) ||
@@ -27,48 +35,18 @@ export function RegisterLoginModal(props) {
 
   const registerHandler = (event) => {
     event.preventDefault();
+    if (isLoading) {
+      return;
+    };
     const form = event.target;
 
-    var error = false;
-    // Check that birthdate is specified
-    if (
-      monthRef.value === 'UNSELECTED' ||
-      dateRef.value === 'UNSELECTED' ||
-      yearRef.value === 'UNSELECTED') {
-        document.getElementById('dateError').innerText =
-        'You must select your birthdate. Don\'t worry, this isn\'t public.'
-      error = true;
-    } else {
-      document.getElementById('dateError').innerText = '';
-    };
-
-    // Check that first and last names are valid
-    if (!isChild && (
-      form.elements.registerFirstName.value.length > 50 ||
-      form.elements.registerLastName.value.length > 50)) {
-        document.getElementById('nameError').innerText =
-        'Your name must be less than 50 characters.'
-        error = true;
-    } else if (!isChild) {
-      document.getElementById('nameError').innerText = '';
-    };
-
-    // Check is username is alphanumeric
-    if (
-      form.elements.registerUsername.value.length > 20 ||
-      !isAlphaNumeric(form.elements.registerUsername.value)) {
-        document.getElementById('registerUsernameError').innerText =
-        `Your username must be less than 20 characters and only include
-        alphanumeric characters, such as abcd1234`
-        error = true;
-    } else {
-      document.getElementById('registerUsernameError').innerText = '';
-    };
-
-    // Check if username is available
+    // Everything has to be done in the callback because of async
+    setIsLoading(true);
     apiCheckUsernameAvailable(form.elements.registerUsername.value, (response, status) => {
       console.log(response, status)
       if (status === 200) {
+        var error = false;
+        // Check if username is available
         const usernameAvailable = response.is_available;
         if (!usernameAvailable) {
           document.getElementById('registerUsernameTakenError').innerText =
@@ -77,50 +55,94 @@ export function RegisterLoginModal(props) {
         } else {
           document.getElementById('registerUsernameTakenError').innerText = '';
         };
+
+        // Check that birthdate is specified
+        if (
+           birthMonth === 'UNSELECTED' ||
+           birthDate === 'UNSELECTED' ||
+           birthYear === 'UNSELECTED') {
+            document.getElementById('dateError').innerText =
+            'You must select your birthdate. Don\'t worry, this isn\'t public.'
+          error = true;
+        } else {
+          document.getElementById('dateError').innerText = '';
+        };    
+    
+        // Check that first and last names are valid
+        if (!isChild && (
+          form.elements.registerFirstName.value.length > 50 ||
+          form.elements.registerLastName.value.length > 50)) {
+            document.getElementById('nameError').innerText =
+            'Your name must be less than 50 characters.'
+            error = true;
+        } else if (!isChild) {
+          document.getElementById('nameError').innerText = '';
+        };
+    
+        // Check is username is alphanumeric
+        if (
+          form.elements.registerUsername.value.length > 20 ||
+          !isAlphaNumeric(form.elements.registerUsername.value)) {
+            document.getElementById('registerUsernameError').innerText =
+            `Your username must be less than 20 characters and only include
+            alphanumeric characters, such as abcd1234`
+            error = true;
+        } else {
+          document.getElementById('registerUsernameError').innerText = '';
+        };
+    
+        // Check if password meets security requirements
+        if (
+          isAlphaNumeric(form.elements.registerPassword.value) ||
+          form.elements.registerPassword.value.length < 8 ) {
+            document.getElementById('registerPasswordLengthError').innerText =
+            `Your password must be at least 8 characters and include
+            special characters such as @, $, or !.`
+            error = true;
+        } else {
+          document.getElementById('registerPasswordLengthError').innerText = '';
+        };
+
+        // Check that passwords are the same
+        if (
+          form.elements.registerPasswordConfirm.value !== form.elements.registerPassword.value) {
+            document.getElementById('registerPasswordMatchError').innerText =
+            'Your passwords don\'t match.'
+            error = true;
+        } else {
+          document.getElementById('registerPasswordMatchError').innerText = '';
+        };
+        
+        // If all went well, create new profile
+        if (error) {
+          setIsLoading(false);
+          return;
+        };
+
+        apiProfileCreate(
+          birthYear,
+          birthMonth,
+          birthDate,
+          isChild ? '' : form.elements.registerFirstName.value,
+          isChild ? '' : form.elements.registerLastName.value,
+          form.elements.registerUsername.value,
+          form.elements.registerEmail.value,
+          form.elements.registerPassword.value,
+          (response, status) => {
+            if (status === 201) {
+              console.log(response, status);
+              // ...
+            } else {
+              console.log(response, status);
+            };
+            setIsLoading(false);
+          },
+        );
       } else {
         console.log(response, status);
         alert('Error checking username availability!');
       };
     });
-
-    // Check if password meets security requirements
-    if (
-      isAlphaNumeric(form.elements.registerPassword.value) ||
-      form.elements.registerPassword.value.length < 8 ) {
-        document.getElementById('registerPasswordLengthError').innerText =
-        `Your password must be at least 8 characters and include
-        special characters such as @, $, or !.`
-        error = true;
-    } else {
-      document.getElementById('registerPasswordLengthError').innerText = '';
-    };
-
-    // Check that passwords are the same
-    if (
-      form.elements.registerPasswordConfirm.value !== form.elements.registerPassword.value) {
-        document.getElementById('registerPasswordMatchError').innerText =
-        'Your passwords don\'t match.'
-        error = true;
-    } else {
-      document.getElementById('registerPasswordMatchError').innerText = '';
-    };
-
-    if (error) {
-      return;
-    };
-  
-    console.log(
-      monthRef.value,
-      dateRef.value,
-      yearRef.value,
-      isChild,
-      isChild ? '' : form.elements.registerFirstName.value,
-      isChild ? '' : form.elements.registerLastName.value,
-      form.elements.registerUsername.value,
-      form.elements.registerEmail.value,
-      form.elements.registerPassword.value,
-      form.elements.registerPasswordConfirm.value,
-    );
   };
 
   return (
@@ -270,7 +292,9 @@ export function RegisterLoginModal(props) {
             </label>
           </Form.Group>
           <Modal.Footer>
-            <Button type='submit' variant='primary' block>Sign Up</Button>
+            <Button type='submit' variant='primary' block>
+              {isLoading ? 'Loading...' : 'Sign Up'}
+            </Button>
           </Modal.Footer>
         </Form>
       </Modal.Body>
