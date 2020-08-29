@@ -224,7 +224,6 @@ export function RegisterForm(props) {
         <Form.Control
           type='text'
           name='registerUsername'
-          defaultValue={defaultEmail}
           maxLength={15}
           required
         />

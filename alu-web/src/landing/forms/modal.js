@@ -1,22 +1,68 @@
 import React, {useState} from 'react';
 import {Modal} from 'react-bootstrap';
-import {RegisterForm} from './components';
+import {RegisterForm} from './register';
+import {LoginForm} from './login';
 
 export function RegisterLoginModal(props) {
-  const {defaultEmail, modalIsOpen, closeModal} = props;
+  const {defaultEmail, defaultForm, modalIsOpen, closeModal} = props;
+
+  const [formToDisplay, setFormToDisplay] = useState(defaultForm ? defaultForm : 'REGISTER');
 
   return (
     <Modal show={modalIsOpen} onHide={closeModal}>
       <Modal.Header>
-        <h3 className='text-center'>Register</h3>
+        <div className='row w-100'>
+          <div className='col-6'>
+            <h3
+              className={
+                'text-center' + (formToDisplay
+                  !== 'REGISTER' ? ' text-secondary'
+                  : '')
+                }
+              style={{
+                textDecoration: (formToDisplay === 'REGISTER' ? 'underline' : 'none'),
+                cursor: 'pointer',
+              }}
+              onClick={_event => setFormToDisplay('REGISTER')}
+            >
+              Register
+            </h3>
+          </div>
+          <div className='col-6'>
+            <h3
+              className={
+                'text-center' + (formToDisplay
+                  !== 'LOGIN' ? ' text-secondary'
+                  : '')
+                }
+              style={{
+                textDecoration: (formToDisplay === 'LOGIN' ? 'underline' : 'none'),
+                cursor: 'pointer',
+              }}
+              onClick={_event => setFormToDisplay('LOGIN')}
+            >
+              Log-in
+            </h3>
+          </div>
+        </div>
       </Modal.Header>
       <Modal.Body>
-        <p className='text-center'>
-          Create your account to start using Alu
-        </p>
-        <RegisterForm
-          defaultEmail={defaultEmail}
-        />
+        <div className={formToDisplay !== 'REGISTER' ? 'd-none' : ''}>
+          <p className='text-center'>
+            Create your account to start using Alu
+          </p>
+          <RegisterForm
+            defaultEmail={defaultEmail}
+          />
+        </div>
+        <div className={formToDisplay !== 'LOGIN' ? 'd-none' : ''}>
+          <p className='text-center'>
+            Welcome back!
+          </p>
+          <LoginForm
+            
+          />
+        </div>
       </Modal.Body>
     </Modal>
   );
