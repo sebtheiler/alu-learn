@@ -286,7 +286,6 @@ def create_profile_api_view(request, *args, **kwargs):
         `password`: Password of user
     """
     birthdate = request.data.get('birthdate')
-    print(birthdate)
     last_name = request.data.get('last_name')
     first_name = request.data.get('first_name')
     username = request.data.get('username')
