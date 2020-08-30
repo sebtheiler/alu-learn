@@ -19,7 +19,7 @@ import {RegisterLoginModal} from './forms';
 
 
 export function LandingComponent(props) {
-  const {alphaSpotsRemaining, experimentId, showLoginRequired, returnUrl} = props;
+  const {alphaSpotsRemaining, experimentParams, showLoginRequired, returnUrl} = props;
 
   const [screenWidth, setScreenWidth] = useState(document.documentElement.clientWidth);
   const [modalIsOpen, setModalIsOpen] = useState(showLoginRequired === 'true');
@@ -54,38 +54,38 @@ export function LandingComponent(props) {
         />
         <div className={screenWidth < 770 ? 'col-12' : 'col-6'}>
           {
-            experimentId[1] === '1' ? 
-            <CoolFeaturesList experimentId={experimentId} />
+            experimentParams[1] === '1' ? 
+            <CoolFeaturesList experimentParams={experimentParams} />
             :
             <MainHook
               alphaSpotsRemaining={alphaSpotsRemaining}
               callback={openModalCallback}
-              experimentId={experimentId}
+              experimentParams={experimentParams}
             />
           }
         </div>
         <div className={screenWidth < 770 ? 'col-12 mt-4' : 'col-6'}>
           {
-            experimentId[1] === '1' ? 
+            experimentParams[1] === '1' ? 
             <MainHook
               alphaSpotsRemaining={alphaSpotsRemaining}
               callback={openModalCallback}
-              experimentId={experimentId}
+              experimentParams={experimentParams}
             />
             :
-            <CoolFeaturesList experimentId={experimentId} />
+            <CoolFeaturesList experimentParams={experimentParams} />
           }
         </div>
       </div>
       <div className='row' style={{marginTop: '100px'}}>
         <div className='text-center mx-auto'>
           <h2>Here's how it works</h2>
-          <HowItWorks isMobile={screenWidth < 770} experimentId={experimentId} />
+          <HowItWorks isMobile={screenWidth < 770} experimentParams={experimentParams} />
 
           <h2>Start Learning</h2>
           <RegisterForm
             callback={openModalCallback}
-            experimentId={experimentId}
+            experimentParams={experimentParams}
             autoFocus={false}
             hideNoSpam
           />

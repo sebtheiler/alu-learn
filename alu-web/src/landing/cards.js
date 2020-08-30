@@ -2,14 +2,14 @@ import React from 'react';
 import {Card, CardDeck} from 'react-bootstrap';
 
 export function CustomCard(props) {
-  const {faName, headerText, imageUrl, imageAlt, bodyText, className, experimentId} = props;
+  const {faName, headerText, imageUrl, imageAlt, bodyText, className, experimentParams} = props;
   const width = props.width ? props.width + '%': '33%';
 
   return (
     <Card className={'text-center mb-5 ' + className} style={{width: width}}>
       <Card.Header>
         <h2>
-          {experimentId[8] === '1' ? null : <><i className={`fas fa-${faName}`} />{' '}</>}
+          {experimentParams[8] === '1' ? null : <><i className={`fas fa-${faName}`} />{' '}</>}
           {headerText}
         </h2>
       </Card.Header>
@@ -25,7 +25,7 @@ export function CustomCard(props) {
 };
 
 export function HowItWorks(props) {
-  const {isMobile, experimentId} = props;
+  const {isMobile, experimentParams} = props;
   const width = isMobile ? 90 : 33; // in percent
 
   // These two prop dicts are required for less repeated-code
@@ -37,7 +37,7 @@ export function HowItWorks(props) {
     imageAlt: 'The page for creating flashcards',
     className: 'ml-4',
     width: width,
-    experimentId: experimentId,
+    experimentParams: experimentParams,
     bodyText: <>Quickly turn your notes into flashcards</>,
   }
 
@@ -48,7 +48,7 @@ export function HowItWorks(props) {
     imageAlt: 'The "Explore" page, with lists of decks made by others',
     className: 'mr-4',
     width: width,
-    experimentId: experimentId,
+    experimentParams: experimentParams,
     bodyText: <>Find decks of flashcards made by others to improve your studying experience</>,
   }
 
@@ -61,7 +61,7 @@ export function HowItWorks(props) {
         imageAlt='The Cornell note-taking system'
         className='mx-auto'
         width={width}
-        experimentId={experimentId}
+        experimentParams={experimentParams}
         bodyText={<>
           Take powerful notes using <strong>Cornell</strong>{' '}
           and <strong>Hierarchical</strong> note systems
@@ -88,7 +88,7 @@ export function HowItWorks(props) {
         imageAlt='Studying an individual flashcard'
         className='mx-auto'
         width={width}
-        experimentId={experimentId}
+        experimentParams={experimentParams}
         bodyText={<>
           Our spaced repetition algorithm will give you the{' '}
           flashcards you need <strong>to focus on most</strong>
@@ -101,7 +101,7 @@ export function HowItWorks(props) {
         imageAlt='The "Explore" page, with lists of decks made by others'
         className='mx-auto'
         width={width}
-        experimentId={experimentId}
+        experimentParams={experimentParams}
         bodyText={<>
           Made a deck of flashcards you think others will like?{' '}
           Share it, and people from around the world can thank you!

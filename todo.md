@@ -36,8 +36,8 @@ Aug 28
 - [X] Fix bugs for anon users
 
 Aug 29
-- [ ] Make analytics tracking DJ app
-- [ ] Rename experiment ID to experiment parameters
+- [X] Make analytics tracking DJ app
+- [X] Rename experiment ID to experiment parameters
 - [ ] Integrate analytics tracking with landing page
 
 Aug 30
@@ -73,7 +73,7 @@ Sep 03
 Sep 04
 - [ ] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
 - [ ] Protect API
-- [ ] Make numeric ids into string ids like "dad2Xadw#1"
+- [ ] Make numeric ids into string ids like "dad2Xadw#1". Look into UUID
 
 Sep 05
 - [ ] Add deck importing system

@@ -18,18 +18,17 @@ def landing_page(request, *args, **kwargs):
     if request.user.is_authenticated:
         return redirect('/home/')
 
-    experiment_id = request.session.get('experiment_id')
-    # TODO: experiment_id not staying consistent
-    if not experiment_id:
-        experiment_id = ''.join(['1' if random.random() < prob else '0' for prob in EXPERIMENT_PROBABILITIES])
-        request.session['experiment_id'] = experiment_id
+    landing_experiment_params = request.session.get('landing_experiment_params')
+    if not landing_experiment_params:
+        landing_experiment_params = ''.join(['1' if random.random() < prob else '0' for prob in EXPERIMENT_PROBABILITIES])
+        request.session['landing_experiment_params'] = landing_experiment_params
 
     return_url = request.GET.get('returnUrl')
     show_login_required = request.GET.get('showLoginRequired')
     ua = request.user_agent
     context = {
         'alpha_spots_remaining': 200,
-        'experiment_id': experiment_id,
+        'experiment_params': landing_experiment_params,
         'show_login_required': show_login_required,
         'return_url': return_url if return_url else '',
         'user_agent': {

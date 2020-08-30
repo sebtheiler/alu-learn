@@ -3,7 +3,7 @@ import {Form, Button, ListGroup, OverlayTrigger} from 'react-bootstrap';
 import {generateTooltip} from '../utils';
 
 export function RegisterForm(props) {
-  const {callback, experimentId, hideNoSpam, autoFocus} = props;
+  const {callback, experimentParams, hideNoSpam, autoFocus} = props;
 
   const emailRef = React.createRef();
 
@@ -14,7 +14,7 @@ export function RegisterForm(props) {
 
   return (
     <Form onSubmit={onSubmit} className='mb-0'>
-      {experimentId[3] === '1' ? null :
+      {experimentParams[3] === '1' ? null :
       <>
         {hideNoSpam ? null :
           <Form.Label className='mb-0 mt-2'>
@@ -44,29 +44,29 @@ export function RegisterForm(props) {
       </>}
       <Button
         type='submit'
-        variant={experimentId[0] === '1' ? 'success' : 'primary'}
+        variant={experimentParams[0] === '1' ? 'success' : 'primary'}
         className='mt-1'
         style={{width: '250px'}}
       >
-        {experimentId[2] === '1' ? 'Join Us' : 'Apply for the Alpha'}
+        {experimentParams[2] === '1' ? 'Join Us' : 'Apply for the Alpha'}
       </Button>
     </Form>
   );
 };
 
 export function MainHook(props) {
-  const {alphaSpotsRemaining, callback, experimentId} = props;
+  const {alphaSpotsRemaining, callback, experimentParams} = props;
 
   return (
     <>
       <h1>
         {
-          experimentId[5] === '0' ? (
-            experimentId[6] === '1'
+          experimentParams[5] === '0' ? (
+            experimentParams[6] === '1'
             ? 'Want to learn something new?'
             : 'Need help learning something new?'
             ) : (
-            experimentId[6] === '1'
+            experimentParams[6] === '1'
             ? 'Looking for a new way to study?'
             : 'Need some new studying partners?'
           )
@@ -74,16 +74,16 @@ export function MainHook(props) {
       </h1>
       <p>
         {
-          experimentId[7] === '1'
+          experimentParams[7] === '1'
             ? <>Whether you're a student, life-long learner,{' '}
               or both, Alu can help you takes notes and study.</>
             : <>Whether you're a <strong>student, life-long learner,</strong>{' '}
               or <strong>both</strong>, Alu can help you takes notes and study.</>
         }
       </p>
-      <RegisterForm callback={callback} experimentId={experimentId} autoFocus={true} />
+      <RegisterForm callback={callback} experimentParams={experimentParams} autoFocus={true} />
       <p className='text-secondary mt-1'>
-        {experimentId[4] === '1' ?
+        {experimentParams[4] === '1' ?
           <>
             It's free
           </>
