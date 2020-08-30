@@ -23,6 +23,7 @@ class ExperimentController(models.Model):
         """
         Gets the rate at which the experiment succeeds
         """
+        # TODO: add option to include None as fail
         successes = self.experiments.filter(successful=True).count()
         failures = self.experiments.filter(successful=False).count()
         return successes / (failures + successes)

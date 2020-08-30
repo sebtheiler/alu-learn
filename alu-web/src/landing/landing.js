@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {MainHook, CoolFeaturesList, RegisterForm} from './components';
+import {MainHook, CoolFeaturesList, MiniRegisterForm} from './components';
 import {HowItWorks} from './cards';
 import {RegisterLoginModal} from './forms';
 
@@ -51,6 +51,7 @@ export function LandingComponent(props) {
           modalIsOpen={modalIsOpen}
           closeModal={closeModal}
           returnUrl={returnUrl}
+          experimentParams={experimentParams}
         />
         <div className={screenWidth < 770 ? 'col-12' : 'col-6'}>
           {
@@ -83,7 +84,7 @@ export function LandingComponent(props) {
           <HowItWorks isMobile={screenWidth < 770} experimentParams={experimentParams} />
 
           <h2>Start Learning</h2>
-          <RegisterForm
+          <MiniRegisterForm
             callback={openModalCallback}
             experimentParams={experimentParams}
             autoFocus={false}

@@ -9,6 +9,7 @@ from rest_framework.response import Response
 
 from ..models import Profile, Notification, ProfileBadge
 from ..serializers import PublicProfileSerializer, NotificationSerializer, ProfileBadgeSerializer
+from analytics.models import ExperimentController
 
 import datetime
 
@@ -286,13 +287,16 @@ def create_profile_api_view(request, *args, **kwargs):
         `username`: Username of profile
         `email`: Email of profile. Email of parent if user is child.
         `password`: Password of user
+        `experiment_params`: Experiment paramaters for analytics apps
     """
+    # Get data
     birthdate = request.data.get('birthdate')
     last_name = request.data.get('last_name')
     first_name = request.data.get('first_name')
     username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
+    experiment_params = request.data.get('experiment_params')
 
     months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
     birthdate = datetime.date(
@@ -301,6 +305,7 @@ def create_profile_api_view(request, *args, **kwargs):
         day=birthdate.get('day'),
     )
 
+    # Create user
     user = User.objects.create_user(
         first_name=first_name,
         last_name=last_name,
@@ -311,6 +316,10 @@ def create_profile_api_view(request, *args, **kwargs):
 
     user.profile.birthdate = birthdate
     user.profile.save()
+
+    # Add data to the analytics tracker
+    controller = ExperimentController.objects.get(short_name='landing1')
+    controller.add_data_piece(parameters=experiment_params, successful=True)
 
     return Response(PublicProfileSerializer(user.profile).data, status=201)
 
@@ -366,7 +375,7 @@ def logout_api_view(request, *args, **kwargs):
 #     subject = 'Thank you for registering to our site'
 #     message = 'Body text Body text Body text Body text Body text'
 #     email_from = settings.EMAIL_HOST_USER
-#     recipient_list = ['sebastiantk9@gmail.com',]
+#     recipient_list = ['sebastiantk9@gmail.com',] # TODO: clean up this sensitive line
 
 #     return Response(
 #         send_mail(

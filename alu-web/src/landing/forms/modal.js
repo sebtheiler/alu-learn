@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import {Modal} from 'react-bootstrap';
-import {RegisterForm} from './register';
+import {ModalRegisterForm} from './register';
 import {LoginForm} from './login';
 
 export function RegisterLoginModal(props) {
-  const {defaultEmail, defaultForm, modalIsOpen, closeModal, returnUrl} = props;
+  const {defaultEmail, defaultForm, modalIsOpen, closeModal, returnUrl, experimentParams} = props;
 
   const [formToDisplay, setFormToDisplay] = useState(defaultForm ? defaultForm : 'REGISTER');
 
@@ -51,9 +51,10 @@ export function RegisterLoginModal(props) {
           <p className='text-center'>
             Create your account to start using Alu
           </p>
-          <RegisterForm
+          <ModalRegisterForm
             defaultEmail={defaultEmail}
             returnUrl={returnUrl}
+            experimentParams={experimentParams}
           />
         </div>
         <div className={formToDisplay !== 'LOGIN' ? 'd-none' : ''}>

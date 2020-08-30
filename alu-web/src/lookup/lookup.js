@@ -140,7 +140,7 @@ export function apiCheckUsernameAvailable(username, callback) {
 };
 
 // Creates a profile & user
-export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, lastName, username, email, password, callback) {
+export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, lastName, username, email, password, experimentParams, callback) {
   backendLookup('POST', 'profiles/create/', callback, {
     birthdate: {
       year: parseInt(birthYear),
@@ -152,6 +152,7 @@ export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, la
     username: username,
     email: email,
     password: password,
+    experiment_params: experimentParams,
   });
 };
 

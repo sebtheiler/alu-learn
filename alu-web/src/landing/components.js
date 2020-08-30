@@ -2,7 +2,7 @@ import React from 'react';
 import {Form, Button, ListGroup, OverlayTrigger} from 'react-bootstrap';
 import {generateTooltip} from '../utils';
 
-export function RegisterForm(props) {
+export function MiniRegisterForm(props) {
   const {callback, experimentParams, hideNoSpam, autoFocus} = props;
 
   const emailRef = React.createRef();
@@ -81,7 +81,11 @@ export function MainHook(props) {
               or <strong>both</strong>, Alu can help you takes notes and study.</>
         }
       </p>
-      <RegisterForm callback={callback} experimentParams={experimentParams} autoFocus={true} />
+      <MiniRegisterForm
+        callback={callback}
+        experimentParams={experimentParams}
+        autoFocus={true}
+      />
       <p className='text-secondary mt-1'>
         {experimentParams[4] === '1' ?
           <>

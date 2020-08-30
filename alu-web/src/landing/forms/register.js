@@ -3,8 +3,8 @@ import {Modal, Form, Button} from 'react-bootstrap';
 import {isAlphaNumeric, errorHandler} from '../../utils';
 import {apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin} from '../../lookup';
 
-export function RegisterForm(props) {
-  const {defaultEmail} = props;
+export function ModalRegisterForm(props) {
+  const {defaultEmail, experimentParams} = props;
   const returnUrl = props.returnUrl ? new URL(props.returnUrl).pathname : null;
   var monthRef, dateRef, yearRef;
   
@@ -128,6 +128,7 @@ export function RegisterForm(props) {
           form.elements.registerUsername.value,
           form.elements.registerEmail.value,
           form.elements.registerPassword.value,
+          experimentParams,
           (response, status) => {
             if (status === 201) {
               // TODO: email authentication
