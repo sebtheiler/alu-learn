@@ -84,6 +84,8 @@ class DeckSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request is None or not request.user.is_authenticated:
             return None
+        if request.user.is_anonymous:
+            return False
 
         thank_profiles_list = [thank.profile for thank in obj.thanks.all()]
         has_thanked = request.user.profile in thank_profiles_list

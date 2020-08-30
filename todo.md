@@ -37,6 +37,7 @@ Aug 28
 
 Aug 29
 - [ ] Make analytics tracking DJ app
+- [ ] Rename experiment ID to experiment parameters
 - [ ] Integrate analytics tracking with landing page
 
 Aug 30
@@ -67,6 +68,7 @@ Sep 02
 Sep 03
 - [ ] Review heatmap?
 - [ ] Show deck of flashcard when searching for flashcards
+- [ ] Add welcome page
 
 Sep 04
 - [ ] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
@@ -74,12 +76,13 @@ Sep 04
 - [ ] Make numeric ids into string ids like "dad2Xadw#1"
 
 Sep 05
+- [ ] Add deck importing system
+- [ ] Test deployment on Heroku
+
+Sep 06
 - [ ] Add ToS
 - [ ] Add Privacy Policy
 - [ ] Flesh out legal structure
-
-Sep 06
-- [ ] Test deployment on Heroku
 
 Sep 07
 - [ ] Final deployment system

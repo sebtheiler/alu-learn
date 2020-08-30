@@ -42,7 +42,11 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
     def get_is_friend(self, obj):
         request = self.context.get('request')
-        is_friend = request.user in obj.friends.all() if request else None
+        if request is None:
+            return None
+        if request.user.is_anonymous:
+            return False
+        is_friend = request.user in obj.friends.all()
         return is_friend
 
     def get_you_are_pending(self, obj):
