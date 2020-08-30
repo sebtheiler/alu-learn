@@ -86,7 +86,7 @@ export function apiDeckList(username, callback, nextUrl) {
     endpoint = `decks/decklist/?username=${username}`;
   };
   if (nextUrl !== null && nextUrl !== undefined) {
-    // TODO: The replace system will need to be redone
+    // TODO: The replace system will need to be redone, maybe use window.location.host?
     endpoint = nextUrl.replace('http://127.0.0.1:8000/api/', '');
   };
   backendLookup('GET', endpoint, callback);

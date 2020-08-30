@@ -3,7 +3,9 @@ import {Modal, Form, Button} from 'react-bootstrap';
 import {apiProfileLogin} from '../../lookup';
 import { errorHandler } from '../../utils';
 
-export function LoginForm(_props) {
+export function LoginForm(props) {
+  const returnUrl = props.returnUrl ? new URL(props.returnUrl).pathname : null;
+
   const [isLoading, setIsLoading] = useState(false);
 
   const loginHandler = (event) => {
@@ -19,7 +21,11 @@ export function LoginForm(_props) {
       form.elements.loginPassword.value,
       (response, status) => {
         if (status === 200) {
-          window.location.reload();
+          if (returnUrl) {
+            window.location.href = returnUrl;
+          } else {
+            window.location.reload();
+          };
         } else if (response.message === 'Invalid credentials') {
           document.getElementById('loginAuthFail').innerText =
             `We don't recognize your username and password.  Maybe try typing it again?`

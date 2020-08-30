@@ -24,11 +24,14 @@ def landing_page(request, *args, **kwargs):
         experiment_id = ''.join(['1' if random.random() < prob else '0' for prob in EXPERIMENT_PROBABILITIES])
         request.session['experiment_id'] = experiment_id
 
+    return_url = request.GET.get('returnUrl')
+    show_login_required = request.GET.get('showLoginRequired')
     ua = request.user_agent
     context = {
         'alpha_spots_remaining': 200,
         'experiment_id': experiment_id,
-        'show_login_required': request.GET.get('showLoginRequired'),
+        'show_login_required': show_login_required,
+        'return_url': return_url if return_url else '',
         'user_agent': {
             'device': {
                 'family': ua.device.family,

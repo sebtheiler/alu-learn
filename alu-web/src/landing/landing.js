@@ -19,7 +19,7 @@ import {RegisterLoginModal} from './forms';
 
 
 export function LandingComponent(props) {
-  const {alphaSpotsRemaining, experimentId, showLoginRequired} = props;
+  const {alphaSpotsRemaining, experimentId, showLoginRequired, returnUrl} = props;
 
   const [screenWidth, setScreenWidth] = useState(document.documentElement.clientWidth);
   const [modalIsOpen, setModalIsOpen] = useState(showLoginRequired === 'true');
@@ -50,6 +50,7 @@ export function LandingComponent(props) {
           defaultEmail={currentEmail}
           modalIsOpen={modalIsOpen}
           closeModal={closeModal}
+          returnUrl={returnUrl}
         />
         <div className={screenWidth < 770 ? 'col-12' : 'col-6'}>
           {

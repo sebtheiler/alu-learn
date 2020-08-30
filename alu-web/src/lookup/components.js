@@ -25,6 +25,7 @@ export function backendLookup(method, endpoint, callback, data) {
     jsonData = JSON.stringify(data);
   };
   const xhr = new XMLHttpRequest();
+  // TODO: maybe `${window.location.host}/api/${endpoint}`
   const endpointUrl = `http://127.0.0.1:8000/api/${endpoint}`;
   
   xhr.responseType = 'json';

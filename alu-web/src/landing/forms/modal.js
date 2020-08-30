@@ -4,7 +4,7 @@ import {RegisterForm} from './register';
 import {LoginForm} from './login';
 
 export function RegisterLoginModal(props) {
-  const {defaultEmail, defaultForm, modalIsOpen, closeModal} = props;
+  const {defaultEmail, defaultForm, modalIsOpen, closeModal, returnUrl} = props;
 
   const [formToDisplay, setFormToDisplay] = useState(defaultForm ? defaultForm : 'REGISTER');
 
@@ -53,6 +53,7 @@ export function RegisterLoginModal(props) {
           </p>
           <RegisterForm
             defaultEmail={defaultEmail}
+            returnUrl={returnUrl}
           />
         </div>
         <div className={formToDisplay !== 'LOGIN' ? 'd-none' : ''}>
@@ -60,7 +61,7 @@ export function RegisterLoginModal(props) {
             Welcome back!
           </p>
           <LoginForm
-            
+            returnUrl={returnUrl}
           />
         </div>
       </Modal.Body>

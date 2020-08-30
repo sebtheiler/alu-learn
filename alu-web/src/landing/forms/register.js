@@ -5,6 +5,7 @@ import {apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin} from '../.
 
 export function RegisterForm(props) {
   const {defaultEmail} = props;
+  const returnUrl = props.returnUrl ? new URL(props.returnUrl).pathname : null;
   var monthRef, dateRef, yearRef;
   
   const [isLoading, setIsLoading] = useState(false);
@@ -135,7 +136,11 @@ export function RegisterForm(props) {
                 form.elements.registerPassword.value,
                 (response, status) => {
                   if (status === 200) {
-                    window.location.reload();
+                    if (returnUrl) {
+                      window.location.href = returnUrl;
+                    } else {
+                      window.location.reload();
+                    };
                   } else {
                     // Error logging-in the user
                     errorHandler(response, status, 3009);
