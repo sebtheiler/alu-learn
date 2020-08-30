@@ -1,6 +1,6 @@
 export function errorHandler(response, status, errorCode) {
   if (status === 403) {
-    alert('You must log in to perform that action!');
+    window.location.href = '/?showLoginRequired=true';
   } else {
     // TODO: maybe remove response from this line
     console.log(response, status);
@@ -21,11 +21,15 @@ here: TODO:, with the error code: ${errorCode.toString(16)}
 ===================
 === Error Codes ===
 ===================
-Note: Codes are display to the user in base-16/hexadecimal
+Note: Codes are displayed to the user in base-16/hexadecimal
 to convert to base 10 (which this list uses) use the
-following function:
+following functions:
 
-parseInt(hexadecimalNumber, 16)
+JavaScript:
+parseInt(hexadecimalString, 16)
+
+Python:
+int(hexadecimal_string, 16)
 
 === Deck related errors ===
 1000: Error updating deck through apiDeckEdit in alu-web/src/decks/button.js

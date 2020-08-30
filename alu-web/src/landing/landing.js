@@ -19,10 +19,10 @@ import {RegisterLoginModal} from './forms';
 
 
 export function LandingComponent(props) {
-  const {alphaSpotsRemaining, experimentId} = props;
+  const {alphaSpotsRemaining, experimentId, showLoginRequired} = props;
 
   const [screenWidth, setScreenWidth] = useState(document.documentElement.clientWidth);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(showLoginRequired === 'true');
   const [currentEmail, setCurrentEmail] = useState('');
 
   const openModal = () => {

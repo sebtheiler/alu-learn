@@ -28,6 +28,7 @@ def landing_page(request, *args, **kwargs):
     context = {
         'alpha_spots_remaining': 200,
         'experiment_id': experiment_id,
+        'show_login_required': request.GET.get('showLoginRequired'),
         'user_agent': {
             'device': {
                 'family': ua.device.family,
