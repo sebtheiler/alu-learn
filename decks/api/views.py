@@ -670,7 +670,6 @@ def flashcard_search_view(request, *args, **kwargs):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def deck_search_view(request, *args, **kwargs):
     """
     Searches for decks based on a query - GET

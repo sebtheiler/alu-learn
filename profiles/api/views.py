@@ -84,6 +84,7 @@ def profile_detail_api_view(request, username, *args, **kwargs):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def friend_request_api_view(request, recipient_username, *args, **kwargs):
     """
     Send a friend request to a user with username `recipient_username`
@@ -92,8 +93,8 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
         `recipient_username`: (URL) Username of the user to send a friend request to
     
     Possible errors:
-        Unknown username: 404, {message: 'User "`username`" not found'}
-        Cannot self-friend: 400, {message: 'You cannot friend yourself'}
+        Unknown username: 404, {'message': 'User "`username`" not found'}
+        Cannot self-friend: 400, {'message': 'You cannot friend yourself'}
     """
     # Get recipient user
     user_qs = User.objects.filter(username=recipient_username) # TODO: turn this common snippet of getting user into function

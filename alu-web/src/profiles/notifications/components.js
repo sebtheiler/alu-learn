@@ -51,16 +51,18 @@ export function NotificationComponent(props) {
   };
 
   const markAllAsRead = (_event) => {
-    for (let notif of notifList) {
-      if (notif.read === false) {
-        apiNotificationRead(notif.profile.username, notif.id, (response, status) => {
-          if (status === 200) {
-            // ...
-          } else {
-            // Error marking notification as read
-            errorHandler(response, status, 3003);
-          };
-        });
+    if (username.length > 0) {
+      for (let notif of notifList) {
+        if (notif.read === false) {
+          apiNotificationRead(notif.profile.username, notif.id, (response, status) => {
+            if (status === 200) {
+              // ...
+            } else {
+              // Error marking notification as read
+              errorHandler(response, status, 3003);
+            };
+          });
+        };
       };
     };
   };
@@ -74,10 +76,12 @@ export function NotificationComponent(props) {
             return <Notification notif={notif} read={notif.read} key={index} />
           })}
         </div>
-        <hr></hr>
-        <div>
-          <Button href='/profiles/notifications/' variant='primary' size='sm'>See older notifications</Button>
-        </div>
+        {username.length < 1 ? null : <>
+          <hr />
+          <div>
+            <Button href='/profiles/notifications/' variant='primary' size='sm'>See older notifications</Button>
+          </div>
+        </>}
       </Popover.Content>
     </Popover>
   );

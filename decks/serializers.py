@@ -82,7 +82,7 @@ class DeckSerializer(serializers.ModelSerializer):
 
     def get_you_have_thanked(self, obj):
         request = self.context.get('request')
-        if request is None:
+        if request is None or not request.user.is_authenticated:
             return None
 
         thank_profiles_list = [thank.profile for thank in obj.thanks.all()]

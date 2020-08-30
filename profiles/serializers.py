@@ -47,7 +47,9 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
     def get_you_are_pending(self, obj):
         request = self.context.get('request')
-        is_pending = request.user.profile in obj.pending_friends.all() if request else None
+        if request is None or not request.user.is_authenticated:
+            return None
+        is_pending = request.user.profile in obj.pending_friends.all()
         return is_pending
 
     def get_first_name(self, obj):

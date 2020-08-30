@@ -61,7 +61,7 @@ export function DeckDetail(props) {
 
   const handleThankDeck = (event) => {
     event.preventDefault();
-    if (deck.you_have_thanked === false) {
+    if (deck.you_have_thanked !== true) {
       setThankBtnLabel('Loading...');
       apiDeckThank(deck.id, (response, status) => {
         if (status === 201) {
