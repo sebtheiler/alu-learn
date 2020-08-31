@@ -15,7 +15,7 @@ from decks.views import (
     flashcard_search_view,
 )
 
-from landing.views import (
+from pages.views import (
     landing_page,
 )
 
