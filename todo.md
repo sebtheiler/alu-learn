@@ -32,7 +32,7 @@ Features
 ## Aug 28
 - [X] Make log-in/register modal
 - [X] Make global JS API request error handler
-    - [X] Show log-in/register modal on 403
+  - [X] Show log-in/register modal on 403
 - [X] Fix bugs for anon users
 
 ## Aug 29
@@ -42,28 +42,29 @@ Features
 
 ## Aug 30
 - [ ] Add welcome page
+- [ ] Merge 'landing' and 'pages' apps
 - [ ] Add real home page
-    - [ ] Move decks "feed" to sub-page
-    - [ ] Rename "feed" to better name
+  - [ ] Move decks "feed" to sub-page
+  - [ ] Rename "feed" to better name
 - [ ] Add "Golden Rules"
 
 ## Aug 31
 - [ ] Make navbar in React
-    - [ ] Fix for mobile
-    - [ ] Improve notification icon + fix bugs
-    - [ ] Fix old and broken login/logout/register links
+  - [ ] Fix for mobile
+  - [ ] Improve notification icon + fix bugs
+  - [ ] Fix old and broken login/logout/register links
 - [ ] Make 'base.html' and 'base-landing.html' the same file
 
 ## Sep 01
 - [ ] Add pagination for deck search
-    - [ ] Limimt # of results with fuzzywuzzy threshold
+  - [ ] Limimt # of results with fuzzywuzzy threshold
 - [ ] Add flashcard browsing infinite scroll?
-    - [ ] Force load all button?
+  - [ ] Force load all button?
 
 ## Sep 02
 - [ ] In custom study:
-    - [ ] Allow min/max ease to go to +/- infinity
-    - [ ] Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
+  - [ ] Allow min/max ease to go to +/- infinity
+  - [ ] Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
 - [ ] Freeze field for creating flashcards
 
 ## Sep 03

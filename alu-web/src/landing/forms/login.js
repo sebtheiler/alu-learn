@@ -21,11 +21,7 @@ export function LoginForm(props) {
       form.elements.loginPassword.value,
       (response, status) => {
         if (status === 200) {
-          if (returnUrl) {
-            window.location.href = returnUrl;
-          } else {
-            window.location.reload();
-          };
+          window.location.href = returnUrl ? returnUrl : '/help/welcome';
         } else if (response.message === 'Invalid credentials') {
           document.getElementById('loginAuthFail').innerText =
             `We don't recognize your username and password.  Maybe try typing it again?`

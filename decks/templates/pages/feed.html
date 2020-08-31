@@ -1,11 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{% if request.user.is_authenticated %}
-    <div id='decks-feed' data-username='{{ request.user.username }}'></div>
-{% else %}
-    <!-- TODO: Redirect to explore with sign-in/up modal -->
-    <p class='text-center mt-5'>You must login before you create any decks!</p>
-{% endif %}
+<div id='decks-feed' data-username='{{ request.user.username }}'></div>
 
 {% endblock content %}

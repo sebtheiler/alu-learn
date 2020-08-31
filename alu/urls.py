@@ -31,6 +31,7 @@ urlpatterns = [
     path('decks/<int:deck_id>/flashcards/', flashcard_list_view),
     path('decks/<int:deck_id>/flashcards/create/', flashcard_create_view),
     path('decks/<int:deck_id>/flashcards/<int:flashcard_id>/edit/', flashcard_edit_view),
+    path('', include('pages.urls')),
     path('api/decks/', include('decks.api.urls')),
     path('profiles/', include('profiles.urls')),
     path('api/profiles/', include('profiles.api.urls')),

@@ -137,11 +137,7 @@ export function ModalRegisterForm(props) {
                 form.elements.registerPassword.value,
                 (response, status) => {
                   if (status === 200) {
-                    if (returnUrl) {
-                      window.location.href = returnUrl;
-                    } else {
-                      window.location.reload();
-                    };
+                    window.location.href = returnUrl ? returnUrl : '/help/welcome';
                   } else {
                     // Error logging-in the user
                     errorHandler(response, status, 3009);

@@ -28,7 +28,7 @@ export function LandingComponent(props) {
   const [sentUserIsNewData, setSentUserIsNewData] = useState(false);
 
   useEffect(() => {
-    if (userIsNew.toLowerCase() === 'true' && sentUserIsNewData === false) {
+    if (userIsNew && userIsNew.toLowerCase() === 'true' && sentUserIsNewData === false) {
       setSentUserIsNewData(true);
       apiCreateBlankExperiment('landing1', experimentParams, (_response, _status) => {
         // pass
