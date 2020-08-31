@@ -67,5 +67,6 @@ int(hexadecimal_string, 16)
 3007: Error checking username availability through apiCheckUsernameAvailable in alu-web/src/landing/forms/register.js
 3008: Error creating the user profile through apiProfileCreate in alu-web/src/landing/forms/register.js
 3009: Error logging-in the user through apiProfileLogin in alu-web/src/landing/forms/register.js
+3010: Error getting profile details through apiProfileDetail in alu-web/src/home/home.js
 
 */

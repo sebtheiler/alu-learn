@@ -9,6 +9,7 @@ import {StudyComponent, CustomStudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
 import {ExploreComponent, DeckSearchComponent} from './explore';
 import {LandingComponent} from './landing';
+import {HomeComponent} from './home';
 
 const e = React.createElement;
 
@@ -57,17 +58,17 @@ notificationElements.forEach(container => {
   ReactDOM.render(e(NotificationComponent, container.dataset), container);
 });
 
-const exploreElement = document.getElementById('explore-component')
+const exploreElement = document.getElementById('explore-component');
 if (exploreElement) {
   ReactDOM.render(e(ExploreComponent, exploreElement.dataset), exploreElement);
 };
 
-const flashcardSearchElement = document.getElementById('flashcard-search-component')
+const flashcardSearchElement = document.getElementById('flashcard-search-component');
 if (flashcardSearchElement) {
   ReactDOM.render(e(FlashCardSearchComponent, flashcardSearchElement.dataset), flashcardSearchElement);
 };
 
-const deckSearchElement = document.getElementById('deck-search-component')
+const deckSearchElement = document.getElementById('deck-search-component');
 if (deckSearchElement) {
   ReactDOM.render(e(DeckSearchComponent, deckSearchElement.dataset), deckSearchElement);
 };
@@ -77,6 +78,10 @@ landingComponents.forEach(container => {
   ReactDOM.render(e(LandingComponent, container.dataset), container);
 });
 
+const homeElement = document.getElementById('home-component');
+if (homeElement) {
+  ReactDOM.render(e(HomeComponent, homeElement.dataset), homeElement);
+};
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
