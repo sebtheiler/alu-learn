@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {MainHook, CoolFeaturesList, MiniRegisterForm} from './components';
 import {HowItWorks} from './cards';
 import {RegisterLoginModal} from './forms';
+import {apiCreateBlankExperiment} from '../lookup';
 
 // Experiments:
 // (1) Apply button color
@@ -19,11 +20,21 @@ import {RegisterLoginModal} from './forms';
 
 
 export function LandingComponent(props) {
-  const {alphaSpotsRemaining, experimentParams, showLoginRequired, returnUrl} = props;
+  const {alphaSpotsRemaining, experimentParams, showLoginRequired, returnUrl, userIsNew} = props;
 
   const [screenWidth, setScreenWidth] = useState(document.documentElement.clientWidth);
   const [modalIsOpen, setModalIsOpen] = useState(showLoginRequired === 'true');
   const [currentEmail, setCurrentEmail] = useState('');
+  const [sentUserIsNewData, setSentUserIsNewData] = useState(false);
+
+  useEffect(() => {
+    if (userIsNew.toLowerCase() === 'true' && sentUserIsNewData === false) {
+      setSentUserIsNewData(true);
+      apiCreateBlankExperiment('landing1', experimentParams, (_response, _status) => {
+        // pass
+      });
+    };
+  }, [experimentParams, userIsNew, sentUserIsNewData, setSentUserIsNewData]);
 
   const openModal = () => {
     setModalIsOpen(true);

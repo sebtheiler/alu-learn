@@ -19,7 +19,9 @@ def landing_page(request, *args, **kwargs):
         return redirect('/home/')
 
     landing_experiment_params = request.session.get('landing_experiment_params')
+    user_is_new = False
     if not landing_experiment_params:
+        user_is_new = True
         landing_experiment_params = ''.join(['1' if random.random() < prob else '0' for prob in EXPERIMENT_PROBABILITIES])
         request.session['landing_experiment_params'] = landing_experiment_params
 
@@ -31,6 +33,7 @@ def landing_page(request, *args, **kwargs):
         'experiment_params': landing_experiment_params,
         'show_login_required': show_login_required,
         'return_url': return_url if return_url else '',
+        'user_is_new': user_is_new,
         'user_agent': {
             'device': {
                 'family': ua.device.family,

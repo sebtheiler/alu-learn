@@ -199,3 +199,10 @@ export function apiNotificationRead(username, notificationId, callback) {
 export function apiExploreLists(callback) {
   backendLookup('GET', 'explore/lists/', callback);
 };
+
+export function apiCreateBlankExperiment(controllerShortName, experimentParams, callback) {
+  backendLookup('POST', 'analytics/createblank/', callback, {
+    controller_short_name: controllerShortName,
+    experiment_params: experimentParams,
+  });
+};
