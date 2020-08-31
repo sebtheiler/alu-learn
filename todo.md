@@ -41,12 +41,12 @@ Features
 - [X] Integrate analytics tracking with landing page
 
 ## Aug 30
-- [ ] Add welcome page
+- [X] Add welcome page
 - [ ] Merge 'landing' and 'pages' apps
 - [ ] Add real home page
   - [ ] Move decks "feed" to sub-page
   - [ ] Rename "feed" to better name
-- [ ] Add "Golden Rules"
+- [X] Add "Golden Rules"
 
 ## Aug 31
 - [ ] Make navbar in React
