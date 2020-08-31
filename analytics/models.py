@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 
 
 class ExperimentController(models.Model):
@@ -10,22 +11,27 @@ class ExperimentController(models.Model):
         return self.name
 
 
-    def get_success_ratio(self):
+    def get_success_ratio(self, inc_none_as_fail=False):
         """
         Gets the number of successful to unsuccessful experiments
         """
         successes = self.experiments.filter(successful=True).count()
-        failures = self.experiments.filter(successful=False).count()
+        if inc_none_as_fail:
+            failures = self.experiments.filter(Q(successful=False) | Q(successful=None)).count()
+        else:
+            failures = self.experiments.filter(successful=False).count()
         return successes / failures
 
     
-    def get_success_rate(self):
+    def get_success_rate(self, inc_none_as_fail=False):
         """
         Gets the rate at which the experiment succeeds
         """
-        # TODO: add option to include None as fail
         successes = self.experiments.filter(successful=True).count()
-        failures = self.experiments.filter(successful=False).count()
+        if inc_none_as_fail:
+            failures = self.experiments.filter(Q(successful=False) | Q(successful=None)).count()
+        else:
+            failures = self.experiments.filter(successful=False).count()
         return successes / (failures + successes)
 
 
