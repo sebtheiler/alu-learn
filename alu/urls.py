@@ -23,7 +23,7 @@ from pages.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', landing_page),
-    path('home/', decks_feed_view),
+    path('home/decks/', decks_feed_view),
     path('customstudy/', custom_study_view),
     path('flashcards/search/', flashcard_search_view),
     path('decks/<int:deck_id>/', decks_detail_view),
