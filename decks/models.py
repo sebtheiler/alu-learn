@@ -12,19 +12,19 @@ class DeckQuerySet(models.QuerySet):
     def by_username(self, username):
         return self.filter(user__username__iexact=username)
 
-    # Get the feed for a user
-    def feed(self, user):
+    # Get the home deck page for a user
+    def home(self, user):
         # Order alphabetically, not by order added
-        feed_qs = self.filter(user__username=user.username).order_by('title')
-        return feed_qs
+        home_qs = self.filter(user__username=user.username).order_by('title')
+        return home_qs
 
 
 class DeckManager(models.Manager):
     def get_queryset(self, *args, **kwargs):
         return DeckQuerySet(self.model, using=self._db)
 
-    def feed(self, user):
-        return self.get_queryset().feed(user)
+    def home(self, user):
+        return self.get_queryset().home(user)
 
 
 class Deck(models.Model):

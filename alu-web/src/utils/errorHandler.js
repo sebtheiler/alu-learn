@@ -39,8 +39,8 @@ int(hexadecimal_string, 16)
 1003: Error getting deck detail through apiDeckDetail in alu-web/src/decks/components.js
 1004: Error creating deck through apiDeckCreate in alu-web/src/decks/create.js
 1005: Error thanking deck through apiDeckThank in alu-web/src/decks/detail.js
-1006: Error getting deck through apiDeckFeed in alu-web/src/decks/feed.js
-1007: Error handling next set of decks (pagination, decks home page / feed) through apiDeckFeed in alu-web/src/decks/feed.js
+1006: Error getting deck through apiDeckHome in alu-web/src/decks/home.js
+1007: Error handling next set of decks (pagination, decks home page) through apiDeckHome in alu-web/src/decks/home.js
 1008: Error getting shared decks through apiDeckSharedList in alu-web/src/decks/list.js
 1009: Error getting deck to study through apiDeckDetail in alu-web/src/decks/study/components.js
 1010: Error getting explore deck lists through apiExploreLists in alu-web/src/explore/base.js

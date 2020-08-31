@@ -3,13 +3,13 @@ import {DeckCreate,} from './create';
 import {DecksList} from './list';
 import {DeckDetail} from './detail';
 import {apiDeckDetail} from '../lookup';
-import {DecksFeedList} from './feed';
+import {DecksHomeList} from './home';
 import {Button} from 'react-bootstrap';
 import { errorHandler } from '../utils';
 
 
 // Component for the decks shown on the user's homepage
-export function DecksFeedComponent(props) {
+export function DecksHomeComponent(props) {
   const [newDecks, setNewDecks] = useState([]);
   const canCreateDeck = props.canCreateDeck === 'false' ? false : true;
 
@@ -28,7 +28,7 @@ export function DecksFeedComponent(props) {
         <Button href='/flashcards/search/' className='text-center mt-1'>Search for Flashcards / Custom Study</Button>
       </div>
       {canCreateDeck === true && <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mt-3' />}
-      <DecksFeedList newDecks={newDecks} {...props}/>
+      <DecksHomeList newDecks={newDecks} {...props}/>
     </div>
   );
 };

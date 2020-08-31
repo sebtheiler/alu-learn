@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckFeed} from '../lookup';
+import {apiDeckHome} from '../lookup';
 import {Deck} from './detail';
 import {Button} from 'react-bootstrap';
 import { errorHandler } from '../utils';
@@ -7,7 +7,7 @@ import { errorHandler } from '../utils';
 
 // Paginated function for decks that should appear
 // in the user's home page
-export function DecksFeedList(props) {
+export function DecksHomeList(props) {
   const {newDecks, username} = props;
   const [decksInit, setDecksInit] = useState([newDecks ? newDecks : []]);
   const [decks, setDecks] = useState([]); // Current set of decks
@@ -25,7 +25,7 @@ export function DecksFeedList(props) {
   // Send request to the API to get decks and URLs for pagination
   useEffect(() => {
     if (decksDidSet === false) {
-      apiDeckFeed((response, status) => {
+      apiDeckHome((response, status) => {
         if (status === 200) {
           setNextUrl(response.next);
           setDecksInit(response.results);
@@ -43,7 +43,7 @@ export function DecksFeedList(props) {
   const handleLoadNext = (event) => {
     event.preventDefault();
     if (nextUrl !== null) {
-      apiDeckFeed((response, status) => {
+      apiDeckHome((response, status) => {
         if (status === 200) {
           setNextUrl(response.next);
           const newDecks = [...decks].concat(response.results)

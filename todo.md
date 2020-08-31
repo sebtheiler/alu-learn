@@ -44,8 +44,8 @@ Features
 - [X] Add welcome page
 - [X] Merge 'landing' and 'pages' apps
 - [ ] Add real home page
-  - [ ] Move decks "feed" to sub-page
-  - [ ] Rename "feed" to better name
+  - [X] Move decks "feed" to sub-page
+  - [X] Rename "feed" to better name
 - [X] Add "Golden Rules"
 
 ## Aug 31

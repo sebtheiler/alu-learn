@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {ProfileInformationComponent} from './profiles';
-import {DecksComponent, DeckDetailComponent, DecksFeedComponent} from './decks';
+import {DecksComponent, DeckDetailComponent, DecksHomeComponent} from './decks';
 import {FlashCardCreateComponent, FlashCardsList, FlashCardSearchComponent} from './decks/flashcards';
 import {StudyComponent, CustomStudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
@@ -27,9 +27,9 @@ userProfileInfoElements.forEach(container => {
   ReactDOM.render(e(ProfileInformationComponent, container.dataset), container);
 });
 
-const deckFeedElement = document.getElementById('decks-feed');
-if (deckFeedElement) {
-  ReactDOM.render(e(DecksFeedComponent, deckFeedElement.dataset), deckFeedElement);
+const deckHomeElement = document.getElementById('decks-home');
+if (deckHomeElement) {
+  ReactDOM.render(e(DecksHomeComponent, deckHomeElement.dataset), deckHomeElement);
 };
 
 const flashcardCreateElement = document.getElementById('create-flashcard');

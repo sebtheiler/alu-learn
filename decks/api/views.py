@@ -331,16 +331,16 @@ def deck_shared_view(request, username, *args, **kwargs):
 # TODO: maybe we don't need SessionAuthentication?
 # @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
-def deck_feed_view(request, *args, **kwargs):
+def deck_home_view(request, *args, **kwargs):
     """
-    Gets a feed/homepage list of decks for a logged-in user - GET
+    Gets a homepage list of decks for a logged-in user - GET
 
     Returns:
         A list of decks (DeckSerializer)
     """
     user = request.user
-    feed_qs = Deck.objects.feed(user)
-    return get_paginated_queryset_response(feed_qs, request, DeckSerializer)
+    home_qs = Deck.objects.home(user)
+    return get_paginated_queryset_response(home_qs, request, DeckSerializer)
 
 
 @api_view(['GET'])

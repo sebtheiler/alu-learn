@@ -2,11 +2,11 @@ from django.shortcuts import render, redirect
 from django.views import generic
 
 
-# Render the home-page feed view
-def decks_feed_view(request, *args, **kwargs):
+# Render the home-page view
+def decks_home_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
-    return render(request, 'pages/feed.html', status=200)
+    return render(request, 'decks/home.html', status=200)
 
 
 # Render a global list of decks (unused, should probably be removed)

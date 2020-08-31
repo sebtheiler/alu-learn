@@ -98,9 +98,9 @@ export function apiDeckSharedList(username, callback) {
 };
 
 
-// Gets a feed of decks from the API
-export function apiDeckFeed(callback, nextUrl) {
-  let endpoint = 'decks/feed/';
+// Gets a page of decks from the API
+export function apiDeckHome(callback, nextUrl) {
+  let endpoint = 'decks/home/';
   if (nextUrl !== null && nextUrl !== undefined) {
     // TODO: The replace system will need to be redone
     endpoint = nextUrl.replace('http://127.0.0.1:8000/api/', '');
