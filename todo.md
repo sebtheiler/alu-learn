@@ -38,7 +38,7 @@ Features
 ## Aug 29
 - [X] Make analytics tracking DJ app
 - [X] Rename experiment ID to experiment parameters
-- [ ] Integrate analytics tracking with landing page
+- [X] Integrate analytics tracking with landing page
 
 ## Aug 30
 - [ ] Add welcome page
