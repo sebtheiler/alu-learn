@@ -11,7 +11,8 @@ Something went wrong trying to perform that action.
 Please reload the page and try again.
 
 If this problem persists, please contact the developer
-here: TODO:, with the error code: ${errorCode.toString(16)}
+here: TODO:.
+With the error code: ${errorCode.toString(16)}-${status.toString(16)}
 `
     );
   };

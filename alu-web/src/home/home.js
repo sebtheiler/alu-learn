@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Card, CardDeck, Button} from 'react-bootstrap';
 import {apiProfileDetail, apiProfileFriends} from '../lookup';
 import {errorHandler, DisplayCountCommas} from '../utils';
+import {UserLink} from '../profiles/components.js';
 import './home.css';
 
 export function HomeComponent(props) {
@@ -70,22 +71,31 @@ export function HomeComponent(props) {
       <div className='row'>
         <div className='col-12'>
           <h3>Friends</h3>
-          {friends.length > 0 ?
-            friends.map(friend => {
-              return (
-                <div>
-                  {friend.first_name} {friend.last_name} @{friend.username}
-                  <Button href={`/profiles/u/${friend.username}`}>
-                    View Profile
-                  </Button>
-                </div>
-              );
-            })
-          :
-          <p>
-            You don't have any friends yet.<br /> Look for some to make your learning
-            experience even better!
-          </p>
+          {friendsDidSet ? <>
+            {friends.length > 0 ?
+              friends.map((friend, index) => {
+                if (friend) {
+                  return (
+                    <div key={`friend-${index}`}>
+                      <hr />
+                      <UserLink user={friend} hideBadges />
+                      <Button href={`/profiles/u/${friend.username}`} className='mt-2'>
+                        View Profile
+                      </Button>
+                    </div>
+                  );
+                } else {
+                  return null;
+                };
+              })
+            :
+            <p>
+              You don't have any friends yet.<br /> Look for some to make your learning
+              experience even better!
+            </p>
+            }</>
+            :
+            <p>Loading...</p>
           }
         </div>
       </div>

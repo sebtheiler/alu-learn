@@ -83,13 +83,22 @@ class MinifiedProfileSerializer(serializers.ModelSerializer):
         ]
     
     def get_first_name(self, obj):
-        return obj.user.first_name
+        if isinstance(obj, Profile):
+            return obj.user.first_name
+        else:
+            return obj.first_name
     
     def get_last_name(self, obj):
-        return obj.user.last_name
+        if isinstance(obj, Profile):
+            return obj.user.last_name
+        else:
+            return obj.last_name
 
     def get_username(self, obj):
-        return obj.user.username
+        if isinstance(obj, Profile):
+            return obj.user.username
+        else:
+            return obj.username
 
 
 class NotificationSerializer(serializers.ModelSerializer):
