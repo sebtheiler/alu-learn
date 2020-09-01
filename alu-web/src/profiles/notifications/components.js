@@ -72,11 +72,13 @@ export function NotificationComponent(props) {
       <Popover.Title as='h3'>Notifications</Popover.Title>
       <Popover.Content>
         <div>
-          {notifList.map((notif, index) => {
+          {notifList.length > 0 ? notifList.map((notif, index) => {
             return <Notification notif={notif} read={notif.read} key={index} />
-          })}
+          })
+          :
+          <p>You don't have any notifications yet</p>}
         </div>
-        {username.length < 1 ? null : <>
+        {username.length < 1 || notifList.length < 1 ? null : <>
           <hr />
           <div>
             <Button href='/profiles/notifications/' variant='primary' size='sm'>See older notifications</Button>
