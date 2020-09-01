@@ -1,0 +1,12 @@
+.notification-badge {
+  font-size: 10px;
+  position: absolute;
+  text-align: center;
+  transform: translate(-10px, -5px);
+  width: 15px;
+  height: 15px;
+  line-height: 15px;
+  border-radius: 50%;
+  background: red;
+  color: white;
+}
