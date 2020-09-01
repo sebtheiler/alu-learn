@@ -49,7 +49,7 @@ Features
 - [X] Add "Golden Rules"
 
 ## Aug 31
-- [ ] Make navbar in React
+- [X] Make navbar in React
   - [X] Fix for mobile
   - [X] Improve notification icon + fix bugs
   - [ ] Fix old and broken login/logout/register links
@@ -66,6 +66,8 @@ Features
   - [ ] Allow min/max ease to go to +/- infinity
   - [ ] Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
 - [ ] Freeze field for creating flashcards
+- [ ] Add daily random tips for home page
+- [ ] Add "Happy Birthday!" message on home page (maybe change icon)
 
 ## Sep 03
 - [ ] Review heatmap https://github.com/kevinsqi/react-calendar-heatmap

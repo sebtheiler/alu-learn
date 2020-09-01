@@ -1,11 +1,12 @@
 import React from 'react';
-import {Navbar, NavDropdown, Nav, Button, Form} from 'react-bootstrap';
+import {Navbar, NavDropdown, Nav, Button} from 'react-bootstrap';
 import {apiProfileLogout} from '../lookup';
 import './navbar.css';
 import {errorHandler} from '../utils';
 import {NotificationComponent} from '../profiles/notifications'
 
 export function NavbarComponent(props) {
+  const firstName = props.firstName ? props.firstName : '';
   const username = props.username ? props.username : '';
 
   const logoutHandler = (event) => {
@@ -26,6 +27,9 @@ export function NavbarComponent(props) {
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>
         <Nav className='mr-auto'>
+          <Navbar.Text className='mr-3'>
+            Good {(new Date()).getHours() < 12 ? 'morning' : 'evening'}{firstName ? ` ${firstName}` : ''}!
+          </Navbar.Text>
           <Nav.Link href='/explore/'>
             <i className='fa fa-compass'></i>{' '}
             Explore
@@ -74,22 +78,22 @@ export function NavbarComponent(props) {
             </>
             :
             <>
-              <Form>
-                <Nav.Link>
-                  <Button
-                    variant='light'
-                    className='text-primary mr-1'
-                  >
-                    Sign-up
-                  </Button>
-                  <Button
-                    variant='outline-light'
-                    className='text-white'
-                  >
-                    Log-in
-                  </Button>
-                </Nav.Link>
-              </Form>
+              <Nav.Link href={`/?showLoginRequired=true&returnUrl=${window.location.href}`}>
+                <Button
+                  variant='light'
+                  className='text-primary mr-1'
+                >
+                  Sign-up
+                </Button>
+              </Nav.Link>
+              <Nav.Link href={`/login/`}>
+                <Button
+                  variant='outline-light'
+                  className='text-white'
+                >
+                  Log-in
+                </Button>
+              </Nav.Link>
             </>
           }
         </Nav>

@@ -1,35 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <a class="navbar-brand" href="/home/">Alu</a>
-  <div class='nav-item mr-3'>
-    <div class="notification-component" data-username='{{ request.user.username }}' data-is-popup='true'></div>
-  </div>
-  <span class="navbar-text white">
-    {% if request.user.first_name %}
-      Welcome {{ request.user.first_name }}!
-    {% else %}
-      Welcome!
-    {% endif %}
-  </span>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/explore">Explore <span class="sr-only">(current)</span></a>
-      </li>
-      {% if request.user.is_authenticated %}
-        <li class="nav-item">
-          <a class="nav-link" href="/logout">Logout</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href='{{ "/profiles/u/"|add:request.user.username }}'>Profile</a>
-        </li>
-      {% else %}
-        <li class="nav-item">
-          <a class="nav-link" href="/login">Login</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/register">Register</a>
-        </li>
-      {% endif %}
-    </ul>
-  </div>
-</nav>
+<div
+  id='navbar-component'
+  data-username='{{ request.user.username }}'
+  data-first-name='{{ request.user.first_name }}'
+></div>
