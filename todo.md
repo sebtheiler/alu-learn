@@ -52,7 +52,7 @@ Features
 - [X] Make navbar in React
   - [X] Fix for mobile
   - [X] Improve notification icon + fix bugs
-  - [ ] Fix old and broken login/logout/register links
+  - [X] Fix old and broken login/logout/register links
 - [X] Make 'base.html' and 'base-landing.html' the same file
 
 ## Sep 01
@@ -72,7 +72,8 @@ Features
 ## Sep 03
 - [ ] Review heatmap https://github.com/kevinsqi/react-calendar-heatmap
 - [ ] Show deck of flashcard when searching for flashcards
-- [ ] Add welcome page
+- [X] Add welcome page
+- [ ] Add 404/500 custom pages
 
 ## Sep 04
 - [ ] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do

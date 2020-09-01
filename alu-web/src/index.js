@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import {ProfileInformationComponent} from './profiles';
+import {ProfileInformationComponent, LoginComponent} from './profiles';
 import {DecksComponent, DeckDetailComponent, DecksHomeComponent} from './decks';
 import {FlashCardCreateComponent, FlashCardsList, FlashCardSearchComponent} from './decks/flashcards';
 import {StudyComponent, CustomStudyComponent} from './decks/study';
@@ -86,6 +86,11 @@ if (homeElement) {
 const navbarElement = document.getElementById('navbar-component');
 if (navbarElement) {
   ReactDOM.render(e(NavbarComponent, navbarElement.dataset), navbarElement);
+};
+
+const loginElement = document.getElementById('login-component');
+if (loginElement) {
+  ReactDOM.render(e(LoginComponent, loginElement.dataset), loginElement);
 };
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -9,8 +9,27 @@ def home_page(request, *args, **kwargs):
 
     return render(request, 'misc/home.html', context={'username': request.user.username})
 
+
 def welcome_view(request, *args, **kwargs):
     return render(request, 'help/welcome.html')
+
+
+def settings_view(request, *args, **kwargs):
+    return render(request, 'misc/settings.html')
+
+
+def profile_redirect_view(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+
+    return redirect(f'/profiles/u/{request.user.username}')
+
+
+def login_view(request, *args, **kwars):
+    if request.user.is_authenticated:
+        return redirect('/home/')
+    
+    return render(request, 'profiles/login.html')
 
 
 LANDING_EXPERIMENT_PROBABILITIES = [

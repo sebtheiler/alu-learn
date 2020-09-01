@@ -78,7 +78,13 @@ export function NavbarComponent(props) {
             </>
             :
             <>
-              <Nav.Link href={`/?showLoginRequired=true&returnUrl=${window.location.href}`}>
+              <Nav.Link href={window.location.pathname.length > 1
+                ? `/?showLoginRequired=true&returnUrl=${window.location.href}` // anywhere but homepage
+                : (window.location.href.includes('showLoginRequired')
+                  ? window.location.href
+                  : '/?showLoginRequired=true'
+                )
+              }>
                 <Button
                   variant='light'
                   className='text-primary mr-1'
