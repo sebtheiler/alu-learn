@@ -21,75 +21,79 @@ export function NavbarComponent(props) {
   };
 
   return (
-    <Navbar bg='primary' variant='dark'>
+    <Navbar bg='primary' variant='dark' expand='md' collapseOnSelect>
       <Navbar.Brand href='/home/'>Alu Flashcards</Navbar.Brand>
-      <Nav className='mr-auto'>
-        <Nav.Link href='/explore/'>
-          <i className='fa fa-compass'></i>{' '}
-          Explore
-        </Nav.Link>
-        <Nav.Link href='/explore/decks/search/'>
-          <i className='fa fa-search'></i>{' '}
-          Search
-        </Nav.Link>
-      </Nav>
-      <Nav className='ml-auto'>
-        <div class='mr-2'>
-          <NotificationComponent username={username} isPopup={true} />
-        </div>
-        {username ?
-          <>
-            <NavDropdown
-              title={
-                <i className='fas fa-user-circle text-light fa-2x'></i>
-              }
-              id='profile-dropdown'
-              alignRight
-            >
-              <NavDropdown.Item href='/profile/'>
-                <i className='fas fa-user-circle'></i>{' '}
-                Your Profile
-              </NavDropdown.Item>
-              <NavDropdown.Item href='/home/decks/'>
-                <i className='fas fa-window-restore'></i>{' '}
-                Decks
-              </NavDropdown.Item>
-              <NavDropdown.Item href='/home/notes/'>
-                <i className='fas fa-edit'></i>{' '}
-                Notes
-              </NavDropdown.Item>
+      <Navbar.Toggle aria-controls='responsive-navbar-nav' />
+      <Navbar.Collapse id='responsive-navbar-nav'>
+        <Nav className='mr-auto'>
+          <Nav.Link href='/explore/'>
+            <i className='fa fa-compass'></i>{' '}
+            Explore
+          </Nav.Link>
+          <Nav.Link href='/explore/decks/search/'>
+            <i className='fa fa-search'></i>{' '}
+            Search
+          </Nav.Link>
+        </Nav>
+        <Nav className='ml-auto'>
+          <Nav.Link className='mr-2'>
+            <NotificationComponent username={username} isPopup={true} />
+          </Nav.Link>
+          {username ?
+            <>
+              <NavDropdown
+                title={
+                  <i className='fas fa-user-circle text-light fa-2x'></i>
+                }
+                id='profile-dropdown'
+                alignRight
+              >
+                <NavDropdown.Item href='/profile/'>
+                  <i className='fas fa-user-circle'></i>{' '}
+                  Your Profile
+                </NavDropdown.Item>
+                <NavDropdown.Item href='/home/decks/'>
+                  <i className='fas fa-window-restore'></i>{' '}
+                  Decks
+                </NavDropdown.Item>
+                <NavDropdown.Item href='/home/notes/'>
+                  <i className='fas fa-edit'></i>{' '}
+                  Notes
+                </NavDropdown.Item>
 
-              <NavDropdown.Divider />
-              <NavDropdown.Item href='/settings/'>
-                <i className='fas fa-cog'></i>{' '}
-                Settings
-              </NavDropdown.Item>
-              <NavDropdown.Item onClick={logoutHandler}>
-                <i className='fas fa-sign-out-alt'></i>{' '}
-                Log-out
-              </NavDropdown.Item>
-            </NavDropdown>
-          </>
-          :
-          <>
-            <Form>
-              <Button
-                variant='light'
-                className='text-primary mr-1'
-              >
-                Sign-up
-              </Button>
-              {/* TODO: fix colors */}
-              <Button
-                variant='outline-light'
-                className='text-white'
-              >
-                Log-in
-              </Button>
-            </Form>
-          </>
-        }
-      </Nav>
+                <NavDropdown.Divider />
+                <NavDropdown.Item href='/settings/'>
+                  <i className='fas fa-cog'></i>{' '}
+                  Settings
+                </NavDropdown.Item>
+                <NavDropdown.Item onClick={logoutHandler}>
+                  <i className='fas fa-sign-out-alt'></i>{' '}
+                  Log-out
+                </NavDropdown.Item>
+              </NavDropdown>
+            </>
+            :
+            <>
+              <Form>
+                <Nav.Link>
+                  <Button
+                    variant='light'
+                    className='text-primary mr-1'
+                  >
+                    Sign-up
+                  </Button>
+                  <Button
+                    variant='outline-light'
+                    className='text-white'
+                  >
+                    Log-in
+                  </Button>
+                </Nav.Link>
+              </Form>
+            </>
+          }
+        </Nav>
+      </Navbar.Collapse>
     </Navbar>
   );
 };
