@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.utils.http import is_safe_url
 from django.contrib.auth import get_user_model, authenticate, login, logout
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
@@ -8,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Profile, Notification, ProfileBadge
-from ..serializers import PublicProfileSerializer, NotificationSerializer, ProfileBadgeSerializer
+from ..serializers import PublicProfileSerializer, MinifiedProfileSerializer, NotificationSerializer, ProfileBadgeSerializer
 from analytics.models import ExperimentController
 
 import datetime
@@ -367,6 +368,21 @@ def logout_api_view(request, *args, **kwargs):
     logout(request)
     return Response({'message': 'Successfully unauthenticated user'}, status=200)
 
+
+@api_view(['GET'])
+def get_user_friends_api_view(request, username, *args, **kwargs):
+    """
+    Gets a users friends - GET
+
+    Possible errors:
+        Invalid username: 404, {'message': 'User not found'}
+    """
+    try:
+        # TODO: replace all segments of code to something like this
+        profile = Profile.objects.get(user__username=username)
+    except ObjectDoesNotExist:
+        return Response({'message': 'User not found'}, status=404)
+    return Response(MinifiedProfileSerializer(profile.friends, many=True).data, status=200)
 
 # from django.core.mail import send_mail
 # from django.conf import settings

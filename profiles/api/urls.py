@@ -10,6 +10,7 @@ from .views import (
     create_profile_api_view,
     login_api_view,
     logout_api_view,
+    get_user_friends_api_view,
     # test_my_email_api_view,
 )
 
@@ -18,6 +19,7 @@ app_names = 'decks' # TODO: is this needed?
 urlpatterns = [
     path('<str:username>/detail/', profile_detail_api_view),
     path('<str:username>/friend/', profile_detail_api_view),
+    path('<str:username>/friends/', get_user_friends_api_view),
     path('<str:username>/givebadge/', profile_badge_create_api_view),
     path('<str:recipient_username>/friendrequest/', friend_request_api_view),
     path('<str:username>/notifications/', notification_api_view),

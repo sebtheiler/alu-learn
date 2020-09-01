@@ -68,7 +68,7 @@ Features
 - [ ] Freeze field for creating flashcards
 
 ## Sep 03
-- [ ] Review heatmap?
+- [ ] Review heatmap https://github.com/kevinsqi/react-calendar-heatmap
 - [ ] Show deck of flashcard when searching for flashcards
 - [ ] Add welcome page
 
