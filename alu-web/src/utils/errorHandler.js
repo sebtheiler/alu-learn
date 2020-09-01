@@ -70,5 +70,6 @@ int(hexadecimal_string, 16)
 3009: Error logging-in the user through apiProfileLogin in alu-web/src/landing/forms/register.js
 3010: Error getting profile details through apiProfileDetail in alu-web/src/home/home.js
 3011: Error getting list of friends through apiProfileFriends in alu-web/src/home/home.js
+3012: Error logging out the user through apiProfileLogout in alu-web/src/home/navbar.js
 
 */

@@ -9,7 +9,7 @@ import {StudyComponent, CustomStudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
 import {ExploreComponent, DeckSearchComponent} from './explore';
 import {LandingComponent} from './landing';
-import {HomeComponent} from './home';
+import {HomeComponent, NavbarComponent} from './home';
 
 const e = React.createElement;
 
@@ -81,6 +81,11 @@ landingComponents.forEach(container => {
 const homeElement = document.getElementById('home-component');
 if (homeElement) {
   ReactDOM.render(e(HomeComponent, homeElement.dataset), homeElement);
+};
+
+const navbarElement = document.getElementById('navbar-component');
+if (navbarElement) {
+  ReactDOM.render(e(NavbarComponent, navbarElement.dataset), navbarElement);
 };
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
