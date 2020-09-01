@@ -3,6 +3,12 @@ from django_user_agents.utils import get_user_agent
 import random
 
 
+def home_page(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+
+    return render(request, 'misc/home.html', context={'username': request.user.username})
+
 def welcome_view(request, *args, **kwargs):
     return render(request, 'help/welcome.html')
 
