@@ -5,11 +5,13 @@ import {Notification} from './detail';
 import {apiNotificationList, apiNotificationRead} from '../../lookup';
 import { errorHandler } from '../../utils';
 
+import './components.css';
+
 export function NotificationComponent(props) {
   const {username, isPopup} = props;
   const [notifList, setNotifList] = useState([]);
   const [didGetNotifs, setDidGetNotifs] = useState(false);
-  const [hasUnreadNotifs, setHasUnreadNotifs] = useState(false);
+  const [numUnreadNotifs, setNumUnreadNotifs] = useState(0);
 
   // Lookup notifications in API
   if (didGetNotifs === false) {
@@ -24,7 +26,7 @@ export function NotificationComponent(props) {
         id: -1,
       }]);
       setDidGetNotifs(true);
-      setHasUnreadNotifs(true);
+      setNumUnreadNotifs(1);
     } else {
       // If the user is logged in, get notifications
       apiNotificationList(username, (response, status) => {
@@ -39,9 +41,7 @@ export function NotificationComponent(props) {
           const unread = response.slice(0, numNotifs).reverse().filter((notif) => {
             return notif.read === false;
           });
-          if (unread.length > 0) {
-            setHasUnreadNotifs(true);
-          };
+          setNumUnreadNotifs(unread.length);
         } else {
           // Error getting notification list
           errorHandler(response, status, 3002);
@@ -91,11 +91,15 @@ export function NotificationComponent(props) {
       <>
         <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
           <Button
-            onClick={(event) => {event.preventDefault(); setHasUnreadNotifs(false);}}
-            variant={hasUnreadNotifs ? 'success' : 'secondary'}
+            onClick={(event) => {event.preventDefault(); setNumUnreadNotifs(false);}}
             size='sm'
           >
-            Notifications
+            {numUnreadNotifs > 0 ? <>
+              <i className='fas fa-bell fa-2x'></i>
+              <span className='notification-badge'>{numUnreadNotifs < 10 ? numUnreadNotifs : '9+'}</span>
+            </>:
+              <i className='far fa-bell fa-2x'></i>
+            }
           </Button>
         </OverlayTrigger>
       </>
