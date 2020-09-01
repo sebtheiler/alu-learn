@@ -267,7 +267,6 @@ def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
 def get_paginated_queryset_response(qs, request, Serializer, page_size=50):
     paginator = PageNumberPagination()
     paginator.page_size = page_size
-    user = request.user
     paginated_qs = paginator.paginate_queryset(qs, request)
     serializer = Serializer(paginated_qs, many=True)
     return paginator.get_paginated_response(serializer.data)
@@ -699,4 +698,5 @@ def deck_search_view(request, *args, **kwargs):
     )
     sorted_qs = sorted(deck_qs, key=sorting_function)[:settings.DECK_SEARCH_RESULT_LIMIT]
 
-    return Response(DeckSerializer(sorted_qs, many=True).data, status=200)
+    # return Response(DeckSerializer(sorted_qs, many=True).data, status=200)
+    return get_paginated_queryset_response(sorted_qs, request, DeckSerializer, 5)

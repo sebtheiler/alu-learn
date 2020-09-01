@@ -58,7 +58,7 @@ export function DecksHomeList(props) {
   };
 
   return (
-    <React.Fragment>
+    <>
       <div className='card-deck text-center mx-auto justify-content-center'>
         {decks.map((deck, index) => {
           return <Deck 
@@ -71,9 +71,15 @@ export function DecksHomeList(props) {
       </div>
       <div className='text-center'>
         {nextUrl !== null ?
-          <Button onClick={handleLoadNext} variant='outline-primary' size='lg'>Load more decks</Button>
+          <Button
+            onClick={handleLoadNext}
+            variant='outline-primary'
+            size='lg'
+          >
+            Load more decks
+          </Button>
         : null}
       </div>
-    </React.Fragment>
+    </>
   );
 };

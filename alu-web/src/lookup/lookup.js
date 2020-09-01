@@ -119,8 +119,12 @@ export function apiDeckThank(deckId, callback) {
 };
 
 // Searches for decks based on a query
-export function apiDeckSearch(query, callback) {
-  backendLookup('GET', `decks/search/?q=${query}/`, callback);
+export function apiDeckSearch(query, callback, nextUrl) {
+  let endpoint = `decks/search/?q=${query}/`;
+  if (nextUrl !== null && nextUrl !== undefined) {
+    endpoint = nextUrl.replace('http://127.0.0.1:8000/api/', '');
+  };
+  backendLookup('GET', endpoint, callback);
 };
 
 // Gets detail information about a profile, such as bio, name, username, etc.

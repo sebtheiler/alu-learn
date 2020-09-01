@@ -7,20 +7,41 @@ import { errorHandler } from '../utils';
 export function DeckSearchComponent(_props) {
   const searchQueryRef = React.createRef();
   const [searchBtnLabel, setSearchBtnLabel] = useState('Search!');
+  const [currentQuery, setCurrentQuery] = useState('');
+
   const [retrievedDecks, setRetrievedDecks] = useState([]);
+  const [nextUrl, setNextUrl] = useState(null);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     setSearchBtnLabel('Loading...')
+    setCurrentQuery(searchQueryRef.current.value);
     apiDeckSearch(searchQueryRef.current.value, (response, status) => {
       if (status === 200) {
-        setRetrievedDecks(response);
+        setNextUrl(response.next);
+        setRetrievedDecks(response.results);
       } else {
         // Error performing deck search
         errorHandler(response, status, 1011);
-      }
+      };
     });
     setSearchBtnLabel('Search!');
+  };
+
+  const handleLoadNext = (event) => {
+    event.preventDefault();
+    if (nextUrl !== null) {
+      apiDeckSearch(currentQuery, (response, status) => {
+        if (status === 200) {
+          setNextUrl(response.next);
+          const totalResults = [...retrievedDecks].concat(response.results);
+          setRetrievedDecks(totalResults);
+        } else {
+          // Error handling next set of decks (pagination)
+          errorHandler(response, status, 1012);
+        };
+      }, nextUrl);
+    };
   };
 
   return (
@@ -55,6 +76,17 @@ export function DeckSearchComponent(_props) {
             );
           })
         }
+      </div>
+      <div className='text-center'>
+        {nextUrl !== null ?
+          <Button
+            onClick={handleLoadNext}
+            variant='outline-primary'
+            size='lg'
+          >
+            Load more decks
+          </Button>
+        : null}
       </div>
     </>
   );
