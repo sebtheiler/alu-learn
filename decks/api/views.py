@@ -691,12 +691,14 @@ def deck_search_view(request, *args, **kwargs):
     # This is horribly inefficient
     # TODO: Custom SQL??
     # TODO: caching???
+    THRESHOLD = 80
     sorting_function = lambda deck: -(
-        +fuzz.token_set_ratio(query, deck.description)*1.0
-        +fuzz.token_set_ratio(query, deck.title)      *2.0
-        +(deck.thanks.count() + 1)                    *0.005
+        +fuzz.token_set_ratio(query, deck.description)  *1.0
+        +fuzz.token_set_ratio(query, deck.title)        *2.0
+        +fuzz.token_set_ratio(query, deck.user.username)*0.8
+        +(deck.thanks.count() + 1)                      *0.005
     )
-    sorted_qs = sorted(deck_qs, key=sorting_function)[:settings.DECK_SEARCH_RESULT_LIMIT]
+    sorted_qs = sorted([deck for deck in deck_qs if sorting_function(deck) < -THRESHOLD], key=sorting_function)
 
     # return Response(DeckSerializer(sorted_qs, many=True).data, status=200)
     return get_paginated_queryset_response(sorted_qs, request, DeckSerializer, 5)

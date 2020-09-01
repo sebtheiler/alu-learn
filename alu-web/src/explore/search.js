@@ -10,12 +10,14 @@ export function DeckSearchComponent(_props) {
   const [currentQuery, setCurrentQuery] = useState('');
 
   const [retrievedDecks, setRetrievedDecks] = useState([]);
+  const [didSearch, setDidSearch] = useState(false);
   const [nextUrl, setNextUrl] = useState(null);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     setSearchBtnLabel('Loading...')
     setCurrentQuery(searchQueryRef.current.value);
+    setDidSearch(true);
     apiDeckSearch(searchQueryRef.current.value, (response, status) => {
       if (status === 200) {
         setNextUrl(response.next);
@@ -44,6 +46,8 @@ export function DeckSearchComponent(_props) {
     };
   };
 
+  console.log(didSearch)
+
   return (
     <>
       <div className='text-center'>
@@ -61,7 +65,7 @@ export function DeckSearchComponent(_props) {
         </Form>
       </div>
       <div className='w-50 mx-auto'>
-        {
+        {retrievedDecks.length > 0 || !didSearch ?
           retrievedDecks.map((deck, index) => {
             return (
               <React.Fragment key={`deck-${index}`}>
@@ -75,6 +79,8 @@ export function DeckSearchComponent(_props) {
               </React.Fragment>
             );
           })
+        :
+          <p className='text-center'>No decks found</p>
         }
       </div>
       <div className='text-center'>

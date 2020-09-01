@@ -56,8 +56,9 @@ Features
 - [X] Make 'base.html' and 'base-landing.html' the same file
 
 ## Sep 01
-- [ ] Add pagination for deck search
-  - [ ] Limimt # of results with fuzzywuzzy threshold
+- [X] Add pagination for deck search
+  - [ ] Limit # of results with fuzzywuzzy threshold
+  - [ ] Add deck search caching
 - [ ] Add flashcard browsing infinite scroll?
   - [ ] Force load all button?
 
