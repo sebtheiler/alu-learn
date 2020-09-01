@@ -1,7 +1,8 @@
 import {
   generateTooltip,
   timeSince,
-  DisplayCount,
+  DisplayCountChar,
+  DisplayCountCommas,
   lightOrDark,
   isAlphaNumeric,
 } from './utils';
@@ -11,7 +12,8 @@ import {errorHandler} from './errorHandler';
 export {
   generateTooltip,
   timeSince,
-  DisplayCount,
+  DisplayCountChar,
+  DisplayCountCommas,
   lightOrDark,
   isAlphaNumeric,
   errorHandler,

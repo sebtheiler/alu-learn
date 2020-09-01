@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {apiProfileDetail, apiProfileFriendToggle, apiSendFriendReq} from '../lookup';
 import {UserLink} from './components';
-import {DisplayCount, errorHandler} from '../utils';
+import {DisplayCountChar, errorHandler} from '../utils';
 import {Button} from 'react-bootstrap';
 
 
@@ -36,7 +36,7 @@ function ProfileInformation(props) {
     <>
       <UserLink user={user} noLink showAllBadges/>
       <small className='mt-0 text-secondary'>
-        <DisplayCount>{user.total_thanks_recieved}</DisplayCount> thank{user.total_thanks_recieved === 1 ? '' : 's'} recieved
+        <DisplayCountChar>{user.total_thanks_recieved}</DisplayCountChar> thank{user.total_thanks_recieved === 1 ? '' : 's'} recieved
       </small>
       <div className={'mt-3' + (user.location ? '' : ' d-none')}>
         <h5 className='mb-0'>Location</h5>

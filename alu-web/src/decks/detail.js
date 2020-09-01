@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {DeckDefaultButtonGroup, DeckForeignUserButtonGroup} from './buttons';
 import {FlashCardsList} from './flashcards';
 import {apiDeckThank} from '../lookup';
-import {DisplayCount, errorHandler} from '../utils';
+import {DisplayCountChar, errorHandler} from '../utils';
 import {UserLink} from '../profiles';
 import {Card, ButtonGroup, Button} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
@@ -85,7 +85,7 @@ export function DeckDetail(props) {
         </a>
         <UserLink user={deck.author} />
         <p className='text-secondary mb-3'>
-          <DisplayCount>{deck.num_thanks}</DisplayCount> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
+          <DisplayCountChar>{deck.num_thanks}</DisplayCountChar> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
         </p>
         <ReactMarkdown
           source={deck.description}

@@ -47,10 +47,19 @@ export function timeSince(date) {
 
 
 // Makes the passed number appear in the format: 1231 -> 1k, 123 -> 123, 4124124 -> 4m
-export function DisplayCount(props) {
+export function DisplayCountChar(props) {
   return (
     <span className={props.className}>
       {parseInt(props.children) < 1000 ? parseInt(props.children) : numeral(props.children).format('0.0a')}
+    </span>
+  );
+};
+
+// Makes the passed number appear in the format: 1231 -> 1,231, 123 -> 123, 4124124 -> 4,124,124
+export function DisplayCountCommas(props) {
+  return (
+    <span className={props.className}>
+      {numeral(props.children).format('0,0')}
     </span>
   );
 };
