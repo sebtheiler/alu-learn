@@ -53,7 +53,7 @@ Features
   - [X] Fix for mobile
   - [X] Improve notification icon + fix bugs
   - [ ] Fix old and broken login/logout/register links
-- [ ] Make 'base.html' and 'base-landing.html' the same file
+- [X] Make 'base.html' and 'base-landing.html' the same file
 
 ## Sep 01
 - [ ] Add pagination for deck search

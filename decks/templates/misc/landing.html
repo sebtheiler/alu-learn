@@ -1,11 +1,9 @@
-{% extends 'landing/base-landing.html' %}
+{% extends 'base.html' %}
 
 {% block title %}{{ title }} at{% endblock title %}
 
 {% block content %}
-<!-- TODO: this is very slow -->
-<script src="https://kit.fontawesome.com/11201b2070.js" crossorigin="anonymous" media="print" onload="this.media='all'"></script>
-
+<!-- TODO: maybe remove user agent -->
 <div
   id='landing-main'
   class='landing-component mt-5'

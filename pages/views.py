@@ -57,4 +57,4 @@ def landing_page(request, *args, **kwargs):
             'os': ua.os.family,
         },
     }
-    return render(request, 'landing/landing.html', context=context)
+    return render(request, 'misc/landing.html', context=context)
