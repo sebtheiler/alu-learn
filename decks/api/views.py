@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from django.utils.http import is_safe_url
 from django.utils import timezone
 from django.db.models import Q
+from django.core.cache import cache
+from django.views.decorators.cache import cache_page
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (api_view, authentication_classes,
@@ -686,19 +688,29 @@ def deck_search_view(request, *args, **kwargs):
     if query is None:
         return Response({'message': 'Please specify a query'}, status=400)
 
-    deck_qs = Deck.objects.filter(sharing_setting='PUBLIC')
 
-    # This is horribly inefficient
-    # TODO: Custom SQL??
-    # TODO: caching???
-    THRESHOLD = 80
-    sorting_function = lambda deck: -(
-        +fuzz.token_set_ratio(query, deck.description)  *1.0
-        +fuzz.token_set_ratio(query, deck.title)        *2.0
-        +fuzz.token_set_ratio(query, deck.user.username)*0.8
-        +(deck.thanks.count() + 1)                      *0.005
-    )
-    sorted_qs = sorted([deck for deck in deck_qs if sorting_function(deck) < -THRESHOLD], key=sorting_function)
+    # Attempt to read cached value  for query
+    CACHE_KEY = f'deck-search-q="{query}"'
+    sorted_qs = cache.get(CACHE_KEY)
+
+    if sorted_qs is None:
+        # Get all public decks
+        deck_qs = Deck.objects.filter(sharing_setting='PUBLIC')
+
+        # Function for calculating how "relevant" each search result is
+        THRESHOLD = 80
+        sorting_function = lambda deck: -(
+            +fuzz.token_set_ratio(query, deck.description)  *1.0
+            +fuzz.token_set_ratio(query, deck.title)        *2.0
+            +fuzz.token_set_ratio(query, deck.user.username)*0.8
+            +(deck.thanks.count() + 1)                      *0.005
+        )
+
+        # Sort based on function
+        sorted_qs = sorted([deck for deck in deck_qs if sorting_function(deck) < -THRESHOLD], key=sorting_function)
+
+        # Cache result for 6 hours
+        cache.set(CACHE_KEY, sorted_qs, 60*60*6)
 
     # return Response(DeckSerializer(sorted_qs, many=True).data, status=200)
     return get_paginated_queryset_response(sorted_qs, request, DeckSerializer, 5)

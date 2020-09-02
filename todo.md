@@ -58,7 +58,8 @@ Features
 ## Sep 01
 - [X] Add pagination for deck search
   - [X] Limit # of results with fuzzywuzzy threshold
-  - [ ] Add deck search caching
+  - [X] Add deck search caching
+- [ ] Add caching to more API views
 - [ ] Add flashcard browsing infinite scroll?
   - [ ] Force load all button?
 

@@ -120,7 +120,7 @@ export function apiDeckThank(deckId, callback) {
 
 // Searches for decks based on a query
 export function apiDeckSearch(query, callback, nextUrl) {
-  let endpoint = `decks/search/?q=${query}/`;
+  let endpoint = `decks/search/?q=${query}`;
   if (nextUrl !== null && nextUrl !== undefined) {
     endpoint = nextUrl.replace('http://127.0.0.1:8000/api/', '');
   };
