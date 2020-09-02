@@ -4,7 +4,7 @@ Fixes and patches
 - [ ] Protect API
 
 Landing:
-- [ ] Add statistic tracking
+- [X] Add statistic tracking
 - [X] Prettify registration and sign-in page
 
 Spaced repitition
@@ -12,13 +12,13 @@ Spaced repitition
 - [ ] In custom study: add more options, e.g., shuffle, lookahead, increase new card limit, etc.
 
 Improvements
-- [ ] Add pagination for deck search
+- [X] Add pagination for deck search
 - [ ] Infinite scroll for browsing flashcards
 - [ ] Make numeric ids into string ids like "dad2Xadw#1"
-- [ ] Fix navbar on mobile
-- [ ] Make NavBar 100% React
-- [ ] Improve notification icon
-- [ ] Make 'base-landing.html' and 'base.html' the same file
+- [X] Fix navbar on mobile
+- [X] Make NavBar 100% React
+- [X] Improve notification icon
+- [X] Make 'base-landing.html' and 'base.html' the same file
 
 Features
 - [ ] Freeze field in create
@@ -59,7 +59,7 @@ Features
 - [X] Add pagination for deck search
   - [X] Limit # of results with fuzzywuzzy threshold
   - [X] Add deck search caching
-- [ ] Add caching to more API views
+- [X] Add caching to more API views
 - [ ] Add flashcard browsing infinite scroll?
   - [ ] Force load all button?
 

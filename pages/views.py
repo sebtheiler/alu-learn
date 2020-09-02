@@ -1,15 +1,20 @@
 from django.shortcuts import render, redirect
 from django_user_agents.utils import get_user_agent
+from django.views.decorators.cache import cache_page, cache_control
+from django.views.decorators.vary import vary_on_cookie
+
 import random
 
 
+@vary_on_cookie
+@cache_control(max_age=60*60)
 def home_page(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
 
     return render(request, 'misc/home.html', context={'username': request.user.username})
 
-
+@cache_page(timeout=60*60*48) # 2 days - this page will almost never be updated
 def welcome_view(request, *args, **kwargs):
     return render(request, 'help/welcome.html')
 
@@ -25,6 +30,7 @@ def profile_redirect_view(request, *args, **kwargs):
     return redirect(f'/profiles/u/{request.user.username}')
 
 
+@cache_page(timeout=60*15)
 def login_view(request, *args, **kwars):
     if request.user.is_authenticated:
         return redirect('/home/')
@@ -44,6 +50,7 @@ LANDING_EXPERIMENT_PROBABILITIES = [
     0, # Hide FA icons
 ]
 
+@vary_on_cookie
 def landing_page(request, *args, **kwargs):
     if request.user.is_authenticated:
         return redirect('/home/')

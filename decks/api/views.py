@@ -4,7 +4,8 @@ from django.utils.http import is_safe_url
 from django.utils import timezone
 from django.db.models import Q
 from django.core.cache import cache
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_page, cache_control
+from django.views.decorators.vary import vary_on_cookie
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (api_view, authentication_classes,
@@ -131,7 +132,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
 @api_view(['POST'])
 # @authentication_classes([SessionAuthentication])
 # @permission_classes([IsAuthenticated])
-# TODO: rename and readd permissins
+# TODO: rename and re-add permission requirements
 def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
     Edit a flashcard - POST
@@ -274,6 +275,8 @@ def get_paginated_queryset_response(qs, request, Serializer, page_size=50):
     return paginator.get_paginated_response(serializer.data)
 
 
+@vary_on_cookie
+@cache_control(private=True)
 @api_view(['GET'])
 def deck_list_view(request, *args, **kwargs):
     """
@@ -293,8 +296,9 @@ def deck_list_view(request, *args, **kwargs):
 
 
 @api_view(['GET'])
+@vary_on_cookie
+@cache_control(private=True)
 # @permission_classes([IsAuthenticated])
-# TODO: should this be merged with deck_list_view?
 def deck_shared_view(request, username, *args, **kwargs):
     """
     Gets decks from a user that are either shared with the requester or public - GET
@@ -328,6 +332,8 @@ def deck_shared_view(request, username, *args, **kwargs):
     return Response(DeckSerializer(decks_qs, many=True).data, status=200)
 
 
+@vary_on_cookie
+@cache_control(private=True)
 @api_view(['GET'])
 # TODO: maybe we don't need SessionAuthentication?
 # @authentication_classes([SessionAuthentication])
