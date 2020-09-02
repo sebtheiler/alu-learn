@@ -5,7 +5,7 @@ import {Button, ButtonGroup} from 'react-bootstrap';
 import { errorHandler } from '../../utils';
 
 export function FlashCardsList(props) {
-  const {deckId, flashcardList, foreignUser} = props;
+  const {deckId, flashcardList, foreignUser, showParentDeckTitle} = props;
   const [flashcards, setFlashCards] = useState([]);
   const [flashcardsDidSet, setFlashCardsDidSet] = useState(false);
 
@@ -50,6 +50,7 @@ export function FlashCardsList(props) {
       </div>
       {flashcards.map((flashcard, index) => {
         // Functions for handling button presses
+        // This is defined individually for each displayed flashcard
         const handleSuspend = (event) => {
           event.preventDefault();
           const action = flashcard.is_suspended ? 'unsuspend' : 'suspend';
@@ -82,6 +83,7 @@ export function FlashCardsList(props) {
                 flashcard={flashcard}
                 key={index}
                 number={index}
+                showParentDeckTitle={showParentDeckTitle}
                 handleSuspend={handleSuspend}
                 handleDelete={handleDelete}
                 foreignUser={foreignUser}

@@ -12,9 +12,9 @@ export function FlashCardCreate(props) {
   // const markdownRef = React.createRef();
   // const latexRef = React.createRef();
   // `deckId`: ID of the deck in which to create flashcard
-  // `redirectUrl`: If not null/undefined, where to redirect the user upon completion
+  // `returnToPreviousPage`: If true, redirect the user to the previous page (used for editing)
   // `flashcardId`: If not null/undefined, the ID of the flashcard to EDIT
-  const {deckId, redirectUrl, flashcardId} = props;
+  const {deckId, returnToPreviousPage, flashcardId} = props;
   let btn_label = 'Create';
 
   // If we are editing a card, get its current values
@@ -36,9 +36,10 @@ export function FlashCardCreate(props) {
   const handleBackendUpdate = (response, status) => {
     if (status === 201 || status === 200) {
       // If the user should be redirected, redirect them
-      if (redirectUrl) {
-        window.location.href = redirectUrl;
+      if (returnToPreviousPage) {
+        window.history.back();
       };
+
       // Make the textareas empty
       frontTextRef.current.focus();
       frontTextRef.current.value = '';
@@ -80,28 +81,6 @@ export function FlashCardCreate(props) {
   return (
     <div className={props.className}>
       <Form onSubmit={handleSubmit}>
-        {/* TODO: Re-enable and fi these editing options */}
-        {/* <Form.Group className='mb-0'>
-          <Form.Check
-            type='checkbox'
-            label='Enable MarkDown editing'
-            name='enableMarkdown'
-            id='enableMarkdown'
-            value={true}
-            inline
-            defaultChecked
-            ref={markdownRef}
-          />
-          <Form.Check
-            type='checkbox'
-            label='Enable LaTeX editing'
-            name='enableLatex'
-            id='enableLatex'
-            inline
-            defaultChecked
-            ref={latexRef}
-          />
-        </Form.Group> */}
         <Form.Group className='blue-border-focus'>
           <Form.Label htmlFor='frontText' className='mb-0 mt-3'>
             <small className='text-secondary'>Front</small>

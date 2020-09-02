@@ -12,21 +12,26 @@ import 'katex/dist/katex.min.css';
 export function FlashCard(props) {
   // `flashcard` is a JSON object
   // `handleSuspend` and `handleDelete` are callback functions
-  const {flashcard, number, handleSuspend, handleDelete, foreignUser} = props;
+  const {flashcard, number, showParentDeckTitle, handleSuspend, handleDelete, foreignUser} = props;
   let date = new Date(flashcard.next_review)
 
   if (!flashcard) {
     return null;
   };
-  
+
   return (
     <div className={'container-fluid border my-3' + (foreignUser ? '' : (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : ''))}>
       <div className='row mt-3 text-center'>
         <div className='col-md-12'>
           <p className='mb-0'>
             <strong>Flashcard - #{number + 1}</strong>
-            {flashcard.learning_status !== 'UNSEEN' ? <>| Due {date.toString().substring(0, 10)}</> : null}
+            {flashcard.learning_status !== 'UNSEEN' ? <> | Due {date.toString().substring(0, 10)}</> : null}
           </p>
+          {showParentDeckTitle ? 
+            <small className='text-secondary'>
+              From <a href={`/decks/${flashcard.parent_deck_id}/`}>"{flashcard.parent_deck_title}"</a>
+            </small>
+          : null}
           <p className={foreignUser ? 'd-none' : ''}>
             <em className={flashcard.is_leech ? '' : 'd-none'}>
               This flashcard is a leech{' '}
@@ -92,7 +97,7 @@ export function FlashCard(props) {
       {foreignUser ? null : 
         <div className='col-md-12 mb-3 text-center'>
           <div className='btn-group'>
-            <Button href={`${flashcard.id}/edit/`} variant='primary'>Edit</Button>
+            <Button href={`/decks/${flashcard.parent_deck_id}/flashcards/${flashcard.id}/edit/`} variant='primary'>Edit</Button>
             <Button onClick={handleSuspend} variant='primary' className='ml-1'>{flashcard.is_suspended ? 'Unsuspend' : 'Suspend'}</Button>
             <Button onClick={handleDelete} variant='danger' className='ml-1'>Delete</Button>
           </div>

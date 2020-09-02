@@ -67,13 +67,13 @@ Features
 - [ ] In custom study:
   - [ ] Allow min/max ease to go to +/- infinity
   - [ ] Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
+  - [X] Show deck of flashcard when searching for flashcards
 - [ ] Freeze field for creating flashcards
 - [ ] Add daily random tips for home page
-- [ ] Add "Happy Birthday!" message on home page (maybe change icon)
 
 ## Sep 03
 - [ ] Review heatmap https://github.com/kevinsqi/react-calendar-heatmap
-- [ ] Show deck of flashcard when searching for flashcards
+- [ ] Add "Happy Birthday!" message on home page (maybe change icon)
 - [X] Add welcome page
 - [ ] Add 404/500 custom pages
 

@@ -215,7 +215,7 @@ export function FlashCardSearchComponent(props) {
         }
         {didSearch ? (
           searchedFlashcards.length > 0 ?
-            <FlashCardsList flashcardList={searchedFlashcards} /> 
+            <FlashCardsList flashcardList={searchedFlashcards} showParentDeckTitle={true} /> 
           : <h5>No results! Maybe try a less specific search, or check your parameters?</h5>
         ) : null}
       </div>

@@ -591,6 +591,7 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
 @permission_classes([IsAuthenticated])
 # TODO: this should probably be moved to a GET
 # It can also probably be optimized with the number of SQL operations
+# It should also be cached
 def flashcard_search_view(request, *args, **kwargs):
     """
     Searches for flashcards based on some parameters - POST

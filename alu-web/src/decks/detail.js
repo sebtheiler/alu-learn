@@ -122,7 +122,9 @@ export function DeckDetail(props) {
           <div className='text-center'>
             <h2>Example flashcards</h2>
             <h5>{`(${deck.flashcards.length} in total, ${Math.min(deck.flashcards.length, 10)} displayed)`}</h5>
-            {currentUsername === deck.author.username ? null :
+            {currentUsername === deck.author.username ?
+              <DeckDefaultButtonGroup deck={deck} />
+            :
               <DeckForeignUserButtonGroup deck={deck} handleThankDeck={handleThankDeck} thankBtnLabel={thankBtnLabel} />
             }
             <div>

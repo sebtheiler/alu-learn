@@ -44,7 +44,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     context = {
         'deck_id': deck_id,
         'flashcard_id': flashcard_id,
-        'redirect_url': f'/{deck_id}/flashcards/',
+        'return_to_previous_page': True,
         'desc': 'Edit your flashcard',
     }
     return render(request, 'flashcards/create.html', context=context)
