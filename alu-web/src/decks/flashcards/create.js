@@ -1,8 +1,23 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {apiFlashCardCreate, apiFlashCardEdit, apiFlashCardDetail} from '../../lookup';
 import {Button, Form, OverlayTrigger} from 'react-bootstrap';
 import {generateTooltip, errorHandler} from '../../utils';
 
+
+function FreezeOverlay(props) {
+  return (
+    <OverlayTrigger
+      overlay={generateTooltip(
+        `You can freeze a field to keep its value the same after creating your flashcard.
+        Useful for creating multiple similar flashcards.`
+        )}
+        placement='right'
+        delay={{ hide: 100 }}
+        >
+      {props.children}
+    </OverlayTrigger>
+  );
+};
 
 // Function for card create form
 export function FlashCardCreate(props) {
@@ -16,6 +31,13 @@ export function FlashCardCreate(props) {
   // `flashcardId`: If not null/undefined, the ID of the flashcard to EDIT
   const {deckId, returnToPreviousPage, flashcardId} = props;
   let btn_label = 'Create';
+
+  const [freezeFront, setFreezeFront] = useState(false);
+  const [freezeBack, setFreezeBack] = useState(false);
+  const [freezeTags, setFreezeTags] = useState(false);
+
+  // Warn user before leaving page (adapted from https://stackoverflow.com/a/7317311)
+  window.addEventListener("beforeunload", () => {});
 
   // If we are editing a card, get its current values
   if (isNaN(flashcardId) === false) {
@@ -42,9 +64,15 @@ export function FlashCardCreate(props) {
 
       // Make the textareas empty
       frontTextRef.current.focus();
-      frontTextRef.current.value = '';
-      backTextRef.current.value = '';
-      tagsRef.current.value = '';
+      if (freezeFront === false) {
+        frontTextRef.current.value = '';
+      };
+      if (freezeBack === false) {
+        backTextRef.current.value = '';
+      };
+      if (freezeTags === false) {
+        tagsRef.current.value = '';
+      };
     } else {
       // Error creating/editing flashcard
       errorHandler(response, status, 2001);
@@ -82,8 +110,15 @@ export function FlashCardCreate(props) {
     <div className={props.className}>
       <Form onSubmit={handleSubmit}>
         <Form.Group className='blue-border-focus'>
-          <Form.Label htmlFor='frontText' className='mb-0 mt-3'>
-            <small className='text-secondary'>Front</small>
+          <Form.Label htmlFor='frontText' className='mb-0 mt-3 w-100'>
+            <p className='mb-1'>
+            {returnToPreviousPage ? null : <FreezeOverlay><i
+                className='far fa-snowflake mb-1 mr-1 fa-lg'
+                onClick={event => {event.preventDefault(); setFreezeFront(!freezeFront)}}
+                style={{cursor: 'pointer', color: freezeFront ? '#89ACFF' : '#6C757D'}}
+              /></FreezeOverlay>}
+              Front
+            </p>
           </Form.Label>
           <Form.Control
             as='textarea'
@@ -94,8 +129,15 @@ export function FlashCardCreate(props) {
             autoFocus
             required
           />
-          <Form.Label htmlFor='backText' className='mb-0 mt-3'>
-            <small className='text-secondary'>Back</small>
+          <Form.Label htmlFor='backText' className='mb-0 mt-3 w-100'>
+            <p className='mb-0'>
+              {returnToPreviousPage ? null : <FreezeOverlay><i
+                className='far fa-snowflake mb-1 mr-1 fa-lg'
+                onClick={event => {event.preventDefault(); setFreezeBack(!freezeBack)}}
+                style={{cursor: 'pointer', color: freezeBack ? '#89ACFF' : '#6C757D'}}
+              /></FreezeOverlay>}
+              Back
+            </p>
           </Form.Label>
           <Form.Control
             as='textarea'
@@ -107,8 +149,13 @@ export function FlashCardCreate(props) {
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label htmlFor='tags' className='mb-0'>
-            <small className='text-secondary'>
+          <Form.Label htmlFor='tags' className='mb-0 w-100'>
+            <p className='mb-0'>
+              {returnToPreviousPage ? null : <FreezeOverlay><i
+                className='far fa-snowflake mb-1 mr-1 fa-lg'
+                onClick={event => {event.preventDefault(); setFreezeTags(!freezeTags)}}
+                style={{cursor: 'pointer', color: freezeTags ? '#89ACFF' : '#6C757D'}}
+              /></FreezeOverlay>}
               Tags (separate with commas){' '}
               <OverlayTrigger
                 overlay={generateTooltip(
@@ -116,11 +163,11 @@ export function FlashCardCreate(props) {
                   Learn more here TODO`
                   )}
                   placement='right'
-                  delay={{ show: 20, hide: 800 }}
+                  delay={{ Backshow: 20, hide: 800 }}
                   >
                 <i className="fas fa-question-circle"></i>
               </OverlayTrigger>
-            </small>
+            </p>
           </Form.Label>
           <Form.Control
             type="text"

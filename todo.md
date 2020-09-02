@@ -68,7 +68,7 @@ Features
   - [ ] Allow min/max ease to go to +/- infinity
   - [ ] Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
   - [X] Show deck of flashcard when searching for flashcards
-- [ ] Freeze field for creating flashcards
+- [X] Freeze field for creating flashcards
 - [ ] Add daily random tips for home page
 
 ## Sep 03
