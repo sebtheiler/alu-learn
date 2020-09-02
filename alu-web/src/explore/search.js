@@ -46,8 +46,6 @@ export function DeckSearchComponent(_props) {
     };
   };
 
-  console.log(didSearch)
-
   return (
     <>
       <div className='text-center'>
