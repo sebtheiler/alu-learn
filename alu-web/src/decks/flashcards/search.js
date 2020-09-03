@@ -114,8 +114,8 @@ export function FlashCardSearchComponent(props) {
       (suspended ? '&suspended=' + suspended : '') +
       (leech ? '&leech=' + leech : '') +
       (learningStatus ? '&learningStatus=' + learningStatus : '') +
-      (minEaseSelectRefCurrentValue ? '&minEase=' + minEaseSelectRefCurrentValue : '') +
-      (maxEaseSelectRefCurrentValue ? '&maxEase=' + maxEaseSelectRefCurrentValue : '')
+      ((minEaseSelectRefCurrentValue && parseInt(minEaseSelectRefCurrentValue) !== 130) ? '&minEase=' + minEaseSelectRefCurrentValue : '') +
+      ((maxEaseSelectRefCurrentValue && parseInt(maxEaseSelectRefCurrentValue) !== 350) ? '&maxEase=' + maxEaseSelectRefCurrentValue : '')
     ).replace('&', ''); // removes first, arbitrary '&'
 
     return returnUrl;
@@ -183,6 +183,7 @@ export function FlashCardSearchComponent(props) {
             max={350}
             step={5}
             ref={minEaseSelectRef}
+            tooltipLabel={value => parseInt(value) === 130 ? '-∞' : value + '%'}
             name='minEase'
             />
         </Form.Group>
@@ -196,6 +197,7 @@ export function FlashCardSearchComponent(props) {
             max={350}
             step={5}
             ref={maxEaseSelectRef}
+            tooltipLabel={value => parseInt(value) === 350 ? '∞' : value + '%'}
             name='maxEase'
           />
         </Form.Group>
