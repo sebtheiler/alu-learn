@@ -38,6 +38,8 @@ class PublicProfileSerializer(serializers.ModelSerializer):
             'you_are_pending',
             'badges',
             'total_thanks_recieved',
+            'longest_streak',
+            'current_streak',
         ]
 
     def get_is_friend(self, obj):

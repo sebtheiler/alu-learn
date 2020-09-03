@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Card, CardDeck, Button} from 'react-bootstrap';
-import {apiProfileDetail, apiProfileFriends} from '../lookup';
+import {apiProfileDetail, apiProfileFriends, apiProfileHistory} from '../lookup';
 import {errorHandler, DisplayCountCommas, shiftDate, range} from '../utils';
 import {UserLink} from '../profiles/components';
 import {randomTip} from './randomtips';
@@ -13,10 +13,10 @@ export function HomeComponent(props) {
   const {username} = props;
   const today = new Date();
 
-  const randomValues = range(0, 366).map(i => {
+  const blankValues = range(0, 366).map(i => {
     return {
       date: shiftDate(today, -i),
-      count: Math.floor(Math.random()*8),
+      cardsDone: 0,
     };
   });
 
@@ -35,6 +35,9 @@ export function HomeComponent(props) {
   const [profileDidSet, setProfileDidSet] = useState(false);
   const [friends, setFriends] = useState({});
   const [friendsDidSet, setFriendsDidSet] = useState(false);
+  const [userHistory, setUserHistory] = useState(blankValues);
+  const [gotHistory, setGotHistory] = useState(false);
+  const [maxReviews, setMaxReviews] = useState([0, 100]);
 
   useEffect(() => {
     if (profileDidSet === false) {
@@ -63,6 +66,36 @@ export function HomeComponent(props) {
       });
     };
   }, [username, setFriends, friendsDidSet, setFriendsDidSet]);
+
+  useEffect(() => {
+    if (gotHistory === false) {
+      setGotHistory(true);
+      apiProfileHistory(username, (response, status) => {
+        if (status === 200) {
+          setMaxReviews(Math.max(...response.map(hist => hist.cards_done)));
+          const gottenDates = response.map(hist => hist.date);
+          const historyValues = userHistory.map(hist => {
+            // Check if we have that date in history
+            if (gottenDates.includes(hist.date.toISOString().slice(0, 10))) {
+              // Get the date that matches
+              const date = response.filter(subHist => subHist.date === hist.date.toISOString().slice(0, 10))[0];
+              return {
+                ...hist,
+                cardsDone: date.cards_done,
+              };
+            } else {
+              // Return the standard/blank value
+              return hist;
+            };
+          });
+          setUserHistory(historyValues);
+        } else {
+          // Error getting user history
+          errorHandler(response, status, 3013);
+        };
+      });
+    };
+  }, [username, gotHistory, setGotHistory, userHistory, setUserHistory]);
 
   return (
     <div className='text-center mt-5 w-100' style={{overflow: 'hidden'}}>
@@ -93,20 +126,32 @@ export function HomeComponent(props) {
           <CalendarHeatmap
             startDate={shiftDate(today, -366)}
             endDate={today}
-            values={randomValues}
+            values={userHistory}
             tooltipDataAttrs={value => {
               return {
-                'data-tip': `${value.date.toISOString().slice(0, 10)} has count: ${
-                  value.count
+                'data-tip': `You reviewed ${value.cardsDone} flashcards on ${
+                  value.date.toISOString().slice(0, 10)
                 }`,
               };
             }}
             classForValue={(value) => {
-              return `color-scale-${Math.min(value.count, 7)}`;
+              const unit = maxReviews / 7; // 7 = number of colors that aren't zero
+              const cardsDone = value.cardsDone;
+              var colorValue;
+              if (cardsDone === 0) {colorValue = 0} else
+              if (cardsDone > maxReviews - unit*1) {colorValue = 7} else
+              if (cardsDone > maxReviews - unit*2) {colorValue = 6} else
+              if (cardsDone > maxReviews - unit*3) {colorValue = 5} else
+              if (cardsDone > maxReviews - unit*4) {colorValue = 4} else
+              if (cardsDone > maxReviews - unit*5) {colorValue = 3} else
+              if (cardsDone > maxReviews - unit*6) {colorValue = 2} else
+              {colorValue = 1}
+              
+              return `color-scale-${Math.min(colorValue, 7)}`;
             }}
           />
           <ReactTooltip />
-          Longest streak: {10} | Current streak: {10}
+          Longest streak: {profile.longest_streak} | Current streak: {profile.current_streak}
         </div>
         <div
           className={`text-center mx-auto alert alert-info ${heatmapWidthClass}`}
