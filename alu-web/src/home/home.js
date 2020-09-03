@@ -19,6 +19,17 @@ export function HomeComponent(props) {
       count: Math.floor(Math.random()*8),
     };
   });
+
+  // Used for dynamically changing object positioning
+  const determineItemWidthClass = (clientWidth) => {
+    if (clientWidth < 500) {return 'w-100'} else
+    if (clientWidth < 900) {return 'w-75'} else
+    {return 'w-50'}
+  };
+  const [heatmapWidthClass, setHeatmapWidthClass] = useState(determineItemWidthClass(document.documentElement.clientWidth));
+  window.addEventListener("resize", (_event) => {
+    setHeatmapWidthClass(determineItemWidthClass(document.documentElement.clientWidth));
+  });
   
   const [profile, setProfile] = useState({});
   const [profileDidSet, setProfileDidSet] = useState(false);
@@ -78,7 +89,7 @@ export function HomeComponent(props) {
         <p>Total thanks recieved:{' '}
           <DisplayCountCommas>{profile.total_thanks_recieved}</DisplayCountCommas>
         </p>
-        <div className='w-50 mx-auto mb-3'>
+        <div className={`${heatmapWidthClass} mx-auto mb-3`}>
           <CalendarHeatmap
             startDate={shiftDate(today, -366)}
             endDate={today}
@@ -98,7 +109,7 @@ export function HomeComponent(props) {
           Longest streak: {10} | Current streak: {10}
         </div>
         <div
-          className='text-center w-25 mx-auto alert alert-info'
+          className={`text-center mx-auto alert alert-info ${heatmapWidthClass}`}
         >
           {randomTip}
         </div>
