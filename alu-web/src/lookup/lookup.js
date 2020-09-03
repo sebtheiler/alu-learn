@@ -172,7 +172,12 @@ export function apiProfileLogout(callback) {
 
 // Gets a list of a user's friends
 export function apiProfileFriends(username, callback) {
-  backendLookup('GET', `profiles/${username}/friends`, callback);
+  backendLookup('GET', `profiles/${username}/friends/`, callback);
+};
+
+// Get's a profile's history
+export function apiProfileHistory(username, callback) {
+  backendLookup('GET', `profiles/${username}/history/`, callback);
 };
 
 // Send a friend request

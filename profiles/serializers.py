@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
 
-from .models import Profile, Notification, ProfileBadge
+from .models import Profile, Notification, ProfileBadge, ProfileHistorySegment
 
 
 class ProfileBadgeSerializer(serializers.ModelSerializer):
@@ -124,3 +124,13 @@ class NotificationSerializer(serializers.ModelSerializer):
     
     def get_description(self, obj):
         return obj.description
+
+
+class HistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfileHistorySegment
+        fields = [
+            'date',
+            'cards_done',
+            'id',
+        ]

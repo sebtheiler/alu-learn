@@ -2,6 +2,8 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 
+import datetime
+
 User = settings.AUTH_USER_MODEL
 
 
@@ -12,9 +14,12 @@ class Profile(models.Model):
     birthdate = models.DateField(null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    friends = models.ManyToManyField(User, related_name='friends', blank=True)
+    friends = models.ManyToManyField(User, related_name='friends', blank=True) # TODO: this should probably be 'self' not User
     pending_friends = models.ManyToManyField('self', blank=True)
     total_thanks_recieved = models.IntegerField(default=0)
+
+    longest_streak = models.PositiveSmallIntegerField(default=0)
+    current_streak = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
         if self.user.first_name and self.user.last_name:
@@ -28,6 +33,10 @@ class Profile(models.Model):
         self.total_thanks_recieved += 1
         self.save()
         return self.total_thanks_recieved
+    
+    def increment_cards_done_today(self):
+        history_obj, created = self.history.get_or_create(date=datetime.date.today())
+        return history_obj.increment_cards_done()
 
 
 class Notification(models.Model):
@@ -49,6 +58,22 @@ class ProfileBadge(models.Model):
 
     def __str__(self):
         return f'"{self.identifier}" badge for @{self.profile.user.username}'
+
+
+class ProfileHistorySegment(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='history')
+    date = models.DateField(auto_now_add=True)
+    cards_done = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        return f"History for {self.profile.user.username} on {self.date}"
+    
+    def increment_cards_done(self):
+        # Do not use this method if you need to make other changes to the profile obj
+        # Only use this method if the `cards_done` is the only attr that needs to be changed
+        self.cards_done += 1
+        self.save()
+        return self.cards_done
 
 
 # When a user is saved, create a corresponding Profile object

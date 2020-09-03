@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Profile, Notification, ProfileBadge
-from ..serializers import PublicProfileSerializer, MinifiedProfileSerializer, NotificationSerializer, ProfileBadgeSerializer
+from ..serializers import PublicProfileSerializer, MinifiedProfileSerializer, NotificationSerializer, ProfileBadgeSerializer, HistorySerializer
 from analytics.models import ExperimentController
 
 import datetime
@@ -372,7 +372,7 @@ def logout_api_view(request, *args, **kwargs):
 @api_view(['GET'])
 def get_user_friends_api_view(request, username, *args, **kwargs):
     """
-    Gets a users friends - GET
+    Gets a user's friends - GET
 
     Possible errors:
         Invalid username: 404, {'message': 'User not found'}
@@ -383,6 +383,22 @@ def get_user_friends_api_view(request, username, *args, **kwargs):
     except ObjectDoesNotExist:
         return Response({'message': 'User not found'}, status=404)
     return Response(MinifiedProfileSerializer(profile.friends, many=True).data, status=200)
+
+
+@api_view(['GET'])
+def profile_history_view(request, username, *args, **kwargs):
+    """
+    Gets a user's history - GET
+
+    Possible errors:
+        Invalid username: 404, {'message': 'User not found'}
+    """
+    try:
+        # TODO: replace all segments of code to something like this
+        profile = Profile.objects.get(user__username=username)
+    except ObjectDoesNotExist:
+        return Response({'message': 'User not found'}, status=404)
+    return Response(HistorySerializer(profile.history, many=True).data, status=200)
 
 # from django.core.mail import send_mail
 # from django.conf import settings

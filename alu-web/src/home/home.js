@@ -147,4 +147,4 @@ export function HomeComponent(props) {
       </div>
     </div>
   );
-}
+};

@@ -29,6 +29,7 @@ import {
   apiProfileLogin,
   apiProfileLogout,
   apiProfileFriends,
+  apiProfileHistory,
   apiCreateBlankExperiment,
 } from './lookup';
 
@@ -63,5 +64,6 @@ export {
   apiProfileLogin,
   apiProfileLogout,
   apiProfileFriends,
+  apiProfileHistory,
   apiCreateBlankExperiment,
 };
