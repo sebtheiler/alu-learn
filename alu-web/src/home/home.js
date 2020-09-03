@@ -146,12 +146,12 @@ export function HomeComponent(props) {
               if (cardsDone > maxReviews - unit*5) {colorValue = 3} else
               if (cardsDone > maxReviews - unit*6) {colorValue = 2} else
               {colorValue = 1}
-              
+
               return `color-scale-${Math.min(colorValue, 7)}`;
             }}
           />
           <ReactTooltip />
-          Longest streak: {profile.longest_streak} | Current streak: {profile.current_streak}
+          Reviews today: {userHistory.sort(hist => hist.date)[0].cardsDone} | Longest streak: {profile.longest_streak} | Current streak: {profile.current_streak}
         </div>
         <div
           className={`text-center mx-auto alert alert-info ${heatmapWidthClass}`}
@@ -160,7 +160,7 @@ export function HomeComponent(props) {
         </div>
       </div>
       <div className='row'>
-        <div className='col-12'>
+        <div className='col-12' style={{minHeight: '500px'}}>
           <hr />
           <h3>Friends</h3>
           {friendsDidSet ? <>

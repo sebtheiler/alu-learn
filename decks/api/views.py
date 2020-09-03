@@ -195,6 +195,10 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
         obj.deck.new_cards_done_today += 1
         obj.deck.save()
     obj.save()
+
+    # Increment the number of cards that the profile is registed as doing today
+    obj.deck.user.profile.increment_cards_done_today()
+
     return Response(FlashCardSerializer(instance=obj).data, 200)
 
 

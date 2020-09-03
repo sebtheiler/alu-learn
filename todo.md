@@ -72,7 +72,7 @@ Features
 - [X] Add daily random tips for home page
 
 ## Sep 03
-- [ ] Review heatmap https://github.com/kevinsqi/react-calendar-heatmap
+- [X] Review heatmap https://github.com/kevinsqi/react-calendar-heatmap
 - [ ] Add "Happy Birthday!" message on home page (maybe change icon)
 - [X] Add welcome page
 - [ ] Add 404/500 custom pages
