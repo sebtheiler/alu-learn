@@ -48,7 +48,7 @@ export function FlashCard(props) {
               </OverlayTrigger>
               <br />
             </em>
-            <em className={flashcard.is_leech ? '' : 'd-none'}>
+            <em className={flashcard.is_suspended ? '' : 'd-none'}>
               This flashcard is suspended{' '}
               <OverlayTrigger
                 overlay={generateTooltip(

@@ -69,7 +69,7 @@ Features
   - [ ] Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
   - [X] Show deck of flashcard when searching for flashcards
 - [X] Freeze field for creating flashcards
-- [ ] Add daily random tips for home page
+- [X] Add daily random tips for home page
 
 ## Sep 03
 - [ ] Review heatmap https://github.com/kevinsqi/react-calendar-heatmap

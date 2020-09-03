@@ -2,7 +2,8 @@ import React, {useState, useEffect} from 'react';
 import {Card, CardDeck, Button} from 'react-bootstrap';
 import {apiProfileDetail, apiProfileFriends} from '../lookup';
 import {errorHandler, DisplayCountCommas} from '../utils';
-import {UserLink} from '../profiles/components.js';
+import {UserLink} from '../profiles/components';
+import {randomTip} from './randomtips';
 import './home.css';
 
 export function HomeComponent(props) {
@@ -59,6 +60,11 @@ export function HomeComponent(props) {
         </a>
       </CardDeck>
       <hr />
+      <div
+        className='text-center w-25 mx-auto alert alert-info'
+      >
+        {randomTip}
+      </div>
       <div className='mt-5'>
         <h3>Stats</h3>
         <h4>{profile.first_name} {profile.last_name}</h4>
