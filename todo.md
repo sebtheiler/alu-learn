@@ -81,6 +81,13 @@ Features
 - [ ] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
 - [ ] Protect API
 - [ ] Make numeric ids into string ids like "dad2Xadw#1". Look into UUID
+- [ ] Add more options when studying flashcards
+  - [ ] Delete card
+  - [ ] Suspend card
+  - [ ] Mark as leech
+  - [ ] Edit card
+  - [ ] Alert that card was marked as leech when done automatically
+  - [ ] Bury card?
 
 ## Sep 05
 - [ ] Add deck importing system

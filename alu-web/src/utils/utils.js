@@ -117,3 +117,18 @@ export function isAlphaNumeric(str) {
   };
   return true;
 };
+
+// Move move a date by a number of days
+// Taken from https://codesandbox.io/s/73mk9wlyx?file=/src/index.js:1031-1195
+export function shiftDate(date, numDays) {
+  const newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + numDays);
+  return newDate;
+};
+
+// Equivalent of Python's range
+// Taken from https://dev.to/ycmjason/how-to-create-range-in-javascript-539i#:~:text=range%20is%20a%20function%20that,integers%20from%20start%20to%20end.
+export function range(start, end) {
+  const length = end - start;
+  return Array.from({ length }, (_, i) => start + i);
+};

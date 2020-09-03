@@ -5,6 +5,8 @@ import {
   DisplayCountCommas,
   lightOrDark,
   isAlphaNumeric,
+  shiftDate,
+  range,
 } from './utils';
 
 import {errorHandler} from './errorHandler';
@@ -16,5 +18,7 @@ export {
   DisplayCountCommas,
   lightOrDark,
   isAlphaNumeric,
+  shiftDate,
+  range,
   errorHandler,
 };
