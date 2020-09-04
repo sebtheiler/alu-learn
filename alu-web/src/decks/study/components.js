@@ -24,6 +24,7 @@ export function StudyComponent(props) {
   const [finishedStudying, setFinishedStudying] = useState(false);
 
   const [canceledBtns, setCanceledBtns] = useState([]);
+  const [message, setMessage] = useState({});
   
   // Get flashcard list (either from raw list, `flashcardList` or
   // indirectly from sending an API call)
@@ -132,6 +133,7 @@ export function StudyComponent(props) {
     setCurrentCardDidSet(false);
 
     // Calculate when the card should be next seen
+    const wasLeech = currentCard.is_leech;
     const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex, leechIndex, isLeech} = getAnkiInterval(currentCard, grade, deck.scheduling_algorithm);
 
     // This checks that the interval is valid
@@ -165,6 +167,15 @@ export function StudyComponent(props) {
       deckCopy.flashcards[index].learning_status = learningStatus;
       deckCopy.flashcards[index].steps_index = stepsIndex;
       setDeck(deckCopy);
+
+      // Display a message if the card is now a leech
+      if (!wasLeech && isLeech) {
+        setMessage({
+          variant: 'danger',
+          content: 'Flashcard automatically marked as a leech',
+        });
+        setTimeout(() => setMessage({}), 5000);
+      };
     };
   };
 
@@ -248,6 +259,7 @@ export function StudyComponent(props) {
           <StudyElement
             currentCard={currentCard}
             showAnswer={showAnswer}
+            message={message}
             showAnswerHandler={showAnswerHandler}
             backendGradeUpdate={backendGradeUpdate}
             handleKeyDown={handleKeyDown}

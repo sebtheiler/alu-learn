@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {getAnkiInterval} from './algorithm';
-import {Button, Collapse} from 'react-bootstrap';
+import {Button, Collapse, Alert} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import RemarkMathPlugin from 'remark-math';
 import {BlockMath, InlineMath} from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 export function StudyElement(props) {
-  const {currentCard, showAnswer, showAnswerHandler, backendGradeUpdate, handleKeyDown, getCanceledBtns, schedulingAlgorithm, deleteFlashCardHandler, leechsuspendFlashCardGenerator} = props;
+  const {currentCard, showAnswer, showAnswerHandler, message, backendGradeUpdate, handleKeyDown, getCanceledBtns, schedulingAlgorithm, deleteFlashCardHandler, leechsuspendFlashCardGenerator} = props;
   const [gotCanceledBtns, setGotCanceledBtns] = useState(false);
   const [optionButtonsExpanded, setOptionButtonsExpanded] = useState(false);
 
@@ -85,10 +85,10 @@ export function StudyElement(props) {
       </div>
       <footer className='fixed-bottom mb-5'>
         <div className='mb-5'>
-          <div className={'col-md-12 text-center btn-group mb-5' + (showAnswer || currentCard === null ? ' d-none' : '')}>
+          <div className={'col-md-12 text-center btn-group mb-1' + (showAnswer || currentCard === null ? ' d-none' : '')}>
               <Button onClick={showAnswerHandler} id='showanswer'>Show Answer</Button>
           </div>
-          <div className={'col-md-12 text-center btn-group mb-5' + (!showAnswer ? ' d-none' : '')}>
+          <div className={'col-md-12 text-center btn-group mb-1' + (!showAnswer ? ' d-none' : '')}>
             <Button
               onClick={buttonIntervalWrapper(1)}
               className={'mx-1' + (interval1.interval === -1 ? ' d-none' : '')}
@@ -163,6 +163,11 @@ export function StudyElement(props) {
               <i className='fas fa-bars' style={{color: 'black'}} />
             </Button>
           </div>
+          {message ? <div className='float-left'>
+            <Alert variant={message.variant} className='ml-3'>
+              {message.content}
+            </Alert>
+          </div> : null}
         </div>
       </footer>
     </>
