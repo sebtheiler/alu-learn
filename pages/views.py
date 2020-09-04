@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
-from django_user_agents.utils import get_user_agent
-from django.views.decorators.cache import cache_page, cache_control
-from django.views.decorators.vary import vary_on_cookie
-
 import random
+
+from django.shortcuts import redirect, render
+# from django.template import RequestContext
+from django.views.decorators.cache import cache_control, cache_page
+from django.views.decorators.vary import vary_on_cookie
+from django_user_agents.utils import get_user_agent
 
 
 @vary_on_cookie
@@ -36,6 +37,20 @@ def login_view(request, *args, **kwars):
         return redirect('/home/')
     
     return render(request, 'profiles/login.html')
+
+
+# def handler404(request, *args, **kwargs):
+#     response = render_to_response('misc/404_500.html', {},
+#                                   context_instance=RequestContext(request))
+#     response.status_code = 404
+#     return response
+
+
+# def handler500(request, *args, **kwargs):
+#     response = render_to_response('misc/404_500.html', {},
+#                                   context_instance=RequestContext(request))
+#     response.status_code = 500
+#     return response
 
 
 LANDING_EXPERIMENT_PROBABILITIES = [

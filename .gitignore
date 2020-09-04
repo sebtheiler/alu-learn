@@ -8,6 +8,7 @@ static-root/
 decks/templates/react.html
 decks/templates/react/
 
+mysite.log
 # --- React ---
 
 # dependencies

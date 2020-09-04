@@ -75,7 +75,7 @@ Features
 - [X] Review heatmap https://github.com/kevinsqi/react-calendar-heatmap
 - [ ] Add "Happy Birthday!" message on home page (maybe change icon)
 - [X] Add welcome page
-- [ ] Add 404/500 custom pages
+- [ ] Add 404 custom page
 
 ## Sep 04
 - [ ] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
