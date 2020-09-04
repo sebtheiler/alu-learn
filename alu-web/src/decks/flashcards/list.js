@@ -1,11 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import {apiDeckDetail, apiFlashCardDelete, apiFlashCardSuspendLeech} from '../../lookup';
 import {FlashCard} from './detail';
-import {Button, ButtonGroup} from 'react-bootstrap';
+// import {Button, ButtonGroup} from 'react-bootstrap';
 import { errorHandler } from '../../utils';
+import {DeckDefaultButtonGroup} from '../buttons';
 
 export function FlashCardsList(props) {
+  // deckId: Specify a deck ID to get and display flashcards from
+  // flashcardList: If not deckId, specify a raw list of flashcards
+  // foreignUser: True if a user who does not own the deck is viewing it
+  // showParnetDeckTitle: If True, show the title of the deck for each flashcard
   const {deckId, flashcardList, foreignUser, showParentDeckTitle} = props;
+  const [deck, setDeck] = useState(null);
   const [flashcards, setFlashCards] = useState([]);
   const [flashcardsDidSet, setFlashCardsDidSet] = useState(false);
 
@@ -24,6 +30,7 @@ export function FlashCardsList(props) {
         apiDeckDetail(deckId, (response, status) => {
           if (status === 200) {
             setFlashCardsDidSet(true);
+            setDeck(response);
             setFlashCards(response.flashcards);
           } else {
             // Error looking up deck
@@ -41,11 +48,8 @@ export function FlashCardsList(props) {
   return (
     <div className={props.className}>
       <div className='text-center'>
-        {flashcardList || foreignUser ? null :
-        <ButtonGroup>
-          <Button href='create/' className='mx-1'>Create a new flashcard</Button>
-          <Button href={`/decks/${deckId}/study/`} className='mx-1'>Study this deck</Button>
-        </ButtonGroup>
+        {flashcardList || foreignUser || !deck ? null :
+          <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />
         }
       </div>
       {flashcards.map((flashcard, index) => {

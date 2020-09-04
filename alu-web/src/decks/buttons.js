@@ -7,7 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // Buttons for when an owner views their deck
 export function DeckDefaultButtonGroup(props) {
-  const {deck, vertical} = props;
+  const {deck, vertical, hideBrowse} = props;
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   const openModal = () => {
@@ -86,9 +86,11 @@ export function DeckDefaultButtonGroup(props) {
       <Button href={`/decks/${deck.id}/flashcards/create/`} className='mr-1'>
         Add Cards
       </Button>
-      <Button href={`/decks/${deck.id}/flashcards/`} className='mr-1'>
-        Browse
-      </Button>
+      {hideBrowse ? null :
+        <Button href={`/decks/${deck.id}/flashcards/`} className='mr-1'>
+          Browse
+        </Button>
+      }
       <Button href={`/decks/${deck.id}/study/`} className='mr-1'>
         Study
       </Button>
