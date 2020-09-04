@@ -172,6 +172,9 @@ export function StudyComponent(props) {
     if (event.key === ' ') {
       // Show answer when spacebar is pressed
       setShowAnswer(true);
+
+      // Unselect everything
+      document.activeElement.blur();
     } else if (isNaN(event.key) === false && showAnswer) {
       // Shortcuts for clicking 'Again', 'Hard', ...
       let grade = parseInt(event.key);
@@ -196,6 +199,12 @@ export function StudyComponent(props) {
         };
       };
       backendGradeUpdate(grade);
+      // Select the 'Show Answer' button
+      try {
+        document.getElementById('showanswer').focus();
+      } catch (e) {
+        // pass
+      };
     };
   };
 

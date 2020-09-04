@@ -17,6 +17,7 @@ const randomTips = [
   'Suspended cards are never shown to you when studying. Use this feature to temporarily disable cards.',
   'Give cards tags to organize them',
   'Want to study a specific set of cards? Use the "Custom Study" feature.',
+  'When studying flashcards, use the spacebar to reveal the answer and the number keys (1-4) to select a choice',
   // Random stuff
   '42 (forty-two) is the natural number that follows 41 and precedes 43.',
   'Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid of Giza.',

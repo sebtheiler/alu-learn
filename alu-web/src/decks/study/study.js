@@ -81,7 +81,7 @@ export function StudyElement(props) {
       <footer className='fixed-bottom mb-5'>
         <div className='mb-5'>
           <div className={'col-md-12 text-center btn-group mb-5' + (showAnswer || currentCard === null ? ' d-none' : '')}>
-              <Button onClick={showAnswerHandler}>Show Answer</Button>
+              <Button onClick={showAnswerHandler} id='showanswer'>Show Answer</Button>
           </div>
           <div className={'col-md-12 text-center btn-group mb-5' + (!showAnswer ? ' d-none' : '')}>
             <Button
