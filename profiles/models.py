@@ -35,7 +35,21 @@ class Profile(models.Model):
         return self.total_thanks_recieved
     
     def increment_cards_done_today(self):
+        # Get or create history for today
         history_obj, created = self.history.get_or_create(date=datetime.date.today())
+
+        # Increment the current streak if this is the first card done today
+        if created:
+            self.current_streak += 1
+
+            # Update the longest streak if the current streak is longer
+            if self.current_streak > self.longest_streak:
+                self.longest_streak = self.current_streak
+            
+            # Save
+            self.save()
+
+        # Increment the cards done today
         return history_obj.increment_cards_done()
 
 

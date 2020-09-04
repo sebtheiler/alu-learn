@@ -168,7 +168,7 @@ export function HomeComponent(props) {
               friends.map((friend, index) => {
                 if (friend) {
                   return (
-                    <div key={`friend-${index}`}>
+                    <div key={`friend-${index}`} className='mb-4'>
                       <UserLink user={friend} hideBadges />
                       <Button href={`/profiles/u/${friend.username}`} className='mt-2'>
                         View Profile
