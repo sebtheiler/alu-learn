@@ -46,6 +46,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
         'flashcard_id': flashcard_id,
         'return_to_previous_page': True,
         'desc': 'Edit your flashcard',
+        'sub_desc': 'After saving, you may need to reload the previous page to see new changes'
     }
     return render(request, 'flashcards/create.html', context=context)
 

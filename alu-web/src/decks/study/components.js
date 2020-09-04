@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail, apiFlashCardDateUpdate, apiFlashCardSearch} from '../../lookup';
+import {apiDeckDetail, apiFlashCardDateUpdate, apiFlashCardSearch, apiFlashCardSuspendLeech, apiFlashCardDelete} from '../../lookup';
 import {StudyElement} from './study';
 import {getAnkiInterval} from './algorithm'
 import {Button} from 'react-bootstrap';
@@ -208,6 +208,32 @@ export function StudyComponent(props) {
     };
   };
 
+  const flashcardDeleteCallback = (event) => {
+    event.preventDefault();
+    apiFlashCardDelete(currentCard.parent_deck_id, currentCard.id, (response, status) => {
+      if (status === 200) {
+        window.location.reload();
+      } else {
+        // Error deleting flashcard while studying
+        errorHandler(response, status, 2008);
+      };
+    });
+  };
+
+  const flashcardLeechSuspendGenerator = (action) => {
+    return (event) => {
+      event.preventDefault();
+      apiFlashCardSuspendLeech(currentCard.parent_deck_id, currentCard.id, action, (response, status) => {
+        if (status === 200) {
+          window.location.reload();
+        } else {
+          // Error marking flashcard as leech or suspending while studying
+          errorHandler(response, status, 2009);
+        };
+      });
+    };
+  };
+
   return (
     <>
       {finishedStudying ?
@@ -226,6 +252,8 @@ export function StudyComponent(props) {
             backendGradeUpdate={backendGradeUpdate}
             handleKeyDown={handleKeyDown}
             getCanceledBtns={setCanceledBtns}
+            deleteFlashCardHandler={flashcardDeleteCallback}
+            leechsuspendFlashCardGenerator={flashcardLeechSuspendGenerator}
             schedulingAlgorithm={deck ? deck.scheduling_algorithm : null}
           />
         </div>

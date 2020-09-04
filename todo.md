@@ -83,10 +83,10 @@ Features
 - [ ] Protect API
 - [ ] Make numeric ids into string ids like "dad2Xadw#1". Look into UUID
 - [ ] Add more options when studying flashcards
-  - [ ] Delete card
-  - [ ] Suspend card
-  - [ ] Mark as leech
-  - [ ] Edit card
+  - [X] Delete card
+  - [X] Suspend card
+  - [X] Mark as leech
+  - [X] Edit card
   - [ ] Alert that card was marked as leech when done automatically
 
 ## Sep 05

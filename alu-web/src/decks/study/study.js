@@ -7,7 +7,7 @@ import {BlockMath, InlineMath} from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 export function StudyElement(props) {
-  const {currentCard, showAnswer, showAnswerHandler, backendGradeUpdate, handleKeyDown, getCanceledBtns, schedulingAlgorithm} = props;
+  const {currentCard, showAnswer, showAnswerHandler, backendGradeUpdate, handleKeyDown, getCanceledBtns, schedulingAlgorithm, deleteFlashCardHandler, leechsuspendFlashCardGenerator} = props;
   const [gotCanceledBtns, setGotCanceledBtns] = useState(false);
   const [optionButtonsExpanded, setOptionButtonsExpanded] = useState(false);
 
@@ -55,7 +55,11 @@ export function StudyElement(props) {
       setGotCanceledBtns(true);
     };
   }, [gotCanceledBtns, getCanceledBtns, setGotCanceledBtns, interval1, interval2, interval3, interval4]);
-  
+
+  if (currentCard === null) {
+    return null;
+  };
+
   return (
     <>
       <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
@@ -118,28 +122,30 @@ export function StudyElement(props) {
             <Collapse in={optionButtonsExpanded} id='collapse-buttons-manager'>
               <div id='collapse-buttons'>
                 <Button
-                  onClick={() => {}}
+                  onClick={deleteFlashCardHandler}
                   className='mr-1'
                   variant='danger'
                 >
                   Delete
                 </Button>
                 <Button
-                  onClick={() => {}}
+                  onClick={leechsuspendFlashCardGenerator(
+                    currentCard.is_leech ? 'unleech' : 'leech'
+                  )}
                   className='mr-1'
                   variant='warning'
                 >
-                  Mark as Leech
+                  {currentCard.is_leech ? 'Unmark as leech' : 'Mark as leech'}
                 </Button>
                 <Button
-                  onClick={() => {}}
+                  onClick={leechsuspendFlashCardGenerator('suspend')}
                   className='mr-1'
                   variant='warning'
                 >
                   Suspend
                 </Button>
                 <Button
-                  onClick={() => {}}
+                  href={`/decks/${currentCard.parent_deck_id}/flashcards/${currentCard.id}/edit/`}
                   className='mr-1'
                   variant='success'
                 >
@@ -154,7 +160,7 @@ export function StudyElement(props) {
               className='mr-1'
               style={{background: 'none', border: 'none'}}
             >
-              <i className='fas fa-bars' style={{color: 'black'}}/>
+              <i className='fas fa-bars' style={{color: 'black'}} />
             </Button>
           </div>
         </div>
