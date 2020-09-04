@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {getAnkiInterval} from './algorithm';
-import {Button} from 'react-bootstrap';
+import {Button, Collapse} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import RemarkMathPlugin from 'remark-math';
 import {BlockMath, InlineMath} from 'react-katex';
@@ -9,13 +9,14 @@ import 'katex/dist/katex.min.css';
 export function StudyElement(props) {
   const {currentCard, showAnswer, showAnswerHandler, backendGradeUpdate, handleKeyDown, getCanceledBtns, schedulingAlgorithm} = props;
   const [gotCanceledBtns, setGotCanceledBtns] = useState(false);
+  const [optionButtonsExpanded, setOptionButtonsExpanded] = useState(false);
 
   
   // Used for handling keypresses
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [showAnswer, handleKeyDown]);
   
@@ -111,6 +112,49 @@ export function StudyElement(props) {
               variant='primary'
             >
               Easy {interval4.interval.toString() + (interval4.isMinute ? 'm' : 'd')}
+            </Button>
+          </div>
+          <div className='btn-group float-right'>
+            <Collapse in={optionButtonsExpanded} id='collapse-buttons-manager'>
+              <div id='collapse-buttons'>
+                <Button
+                  onClick={() => {}}
+                  className='mr-1'
+                  variant='danger'
+                >
+                  Delete
+                </Button>
+                <Button
+                  onClick={() => {}}
+                  className='mr-1'
+                  variant='warning'
+                >
+                  Mark as Leech
+                </Button>
+                <Button
+                  onClick={() => {}}
+                  className='mr-1'
+                  variant='warning'
+                >
+                  Suspend
+                </Button>
+                <Button
+                  onClick={() => {}}
+                  className='mr-1'
+                  variant='success'
+                >
+                  Edit
+                </Button>
+              </div>
+            </Collapse>
+            <Button
+              onClick={() => setOptionButtonsExpanded(!optionButtonsExpanded)}
+              aria-controls='collapse-buttons'
+              aria-expanded={optionButtonsExpanded}
+              className='mr-1'
+              style={{background: 'none', border: 'none'}}
+            >
+              <i className='fas fa-bars' style={{color: 'black'}}/>
             </Button>
           </div>
         </div>

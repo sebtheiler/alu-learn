@@ -88,7 +88,6 @@ Features
   - [ ] Mark as leech
   - [ ] Edit card
   - [ ] Alert that card was marked as leech when done automatically
-  - [ ] Bury card?
 
 ## Sep 05
 - [ ] Add deck importing system
