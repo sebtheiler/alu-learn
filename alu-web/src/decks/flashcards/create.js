@@ -122,7 +122,7 @@ export function FlashCardCreate(props) {
           </Form.Label>
           <Form.Control
             as='textarea'
-            rows='10'
+            rows='8'
             name='frontText'
             placeholder='Front Text'
             ref={frontTextRef}
@@ -141,7 +141,7 @@ export function FlashCardCreate(props) {
           </Form.Label>
           <Form.Control
             as='textarea'
-            rows='10'
+            rows='8'
             name='backText'
             placeholder='Back Text'
             ref={backTextRef}
