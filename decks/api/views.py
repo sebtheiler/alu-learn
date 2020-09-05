@@ -33,17 +33,36 @@ def deck_create_view(request, *args, **kwargs):
 
     Required information:
         `title`: (Data) Title of the deck to create
+        `description`: (Data) Description fo the deck to create
+        `sharing_setting`: (Data) Sharing setting of the new deck
+        `shuffle_unseen_cards`: (Data) Whether or not to shuffle unseen cards in the new deck
+        `daily_new_card_limit`: (Data) Number of new cards to be done daily in the deck,
+        `scheduling_algorithm`: (Data) Scheduling algo for the new deck,
 
     Returns:
         Author of the deck (PublicProfileSerializer): 'author'
         Title of the deck: 'title'
         ID of the deck: 'id'
     """
-    serializer = DeckSerializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save(user=request.user)
-        return Response(serializer.data, status=201)
-    return Response({}, status=400)
+    title = request.data.get('title')
+    if title is None:
+        return Response({'message': 'You must specify a title'}, status=400)
+
+    description = request.data.get('description')
+    sharing_setting = request.data.get('sharing_setting')
+    scheduling_algorithm = request.data.get('scheduling_algorithm')
+    shuffle_unseen_cards = request.data.get('shuffle_unseen_cards')
+
+    new_deck = Deck.objects.create(
+        user=request.user,
+        title=title,
+        description=description if description else '',
+        sharing_setting=sharing_setting if sharing_setting else 'PRIVATE',
+        scheduling_algorithm=scheduling_algorithm if scheduling_algorithm else 'ANKI',
+        shuffle_unseen_cards=shuffle_unseen_cards if shuffle_unseen_cards else False,
+    )
+
+    return Response(DeckSerializer(new_deck).data, status=201)
 
 
 @api_view(['GET', 'POST'])

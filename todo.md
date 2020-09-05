@@ -90,6 +90,7 @@ Features
   - [X] Alert that card was marked as leech when done automatically
 
 ## Sep 05
+- [X] Improve deck creation system
 - [ ] Add deck importing system
 - [ ] Test deployment on Heroku
 

@@ -1,9 +1,16 @@
 import {backendLookup} from './components';
 
 
-// Creates a new deck with the title, `newDeck`
-export function apiDeckCreate(newDeck, callback) {
-  backendLookup('POST', 'decks/create/', callback, {title: newDeck});
+// Creates a new deck
+export function apiDeckCreate(title, description, sharingSetting, shuffleUnseenCards, dailyNewCardLimit, schedulingAlgo, callback) {
+  backendLookup('POST', 'decks/create/', callback, {
+    title: title,
+    description: description,
+    sharing_setting: sharingSetting,
+    shuffle_unseen_cards: shuffleUnseenCards,
+    daily_new_card_limit: dailyNewCardLimit,
+    scheduling_algorithm: schedulingAlgo,
+  });
 };
 
 // Creates a flashcard in a deck

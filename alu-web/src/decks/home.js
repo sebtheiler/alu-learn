@@ -16,7 +16,7 @@ export function DecksHomeList(props) {
 
   // If there are any new decks, add them
   useEffect(() => {
-    const final = [...newDecks].concat(decksInit);
+    const final = decksInit;//[...newDecks].concat(decksInit);
     if (final.length !== decks.length) {
       setDecks(final);
     };

@@ -4,31 +4,21 @@ import {DecksList} from './list';
 import {DeckDetail} from './detail';
 import {apiDeckDetail} from '../lookup';
 import {DecksHomeList} from './home';
-import {Button} from 'react-bootstrap';
+import {Button, ButtonGroup} from 'react-bootstrap';
 import { errorHandler } from '../utils';
 
 
 // Component for the decks shown on the user's homepage
 export function DecksHomeComponent(props) {
-  const [newDecks, setNewDecks] = useState([]);
-  const canCreateDeck = props.canCreateDeck === 'false' ? false : true;
-
-  // Appends new deck to front of decks list (should be changed to alphabetically)
-  // Client-side only
-  const handleNewDeck = (newDeck) => {
-    let tempNewDecks = [...newDecks];
-    tempNewDecks.unshift(newDeck);
-    setNewDecks(tempNewDecks);
-  };
-
   return (
     <div className={props.className}>
-      <div className='text-center'>
-        {/* TODO: Combine with create new deck button */}
-        <Button href='/flashcards/search/' className='text-center mt-1'>Search for Flashcards / Custom Study</Button>
+      <div className='text-center my-3'>
+        <ButtonGroup vertical>
+          <Button href='/flashcards/search/'>Search for Flashcards / Custom Study</Button>
+          <DeckCreate className='mt-1' />
+        </ButtonGroup>
       </div>
-      {canCreateDeck === true && <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mt-3' />}
-      <DecksHomeList newDecks={newDecks} {...props}/>
+      <DecksHomeList {...props}/>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {apiDeckDelete, apiDeckEdit, apiDeckCopy} from '../lookup';
-import {errorHandler} from '../utils';
+import {errorHandler, FormCheckbox} from '../utils';
 import {Modal, Button, Form, ButtonGroup} from 'react-bootstrap';
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -20,7 +20,7 @@ export function DeckDefaultButtonGroup(props) {
 
   const saveHandler = (event) => {
     event.preventDefault();
-    let form = event.target;
+    const form = event.target;
 
     // If nothing has changed, prevent the user from saving
     if (
@@ -74,11 +74,11 @@ export function DeckDefaultButtonGroup(props) {
       >
         Edit
       </Button>
-      <DeckEditModal
+      <DeckEditCreateModal
         deck={deck}
         modalIsOpen={modalIsOpen}
         closeModal={closeModal}
-        saveHandler={saveHandler}
+        submitHandler={saveHandler}
         deleteHandler={deleteHandler}
       />
 
@@ -99,25 +99,43 @@ export function DeckDefaultButtonGroup(props) {
 };
 
 // Modal pop-up for when the 'Edit' button is pressed
-export function DeckEditModal(props) {
-  const {deck, modalIsOpen, closeModal, saveHandler, deleteHandler} = props;
+export function DeckEditCreateModal(props) {
+  const {modalIsOpen, closeModal, submitHandler, deleteHandler} = props;
+  const deck = props.deck ? props.deck : {};
+  const mode = props.mode ? props.mode.toLowerCase() : 'edit';
 
   return (
     <Modal show={modalIsOpen} onHide={closeModal}>
-      <Modal.Header>
-        <Modal.Title>
-          Edit "{deck.title}"
-        </Modal.Title>
-      </Modal.Header>
-      <Form onSubmit={saveHandler}>
+        <Modal.Header>
+          <Modal.Title>
+            {mode === 'edit' ?
+              <>Edit "{deck.title}"</>
+              :
+              <>Creating deck</>
+              }
+          </Modal.Title>
+        </Modal.Header>
+      <Form onSubmit={submitHandler}>
         <Modal.Body>
           <Form.Group>
             <Form.Label htmlFor='title'>Title</Form.Label>
-            <Form.Control type='text' placeholder='My deck' name='title' defaultValue={deck.title} />
+            <Form.Control
+              type='text'
+              placeholder='My deck'
+              name='title'
+              defaultValue={deck.title}
+              required
+            />
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor='description'>Description</Form.Label>
-            <Form.Control as='textarea' rows='3' placeholder="My deck's description" name='description' defaultValue={deck.description} />
+            <Form.Control
+              as='textarea'
+              rows='3'
+              placeholder="My deck's description"
+              name='description'
+              defaultValue={deck.description}
+            />
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor='sharingSetting'>Sharing Setting</Form.Label>
@@ -132,26 +150,37 @@ export function DeckEditModal(props) {
               <option value='PUBLIC'>Public</option>
             </Form.Control>
           </Form.Group>
+          <div className='text-center d-flex'>
+            <hr className='flex-grow-1' />
+            <span className='px-2 align-self-center'>
+              Advanced Options
+            </span>
+            <hr className='flex-grow-1' />
+          </div>
           <Form.Group>
-            <Form.Check
+            <FormCheckbox name='shuffleUnseenCards' defaultChecked={deck.shuffle_unseen_cards}>
+              Shuffle Unseen Cards
+            </FormCheckbox>
+            {/* <Form.Check
               type='checkbox'
               label='Shuffle Unseen Cards'
               name='shuffleUnseenCards'
               defaultChecked={deck.shuffle_unseen_cards}
-            />
+            /> */}
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor='dailyNewCardLimit'>Daily new card limit</Form.Label>
             <Form.Control
               type='number'
               name='dailyNewCardLimit'
-              defaultValue={deck.daily_new_card_limit}
+              defaultValue={deck.daily_new_card_limit ? deck.daily_new_card_limit : 20}
               min='1'
+              max='9999'
               required
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label htmlFor='schedulingAlgo'>Scheduling Algorithm (Advanced)</Form.Label>
+            <Form.Label htmlFor='schedulingAlgo'>Scheduling Algorithm</Form.Label>
             <Form.Control
               as='select'
               name='schedulingAlgo'
@@ -164,9 +193,13 @@ export function DeckEditModal(props) {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={deleteHandler} variant='danger' className='text-left mr-auto'>Delete Deck</Button>
+          {mode === 'edit' ?
+            <Button onClick={deleteHandler} variant='danger' className='text-left mr-auto'>Delete Deck</Button>
+          : null}
           <Button onClick={closeModal} variant='secondary'>Cancel</Button>
-          <Button type='submit' variant='primary'>Save</Button>
+          <Button type='submit' variant='primary'>
+            {mode === 'edit' ? 'Save' : 'Create'}
+          </Button>
         </Modal.Footer>
       </Form>
     </Modal>
