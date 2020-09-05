@@ -370,7 +370,7 @@ def deck_home_view(request, *args, **kwargs):
     """
     user = request.user
     home_qs = Deck.objects.home(user)
-    return get_paginated_queryset_response(home_qs, request, DeckSerializer)
+    return get_paginated_queryset_response(home_qs, request, DeckSerializer, page_size=50)
 
 
 @api_view(['GET'])

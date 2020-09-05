@@ -8,36 +8,26 @@ import { errorHandler } from '../utils';
 // Paginated function for decks that should appear
 // in the user's home page
 export function DecksHomeList(props) {
-  const {newDecks, username} = props;
-  const [decksInit, setDecksInit] = useState([newDecks ? newDecks : []]);
+  const {username} = props;
   const [decks, setDecks] = useState([]); // Current set of decks
   const [decksDidSet, setDecksDidSet] = useState(false);
   const [nextUrl, setNextUrl] = useState(null); // URLS used for pagination
 
-  // If there are any new decks, add them
-  useEffect(() => {
-    const final = decksInit;//[...newDecks].concat(decksInit);
-    if (final.length !== decks.length) {
-      setDecks(final);
-    };
-  }, [newDecks, decksInit, decks.length]);
-
   // Send request to the API to get decks and URLs for pagination
-  useEffect(() => {
+  useEffect(()=>  {
     if (decksDidSet === false) {
       apiDeckHome((response, status) => {
         if (status === 200) {
           setNextUrl(response.next);
-          setDecksInit(response.results);
           setDecks(response.results);
           setDecksDidSet(true);
         } else {
-          // Error getting deck
+          // Error getting decks
           errorHandler(response, status, 1006);
         };
       });
     };
-  }, [decksInit, decksDidSet, setDecksDidSet, username]);
+  }, [decksDidSet, setDecksDidSet]);
 
   // Loads next set of decks (pagination)
   const handleLoadNext = (event) => {
@@ -47,7 +37,6 @@ export function DecksHomeList(props) {
         if (status === 200) {
           setNextUrl(response.next);
           const newDecks = [...decks].concat(response.results)
-          setDecksInit(newDecks);
           setDecks(newDecks);
         } else {
           // Error handling next set of decks (pagination)
@@ -69,7 +58,7 @@ export function DecksHomeList(props) {
                   />;
         })}
       </div>
-      <div className='text-center'>
+      <div className='text-center mb-2'>
         {nextUrl !== null ?
           <Button
             onClick={handleLoadNext}
