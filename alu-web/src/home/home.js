@@ -104,7 +104,7 @@ export function HomeComponent(props) {
         <a href='/home/decks/' className='card'>
           <i className='fas fa-window-restore fa-10x card-img-top mx-auto text-center my-3'></i>
           <Card.Title>
-            Decks
+            Flashcard Decks
           </Card.Title>
         </a>
         <a href='/home/notes/' className='card'>
