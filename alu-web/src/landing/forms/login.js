@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Modal, Form, Button} from 'react-bootstrap';
 import {apiProfileLogin} from '../../lookup';
-import { errorHandler } from '../../utils';
+import { errorHandler, FormCheckbox } from '../../utils';
 
 export function LoginForm(props) {
   const returnUrl = props.returnUrl ? new URL(props.returnUrl).pathname : null;
@@ -56,19 +56,12 @@ export function LoginForm(props) {
         />
       </Form.Group>
       <Form.Group>
-        {/*
-        The React-Bootstrap checkmark is very broken,
-        so we are temporarily using regular HTML. Once
-        it is fixed we can replace this with proper React-
-        Bootstrap
-        */}
-        <label className="form-check-label">
-          <input type="checkbox" required="required" />{' '}
+        <FormCheckbox required={true}>
           I continue to accept the <a href='/legal/tos/' target='_blank'>
           Terms of Service</a> and{' '}
           <a href='/legal/privacypolicy/' target='_blank'>
           Privacy Policy</a>.
-        </label>
+        </FormCheckbox>
       </Form.Group>
       <div>
         <p>Forgot your password? Click <a href='/TODO:/'>TODO: here</a> to reset it</p>

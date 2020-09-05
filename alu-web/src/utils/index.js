@@ -7,6 +7,7 @@ import {
   isAlphaNumeric,
   shiftDate,
   range,
+  FormCheckbox,
 } from './utils';
 
 import {errorHandler} from './errorHandler';
@@ -21,4 +22,5 @@ export {
   shiftDate,
   range,
   errorHandler,
+  FormCheckbox,
 };

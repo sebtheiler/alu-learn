@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Modal, Form, Button} from 'react-bootstrap';
-import {isAlphaNumeric, errorHandler} from '../../utils';
+import {isAlphaNumeric, errorHandler, FormCheckbox} from '../../utils';
 import {apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin} from '../../lookup';
 
 export function ModalRegisterForm(props) {
@@ -281,19 +281,12 @@ export function ModalRegisterForm(props) {
         </div>
       </Form.Group>
       <Form.Group>
-        {/*
-        The React-Bootstrap checkmark is very broken,
-        so we are temporarily using regular HTML. Once
-        it is fixed we can replace this with proper React-
-        Bootstrap
-        */}
-        <label className="form-check-label">
-          <input type="checkbox" required="required" />{' '}
+        <FormCheckbox required={true}>
           I accept the <a href='/legal/tos/' target='_blank'>
           Terms of Service</a> and{' '}
           <a href='/legal/privacypolicy/' target='_blank'>
           Privacy Policy</a>.
-        </label>
+        </FormCheckbox>
       </Form.Group>
       <Modal.Footer>
         <Button type='submit' variant='primary' block>

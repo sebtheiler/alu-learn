@@ -132,3 +132,20 @@ export function range(start, end) {
   const length = end - start;
   return Array.from({ length }, (_, i) => start + i);
 };
+
+// Makes a Bootstrap checkmark, that isn't broken
+// The React-Bootstrap checkmark is very broken,
+// so we are temporarily using regular HTML. Once
+// it is fixed we can replace this with proper React-
+// Bootstrap
+export function FormCheckbox(props) {
+  const {required, name, defaultChecked} = props;
+  const type = props.type ? props.type : 'checkbox';
+
+  return (
+    <label className='form-check-label'>
+      <input type={type} required={required ? 'required' : ''} defaultChecked={defaultChecked} name={name} />{' '}
+      {props.children}
+    </label>
+  );
+};
