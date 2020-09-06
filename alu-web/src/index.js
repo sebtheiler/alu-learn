@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {ProfileInformationComponent, LoginComponent} from './profiles';
-import {DecksComponent, DeckDetailComponent, DecksHomeComponent} from './decks';
+import {DecksComponent, DeckDetailComponent, DecksHomeComponent, DeckImportComponent} from './decks';
 import {FlashCardCreateComponent, FlashCardsList, FlashCardSearchComponent} from './decks/flashcards';
 import {StudyComponent, CustomStudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
@@ -92,6 +92,12 @@ const loginElement = document.getElementById('login-component');
 if (loginElement) {
   ReactDOM.render(e(LoginComponent, loginElement.dataset), loginElement);
 };
+
+const importElement = document.getElementById('deck-importer');
+if (importElement) {
+  ReactDOM.render(e(DeckImportComponent, importElement.dataset), importElement);
+};
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

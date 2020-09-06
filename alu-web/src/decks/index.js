@@ -3,6 +3,7 @@ import {Deck, DeckDetail} from './detail';
 import {DecksList} from './list';
 import {DeckCreate} from './create';
 import {DeckDefaultButtonGroup} from './buttons';
+import {DeckImportComponent} from './import';
 
 export {
     DeckDefaultButtonGroup,
@@ -13,4 +14,5 @@ export {
     DeckDetailComponent,
     DecksHomeComponent,
     DeckDetail,
+    DeckImportComponent,
 };
