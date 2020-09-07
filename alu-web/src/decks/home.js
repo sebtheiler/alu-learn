@@ -46,12 +46,8 @@ export function DecksHomeList(props) {
     };
   };
 
-  if (decks.length === 0) { // TODO: this is appearing before decks have loaded even if the user has decks
-    return <p className='text-center mt-3'>You don't have any decks yet.</p>
-  };
-
   return (
-    <>
+    <>{decks.length > 0 ? <>
       <div className='card-deck text-center mx-auto justify-content-center'>
         {decks.map((deck, index) => {
           return <Deck 
@@ -73,6 +69,6 @@ export function DecksHomeList(props) {
           </Button>
         : null}
       </div>
-    </>
+    </> : <p className='text-center mt-3'>{decksDidSet ? 'You don\'t have any decks yet.' : 'Loading...'}</p>}</>
   );
 };

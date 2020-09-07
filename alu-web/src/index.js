@@ -4,7 +4,7 @@ import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {ProfileInformationComponent, LoginComponent} from './profiles';
 import {DecksComponent, DeckDetailComponent, DecksHomeComponent, DeckImportComponent} from './decks';
-import {FlashCardCreateComponent, FlashCardsList, FlashCardSearchComponent} from './decks/flashcards';
+import {FlashCardCreate, FlashCardsList, FlashCardSearchComponent} from './decks/flashcards';
 import {StudyComponent, CustomStudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
 import {ExploreComponent, DeckSearchComponent} from './explore';
@@ -35,7 +35,7 @@ if (deckHomeElement) {
 
 const flashcardCreateElement = document.getElementById('create-flashcard');
 if (flashcardCreateElement) {
-  ReactDOM.render(e(FlashCardCreateComponent, flashcardCreateElement.dataset), flashcardCreateElement);
+  ReactDOM.render(e(FlashCardCreate, flashcardCreateElement.dataset), flashcardCreateElement);
 };
 
 const flashcardListElement = document.querySelectorAll('.flashcard-list');

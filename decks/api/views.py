@@ -358,8 +358,6 @@ def deck_shared_view(request, username, *args, **kwargs):
 @vary_on_cookie
 @cache_control(private=True)
 @api_view(['GET'])
-# TODO: maybe we don't need SessionAuthentication?
-# @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def deck_home_view(request, *args, **kwargs):
     """
@@ -374,7 +372,7 @@ def deck_home_view(request, *args, **kwargs):
 
 
 @api_view(['GET'])
-# TODO: require permission/authentication
+# TODO: require permission/authentication with friends
 def deck_detail_view(request, deck_id, *args, **kwargs):
     """
     Get specific information about a deck - GET
@@ -541,8 +539,9 @@ def deck_thank_view(request, deck_id, *args, **kwargs):
     Required information:
         `deck_id`: (URL) ID of the get to thank
 
-    Possible errors:
+    Possible errors: TODO: make the {'message': 'stuff'} cleaner EVERYWHERE
         Invalid deck ID: 404, {'message': 'Deck not found'}
+        Attempt to thank self: 400, {'message': 'You cannot thank yourself}
         Already thanked: 400, {'message': 'You have already thanked this deck'}
     """
     # Get Deck
@@ -550,6 +549,10 @@ def deck_thank_view(request, deck_id, *args, **kwargs):
     if not deck_qs.exists():
         return Response({'message': 'Deck not found'}, status=404)
     deck = deck_qs.first()
+
+    # Check that the user is not thanking themselves
+    if deck.user.username == request.user.username:
+        return Response({'message': 'You cannot thank yourself'}, status=400)
 
     # Create thank object
     new_thank, created = DeckThank.objects.get_or_create(deck=deck, profile=request.user.profile)

@@ -278,8 +278,7 @@ export function StudyComponent(props) {
 // attributes, searches for all flashcards with those attributes and studies those
 // cards.
 export function CustomStudyComponent(props) {
-  // TODO: make snake_casing and camelCasing consistent
-  const {deckIds, tags, contains, suspended, leech, learningStatus, min_ease, max_ease} = props;
+  const {deckIds, tags, contains, suspended, leech, learningStatus, minEase, maxEase} = props;
   const [flashcards, setFlashcards] = useState([]);
   const [gotFlashcards, setGotFlashcards] = useState(false);
 
@@ -293,8 +292,8 @@ export function CustomStudyComponent(props) {
         suspended && suspended !== 'None' ? suspended === 'true' : null,
         leech && leech !== 'None' ? leech === 'true' : null,
         learningStatus && learningStatus !== 'None' ? learningStatus === 'true' : null,
-        min_ease && min_ease !== 'None' ? parseInt(min_ease) : null,
-        max_ease && max_ease !== 'None' ? parseInt(max_ease) : null,
+        minEase && minEase !== 'None' ? parseInt(minEase) : null,
+        maxEase && maxEase !== 'None' ? parseInt(maxEase) : null,
         (response, status) => {
           if (status === 200) {
             setFlashcards(response);
@@ -304,7 +303,7 @@ export function CustomStudyComponent(props) {
           };
       });
     };
-  }, [setFlashcards, gotFlashcards, setGotFlashcards, deckIds, tags, contains, suspended, leech, learningStatus, min_ease, max_ease]);
+  }, [setFlashcards, gotFlashcards, setGotFlashcards, deckIds, tags, contains, suspended, leech, learningStatus, minEase, maxEase]);
 
   if (flashcards.length === 0) {
     return null;

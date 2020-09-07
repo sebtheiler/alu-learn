@@ -93,7 +93,12 @@ class ProfileHistorySegment(models.Model):
 # When a user is saved, create a corresponding Profile object
 def user_did_save(sender, instance, created, *args, **kwargs):
     if created:
-        Profile.objects.get_or_create(user=instance)
-        # TODO: create welcoming notification
+        profile = Profile.objects.get_or_create(user=instance)
+        Notification.objects.create(
+            profile=profile,
+            title='Need help?',
+            description="If you ever get lost or need help, you can check our <a href='/help/tutorial/'>tutorial</a> or <a href='/help/welcome/'>welcome</a> pages."
+        )
+        # TODO: test this, fix signing up
 
 post_save.connect(user_did_save, sender=User)

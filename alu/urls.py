@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.urls import include, path
 
 from decks.views import (
-    decks_list_view,
     decks_detail_view,
     decks_home_view,
     deck_study_view,

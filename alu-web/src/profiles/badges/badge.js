@@ -39,8 +39,6 @@ export function BadgeComponent(props) {
       </>
     );
   } else {
-    // I don't know why this happens
-    // TODO:
     return null;
   };
 };

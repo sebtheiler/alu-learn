@@ -61,7 +61,7 @@ export function FlashCardsList(props) {
           const action = flashcard.is_suspended ? 'unsuspend' : 'suspend';
           apiFlashCardSuspendLeech(flashcard.parent_deck_id, flashcard.id, action, (response, status) => {
             if (status === 200) {
-              // TODO: This might cause *slight* performance issues
+              // TODO: Add loading animation/statement when suspending
               flashcard.is_suspended = action === 'suspend';
               setFlashCardsDidSet(false);
             } else {
@@ -72,7 +72,6 @@ export function FlashCardsList(props) {
         };
 
         const handleDelete = (event) => {
-          // TODO: Modal pop-up for confirmation?
           event.preventDefault();
           apiFlashCardDelete(flashcard.parent_deck_id, flashcard.id, (response, status) => {
             if (status === 200) {

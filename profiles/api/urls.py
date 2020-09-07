@@ -16,7 +16,6 @@ from .views import (
 )
 
 # Base endpoint = /api/profiles/
-app_names = 'decks' # TODO: is this needed?
 urlpatterns = [
     path('<str:username>/detail/', profile_detail_api_view),
     path('<str:username>/friend/', profile_detail_api_view),

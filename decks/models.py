@@ -28,7 +28,7 @@ class DeckManager(models.Manager):
 
 
 class Deck(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks') # todo: maybe allow this to become NULL?
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
     description = models.TextField(default='')
 
@@ -67,12 +67,6 @@ class Deck(models.Model):
 
     def __str__(self):
         return self.title
-    
-    def serialize(self): # TODO: is this needed?
-        return {
-            'id': self.id,
-            'title': self.title,
-        }
 
 
 class FlashCard(models.Model):

@@ -23,8 +23,6 @@ export function Deck(props) {
   // const urlDeckId = match ? match.groups.deckid : -1;
   // const isDetail = `${deck.id}` === `${urlDeckId}`;
 
-  // Still not sure why this happens
-  // TODO:
   if (deck.length === 0) {
     return <div>Loading...</div>
   };

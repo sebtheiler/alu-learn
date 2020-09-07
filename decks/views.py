@@ -9,11 +9,6 @@ def decks_home_view(request, *args, **kwargs):
     return render(request, 'decks/home.html', status=200)
 
 
-# Render a global list of decks (unused, should probably be removed TODO:)
-def decks_list_view(request, *args, **kwargs):
-    return render(request, 'decks/list.html')
-
-
 # Renders information on a specific deck
 def decks_detail_view(request, deck_id, *args, **kwargs):
     context = {

@@ -95,7 +95,6 @@ export function FlashCardCreate(props) {
       );
     } else {
       // This implies we are creating a card
-      // TODO: set focus back to top input area
       apiFlashCardCreate(
         deckId,
         frontTextRef.current.value,

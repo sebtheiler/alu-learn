@@ -1,9 +1,7 @@
 export function errorHandler(response, status, errorCode) {
   if (status === 403) {
-    // .replace(window.location.protocal + window.location.host, '')
     window.location.href = `/?showLoginRequired=true&returnUrl=${window.location.href}`;
   } else {
-    // TODO: maybe remove response from this line
     console.log(response, status);
     alert(
 `
