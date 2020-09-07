@@ -8,6 +8,21 @@ export function DeckImportComponent() {
   const titleRef = React.createRef();
 
   const [uploadType, setUploadType] = useState('TXT');
+  
+  // Used for dynamically changing object positioning
+  const calculateMarginClass = () => {
+    if (document.documentElement.clientWidth > 850) {return 'w-50'} else
+    if (document.documentElement.clientWidth < 850) {return 'w-75'} else
+    if (document.documentElement.clientWidth < 500) {return 'w-100'}
+  };
+
+  const [widthClass, setWidthClass] = useState(calculateMarginClass());
+
+  window.addEventListener("resize", (_event) => {
+    setWidthClass(calculateMarginClass())
+
+    console.log(widthClass)
+  });
 
   const handleImport = (event) => {
     event.preventDefault();
@@ -28,13 +43,13 @@ export function DeckImportComponent() {
   };
 
   return (
-    <Form onSubmit={handleImport} className='w-50 mx-auto mt-5 text-center'>
+    <Form onSubmit={handleImport} className={`mx-auto mt-5 text-center ${widthClass}`}>
       <Form.Group>
         {/* For some reason, switching this to a <label> freaks it out */}
         <p className='mb-0'>Type of Import</p>
         <Form.Control
           as='select'
-          className='w-50'
+          className={widthClass}
           defaultValue={uploadType}
           onChange={(event) => setUploadType(event.target.value)}
           custom
@@ -46,7 +61,7 @@ export function DeckImportComponent() {
       </Form.Group>
       {uploadType === 'TXT' ? <>
         <Form.Group>
-          <Form.Label className='w-50' style={{lineHeight: '15px'}}>
+          <Form.Label className={widthClass} style={{lineHeight: '15px'}}>
             <p className='mb-1'>Title of deck</p>
             <small className='text-secondary w-50 mb-0'>
               If you enter the name of a deck that already exists, the uploaded contents will be appended to that deck.
@@ -56,16 +71,16 @@ export function DeckImportComponent() {
             ref={titleRef}
             type='text'
             placeholder='My deck'
-            className='w-50 mx-auto text-center'
+            className={`${widthClass} mx-auto`}
             required
           />
         </Form.Group>
         <p className='mb-0'>
           Select the file to import
         </p>
-        <Form.Group className='custom-file mb-4 w-50'>
+        <Form.Group className={`custom-file mb-4 ${widthClass}`}>
           <Form.Label
-            className='custom-file-label'
+            className='custom-file-label text-left'
             htmlFor='txtFileUpload'
             id='txt-file-label'
           >
@@ -86,7 +101,7 @@ export function DeckImportComponent() {
         <Form.Group>
           <Button
             type='submit'
-            className='w-50 mx-auto'
+            className={`${widthClass} mx-auto`}
             block
           >Import!</Button>
         </Form.Group>
