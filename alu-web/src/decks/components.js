@@ -13,9 +13,10 @@ export function DecksHomeComponent(props) {
   return (
     <div className={props.className}>
       <div className='text-center my-3'>
-        <ButtonGroup vertical>
+        <ButtonGroup>
           <Button href='/flashcards/search/'>Search for Flashcards / Custom Study</Button>
-          <DeckCreate className='mt-1' />
+          <DeckCreate className='ml-1' />
+          <Button className='ml-1' href='/decks/import/'>Import Deck</Button>
         </ButtonGroup>
       </div>
       <DecksHomeList {...props}/>

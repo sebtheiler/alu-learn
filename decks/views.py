@@ -67,6 +67,12 @@ def deck_study_view(request, deck_id, *args, **kwargs):
         return redirect('/')
     return render(request, 'decks/study.html', context={'deck_id': deck_id})
 
+# Renders the view for importing decks
+def deck_import_view(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    return render(request, 'decks/import.html')
+
 # Studies flashcards based on a set of criteria
 def custom_study_view(request, *args, **kwargs):
     if not request.user.is_authenticated:

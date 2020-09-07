@@ -34,7 +34,7 @@ export function DeckImportComponent() {
 
       apiDeckTextImport(titleValue, fileContents, (response, status) => {
         if (status === 201) {
-          window.location.href = '/home/decks/';
+          window.location.href = `/decks/${response.id}/flashcards/`;
         } else {
           // Error importing deck from .txt file
           errorHandler(response, status, 1013);
@@ -56,8 +56,8 @@ export function DeckImportComponent() {
           onChange={(event) => setUploadType(event.target.value)}
           custom
         >
-          <option value='TXT'>Upload from *.txt</option>
-          <option value='APKG'>Upload from *.apkg</option>
+          <option value='TXT'>Upload from *.txt (Text file)</option>
+          <option value='APKG'>Upload from *.apkg (Anki)</option>
           <option value='QUIZLET'>Upload from Quizlet</option>
         </Form.Control>
       </Form.Group>

@@ -90,7 +90,7 @@ Features
 
 ## Sep 05
 - [X] Improve deck creation system
-- [ ] Add deck importing system
+- [X] Add deck importing system
 - [ ] Test deployment on Heroku
 
 ## Sep 06
