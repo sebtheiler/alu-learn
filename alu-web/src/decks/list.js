@@ -4,29 +4,19 @@ import {Deck} from './detail';
 import { errorHandler } from '../utils';
 
 
-// Paginated list of function for loading raw-list of decks
-// This is NOT used on the user's home page
-// TODO: clean up this function
-export function DecksList(props) {
-  const {newDecks, username, currentUsername} = props;
-  const [decksInit, setDecksInit] = useState([newDecks ? newDecks : []]);
+// Paginated list of function for loading list
+// of decks shared with the current user
+// (Either public or friends-only and the current user is a friend)
+export function DeckPublicList(props) {
+  const {username, currentUsername} = props;
   const [decks, setDecks] = useState([]);
   const [decksDidSet, setDecksDidSet] = useState(false);
-
-  // If there are any new decks, add them
-  useEffect(() => {
-    const final = [...newDecks].concat(decksInit);
-    if (final.length !== decks.length) {
-      setDecks(final);
-    };
-  }, [newDecks, decksInit, decks.length]);
 
   // Send request to the API to get decks and URLs for pagination
   useEffect(() => {
     if (decksDidSet === false) {
       apiDeckSharedList(username, (response, status) => {
         if (status === 200) {
-          setDecksInit(response);
           setDecks(response);
           setDecksDidSet(true);
         } else {
@@ -35,10 +25,10 @@ export function DecksList(props) {
         };
       });
     };
-  }, [decksInit, decksDidSet, setDecksDidSet, username]);
+  }, [decksDidSet, setDecksDidSet, username, setDecks]);
 
   return (
-    <React.Fragment>
+    <>
       {decks.map((deck, index) => {
         return <Deck
                   deck={deck}
@@ -47,5 +37,6 @@ export function DecksList(props) {
                   className='my-5 py-5 border bg-white text-dark'
                 />;
       })}
-    </React.Fragment>);
+    </>
+  );
 };

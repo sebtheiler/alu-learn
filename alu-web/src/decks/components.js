@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import {DeckCreate,} from './create';
-import {DecksList} from './list';
 import {DeckDetail} from './detail';
 import {apiDeckDetail} from '../lookup';
 import {DecksHomeList} from './home';
@@ -23,29 +22,6 @@ export function DecksHomeComponent(props) {
     </div>
   );
 };
-
-
-// Component for list of a user's decks
-export function DecksComponent(props) {
-  const [newDecks, setNewDecks] = useState([]);
-  const canCreateDeck = props.canCreateDeck === 'false' ? false : true;
-
-  // Appends new deck to front of decks list (should be changed to alphabetically)
-  // Client-side only
-  const handleNewDeck = (newDeck) => {
-    let tempNewDecks = [...newDecks];
-    tempNewDecks.unshift(newDeck);
-    setNewDecks(tempNewDecks);
-  };
-  
-  return (
-    <div className={props.className}>
-      {canCreateDeck === true ? <DeckCreate didCreateDeck={handleNewDeck} className='col-12 mb-3' /> : null}
-      <DecksList newDecks={newDecks} {...props}/>
-    </div>
-  );
-};
-
 
 // Component for displaying an individual deck
 export function DeckDetailComponent(props) {

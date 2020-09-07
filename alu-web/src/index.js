@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {ProfileInformationComponent, LoginComponent} from './profiles';
-import {DecksComponent, DeckDetailComponent, DecksHomeComponent, DeckImportComponent} from './decks';
+import {DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent} from './decks';
 import {FlashCardCreate, FlashCardsList, FlashCardSearchComponent} from './decks/flashcards';
 import {StudyComponent, CustomStudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
@@ -13,9 +13,9 @@ import {HomeComponent, NavbarComponent} from './home';
 
 const e = React.createElement;
 
-const decksEl = document.getElementById('user_decks');
+const decksEl = document.getElementById('user-decks');
 if (decksEl) {
-  ReactDOM.render(e(DecksComponent, decksEl.dataset), decksEl);
+  ReactDOM.render(e(DeckPublicList, decksEl.dataset), decksEl);
 };
 
 const deckDetailElements = document.querySelectorAll('.deck-detail');
