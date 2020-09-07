@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail, apiFlashCardDelete, apiFlashCardSuspendLeech} from '../../lookup';
+import {apiDeckDetail} from '../../lookup';
 import {FlashCard} from './detail';
-// import {Button, ButtonGroup} from 'react-bootstrap';
 import { errorHandler } from '../../utils';
 import {DeckDefaultButtonGroup} from '../buttons';
 
@@ -54,42 +53,13 @@ export function FlashCardsList(props) {
         }
       </div>
       {flashcards.length > 0 ? flashcards.map((flashcard, index) => {
-        // Functions for handling button presses
-        // This is defined individually for each displayed flashcard
-        const handleSuspend = (event) => {
-          event.preventDefault();
-          const action = flashcard.is_suspended ? 'unsuspend' : 'suspend';
-          apiFlashCardSuspendLeech(flashcard.parent_deck_id, flashcard.id, action, (response, status) => {
-            if (status === 200) {
-              // TODO: Add loading animation/statement when suspending
-              flashcard.is_suspended = action === 'suspend';
-              setFlashCardsDidSet(false);
-            } else {
-              // Error suspending/leeching flashcard
-              errorHandler(response, status, 2003);
-            };
-          });
-        };
-
-        const handleDelete = (event) => {
-          event.preventDefault();
-          apiFlashCardDelete(flashcard.parent_deck_id, flashcard.id, (response, status) => {
-            if (status === 200) {
-              flashcards.splice(index);
-              setFlashCardsDidSet(false);
-            } else {
-              // Error deleting flashcard
-              errorHandler(response, status, 2004);
-            };
-          });
-        };
         return <FlashCard
                 flashcard={flashcard}
                 key={index}
                 number={index}
                 showParentDeckTitle={showParentDeckTitle}
-                handleSuspend={handleSuspend}
-                handleDelete={handleDelete}
+                suspendCallback={() => setFlashCardsDidSet(false)}
+                deleteCallback={() => {flashcards.splice(index); setFlashCardsDidSet(false);}}
                 foreignUser={foreignUser}
               />;
       }) :

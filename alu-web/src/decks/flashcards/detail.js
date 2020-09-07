@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, OverlayTrigger} from 'react-bootstrap';
-import {generateTooltip} from '../../utils';
+import {generateTooltip, errorHandler} from '../../utils';
+import {apiFlashCardSuspendLeech, apiFlashCardDelete} from '../../lookup';
 import './detail.css';
 import ReactMarkdown from 'react-markdown';
 import RemarkMathPlugin from 'remark-math';
@@ -10,10 +11,49 @@ import 'katex/dist/katex.min.css';
 
 // Display an individual flashcard
 export function FlashCard(props) {
-  // `flashcard` is a JSON object
-  // `handleSuspend` and `handleDelete` are callback functions
-  const {flashcard, number, showParentDeckTitle, handleSuspend, handleDelete, foreignUser} = props;
+  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser} = props;
   let date = new Date(flashcard.next_review)
+
+  const [deleteIsLoading, setDeleteIsLoading] = useState(false);
+  const [suspendIsLoading, setSuspendIsLoading] = useState(false);
+
+  const handleSuspend = (event) => {
+    event.preventDefault();
+
+    if (suspendIsLoading === false) {
+      setSuspendIsLoading(true);
+  
+      const action = flashcard.is_suspended ? 'unsuspend' : 'suspend';
+      apiFlashCardSuspendLeech(flashcard.parent_deck_id, flashcard.id, action, (response, status) => {
+        if (status === 200) {
+          flashcard.is_suspended = action === 'suspend';
+          suspendCallback();
+          setSuspendIsLoading(false);
+        } else {
+          // Error suspending/leeching flashcard
+          errorHandler(response, status, 2003);
+        };
+      });
+    };
+  };
+
+  const handleDelete = (event) => {
+    event.preventDefault();
+
+    if (deleteIsLoading === false) {
+      setDeleteIsLoading(true);
+
+      apiFlashCardDelete(flashcard.parent_deck_id, flashcard.id, (response, status) => {
+        if (status === 200) {
+          deleteCallback();
+          setDeleteIsLoading(false);
+        } else {
+          // Error deleting flashcard
+          errorHandler(response, status, 2004);
+        };
+      });
+    };
+  };
 
   if (!flashcard) {
     return null;
@@ -98,8 +138,12 @@ export function FlashCard(props) {
         <div className='col-md-12 mb-3 text-center'>
           <div className='btn-group'>
             <Button href={`/decks/${flashcard.parent_deck_id}/flashcards/${flashcard.id}/edit/`} variant='primary'>Edit</Button>
-            <Button onClick={handleSuspend} variant='primary' className='ml-1'>{flashcard.is_suspended ? 'Unsuspend' : 'Suspend'}</Button>
-            <Button onClick={handleDelete} variant='danger' className='ml-1'>Delete</Button>
+            <Button onClick={handleSuspend} variant='primary' className='ml-1'>
+              {suspendIsLoading ? 'Suspending...' : (flashcard.is_suspended ? 'Unsuspend' : 'Suspend')}
+            </Button>
+            <Button onClick={handleDelete} variant='danger' className='ml-1'>
+              {deleteIsLoading ? 'Deleting...' : 'Delete'}
+            </Button>
           </div>
         </div>
       }
