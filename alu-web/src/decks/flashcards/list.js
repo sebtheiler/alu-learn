@@ -47,6 +47,7 @@ export function FlashCardsList(props) {
 
   return (
     <div className={props.className}>
+      {flashcardList ? null : <h2 class='text-center mt-3'>Browsing Flashcards{deck ? ` in "${deck.title}"` : null}</h2>}
       <div className='text-center'>
         {flashcardList || foreignUser || !deck ? null :
           <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />
@@ -92,7 +93,10 @@ export function FlashCardsList(props) {
                 handleDelete={handleDelete}
                 foreignUser={foreignUser}
               />;
-      }) : <p className='text-center mt-3'>This deck has no flashcards yet.</p>}
+      }) :
+        <p className='text-center mt-3'>
+          {flashcardsDidSet ? 'This deck has no flashcards yet.' : 'Loading...'}
+        </p>}
     </div>
   );
 };

@@ -1,23 +1,47 @@
 import React from 'react';
 import { Form, Button } from 'react-bootstrap';
+import {apiDeckTextImport} from '../lookup';
+import {errorHandler} from '../utils';
 
 export function DeckImportComponent() {
-  // const {username} = props;
   const fileRef = React.createRef();
+  const titleRef = React.createRef();
 
   const handleImport = (event) => {
     event.preventDefault();
     const file = event.target.uploadFile.files[0];
 
     file.text().then((response) => {
-      const contents = response;
-      console.log(contents);
+      const fileContents = response;
+
+      apiDeckTextImport(titleRef.current.value, fileContents, (response, status) => {
+        if (status === 201) {
+          window.location.href = '/home/decks/';
+        } else {
+          // Error importing deck from .txt file
+          errorHandler(response, status, 1013);
+        };
+      });
     });
   };
 
   return (
     <Form onSubmit={handleImport}>
-
+      <Form.Group>
+        <Form.Label>
+          Title of deck<br />
+          <small className='text-secondary'>
+            If you enter the name of a deck that already exists, the uploaded contents will be appended to that deck.
+          </small>
+        </Form.Label>
+        <Form.Control
+          ref={titleRef}
+          type='text'
+          placeholder='My deck'
+          className='w-25'
+          required
+        />
+      </Form.Group>
       <Form.Group>
         <Form.File
           id='uploadFile'
@@ -27,23 +51,9 @@ export function DeckImportComponent() {
           ref={fileRef}
           required
         />
-        {/* <Dropzone onDrop={acceptedFiles => console.log(acceptedFiles)}>
-          {({getRootProps, getInputProps}) => (
-            <section>
-              <div {...getRootProps()}>
-                <input {...getInputProps()} />
-                <p>Drag 'n' drop some files here, or click to select files</p>
-              </div>
-            </section>
-          )}
-        </Dropzone> */}
       </Form.Group>
       <Form.Group>
-        <Button
-          type='submit'
-        >
-          Import!
-        </Button>
+        <Button type='submit'>Import!</Button>
       </Form.Group>
     </Form>
   );

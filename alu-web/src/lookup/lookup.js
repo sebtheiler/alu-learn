@@ -134,6 +134,14 @@ export function apiDeckSearch(query, callback, nextUrl) {
   backendLookup('GET', endpoint, callback);
 };
 
+// Imports a deck from a text file
+export function apiDeckTextImport(title, fileContents, callback) {
+  backendLookup('POST', 'deckimporter/textupload/', callback, {
+    deck_title: title,
+    uploaded_file: fileContents,
+  });
+};
+
 // Gets detail information about a profile, such as bio, name, username, etc.
 export function apiProfileDetail(username, callback) {
   backendLookup('GET', `profiles/${username}/detail/`, callback);

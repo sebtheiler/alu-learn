@@ -47,6 +47,7 @@ int(hexadecimal_string, 16)
 1010: Error getting explore deck lists through apiExploreLists in alu-web/src/explore/base.js
 1011: Error performing deck search through apiDeckSearch in alu-web/src/explore/search.js
 1012: Error handling next set of decks (pagination, decks search) through apiDeckSearch in alu-web/src/explore/search.js
+1013: Error importing deck from .txt file through apiDeckTextImport in alu-web/src/decks/import.js
 
 === Flashcard related errors ===
 2000: Error getting flashcard detail through apiFlashCardDetail in alu-web/src/decks/flashcards/create.js
