@@ -46,6 +46,10 @@ export function DecksHomeList(props) {
     };
   };
 
+  if (decks.length === 0) {
+    return <p className='text-center mt-3'>You don't have any decks yet.</p>
+  };
+
   return (
     <>
       <div className='card-deck text-center mx-auto justify-content-center'>

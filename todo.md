@@ -74,7 +74,6 @@ Features
 ## Sep 03
 - [X] Review heatmap https://github.com/kevinsqi/react-calendar-heatmap
 - [X] Add streaks
-- [ ] Add "Happy Birthday!" message on home page (maybe change icon)
 - [X] Add welcome page
 - [ ] Add 404 custom page (this is half done)
 

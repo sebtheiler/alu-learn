@@ -52,7 +52,7 @@ export function FlashCardsList(props) {
           <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />
         }
       </div>
-      {flashcards.map((flashcard, index) => {
+      {flashcards.length > 0 ? flashcards.map((flashcard, index) => {
         // Functions for handling button presses
         // This is defined individually for each displayed flashcard
         const handleSuspend = (event) => {
@@ -92,7 +92,7 @@ export function FlashCardsList(props) {
                 handleDelete={handleDelete}
                 foreignUser={foreignUser}
               />;
-      })}
+      }) : <p className='text-center mt-3'>This deck has no flashcards yet.</p>}
     </div>
   );
 };

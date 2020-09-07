@@ -339,7 +339,7 @@ def login_api_view(request, *args, **kwargs):
         `username` or `password` not supplied: 400, {'message': 'Please specify a username and password'}
         Invalid credentials: 401, {'message': 'Invalid credentials'}
     """
-    if request.user.is_authenticated:
+    if request.user and request.user.is_authenticated:
         return Response({'message': 'User is already authenticated'}, status=400)
 
     username = request.data.get('username')
