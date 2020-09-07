@@ -8,6 +8,7 @@ urlpatterns = [
     path('decklist/', views.deck_list_view),
     path('create/', views.deck_create_view),
     path('search/', views.deck_search_view),
+    path('textupload/', views.txt_file_upload),
     path('detail/<str:username>/', views.deck_shared_view),
     path('<int:deck_id>/', views.deck_detail_view),
     path('<int:deck_id>/delete/', views.deck_delete_view),

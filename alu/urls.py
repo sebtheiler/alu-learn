@@ -37,7 +37,6 @@ urlpatterns = [
     path('api/profiles/', include('profiles.api.urls')),
     path('explore/', include('explore.urls')),
     path('api/explore/', include('explore.api.urls')),
-    path('api/deckimporter/', include('deckimporter.api.urls')),
     path('api/analytics/', include('analytics.api.urls')),
 ]
 

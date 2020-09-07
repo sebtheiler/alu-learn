@@ -46,7 +46,7 @@ export function DecksHomeList(props) {
     };
   };
 
-  if (decks.length === 0) {
+  if (decks.length === 0) { // TODO: this is appearing before decks have loaded even if the user has decks
     return <p className='text-center mt-3'>You don't have any decks yet.</p>
   };
 

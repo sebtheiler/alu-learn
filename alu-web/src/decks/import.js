@@ -8,6 +8,8 @@ export function DeckImportComponent() {
   const titleRef = React.createRef();
 
   const [uploadType, setUploadType] = useState('TXT');
+  const [titleValue, setTitleValue] = useState('');
+  const [isLoading, setIsLoading] = useState(false)
   
   // Used for dynamically changing object positioning
   const calculateMarginClass = () => {
@@ -20,24 +22,24 @@ export function DeckImportComponent() {
 
   window.addEventListener("resize", (_event) => {
     setWidthClass(calculateMarginClass())
-
-    console.log(widthClass)
   });
 
   const handleImport = (event) => {
     event.preventDefault();
+    setIsLoading(true);
     const file = event.target.uploadFile.files[0];
 
     file.text().then((response) => {
       const fileContents = response;
 
-      apiDeckTextImport(titleRef.current.value, fileContents, (response, status) => {
+      apiDeckTextImport(titleValue, fileContents, (response, status) => {
         if (status === 201) {
           window.location.href = '/home/decks/';
         } else {
           // Error importing deck from .txt file
           errorHandler(response, status, 1013);
         };
+        setIsLoading(false);
       });
     });
   };
@@ -69,6 +71,7 @@ export function DeckImportComponent() {
           </Form.Label>
           <Form.Control
             ref={titleRef}
+            onChange={() => setTitleValue(titleRef.current.value)}
             type='text'
             placeholder='My deck'
             className={`${widthClass} mx-auto`}
@@ -103,7 +106,7 @@ export function DeckImportComponent() {
             type='submit'
             className={`${widthClass} mx-auto`}
             block
-          >Import!</Button>
+          >{isLoading ? 'Loading...' : 'Import!'}</Button>
         </Form.Group>
       </> : 
       <p>We currently don't support imports of this type. We are working hard to implement this functionality as soon as possible.</p>

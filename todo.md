@@ -98,6 +98,8 @@ Features
 - [ ] Add Privacy Policy
 - [ ] Flesh out legal structure
 
+TODO: seprate function for getting meta data about deck and for getting flashcard information
+
 ## Sep 07
 - [ ] Final deployment system
 
