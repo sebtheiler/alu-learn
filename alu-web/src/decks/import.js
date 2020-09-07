@@ -26,11 +26,11 @@ export function DeckImportComponent() {
   };
 
   return (
-    <Form onSubmit={handleImport}>
+    <Form onSubmit={handleImport} className='w-50 mx-auto mt-5 text-center'>
       <Form.Group>
-        <Form.Label>
-          Title of deck<br />
-          <small className='text-secondary'>
+        <Form.Label className='w-50' style={{lineHeight: '15px'}}>
+          <p className='mb-1'>Title of deck</p>
+          <small className='text-secondary w-50 mb-0'>
             If you enter the name of a deck that already exists, the uploaded contents will be appended to that deck.
           </small>
         </Form.Label>
@@ -38,22 +38,39 @@ export function DeckImportComponent() {
           ref={titleRef}
           type='text'
           placeholder='My deck'
-          className='w-25'
+          className='w-50 mx-auto text-center'
           required
         />
       </Form.Group>
-      <Form.Group>
+      <p className='mb-0'>
+        Select the file to import
+      </p>
+      <Form.Group className='custom-file mb-4 w-50'>
+        <Form.Label
+          className='custom-file-label'
+          htmlFor='txtFileUpload'
+          id='txt-file-label'
+        >
+          Choose file
+        </Form.Label>
         <Form.File
-          id='uploadFile'
+          className='custom-file-input'
+          id='txtFileUpload'
           name='uploadFile'
-          label='File to import'
-          onChange={event => console.log(event)}
+          accept='.txt'
           ref={fileRef}
           required
+
+          // Update the label to the name of the uploaded file
+          onChange={() => document.getElementById('txt-file-label').innerHTML = fileRef.current.value.replace('C:\\fakepath\\', '')}
         />
       </Form.Group>
       <Form.Group>
-        <Button type='submit'>Import!</Button>
+        <Button
+          type='submit'
+          className='w-50 mx-auto'
+          block
+        >Import!</Button>
       </Form.Group>
     </Form>
   );
