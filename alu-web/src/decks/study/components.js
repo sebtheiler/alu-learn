@@ -7,7 +7,7 @@ import { errorHandler } from '../../utils';
 
 export function StudyComponent(props) {
   const {deckId, flashcardList, studySuspendedCards} = props;
-  const futureReviewDays = props.futureReviewDays ? parseInt(props.futureReviewDays) : 0;
+  const reviewAheadMinutes = props.reviewAheadMinutes ? parseInt(props.reviewAheadMinutes) : 120;
   // Either specify `deckId`, the ID of the deck to study
   // or `flashcardList`, a raw list of flashcards
   // Do NOT specify both
@@ -60,7 +60,7 @@ export function StudyComponent(props) {
       const cardsDueNow = deck.flashcards.filter((card) => {
         let now = new Date();
         // If we are reviewing ahead, change when "now" is
-        now.setDate(now.getDate() + futureReviewDays);
+        now.setMinutes(now.getMinutes() + reviewAheadMinutes);
 
         // Date the card should be reviewed
         const review = new Date(card.next_review);
@@ -71,9 +71,7 @@ export function StudyComponent(props) {
           return false;
         };
 
-        // This is done weirdly so that you don't have to wait for 1min/10min cards
-        // TODO: change to just allow for futureReviewDays to be minutes
-        return new Date(review.getFullYear(), review.getMonth(), review.getDate()) < now && (!card.is_suspended || studySuspendedCards);
+        return review < now && (!card.is_suspended || studySuspendedCards);
       });
 
       // If there are no more cards, we've finished
@@ -118,7 +116,7 @@ export function StudyComponent(props) {
       setCurrentCard(card);
       setShowAnswer(false);
     };
-  }, [currentCardDidSet, setCurrentCardDidSet, deck, studySuspendedCards, futureReviewDays, previousCard]);
+  }, [currentCardDidSet, setCurrentCardDidSet, deck, studySuspendedCards, reviewAheadMinutes, previousCard]);
 
   // Shows answer when spacebar is pressed or "Show Answer" is clicked
   const showAnswerHandler = (event) => {
@@ -163,6 +161,7 @@ export function StudyComponent(props) {
       // Update date locally
       const deckCopy = deck;
       const index = deckCopy.flashcards.map(e => e.id).indexOf(currentCard.id);
+      if (deckCopy.flashcards[index].learning_status === 'UNSEEN') {deckCopy.new_cards_done_today++};
       deckCopy.flashcards[index].next_review = nextReviewDate.toISOString();
       deckCopy.flashcards[index].interval = isMinute ? 0 : interval;
       deckCopy.flashcards[index].ease = easeFactor;
@@ -211,6 +210,7 @@ export function StudyComponent(props) {
           return;
         };
       };
+
       backendGradeUpdate(grade);
       // Select the 'Show Answer' button
       try {
@@ -314,7 +314,7 @@ export function CustomStudyComponent(props) {
       <StudyComponent
         flashcardList={{flashcards: flashcards}}
         // studySuspendedCards={true}
-        // futureReviewDays={1}
+        // reviewAheadMinutes={1}
       />
     );
   };
