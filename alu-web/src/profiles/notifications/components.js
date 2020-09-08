@@ -19,7 +19,7 @@ export function NotificationComponent(props) {
       // If the user is not logged in make a fake notification
       setNotifList([{
         title: 'Hey there!',
-        description: 'Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study most effectively. Learn more at TODO',
+        description: "Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study most effectively. Learn more at <a href='/help/tutorial/'>here</a>",
         read: false,
         category: 'basic',
         timestamp: (new Date()).toISOString(),

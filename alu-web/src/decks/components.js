@@ -26,8 +26,11 @@ export function DecksHomeComponent(props) {
 // Component for displaying an individual deck
 export function DeckDetailComponent(props) {
   const {deckId, currentUsername} = props;
+
   const [didLookup, setDidLookup] = useState(false);
   const [deck, setDeck] = useState(null);
+  const [isForbidden, setIsForbidden] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   // Send a request to the API to get information about the given deck
   // `didLookup` is required so that this doesn't infinitely run
@@ -36,6 +39,12 @@ export function DeckDetailComponent(props) {
       apiDeckDetail(deckId, (response, status) => {
         if (status === 200) {
           setDeck(response);
+          setIsForbidden(false);
+        } else if (status === 403) {
+          setIsForbidden(true);
+        } else if (status === 404) {
+          setNotFound(true);
+          setIsForbidden(false);
         } else {
           // Error getting deck detail
           errorHandler(response, status, 1003);
@@ -45,11 +54,15 @@ export function DeckDetailComponent(props) {
     };
   }, [deckId, didLookup, setDidLookup]);
 
-  return deck === null ? null : (
-    <DeckDetail
-      deck={deck}
-      currentUsername={currentUsername}
-      textAlign='left'
-    />
+  return deck === null ?
+    <p className='text-center'>
+      {isForbidden ? 'You are not allowed to view this deck.' : (notFound ? 'It doesn\'t look like this deck exists.' : 'Loading...')}
+    </p>
+    : (
+      <DeckDetail
+        deck={deck}
+        currentUsername={currentUsername}
+        textAlign='left'
+      />
   );
 };

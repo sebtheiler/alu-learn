@@ -54,7 +54,7 @@ int(hexadecimal_string, 16)
 2003: Error suspending/leeching flashcard through apiFlashCardSuspendLeech in alu-web/src/decks/flashcards/list.js
 2004: Error deleting flashcard through apiFlashCardDelete in alu-web/src/decks/flashcards/list.js
 2005: Error searching for flashcards through apiFlashCardSearch in alu-web/src/decks/flashcards/search.js
-2006: Error updating flashcard with information returned from studying through apiFlashCardDateUpdate alu-web/src/decks/study/components.js
+2006: Error updating flashcard with information returned from studying through apiFlashCardReviewUpdate alu-web/src/decks/study/components.js
 2007: Error searching for flashcards in custom study through apiFlashCardSearch in alu-web/src/decks/study/components.js
 2008: Error deleting flashcard while studying through apiFlashCardDelete in alu-web/src/decks/study/components.js
 2009: Error marking flashcard as leech or suspending while studying through apiFlashCardSuspendLeech in alu-web/src/decks/study/components.js

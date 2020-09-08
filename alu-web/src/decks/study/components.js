@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail, apiFlashCardDateUpdate, apiFlashCardSearch, apiFlashCardSuspendLeech, apiFlashCardDelete} from '../../lookup';
+import {apiDeckDetail, apiFlashCardReviewUpdate, apiFlashCardSearch, apiFlashCardSuspendLeech, apiFlashCardDelete} from '../../lookup';
 import {StudyElement} from './study';
 import {getAnkiInterval} from './algorithm'
 import {Button} from 'react-bootstrap';
@@ -37,6 +37,8 @@ export function StudyComponent(props) {
         apiDeckDetail(deckId, (response, status) => {
           if (status === 200) {
             setDeck(response);
+          } else if (status === 403) {
+            window.location.href = `/decks/${deckId}`;
           } else {
             // Error getting deck to study
             errorHandler(response, status, 1009);
@@ -139,7 +141,7 @@ export function StudyComponent(props) {
     // This checks that the interval is valid
     if (interval !== -1) {
       // Update date in database
-      apiFlashCardDateUpdate(
+      apiFlashCardReviewUpdate(
         currentCard.parent_deck_id,
         currentCard.id,
         nextReviewDate.toISOString(),

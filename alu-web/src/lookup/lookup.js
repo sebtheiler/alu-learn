@@ -29,8 +29,8 @@ export function apiFlashCardEdit(deckId, flashcardId, frontText, backText, tags,
 };
 
 // Update a flashcard's review date
-export function apiFlashCardDateUpdate(deckId, flashcardId, nextReview, interval, ease, learningStatus, stepsIndex, leechIndex, isLeech, incrementNewCardsDoneToday, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/changedate/`, callback, {
+export function apiFlashCardReviewUpdate(deckId, flashcardId, nextReview, interval, ease, learningStatus, stepsIndex, leechIndex, isLeech, incrementNewCardsDoneToday, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/review_update/`, callback, {
     next_review: nextReview,
     interval: interval,
     ease: ease,

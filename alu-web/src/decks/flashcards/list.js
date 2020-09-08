@@ -31,6 +31,8 @@ export function FlashCardsList(props) {
             setFlashCardsDidSet(true);
             setDeck(response);
             setFlashCards(response.flashcards);
+          } else if (status === 403) {
+            window.location.href = `/decks/${deckId}`;
           } else {
             // Error looking up deck
             errorHandler(response, status, 2002);

@@ -7,8 +7,7 @@ import 'bootstrap/dist/css/bootstrap.css'; // or include from a CDN
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import { errorHandler } from '../../utils';
 
-// TODO: split this component in multiple components
-// It is a horrible piece of code
+// Renders the form for searching for flashcards
 export function FlashCardSearchComponent(props) {
   const {username} = props;
   const [decks, setDecks] = useState([]);

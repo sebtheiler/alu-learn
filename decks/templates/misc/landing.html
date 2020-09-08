@@ -1,13 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!-- TODO: maybe remove user agent -->
 <div
   id='landing-main'
   class='landing-component mt-5'
   data-alpha-spots-remaining='200'
   data-experiment-params='{{ experiment_params }}'
-  data-user-agent='{{ user_agent }}'
   data-show-login-required='{{ show_login_required }}'
   data-return-url='{{ return_url }}'
   data-user-is-new='{{ user_is_new }}'

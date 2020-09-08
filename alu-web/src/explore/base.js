@@ -11,7 +11,6 @@ export function ExploreComponent(props) {
 
   useEffect(() => {
     if (decksDidSet === false) {
-      // TODO: replace with actual explore function
       apiExploreLists((response, status) => {
         if (status === 200) {
           setDecks(response);

@@ -149,12 +149,10 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
 
 
 @api_view(['POST'])
-# @authentication_classes([SessionAuthentication])
-# @permission_classes([IsAuthenticated])
-# TODO: rename and re-add permission requirements
-def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
+@permission_classes([IsAuthenticated])
+def flashcard_review_update_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
-    Edit a flashcard - POST
+    Update a flashcard's review information - POST
 
     Required information:
         `deck_id`: (URL) ID of the deck in which we are editing the flashcard
@@ -162,7 +160,7 @@ def flashcard_changedate_view(request, deck_id, flashcard_id, *args, **kwargs):
         `date`: (Data) ISO string date for next review
         `learning_status`: (Data) Learning status of the card, either 'UNSEEN', 'LEARNING', 'LEARNED', or 'RELEARNING'
         `ease` Ease of card
-        `interval`: next interval TODO make doc better
+        `interval`: The new interval for the flashcard
         `increment_new_cards_done_today`: Whether or not to increment the parent deck's new_cards_done_today` attribute
 
     Possible errors:
@@ -372,7 +370,6 @@ def deck_home_view(request, *args, **kwargs):
 
 
 @api_view(['GET'])
-# TODO: require permission/authentication with friends
 def deck_detail_view(request, deck_id, *args, **kwargs):
     """
     Get specific information about a deck - GET
@@ -387,12 +384,18 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
     
     Possible errors:
         Invalid deck: 404, {message: 'Deck not found'}
+        Deck is not shared with user: 403, {'message': 'You are unauthorized to view this deck'}
     """
     decks_qs = Deck.objects.filter(pk=deck_id)
+
     if not decks_qs.exists():
         return Response({'message': 'Deck not found'}, status=404)
-    obj = decks_qs.first()
-    serializer = DeckSerializer(obj, context={'request': request})
+    deck = decks_qs.first()
+    
+    if not (deck.sharing_setting == 'PUBLIC' or (deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends)):
+        return Response({'message': 'You are unauthorized to view this deck'}, status=403)
+
+    serializer = DeckSerializer(deck, context={'request': request})
     return Response(serializer.data, status=200)
 
 
@@ -531,7 +534,6 @@ def deck_copy_view(request, deck_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-# TODO: should the user be able to thank themselves????
 def deck_thank_view(request, deck_id, *args, **kwargs):
     """
     Create a thank object for a deck - POST
@@ -657,9 +659,7 @@ def flashcard_search_view(request, *args, **kwargs):
         else:
             tag_list = tags
 
-        # THIS IS THE WORST LINE OF CODE I'VE EVER WRITTEN
-        # TODO: HEAL THE MONSTROSITY THAT THIS LINE HAS BECOME
-        # For reference, it gets a list of flashcard IDs, if the
+        # Gets a list of flashcard IDs, if the
         # flashcard has a tag that is in `tag_list`
         flashcard_ids = [
             flashcard.id for flashcard in flashcard_qs if len( # each flashcard if...
