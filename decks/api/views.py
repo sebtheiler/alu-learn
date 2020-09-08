@@ -608,9 +608,6 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-# TODO: this should probably be moved to a GET
-# It can also probably be optimized with the number of SQL operations
-# It should also be cached
 def flashcard_search_view(request, *args, **kwargs):
     """
     Searches for flashcards based on some parameters - GET
@@ -643,6 +640,11 @@ def flashcard_search_view(request, *args, **kwargs):
     for deck in deck_qs[1:]:
         flashcard_qs |= deck.flashcards.all()
 
+    # Search flashcards
+    # We will be ANDing (&=) a bunch more queries to this
+    # and using it as a filter in the end.
+    flashcard_query = Q()
+
     # Filter by tags
     tags = request.GET.get('tags')
     if tags:
@@ -661,17 +663,17 @@ def flashcard_search_view(request, *args, **kwargs):
                     ] # ...has any shared elements in `tag_list`
                 ).intersection(set(tag_list))) > 0
         ] 
-        flashcard_qs = flashcard_qs.filter(id__in=flashcard_ids)
+        flashcard_query &= Q(id__in=flashcard_ids)
 
     # Filter by contains
     contains = request.GET.get('contains')
     if contains:
-        flashcard_qs = flashcard_qs.filter(Q(front_text__icontains=contains) | Q(back_text__icontains=contains))
+        flashcard_query &= Q(front_text__icontains=contains) | Q(back_text__icontains=contains)
 
     # Filter by suspended, leech, and learning status
     suspended = request.GET.get('suspended')
     if suspended is not None:
-        flashcard_qs = flashcard_qs.filter(is_suspended=suspended.lower() == 'true')
+        flashcard_query &= Q(is_suspended=suspended.lower() == 'true')
     
     leech = request.GET.get('leech')
     if leech is not None:
@@ -681,20 +683,23 @@ def flashcard_search_view(request, *args, **kwargs):
             filter_func = lambda flashcard: not flashcard.is_leech()
 
         flashcard_ids = [flashcard.id for flashcard in flashcard_qs if filter_func(flashcard)]
-        flashcard_qs = flashcard_qs.filter(id__in=flashcard_ids)
+        flashcard_query &= Q(id__in=flashcard_ids)
     
     learning_status = request.GET.get('learningStatus')
     if learning_status is not None:
-        flashcard_qs = flashcard_qs.filter(learning_status__iexact=learning_status)
+        flashcard_query &= Q(learning_status__iexact=learning_status)
 
     # Filter by min/max ease
     min_ease = request.GET.get('minEase')
     if min_ease is not None:
-        flashcard_qs = flashcard_qs.filter(ease__gte=int(min_ease))
+        flashcard_query &= Q(ease__gte=int(min_ease))
     
     max_ease = request.GET.get('maxEase')
     if max_ease is not None:
-        flashcard_qs = flashcard_qs.filter(ease__lte=int(max_ease))
+        flashcard_query &= Q(ease__lte=int(max_ease))
+    
+    # Execute query
+    flashcard_qs = flashcard_qs.filter(flashcard_query)
 
     # Return
     return Response(FlashCardSerializer(flashcard_qs, many=True).data, status=200)

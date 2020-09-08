@@ -113,7 +113,8 @@ TODO: seprate function for getting meta data about deck and for getting flashcar
   - [X] Remove profile information from notification serializer
 - [X] Redirect to login when logged out
 - [X] Turn flashcard search into GET
-  - [ ] Optimize it
+  - [X] Optimize it
+  - [ ] Cache?
 - [ ] Add password reset page
 - [ ] Check email availibility
   - [ ] API view
