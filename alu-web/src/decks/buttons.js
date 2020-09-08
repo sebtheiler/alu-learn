@@ -56,7 +56,7 @@ export function DeckDefaultButtonGroup(props) {
   const deleteHandler = () => {
     apiDeckDelete(deck.id, (response, status) => {
       if (status === 200) {
-        window.location.reload();
+        window.location.href = '/home/decks/';
       } else {
         // Error deleting deck
         errorHandler(response, status, 1001);
