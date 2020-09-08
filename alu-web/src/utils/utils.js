@@ -1,6 +1,6 @@
 import React from 'react';
 import numeral from 'numeral';
-import {Tooltip} from 'react-bootstrap';
+import {Tooltip, OverlayTrigger} from 'react-bootstrap';
 
 // Creates a simple tooltip
 export const generateTooltip = (text) => {
@@ -147,5 +147,27 @@ export function FormCheckbox(props) {
       <input type={type} required={required ? 'required' : ''} defaultChecked={defaultChecked} name={name} />{' '}
       {props.children}
     </label>
+  );
+};
+
+
+// Generates a little question-bubble with tooltip
+export function QuestionBubble(props) {
+  // Type could be:
+  // question; info; times; stop; minus; plus;
+  // dot; usd; pause; etc.
+  const type = props.type ? props.type : 'question';
+
+  const showDelay = props.showDelay ? props.showDelay : 20;
+  const hideDelay = props.hideDelay ? props.hideDelay : 500;
+
+  return (
+    <OverlayTrigger
+      overlay={generateTooltip(props.children)}
+      placement='right'
+      delay={{ show: showDelay, hide: hideDelay }}
+    >
+      <i className={`fas fa-${type}-circle text-secondary`} />
+    </OverlayTrigger>
   );
 };

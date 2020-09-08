@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {apiFlashCardCreate, apiFlashCardEdit, apiFlashCardDetail} from '../../lookup';
 import {Button, Form, OverlayTrigger} from 'react-bootstrap';
-import {generateTooltip, errorHandler} from '../../utils';
+import {generateTooltip, errorHandler, QuestionBubble} from '../../utils';
 
 
 function FreezeOverlay(props) {
@@ -156,16 +156,10 @@ export function FlashCardCreate(props) {
                 style={{cursor: 'pointer', color: freezeTags ? '#89ACFF' : '#6C757D'}}
               /></FreezeOverlay>}
               Tags (separate with commas){' '}
-              <OverlayTrigger
-                overlay={generateTooltip(
-                  `You can give your flashcards tags to group them together.
-                  Learn more here TODO`
-                  )}
-                  placement='right'
-                  delay={{ Backshow: 20, hide: 800 }}
-                  >
-                <i className="fas fa-question-circle"></i>
-              </OverlayTrigger>
+              <QuestionBubble>
+                You can give your flashcards tags to group them together.
+                Learn more here TODO
+              </QuestionBubble>
             </p>
           </Form.Label>
           <Form.Control

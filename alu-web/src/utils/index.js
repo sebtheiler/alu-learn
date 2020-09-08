@@ -8,6 +8,7 @@ import {
   shiftDate,
   range,
   FormCheckbox,
+  QuestionBubble,
 } from './utils';
 
 import {errorHandler} from './errorHandler';
@@ -23,4 +24,5 @@ export {
   range,
   errorHandler,
   FormCheckbox,
+  QuestionBubble,
 };

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import {Button, OverlayTrigger} from 'react-bootstrap';
-import {generateTooltip, errorHandler} from '../../utils';
+import {Button} from 'react-bootstrap';
+import {QuestionBubble, errorHandler} from '../../utils';
 import {apiFlashCardSuspendLeech, apiFlashCardDelete} from '../../lookup';
 import './detail.css';
 import ReactMarkdown from 'react-markdown';
@@ -75,30 +75,18 @@ export function FlashCard(props) {
           <p className={foreignUser ? 'd-none' : ''}>
             <em className={flashcard.is_leech ? '' : 'd-none'}>
               This flashcard is a leech{' '}
-              <OverlayTrigger
-                overlay={generateTooltip(
-                  `A leech is a card that you've repeatedly struggled to learn.
-                  You should give this card special attention, such as rewording the question, or reviewing the material.
-                  You can learn more here TODO`
-                )}
-                placement='right'
-                delay={{ show: 20, hide: 800 }}
-              >
-                <i className="fas fa-question-circle"></i>
-              </OverlayTrigger>
+              <QuestionBubble>
+                A leech is a card that you've repeatedly struggled to learn.
+                You should give this card special attention, such as rewording the question, or reviewing the material.
+                You can learn more here TODO
+              </QuestionBubble>
               <br />
             </em>
             <em className={flashcard.is_suspended ? '' : 'd-none'}>
               This flashcard is suspended{' '}
-              <OverlayTrigger
-                overlay={generateTooltip(
-                  `A suspended card will not be shown to you when you study this deck. Learn more here TODO.`
-                )}
-                placement='right'
-                delay={{ show: 20, hide: 800 }}
-                >
-                  <i className="fas fa-question-circle"></i>
-              </OverlayTrigger>
+              <QuestionBubble>
+                A suspended card will not be shown to you when you study this deck. Learn more here TODO.`
+              </QuestionBubble>
               <br />
             </em>
           </p>

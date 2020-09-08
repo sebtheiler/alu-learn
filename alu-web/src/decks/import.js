@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import { Form, Button, OverlayTrigger } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 import {apiDeckTextImport} from '../lookup';
-import {errorHandler, FormCheckbox, generateTooltip} from '../utils';
+import {errorHandler, FormCheckbox, QuestionBubble} from '../utils';
 
 export function DeckImportComponent() {
   const fileRef = React.createRef();
@@ -102,19 +102,9 @@ export function DeckImportComponent() {
         <Form.Group>
           <FormCheckbox name='convertFormatting' id='convertFormatting'>
             Convert Anki formatting to Alu formatting?{' '}
-            <OverlayTrigger
-                overlay={generateTooltip(
-                  `For example:
-                  [$$] ➡ $$,
-                  [$] ➡ $,
-                  $ ➡ \\$
-                  `
-                  )}
-                  placement='right'
-                  delay={{ Backshow: 20, hide: 800 }}
-                  >
-                <i className="fas fa-question-circle"></i>
-              </OverlayTrigger>
+            <QuestionBubble>
+              For example: [$$] ➡ $$, [$] ➡ $, $ ➡ \$
+            </QuestionBubble>
           </FormCheckbox>
         </Form.Group>
         <Form.Group>
