@@ -104,14 +104,12 @@ class MinifiedProfileSerializer(serializers.ModelSerializer):
 
 
 class NotificationSerializer(serializers.ModelSerializer):
-    profile = PublicProfileSerializer(read_only=True)
     title = serializers.SerializerMethodField(read_only=True)
     description = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Notification
         fields = [
-            'profile',
             'title',
             'description',
             'read',

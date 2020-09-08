@@ -107,8 +107,10 @@ TODO: seprate function for getting meta data about deck and for getting flashcar
 - [X] Paginate notifications
   - [X] Make See older notifications work properly
     - [ ] Display number of unread in that too
+      - [ ] Make notification reading work properly in detail
     - [X] Make it left-aligned
-  - [ ] Remove profile information from notification serializer
+    - [X] Align notif icon and profile icon
+  - [X] Remove profile information from notification serializer
 - [ ] Add Contact Page
 - [ ] Add password reset page
 - [ ] Turn flashcard search into GET
@@ -117,7 +119,8 @@ TODO: seprate function for getting meta data about deck and for getting flashcar
   - [ ] API view
   - [ ] JS
 - [ ] Basic settings page
-- [ ] 
+- [X] Redirect to login when logged out
+- [ ] Fix login/register issue
 
 ## Sep 09
 - [ ] Spread the word

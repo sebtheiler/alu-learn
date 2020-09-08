@@ -13,7 +13,7 @@ export function NavbarComponent(props) {
     event.preventDefault();
     apiProfileLogout((response, status) => {
       if (status === 200) {
-        window.location.reload();
+        window.location.href = '/login/';
       } else {
         // Error logging-out user
         errorHandler(response, status, 3012);
@@ -40,7 +40,7 @@ export function NavbarComponent(props) {
           </Nav.Link>
         </Nav>
         <Nav className='ml-auto'>
-          <Nav.Link className='mr-2'>
+          <Nav.Link className='mr-2' style={{width: '57px', height: '57px'}}>
             <NotificationComponent username={username} isPopup={true} />
           </Nav.Link>
           {username ?
@@ -50,6 +50,7 @@ export function NavbarComponent(props) {
                   <i className='fas fa-user-circle text-light fa-2x'></i>
                 }
                 id='profile-dropdown'
+                style={{width: '57px', height: '57px', transform: 'translateY(3px)'}}
                 alignRight
               >
                 <NavDropdown.Item href='/profile/'>
