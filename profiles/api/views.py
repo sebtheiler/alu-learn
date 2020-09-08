@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from ..models import Profile, Notification, ProfileBadge
 from ..serializers import PublicProfileSerializer, MinifiedProfileSerializer, NotificationSerializer, ProfileBadgeSerializer, HistorySerializer
 from analytics.models import ExperimentController
+from decks.api.utils import get_paginated_queryset_response
 
 import datetime
 
@@ -176,10 +177,8 @@ def notification_api_view(request, username, *args, **kwargs):
         return Response(NotificationSerializer(instance=notif).data, status=201)
     elif request.method == 'GET':
         # List all notifications
-        return Response(NotificationSerializer(
-            Notification.objects.filter(profile__user=user),
-            many=True,
-        ).data, status=200)
+        notif_qs = Notification.objects.filter(profile__user=user)
+        return get_paginated_queryset_response(notif_qs, request, NotificationSerializer, page_size=2)
     else:
         return Response({'message': f'Method {request.method} not allowed'}, status=405)
 

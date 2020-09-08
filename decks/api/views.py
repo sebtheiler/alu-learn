@@ -10,13 +10,13 @@ from django.views.decorators.vary import vary_on_cookie
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..forms import DeckForm
 from ..models import Deck, FlashCard, DeckThank
 from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer
+from .utils import get_paginated_queryset_response
 from profiles.models import Profile
 
 # For calculating advanced string similarities (used in searching)
@@ -285,15 +285,6 @@ def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
         return Response({'message': 'Flashcard not found'}, status=404)
     serializer = FlashCardSerializer(flashcard_qs.first())
     return Response(serializer.data)
-
-
-# Helper function for pagination
-def get_paginated_queryset_response(qs, request, Serializer, page_size=50):
-    paginator = PageNumberPagination()
-    paginator.page_size = page_size
-    paginated_qs = paginator.paginate_queryset(qs, request)
-    serializer = Serializer(paginated_qs, many=True)
-    return paginator.get_paginated_response(serializer.data)
 
 
 @vary_on_cookie

@@ -97,7 +97,7 @@ def user_did_save(sender, instance, created, *args, **kwargs):
         Notification.objects.create(
             profile=profile,
             title='Need help?',
-            description="If you ever get lost or need help, you can check our <a href='/help/tutorial/'>tutorial</a> or <a href='/help/welcome/'>welcome</a> pages."
+            description="If you ever get lost or need help, you can check our [tutorial](/help/tutorial/) or [welcome](/help/welcome/) pages."
         )
         # TODO: test this, fix signing up
 

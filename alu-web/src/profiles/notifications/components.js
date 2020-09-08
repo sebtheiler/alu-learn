@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Popover, OverlayTrigger, Button} from 'react-bootstrap';
 
 import {Notification} from './detail';
@@ -10,43 +10,61 @@ import './components.css';
 export function NotificationComponent(props) {
   const {username, isPopup} = props;
   const [notifList, setNotifList] = useState([]);
-  const [didGetNotifs, setDidGetNotifs] = useState(false);
+  const [notifsDidSet, setNotifsDidSet] = useState(false);
   const [numUnreadNotifs, setNumUnreadNotifs] = useState(0);
+  const [nextUrl, setNextUrl] = useState(null);
 
   // Lookup notifications in API
-  if (didGetNotifs === false) {
-    if (username === '') {
-      // If the user is not logged in make a fake notification
-      setNotifList([{
-        title: 'Hey there!',
-        description: "Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study most effectively. Learn more at <a href='/help/tutorial/'>here</a>",
-        read: false,
-        category: 'basic',
-        timestamp: (new Date()).toISOString(),
-        id: -1,
-      }]);
-      setDidGetNotifs(true);
-      setNumUnreadNotifs(1);
-    } else {
-      // If the user is logged in, get notifications
+  useEffect(() => {
+    if (notifsDidSet === false) {
+      if (username === '') {
+        // If the user is not logged in make a fake notification
+        setNotifList([{
+          title: 'Hey there!',
+          description: "Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study most effectively. Learn more at [here](/help/tutorial/).",
+          read: false,
+          category: 'basic',
+          timestamp: (new Date()).toISOString(),
+          id: -1,
+        }]);
+        setNotifsDidSet(true);
+        setNumUnreadNotifs(1);
+      } else {
+        // If the user is logged in, get notifications
+        apiNotificationList(username, (response, status) => {
+          if (status === 200) {
+            setNextUrl(response.next);
+            setNotifList(response.results.reverse().splice(0, isPopup ? 5 : 10000));
+            setNotifsDidSet(true);
+            
+            // Check if there are any unread notifications
+            const unread = response.results.filter((notif) => {
+              return notif.read === false;
+            });
+            setNumUnreadNotifs(unread.length);
+          } else {
+            // Error getting notification list
+            errorHandler(response, status, 3002);
+          };
+        });
+      };
+    };
+  }, [notifsDidSet, isPopup, username]);
+
+  // Load next set of notifications (pagination)
+  const handleLoadNext = (event) => {
+    event.preventDefault();
+    if (nextUrl !== null) {
       apiNotificationList(username, (response, status) => {
         if (status === 200) {
-          // TODO: It would be nice if this was paginated, but since that
-          // requires a whole new class I'm just setting it to 500 notifications
-          const numNotifs = isPopup ? 5 : 500;
-          setNotifList(response.slice(0, numNotifs).reverse());
-          setDidGetNotifs(true);
-          
-          // Check if there are any unread notifications
-          const unread = response.slice(0, numNotifs).reverse().filter((notif) => {
-            return notif.read === false;
-          });
-          setNumUnreadNotifs(unread.length);
+          setNextUrl(response.next);
+          const newNotifs = [...notifList].concat(response.results);
+          setNotifList(newNotifs);
         } else {
-          // Error getting notification list
-          errorHandler(response, status, 3002);
+          // Error handling next set of notifications (pagination)
+          errorHandler(response, status, 3014);
         };
-      });
+      }, nextUrl);
     };
   };
 
@@ -113,6 +131,16 @@ export function NotificationComponent(props) {
         {notifList.map((notif, index) => {
           return <Notification notif={notif} read={notif.read} key={index} />
         })}
+        <div className='text-center mb-2'>
+        {nextUrl !== null ?
+          <Button
+            onClick={handleLoadNext}
+            variant='outline-primary'
+          >
+            Load more notifications
+          </Button>
+        : null}
+      </div>
       </>
     );
   };

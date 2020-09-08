@@ -14,7 +14,7 @@ export function DecksHomeList(props) {
   const [nextUrl, setNextUrl] = useState(null); // URLS used for pagination
 
   // Send request to the API to get decks and URLs for pagination
-  useEffect(()=>  {
+  useEffect(() =>  {
     if (decksDidSet === false) {
       apiDeckHome((response, status) => {
         if (status === 200) {

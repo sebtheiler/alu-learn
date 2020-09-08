@@ -74,5 +74,6 @@ int(hexadecimal_string, 16)
 3011: Error getting list of friends through apiProfileFriends in alu-web/src/home/home.js
 3012: Error logging out the user through apiProfileLogout in alu-web/src/home/navbar.js
 3013: Error getting user history through apiProfileHistory in alu-web/src/home/home.js
+3014: Error handling next set of notifications (pagination) through apiNotificationList in alu-web/src/profiles/notifications/components.js
 
 */

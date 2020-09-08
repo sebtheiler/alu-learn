@@ -208,8 +208,12 @@ export function apiNotificationCreate(username, title, description, category, ca
 };
 
 // Gets list of notifications for a user
-export function apiNotificationList(username, callback) {
-  backendLookup('GET', `profiles/${username}/notifications/`, callback);
+export function apiNotificationList(username, callback, nextUrl) {
+  let endpoint = `profiles/${username}/notifications/`;
+  if (nextUrl !== null && nextUrl !== undefined) {
+    endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
+  };
+  backendLookup('GET', endpoint, callback);
 };
 
 // Gets list of unread notifications for a user
