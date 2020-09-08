@@ -53,17 +53,19 @@ export function apiFlashCardSuspendLeech(deckId, flashcardId, action, callback) 
 };
 
 // Search for flashcards
-export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, learningStatus, min_ease, max_ease, callback) {
-  backendLookup('POST', `decks/flashcards/search/`, callback, {
-    deck_ids: deckIds,
-    tags: tags,
-    contains: contains,
-    suspended: suspended,
-    leech: leech,
-    learning_status: learningStatus,
-    min_ease: min_ease,
-    max_ease: max_ease,
-  });
+export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, learningStatus, minEase, maxEase, callback) {
+  let endpoint = 'decks/flashcards/search/?';
+  if (deckIds !== null && deckIds !== undefined) {endpoint += `&deckIds=${deckIds}`}
+  if (tags !== null && tags !== undefined) {endpoint += `&tags=${tags}`}
+  if (contains !== null && contains !== undefined) {endpoint += `&contains=${contains}`}
+  if (suspended !== null && suspended !== undefined) {endpoint += `&suspended=${suspended}`}
+  if (leech !== null && leech !== undefined) {endpoint += `&leech=${leech}`}
+  if (learningStatus !== null && learningStatus !== undefined) {endpoint += `&learningStatus=${learningStatus}`}
+  if (minEase !== null && minEase !== undefined) {endpoint += `&minEase=${minEase}`}
+  if (maxEase !== null && maxEase !== undefined) {endpoint += `&maxEase=${maxEase}`}
+  endpoint = endpoint.replace('&', ''); // get rid of first, arbitrary, &
+
+  backendLookup('GET', endpoint, callback);
 };
 
 // Gets detail information on a deck with ID `deckId`

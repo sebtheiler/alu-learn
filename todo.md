@@ -111,15 +111,15 @@ TODO: seprate function for getting meta data about deck and for getting flashcar
     - [X] Make it left-aligned
     - [X] Align notif icon and profile icon
   - [X] Remove profile information from notification serializer
-- [ ] Add Contact Page
-- [ ] Add password reset page
-- [ ] Turn flashcard search into GET
+- [X] Redirect to login when logged out
+- [X] Turn flashcard search into GET
   - [ ] Optimize it
+- [ ] Add password reset page
 - [ ] Check email availibility
   - [ ] API view
   - [ ] JS
+- [ ] Add Contact Page
 - [ ] Basic settings page
-- [X] Redirect to login when logged out
 - [ ] Fix login/register issue
 
 ## Sep 09
