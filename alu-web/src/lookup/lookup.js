@@ -1,4 +1,4 @@
-import {backendLookup} from './components';
+import {backendLookup, baseUrl} from './components';
 
 
 // Creates a new deck
@@ -93,8 +93,7 @@ export function apiDeckList(username, callback, nextUrl) {
     endpoint = `decks/decklist/?username=${username}`;
   };
   if (nextUrl !== null && nextUrl !== undefined) {
-    // TODO: The replace system will need to be redone, maybe use window.location.host?
-    endpoint = nextUrl.replace('http://127.0.0.1:8000/api/', '');
+    endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   };
   backendLookup('GET', endpoint, callback);
 };
@@ -109,8 +108,7 @@ export function apiDeckSharedList(username, callback) {
 export function apiDeckHome(callback, nextUrl) {
   let endpoint = 'decks/home/';
   if (nextUrl !== null && nextUrl !== undefined) {
-    // TODO: The replace system will need to be redone
-    endpoint = nextUrl.replace('http://127.0.0.1:8000/api/', '');
+    endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   };
   backendLookup('GET', endpoint, callback);
 };
@@ -129,7 +127,7 @@ export function apiDeckThank(deckId, callback) {
 export function apiDeckSearch(query, callback, nextUrl) {
   let endpoint = `decks/search/?q=${query}`;
   if (nextUrl !== null && nextUrl !== undefined) {
-    endpoint = nextUrl.replace('http://127.0.0.1:8000/api/', '');
+    endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   };
   backendLookup('GET', endpoint, callback);
 };

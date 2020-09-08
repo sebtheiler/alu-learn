@@ -16,6 +16,8 @@ function getCookie(cname) {
 };
 
 
+export const baseUrl = `${window.location.protocol}//${window.location.host}` // http://127.0.0.1:8000
+
 // Function for getting and receiving data from the backend
 // This is used in all api-lookup functions, and should not be
 // changed unless there is a very good reason.
@@ -25,8 +27,7 @@ export function backendLookup(method, endpoint, callback, data) {
     jsonData = JSON.stringify(data);
   };
   const xhr = new XMLHttpRequest();
-  // TODO: maybe `${window.location.host}/api/${endpoint}`
-  const endpointUrl = `http://127.0.0.1:8000/api/${endpoint}`;
+  const endpointUrl = `${baseUrl}/api/${endpoint}`;
   
   xhr.responseType = 'json';
   const csrftoken = getCookie('csrftoken');

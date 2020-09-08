@@ -101,7 +101,19 @@ Features
 TODO: seprate function for getting meta data about deck and for getting flashcard information
 
 ## Sep 07
-- [ ] Final deployment system
+- [X] Finish 20-30 TODO's
+
+## Sep 08
+- [ ] Paginate notifications
+- [ ] Add Contact Page
+- [ ] Add password reset page
+- [ ] Turn flashcard search into GET
+  - [ ] Optimize it
+- [ ] Check email availibility
+  - [ ] API view
+  - [ ] JS
+- [ ] Basic settings page
+- [ ] 
 
 ## Sep 09
 - [ ] Spread the word
