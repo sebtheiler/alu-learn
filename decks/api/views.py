@@ -392,7 +392,7 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
         return Response({'message': 'Deck not found'}, status=404)
     deck = decks_qs.first()
     
-    if not (deck.sharing_setting == 'PUBLIC' or (deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends)):
+    if not (request.user == deck.user or deck.sharing_setting == 'PUBLIC' or (deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all())):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
     serializer = DeckSerializer(deck, context={'request': request})
