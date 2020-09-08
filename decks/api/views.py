@@ -79,8 +79,8 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
         `tags`: (Data) Raw string of tags, seperated by commas
     
     Possible errors:
-        Deck ID does not exist: 400, {message: 'Unknown deck ID'}
-        Front/back text is None: 400, {message: 'Front and back text must not be None'}
+        Deck ID does not exist: 400, Unknown deck ID
+        Front/back text is None: 400, Front and back text must not be None
     """
     deck_qs = Deck.objects.filter(pk=deck_id)
     if deck_qs.exists():
@@ -120,9 +120,9 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
         `tags`: (Data) Raw string of tags, seperated by commas
 
     Possible errors:
-        Deck does not exist: 404, {message: 'Deck not found'}
-        Current user does not own deck: 401, {message: 'You are not authorized to edit this flashcard'}
-        Flashcard does not exist: 404, {message: 'Flashcard not found'}
+        Deck does not exist: 404, Deck not found
+        Current user does not own deck: 401, You are not authorized to edit this flashcard
+        Flashcard does not exist: 404, Flashcard not found
     """
     # Get the deck
     decks_qs = Deck.objects.filter(pk=deck_id)
@@ -164,9 +164,9 @@ def flashcard_review_update_view(request, deck_id, flashcard_id, *args, **kwargs
         `increment_new_cards_done_today`: Whether or not to increment the parent deck's new_cards_done_today` attribute
 
     Possible errors:
-        Deck does not exist: 404, {message: 'Deck not found'}
-        Current user does not own deck: 401, {message: 'You are not authorized to edit this flashcard'}
-        Flashcard does not exist: 404, {message: 'Flashcard not found'}
+        Deck does not exist: 404, Deck not found
+        Current user does not own deck: 401, You are not authorized to edit this flashcard
+        Flashcard does not exist: 404, Flashcard not found
     """
     # Get the deck
     decks_qs = Deck.objects.filter(pk=deck_id)
@@ -236,9 +236,9 @@ def flashcard_delete_view(request, deck_id, flashcard_id, *args, **kwargs):
         `status`: 200
     
     Possible errors:
-        Deck does not exist: 404, {message: 'Deck not found'}
-        Current user does not own deck: 401, {message: 'You are not authorized to delete this deck'}
-        Flashcard does not exist: 404, {message: 'Flashcard not found'}
+        Deck does not exist: 404, Deck not found
+        Current user does not own deck: 401, You are not authorized to delete this deck
+        Flashcard does not exist: 404, Flashcard not found
     """
     # Get the deck
     decks_qs = Deck.objects.filter(pk=deck_id)
@@ -273,8 +273,8 @@ def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
         ID of the flashcard: 'id'
     
     Possible errors:
-        Invalid deck: 404, {message: 'Deck not found'}
-        Invalid flashcard: 404, {message: 'Flashcard not found'}
+        Invalid deck: 404, Deck not found
+        Invalid flashcard: 404, Flashcard not found
     """
     decks_qs = Deck.objects.filter(pk=deck_id)
     if not decks_qs.exists():
@@ -383,8 +383,8 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
         ID of the deck: 'id'
     
     Possible errors:
-        Invalid deck: 404, {message: 'Deck not found'}
-        Deck is not shared with user: 403, {'message': 'You are unauthorized to view this deck'}
+        Invalid deck: 404, Deck not found
+        Deck is not shared with user: 403, You are unauthorized to view this deck
     """
     decks_qs = Deck.objects.filter(pk=deck_id)
 
@@ -414,7 +414,7 @@ def deck_delete_view(request, deck_id, *args, **kwargs):
         `status`: 200
     
     Possible errors:
-        Current user does not own deck: 401, {message: 'You are not authorized to delete this deck.'}
+        Current user does not own deck: 401, You are not authorized to delete this deck.
     """
     decks_qs = Deck.objects.filter(pk=deck_id)
     if not decks_qs.exists():
@@ -443,9 +443,9 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         `shufle_unseen_cards`: (Data) Whether or not to shuffle unseen cards
 
     Possible errors:
-        Deck does not exist: 404, {message: 'Deck not found'}
-        Current user does not own deck: 401, {message: 'You are not authorized to edit this flashcard'}
-        Invalid sharing setting (if specified): 400, {message: 'Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`'}
+        Deck does not exist: 404, Deck not found
+        Current user does not own deck: 401, You are not authorized to edit this flashcard
+        Invalid sharing setting (if specified): 400, Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`
     """
     # Get the deck
     decks_qs = Deck.objects.filter(pk=deck_id)
@@ -502,9 +502,9 @@ def deck_copy_view(request, deck_id, *args, **kwargs):
         `deck_id`: (URL): ID of the deck to copy
     
     Possible errors:
-        Invalid deck ID: 404, {'message': 'Deck not found'}
-        User attempts to copy their own deck: 400, {'message': 'You cannot copy your own deck'}
-        User attempts to copy a deck they don't have access to: 403, {'message': 'You cannot copy a private deck'}
+        Invalid deck ID: 404, Deck not found
+        User attempts to copy their own deck: 400, You cannot copy your own deck
+        User attempts to copy a deck they don't have access to: 403, You cannot copy a private deck
         User not authenticated: 403
     """
     # Get deck
@@ -541,10 +541,10 @@ def deck_thank_view(request, deck_id, *args, **kwargs):
     Required information:
         `deck_id`: (URL) ID of the get to thank
 
-    Possible errors: TODO: make the {'message': 'stuff'} cleaner EVERYWHERE
-        Invalid deck ID: 404, {'message': 'Deck not found'}
-        Attempt to thank self: 400, {'message': 'You cannot thank yourself}
-        Already thanked: 400, {'message': 'You have already thanked this deck'}
+    Possible errors:
+        Invalid deck ID: 404, Deck not found
+        Attempt to thank self: 400, You cannot thank yourself
+        Already thanked: 400, You have already thanked this deck
     """
     # Get Deck
     deck_qs = Deck.objects.filter(pk=deck_id)
@@ -580,10 +580,10 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
         `action`: (Data) Either 'suspend', 'unsuspend', 'leech', or 'unleech'
     
     Possible errors:
-        No action specified: 400, {'message': 'Please specify an action'}
-        Invalid deck ID: 404, {'message': 'Deck not found'}
-        Invalid flashcard ID: 404, {'message': 'Flashcard not found'}
-        User attempts to suspend a deck they don't own: 403, {'message': 'You are not authorized to (un)suspend/leech this deck'}
+        No action specified: 400, Please specify an action
+        Invalid deck ID: 404, Deck not found
+        Invalid flashcard ID: 404, Flashcard not found
+        User attempts to suspend a deck they don't own: 403, You are not authorized to (un)suspend/leech this deck
         User not authenticated: 403
     """
     # Check action is specified
@@ -712,7 +712,7 @@ def deck_search_view(request, *args, **kwargs):
         `q`: (GET) Query for searching
     
     Possible errors:
-        No query {'message': 'Please specify a query'}
+        No query: 400, Please specify a query
 
     Returns:
         A list of decks (DeckSerializer)

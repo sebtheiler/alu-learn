@@ -39,11 +39,11 @@ def profile_detail_api_view(request, username, *args, **kwargs):
         Whether the current user is a friend of the given user, None/null if the current user is the user: 'is_friend'
 
     Possible errors:
-        Unknown username: 404, {message: 'User not found'}
-        Already friends when adding friend: 400, {message: 'You are already friends with this user'}
-        Unfriending user who is not a friend: 400 {message: 'You cannot unfriend a user who is not your friend'}
-        Action is not friend/unfriend: 400, {message: 'Unknown action'}
-        Adding yourself as a friend: 400, {message: 'You cannot friend yourself'}
+        Unknown username: 404, User not found
+        Already friends when adding friend: 400, You are already friends with this user
+        Unfriending user who is not a friend: 400 'You cannot unfriend a user who is not your friend
+        Action is not friend/unfriend: 400, 'Unknown action
+        Adding yourself as a friend: 400, 'You cannot friend yourself
     """
     # Find the user in question
     profile_qs = Profile.objects.filter(user__username=username)
@@ -95,8 +95,8 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
         `recipient_username`: (URL) Username of the user to send a friend request to
     
     Possible errors:
-        Unknown username: 404, {'message': 'User "`username`" not found'}
-        Cannot self-friend: 400, {'message': 'You cannot friend yourself'}
+        Unknown username: 404, User "`username`" not found
+        Cannot self-friend: 400, You cannot friend yourself
     """
     # Get recipient user
     user_qs = User.objects.filter(username=recipient_username) # TODO: turn this common snippet of getting user into function
@@ -157,7 +157,7 @@ def notification_api_view(request, username, *args, **kwargs):
         `description`: Description of the newly created notification
 
     Possible errors:
-        Unknown username: 404, {message: 'User "`username`" not found'}
+        Unknown username: 404, User "`username`" not found
     """
     # Get user
     user_qs = User.objects.filter(username=username) # TODO: turn this common snippet of getting user into function
@@ -202,7 +202,7 @@ def notification_read_api_view(request, username, *args, **kwargs):
         `description`: Description of the newly created notification
 
     Possible errors:
-        Unknown username: 404, {message: 'User not found'}
+        Unknown username: 404, User not found
     """
     # Get user
     user_qs = User.objects.filter(username=username) # TODO: turn this common snippet of getting user into function
@@ -266,7 +266,7 @@ def check_username_available_api_view(request, *args, **kwargs):
         `username`: (GET) Username to check
     
     Possible errors:
-        Username not specified: 400, {'message': 'Please specify username'}
+        Username not specified: 400, Please specify username
     """
     username = request.GET.get('username')
     if username is None:
@@ -335,9 +335,9 @@ def login_api_view(request, *args, **kwargs):
         `password`: Raw password of user
     
     Possible errors:
-        User is already authenticated: 400, {'message': 'User is already authenticated'}
-        `username` or `password` not supplied: 400, {'message': 'Please specify a username and password'}
-        Invalid credentials: 401, {'message': 'Invalid credentials'}
+        User is already authenticated: 400, User is already authenticated
+        `username` or `password` not supplied: 400, Please specify a username and password
+        Invalid credentials: 401, Invalid credentials
     """
     if request.user and request.user.is_authenticated:
         return Response({'message': 'User is already authenticated'}, status=400)
@@ -361,7 +361,7 @@ def logout_api_view(request, *args, **kwargs):
     Logs out a user - POST
 
     Possible errors:
-        User is not logged in: 400, {'message': 'User is not logged in'}
+        User is not logged in: 400, User is not logged in
     """
     if not request.user.is_authenticated:
         return Response({'message': 'User is not logged in'}, status=400)
@@ -375,7 +375,7 @@ def get_user_friends_api_view(request, username, *args, **kwargs):
     Gets a user's friends - GET
 
     Possible errors:
-        Invalid username: 404, {'message': 'User not found'}
+        Invalid username: 404, User not found
     """
     try:
         # TODO: replace all segments of code to something like this
@@ -391,7 +391,7 @@ def profile_history_view(request, username, *args, **kwargs):
     Gets a user's history - GET
 
     Possible errors:
-        Invalid username: 404, {'message': 'User not found'}
+        Invalid username: 404, User not found
     """
     try:
         # TODO: replace all segments of code to something like this
