@@ -19,6 +19,7 @@ from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializ
 from .utils import get_paginated_queryset_response
 from profiles.models import Profile
 
+import re
 # For calculating advanced string similarities (used in searching)
 # pip install fuzzywuzzy
 # pip install fuzzywuzzy[speedup]
@@ -764,10 +765,20 @@ def txt_file_upload(request, *args, **kwargs):
     # Get information
     deck_title = request.data.get('deck_title')
     uploaded_file = request.data.get('uploaded_file')
+    convert_formatting = request.data.get('convert_formatting')
+
+    # Convert formatting function
+    if convert_formatting:
+        regex = r"\[[^][]*]|(\$)" # this is used for selecting all $'s outside of [brackets]
+
+        convert_formatting_func = lambda text: re.sub(regex, lambda m: '\\$' if m.group(1) else m.group(), text)\
+            .replace('[$$]', '$$').replace('[/$$]', '$$').replace('[$]', '$').replace('[/$]', '$')
+    else:
+        convert_formatting_func = lambda text: text
 
     # Parse text document
     split_lines = uploaded_file.split('\n')
-    front_and_back = [line.split('\t') for line in split_lines if line]
+    front_and_back = [convert_formatting_func(line).split('\t') for line in split_lines if line]
 
     # Get/create deck with given title
     deck, created = Deck.objects.get_or_create(user=request.user, title=deck_title)

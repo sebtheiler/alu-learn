@@ -118,7 +118,9 @@ TODO: seprate function for getting meta data about deck and for getting flashcar
   - [X] API view
   - [X] JS
 - [ ] Paginate flashcards list
-- [ ] Add options for converting imported decks to Alu format ([$$] -> $$)
+- [X] Add options for converting imported decks to Alu format ([$$] -> $$)
+- [ ] Redirect to decks home page after deleting deck
+- [ ] Add React component for question-bubble toolti[]
 - [ ] Add Contact Page
 - [ ] Basic settings page
 - [ ] Fix login/register issue
