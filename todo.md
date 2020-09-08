@@ -91,7 +91,6 @@ Features
 ## Sep 05
 - [X] Improve deck creation system
 - [X] Add deck importing system
-- [ ] Test deployment on Heroku
 
 ## Sep 06
 - [ ] Add ToS
@@ -115,13 +114,15 @@ TODO: seprate function for getting meta data about deck and for getting flashcar
 - [X] Turn flashcard search into GET
   - [X] Optimize it
   - [ ] Cache?
-- [ ] Add password reset page
-- [ ] Check email availibility
-  - [ ] API view
-  - [ ] JS
+- [X] Check email availibility
+  - [X] API view
+  - [X] JS
+- [ ] Paginate flashcards list
+- [ ] Add options for converting imported decks to Alu format ([$$] -> $$)
 - [ ] Add Contact Page
 - [ ] Basic settings page
 - [ ] Fix login/register issue
+- [ ] Add password reset page
 
 ## Sep 09
 - [ ] Spread the word

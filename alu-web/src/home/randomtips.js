@@ -21,6 +21,8 @@ const randomTips = [
   'When studying flashcards, use the spacebar to reveal the answer and the number keys (1-4) to select a choice',
   'You can share decks with others by changing the "Sharing Setting" value',
   'When creating cards, click the snowflake icon to "freeze" a field',
+  'You can write MarkDown and LaTeX when creating flashcards and deck descriptions',
+  'You can import flashcards from other popular flashcard programs using the "import" feature',
   // Random stuff
   '42 (forty-two) is the natural number that follows 41 and precedes 43.',
   'Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid of Giza.',

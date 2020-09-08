@@ -256,24 +256,27 @@ def profile_badge_create_api_view(request, username, *args, **kwargs):
     return Response(ProfileBadgeSerializer(new_badge).data, status=201)
 
 @api_view(['GET'])
-# TODO: make another view for checking emails
 def check_username_available_api_view(request, *args, **kwargs):
     """
-    Check if a username is available - GET
+    Check if a username or email is available - GET
 
     Required information:
         `username`: (GET) Username to check
-    
+        `email`: (GET) Email to check
+
     Possible errors:
         Username not specified: 400, Please specify username
     """
     username = request.GET.get('username')
-    if username is None:
-        return Response({'message': 'Please specify username'}, status=400)
+    email = request.GET.get('email')
+    if username is None or email is None:
+        return Response({'message': 'Please specify username and email'}, status=400)
     
-    all_usernames = [user.username for user in User.objects.all()]
-    is_available = username not in all_usernames
-    return Response({'is_available': is_available}, status=200)
+    all_usernames_and_emails = [(user.username, user.email) for user in User.objects.all()]
+    username_is_available = not username in [x[0] for x in all_usernames_and_emails]
+    email_is_available = not email in [x[1] for x in all_usernames_and_emails]
+
+    return Response({'username_is_available': username_is_available, 'email_is_available': email_is_available}, status=200)
 
 @api_view(['POST'])
 def create_profile_api_view(request, *args, **kwargs):

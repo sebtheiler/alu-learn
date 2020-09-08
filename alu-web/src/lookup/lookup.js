@@ -154,8 +154,8 @@ export function apiProfileFriendToggle(username, action, callback) {
 };
 
 // Checks if a username is available
-export function apiCheckUsernameAvailable(username, callback) {
-  backendLookup('GET', `profiles/available/?username=${username}`, callback);
+export function apiCheckUsernameAvailable(username, email, callback) {
+  backendLookup('GET', `profiles/available/?username=${username}&email=${email}`, callback);
 };
 
 // Creates a profile & user

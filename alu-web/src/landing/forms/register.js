@@ -43,17 +43,24 @@ export function ModalRegisterForm(props) {
 
     // Everything has to be done in the callback because of async
     setIsLoading(true);
-    apiCheckUsernameAvailable(form.elements.registerUsername.value, (response, status) => {
+    apiCheckUsernameAvailable(form.elements.registerUsername.value, form.elements.registerEmail.value, (response, status) => {
       if (status === 200) {
         var error = false;
-        // Check if username is available
-        const usernameAvailable = response.is_available;
+        // Check if username and email is available
+        const usernameAvailable = response.username_is_available;
+        const emailAvailable = response.email_is_available;
         if (!usernameAvailable) {
           document.getElementById('registerUsernameTakenError').innerText =
           'That username is already taken!'
           error = true;
         } else {
           document.getElementById('registerUsernameTakenError').innerText = '';
+        };
+        if (!emailAvailable) {
+          document.getElementById('registerEmailTakenError').innerHTML = 
+          'That email is already taken! Click <a href="/reset_password">here</a> to reset your password.'
+        } else {
+          document.getElementById('registerEmailTakenError').innerHTML = '';
         };
 
         // Check that birthdate is specified
@@ -245,6 +252,7 @@ export function ModalRegisterForm(props) {
         <Form.Label className='mb-0'>
           {isChild ? 'Parent/guardian\'s email' : 'Email'}
         </Form.Label>
+        <p id='registerEmailTakenError' className='text-danger mb-0'></p>
         <Form.Control
           type='email'
           name='registerEmail'
