@@ -1,14 +1,13 @@
 import React, {useState} from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, OverlayTrigger } from 'react-bootstrap';
 import {apiDeckTextImport} from '../lookup';
-import {errorHandler} from '../utils';
+import {errorHandler, FormCheckbox, generateTooltip} from '../utils';
 
 export function DeckImportComponent() {
   const fileRef = React.createRef();
   const titleRef = React.createRef();
 
   const [uploadType, setUploadType] = useState('TXT');
-  const [titleValue, setTitleValue] = useState('');
   const [isLoading, setIsLoading] = useState(false)
   
   // Used for dynamically changing object positioning
@@ -27,12 +26,11 @@ export function DeckImportComponent() {
   const handleImport = (event) => {
     event.preventDefault();
     setIsLoading(true);
+    const form = event.target;
     const file = event.target.uploadFile.files[0];
 
-    file.text().then((response) => {
-      const fileContents = response;
-
-      apiDeckTextImport(titleValue, fileContents, (response, status) => {
+    file.text().then((fileContents) => {
+      apiDeckTextImport(form.elements.deckTitle.value, fileContents, form.elements.convertFormatting.checked, (response, status) => {
         if (status === 201) {
           window.location.href = `/decks/${response.id}/flashcards/`;
         } else {
@@ -71,10 +69,10 @@ export function DeckImportComponent() {
           </Form.Label>
           <Form.Control
             ref={titleRef}
-            onChange={() => setTitleValue(titleRef.current.value)}
             type='text'
             placeholder='My deck'
             className={`${widthClass} mx-auto`}
+            id='deckTitle' name='deckTitle'
             required
           />
         </Form.Group>
@@ -100,6 +98,24 @@ export function DeckImportComponent() {
             // Update the label to the name of the uploaded file
             onChange={() => document.getElementById('txt-file-label').innerHTML = fileRef.current.value.replace('C:\\fakepath\\', '')}
           />
+        </Form.Group>
+        <Form.Group>
+          <FormCheckbox name='convertFormatting' id='convertFormatting'>
+            Convert Anki formatting to Alu formatting?{' '}
+            <OverlayTrigger
+                overlay={generateTooltip(
+                  `For example:
+                  [$$] ➡ $$,
+                  [$] ➡ $,
+                  $ ➡ \\$
+                  `
+                  )}
+                  placement='right'
+                  delay={{ Backshow: 20, hide: 800 }}
+                  >
+                <i className="fas fa-question-circle"></i>
+              </OverlayTrigger>
+          </FormCheckbox>
         </Form.Group>
         <Form.Group>
           <Button

@@ -135,10 +135,11 @@ export function apiDeckSearch(query, callback, nextUrl) {
 };
 
 // Imports a deck from a text file
-export function apiDeckTextImport(title, fileContents, callback) {
+export function apiDeckTextImport(title, fileContents, convertFormatting, callback) {
   backendLookup('POST', 'decks/textupload/', callback, {
     deck_title: title,
     uploaded_file: fileContents,
+    convert_formatting: convertFormatting,
   });
 };
 
