@@ -177,8 +177,8 @@ def notification_api_view(request, username, *args, **kwargs):
         return Response(NotificationSerializer(instance=notif).data, status=201)
     elif request.method == 'GET':
         # List all notifications
-        notif_qs = Notification.objects.filter(profile__user=user)
-        return get_paginated_queryset_response(notif_qs, request, NotificationSerializer, page_size=2)
+        notif_qs = Notification.objects.filter(profile__user=user).order_by('-timestamp')
+        return get_paginated_queryset_response(notif_qs, request, NotificationSerializer, page_size=3)
     else:
         return Response({'message': f'Method {request.method} not allowed'}, status=405)
 

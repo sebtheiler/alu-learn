@@ -34,7 +34,7 @@ export function NotificationComponent(props) {
         apiNotificationList(username, (response, status) => {
           if (status === 200) {
             setNextUrl(response.next);
-            setNotifList(response.results.reverse().splice(0, isPopup ? 5 : 10000));
+            setNotifList(response.results.splice(0, isPopup ? 5 : 10000));
             setNotifsDidSet(true);
             
             // Check if there are any unread notifications
@@ -99,7 +99,14 @@ export function NotificationComponent(props) {
         {username.length < 1 || notifList.length < 1 ? null : <>
           <hr />
           <div>
-            <Button href='/profiles/notifications/' variant='primary' size='sm'>See older notifications</Button>
+            <Button
+              href='/profiles/notifications/'
+              onClick={() => window.location.href = '/profiles/notifications/'}
+              variant='primary'
+              size='sm'
+            >
+              See older notifications
+            </Button>
           </div>
         </>}
       </Popover.Content>
@@ -126,12 +133,12 @@ export function NotificationComponent(props) {
     );
   } else {
     return (
-      <>
+      <div className='text-left mx-auto' style={{width: '75%'}}>
         <h2>All Notifications</h2>
         {notifList.map((notif, index) => {
           return <Notification notif={notif} read={notif.read} key={index} />
         })}
-        <div className='text-center mb-2'>
+        <div className='mb-2'>
         {nextUrl !== null ?
           <Button
             onClick={handleLoadNext}
@@ -141,7 +148,7 @@ export function NotificationComponent(props) {
           </Button>
         : null}
       </div>
-      </>
+      </div>
     );
   };
 };

@@ -105,9 +105,9 @@ TODO: seprate function for getting meta data about deck and for getting flashcar
 
 ## Sep 08
 - [X] Paginate notifications
-  - [ ] Make See older notifications work properly
+  - [X] Make See older notifications work properly
     - [ ] Display number of unread in that too
-    - [ ] Make it left-aligned
+    - [X] Make it left-aligned
   - [ ] Remove profile information from notification serializer
 - [ ] Add Contact Page
 - [ ] Add password reset page
