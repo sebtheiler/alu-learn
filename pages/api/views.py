@@ -19,6 +19,7 @@ def contact_us_api_view(request, *args, **kwargs):
         `urgency`: (Data) How urgent is this issue? (optional)
         `email`: (Data) Email of the user (optional)
         `contact_allowed`: (Data) Allow us to contact you? (default=False)
+        `is_legal_issue`: (Data) Is this a legal issue?
     """
     ContactFeedback.objects.create(
         title=request.data.get('title', '<EMPTY TITLE>'),
@@ -27,6 +28,7 @@ def contact_us_api_view(request, *args, **kwargs):
         urgency=request.data.get('urgency'),
         email_address=request.data.get('email', '') if not request.user.is_authenticated else request.user.email,
         contact_allowed=request.data.get('contact_allowed', False),
+        is_legal_issue=request.data.get('is_legal_issue', False),
     )
 
     return Response({'message': 'Feedback submitted successfully'}, status=201)

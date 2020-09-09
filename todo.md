@@ -121,12 +121,12 @@ Features
 - [X] Improve code for updating flashcard review info
 
 ## Sep 09
-- [ ] Add Contact Page
+- [X] Add Contact Page
   - [X] React
   - [X] API
   - [X] Integrate API into React
   - [X] Integrate React into Django
-  - [ ] Add Legal version
+  - [X] Add Legal version
 - [ ] Seperate functions for getting meta data about deck and for getting flashcard information
 - [ ] Paginate flashcards list
 - [ ] Fix login/register issue

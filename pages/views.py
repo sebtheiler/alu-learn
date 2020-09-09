@@ -38,11 +38,19 @@ def login_view(request, *args, **kwars):
     return render(request, 'profiles/login.html')
 
 
-def contact_us_view(request, *args, **kwargs):
-    return render(request, 'help/contactus.html', context={'is_finished': False, 'user_is_authenticated': request.user.is_authenticated})
+def contact_view_wrapper(is_legal_issue):
+    def contact_us_view(request, *args, **kwargs):
+        return render(request, 'help/contactus.html', context={
+            'is_finished': False,
+            'user_is_authenticated': request.user.is_authenticated,
+            'is_legal_issue': is_legal_issue,
+        })
+    return contact_us_view
 
-def contact_us_finished_view(request, *args, **kwargs):
-    return render(request, 'help/contactus.html', context={'is_finished': True})
+def contact_finished_view_wrapper(is_legal_issue):
+    def contact_us_finished_view(request, *args, **kwargs):
+        return render(request, 'help/contactus.html', context={'is_finished': True, 'is_legal_issue': is_legal_issue})
+    return contact_us_finished_view
 
 # def handler404(request, *args, **kwargs):
 #     response = render_to_response('misc/404_500.html', {},

@@ -243,7 +243,7 @@ export function apiCreateBlankExperiment(controllerShortName, experimentParams, 
 };
 
 // Submit a piece of feedback
-export function apiFeedbackSubmit(title, description, errorCode, urgency, email, contactAllowed, callback) {
+export function apiFeedbackSubmit(title, description, errorCode, urgency, email, contactAllowed, isLegalIssue, callback) {
   backendLookup('POST', 'pages/contactus/', callback, {
     title: title,
     description: description,
@@ -251,5 +251,6 @@ export function apiFeedbackSubmit(title, description, errorCode, urgency, email,
     urgency: urgency,
     email: email,
     contact_allowed: contactAllowed,
+    is_legal_issue: isLegalIssue,
   });
 };
