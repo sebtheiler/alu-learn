@@ -59,7 +59,6 @@ class FlashCardSerializer(serializers.ModelSerializer):
 
 class DeckSerializer(serializers.ModelSerializer):
     author = PublicProfileSerializer(source='user.profile', read_only=True)
-    flashcards = FlashCardSerializer(read_only=True, many=True)
     num_thanks = serializers.SerializerMethodField(read_only=True)
     you_have_thanked = serializers.SerializerMethodField(read_only=True)
 
@@ -69,7 +68,6 @@ class DeckSerializer(serializers.ModelSerializer):
             'author',
             'title',
             'description',
-            'flashcards',
             'sharing_setting',
             'num_thanks',
             'you_have_thanked',

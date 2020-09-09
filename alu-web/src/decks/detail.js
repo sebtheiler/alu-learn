@@ -47,7 +47,7 @@ export function Deck(props) {
 
 // This is used on pages displaying a single deck
 export function DeckDetail(props) {
-  const {deck, currentUsername, hideExtras, titleLink} = props;
+  const {deck, flashcards, numFlashcards, currentUsername, hideExtras, titleLink} = props;
   const textAlign = props.textAlign ? props.textAlign : 'center';
   const [browsingState, setBrowsingState] = useState('FLASHCARDS');
   const [thankBtnLabel, setThankBtnLabel] = useState(deck.you_have_thanked ? 'Thanked' : 'Thank');
@@ -119,15 +119,17 @@ export function DeckDetail(props) {
           <hr />
           <div className='text-center'>
             <h2>Example flashcards</h2>
-            <h5>{`(${deck.flashcards.length} in total, ${Math.min(deck.flashcards.length, 10)} displayed)`}</h5>
-            {currentUsername === deck.author.username ?
-              <DeckDefaultButtonGroup deck={deck} />
-            :
-              <DeckForeignUserButtonGroup deck={deck} handleThankDeck={handleThankDeck} thankBtnLabel={thankBtnLabel} />
-            }
-            <div>
-              <FlashCardsList flashcardList={deck.flashcards.slice(0, 10)} foreignUser={true} />
-            </div>
+            {flashcards && <>
+              <h5>{`(${numFlashcards} in total, ${Math.min(numFlashcards, 10)} displayed)`}</h5>
+              {currentUsername === deck.author.username ?
+                <DeckDefaultButtonGroup deck={deck} />
+              :
+                <DeckForeignUserButtonGroup deck={deck} handleThankDeck={handleThankDeck} thankBtnLabel={thankBtnLabel} />
+              }
+              <div>
+                <FlashCardsList flashcardList={flashcards.slice(0, 10)} foreignUser={true} />
+              </div>
+            </>}
           </div>
         </div>
       </div>}

@@ -49,18 +49,21 @@ int(hexadecimal_string, 16)
 1011: Error performing deck search through apiDeckSearch in alu-web/src/explore/search.js
 1012: Error handling next set of decks (pagination, decks search) through apiDeckSearch in alu-web/src/explore/search.js
 1013: Error importing deck from .txt file through apiDeckTextImport in alu-web/src/decks/import.js
+1014: Error getting a deck's flashcards in apiDeckFlashcards in alu-web/src/decks/components.js
+1015: Error looking up deck through apiDeckDetail in alu-web/src/decks/flashcards/list.js
+1016: Error getting a deck's flashcards in apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
+1017: Error getting a deck's flashcards in apiDeckFlashcards in alu-web/src/decks/study/components.js
 
 === Flashcard related errors ===
 2000: Error getting flashcard detail through apiFlashCardDetail in alu-web/src/decks/flashcards/create.js
 2001: Error creating or editing flashcard through apiFlashCardEdit or apiFlashCardCreate in alu-web/src/decks/flashcards/create.js
-2002: Error looking up deck through apiDeckDetail in alu-web/src/decks/flashcards/list.js
+2002: Error marking flashcard as leech or suspending while studying through apiFlashCardSuspendLeech in alu-web/src/decks/study/components.js
 2003: Error suspending/leeching flashcard through apiFlashCardSuspendLeech in alu-web/src/decks/flashcards/list.js
 2004: Error deleting flashcard through apiFlashCardDelete in alu-web/src/decks/flashcards/list.js
 2005: Error searching for flashcards through apiFlashCardSearch in alu-web/src/decks/flashcards/search.js
 2006: Error updating flashcard with information returned from studying through apiFlashCardReviewUpdate alu-web/src/decks/study/components.js
 2007: Error searching for flashcards in custom study through apiFlashCardSearch in alu-web/src/decks/study/components.js
 2008: Error deleting flashcard while studying through apiFlashCardDelete in alu-web/src/decks/study/components.js
-2009: Error marking flashcard as leech or suspending while studying through apiFlashCardSuspendLeech in alu-web/src/decks/study/components.js
 
 === Profile related errors ===
 3000: Error getting profile details through apiProfileDetail in alu-web/src/profiles/information.js

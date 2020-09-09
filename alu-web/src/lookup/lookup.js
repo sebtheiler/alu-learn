@@ -73,6 +73,12 @@ export function apiDeckDetail(deckId, callback) {
   backendLookup('GET', `decks/${deckId}/`, callback);
 };
 
+// Gets a deck's flashcards
+export function apiDeckFlashcards(deckId, limit, callback) {
+  backendLookup('GET', `decks/${deckId}/flashcards/${limit ? `?limit=${limit}` : ''}`, callback);
+};
+
+// Deletes a deck
 export function apiDeckDelete(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/delete/`, callback);
 };

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail} from '../../lookup';
+import {apiDeckDetail, apiDeckFlashcards} from '../../lookup';
 import {FlashCard} from './detail';
 import { errorHandler } from '../../utils';
 import {DeckDefaultButtonGroup} from '../buttons';
@@ -27,15 +27,26 @@ export function FlashCardsList(props) {
       if (!flashcardList) {
         // API lookup if given deck ID
         apiDeckDetail(deckId, (response, status) => {
+          // Get deck metadata
           if (status === 200) {
-            setFlashCardsDidSet(true);
             setDeck(response);
-            setFlashCards(response.flashcards);
           } else if (status === 403) {
             window.location.href = `/decks/${deckId}`;
           } else {
             // Error looking up deck
-            errorHandler(response, status, 2002);
+            errorHandler(response, status, 1015);
+          };
+        });
+        apiDeckFlashcards(deckId, null, (response, status) => { // TODO: PAGINATE
+          // Get flashcards
+          if (status === 200) {
+            setFlashCardsDidSet(true);
+            setFlashCards(response);
+          } else if (status === 403) {
+            window.location.href = `/decks/${deckId}`;
+          } else {
+            // Error looking up deck's flashcards
+            errorHandler(response, status, 1016);
           };
         });
       } else {

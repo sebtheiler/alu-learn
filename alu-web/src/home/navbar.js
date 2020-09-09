@@ -50,7 +50,7 @@ export function NavbarComponent(props) {
                   <i className='fas fa-user-circle text-light fa-2x'></i>
                 }
                 id='profile-dropdown'
-                style={{width: '57px', height: '57px', transform: 'translateY(3px)'}}
+                style={{width: '57px', height: '57px'}}
                 alignRight
               >
                 <NavDropdown.Item href='/profile/'>

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail, apiFlashCardReviewUpdate, apiFlashCardSearch, apiFlashCardSuspendLeech, apiFlashCardDelete} from '../../lookup';
+import {apiDeckDetail, apiFlashCardReviewUpdate, apiFlashCardSearch, apiFlashCardSuspendLeech, apiFlashCardDelete, apiDeckFlashcards} from '../../lookup';
 import {StudyElement} from './study';
 import {getAnkiInterval} from './algorithm'
 import {Button} from 'react-bootstrap';
@@ -14,7 +14,8 @@ export function StudyComponent(props) {
 
   // Get deck to study from API
   const [deck, setDeck] = useState(null);
-  const [gotDeck, setGotDeck] = useState(false);
+  const [flashcards, setFlashcards] = useState(null);
+  const [deckDidSet, setDeckDidSet] = useState(false);
   
   const [currentCard, setCurrentCard] = useState(null);
   const [currentCardDidSet, setCurrentCardDidSet] = useState(false);
@@ -29,11 +30,11 @@ export function StudyComponent(props) {
   // Get flashcard list (either from raw list, `flashcardList` or
   // indirectly from sending an API call)
   useEffect(() => {
-    if (gotDeck === false) {
+    if (deckDidSet === false) {
       if (!flashcardList) {
         // If `deckId` is specified (and `flashcardList` isn't) then
         // get the list of flashcards from the API
-        setGotDeck(true);
+        setDeckDidSet(true);
         apiDeckDetail(deckId, (response, status) => {
           if (status === 200) {
             setDeck(response);
@@ -44,20 +45,31 @@ export function StudyComponent(props) {
             errorHandler(response, status, 1009);
           };
         });
+        apiDeckFlashcards(deckId, null, (response, status) => {
+          if (status === 200) {
+            setFlashcards(response);
+          } else if (status === 403) {
+            window.location.href = `/decks/${deckId}`;
+          } else {
+            // Error getting deck's flashcards to study
+            errorHandler(response, status, )
+          };
+        });
       } else {
         // Get deck from raw list of flashcards
-        setGotDeck(true);
+        // TODO: fix this
+        setDeckDidSet(true);
         setDeck(flashcardList);
       };
     };
-  }, [deckId, flashcardList, gotDeck, setGotDeck, deck, setDeck]);
+  }, [deckId, flashcardList, deckDidSet, flashcards]);
 
   // Get which card should appear
   useEffect(() => {
-    if (deck && currentCardDidSet === false) {
+    if (deck && flashcards && currentCardDidSet === false) {
       setCurrentCardDidSet(true);
       // Only get cards that were due previously (or if we are studying ahead)
-      const cardsDueNow = deck.flashcards.filter((card) => {
+      const cardsDueNow = flashcards.filter((card) => {
         let now = new Date();
         // If we are reviewing ahead, change when "now" is
         now.setMinutes(now.getMinutes() + reviewAheadMinutes);
@@ -116,7 +128,7 @@ export function StudyComponent(props) {
       setCurrentCard(card);
       setShowAnswer(false);
     };
-  }, [currentCardDidSet, setCurrentCardDidSet, deck, studySuspendedCards, reviewAheadMinutes, previousCard]);
+  }, [currentCardDidSet, setCurrentCardDidSet, deck, studySuspendedCards, reviewAheadMinutes, previousCard, flashcards]);
 
   // Shows answer when spacebar is pressed or "Show Answer" is clicked
   const showAnswerHandler = (event) => {
@@ -159,14 +171,15 @@ export function StudyComponent(props) {
           };
       });
       // Update date locally
-      const deckCopy = deck;
-      const index = deckCopy.flashcards.map(e => e.id).indexOf(currentCard.id);
-      if (deckCopy.flashcards[index].learning_status === 'UNSEEN') {deckCopy.new_cards_done_today++};
-      deckCopy.flashcards[index].next_review = nextReviewDate.toISOString();
-      deckCopy.flashcards[index].interval = isMinute ? 0 : interval;
-      deckCopy.flashcards[index].ease = easeFactor;
-      deckCopy.flashcards[index].learning_status = learningStatus;
-      deckCopy.flashcards[index].steps_index = stepsIndex;
+      const flashcardsCopy = flashcards, deckCopy = deck;
+      const index = flashcardsCopy.map(e => e.id).indexOf(currentCard.id);
+      if (flashcardsCopy[index].learning_status === 'UNSEEN') {deckCopy.new_cards_done_today++};
+      flashcardsCopy[index].next_review = nextReviewDate.toISOString();
+      flashcardsCopy[index].interval = isMinute ? 0 : interval;
+      flashcardsCopy[index].ease = easeFactor;
+      flashcardsCopy[index].learning_status = learningStatus;
+      flashcardsCopy[index].steps_index = stepsIndex;
+      setFlashcards(flashcardsCopy);
       setDeck(deckCopy);
 
       // Display a message if the card is now a leech
@@ -241,7 +254,7 @@ export function StudyComponent(props) {
           window.location.reload();
         } else {
           // Error marking flashcard as leech or suspending while studying
-          errorHandler(response, status, 2009);
+          errorHandler(response, status, 2002);
         };
       });
     };
@@ -307,7 +320,7 @@ export function CustomStudyComponent(props) {
     };
   }, [setFlashcards, gotFlashcards, setGotFlashcards, deckIds, tags, contains, suspended, leech, learningStatus, minEase, maxEase]);
 
-  if (flashcards.length === 0) {
+  if (flashcards === null || flashcards.length === 0) {
     return null;
   } else {
     return (

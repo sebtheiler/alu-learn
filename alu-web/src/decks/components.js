@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {DeckCreate,} from './create';
 import {DeckDetail} from './detail';
-import {apiDeckDetail} from '../lookup';
+import {apiDeckDetail, apiDeckFlashcards} from '../lookup';
 import {DecksHomeList} from './home';
 import {Button, ButtonGroup} from 'react-bootstrap';
 import { errorHandler } from '../utils';
@@ -29,7 +29,9 @@ export function DeckDetailComponent(props) {
 
   const [didLookup, setDidLookup] = useState(false);
   const [deck, setDeck] = useState(null);
-  const [isForbidden, setIsForbidden] = useState(true);
+  const [flashcards, setFlashcards] = useState(null);
+  const [totalFlashcardNum, setTotalFlashcardNum] = useState(null);
+  const [isForbidden, setIsForbidden] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
   // Send a request to the API to get information about the given deck
@@ -50,17 +52,33 @@ export function DeckDetailComponent(props) {
           errorHandler(response, status, 1003);
         };
       });
+      apiDeckFlashcards(deckId, 10, (response, status) => {
+        if (status === 200) {
+          setFlashcards(response.results);
+          setTotalFlashcardNum(response.count);
+          setIsForbidden(false);
+        } else if (status === 403) {
+          setIsForbidden(true);
+        } else if (status === 404) {
+          setNotFound(true);
+          setIsForbidden(false);
+        } else {
+          // Error getting deck flashcards
+          errorHandler(response, status, 1014);
+        };
+      });
       setDidLookup(true);
     };
-  }, [deckId, didLookup, setDidLookup]);
+  }, [deckId, didLookup]);
 
   return deck === null ?
-    <p className='text-center'>
-      {isForbidden ? 'You are not allowed to view this deck.' : (notFound ? 'It doesn\'t look like this deck exists.' : 'Loading...')}
+  <p className='text-center'>
+      {(notFound ? 'It doesn\'t look like this deck exists.' : (isForbidden ? 'You are not allowed to view this deck.' : 'Loading...'))}
     </p>
     : (
       <DeckDetail
         deck={deck}
+        flashcards={flashcards} numFlashcards={totalFlashcardNum}
         currentUsername={currentUsername}
         textAlign='left'
       />

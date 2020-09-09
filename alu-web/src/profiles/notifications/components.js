@@ -119,6 +119,8 @@ export function NotificationComponent(props) {
         <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
           <Button
             onClick={(event) => {event.preventDefault(); setNumUnreadNotifs(false);}}
+            style={{transform: 'translate(2px, 1px)'}}
+            className='p-0'
             size='sm'
           >
             {numUnreadNotifs > 0 ? <>

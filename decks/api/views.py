@@ -356,7 +356,7 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
         Author of the deck (PublicProfileSerializer): 'author'
         Title of the deck: 'title'
         ID of the deck: 'id'
-    
+
     Possible errors:
         Invalid deck: 404, Deck not found
         Deck is not shared with user: 403, You are unauthorized to view this deck
@@ -366,13 +366,54 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
     if not decks_qs.exists():
         return Response({'message': 'Deck not found'}, status=404)
     deck = decks_qs.first()
-    
+
     if not (request.user == deck.user or deck.sharing_setting == 'PUBLIC' or (deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all())):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
     serializer = DeckSerializer(deck, context={'request': request})
     return Response(serializer.data, status=200)
 
+@api_view(['GET'])
+def deck_flashcards_view(request, deck_id, *args, **kwargs):
+    """
+    Gets flashcards from a deck - GET
+
+    Required information:
+        `deck_id`: (URL) The ID of the deck
+        `limit`: (GET) Number of results to return (optional)
+            if True, instead of directly returning flashcards it will return:
+                'results': Regular list of flashcards
+                'count': Total number of flashcards
+
+    Returns:
+        Author of the deck (PublicProfileSerializer): 'author'
+        Title of the deck: 'title'
+        ID of the deck: 'id'
+
+    Possible errors:
+        Invalid deck: 404, Deck not found
+        Deck is not shared with user: 403, You are unauthorized to view this deck
+    """
+    decks_qs = Deck.objects.filter(pk=deck_id)
+
+    if not decks_qs.exists():
+        return Response({'message': 'Deck not found'}, status=404)
+    deck = decks_qs.first()
+
+    if not (request.user == deck.user or deck.sharing_setting == 'PUBLIC' or (deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all())):
+        return Response({'message': 'You are unauthorized to view this deck'}, status=403)
+
+    limit = request.GET.get('limit')
+    if limit:
+        serializer = FlashCardSerializer(deck.flashcards.all()[:int(limit)], context={'request': request}, many=True)
+        return Response({
+            'results': serializer.data,
+            'count': deck.flashcards.count(),
+        })
+    else:
+        # TODO: PAGINATE
+        serializer = FlashCardSerializer(deck.flashcards, context={'request': request}, many=True)
+        return Response(serializer.data, status=200)
 
 @api_view(['DELETE', 'POST'])
 @authentication_classes([SessionAuthentication])
@@ -708,8 +749,9 @@ def deck_search_view(request, *args, **kwargs):
         return Response({'message': 'Please specify a query'}, status=400)
 
 
-    # Attempt to read cached value  for query
-    CACHE_KEY = f'deck-search-q="{query}"'
+    # Attempt to read cached value for query
+    # (spaces will break it, so we need to replace them)
+    CACHE_KEY = f'deck-search-q="{query.replace(" ", "<<SPACE_CHAR>>")}"'
     sorted_qs = cache.get(CACHE_KEY)
 
     if sorted_qs is None:

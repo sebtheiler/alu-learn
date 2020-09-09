@@ -127,16 +127,21 @@ Features
   - [X] Integrate API into React
   - [X] Integrate React into Django
   - [X] Add Legal version
-- [ ] Seperate functions for getting meta data about deck and for getting flashcard information
+- [X] Seperate functions for getting meta data about deck and for getting flashcard information
 - [ ] Paginate flashcards list
-- [ ] Fix login/register issue
-- [ ] Add password reset page LOOK INTO DEV AUTHENTICATION
+- [ ] Fix login/register issue LOOK INTO DEV AUTHENTICATION
+- [ ] Replace `x ? y : null` with `x && y`
+- [ ] Add password reset page
 - [ ] Basic settings page
+- [ ] favicon.ico + Logo
+- [ ] Fix custom study
 
 ## Sep 10
 - [ ] Add help pages
+  - [ ] Features
   - [ ] Tags
   - [ ] Leech/suspend
+  - [ ] Freeze
 - [ ] Add legal pages
   - [ ] Finish privacy policy
 - [ ] Spread the word
