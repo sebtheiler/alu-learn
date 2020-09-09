@@ -115,19 +115,26 @@ Features
 - [X] Check email availibility
   - [X] API view
   - [X] JS
-- [ ] Paginate flashcards list
 - [X] Add options for converting imported decks to Alu format ([$$] -> $$)
 - [X] Redirect to decks home page after deleting deck
 - [X] Add React component for question-bubble tooltip
 - [X] Improve code for updating flashcard review info
+
+## Sep 09
 - [ ] Add Contact Page
+  - [X] React
+  - [ ] API
+  - [ ] Django
 - [ ] Seperate functions for getting meta data about deck and for getting flashcard information
+- [ ] Paginate flashcards list
 - [ ] Fix login/register issue
 - [ ] Add password reset page
 - [ ] Basic settings page
+
+## Sep 10
 - [ ] Add help pages
   - [ ] Tags
   - [ ] Leech/suspend
-
-## Sep 09
+- [ ] Add legal pages
+  - [ ] Finish privacy policy
 - [ ] Spread the word

@@ -9,7 +9,7 @@ import {StudyComponent, CustomStudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
 import {ExploreComponent, DeckSearchComponent} from './explore';
 import {LandingComponent} from './landing';
-import {HomeComponent, NavbarComponent} from './home';
+import {HomeComponent, NavbarComponent, ContactUs} from './home';
 
 const e = React.createElement;
 
@@ -96,6 +96,11 @@ if (loginElement) {
 const importElement = document.getElementById('deck-importer');
 if (importElement) {
   ReactDOM.render(e(DeckImportComponent, importElement.dataset), importElement);
+};
+
+const contactElement = document.getElementById('contact-us');
+if (contactElement) {
+  ReactDOM.render(e(ContactUs, contactElement.dataset), contactElement);
 };
 
 // If you want your app to work offline and load faster, you can change
