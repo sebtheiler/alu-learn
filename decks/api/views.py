@@ -184,38 +184,21 @@ def flashcard_review_update_view(request, deck_id, flashcard_id, *args, **kwargs
         return Response({'message': 'Flashcard not found'}, status=404)
 
     # Edit the flashcard
-    # TODO: there must be a way to optimize this
-    next_review = request.data.get('next_review')
-    learning_status = request.data.get('learning_status')
-    ease = request.data.get('ease')
-    interval = request.data.get('interval')
-    steps_index = request.data.get('steps_index')
-    leech_index = request.data.get('leech_index')
-    is_leech = request.data.get('is_leech')
-    increment_new_cards_done_today = request.data.get('increment_new_cards_done_today')
-
     obj = flashcard_qs.first()
-    if next_review is not None:
-        obj.next_review = next_review
-    if learning_status is not None:
-        obj.learning_status = learning_status.upper()
-    if ease is not None:
-        obj.ease = ease
-    if interval is not None:
-        obj.interval = interval
-    if steps_index is not None:
-        obj.steps_index = steps_index
-    if leech_index is not None:
-        obj.leech_index = leech_index
-    if is_leech is not None:
-        obj.set_is_leech(is_leech)
-    if increment_new_cards_done_today:
-        obj.deck.new_cards_done_today += 1
-        obj.deck.save()
+    obj.next_review = request.data.get('next_review', obj.next_review)
+    obj.learning_status = request.data.get('learning_status', obj.learning_status).upper()
+    obj.interval = request.data.get('interval', obj.interval)
+    obj.steps_index = request.data.get('steps_index', obj.steps_index)
+    obj.leech_index = request.data.get('leech_index', obj.leech_index)
+    obj.set_is_leech(request.data.get('is_leech', obj.is_leech))
     obj.save()
 
     # Increment the number of cards that the profile is registed as doing today
     obj.deck.user.profile.increment_cards_done_today()
+    increment_new_cards_done_today = request.data.get('increment_new_cards_done_today')
+    if increment_new_cards_done_today:
+        obj.deck.new_cards_done_today += 1
+        obj.deck.save()
 
     return Response(FlashCardSerializer(instance=obj).data, 200)
 

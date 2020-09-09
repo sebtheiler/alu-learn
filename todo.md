@@ -97,8 +97,6 @@ Features
 - [ ] Add Privacy Policy
 - [ ] Flesh out legal structure
 
-TODO: seprate function for getting meta data about deck and for getting flashcard information
-
 ## Sep 07
 - [X] Finish 20-30 TODO's
 
@@ -121,10 +119,15 @@ TODO: seprate function for getting meta data about deck and for getting flashcar
 - [X] Add options for converting imported decks to Alu format ([$$] -> $$)
 - [X] Redirect to decks home page after deleting deck
 - [X] Add React component for question-bubble tooltip
+- [X] Improve code for updating flashcard review info
 - [ ] Add Contact Page
-- [ ] Basic settings page
+- [ ] Seperate functions for getting meta data about deck and for getting flashcard information
 - [ ] Fix login/register issue
 - [ ] Add password reset page
+- [ ] Basic settings page
+- [ ] Add help pages
+  - [ ] Tags
+  - [ ] Leech/suspend
 
 ## Sep 09
 - [ ] Spread the word
