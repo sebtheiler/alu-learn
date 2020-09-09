@@ -1,20 +1,33 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Form, Button} from 'react-bootstrap';
-import { FormCheckbox } from '../utils';
+import { FormCheckbox, errorHandler } from '../utils';
+import {apiFeedbackSubmit} from '../lookup';
 
 export function ContactUs(props) {
   const {userIsAuthenticated} = {userIsAuthenticated : true }//props;
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    setIsLoading(true);
     const form = event.target;
 
-    console.log(
+    apiFeedbackSubmit(
       form.title.value,
       form.description.value,
       form.errorCode.value,
-      userIsAuthenticated ? form.allowUsToContactYou.checked : null,
+      form.urgency.value,
       !userIsAuthenticated ? form.email.value : null,
+      userIsAuthenticated ? form.allowUsToContactYou.checked : form.email.value.length > 0,
+      (response, status) => {
+        if (status === 201) {
+          window.location.href = '/contactus/finished/';
+        } else {
+          // Error submitting feedback
+          errorHandler(response, status, 4000);
+        };
+        setIsLoading(false);
+      },
     );
   };
 
@@ -31,6 +44,7 @@ export function ContactUs(props) {
           type='text'
           name='title'
           placeholder="My flashcards aren't loading"
+          maxLength={80}
           required
         />
       </Form.Group>
@@ -47,6 +61,7 @@ export function ContactUs(props) {
           name='description'
           placeholder="After I ... then, ... happened and ..."
           rows='10'
+          maxLength={4000}
           required
         />
       </Form.Group>
@@ -57,12 +72,21 @@ export function ContactUs(props) {
             If you recieved an error code, please specify it here
           </small>
         </Form.Label>
-        <Form.Control type='text' placeholder="bb8-194" name='errorCode' />
+        <Form.Control type='text' placeholder="bb8-194" name='errorCode' maxLength={8} />
+      </Form.Group>
+      <Form.Group>
+        <Form.Label className='mb-0'>
+          How urgent is this? (optional)<br />
+          <small className='text-secondary'>
+            0 is not urgent at all, 10 is very urgent. This helps our support team prioritize the most pressing issues. Please don't lie about this.
+          </small>
+        </Form.Label>
+        <Form.Control type='number' name='urgency' min={0} max={10} />
       </Form.Group>
       <Form.Group>
         {userIsAuthenticated ? <>
           <FormCheckbox name='allowUsToContactYou'>
-            Allow us to contact you?<br />
+            Allow us to contact you? (optional)<br />
             <small className='text-secondary'>
               By checking this box, you allow us to email you, and are bound to our{' '}
               <a href='/legal/tos'>Terms of Service</a> and <a href='/legal/privacypolicy'>Privacy Policy</a>.
@@ -76,10 +100,10 @@ export function ContactUs(props) {
               <a href='/legal/tos'>Terms of Service</a> and <a href='/legal/privacypolicy'>Privacy Policy</a>.
             </small>
           </Form.Label>
-          <Form.Control type='email' placeholder="email@company.com" name='email' />
+          <Form.Control type='email' placeholder="email@company.com" name='email' maxLength={64} />
         </>}
       </Form.Group>
-      <Button type='submit' block>Submit</Button>
+      <Button type='submit' block>{isLoading ? 'Loading...' : 'Submit'}</Button>
     </Form>
   );
 };

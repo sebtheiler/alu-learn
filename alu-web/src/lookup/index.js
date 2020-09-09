@@ -32,6 +32,7 @@ import {
   apiProfileFriends,
   apiProfileHistory,
   apiCreateBlankExperiment,
+  apiFeedbackSubmit,
 } from './lookup';
 
 export {
@@ -68,4 +69,5 @@ export {
   apiProfileFriends,
   apiProfileHistory,
   apiCreateBlankExperiment,
+  apiFeedbackSubmit,
 };

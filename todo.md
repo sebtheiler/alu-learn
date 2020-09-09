@@ -124,7 +124,7 @@ Features
 - [ ] Add Contact Page
   - [X] React
   - [X] API
-  - [ ] Integrate API into React
+  - [X] Integrate API into React
   - [ ] Integrate React into Django
 - [ ] Seperate functions for getting meta data about deck and for getting flashcard information
 - [ ] Paginate flashcards list

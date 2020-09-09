@@ -76,4 +76,6 @@ int(hexadecimal_string, 16)
 3013: Error getting user history through apiProfileHistory in alu-web/src/home/home.js
 3014: Error handling next set of notifications (pagination) through apiNotificationList in alu-web/src/profiles/notifications/components.js
 
+=== Misc ===
+4000: Error submitting feedback through apiFeedbackSubmit in alu-web/src/home/contactus.js
 */

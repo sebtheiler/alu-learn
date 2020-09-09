@@ -234,9 +234,22 @@ export function apiExploreLists(callback) {
   backendLookup('GET', 'explore/lists/', callback);
 };
 
+// Create an empty data oiubt
 export function apiCreateBlankExperiment(controllerShortName, experimentParams, callback) {
   backendLookup('POST', 'analytics/createblank/', callback, {
     controller_short_name: controllerShortName,
     experiment_params: experimentParams,
+  });
+};
+
+// Submit a piece of feedback
+export function apiFeedbackSubmit(title, description, errorCode, urgency, email, contactAllowed, callback) {
+  backendLookup('POST', 'pages/contactus/', callback, {
+    title: title,
+    description: description,
+    error_code: errorCode,
+    urgency: urgency,
+    email: email,
+    contact_allowed: contactAllowed,
   });
 };

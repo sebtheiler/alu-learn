@@ -16,7 +16,8 @@ function getCookie(cname) {
 };
 
 
-export const baseUrl = `${window.location.protocol}//${window.location.host}` // http://127.0.0.1:8000
+const host = window.location.host === 'localhost:3000' ? '127.0.0.1:8000' : window.location.host;
+export const baseUrl = `${window.location.protocol}//${host}` // http://127.0.0.1:8000
 
 // Function for getting and receiving data from the backend
 // This is used in all api-lookup functions, and should not be
@@ -28,6 +29,7 @@ export function backendLookup(method, endpoint, callback, data) {
   };
   const xhr = new XMLHttpRequest();
   const endpointUrl = `${baseUrl}/api/${endpoint}`;
+  console.log(endpointUrl)
   
   xhr.responseType = 'json';
   const csrftoken = getCookie('csrftoken');
