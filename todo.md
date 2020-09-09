@@ -60,13 +60,10 @@ Features
   - [X] Limit # of results with fuzzywuzzy threshold
   - [X] Add deck search caching
 - [X] Add caching to more API views
-- [ ] Add flashcard browsing infinite scroll?
-  - [ ] Force load all button?
 
 ## Sep 02
-- [ ] In custom study:
+- [X] In custom study:
   - [X] Allow min/max ease to go to +/- infinity
-  - [ ] Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
   - [X] Show deck of flashcard when searching for flashcards
 - [X] Freeze field for creating flashcards
 - [X] Add daily random tips for home page
@@ -78,9 +75,6 @@ Features
 - [ ] Add 404 custom page (this is half done)
 
 ## Sep 04
-- [ ] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
-- [ ] Protect API
-- [ ] Make numeric ids into string ids like "dad2Xadw#1". Look into UUID
 - [X] Add more options when studying flashcards
   - [X] Delete card
   - [X] Suspend card
@@ -103,8 +97,6 @@ Features
 ## Sep 08
 - [X] Paginate notifications
   - [X] Make See older notifications work properly
-    - [ ] Display number of unread in that too
-      - [ ] Make notification reading work properly in detail
     - [X] Make it left-aligned
     - [X] Align notif icon and profile icon
   - [X] Remove profile information from notification serializer
@@ -129,7 +121,7 @@ Features
   - [X] Add Legal version
 - [X] Seperate functions for getting meta data about deck and for getting flashcard information
 - [ ] Paginate flashcards list
-- [ ] Fix login/register issue LOOK INTO DEV AUTHENTICATION
+- [X] Fix login/register issue LOOK INTO DEV AUTHENTICATION
 - [ ] Replace `x ? y : null` with `x && y`
 - [ ] Add password reset page
 - [ ] Basic settings page
@@ -137,6 +129,16 @@ Features
 - [ ] Fix custom study
 
 ## Sep 10
+- [ ] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
+- [ ] Protect API
+- [ ] Make numeric ids into string ids like "dad2Xadw#1". Look into UUID
+- [ ] Custom study: Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
+- [ ] Spread the word
+- [ ] Fix notification issues
+  - [ ] Error when clicking
+  - [ ] Display number of unread in that too
+  - [ ] Make notification reading work properly
+
 - [ ] Add help pages
   - [ ] Features
   - [ ] Tags
@@ -144,4 +146,3 @@ Features
   - [ ] Freeze
 - [ ] Add legal pages
   - [ ] Finish privacy policy
-- [ ] Spread the word
