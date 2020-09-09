@@ -3,13 +3,16 @@ export function errorHandler(response, status, errorCode) {
     window.location.href = `/?showLoginRequired=true&returnUrl=${window.location.href}`;
   } else {
     console.log(response, status);
+
+    const host = window.location.host === 'localhost:3000' ? '127.0.0.1:8000' : window.location.host;
+    const baseUrl = `${window.location.protocol}//${host}` // http://127.0.0.1:8000
     alert(
 `
 Something went wrong trying to perform that action.
 Please reload the page and try again.
 
 If this problem persists, please contact the developer
-here: TODO:.
+here: ${baseUrl}/contactus/
 With the error code: ${errorCode.toString(16)}-${status.toString(16)}
 `
     );

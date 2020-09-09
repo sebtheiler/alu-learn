@@ -29,7 +29,6 @@ export function backendLookup(method, endpoint, callback, data) {
   };
   const xhr = new XMLHttpRequest();
   const endpointUrl = `${baseUrl}/api/${endpoint}`;
-  console.log(endpointUrl)
   
   xhr.responseType = 'json';
   const csrftoken = getCookie('csrftoken');

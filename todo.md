@@ -98,7 +98,7 @@ Features
 - [ ] Flesh out legal structure
 
 ## Sep 07
-- [X] Finish 20-30 TODO's
+- [X] Finish 20-30 TO-DO's
 
 ## Sep 08
 - [X] Paginate notifications
@@ -125,11 +125,12 @@ Features
   - [X] React
   - [X] API
   - [X] Integrate API into React
-  - [ ] Integrate React into Django
+  - [X] Integrate React into Django
+  - [ ] Add Legal version
 - [ ] Seperate functions for getting meta data about deck and for getting flashcard information
 - [ ] Paginate flashcards list
 - [ ] Fix login/register issue
-- [ ] Add password reset page
+- [ ] Add password reset page LOOK INTO DEV AUTHENTICATION
 - [ ] Basic settings page
 
 ## Sep 10

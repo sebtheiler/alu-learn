@@ -75,6 +75,10 @@ export function NavbarComponent(props) {
                   <i className='fas fa-sign-out-alt'></i>{' '}
                   Log-out
                 </NavDropdown.Item>
+                <NavDropdown.Item href='/contactus/'>
+                  <i className='far fa-envelope'></i>{' '}
+                  Contact us
+                </NavDropdown.Item>
               </NavDropdown>
             </>
             :

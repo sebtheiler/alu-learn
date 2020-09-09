@@ -4,7 +4,7 @@ import { FormCheckbox, errorHandler } from '../utils';
 import {apiFeedbackSubmit} from '../lookup';
 
 export function ContactUs(props) {
-  const {userIsAuthenticated} = {userIsAuthenticated : true }//props;
+  const userIsAuthenticated = props.userIsAuthenticated ? props.userIsAuthenticated.toLowerCase() === 'true' : false;
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = (event) => {
