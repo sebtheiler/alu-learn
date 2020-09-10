@@ -43,6 +43,7 @@ export function LoginForm(props) {
           type='text'
           name='loginUsername'
           maxLength={15}
+          style={{textTransform: 'lowercase'}}
           required
         />
       </Form.Group>

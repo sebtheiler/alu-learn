@@ -1,6 +1,6 @@
 Fixes and patches
 - [X] Fix bugs for Anonymous users
-- [ ] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
+- [X] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
 - [ ] Protect API
 
 Landing:
@@ -129,7 +129,7 @@ Features
 - [ ] Fix custom study
 
 ## Sep 10
-- [ ] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
+- [X] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
 - [ ] Protect API
 - [ ] Make numeric ids into string ids like "dad2Xadw#1". Look into UUID
 - [ ] Custom study: Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
@@ -145,5 +145,6 @@ Features
   - [ ] Tags
   - [ ] Leech/suspend
   - [ ] Freeze
+  - [ ] Tutorial
 - [ ] Add legal pages
   - [ ] Finish privacy policy

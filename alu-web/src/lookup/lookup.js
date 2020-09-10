@@ -97,7 +97,7 @@ export function apiDeckEdit(deckId, newTitle, newDescription, sharingSetting, sc
 
 // Gets a list of decks owned by a user with username `username` that are shared with the given user
 export function apiDeckSharedList(username, callback) {
-  backendLookup('GET', `decks/detail/${username}/`, callback);
+  backendLookup('GET', `decks/detail/${username.toLowerCase()}/`, callback);
 };
 
 
@@ -140,18 +140,18 @@ export function apiDeckTextImport(title, fileContents, convertFormatting, callba
 
 // Gets detail information about a profile, such as bio, name, username, etc.
 export function apiProfileDetail(username, callback) {
-  backendLookup('GET', `profiles/${username}/detail/`, callback);
+  backendLookup('GET', `profiles/${username.toLowerCase()}/detail/`, callback);
 };
 
 
 // Sends a friend/unfriend request to the backend
 export function apiProfileFriendToggle(username, action, callback) {
-  backendLookup('POST', `profiles/${username}/friend/`, callback, {action: action.toLowerCase()});
+  backendLookup('POST', `profiles/${username.toLowerCase()}/friend/`, callback, {action: action.toLowerCase()});
 };
 
 // Checks if a username is available
 export function apiCheckUsernameAvailable(username, email, callback) {
-  backendLookup('GET', `profiles/available/?username=${username}&email=${email}`, callback);
+  backendLookup('GET', `profiles/available/?username=${username.toLowerCase()}&email=${email}`, callback);
 };
 
 // Creates a profile & user
@@ -173,7 +173,7 @@ export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, la
 
 // Logs a user in
 export function apiProfileLogin(username, password, callback) {
-  backendLookup('POST', 'profiles/login/', callback, {username: username, password: password});
+  backendLookup('POST', 'profiles/login/', callback, {username: username.toLowerCase(), password: password});
 };
 
 // Logs a user out
@@ -183,22 +183,22 @@ export function apiProfileLogout(callback) {
 
 // Gets a list of a user's friends
 export function apiProfileFriends(username, callback) {
-  backendLookup('GET', `profiles/${username}/friends/`, callback);
+  backendLookup('GET', `profiles/${username.toLowerCase()}/friends/`, callback);
 };
 
 // Get's a profile's history
 export function apiProfileHistory(username, callback) {
-  backendLookup('GET', `profiles/${username}/history/`, callback);
+  backendLookup('GET', `profiles/${username.toLowerCase()}/history/`, callback);
 };
 
 // Send a friend request
 export function apiSendFriendReq(recipientUsername, callback) {
-  backendLookup('POST', `profiles/${recipientUsername}/friendrequest/`, callback);
+  backendLookup('POST', `profiles/${recipientUsername.toLowerCase()}/friendrequest/`, callback);
 };
 
 // Creates a notification
 export function apiNotificationCreate(username, title, description, category, callback) {
-  backendLookup('POST', `profiles/${username}/notifications/`, callback, {
+  backendLookup('POST', `profiles/${username.toLowerCase()}/notifications/`, callback, {
     title: title,
     description: description,
     category: category,
@@ -207,7 +207,7 @@ export function apiNotificationCreate(username, title, description, category, ca
 
 // Gets list of notifications for a user
 export function apiNotificationList(username, callback, nextUrl) {
-  let endpoint = `profiles/${username}/notifications/`;
+  let endpoint = `profiles/${username.toLowerCase()}/notifications/`;
   if (nextUrl !== null && nextUrl !== undefined) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   };
@@ -216,12 +216,12 @@ export function apiNotificationList(username, callback, nextUrl) {
 
 // Gets list of unread notifications for a user
 export function apiUnreadNotificationList(username, callback) {
-  backendLookup('GET', `profiles/${username}/notifications/read/`, callback);
+  backendLookup('GET', `profiles/${username.toLowerCase()}/notifications/read/`, callback);
 };
 
 // Marks a user's notification as read
 export function apiNotificationRead(username, notificationId, callback) {
-  backendLookup('POST', `profiles/${username}/notifications/read/`, callback, {notification_id: notificationId});
+  backendLookup('POST', `profiles/${username.toLowerCase()}/notifications/read/`, callback, {notification_id: notificationId});
 };
 
 // Gets decks for explore component
@@ -229,7 +229,7 @@ export function apiExploreLists(callback) {
   backendLookup('GET', 'explore/lists/', callback);
 };
 
-// Create an empty data oiubt
+// Create an empty data point
 export function apiCreateBlankExperiment(controllerShortName, experimentParams, callback) {
   backendLookup('POST', 'analytics/createblank/', callback, {
     controller_short_name: controllerShortName,

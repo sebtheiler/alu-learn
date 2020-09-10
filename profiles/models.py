@@ -14,8 +14,8 @@ class Profile(models.Model):
     birthdate = models.DateField(null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    friends = models.ManyToManyField(User, related_name='friends', blank=True) # TODO: this should probably be 'self' not User
-    pending_friends = models.ManyToManyField('self', blank=True)
+    friends = models.ManyToManyField(User, related_name='friends', blank=True)
+    pending_friends = models.ManyToManyField(User, blank=True, related_name='users_who_requested')
     total_thanks_recieved = models.IntegerField(default=0)
 
     longest_streak = models.PositiveSmallIntegerField(default=0)

@@ -58,7 +58,7 @@ export function ModalRegisterForm(props) {
         };
         if (!emailAvailable) {
           document.getElementById('registerEmailTakenError').innerHTML = 
-          'That email is already taken! Click <a href="/reset_password">here</a> to reset your password.'
+          'That email is already taken! Click <a href="/reset_password/">here</a> to reset your password.'
         } else {
           document.getElementById('registerEmailTakenError').innerHTML = '';
         };
@@ -78,9 +78,11 @@ export function ModalRegisterForm(props) {
         // Check that first and last names are valid
         if (!isChild && (
           form.elements.registerFirstName.value.length > 50 ||
-          form.elements.registerLastName.value.length > 50)) {
+          form.elements.registerLastName.value.length > 50 ||
+          ['@','#','$'].some(el => form.elements.registerFirstName.value.includes(el)) ||
+          ['@','#','$'].some(el => form.elements.registerLastName.value.includes(el)))) {
             document.getElementById('nameError').innerText =
-            'Your name must be less than 50 characters.'
+            'Your name must be less than 50 characters and not contain special characters such as @, #, or $.'
             error = true;
         } else if (!isChild) {
           document.getElementById('nameError').innerText = '';
@@ -245,6 +247,7 @@ export function ModalRegisterForm(props) {
           type='text'
           name='registerUsername'
           maxLength={15}
+          style={{textTransform: 'lowercase'}}
           required
         />
       </Form.Group>

@@ -65,7 +65,11 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
 # Renders a list of flashcards in a deck (used in browsing)
 def flashcard_list_view(request, deck_id, *args, **kwargs):
     # TODO: remove due date when foreign user, also reset all information when copying deck
-    is_foreign_user = not Deck.objects.get(pk=deck_id).user == request.user
+    try:
+        is_foreign_user = not Deck.objects.get(pk=deck_id).user == request.user
+    except ObjectDoesNotExist:
+        return redirect('/home/')
+
     return render(request, 'flashcards/list.html', context={'deck_id': deck_id, 'is_foreign_user': is_foreign_user})
 
 # Renders the flashcard search tool

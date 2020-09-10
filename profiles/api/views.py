@@ -18,16 +18,10 @@ import datetime
 User = get_user_model()
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def profile_detail_api_view(request, username, *args, **kwargs):
     """
-    Get detail about a profile with username `username`, or add/remove them as a friend - GET/POST
-
-    To get details about a profile, use request method GET
-    
-    To add/remove another user as a friend,
-        Use request method POST
-        Request data must have an attribute `action`.  This must either be `friend` or `unfriend`
+    Get detail about a profile with username `username` - GET
 
     Returns:
         First name of the given user: 'first_name'
@@ -41,49 +35,72 @@ def profile_detail_api_view(request, username, *args, **kwargs):
 
     Possible errors:
         Unknown username: 404, User not found
-        Already friends when adding friend: 400, You are already friends with this user
-        Unfriending user who is not a friend: 400 'You cannot unfriend a user who is not your friend
-        Action is not friend/unfriend: 400, 'Unknown action
-        Adding yourself as a friend: 400, 'You cannot friend yourself
     """
     # Find the user in question
-    profile_qs = Profile.objects.filter(user__username=username)
-    if not profile_qs.exists():
+    try:
+        profile = Profile.objects.get(user__username=username.lower())
+    except ObjectDoesNotExist:
         return Response({'message': 'User not found'}, status=404)
-    profile_obj = profile_qs.first()
 
-    # Logic for adding/removing friends
-    if request.method == 'POST':
-        data = request.data or {}
-        action = data.get('action')
-        if action == 'friend':
-            if profile_obj.user == request.user:
-                return Response({'message': 'You cannot friend yourself'}, status=400)
-            if not request.user in profile_obj.friends.all():
+    return Response(PublicProfileSerializer(profile, context={'request': request}).data, status=200)
+
+
+@api_view(['POST'])
+def friend_toggle_api_view(request, recipient_username, *args, **kwargs):
+    """
+    Adds or removes a friend - POST
+
+    Required information:
+        `recipient_username`: The username of the user who launched the friend request
+
+    Possible errors:
+        Recipient profile not found: 404, User not found
+        Already friends when adding friend: 400, You are already friends with this user
+        Unfriending user who is not a friend: 400 You cannot unfriend a user who is not your friend
+        Action is not friend/unfriend: 400, Unknown action
+        Adding yourself as a friend: 400, You cannot friend yourself
+        Friend a user who has not requested you: 400, You cannot friend a user who has not requested to be your friend
+    """
+    # Find the user in question
+    try:
+        recipient_user = User.objects.get(username=recipient_username.lower())
+    except ObjectDoesNotExist:
+        return Response({'message': 'User not found'}, status=404)
+
+    # Get action
+    action = request.data.get('action')
+    if action is None:
+        return Response({'message': 'You must specify an action'})
+
+    # Friending logic
+    if action == 'friend':
+        if recipient_user == request.user:
+            return Response({'message': 'You cannot friend yourself'}, status=400)
+
+        if not request.user in recipient_user.profile.friends.all():
+            recipient_is_pending = recipient_user in request.user.profile.pending_friends.all()
+            if recipient_is_pending:
                 # Add eachother as friends
-                profile_obj.friends.add(request.user)
-                request.user.profile.friends.add(profile_obj.user)
+                recipient_user.profile.friends.add(request.user)
+                request.user.profile.friends.add(recipient_user)
 
-                # Remove eachother as pending friends
-                # Technical note: only one user will have the other as
-                # a pending friend, however it is simply easier to do this
-                # to both of them.  This may reduce efficiency, TODO:
-                profile_obj.pending_friends.remove(request.user.profile)
-                request.user.profile.pending_friends.remove(profile_obj)
+                # Remove the user as a pending friend
+                request.user.profile.pending_friends.remove(recipient_user)
             else:
-                return Response({'message': 'You are already friends with this user'}, status=400)
-        elif action == 'unfriend':
-            if request.user in profile_obj.friends.all():
-                # Remove eachother as friends
-                profile_obj.friends.remove(request.user)
-                request.user.profile.friends.remove(profile_obj.user)
-            else:
-                return Response({'message': 'You cannot unfriend a user who is not your friend'}, status=400)
+                return Response({'message': 'You cannot friend a user who has not requested to be your friend'}, status=400)
         else:
-            return Response({'message': 'Unknown action'}, status=400)
-
-    context = PublicProfileSerializer(instance=profile_obj, context={'request': request}).data
-    return Response(context, status=200)
+            return Response({'message': 'You are already friends with this user'}, status=400)
+    elif action == 'unfriend':
+        if request.user in recipient_user.profile.friends.all():
+            # Remove eachother as friends
+            recipient_user.profile.friends.remove(request.user)
+            request.user.profile.friends.remove(recipient_user)
+        else:
+            return Response({'message': 'You cannot unfriend a user who is not your friend'}, status=400)
+    else:
+        return Response({'message': 'Unknown action'}, status=400)
+    
+    return Response(PublicProfileSerializer(recipient_user.profile, context={'request': request}).data, status=200)
 
 
 @api_view(['POST'])
@@ -100,16 +117,31 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
         Cannot self-friend: 400, You cannot friend yourself
     """
     # Get recipient user
-    user_qs = User.objects.filter(username=recipient_username) # TODO: turn this common snippet of getting user into function
+    user_qs = User.objects.filter(username=recipient_username.lower()) # TODO: turn this common snippet of getting user into function
     if not user_qs.exists():
         return Response({'message': f'User "{recipient_username}" not found'}, status=404)
     recipient_user = user_qs.first()
 
     # Get sending user 
     sending_user = request.user
-
     if sending_user == recipient_user:
         return Response({'message': 'You cannot friend yourself'}, status=400)
+
+    # Check if the users are already pending eachother
+    if sending_user in recipient_user.profile.pending_friends.all():
+        return Response({'message': 'You have already sent a friend request to this user'})
+    elif recipient_user in sending_user.profile.pending_friends.all():
+        # If the recipient user has already requested the sending user,
+        # directly add them as friends
+        recipient_user.profile.friends.add(sending_user)
+        sending_user.profile.friends.add(recipient_user)
+        sending_user.profile.pending_friends.remove(recipient_user)
+
+        return Response(PublicProfileSerializer(recipient_user.profile).data, status=201) # for consistency with friend toggle view
+
+    # Put user in the profile's pending friends
+    recipient_user.profile.pending_friends.add(sending_user)
+    recipient_user.save()
 
     # Create notification
     title = f'{sending_user.first_name} wants to be your friend!' if sending_user.first_name else 'Someone wants to be your friend!'
@@ -130,13 +162,7 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
         description=description,
     )
 
-    # Put user in the profile's pending friends
-    recipient_user.profile.pending_friends.add(
-        sending_user.profile,
-    )
-    recipient_user.save()
-
-    return Response({}, status=201)
+    return Response({'message': 'Request sent succesfully'}, status=201)
 
 
 @api_view(['GET', 'POST'])
@@ -161,10 +187,10 @@ def notification_api_view(request, username, *args, **kwargs):
         Unknown username: 404, User "`username`" not found
     """
     # Get user
-    user_qs = User.objects.filter(username=username) # TODO: turn this common snippet of getting user into function
-    if not user_qs.exists():
+    try:
+        user = User.objects.get(username=username.lower())
+    except ObjectDoesNotExist:
         return Response({'message': f'User "{username}" not found'}, status=404)
-    user = user_qs.first()
 
     if request.method == 'POST':
         # Create notification object
@@ -179,8 +205,6 @@ def notification_api_view(request, username, *args, **kwargs):
         # List all notifications
         notif_qs = Notification.objects.filter(profile__user=user).order_by('-timestamp')
         return get_paginated_queryset_response(notif_qs, request, NotificationSerializer, page_size=3)
-    else:
-        return Response({'message': f'Method {request.method} not allowed'}, status=405)
 
 
 @api_view(['GET', 'POST'])
@@ -204,23 +228,22 @@ def notification_read_api_view(request, username, *args, **kwargs):
         Unknown username: 404, User not found
     """
     # Get user
-    user_qs = User.objects.filter(username=username) # TODO: turn this common snippet of getting user into function
-    if not user_qs.exists():
-        return Response({'message': 'User not found'}, status=404)
-    user = user_qs.first()
+    try:
+        user = User.objects.get(username=username.lower())
+    except ObjectDoesNotExist:
+        return Response({'message': f'User "{username}" not found'}, status=404)
 
     if request.method == 'POST':
         # Get notification
-        pk = request.data.get('notification_id')
-        if not pk:
-            return Response({'message': 'Please specify a notification ID'}, status=400)
-        notif_qs = Notification.objects.filter(profile__user=user, pk=pk)
-        if not notif_qs.exists():
+        try:
+            notif = Notification.objects.filter(profile__user=user, pk=request.data.get('notification_id'))
+        except ObjectDoesNotExist:
             return Response({'message': 'Please specify a valid notification ID'}, status=400)
-        notif = notif_qs.first()
+
         # Mark notification as read
         notif.read = True
         notif.save()
+
         return Response(NotificationSerializer(instance=notif).data, status=200)
     elif request.method == 'GET':
         # List all unread notifications
@@ -229,31 +252,6 @@ def notification_read_api_view(request, username, *args, **kwargs):
             many=True,
         ).data, status=200)
 
-
-@api_view(['POST'])
-def profile_badge_create_api_view(request, username, *args, **kwargs):
-    """
-    Give a profile a badge - POST
-
-    Required information:
-        `username`: (URL) Username of the profile to give a badge to
-        `identifier`: (Data) Identifier of the badge to give. This is from a given list in `alu-web/badges/identifiers.js`, however is not verified upon creation.
-    
-    Possible errors:
-        Unknown username: 404, User not found
-        Not identifier specified: 400, Identifier not specified
-    """
-    identifier = request.data.get('identifier')
-    if identifier is None:
-        return Response({'message': 'Identifier not specified'}, status=400)
-
-    profiles_qs = Profile.objects.filter(user__username=username)
-    if not profiles_qs.exists():
-        return Response({'message': 'User not found'}, status=404)
-    profile = profiles_qs.first()
-
-    new_badge = ProfileBadge.objects.create(profile=profile, identifier=identifier)
-    return Response(ProfileBadgeSerializer(new_badge).data, status=201)
 
 @api_view(['GET'])
 def check_username_available_api_view(request, *args, **kwargs):
@@ -267,9 +265,9 @@ def check_username_available_api_view(request, *args, **kwargs):
     Possible errors:
         Username not specified: 400, Please specify username
     """
-    username = request.GET.get('username')
+    username = request.GET.get('username').lower()
     email = request.GET.get('email')
-    if username is None or email is None:
+    if None in (username, email):
         return Response({'message': 'Please specify username and email'}, status=400)
     
     all_usernames_and_emails = [(user.username, user.email) for user in User.objects.all()]
@@ -296,10 +294,13 @@ def create_profile_api_view(request, *args, **kwargs):
     birthdate = request.data.get('birthdate')
     last_name = request.data.get('last_name')
     first_name = request.data.get('first_name')
-    username = request.data.get('username')
+    username = request.data.get('username').lower().replace('@', '').replace('$', '').replace('#', '')
     email = request.data.get('email')
     password = request.data.get('password')
     experiment_params = request.data.get('experiment_params')
+
+    if None in (birthdate, last_name, first_name, username, email, password, experiment_params):
+        return Response({'message': 'Not all parameters were specified'}, status=400)
 
     months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
     birthdate = datetime.date(
@@ -344,9 +345,9 @@ def login_api_view(request, *args, **kwargs):
     if request.user and request.user.is_authenticated:
         return Response({'message': 'User is already authenticated'}, status=400)
 
-    username = request.data.get('username')
+    username = request.data.get('username').lower()
     password = request.data.get('password')
-    if username is None or password is None:
+    if None in (username, password):
         return Response({'message': 'Please specify a username and password'}, status=400)
 
     user = authenticate(request, username=username, password=password)
@@ -380,10 +381,10 @@ def get_user_friends_api_view(request, username, *args, **kwargs):
         Invalid username: 404, User not found
     """
     try:
-        # TODO: replace all segments of code to something like this
-        profile = Profile.objects.get(user__username=username)
+        profile = Profile.objects.get(user__username=username.lower())
     except ObjectDoesNotExist:
         return Response({'message': 'User not found'}, status=404)
+
     return Response(MinifiedProfileSerializer(profile.friends, many=True).data, status=200)
 
 
@@ -396,10 +397,10 @@ def profile_history_view(request, username, *args, **kwargs):
         Invalid username: 404, User not found
     """
     try:
-        # TODO: replace all segments of code to something like this
-        profile = Profile.objects.get(user__username=username)
+        profile = Profile.objects.get(user__username=username.lower())
     except ObjectDoesNotExist:
         return Response({'message': 'User not found'}, status=404)
+
     return Response(HistorySerializer(profile.history, many=True).data, status=200)
 
 # from django.core.mail import send_mail
