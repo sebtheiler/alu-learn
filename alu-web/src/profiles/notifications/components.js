@@ -72,7 +72,7 @@ export function NotificationComponent(props) {
     if (username.length > 0) {
       for (let notif of notifList) {
         if (notif.read === false) {
-          apiNotificationRead(notif.profile.username, notif.id, (response, status) => {
+          apiNotificationRead(notif.username, notif.id, (response, status) => {
             if (status === 200) {
               // ...
             } else {

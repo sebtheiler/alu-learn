@@ -104,8 +104,7 @@ class MinifiedProfileSerializer(serializers.ModelSerializer):
 
 
 class NotificationSerializer(serializers.ModelSerializer):
-    title = serializers.SerializerMethodField(read_only=True)
-    description = serializers.SerializerMethodField(read_only=True)
+    username = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Notification
@@ -114,16 +113,13 @@ class NotificationSerializer(serializers.ModelSerializer):
             'description',
             'read',
             'category',
+            'username',
             'timestamp',
             'id',
         ]
     
-    def get_title(self, obj):
-        return obj.title
-    
-    
-    def get_description(self, obj):
-        return obj.description
+    def get_username(self, obj):
+        return obj.profile.user.username
 
 
 class HistorySerializer(serializers.ModelSerializer):

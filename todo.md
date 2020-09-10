@@ -135,9 +135,10 @@ Features
 - [ ] Custom study: Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
 - [ ] Spread the word
 - [ ] Fix notification issues
-  - [ ] Error when clicking
+  - [X] Error when clicking
   - [ ] Display number of unread in that too
-  - [ ] Make notification reading work properly
+  - [ ] Make notification reading work properly in detail
+  - [ ] Make icon display properly
 
 - [ ] Add help pages
   - [ ] Features
