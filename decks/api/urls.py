@@ -5,7 +5,6 @@ from . import views
 # Base endpoint = /api/decks/
 app_names = 'decks'
 urlpatterns = [
-    path('decklist/', views.deck_list_view),
     path('create/', views.deck_create_view),
     path('search/', views.deck_search_view),
     path('textupload/', views.txt_file_upload),

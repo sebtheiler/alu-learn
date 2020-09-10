@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import generic
+from django.core.exceptions import ObjectDoesNotExist
+from .models import Deck
 
 
 # Render the home-page view
@@ -23,10 +25,17 @@ def decks_detail_view(request, deck_id, *args, **kwargs):
 def flashcard_create_view(request, deck_id, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+
+    # Check that the user has permission to create flashcards
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except ObjectDoesNotExist:
+        return redirect('/home/')
+
     context = {
         'deck_id': deck_id,
         'flashcard_id': None,
-        'desc': 'Create a new flashcard',
+        'desc': f'Create a new flashcard in "{deck.title}"',
         'sub_desc': 'Use "Tab" to cycle through steps, and use enter to press create once it is selected',
     }
     return render(request, 'flashcards/create.html', context=context)
@@ -36,11 +45,18 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+
+    # Check that the user has permission to create flashcards
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except ObjectDoesNotExist:
+        return redirect('/home/')
+
     context = {
         'deck_id': deck_id,
         'flashcard_id': flashcard_id,
         'return_to_previous_page': True,
-        'desc': 'Edit your flashcard',
+        'desc': f'Edit your flashcard in "{deck.title}"',
         'sub_desc': 'After saving, you may need to reload the previous page to see new changes'
     }
     return render(request, 'flashcards/create.html', context=context)
@@ -48,7 +64,9 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
 
 # Renders a list of flashcards in a deck (used in browsing)
 def flashcard_list_view(request, deck_id, *args, **kwargs):
-    return render(request, 'flashcards/list.html', context={'deck_id': deck_id})
+    # TODO: remove due date when foreign user, also reset all information when copying deck
+    is_foreign_user = not Deck.objects.get(pk=deck_id).user == request.user
+    return render(request, 'flashcards/list.html', context={'deck_id': deck_id, 'is_foreign_user': is_foreign_user})
 
 # Renders the flashcard search tool
 def flashcard_search_view(request, *args, **kwargs):

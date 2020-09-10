@@ -4,6 +4,7 @@ from django.utils.http import is_safe_url
 from django.utils import timezone
 from django.db.models import Q
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.decorators.cache import cache_page, cache_control
 from django.views.decorators.vary import vary_on_cookie
 
@@ -26,7 +27,6 @@ import re
 from fuzzywuzzy import process, fuzz
 
 @api_view(['POST'])
-@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def deck_create_view(request, *args, **kwargs):
     """
@@ -49,25 +49,19 @@ def deck_create_view(request, *args, **kwargs):
     if title is None:
         return Response({'message': 'You must specify a title'}, status=400)
 
-    description = request.data.get('description')
-    sharing_setting = request.data.get('sharing_setting')
-    scheduling_algorithm = request.data.get('scheduling_algorithm')
-    shuffle_unseen_cards = request.data.get('shuffle_unseen_cards')
-
     new_deck = Deck.objects.create(
         user=request.user,
         title=title,
-        description=description if description else '',
-        sharing_setting=sharing_setting if sharing_setting else 'PRIVATE',
-        scheduling_algorithm=scheduling_algorithm if scheduling_algorithm else 'ANKI',
-        shuffle_unseen_cards=shuffle_unseen_cards if shuffle_unseen_cards else False,
+        description=request.data.get('description', ''),
+        sharing_setting=request.data.get('sharing_setting', 'PRIVATE'),
+        scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKI'),
+        shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', False),
     )
 
     return Response(DeckSerializer(new_deck).data, status=201)
 
 
 @api_view(['GET', 'POST'])
-# @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def flashcard_create_view(request, deck_id, *args, **kwargs):
     """
@@ -80,14 +74,13 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
         `tags`: (Data) Raw string of tags, seperated by commas
     
     Possible errors:
-        Deck ID does not exist: 400, Unknown deck ID
+        Deck ID does not exist or the user is unauthenticated: 400, Deck not found / unauthorized
         Front/back text is None: 400, Front and back text must not be None
     """
-    deck_qs = Deck.objects.filter(pk=deck_id)
-    if deck_qs.exists():
-        deck = deck_qs.first()
-    else:
-        return Response({'message': 'Unknown deck ID'}, 400)
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except ObjectDoesNotExist:
+        return Response({'message': 'Deck not found / unauthorized'}, status=400)
 
     front_text = request.data.get('front_text')
     back_text = request.data.get('back_text')
@@ -107,46 +100,35 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 
 
 @api_view(['POST'])
-# @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
     Edit a flashcard - POST
 
     Required information:
-        `deck_id`: (URL) ID of the deck in which we are editing the flashcard
+        `deck_id`: (URL) ID of the deck in which we are editing the flashcard (unused)
         `flashcard_id`: (URL) ID of the flashcard we are editing
         `front_text`: (Data) What to set the front text to
         `back_text`: (Data) What to set the back text to
         `tags`: (Data) Raw string of tags, seperated by commas
 
     Possible errors:
-        Deck does not exist: 404, Deck not found
         Current user does not own deck: 401, You are not authorized to edit this flashcard
-        Flashcard does not exist: 404, Flashcard not found
+        Flashcard does not exist: 400, Flashcard not found / you are unauthorized
     """
-    # Get the deck
-    decks_qs = Deck.objects.filter(pk=deck_id)
-    if not decks_qs.exists():
-        return Response({'message': 'Deck not found'}, status=404)
-    decks_qs = decks_qs.filter(user=request.user)
-    if not decks_qs.exists():
-        return Response({'message': 'You are not authorized to edit this flashcard'}, status=401)
-    deck = decks_qs.first()
-
     # Get the flashcard
-    flashcard_qs = deck.flashcards.filter(pk=flashcard_id)
-    if not flashcard_qs.exists():
-        return Response({'message': 'Flashcard not found'}, status=404)
+    try:
+        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
+    except ObjectDoesNotExist:
+        return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
     # Edit the flashcard
-    obj = flashcard_qs.first()
-    obj.front_text = request.data.get('front_text')
-    obj.back_text = request.data.get('back_text')
-    tags = request.data.get('tags')
-    obj.tags = tags if tags else ''
-    obj.save()
-    return Response(FlashCardSerializer(instance=obj).data, 200)
+    flashcard.front_text = request.data.get('front_text')
+    flashcard.back_text = request.data.get('back_text')
+    flashcard.tags = request.data.get('tags', '')
+    flashcard.save()
+
+    return Response(FlashCardSerializer(instance=flashcard).data, 200)
 
 
 @api_view(['POST'])
@@ -156,7 +138,7 @@ def flashcard_review_update_view(request, deck_id, flashcard_id, *args, **kwargs
     Update a flashcard's review information - POST
 
     Required information:
-        `deck_id`: (URL) ID of the deck in which we are editing the flashcard
+        `deck_id`: (URL) ID of the deck in which we are editing the flashcard (unused)
         `flashcard_id`: (URL) ID of the flashcard we are editing
         `date`: (Data) ISO string date for next review
         `learning_status`: (Data) Learning status of the card, either 'UNSEEN', 'LEARNING', 'LEARNED', or 'RELEARNING'
@@ -169,43 +151,33 @@ def flashcard_review_update_view(request, deck_id, flashcard_id, *args, **kwargs
         Current user does not own deck: 401, You are not authorized to edit this flashcard
         Flashcard does not exist: 404, Flashcard not found
     """
-    # Get the deck
-    decks_qs = Deck.objects.filter(pk=deck_id)
-    if not decks_qs.exists():
-        return Response({'message': 'Deck not found'}, status=404)
-    # decks_qs = decks_qs.filter(user=request.user)
-    # if not decks_qs.exists():
-    #     return Response({'message': 'You are not authorized to edit this flashcard'}, status=401)
-    deck = decks_qs.first()
-
     # Get the flashcard
-    flashcard_qs = deck.flashcards.filter(pk=flashcard_id)
-    if not flashcard_qs.exists():
-        return Response({'message': 'Flashcard not found'}, status=404)
+    try:
+        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
+    except ObjectDoesNotExist:
+        return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
     # Edit the flashcard
-    obj = flashcard_qs.first()
-    obj.next_review = request.data.get('next_review', obj.next_review)
-    obj.learning_status = request.data.get('learning_status', obj.learning_status).upper()
-    obj.interval = request.data.get('interval', obj.interval)
-    obj.steps_index = request.data.get('steps_index', obj.steps_index)
-    obj.leech_index = request.data.get('leech_index', obj.leech_index)
-    obj.set_is_leech(request.data.get('is_leech', obj.is_leech))
-    obj.save()
+    flashcard.next_review = request.data.get('next_review', flashcard.next_review)
+    flashcard.learning_status = request.data.get('learning_status', flashcard.learning_status).upper()
+    flashcard.interval = request.data.get('interval', flashcard.interval)
+    flashcard.steps_index = request.data.get('steps_index', flashcard.steps_index)
+    flashcard.leech_index = request.data.get('leech_index', flashcard.leech_index)
+    flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
+    flashcard.save()
 
     # Increment the number of cards that the profile is registed as doing today
-    obj.deck.user.profile.increment_cards_done_today()
+    flashcard.deck.user.profile.increment_cards_done_today()
     increment_new_cards_done_today = request.data.get('increment_new_cards_done_today')
     if increment_new_cards_done_today:
-        obj.deck.new_cards_done_today += 1
-        obj.deck.save()
+        flashcard.deck.new_cards_done_today += 1
+        flashcard.deck.save()
 
-    return Response(FlashCardSerializer(instance=obj).data, 200)
+    return Response(FlashCardSerializer(instance=flashcard).data, 200)
 
 
 
 @api_view(['DELETE', 'POST'])
-@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def flashcard_delete_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
@@ -220,30 +192,22 @@ def flashcard_delete_view(request, deck_id, flashcard_id, *args, **kwargs):
         `status`: 200
     
     Possible errors:
-        Deck does not exist: 404, Deck not found
         Current user does not own deck: 401, You are not authorized to delete this deck
-        Flashcard does not exist: 404, Flashcard not found
+        Flashcard does not exist or user does not own it: 400, Flashcard not found / you are unauthorized
     """
-    # Get the deck
-    decks_qs = Deck.objects.filter(pk=deck_id)
-    if not decks_qs.exists():
-        return Response({'message': 'Deck not found'}, status=404)
-    decks_qs = decks_qs.filter(user=request.user)
-    if not decks_qs.exists():
-        return Response({'message': 'You are not authorized to delete this flashcard'}, status=401)
-    deck = decks_qs.first()
     # Get the flashcard
-    flashcard_qs = deck.flashcards.filter(pk=flashcard_id)
-    if not flashcard_qs.exists():
-        return Response({'message': 'Flashcard not found'}, status=404)
+    try:
+        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
+    except ObjectDoesNotExist:
+        return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
+
     # Delete the flashcard
-    obj = flashcard_qs.first()
-    obj.delete()
+    flashcard.delete()
     return Response({'message': 'Flashcard deleted succesfully'}, status=200)
 
 
 @api_view(['GET'])
-def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
+def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs): # TODO: fix things, need to check if friend also
     """
     Get specific information about a deck - GET
 
@@ -271,30 +235,9 @@ def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
     return Response(serializer.data)
 
 
-@vary_on_cookie
-@cache_control(private=True)
-@api_view(['GET'])
-def deck_list_view(request, *args, **kwargs):
-    """
-    Get a list of all decks from a username - GET
-
-    Required information:
-        `username`: (GET) Username of the user to get decks from.  If None, returns all decks.
-    
-    Returns:
-        A list of decks (DeckSerializer)
-    """
-    decks_qs = Deck.objects.all()
-    username = request.GET.get('username')
-    if username is not None:
-        decks_qs = decks_qs.by_username(username)
-    return get_paginated_queryset_response(decks_qs, request, DeckSerializer)
-
-
 @api_view(['GET'])
 @vary_on_cookie
 @cache_control(private=True)
-# @permission_classes([IsAuthenticated])
 def deck_shared_view(request, username, *args, **kwargs):
     """
     Gets decks from a user that are either shared with the requester or public - GET
@@ -306,24 +249,21 @@ def deck_shared_view(request, username, *args, **kwargs):
         A list of decks (DeckSerializer)
     """
     # Get user
-    profile_qs = Profile.objects.filter(user__username=username)
-    if not profile_qs.exists():
+    try:
+        profile = Profile.objects.get(user__username=username)
+    except ObjectDoesNotExist:
         return Response({'message': f'Invalid username "{username}"'}, status=404)
-    profile = profile_qs.first()
-
-    # Get user's decks
-    decks_qs = Deck.objects.filter(user=profile.user)
 
     # Get user's decks that are either public or shared
     if profile.user == request.user:
         # If the user is viewing their own decks, just return everything
-        return Response(DeckSerializer(decks_qs, many=True).data, status=200)
+        return Response(DeckSerializer(Deck.objects.filter(user=profile.user), many=True).data, status=200)
 
     is_friend = request.user in profile.friends.all()
     if is_friend:
-        decks_qs = decks_qs.filter(Q(sharing_setting='PUBLIC') | Q(sharing_setting='FRIENDS'))
+        decks_qs = Deck.objects.filter(Q(user=profile.user) & (Q(sharing_setting='PUBLIC') | Q(sharing_setting='FRIENDS')))
     else:
-        decks_qs = decks_qs.filter(sharing_setting='PUBLIC')
+        decks_qs = Deck.objects.filter(user=profile.user, sharing_setting='PUBLIC')
 
     return Response(DeckSerializer(decks_qs, many=True).data, status=200)
 
@@ -339,8 +279,7 @@ def deck_home_view(request, *args, **kwargs):
     Returns:
         A list of decks (DeckSerializer)
     """
-    user = request.user
-    home_qs = Deck.objects.home(user)
+    home_qs = Deck.objects.home(request.user)
     return get_paginated_queryset_response(home_qs, request, DeckSerializer, page_size=50)
 
 
@@ -361,15 +300,17 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
         Invalid deck: 404, Deck not found
         Deck is not shared with user: 403, You are unauthorized to view this deck
     """
-    decks_qs = Deck.objects.filter(pk=deck_id)
-
-    if not decks_qs.exists():
+    # Get deck
+    try:
+        deck = Deck.objects.get(pk=deck_id)
+    except ObjectDoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
-    deck = decks_qs.first()
 
+    # Make sure the user is authorized
     if not (request.user == deck.user or deck.sharing_setting == 'PUBLIC' or (deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all())):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
+    # Return
     serializer = DeckSerializer(deck, context={'request': request})
     return Response(serializer.data, status=200)
 
@@ -394,12 +335,13 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
         Invalid deck: 404, Deck not found
         Deck is not shared with user: 403, You are unauthorized to view this deck
     """
-    decks_qs = Deck.objects.filter(pk=deck_id)
-
-    if not decks_qs.exists():
+    # Get deck
+    try:
+        deck = Deck.objects.get(pk=deck_id)
+    except ObjectDoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
-    deck = decks_qs.first()
 
+    # Make sure the user is authorized
     if not (request.user == deck.user or deck.sharing_setting == 'PUBLIC' or (deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all())):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
@@ -430,16 +372,16 @@ def deck_delete_view(request, deck_id, *args, **kwargs):
         `status`: 200
     
     Possible errors:
-        Current user does not own deck: 401, You are not authorized to delete this deck.
+        Current user does not own deck or deck ID is invalid: 400, Deck not found / you are unauthorized
     """
-    decks_qs = Deck.objects.filter(pk=deck_id)
-    if not decks_qs.exists():
-        return Response({'message': 'Deck not found'}, status=404)
-    decks_qs = decks_qs.filter(user=request.user)
-    if not decks_qs.exists():
-        return Response({'message': 'You are not authorized to delete this deck.'}, status=401)
-    obj = decks_qs.first()
-    obj.delete()
+    # Get deck
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except ObjectDoesNotExist:
+        return Response({'message': 'Deck not found / you are unauthorized'}, status=400)
+
+    # Delete
+    deck.delete()
     return Response({'message': 'Deck deleted succesfully'}, status=200)
 
 
@@ -459,50 +401,31 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         `shufle_unseen_cards`: (Data) Whether or not to shuffle unseen cards
 
     Possible errors:
-        Deck does not exist: 404, Deck not found
-        Current user does not own deck: 401, You are not authorized to edit this flashcard
+        Deck does not exist or user is unauthorized: 404, Deck not found / you are unauthorized
         Invalid sharing setting (if specified): 400, Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`
     """
-    # Get the deck
-    decks_qs = Deck.objects.filter(pk=deck_id)
-    if not decks_qs.exists():
-        return Response({'message': 'Deck not found'}, status=404)
-    decks_qs = decks_qs.filter(user=request.user)
-    if not decks_qs.exists():
-        return Response({'message': 'You are not authorized to edit this deck'}, status=401)
-    deck = decks_qs.first()
+    # Get deck
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except ObjectDoesNotExist:
+        return Response({'message': 'Deck not found / you are unauthorized'}, status=400)
 
     # Get data
-    title = request.data.get('new_title')
-    description = request.data.get('description')
-    sharing_setting = request.data.get('sharing_setting')
-    scheduling_algorithm = request.data.get('scheduling_algorithm')
-    shuffle_unseen_cards = request.data.get('shuffle_unseen_cards')
-    daily_new_card_limit = request.data.get('daily_new_card_limit')
+    sharing_setting = request.data.get('sharing_setting', deck.sharing_setting)
+    scheduling_algorithm = request.data.get('scheduling_algorithm', deck.scheduling_algorithm)
 
-    if sharing_setting and sharing_setting not in ('PRIVATE', 'FRIENDS', 'PUBLIC'):
+    if sharing_setting not in ('PRIVATE', 'FRIENDS', 'PUBLIC'):
         return Response({'message': 'Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`'}, status=400)
-    if scheduling_algorithm and scheduling_algorithm not in ('ANKI', 'ANKING'):
+    if scheduling_algorithm not in ('ANKI', 'ANKING'):
         return Response({'message': 'Invalid `scheduling_algorithm`.  Must be `ANKI` or `ANKING`'}, status=400)
 
     # Edit the deck
-    if title is not None:
-        deck.title = title
-
-    if description is not None:
-        deck.description = description
-
-    if sharing_setting is not None:
-        deck.sharing_setting = sharing_setting
-    
-    if scheduling_algorithm is not None:
-        deck.scheduling_algorithm = scheduling_algorithm.upper()
-    
-    if shuffle_unseen_cards is not None:
-        deck.shuffle_unseen_cards = shuffle_unseen_cards
-
-    if daily_new_card_limit is not None:
-        deck.daily_new_card_limit = daily_new_card_limit
+    deck.title = request.data.get('new_title', deck.title)
+    deck.description = request.data.get('description', deck.description)
+    deck.sharing_setting = sharing_setting
+    deck.scheduling_algorithm = scheduling_algorithm
+    deck.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards', deck.shuffle_unseen_cards)
+    deck.daily_new_card_limit = request.data.get('daily_new_card_limit', deck.daily_new_card_limit)
 
     deck.save()
     return Response(DeckSerializer(instance=deck).data, 200)
@@ -519,31 +442,25 @@ def deck_copy_view(request, deck_id, *args, **kwargs):
     
     Possible errors:
         Invalid deck ID: 404, Deck not found
-        User attempts to copy their own deck: 400, You cannot copy your own deck
         User attempts to copy a deck they don't have access to: 403, You cannot copy a private deck
         User not authenticated: 403
     """
     # Get deck
-    decks_qs = Deck.objects.filter(pk=deck_id)
-    if not decks_qs.exists():
+    try:
+        deck = Deck.objects.get(pk=deck_id)
+    except ObjectDoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
-    deck = decks_qs.first()
-    
-    # Check if the user is trying to copy their own deck
-    if deck.user.username == request.user.username:
-        return Response({'message': 'You cannot copy your own deck'}, status=400)
     
     # Check if the user has permission to copy the deck
-    if deck.sharing_setting == 'PRIVATE':
-        return Response({'message': 'You cannot copy a private deck'}, status=403)
-    elif deck.sharing_setting == 'FRIENDS' and request.user not in deck.user.profile.friends.all():
+    if deck.sharing_setting == 'PRIVATE' or \
+       (deck.sharing_setting == 'FRIENDS' and request.user not in deck.user.profile.friends.all()):
         return Response({'message': 'You cannot copy a private deck'}, status=403)
     
     # Copy deck
     deck.pk = None
     deck.user = request.user
     deck.sharing_setting = 'PRIVATE'
-    deck.title = 'Copy of ' + deck.title
+    deck.title = f'Copy of {deck.title}'
     deck.save()
     return Response(DeckSerializer(deck).data, status=200)
 
@@ -562,14 +479,14 @@ def deck_thank_view(request, deck_id, *args, **kwargs):
         Attempt to thank self: 400, You cannot thank yourself
         Already thanked: 400, You have already thanked this deck
     """
-    # Get Deck
-    deck_qs = Deck.objects.filter(pk=deck_id)
-    if not deck_qs.exists():
+    # Get deck
+    try:
+        deck = Deck.objects.get(pk=deck_id)
+    except ObjectDoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
-    deck = deck_qs.first()
 
     # Check that the user is not thanking themselves
-    if deck.user.username == request.user.username:
+    if deck.user == request.user:
         return Response({'message': 'You cannot thank yourself'}, status=400)
 
     # Create thank object
@@ -605,29 +522,21 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
     # Check action is specified
     if not request.data.get('action'):
         return Response({'message': 'Please specify an action'}, status=400)
-    # Get deck
-    decks_qs = Deck.objects.filter(pk=deck_id)
-    if not decks_qs.exists():
-        return Response({'message': 'Deck not found'}, status=404)
-    decks_qs = decks_qs.filter(user=request.user)
-    if not decks_qs.exists():
-        return Response({'message': 'You are not authorized to (un)suspend/leech this deck'}, status=401)
-    deck = decks_qs.first()
 
-    # Get the flashcard
-    flashcard_qs = deck.flashcards.filter(pk=flashcard_id)
-    if not flashcard_qs.exists():
-        return Response({'message': 'Flashcard not found'}, status=404)
-    flashcard = flashcard_qs.first()
+    # Get flashcard
+    try:
+        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
+    except ObjectDoesNotExist:
+        return Response({'message': 'Flashcard not found / you are unauthorized'}, status=404)
 
     # Set flashcard as (un)suspended/leeched
     action = request.data.get('action')
     if action in ('suspend', 'unsuspend'):
-        flashcard.is_suspended = action == 'suspend'
+        flashcard.is_suspended = (action == 'suspend')
     elif action in ('leech', 'unleech'):
-        flashcard.set_is_leech(action == 'leech')
+        flashcard.set_is_leech(action == 'leech', save=False)
     flashcard.save()
-    
+
     return Response(FlashCardSerializer(flashcard).data, status=200)
 
 

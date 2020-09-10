@@ -84,4 +84,5 @@ int(hexadecimal_string, 16)
 
 === Misc ===
 4000: Error submitting feedback through apiFeedbackSubmit in alu-web/src/home/contactus.js
+4001: Invalid scheduling algorithm through generateConfig in alu-web/src/decks/study/algorithm.js
 */

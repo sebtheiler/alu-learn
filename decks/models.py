@@ -106,7 +106,7 @@ class FlashCard(models.Model):
         # marked as a leech.
         return 'leech' in [tag.strip() for tag in self.tags.split(',')]
     
-    def set_is_leech(self, is_leech):
+    def set_is_leech(self, is_leech, save=True):
         if is_leech:
             if self.is_leech():
                 return
@@ -116,7 +116,9 @@ class FlashCard(models.Model):
                 self.tags += ', leech'
         else:
             self.tags = self.tags.replace(', leech', '')
-        self.save()
+
+        if save:
+            self.save()
 
 # Used to like/thank a person for making a deck
 class DeckThank(models.Model):

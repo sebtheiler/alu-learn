@@ -1,3 +1,5 @@
+import {errorHandler} from '../../utils';
+
 function minutesToDays(minutes) {
   return minutes / (60*24);
 };
@@ -43,6 +45,10 @@ function generateConfig(method='ANKI') {
       MINIMUM_INTERVAL: 1, // in days
       LEECH_THRESHOLD: 8, // number wrong
     };
+  } else {
+    // Invalid deck config
+    console.error('Invalid deck config');
+    errorHandler({}, 0, 4001);
   };
 };
 

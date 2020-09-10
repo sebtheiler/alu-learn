@@ -94,17 +94,6 @@ export function apiDeckEdit(deckId, newTitle, newDescription, sharingSetting, sc
   });
 };
 
-// Gets a list of decks owned by a user with username `username`
-export function apiDeckList(username, callback, nextUrl) {
-  let endpoint = 'decks/decklist/';
-  if (username) {
-    endpoint = `decks/decklist/?username=${username}`;
-  };
-  if (nextUrl !== null && nextUrl !== undefined) {
-    endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
-  };
-  backendLookup('GET', endpoint, callback);
-};
 
 // Gets a list of decks owned by a user with username `username` that are shared with the given user
 export function apiDeckSharedList(username, callback) {
