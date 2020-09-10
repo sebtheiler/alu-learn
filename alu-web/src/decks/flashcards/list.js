@@ -9,7 +9,8 @@ export function FlashCardsList(props) {
   // flashcardList: If not deckId, specify a raw list of flashcards
   // foreignUser: True if a user who does not own the deck is viewing it
   // showParnetDeckTitle: If True, show the title of the deck for each flashcard
-  const {deckId, flashcardList, foreignUser, showParentDeckTitle} = props;
+  const {deckId, flashcardList, showParentDeckTitle} = props;
+  const isForeignUser = typeof props.foreignUser === 'string' ? props.foreignUser.toLowerCase() === 'true' : props.foreignUser;
   const [deck, setDeck] = useState(null);
   const [flashcards, setFlashCards] = useState([]);
   const [flashcardsDidSet, setFlashCardsDidSet] = useState(false);
@@ -61,7 +62,7 @@ export function FlashCardsList(props) {
     <div className={props.className}>
       {flashcardList ? null : <h2 class='text-center mt-3'>Browsing Flashcards{deck ? ` in "${deck.title}"` : null}</h2>}
       <div className='text-center'>
-        {flashcardList || foreignUser || !deck ? null :
+        {flashcardList || isForeignUser || !deck ? null :
           <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />
         }
       </div>
@@ -73,7 +74,7 @@ export function FlashCardsList(props) {
                 showParentDeckTitle={showParentDeckTitle}
                 suspendCallback={() => setFlashCardsDidSet(false)}
                 deleteCallback={() => {flashcards.splice(index); setFlashCardsDidSet(false);}}
-                foreignUser={foreignUser}
+                foreignUser={isForeignUser}
               />;
       }) :
         <p className='text-center mt-3'>

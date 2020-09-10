@@ -26,7 +26,7 @@ function ProfileInformation(props) {
     var handleFriendToggle = (event) => {
       event.preventDefault();
       if (currentVerb !== 'Requested' && currentVerb !== 'Loading...' && !profileLoading) {
-        const action = currentVerb === "Remove Friend" ? "unfriend" : "friend";
+        const action = currentVerb === 'Remove Friend' ? 'unfriend' : 'friend';
         didFriendToggle(action);
       };
     };
@@ -45,7 +45,8 @@ function ProfileInformation(props) {
       <h5 className='mb-0'>Bio</h5>
       <p>{user.bio ? user.bio : "This user hasn't set a bio yet..."}</p>
       {viewingOwnProfile === false ?
-        <Button onClick={handleFriendToggle} variant='primary'>{currentVerb}</Button> :
+        <Button onClick={handleFriendToggle} variant='primary'>{currentVerb}</Button>
+        :
         <Button href='/profiles/edit/' variant='primary'>Edit Profile</Button>
       }
     </>
@@ -103,7 +104,7 @@ export function ProfileInformationComponent(props) {
   };
 
   // If the user is viewing their own profile, don't show the 'Add Friend' button and show a button for editing
-  let viewingOwnProfile = username === currentUserUsername;
+  const viewingOwnProfile = username === currentUserUsername;
 
   return didLookup === false ? 'Loading...' :
     (profile ?

@@ -32,6 +32,7 @@ export function Notification(props) {
     event.preventDefault();
     if (acceptedFriendReq === false) {
       setAcceptedFriendReq(true);
+      setFriendBtnLabel('Loading...');
       // Get anything in the description starting with @
       const match = notif.description.match(/(@[a-z]+)/gm)[0];
       const senderUsername = match.substring(1, match.length);

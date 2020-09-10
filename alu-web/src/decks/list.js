@@ -29,14 +29,14 @@ export function DeckPublicList(props) {
 
   return (
     <>
-      {decks.map((deck, index) => {
+      {decks.length > 0 ? decks.map((deck, index) => {
         return <Deck
                   deck={deck}
                   key={`${index}-${deck.id}`}
                   currentUsername={currentUsername}
                   className='my-5 py-5 border bg-white text-dark'
                 />;
-      })}
+      }) : <p>This user has no public decks</p>}
     </>
   );
 };

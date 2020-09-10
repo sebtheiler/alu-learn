@@ -127,7 +127,7 @@ export function FlashCard(props) {
           <div className='btn-group'>
             <Button href={`/decks/${flashcard.parent_deck_id}/flashcards/${flashcard.id}/edit/`} variant='primary'>Edit</Button>
             <Button onClick={handleSuspend} variant='primary' className='ml-1'>
-              {suspendIsLoading ? 'Suspending...' : (flashcard.is_suspended ? 'Unsuspend' : 'Suspend')}
+              {suspendIsLoading ? (flashcard.is_suspended ? 'Unsuspending...' : 'Suspending...') : (flashcard.is_suspended ? 'Unsuspend' : 'Suspend')}
             </Button>
             <Button onClick={handleDelete} variant='danger' className='ml-1'>
               {deleteIsLoading ? 'Deleting...' : 'Delete'}
