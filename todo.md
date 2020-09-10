@@ -21,7 +21,7 @@ Improvements
 - [X] Make 'base-landing.html' and 'base.html' the same file
 
 Features
-- [ ] Freeze field in create
+- [X] Freeze field in create
 - [ ] Pop-up dictionary?
 - [ ] Review heatmap
 - [ ] Speed focus mode
@@ -120,31 +120,41 @@ Features
   - [X] Integrate React into Django
   - [X] Add Legal version
 - [X] Seperate functions for getting meta data about deck and for getting flashcard information
-- [ ] Paginate flashcards list
 - [X] Fix login/register issue LOOK INTO DEV AUTHENTICATION
-- [ ] Replace `x ? y : null` with `x && y`
-- [ ] Add password reset page
-- [ ] Basic settings page
-- [ ] favicon.ico + Logo
-- [ ] Fix custom study
 
 ## Sep 10
 - [X] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
 - [ ] Protect API
 - [ ] Make numeric ids into string ids like "dad2Xadw#1". Look into UUID
+- [ ] Paginate flashcards list
+
+## Sep 11
+- [ ] Add password change page
+- [ ] Basic settings page
+- [ ] Fix custom study
 - [ ] Custom study: Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
-- [ ] Spread the word
 - [ ] Fix notification issues
   - [X] Error when clicking
   - [ ] Display number of unread in that too
   - [ ] Make notification reading work properly in detail
   - [ ] Make icon display properly
 
+## Sep 12
+- [ ] favicon.ico + Logo
 - [ ] Add help pages
+  - [ ] Tutorial
   - [ ] Features
   - [ ] Tags
   - [ ] Leech/suspend
   - [ ] Freeze
-  - [ ] Tutorial
 - [ ] Add legal pages
   - [ ] Finish privacy policy
+  
+## Sep 13
+- [ ] Deck comments
+  - [ ] Model
+  - [ ] API
+  - [ ] React
+
+## Sep 15
+- [ ] Spread the word

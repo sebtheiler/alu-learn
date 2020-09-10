@@ -49,10 +49,10 @@ int(hexadecimal_string, 16)
 1011: Error performing deck search through apiDeckSearch in alu-web/src/explore/search.js
 1012: Error handling next set of decks (pagination, decks search) through apiDeckSearch in alu-web/src/explore/search.js
 1013: Error importing deck from .txt file through apiDeckTextImport in alu-web/src/decks/import.js
-1014: Error getting a deck's flashcards in apiDeckFlashcards in alu-web/src/decks/components.js
+1014: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/components.js
 1015: Error looking up deck through apiDeckDetail in alu-web/src/decks/flashcards/list.js
-1016: Error getting a deck's flashcards in apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
-1017: Error getting a deck's flashcards in apiDeckFlashcards in alu-web/src/decks/study/components.js
+1016: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
+1017: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/study/components.js
 
 === Flashcard related errors ===
 2000: Error getting flashcard detail through apiFlashCardDetail in alu-web/src/decks/flashcards/create.js

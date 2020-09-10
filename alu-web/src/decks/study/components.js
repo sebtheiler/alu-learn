@@ -52,12 +52,12 @@ export function StudyComponent(props) {
             window.location.href = `/decks/${deckId}`;
           } else {
             // Error getting deck's flashcards to study
-            errorHandler(response, status, )
+            errorHandler(response, status, 1017);
           };
         });
       } else {
         // Get deck from raw list of flashcards
-        // TODO: fix this
+        // TODO: fix this, why on earth is the deck being set to a flashcards list????
         setDeckDidSet(true);
         setDeck(flashcardList);
       };
