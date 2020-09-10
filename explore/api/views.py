@@ -4,17 +4,22 @@ from rest_framework.response import Response
 
 from decks.models import Deck
 from decks.serializers import DeckSerializer
+from django.db.models import Q
+from django.views.decorators.cache import cache_page
 
 EDITOR_PICKS_DECK_IDS = [20, 21, 18, 22]
 TOP_DECK_IDS = [19, 24, 23, 25] # TODO: calculate this daily
 HOT_DECK_IDS = [] # TODO: calculate this daily
 
 def get_decks_from_ids(id_list, public_only=False):
-    decks_qs = Deck.objects.filter(pk__in=id_list)
+    query = Q(pk__in=id_list)
     if public_only:
-        decks_qs = decks_qs.filter(sharing_setting='PUBLIC')
+        query &= Q(sharing_setting='PUBLIC')
+
+    decks_qs = Deck.objects.filter(query)
     return DeckSerializer(decks_qs, many=True).data
 
+@cache_page(60*15)
 @api_view(['GET'])
 def api_explore_lists_view(request, *args, **kwargs):
     """
