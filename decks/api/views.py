@@ -71,7 +71,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
         `deck_id`: (URL) ID of the deck to create a flashcard in
         `front_text`: (Data) Text to go on the front of the flashcard
         `back_text`: (Data) Text to go on the back of the flashcard
-        `tags`: (Data) Raw string of tags, seperated by commas
+        `tags`: (Data) Raw string of tags, separated by commas
     
     Possible errors:
         Deck ID does not exist or the user is unauthenticated: 400, Deck not found / unauthorized
@@ -110,7 +110,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
         `flashcard_id`: (URL) ID of the flashcard we are editing
         `front_text`: (Data) What to set the front text to
         `back_text`: (Data) What to set the back text to
-        `tags`: (Data) Raw string of tags, seperated by commas
+        `tags`: (Data) Raw string of tags, separated by commas
 
     Possible errors:
         Current user does not own deck: 401, You are not authorized to edit this flashcard

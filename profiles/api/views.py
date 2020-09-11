@@ -236,7 +236,7 @@ def notification_read_api_view(request, username, *args, **kwargs):
     if request.method == 'POST':
         # Get notification
         try:
-            notif = Notification.objects.filter(profile__user=user, pk=request.data.get('notification_id'))
+            notif = Notification.objects.get(profile__user=user, pk=request.data.get('notification_id'))
         except ObjectDoesNotExist:
             return Response({'message': 'Please specify a valid notification ID'}, status=400)
 

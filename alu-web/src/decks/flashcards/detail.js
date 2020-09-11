@@ -78,14 +78,14 @@ export function FlashCard(props) {
               <QuestionBubble>
                 A leech is a card that you've repeatedly struggled to learn.
                 You should give this card special attention, such as rewording the question, or reviewing the material.
-                You can learn more here TODO
+                You can learn more [here](/help/leeches/).
               </QuestionBubble>
               <br />
             </em>
             <em className={flashcard.is_suspended ? '' : 'd-none'}>
               This flashcard is suspended{' '}
               <QuestionBubble>
-                A suspended card will not be shown to you when you study this deck. Learn more here TODO.`
+                A suspended card will not be shown to you when you study this deck. Learn more [here](/help/suspended/).
               </QuestionBubble>
               <br />
             </em>

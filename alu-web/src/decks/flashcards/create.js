@@ -9,10 +9,10 @@ function FreezeOverlay(props) {
     <OverlayTrigger
       overlay={generateTooltip(
         `You can freeze a field to keep its value the same after creating your flashcard.
-        Useful for creating multiple similar flashcards.`
+        Useful for creating multiple similar flashcards. Learn more [here](/help/freezing-fields/).`
         )}
         placement='right'
-        delay={{ hide: 100 }}
+        delay={{ show: 300, hide: 1800 }}
         >
       {props.children}
     </OverlayTrigger>
@@ -24,8 +24,6 @@ export function FlashCardCreate(props) {
   const frontTextRef = React.createRef();
   const backTextRef = React.createRef();
   const tagsRef = React.createRef();
-  // const markdownRef = React.createRef();
-  // const latexRef = React.createRef();
   // `deckId`: ID of the deck in which to create flashcard
   // `returnToPreviousPage`: If true, redirect the user to the previous page (used for editing)
   // `flashcardId`: If not null/undefined, the ID of the flashcard to EDIT
@@ -158,7 +156,7 @@ export function FlashCardCreate(props) {
               Tags (separate with commas){' '}
               <QuestionBubble>
                 You can give your flashcards tags to group them together.
-                Learn more here TODO
+                Learn more [here](/help/flashcard-tags/).
               </QuestionBubble>
             </p>
           </Form.Label>

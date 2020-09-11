@@ -90,14 +90,14 @@ class ProfileHistorySegment(models.Model):
         return self.cards_done
 
 
-# When a user is saved, create a corresponding Profile object
+# When a user is saved, create a corresponding Profile object and an initial notification
 def user_did_save(sender, instance, created, *args, **kwargs):
     if created:
         profile, created = Profile.objects.get_or_create(user=instance)
         Notification.objects.create(
             profile=profile,
             title='Need help?',
-            description="If you ever get lost or need help, you can check our [tutorial](/help/tutorial/) or [welcome](/help/welcome/) pages."
+            description="If you ever get lost or need help, you can check our [tutorial](/help/tutorial/) or [user-guide](/help/) pages."
         )
 
 post_save.connect(user_did_save, sender=User)

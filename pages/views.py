@@ -1,9 +1,11 @@
 import random
+import os
 
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.vary import vary_on_cookie
 from django_user_agents.utils import get_user_agent
+from django.http import Http404
 
 
 @vary_on_cookie
@@ -17,6 +19,28 @@ def home_page(request, *args, **kwargs):
 @cache_page(timeout=60*60*48) # 2 days - this page will almost never be updated
 def welcome_view(request, *args, **kwargs):
     return render(request, 'help/welcome.html')
+
+
+def md_view_wrapper(path, title, redirect_if_unauth=False):
+    @cache_page(timeout=60*60*48)
+    def help_view(request, *args, **kwargs):
+        if redirect_if_unauth and not request.user.is_authenticated:
+            return redirect('/')
+
+        # Read the MD file from disk, and send it to the template
+        # This is a slightly expensive operation, but since this is
+        # easily cacheable it doesn't matter too much
+        try:
+            with open(os.path.join(os.path.join(os.getcwd(), f'pages/markdown/{path}.md')), 'r') as f:
+                return render(request, 'help/md-renderer.html', context={
+                    'title': title,
+                    'content': f.read(),
+                })
+        except FileNotFoundError as e:
+            print(e)
+            raise Http404()
+
+    return help_view
 
 
 def settings_view(request, *args, **kwargs):

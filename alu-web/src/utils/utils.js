@@ -1,12 +1,13 @@
 import React from 'react';
 import numeral from 'numeral';
 import {Tooltip, OverlayTrigger} from 'react-bootstrap';
+import ReactMarkdown from 'react-markdown';
 
 // Creates a simple tooltip
 export const generateTooltip = (text) => {
   return (props) => (
     <Tooltip className='button-tooltip' {...props}>
-      {text}
+      <ReactMarkdown source={text} />
     </Tooltip>
   );
 };
@@ -158,8 +159,8 @@ export function QuestionBubble(props) {
   // dot; usd; pause; etc.
   const type = props.type ? props.type : 'question';
 
-  const showDelay = props.showDelay ? props.showDelay : 20;
-  const hideDelay = props.hideDelay ? props.hideDelay : 500;
+  const showDelay = props.showDelay ? props.showDelay : 350;
+  const hideDelay = props.hideDelay ? props.hideDelay : 1800;
 
   return (
     <OverlayTrigger

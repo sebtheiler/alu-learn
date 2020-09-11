@@ -140,7 +140,7 @@ export function FlashCardSearchComponent(props) {
         </Form.Group>
         <hr />
         <Form.Group>
-          <Form.Label  htmlFor='tags' as='h5'>List of tags to search in (seperate with commas)</Form.Label>
+          <Form.Label  htmlFor='tags' as='h5'>List of tags to search in (separate with commas)</Form.Label>
           <Form.Control type='text' ref={tagSelectRef} placeholder='Calculus, Integrals, Exponentials, ...' name='tags' />
         </Form.Group>
         <hr />

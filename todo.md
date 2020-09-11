@@ -7,9 +7,9 @@ Landing:
 - [X] Add statistic tracking
 - [X] Prettify registration and sign-in page
 
-Spaced repitition
-- [ ] In custom study: allow min and max ease to go to +- 
-- [ ] In custom study: add more options, e.g., shuffle, lookahead, increase new card limit, etc.
+Spaced repetition
+- [ ] In custom-study: allow min and max ease to go to +- 
+- [ ] In custom-study: add more options, e.g., shuffle, lookahead, increase new card limit, etc.
 
 Improvements
 - [X] Add pagination for deck search
@@ -57,16 +57,16 @@ Features
 
 ## Sep 01
 - [X] Add pagination for deck search
-  - [X] Limit # of results with fuzzywuzzy threshold
+  - [X] Limit # of results with fuzzy-wuzzy threshold
   - [X] Add deck search caching
 - [X] Add caching to more API views
 
 ## Sep 02
-- [X] In custom study:
+- [X] In custom-study:
   - [X] Allow min/max ease to go to +/- infinity
-  - [X] Show deck of flashcard when searching for flashcards
+  - [X] Show the deck of flashcard when searching for flashcards
 - [X] Freeze field for creating flashcards
-- [X] Add daily random tips for home page
+- [X] Add daily random tips for the home page
 
 ## Sep 03
 - [X] Review heatmap https://github.com/kevinsqi/react-calendar-heatmap
@@ -78,7 +78,7 @@ Features
 - [X] Add more options when studying flashcards
   - [X] Delete card
   - [X] Suspend card
-  - [X] Mark as leech
+  - [X] Mark as a leech
   - [X] Edit card
   - [X] Alert that card was marked as leech when done automatically
 
@@ -119,12 +119,12 @@ Features
   - [X] Integrate API into React
   - [X] Integrate React into Django
   - [X] Add Legal version
-- [X] Seperate functions for getting meta data about deck and for getting flashcard information
+- [X] Separate functions for getting meta data about deck and for getting flashcard information
 - [X] Fix login/register issue LOOK INTO DEV AUTHENTICATION
 
 ## Sep 10
 - [X] Make sure even if a hacker has access to the API, they cannot do anything they wouldn't normally be able to do
-- [ ] Protect API
+- [ ] Limit API requests per user
 - [ ] Make numeric ids into string ids like "dad2Xadw#1". Look into UUID
 - [ ] Paginate flashcards list
 
@@ -141,12 +141,13 @@ Features
 
 ## Sep 12
 - [ ] favicon.ico + Logo
-- [ ] Add help pages
+- [X] Add help pages
   - [ ] Tutorial
   - [ ] Features
-  - [ ] Tags
-  - [ ] Leech/suspend
-  - [ ] Freeze
+  - [ ] Creating good flashcards
+  - [X] Tags
+  - [X] Leech/suspend
+  - [X] Freeze
 - [ ] Add legal pages
   - [ ] Finish privacy policy
   
