@@ -65,7 +65,7 @@ export function LoginForm(props) {
         </FormCheckbox>
       </Form.Group>
       <div>
-        <p>Forgot your password? Click <a href='/TODO:/'>TODO: here</a> to reset it</p>
+        <p>Forgot your password? Click <a href='/reset-password/'>here</a> to reset it</p>
       </div>
       <Modal.Footer>
         <Button type='submit' variant='primary' block>

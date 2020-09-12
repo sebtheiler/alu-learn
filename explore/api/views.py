@@ -8,8 +8,8 @@ from django.db.models import Q
 from django.views.decorators.cache import cache_page
 
 EDITOR_PICKS_DECK_IDS = [20, 21, 18, 22]
-TOP_DECK_IDS = [19, 24, 23, 25] # TODO: calculate this daily
-HOT_DECK_IDS = [] # TODO: calculate this daily
+TOP_DECK_IDS = [19, 24, 23, 25]
+HOT_DECK_IDS = []
 
 def get_decks_from_ids(id_list, public_only=False):
     query = Q(pk__in=id_list)

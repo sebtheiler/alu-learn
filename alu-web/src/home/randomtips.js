@@ -13,7 +13,7 @@ const randomTips = [
   'Is 20 new cards per day too much? Too little? You can change this value in the deck\'s settings.',
   'Looking to study in advance? Change the "review ahead" or "increase new cards limit" in custom study.',
   'Deleted decks can never be recovered! Be careful!',
-  'Tooltips annoying you? Disable them by enabling "expert mode" in settings TODO:.',
+  'Tooltips annoying you? Disable them by enabling "expert mode" in settings.',
   'Alu estimates how easy or hard a card is using an "ease factor". This determines the card\'s interval.',
   'Suspended cards are never shown to you when studying. Use this feature to temporarily disable cards.',
   'Give flashcards tags to organize them',

@@ -140,7 +140,6 @@ export function ModalRegisterForm(props) {
           experimentParams,
           (response, status) => {
             if (status === 201) {
-              // TODO: email authentication
               apiProfileLogin(
                 form.elements.registerUsername.value,
                 form.elements.registerPassword.value,
