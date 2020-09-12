@@ -54,6 +54,7 @@ with open(os.path.join(base_dir, 'decks/templates/react.html'), 'r') as f:
 
     # <link href="/static/css/main.????????.chunk.css" rel="stylesheet">
     css_html = re.findall(r"<link href=\".*\" rel=\"stylesheet\">", contents)[0]
+    css_html = css_html.replace('rel="stylesheet"', 'rel="stylesheet" media="print" onload="this.media=\'all\'"')
 
 
 def write_file(filename, contents):
