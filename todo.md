@@ -112,9 +112,9 @@
 - [X] Clean up TODOs
   - [X] Create new TODOs
 - [ ] Paginate flashcards list
-  - [ ] API
+  - [X] API
   - [ ] React
-    - [ ] Flashcard browse
+    - [X] Flashcard browse
     - [ ] Study
 - [ ] Fix custom study
 - [ ] Custom study: Add more options, e.g., review ahead days, increase new card limit, shuffle new cards

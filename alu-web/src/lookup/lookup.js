@@ -74,8 +74,12 @@ export function apiDeckDetail(deckId, callback) {
 };
 
 // Gets a deck's flashcards
-export function apiDeckFlashcards(deckId, limit, callback) {
-  backendLookup('GET', `decks/${deckId}/flashcards/${limit ? `?limit=${limit}` : ''}`, callback);
+export function apiDeckFlashcards(deckId, limit, callback, nextUrl) {
+  let endpoint = `decks/${deckId}/flashcards/${limit ? `?limit=${limit}` : ''}`;
+  if (nextUrl) {
+    endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
+  };
+  backendLookup('GET', endpoint, callback);
 };
 
 // Deletes a deck
@@ -208,7 +212,7 @@ export function apiNotificationCreate(username, title, description, category, ca
 // Gets list of notifications for a user
 export function apiNotificationList(username, callback, nextUrl) {
   let endpoint = `profiles/${username.toLowerCase()}/notifications/`;
-  if (nextUrl !== null && nextUrl !== undefined) {
+  if (nextUrl !== null && nextUrl !== undefined) { // TODO: replace this with just if (nextUrl) {}
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   };
   backendLookup('GET', endpoint, callback);

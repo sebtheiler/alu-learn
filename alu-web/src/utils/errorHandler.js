@@ -53,6 +53,7 @@ int(hexadecimal_string, 16)
 1015: Error looking up deck through apiDeckDetail in alu-web/src/decks/flashcards/list.js
 1016: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
 1017: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/study/components.js
+1018: Error handling next set of deck's flashcards (pagination) through apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
 
 === Flashcard related errors ===
 2000: Error getting flashcard detail through apiFlashCardDetail in alu-web/src/decks/flashcards/create.js

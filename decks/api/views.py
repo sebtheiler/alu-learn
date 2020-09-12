@@ -343,15 +343,20 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
 
     limit = request.GET.get('limit')
     if limit:
+        # Return set number of flashcards (not paginated)
         serializer = FlashCardSerializer(deck.flashcards.all()[:int(limit)], context={'request': request}, many=True)
         return Response({
             'results': serializer.data,
             'count': deck.flashcards.count(),
         })
     else:
-        # TODO: PAGINATE
-        serializer = FlashCardSerializer(deck.flashcards, context={'request': request}, many=True)
-        return Response(serializer.data, status=200)
+        # Return paginated list of all flashcards
+        return get_paginated_queryset_response(
+            deck.flashcards.all(),
+            request,
+            FlashCardSerializer,
+            page_size=250
+        )
 
 @api_view(['DELETE', 'POST'])
 @authentication_classes([SessionAuthentication])
@@ -690,7 +695,6 @@ def deck_search_view(request, *args, **kwargs):
         # Cache result for 6 hours
         cache.set(CACHE_KEY, sorted_qs, 60*60*6)
 
-    # return Response(DeckSerializer(sorted_qs, many=True).data, status=200)
     return get_paginated_queryset_response(sorted_qs, request, DeckSerializer, 5)
 
 
