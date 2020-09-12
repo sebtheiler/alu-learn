@@ -70,7 +70,7 @@ export function DeckSlider(props) {
                 <p className='deck-description mt-2 w-75' style={{outline: 'none', color: 'black'}}>
                   <ReactMarkdown
                     // The truncation will theoretically cause glitches
-                    // if there is MD/KaTeX syntax at the very end, TODO: maybe fix?
+                    // if there is MD/KaTeX syntax at the very end.
                     source={deck.description.substring(0, 128) + (deck.description.length > 128 ? '...' : '')}
                     plugins={[RemarkMathPlugin]}
                     renderers={{

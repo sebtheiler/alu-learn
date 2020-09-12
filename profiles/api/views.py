@@ -117,7 +117,7 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
         Cannot self-friend: 400, You cannot friend yourself
     """
     # Get recipient user
-    user_qs = User.objects.filter(username=recipient_username.lower()) # TODO: turn this common snippet of getting user into function
+    user_qs = User.objects.filter(username=recipient_username.lower())
     if not user_qs.exists():
         return Response({'message': f'User "{recipient_username}" not found'}, status=404)
     recipient_user = user_qs.first()
@@ -410,7 +410,7 @@ def profile_history_view(request, username, *args, **kwargs):
 #     subject = 'Thank you for registering to our site'
 #     message = 'Body text Body text Body text Body text Body text'
 #     email_from = settings.EMAIL_HOST_USER
-#     recipient_list = ['sebastiantk9@gmail.com',] # TODO: clean up this sensitive line
+#     recipient_list = ['user@company.com',]
 
 #     return Response(
 #         send_mail(

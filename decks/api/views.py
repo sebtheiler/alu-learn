@@ -207,12 +207,12 @@ def flashcard_delete_view(request, deck_id, flashcard_id, *args, **kwargs):
 
 
 @api_view(['GET'])
-def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs): # TODO: fix things, need to check if friend also
+def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
     Get specific information about a deck - GET
 
     Required information:
-        `deck_id`: (URL) The ID of the deck
+        `deck_id`: (URL) The ID of the deck (unused)
         `flashcard_id`: (URL) The ID of the flashcard
 
     Returns:
@@ -221,18 +221,14 @@ def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs): # TO
         ID of the flashcard: 'id'
     
     Possible errors:
-        Invalid deck: 404, Deck not found
-        Invalid flashcard: 404, Flashcard not found
+        Invalid flashcard or user is unauthorized: 404, Flashcard not found / you are unauthorized
     """
-    decks_qs = Deck.objects.filter(pk=deck_id)
-    if not decks_qs.exists():
-        return Response({'message': 'Deck not found'}, status=404)
-    deck = decks_qs.first()
-    flashcard_qs = deck.flashcards.filter(pk=flashcard_id)
-    if not flashcard_qs.exists():
-        return Response({'message': 'Flashcard not found'}, status=404)
-    serializer = FlashCardSerializer(flashcard_qs.first())
-    return Response(serializer.data)
+    try:
+        flashcard = FlashCard.objects.get(pk=deck_id, deck__user=request.user)
+    except ObjectDoesNotExist:
+        return Response({'message': 'Flashcard not found / you are unauthorized'}, status=404)
+
+    return Response(FlashCardSerializer(flashcard).data)
 
 
 @api_view(['GET'])
@@ -450,14 +446,26 @@ def deck_copy_view(request, deck_id, *args, **kwargs):
         deck = Deck.objects.get(pk=deck_id)
     except ObjectDoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
-    
+    print(deck.flashcards.all())
+
     # Check if the user has permission to copy the deck
-    if deck.sharing_setting == 'PRIVATE' or \
-       (deck.sharing_setting == 'FRIENDS' and request.user not in deck.user.profile.friends.all()):
+    if deck.sharing_setting == 'PRIVATE' or (\
+       deck.sharing_setting == 'FRIENDS' and request.user not in deck.user.profile.friends.all()):
         return Response({'message': 'You cannot copy a private deck'}, status=403)
-    
+
     # Copy deck
-    deck.pk = None
+    # This ALL needs to be redone when the git-like algorithm is implemented
+    # deck.flashcards.update(
+    #     id=None,
+    #     tags='', # this also makes it not a leech
+    #     learning_status='UNSEEN',
+    #     ease=250,
+    #     next_review=timezone.now(),
+    #     interval=0,
+    #     is_suspended=False,
+    #     leech_index=0,
+    # )
+    deck.pk = None; deck.id = None
     deck.user = request.user
     deck.sharing_setting = 'PRIVATE'
     deck.title = f'Copy of {deck.title}'

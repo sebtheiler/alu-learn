@@ -54,7 +54,6 @@ function generateConfig(method='ANKI') {
 
 
 // Adapted from https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
-// TODO: implement caching
 export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
   const errorResponse = {
     message: 'ERROR',
@@ -123,8 +122,6 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
       if (leechIndex >= LEECH_THRESHOLD) {
         isLeech = true;
       };
-      // TODO: the Anki manual says "the current interval is multiplied by the
-      // value of new interval", but I have no clue what the "new interval" is
       interval = LAPSES_STEPS[0];
       isMinute = true;
     } else if (grade === 2) {

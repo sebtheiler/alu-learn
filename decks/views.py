@@ -64,7 +64,6 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
 
 # Renders a list of flashcards in a deck (used in browsing)
 def flashcard_list_view(request, deck_id, *args, **kwargs):
-    # TODO: remove due date when foreign user, also reset all information when copying deck
     try:
         is_foreign_user = not Deck.objects.get(pk=deck_id).user == request.user
     except ObjectDoesNotExist:

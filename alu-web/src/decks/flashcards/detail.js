@@ -65,7 +65,7 @@ export function FlashCard(props) {
         <div className='col-md-12'>
           <p className='mb-0'>
             <strong>Flashcard - #{number + 1}</strong>
-            {flashcard.learning_status !== 'UNSEEN' ? <> | Due {date.toString().substring(0, 10)}</> : null}
+            {flashcard.learning_status !== 'UNSEEN' && !foreignUser ? <> | Due {date.toString().substring(0, 10)}</> : null}
           </p>
           {showParentDeckTitle ? 
             <small className='text-secondary'>

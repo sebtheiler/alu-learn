@@ -28,11 +28,11 @@ export function StudyElement(props) {
     };
   };
   
-  // TODO: optimize this
-  const interval1 = getAnkiInterval(currentCard, 1, schedulingAlgorithm)
-  const interval2 = getAnkiInterval(currentCard, 2, schedulingAlgorithm)
-  const interval3 = getAnkiInterval(currentCard, 3, schedulingAlgorithm)
-  const interval4 = getAnkiInterval(currentCard, 4, schedulingAlgorithm)
+  // This could be optimized, but it really isn't worth it at the moment
+  const interval1 = getAnkiInterval(currentCard, 1, schedulingAlgorithm);
+  const interval2 = getAnkiInterval(currentCard, 2, schedulingAlgorithm);
+  const interval3 = getAnkiInterval(currentCard, 3, schedulingAlgorithm);
+  const interval4 = getAnkiInterval(currentCard, 4, schedulingAlgorithm);
 
   // Get canceled buttons to handle keyboard presses correctly
   useEffect(() => {

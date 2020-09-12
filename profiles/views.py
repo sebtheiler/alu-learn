@@ -56,7 +56,6 @@ def profile_detail_view(request, username, *args, **kwargs):
 
 
 # Display a list of the user's notifications
-# TODO: Make paginated
 def notifications_list_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')

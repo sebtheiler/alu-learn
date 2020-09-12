@@ -87,7 +87,7 @@ class FlashCard(models.Model):
 
     learning_status = models.CharField(max_length=10, choices=LEARNING_STATUS_CHOICES, default='UNSEEN')
     steps_index = models.PositiveSmallIntegerField(default=0)
-    ease = models.PositiveSmallIntegerField(default=250) # in percent TODO: Make 250 customizable
+    ease = models.PositiveSmallIntegerField(default=250)
     next_review = models.DateTimeField()
     interval = models.PositiveSmallIntegerField(default=0) # in days
 
