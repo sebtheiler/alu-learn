@@ -225,6 +225,7 @@ export function apiUnreadNotificationList(username, callback) {
 
 // Marks a user's notification as read
 export function apiNotificationRead(username, notificationId, callback) {
+  // Note: notificationId can also be a list or notification ids
   backendLookup('POST', `profiles/${username.toLowerCase()}/notifications/read/`, callback, {notification_id: notificationId});
 };
 

@@ -11,7 +11,9 @@ export function NotificationComponent(props) {
   const {username, isPopup} = props;
   const [notifList, setNotifList] = useState([]);
   const [notifsDidSet, setNotifsDidSet] = useState(false);
-  const [numUnreadNotifs, setNumUnreadNotifs] = useState(0);
+  const [nextNotifsDidSet, setNextNotifsDidset] = useState(true);
+  const [numUnreadNotifs, setNumUnreadNotifs] = useState(null);
+  const [totalUnreadNotifs, setTotalUnreadNotifs] = useState(null);
   const [nextUrl, setNextUrl] = useState(null);
 
   // Lookup notifications in API
@@ -19,9 +21,12 @@ export function NotificationComponent(props) {
     if (notifsDidSet === false) {
       if (username === '') {
         // If the user is not logged in make a fake notification
+        const fakeNotifDesc = `
+        Welcome to Alu! Alu uses spaced reptition algorithms to help you learnand study most effectively.
+        Learn more at [here](/help/tutorial/).`;
         setNotifList([{
           title: 'Hey there!',
-          description: "Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study most effectively. Learn more at [here](/help/tutorial/).",
+          description: fakeNotifDesc,
           read: false,
           category: 'basic',
           timestamp: (new Date()).toISOString(),
@@ -34,7 +39,8 @@ export function NotificationComponent(props) {
         apiNotificationList(username, (response, status) => {
           if (status === 200) {
             setNextUrl(response.next);
-            setNotifList(response.results.splice(0, isPopup ? 5 : 10000));
+            setNotifList(response.results);
+            // setNotifList(response.results.splice(0, isPopup ? 5 : 10000));
             setNotifsDidSet(true);
             
             // Check if there are any unread notifications
@@ -42,6 +48,7 @@ export function NotificationComponent(props) {
               return notif.read === false;
             });
             setNumUnreadNotifs(unread.length);
+            setTotalUnreadNotifs(response.total_unread);
           } else {
             // Error getting notification list
             errorHandler(response, status, 3002);
@@ -54,99 +61,120 @@ export function NotificationComponent(props) {
   // Load next set of notifications (pagination)
   const handleLoadNext = (event) => {
     event.preventDefault();
-    if (nextUrl !== null) {
+
+    if (nextUrl !== null && nextNotifsDidSet) {
+      setNextNotifsDidset(false);
       apiNotificationList(username, (response, status) => {
         if (status === 200) {
           setNextUrl(response.next);
           const newNotifs = [...notifList].concat(response.results);
           setNotifList(newNotifs);
+
+          // Count new unread
+          const unread = response.results.filter((notif) => {
+            return notif.read === false;
+          });
+          setNumUnreadNotifs(numUnreadNotifs + unread.length);
         } else {
           // Error handling next set of notifications (pagination)
           errorHandler(response, status, 3014);
         };
+        setNextNotifsDidset(true);
       }, nextUrl);
     };
   };
 
   const markAllAsRead = (_event) => {
     if (username.length > 0) {
-      for (let notif of notifList) {
-        if (notif.read === false) {
-          apiNotificationRead(notif.username, notif.id, (response, status) => {
-            if (status === 200) {
-              // ...
-            } else {
-              // Error marking notification as read
-              errorHandler(response, status, 3003);
-            };
-          });
+      apiNotificationRead(username, notifList.filter(notif => notif.read === false).map(notif => notif.id), (response, status) => {
+        if (status === 200) {
+          // pass
+        } else {
+          // Error marking notifications as read
+          errorHandler(response, status, 3003);
         };
-      };
+      });
     };
   };
+  
+  if (isPopup) {
+    if (notifsDidSet) {
+      const notifPopover = (
+        <Popover id='notification-popover'>
+          <Popover.Title as='h3'>Notifications</Popover.Title>
+          <Popover.Content>
+            <div>
+              {notifList.length > 0 ? notifList.map((notif, index) => {
+                return <Notification notif={notif} read={notif.read} key={index} />
+              })
+              :
+              <p>{notifsDidSet ? "You don't have any notifications yet" : "Loading..."}</p>}
+            </div>
+            {username.length < 1 || notifList.length < 1 ? null : <>
+              <hr />
+              <div>
+                <Button
+                  href='/profiles/notifications/'
+                  onClick={() => window.location.href = '/profiles/notifications/'}
+                  variant='primary'
+                  size='sm'
+                >
+                  See older notifications {(totalUnreadNotifs - numUnreadNotifs) > 0 &&
+      ` (${totalUnreadNotifs - numUnreadNotifs})`}
+                </Button>
+              </div>
+            </>}
+          </Popover.Content>
+        </Popover>
+      );
 
-  const notifPopover = (
-    <Popover id='notification-popover'>
-      <Popover.Title as='h3'>Notifications</Popover.Title>
-      <Popover.Content>
-        <div>
-          {notifList.length > 0 ? notifList.map((notif, index) => {
-            return <Notification notif={notif} read={notif.read} key={index} />
-          })
-          :
-          <p>You don't have any notifications yet</p>}
-        </div>
-        {username.length < 1 || notifList.length < 1 ? null : <>
-          <hr />
-          <div>
+      return (
+        <>
+          <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
             <Button
-              href='/profiles/notifications/'
-              onClick={() => window.location.href = '/profiles/notifications/'}
-              variant='primary'
+              onClick={(event) => {event.preventDefault(); setTotalUnreadNotifs(totalUnreadNotifs - numUnreadNotifs); setNumUnreadNotifs(0);}}
+              style={{transform: 'translate(2px, 1px)'}}
+              className='p-0'
               size='sm'
             >
-              See older notifications
+              {totalUnreadNotifs > 0 ? <>
+                <i className='fas fa-bell fa-2x'></i>
+                <span className='notification-badge'>{totalUnreadNotifs < 10 ? totalUnreadNotifs : '9+'}</span>
+              </>:
+                <i className='far fa-bell fa-2x'></i>
+              }
             </Button>
-          </div>
-        </>}
-      </Popover.Content>
-    </Popover>
-  );
-
-  if (isPopup) {
-    return (
-      <>
-        <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
-          <Button
-            onClick={(event) => {event.preventDefault(); setNumUnreadNotifs(false);}}
-            style={{transform: 'translate(2px, 1px)'}}
-            className='p-0'
-            size='sm'
-          >
-            {numUnreadNotifs > 0 ? <>
-              <i className='fas fa-bell fa-2x'></i>
-              <span className='notification-badge'>{numUnreadNotifs < 10 ? numUnreadNotifs : '9+'}</span>
-            </>:
-              <i className='far fa-bell fa-2x'></i>
-            }
-          </Button>
-        </OverlayTrigger>
-      </>
-    );
+          </OverlayTrigger>
+        </>
+      );
+    } else {
+      return null;
+    };
   } else {
+    // This doesn't effect the current display - only
+    // for when the page is reloaded
+    markAllAsRead();
+
     return (
-      <div className='text-left mx-auto' style={{width: '75%'}}>
+      <div className='text-left mt-5 mx-auto container'>
         <h2>All Notifications</h2>
-        {notifList.map((notif, index) => {
+        {notifList.length > 0 ? notifList.map((notif, index) => {
           return <Notification notif={notif} read={notif.read} key={index} />
-        })}
+        })
+        :
+          <p>
+            {notifsDidSet ? "You don't have any notifications yet" : "Loading..."}
+          </p>
+        }
         <div className='mb-2'>
         {nextUrl !== null ?
           <Button
             onClick={handleLoadNext}
             variant='outline-primary'
           >
-            Load more notifications
+            {nextNotifsDidSet ? "Load more notifications" : "Loading..."}
+            {(totalUnreadNotifs - numUnreadNotifs) > 0 &&
+            ` (${totalUnreadNotifs - numUnreadNotifs})`}
           </Button>
         : null}
       </div>

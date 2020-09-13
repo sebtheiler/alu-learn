@@ -204,7 +204,14 @@ def notification_api_view(request, username, *args, **kwargs):
     elif request.method == 'GET':
         # List all notifications
         notif_qs = Notification.objects.filter(profile__user=user).order_by('-timestamp')
-        return get_paginated_queryset_response(notif_qs, request, NotificationSerializer, page_size=3)
+
+        return get_paginated_queryset_response(
+            notif_qs,
+            request,
+            NotificationSerializer,
+            page_size=3,
+            other_information={'total_unread': notif_qs.filter(read=False).count()},
+        )
 
 
 @api_view(['GET', 'POST'])
@@ -217,7 +224,7 @@ def notification_read_api_view(request, username, *args, **kwargs):
     To mark a notification as read,
         Use request method POST
         Request data must have attributes:
-            `notification_id`
+            `notification_id` (this can also be a list of multiple notifications)
 
     Returns:
         `profile`: The serialized profile the notification belongs to
@@ -234,17 +241,29 @@ def notification_read_api_view(request, username, *args, **kwargs):
         return Response({'message': f'User "{username}" not found'}, status=404)
 
     if request.method == 'POST':
-        # Get notification
-        try:
-            notif = Notification.objects.get(profile__user=user, pk=request.data.get('notification_id'))
-        except ObjectDoesNotExist:
-            return Response({'message': 'Please specify a valid notification ID'}, status=400)
+        notification_id = request.data.get('notification_id')
+        if isinstance(notification_id, int):
+            # Get notification
+            try:
+                notif = Notification.objects.get(profile__user=user, pk=notification_id)
+            except ObjectDoesNotExist:
+                return Response({'message': 'Please specify a valid notification ID'}, status=400)
 
-        # Mark notification as read
-        notif.read = True
-        notif.save()
+            # Mark notification as read
+            notif.read = True
+            notif.save()
 
-        return Response(NotificationSerializer(instance=notif).data, status=200)
+            return Response(NotificationSerializer(instance=notif).data, status=200)
+        elif isinstance(notification_id, list):
+            # Get notifications
+            notifs = Notification.objects.filter(pk__in=notification_id)
+
+            # Mark notifications as read
+            notifs.update(read=True)
+
+            return Response(NotificationSerializer(instance=notifs, many=True).data, status=200)
+        else:
+            return Response({'message': f'Please specify (a) notification ID(s)'}, status=400)
     elif request.method == 'GET':
         # List all unread notifications
         return Response(NotificationSerializer(

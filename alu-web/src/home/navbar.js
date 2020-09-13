@@ -40,7 +40,7 @@ export function NavbarComponent(props) {
           </Nav.Link>
         </Nav>
         <Nav className='ml-auto'>
-          <Nav.Link className='mr-2' style={{width: '57px', height: '57px'}}>
+          <Nav.Link className='mr-2' style={{width: '57px', height: '57px', cursor: 'default'}}>
             <NotificationComponent username={username} isPopup={true} />
           </Nav.Link>
           {username ?

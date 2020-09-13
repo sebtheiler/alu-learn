@@ -120,10 +120,10 @@
 - [ ] Custom study: Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
 
 ### Sep 13
-- [ ] Make notification reading work properly in detail
+- [X] Make notification reading work properly in detail
+- [X] Show number of unread notifs in "See Older Notifications"
 - [ ] Calculate top/hot deck ids daily
 - [ ] Break streaks daily
-- [ ] Show number of unread notifs in "See Older Notifications"
 - [ ] Basic settings page
   - [ ] "expert mode" - disabled tooltips
   - [ ] Add password change page
@@ -136,6 +136,7 @@
 - [ ] Add legal pages
   - [ ] Simplify everything  
 - [ ] favicon.ico + Logo
+- [ ] Switch to PostgreSQL backend
 
 ### Sep 15
 - [ ] Note taking
