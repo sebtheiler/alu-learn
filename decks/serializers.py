@@ -61,6 +61,10 @@ class DeckSerializer(serializers.ModelSerializer):
     author = PublicProfileSerializer(source='user.profile', read_only=True)
     num_thanks = serializers.SerializerMethodField(read_only=True)
     you_have_thanked = serializers.SerializerMethodField(read_only=True)
+    scheduling_algorithm = serializers.SerializerMethodField(read_only=True)
+    shuffle_unseen_cards = serializers.SerializerMethodField(read_only=True)
+    new_cards_done_today = serializers.SerializerMethodField(read_only=True)
+    daily_new_card_limit = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Deck
@@ -71,11 +75,12 @@ class DeckSerializer(serializers.ModelSerializer):
             'sharing_setting',
             'num_thanks',
             'you_have_thanked',
+            'id',
+            # ssm
             'scheduling_algorithm',
             'shuffle_unseen_cards',
             'new_cards_done_today',
             'daily_new_card_limit',
-            'id',
         ]
     
     def validate_title(self, value):
@@ -96,6 +101,18 @@ class DeckSerializer(serializers.ModelSerializer):
 
     def get_num_thanks(self, obj):
         return obj.thanks.count()
+    
+    def get_scheduling_algorithm(self, obj):
+        return obj.study_session_manager.scheduling_algorithm
+    
+    def get_shuffle_unseen_cards(self, obj):
+        return obj.study_session_manager.shuffle_unseen_cards
+    
+    def get_new_cards_done_today(self, obj):
+        return obj.study_session_manager.new_cards_done_today
+    
+    def get_daily_new_card_limit(self, obj):
+        return obj.study_session_manager.daily_new_card_limit
 
 
 class StudySessionManagerSerializer(serializers.ModelSerializer):

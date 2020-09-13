@@ -57,8 +57,12 @@ def deck_create_view(request, *args, **kwargs):
         title=title,
         description=request.data.get('description', ''),
         sharing_setting=request.data.get('sharing_setting', 'PRIVATE'),
+    )
+
+    ssm = DeckStudySessionManager.objects.create(
         scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKI'),
         shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', False),
+        daily_new_card_limit=request.data.get('daily_new_card_limit', 20),
     )
 
     return Response(DeckSerializer(new_deck).data, status=201)
@@ -369,7 +373,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
 
     # Get data
     sharing_setting = request.data.get('sharing_setting', deck.sharing_setting)
-    scheduling_algorithm = request.data.get('scheduling_algorithm', deck.scheduling_algorithm)
+    scheduling_algorithm = request.data.get('scheduling_algorithm', deck.study_session_manager.scheduling_algorithm)
 
     if sharing_setting not in ('PRIVATE', 'FRIENDS', 'PUBLIC'):
         return Response({'message': 'Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`'}, status=400)
@@ -380,11 +384,12 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     deck.title = request.data.get('new_title', deck.title)
     deck.description = request.data.get('description', deck.description)
     deck.sharing_setting = sharing_setting
-    deck.scheduling_algorithm = scheduling_algorithm
-    deck.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards', deck.shuffle_unseen_cards)
-    deck.daily_new_card_limit = request.data.get('daily_new_card_limit', deck.daily_new_card_limit)
+    deck.study_session_manager.scheduling_algorithm = scheduling_algorithm
+    deck.study_session_manager.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards', deck.study_session_manager.shuffle_unseen_cards)
+    deck.study_session_manager.daily_new_card_limit = request.data.get('daily_new_card_limit', deck.study_session_manager.daily_new_card_limit)
 
     deck.save()
+    deck.study_session_manager.save()
     return Response(DeckSerializer(instance=deck).data, 200)
 
 

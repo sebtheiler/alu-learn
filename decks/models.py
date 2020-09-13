@@ -43,25 +43,6 @@ class Deck(models.Model):
         default='PRIVATE',
     )
 
-    # TODO: remove all of these
-    ALGORITHM_OPTIONS = [
-        ('ANKI', 'Default Anki Settings'),
-        ('ANKING', 'Optimized Anki Settings'),
-        # ('SM-18', 'SuperMemo-18'),
-        # ('CUSTOM', 'Custom'),
-    ]
-    scheduling_algorithm = models.CharField(
-        max_length=10,
-        choices=ALGORITHM_OPTIONS,
-        default='ANKI',
-    )
-
-    # Customizable settings
-    daily_new_card_limit = models.PositiveSmallIntegerField(default=20)
-    new_cards_done_today = models.PositiveSmallIntegerField(default=0)
-    shuffle_unseen_cards = models.BooleanField(default=True)
-
-
     objects = DeckManager()
     class Meta:
         ordering = ['-id']
