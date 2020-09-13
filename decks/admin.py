@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Deck, FlashCard, DeckThank
+from .models import Deck, FlashCard, DeckThank, DeckStudySessionManager, CustomStudySessionManager
 
 class FlashCardTabAdmin(admin.TabularInline):
     fields = [
@@ -45,3 +45,5 @@ class DeckAdmin(admin.ModelAdmin):
 admin.site.register(Deck, DeckAdmin)
 admin.site.register(FlashCard, FlashCardAdmin)
 admin.site.register(DeckThank)
+admin.site.register(DeckStudySessionManager)
+admin.site.register(CustomStudySessionManager)

@@ -15,12 +15,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..forms import DeckForm
-from ..models import Deck, FlashCard, DeckThank
-from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer
+from ..models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, DeckStudySessionManager
+from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer, StudySessionManagerSerializer
 from .utils import get_paginated_queryset_response
 from profiles.models import Profile
 
 import re
+import datetime as dt
+import random
+from itertools import chain
 # For calculating advanced string similarities (used in searching)
 # pip install fuzzywuzzy
 # pip install fuzzywuzzy[speedup]
@@ -129,52 +132,6 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     flashcard.save()
 
     return Response(FlashCardSerializer(instance=flashcard).data, 200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def flashcard_review_update_view(request, deck_id, flashcard_id, *args, **kwargs):
-    """
-    Update a flashcard's review information - POST
-
-    Required information:
-        `deck_id`: (URL) ID of the deck in which we are editing the flashcard (unused)
-        `flashcard_id`: (URL) ID of the flashcard we are editing
-        `date`: (Data) ISO string date for next review
-        `learning_status`: (Data) Learning status of the card, either 'UNSEEN', 'LEARNING', 'LEARNED', or 'RELEARNING'
-        `ease` Ease of card
-        `interval`: The new interval for the flashcard
-        `increment_new_cards_done_today`: Whether or not to increment the parent deck's new_cards_done_today` attribute
-
-    Possible errors:
-        Deck does not exist: 404, Deck not found
-        Current user does not own deck: 401, You are not authorized to edit this flashcard
-        Flashcard does not exist: 404, Flashcard not found
-    """
-    # Get the flashcard
-    try:
-        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
-    except ObjectDoesNotExist:
-        return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
-
-    # Edit the flashcard
-    flashcard.next_review = request.data.get('next_review', flashcard.next_review)
-    flashcard.learning_status = request.data.get('learning_status', flashcard.learning_status).upper()
-    flashcard.interval = request.data.get('interval', flashcard.interval)
-    flashcard.steps_index = request.data.get('steps_index', flashcard.steps_index)
-    flashcard.leech_index = request.data.get('leech_index', flashcard.leech_index)
-    flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
-    flashcard.save()
-
-    # Increment the number of cards that the profile is registed as doing today
-    flashcard.deck.user.profile.increment_cards_done_today()
-    increment_new_cards_done_today = request.data.get('increment_new_cards_done_today')
-    if increment_new_cards_done_today:
-        flashcard.deck.new_cards_done_today += 1
-        flashcard.deck.save()
-
-    return Response(FlashCardSerializer(instance=flashcard).data, 200)
-
 
 
 @api_view(['DELETE', 'POST'])
@@ -387,7 +344,6 @@ def deck_delete_view(request, deck_id, *args, **kwargs):
 
 
 @api_view(['POST'])
-# @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def deck_edit_view(request, deck_id, *args, **kwargs):
     """
@@ -745,3 +701,118 @@ def txt_file_upload(request, *args, **kwargs):
 
     # Return
     return Response(DeckSerializer(deck).data, status=201)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
+    """
+    Gets metadata about a study session manager - GET
+
+    Required information:
+        `ssm_id`: (URL) ID of the study session manager
+    
+    Possible errors:
+        SSM does not exist: 404, SSM does not exist
+    """
+    try:
+        # TODO: Must be some way to optimize this...
+        ssm = DeckStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
+    except ObjectDoesNotExist:
+        try:
+            ssm = CustomStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
+        except ObjectDoesNotExist:
+            return Response({'message': 'SSM does not exist'}, status=404)
+
+    if isinstance(ssm, DeckStudySessionManager):
+        now = timezone.now()
+        now += dt.timedelta(minutes=ssm.review_ahead_minutes)
+
+        seen_flashcards = ssm.deck.flashcards.filter(
+            Q(next_review__lte=now) &
+            ~Q(learning_status__iexact='UNSEEN')
+        )
+        unseen_flashcards = ssm.deck.flashcards.filter(learning_status__iexact='UNSEEN')
+
+        if unseen_flashcards.count() > ssm.daily_new_card_limit:
+            if ssm.shuffle_unseen_cards:
+                unseen_flashcards = random.sample(
+                    list(unseen_flashcards),
+                    ssm.daily_new_card_limit - ssm.new_cards_done_today,
+                )
+            else:
+                unseen_flashcards = unseen_flashcards \
+                    [:ssm.daily_new_card_limit - ssm.new_cards_done_today]
+
+        flashcards = list(chain(seen_flashcards, unseen_flashcards))
+    elif isinstance(ssm, CustomStudySessionManager):
+        flashcards = ...
+
+    return Response(FlashCardSerializer(flashcards, many=True).data, status=200)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def ssm_detail_view(request, ssm_id, *args, **kwargs):
+    """
+    Gets flashcards due for a study session manager - GET
+    Required information:
+        `ssm_id`: (URL) ID of the study session manager
+    
+    Possible errors:
+        SSM does not exist: 404, SSM does not exist
+    """
+    try:
+        ssm = StudySessionManager.objects.get(pk=ssm_id)
+    except ObjectDoesNotExist:
+        return Response({'message': 'SSM does not exist'}, status=404)
+    
+    return Response(StudySessionManagerSerializer(ssm).data, status=200)
+
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
+    """
+    Update a flashcard's review information - POST
+
+    Required information:
+        `ssm_id`: (URL) ID of the study session manager
+        `flashcard_id`: (URL) ID of the flashcard we are editing
+        `date`: (Data) ISO string date for next review
+        `learning_status`: (Data) Learning status of the card, either 'UNSEEN', 'LEARNING', 'LEARNED', or 'RELEARNING'
+        `ease`: (Data) Ease of card
+        `interval`: (Data) The new interval for the flashcard
+        `increment_new_cards_done_today`: (Data) Whether or not to increment the SSM's `new_cards_done_today` attribute
+
+    Possible errors:
+        SSM does not exist: 404, SSM not found
+        Current user does not own SSM: 401, You are not authorized to edit this SSM
+        Flashcard does not exist: 404, Flashcard not found
+    """
+    # Get the SSM
+    try:
+        ssm = StudySessionManager.objects.get(pk=ssm_id)
+    except ObjectDoesNotExist:
+        return Response({'message': 'SSM not found / you are unauthorized'}, status=400)
+
+    # Get the flashcard
+    try:
+        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
+    except ObjectDoesNotExist:
+        return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
+
+    # Edit the flashcard
+    flashcard.next_review = request.data.get('next_review', flashcard.next_review)
+    flashcard.learning_status = request.data.get('learning_status', flashcard.learning_status).upper()
+    flashcard.interval = request.data.get('interval', flashcard.interval)
+    flashcard.steps_index = request.data.get('steps_index', flashcard.steps_index)
+    flashcard.leech_index = request.data.get('leech_index', flashcard.leech_index)
+    flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
+    flashcard.save()
+
+    # Increment the number of cards that the profile and SSM are registed as doing today
+    flashcard.deck.user.profile.increment_cards_done_today()
+    if request.data.get('increment_new_cards_done_today'):
+        ssm.new_cards_done_today += 1
+        ssm.save()
+
+    return Response(FlashCardSerializer(instance=flashcard).data, 200)

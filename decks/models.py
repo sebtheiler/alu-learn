@@ -43,6 +43,7 @@ class Deck(models.Model):
         default='PRIVATE',
     )
 
+    # TODO: remove all of these
     ALGORITHM_OPTIONS = [
         ('ANKI', 'Default Anki Settings'),
         ('ANKING', 'Optimized Anki Settings'),
@@ -119,6 +120,49 @@ class FlashCard(models.Model):
 
         if save:
             self.save()
+
+
+class StudySessionManager(models.Model):
+    user = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE, related_name='study_session_managers')
+
+    ALGORITHM_OPTIONS = [
+        ('ANKI', 'Default Anki Settings'),
+        ('ANKING', 'Optimized Anki Settings'),
+        # ('SM-18', 'SuperMemo-18'),
+        # ('CUSTOM', 'Custom'),
+    ]
+    scheduling_algorithm = models.CharField(
+        max_length=10,
+        choices=ALGORITHM_OPTIONS,
+        default='ANKI',
+    )
+
+    shuffle_unseen_cards = models.BooleanField(default=True)
+    review_ahead_minutes = models.PositiveSmallIntegerField(default=120)
+
+    daily_new_card_limit = models.PositiveSmallIntegerField(default=20)
+    new_cards_done_today = models.PositiveSmallIntegerField(default=0)
+    # last_card_done = models.DateField(auto_now_add=True)
+
+
+class DeckStudySessionManager(StudySessionManager):
+    deck = models.OneToOneField(Deck, on_delete=models.CASCADE, related_name='study_session_manager')
+
+    def __str__(self):
+        return f'SSM for "{self.deck.title}"'
+
+
+class CustomStudySessionManager(StudySessionManager):
+    # Filter parameters
+    deckIds = models.CharField(default='', blank=True, max_length=1024)
+    tags = models.CharField(default='', blank=True, max_length=1024)
+    contains = models.CharField(default='', blank=True, max_length=1024)
+    suspended = models.NullBooleanField(null=True)
+    leech = models.NullBooleanField(null=True, blank=True)
+    learning_status = models.CharField(null=True, blank=True, max_length=10)
+    min_ease = models.PositiveSmallIntegerField(null=True, blank=True)
+    max_ease = models.PositiveSmallIntegerField(null=True, blank=True)
+
 
 # Used to like/thank a person for making a deck
 class DeckThank(models.Model):

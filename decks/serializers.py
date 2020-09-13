@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
 from profiles.serializers import PublicProfileSerializer
-from .models import Deck, FlashCard, DeckThank
+from .models import Deck, FlashCard, DeckThank, StudySessionManager
 
 
 class DeckThankSerializer(serializers.ModelSerializer):
@@ -96,3 +96,14 @@ class DeckSerializer(serializers.ModelSerializer):
 
     def get_num_thanks(self, obj):
         return obj.thanks.count()
+
+
+class StudySessionManagerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudySessionManager
+        fields = [
+            'scheduling_algorithm',
+            'shuffle_unseen_cards',
+            'daily_new_card_limit',
+            'new_cards_done_today',
+        ]
