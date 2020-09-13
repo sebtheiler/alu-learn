@@ -40,7 +40,7 @@ export function FlashCardsList(props) {
             errorHandler(response, status, 1015);
           };
         });
-        apiDeckFlashcards(deckId, null, (response, status) => { // TODO: PAGINATE
+        apiDeckFlashcards(deckId, {}, (response, status) => { // TODO: PAGINATE
           // Get flashcards
           if (status === 200) {
             setNextUrl(response.next);
@@ -65,14 +65,14 @@ export function FlashCardsList(props) {
   const handleLoadNext = (event) => {
     event.preventDefault();
     if (nextUrl !== null) {
-      apiDeckFlashcards(deckId, null, (response, status) => {
+      apiDeckFlashcards(deckId, {}, (response, status) => {
         if (status === 200) {
           setNextUrl(response.next);
           const newFlashcards = [...flashcards].concat(response.results);
           setFlashCards(newFlashcards);
         } else {
           // Error handling next set of flashcards (pagination)
-          errorHandler(response, status, );
+          errorHandler(response, status, 1018);
         };
       }, nextUrl);
     };

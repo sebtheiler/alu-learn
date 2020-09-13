@@ -28,20 +28,6 @@ export function apiFlashCardEdit(deckId, flashcardId, frontText, backText, tags,
   backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {front_text: frontText, back_text: backText, tags: tags});
 };
 
-// Update a flashcard's review date
-export function apiFlashCardReviewUpdate(deckId, flashcardId, nextReview, interval, ease, learningStatus, stepsIndex, leechIndex, isLeech, incrementNewCardsDoneToday, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/review_update/`, callback, {
-    next_review: nextReview,
-    interval: interval,
-    ease: ease,
-    learning_status: learningStatus,
-    steps_index: stepsIndex,
-    leech_index: leechIndex,
-    is_leech: isLeech,
-    increment_new_cards_done_today: incrementNewCardsDoneToday,
-  });
-};
-
 // Gets specific information about a flashcard
 export function apiFlashCardDetail(deckId, flashcardId, callback) {
   backendLookup('GET', `decks/${deckId}/flashcards/${flashcardId}/`, callback);
@@ -74,8 +60,12 @@ export function apiDeckDetail(deckId, callback) {
 };
 
 // Gets a deck's flashcards
-export function apiDeckFlashcards(deckId, limit, callback, nextUrl) {
-  let endpoint = `decks/${deckId}/flashcards/${limit ? `?limit=${limit}` : ''}`;
+export function apiDeckFlashcards(deckId, options, callback, nextUrl) {
+  const {limit} = options;
+  let endpoint = `decks/${deckId}/flashcards/?`;
+
+  if (limit) {endpoint += `&limit=${limit}`}
+
   if (nextUrl) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   };
@@ -252,5 +242,29 @@ export function apiFeedbackSubmit(title, description, errorCode, urgency, email,
     email: email,
     contact_allowed: contactAllowed,
     is_legal_issue: isLegalIssue,
+  });
+};
+
+// Gets metadata about an SSM
+export function apiSSMDetail(studySessionmanagerId, callback) {
+  backendLookup('GET', `decks/ssm/${studySessionmanagerId}/`, callback);
+};
+
+// Gets flashcards to review now from an SSM
+export function apiSSMFlashcards(studySessionmanagerId, callback) {
+  backendLookup('GET', `decks/ssm/${studySessionmanagerId}/flashcards/`, callback);
+};
+
+// Updates a flashcard in an SSM's database
+export function apiSSMFlashcardUpdate(studySessionmanagerId, currentCardId, nextReviewDate, interval, easeFactor, learningStatus, stepsIndex, leechIndex, isLeech, incrementNewCardsDoneToday, callback) {
+  backendLookup('POST', `decks/ssm/${studySessionmanagerId}/flashcards/${currentCardId}/update/`, callback, {
+    next_review: nextReviewDate,
+    interval: interval,
+    ease: easeFactor,
+    learning_status: learningStatus,
+    steps_index: stepsIndex,
+    leech_index: leechIndex,
+    is_leech: isLeech,
+    increment_new_cards_done_today: incrementNewCardsDoneToday,
   });
 };

@@ -116,6 +116,29 @@
   - [ ] React
     - [X] Flashcard browse
     - [ ] Study
+      - [ ] Study Session Manager
+              List of cards to be reviewed / learned
+              Order of those cards
+
+              React
+                Get list of cards from the SSM
+
+                Study loop:
+                  Get card
+                    Decide if it should show an unseen card
+                    if yes:
+                      Get random unseen card
+                    otherwise:
+                      Get card due earliest
+
+                  Rate answer
+                  Get interval info
+
+                  Local changes
+                  API db changes
+
+                  On exit:
+                    SSM returns same cards on return
 - [ ] Fix custom study
 - [ ] Custom study: Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
 

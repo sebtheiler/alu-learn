@@ -3,7 +3,6 @@ import {
   apiFlashCardCreate,
   apiFlashCardDelete,
   apiFlashCardEdit,
-  apiFlashCardReviewUpdate,
   apiFlashCardDetail,
   apiFlashCardSuspendLeech,
   apiFlashCardSearch,
@@ -33,6 +32,9 @@ import {
   apiProfileHistory,
   apiCreateBlankExperiment,
   apiFeedbackSubmit,
+  apiSSMDetail,
+  apiSSMFlashcards,
+  apiSSMFlashcardUpdate,
 } from './lookup';
 
 export {
@@ -40,7 +42,6 @@ export {
   apiFlashCardCreate,
   apiFlashCardDelete,
   apiFlashCardEdit,
-  apiFlashCardReviewUpdate,
   apiFlashCardDetail,
   apiFlashCardSuspendLeech,
   apiFlashCardSearch,
@@ -70,4 +71,7 @@ export {
   apiProfileHistory,
   apiCreateBlankExperiment,
   apiFeedbackSubmit,
+  apiSSMDetail,
+  apiSSMFlashcards,
+  apiSSMFlashcardUpdate,
 };

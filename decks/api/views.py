@@ -352,7 +352,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
     else:
         # Return paginated list of all flashcards
         return get_paginated_queryset_response(
-            deck.flashcards.all(),
+            deck.flashcards.order_by('pk'),
             request,
             FlashCardSerializer,
             page_size=250

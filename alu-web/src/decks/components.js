@@ -52,7 +52,7 @@ export function DeckDetailComponent(props) {
           errorHandler(response, status, 1003);
         };
       });
-      apiDeckFlashcards(deckId, 10, (response, status) => {
+      apiDeckFlashcards(deckId, {limit: 10}, (response, status) => {
         if (status === 200) {
           setFlashcards(response.results);
           setTotalFlashcardNum(response.count);

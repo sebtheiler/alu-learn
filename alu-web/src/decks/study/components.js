@@ -1,134 +1,113 @@
 import React, {useState, useEffect} from 'react';
-import {apiDeckDetail, apiFlashCardReviewUpdate, apiFlashCardSearch, apiFlashCardSuspendLeech, apiFlashCardDelete, apiDeckFlashcards} from '../../lookup';
+import {apiFlashCardSearch,
+        apiFlashCardSuspendLeech,
+        apiFlashCardDelete,
+        apiSSMDetail,
+        apiSSMFlashcards,
+        apiSSMFlashcardUpdate,
+      } from '../../lookup';
 import {StudyElement} from './study';
 import {getAnkiInterval} from './algorithm'
 import {Button} from 'react-bootstrap';
 import { errorHandler } from '../../utils';
 
 export function StudyComponent(props) {
-  const {deckId, flashcardList, studySuspendedCards} = props;
-  const reviewAheadMinutes = props.reviewAheadMinutes ? parseInt(props.reviewAheadMinutes) : 120;
-  // Either specify `deckId`, the ID of the deck to study
-  // or `flashcardList`, a raw list of flashcards
-  // Do NOT specify both
+  const {studySessionmanagerId} = props;
 
-  // Get deck to study from API
-  const [deck, setDeck] = useState(null);
+  // Get flashcards to study from API
   const [flashcards, setFlashcards] = useState(null);
-  const [deckDidSet, setDeckDidSet] = useState(false);
-  
+  const [flashcardsDidSet, setFlashcardsDidSet] = useState(false);
+
+  const [SSM, setSSM] = useState(null);
+  const [SSMDidSet, setSSMDidSet] = useState(false);
+ 
+  // Keep track of what flashcard the user is seeing
   const [currentCard, setCurrentCard] = useState(null);
   const [currentCardDidSet, setCurrentCardDidSet] = useState(false);
   const [previousCard, setPreviousCard] = useState(null);
-  
+
+  // Other states
   const [showAnswer, setShowAnswer] = useState(false);
   const [finishedStudying, setFinishedStudying] = useState(false);
-
   const [canceledBtns, setCanceledBtns] = useState([]);
   const [message, setMessage] = useState({});
   
-  // Get flashcard list (either from raw list, `flashcardList` or
-  // indirectly from sending an API call)
+  // Get the flashcards to study from the SSM
   useEffect(() => {
-    if (deckDidSet === false) {
-      if (!flashcardList) {
-        // If `deckId` is specified (and `flashcardList` isn't) then
-        // get the list of flashcards from the API
-        setDeckDidSet(true);
-        apiDeckDetail(deckId, (response, status) => {
-          if (status === 200) {
-            setDeck(response);
-          } else if (status === 403) {
-            window.location.href = `/decks/${deckId}`;
-          } else {
-            // Error getting deck to study
-            errorHandler(response, status, 1009);
-          };
-        });
-        apiDeckFlashcards(deckId, null, (response, status) => {
-          if (status === 200) {
-            setFlashcards(response);
-          } else if (status === 403) {
-            window.location.href = `/decks/${deckId}`;
-          } else {
-            // Error getting deck's flashcards to study
-            errorHandler(response, status, 1017);
-          };
-        });
-      } else {
-        // Get deck from raw list of flashcards
-        // TODO: fix this, why on earth is the deck being set to a flashcards list????
-        setDeckDidSet(true);
-        setDeck(flashcardList);
-      };
+    if (flashcardsDidSet === false) {
+      apiSSMFlashcards(studySessionmanagerId, (response, status) => {
+        if (status === 200) {
+          setFlashcards(response);
+          setFlashcardsDidSet(true);
+        } else {
+          // Error getting flashcards from SSM
+          errorHandler(response, status, 5001);
+        };
+      });
     };
-  }, [deckId, flashcardList, deckDidSet, flashcards]);
+  }, [flashcards, flashcardsDidSet, studySessionmanagerId]);
+
+  // Get SSM metadata
+  useEffect(() => {
+    if (SSMDidSet === false) {
+      apiSSMDetail(studySessionmanagerId, (response, status) => {
+        if (status === 200) {
+          setSSM(response);
+          setSSMDidSet(true);
+        } else {
+          // Error getting SSM
+          errorHandler(response, status, 5000);
+        };
+      });
+    };
+  }, [SSM, SSMDidSet, studySessionmanagerId])
 
   // Get which card should appear
   useEffect(() => {
-    if (deck && flashcards && currentCardDidSet === false) {
-      setCurrentCardDidSet(true);
-      // Only get cards that were due previously (or if we are studying ahead)
-      const cardsDueNow = flashcards.filter((card) => {
-        let now = new Date();
-        // If we are reviewing ahead, change when "now" is
-        now.setMinutes(now.getMinutes() + reviewAheadMinutes);
-
-        // Date the card should be reviewed
-        const review = new Date(card.next_review);
-
-        // If the card is unseen, and we have surpassed the new cards limit
-        // do not show the card
-        if (card.learning_status === 'UNSEEN' && deck.new_cards_done_today >= deck.daily_new_card_limit) {
-          return false;
-        };
-
-        return review < now && (!card.is_suspended || studySuspendedCards);
-      });
-
+    if (flashcardsDidSet && currentCardDidSet === false) { 
       // If there are no more cards, we've finished
-      if (cardsDueNow.length === 0) {
+      if (flashcards.length === 0) {
         setFinishedStudying(true);
         return;
+      } else if (flashcards.length === 1) {
+        setCurrentCard(flashcards[0]);
+        setCurrentCardDidSet(true);
+        setShowAnswer(false);
+        return;
       };
+      const unseenCards = flashcards.filter(
+        flashcard => flashcard.learning_status.toUpperCase() === 'UNSEEN'
+      );
 
-      const toReview = cardsDueNow.length > 1 && previousCard ?
-        cardsDueNow.filter(card => card.id !== previousCard.id) :
-        cardsDueNow;
+      // Decide if we should show an unseen card, or review an old card
+      const showUnseenCard = Math.random() < unseenCards.length / flashcards.length;
 
-      // Sort cards in order of due date
-      const sortedCards = toReview.sort((a, b) => {
-        return new Date(a.next_review) - new Date(b.next_review);
-      });
-
-      // If there are multiple cards that have the same due date, pick randomly from them
-      var card;
-      if (deck.shuffle_unseen_cards && sortedCards.length > 2) {
-        const earliestCards = sortedCards.filter(card => {
-          let earliestReview = new Date(sortedCards[0].next_review);
-          let nextReview = new Date(card.next_review);
-
-          // Miliseconds may vary based on how the card was created
-          // which is why we don't check that they are equal
-          return (
-            earliestReview.getFullYear() === nextReview.getFullYear() &&
-            earliestReview.getMonth() === nextReview.getMonth() &&
-            earliestReview.getDate() === nextReview.getDate() &&
-            earliestReview.getMinutes() === nextReview.getMinutes() &&
-            earliestReview.getSeconds() === nextReview.getSeconds()
-          );
-        });
-        card = earliestCards[Math.floor(Math.random() * earliestCards.length)];
+      if (showUnseenCard) {
+        // Get random, unseen, card that is not the previous card
+        var card = {id: -1};
+        do {
+          card = unseenCards[Math.floor(Math.random() * unseenCards.length)];
+        } while (card.id === previousCard.id);
+        setCurrentCard(card);
       } else {
-        card = sortedCards[0];
+        // Get earliest card that has already been seen, and is not the previous card
+        // Note: this will break in around 3118 years
+        let earliestFlashcard = {next_review: new Date(100000000000000).toISOString()};
+        var flashcard;
+        for (flashcard of flashcards) {
+          if (flashcard.next_review < earliestFlashcard.next_review &&
+              flashcard.learning_status.toUpperCase() !== 'UNSEEN' &&
+              flashcard.id !== previousCard.id
+              ) {
+            earliestFlashcard = flashcard;
+          };
+        };
+        setCurrentCard(earliestFlashcard);
       };
-      
-
-      // Set current card to studying card
-      setCurrentCard(card);
       setShowAnswer(false);
+      setCurrentCardDidSet(true);
     };
-  }, [currentCardDidSet, setCurrentCardDidSet, deck, studySuspendedCards, reviewAheadMinutes, previousCard, flashcards]);
+  }, [currentCardDidSet, flashcards, previousCard, flashcardsDidSet]);
 
   // Shows answer when spacebar is pressed or "Show Answer" is clicked
   const showAnswerHandler = (event) => {
@@ -146,13 +125,12 @@ export function StudyComponent(props) {
 
     // Calculate when the card should be next seen
     const wasLeech = currentCard.is_leech;
-    const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex, leechIndex, isLeech} = getAnkiInterval(currentCard, grade, deck.scheduling_algorithm);
+    const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex, leechIndex, isLeech} = getAnkiInterval(currentCard, grade, SSM.scheduling_algorithm);
 
-    // This checks that the interval is valid
     if (interval !== -1) {
-      // Update date in database
-      apiFlashCardReviewUpdate(
-        currentCard.parent_deck_id,
+      // Update date in SSM
+      apiSSMFlashcardUpdate(
+        studySessionmanagerId,
         currentCard.id,
         nextReviewDate.toISOString(),
         isMinute ? 0 : interval,
@@ -167,20 +145,18 @@ export function StudyComponent(props) {
             setCurrentCardDidSet(true);
           } else {
             // Error updating flashcard with information returned from studying
-            errorHandler(response, status, 2006);
+            errorHandler(response, status, 5002);
           };
       });
       // Update date locally
-      const flashcardsCopy = flashcards, deckCopy = deck;
+      const flashcardsCopy = flashcards;
       const index = flashcardsCopy.map(e => e.id).indexOf(currentCard.id);
-      if (flashcardsCopy[index].learning_status === 'UNSEEN') {deckCopy.new_cards_done_today++};
       flashcardsCopy[index].next_review = nextReviewDate.toISOString();
       flashcardsCopy[index].interval = isMinute ? 0 : interval;
       flashcardsCopy[index].ease = easeFactor;
       flashcardsCopy[index].learning_status = learningStatus;
       flashcardsCopy[index].steps_index = stepsIndex;
       setFlashcards(flashcardsCopy);
-      setDeck(deckCopy);
 
       // Display a message if the card is now a leech
       if (!wasLeech && isLeech) {
@@ -193,6 +169,7 @@ export function StudyComponent(props) {
     };
   };
 
+  // Handle the user's keypresses
   const handleKeyDown = (event) => {
     if (event.key === ' ') {
       // Show answer when spacebar is pressed
@@ -228,12 +205,13 @@ export function StudyComponent(props) {
       // Select the 'Show Answer' button
       try {
         document.getElementById('showanswer').focus();
-      } catch (e) {
+      } catch (e) { // happens when we are finished studiyng
         // pass
       };
     };
   };
 
+  // Callback for when the user presses delete flashcard
   const flashcardDeleteCallback = (event) => {
     event.preventDefault();
     apiFlashCardDelete(currentCard.parent_deck_id, currentCard.id, (response, status) => {
@@ -246,6 +224,7 @@ export function StudyComponent(props) {
     });
   };
 
+  // Creates a function for marking the flashcard as suspended/leeched
   const flashcardLeechSuspendGenerator = (action) => {
     return (event) => {
       event.preventDefault();
@@ -265,8 +244,8 @@ export function StudyComponent(props) {
       {finishedStudying ?
         <div className='text-center'>
           <p>Congratulations! You've finished studying this deck!</p>
-          {flashcardList ? null :
-            <Button href={`/decks/${deckId}/flashcards/create/`}>Create a new flashcard</Button>
+          {SSM.deck_id &&
+            <Button href={`/decks/${SSM.deck_id}/flashcards/create/`}>Create a new flashcard</Button>
           }
         </div>
         :
@@ -281,7 +260,7 @@ export function StudyComponent(props) {
             getCanceledBtns={setCanceledBtns}
             deleteFlashCardHandler={flashcardDeleteCallback}
             leechsuspendFlashCardGenerator={flashcardLeechSuspendGenerator}
-            schedulingAlgorithm={deck ? deck.scheduling_algorithm : null}
+            schedulingAlgorithm={SSM.scheduling_algorithm}
           />
         </div>
       }

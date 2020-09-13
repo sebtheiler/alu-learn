@@ -44,7 +44,7 @@ int(hexadecimal_string, 16)
 1006: Error getting deck through apiDeckHome in alu-web/src/decks/home.js
 1007: Error handling next set of decks (pagination, decks home page) through apiDeckHome in alu-web/src/decks/home.js
 1008: Error getting shared decks through apiDeckSharedList in alu-web/src/decks/list.js
-1009: Error getting deck to study through apiDeckDetail in alu-web/src/decks/study/components.js
+1009: 
 1010: Error getting explore deck lists through apiExploreLists in alu-web/src/explore/base.js
 1011: Error performing deck search through apiDeckSearch in alu-web/src/explore/search.js
 1012: Error handling next set of decks (pagination, decks search) through apiDeckSearch in alu-web/src/explore/search.js
@@ -52,7 +52,7 @@ int(hexadecimal_string, 16)
 1014: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/components.js
 1015: Error looking up deck through apiDeckDetail in alu-web/src/decks/flashcards/list.js
 1016: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
-1017: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/study/components.js
+1017: 
 1018: Error handling next set of deck's flashcards (pagination) through apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
 
 === Flashcard related errors ===
@@ -62,7 +62,7 @@ int(hexadecimal_string, 16)
 2003: Error suspending/leeching flashcard through apiFlashCardSuspendLeech in alu-web/src/decks/flashcards/list.js
 2004: Error deleting flashcard through apiFlashCardDelete in alu-web/src/decks/flashcards/list.js
 2005: Error searching for flashcards through apiFlashCardSearch in alu-web/src/decks/flashcards/search.js
-2006: Error updating flashcard with information returned from studying through apiFlashCardReviewUpdate alu-web/src/decks/study/components.js
+2006: 
 2007: Error searching for flashcards in custom study through apiFlashCardSearch in alu-web/src/decks/study/components.js
 2008: Error deleting flashcard while studying through apiFlashCardDelete in alu-web/src/decks/study/components.js
 
@@ -86,4 +86,9 @@ int(hexadecimal_string, 16)
 === Misc ===
 4000: Error submitting feedback through apiFeedbackSubmit in alu-web/src/home/contactus.js
 4001: Invalid scheduling algorithm through generateConfig in alu-web/src/decks/study/algorithm.js
+
+=== Study Session Manager ===
+5000: Error getting SSM through apiSSMDetail in alu-web/src/decks/study/components.js
+5001: Error getting flashcards from SSM through apiSSMFlashcards in alu-web/src/decks/study/components.js
+5002: Error updating flashcard with information returned from studying through apiSSMFlashcardUpdate in alu-web/src/decks/study/components.js
 */

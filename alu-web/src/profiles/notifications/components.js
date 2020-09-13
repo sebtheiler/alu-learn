@@ -167,7 +167,7 @@ export function NotificationComponent(props) {
           </p>
         }
         <div className='mb-2'>
-        {nextUrl !== null ?
+        {nextUrl &&
           <Button
             onClick={handleLoadNext}
             variant='outline-primary'
@@ -176,7 +176,7 @@ export function NotificationComponent(props) {
             {(totalUnreadNotifs - numUnreadNotifs) > 0 &&
             ` (${totalUnreadNotifs - numUnreadNotifs})`}
           </Button>
-        : null}
+        }
       </div>
       </div>
     );
