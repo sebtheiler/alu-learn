@@ -60,6 +60,8 @@ def deck_create_view(request, *args, **kwargs):
     )
 
     ssm = DeckStudySessionManager.objects.create(
+        deck=new_deck,
+        user=request.user.profile,
         scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKI'),
         shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', False),
         daily_new_card_limit=request.data.get('daily_new_card_limit', 20),
@@ -689,6 +691,8 @@ def txt_file_upload(request, *args, **kwargs):
 
     # Get/create deck with given title
     deck, created = Deck.objects.get_or_create(user=request.user, title=deck_title)
+    if created:
+        DeckStudySessionManager.objects.create(deck=deck, user=request.user.profile)
 
     # Create flashcards
     now = timezone.now()
@@ -727,7 +731,7 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
         try:
             ssm = CustomStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
         except ObjectDoesNotExist:
-            return Response({'message': 'SSM does not exist'}, status=404)
+            return Response({'message': f'SSM #{ssm_id} does not exist for {request.user.username}'}, status=404)
 
     if isinstance(ssm, DeckStudySessionManager):
         now = timezone.now()
@@ -735,9 +739,10 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
 
         seen_flashcards = ssm.deck.flashcards.filter(
             Q(next_review__lte=now) &
-            ~Q(learning_status__iexact='UNSEEN')
+            ~Q(learning_status__iexact='UNSEEN') &
+            Q(is_suspended=False)
         )
-        unseen_flashcards = ssm.deck.flashcards.filter(learning_status__iexact='UNSEEN')
+        unseen_flashcards = ssm.deck.flashcards.filter(learning_status__iexact='UNSEEN', is_suspended=False)
 
         if unseen_flashcards.count() > ssm.daily_new_card_limit:
             if ssm.shuffle_unseen_cards:
@@ -773,8 +778,8 @@ def ssm_detail_view(request, ssm_id, *args, **kwargs):
     
     return Response(StudySessionManagerSerializer(ssm).data, status=200)
 
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
     """
     Update a flashcard's review information - POST

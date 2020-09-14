@@ -12,7 +12,7 @@ import {Button} from 'react-bootstrap';
 import { errorHandler } from '../../utils';
 
 export function StudyComponent(props) {
-  const {studySessionmanagerId} = props;
+  const {studySessionManagerId} = props;
 
   // Get flashcards to study from API
   const [flashcards, setFlashcards] = useState(null);
@@ -35,7 +35,7 @@ export function StudyComponent(props) {
   // Get the flashcards to study from the SSM
   useEffect(() => {
     if (flashcardsDidSet === false) {
-      apiSSMFlashcards(studySessionmanagerId, (response, status) => {
+      apiSSMFlashcards(studySessionManagerId, (response, status) => {
         if (status === 200) {
           setFlashcards(response);
           setFlashcardsDidSet(true);
@@ -45,12 +45,12 @@ export function StudyComponent(props) {
         };
       });
     };
-  }, [flashcards, flashcardsDidSet, studySessionmanagerId]);
+  }, [flashcards, flashcardsDidSet, studySessionManagerId]);
 
   // Get SSM metadata
   useEffect(() => {
     if (SSMDidSet === false) {
-      apiSSMDetail(studySessionmanagerId, (response, status) => {
+      apiSSMDetail(studySessionManagerId, (response, status) => {
         if (status === 200) {
           setSSM(response);
           setSSMDidSet(true);
@@ -60,7 +60,7 @@ export function StudyComponent(props) {
         };
       });
     };
-  }, [SSM, SSMDidSet, studySessionmanagerId])
+  }, [SSM, SSMDidSet, studySessionManagerId])
 
   // Get which card should appear
   useEffect(() => {
@@ -87,7 +87,8 @@ export function StudyComponent(props) {
         var card = {id: -1};
         do {
           card = unseenCards[Math.floor(Math.random() * unseenCards.length)];
-        } while (card.id === previousCard.id);
+        } while (previousCard ? card.id === previousCard.id : false);
+        console.log('u', card.front_text)
         setCurrentCard(card);
       } else {
         // Get earliest card that has already been seen, and is not the previous card
@@ -97,11 +98,12 @@ export function StudyComponent(props) {
         for (flashcard of flashcards) {
           if (flashcard.next_review < earliestFlashcard.next_review &&
               flashcard.learning_status.toUpperCase() !== 'UNSEEN' &&
-              flashcard.id !== previousCard.id
+              (!previousCard || flashcard.id !== previousCard.id)
               ) {
             earliestFlashcard = flashcard;
           };
         };
+        console.log('r', earliestFlashcard.front_text)
         setCurrentCard(earliestFlashcard);
       };
       setShowAnswer(false);
@@ -120,6 +122,7 @@ export function StudyComponent(props) {
     if (grade > 4) {
       return;
     };
+    console.log('g', grade)
     setPreviousCard(currentCard);
     setCurrentCardDidSet(false);
 
@@ -130,7 +133,7 @@ export function StudyComponent(props) {
     if (interval !== -1) {
       // Update date in SSM
       apiSSMFlashcardUpdate(
-        studySessionmanagerId,
+        studySessionManagerId,
         currentCard.id,
         nextReviewDate.toISOString(),
         isMinute ? 0 : interval,
@@ -149,13 +152,31 @@ export function StudyComponent(props) {
           };
       });
       // Update date locally
-      const flashcardsCopy = flashcards;
+      var flashcardsCopy = flashcards;
       const index = flashcardsCopy.map(e => e.id).indexOf(currentCard.id);
-      flashcardsCopy[index].next_review = nextReviewDate.toISOString();
-      flashcardsCopy[index].interval = isMinute ? 0 : interval;
-      flashcardsCopy[index].ease = easeFactor;
-      flashcardsCopy[index].learning_status = learningStatus;
-      flashcardsCopy[index].steps_index = stepsIndex;
+      console.log('il', index, flashcardsCopy.length)
+
+      try {
+        console.log(flashcardsCopy)
+        console.log(currentCard)
+        console.log(flashcardsCopy[index])
+      } catch (e) {
+
+      };
+
+      console.log(isMinute, interval, SSM.review_ahead_minutes)
+      if ((isMinute ? interval : interval*60*24) > SSM.review_ahead_minutes) {
+        // Get rid of the flashcard if we won't see it again soon
+        console.log('deleting')
+        flashcardsCopy.splice(index, 1);
+      } else {
+        // Edit the flashcard
+        flashcardsCopy[index].next_review = nextReviewDate.toISOString();
+        flashcardsCopy[index].interval = isMinute ? 0 : interval;
+        flashcardsCopy[index].ease = easeFactor;
+        flashcardsCopy[index].learning_status = learningStatus;
+        flashcardsCopy[index].steps_index = stepsIndex;
+      };
       setFlashcards(flashcardsCopy);
 
       // Display a message if the card is now a leech
@@ -237,6 +258,10 @@ export function StudyComponent(props) {
         };
       });
     };
+  };
+
+  if (SSM === null) {
+    return <>Loading...</>
   };
 
   return (

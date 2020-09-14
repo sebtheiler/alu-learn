@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import generic
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Deck
+from .models import Deck, DeckStudySessionManager
 
 
 # Render the home-page view
@@ -81,7 +81,12 @@ def flashcard_search_view(request, *args, **kwargs):
 def deck_study_view(request, deck_id, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
-    return render(request, 'decks/study.html', context={'deck_id': deck_id})
+    try:
+        deck = Deck.objects.get(pk=deck_id)
+    except ObjectDoesNotExist:
+        raise Http404()
+
+    return render(request, 'decks/study.html', context={'ssm_id': deck.study_session_manager.id})
 
 # Renders the view for importing decks
 def deck_import_view(request, *args, **kwargs):
