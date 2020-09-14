@@ -187,7 +187,7 @@ def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
         Invalid flashcard or user is unauthorized: 404, Flashcard not found / you are unauthorized
     """
     try:
-        flashcard = FlashCard.objects.get(pk=deck_id, deck__user=request.user)
+        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
     except ObjectDoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=404)
 
@@ -516,35 +516,16 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
     return Response(FlashCardSerializer(flashcard).data, status=200)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def flashcard_search_view(request, *args, **kwargs):
-    """
-    Searches for flashcards based on some parameters - GET
-
-    Required information:
-        `deckIds`: (GET) IDs (plural) of decks to search in. If None, searches in all the user's decks
-        `tags`: (GET) Tags of flashcards to get
-        `contains`: (GET) Front/back of card contains these words
-        `suspended`: (GET) Whether or not the card is suspended
-        `leech`: (GET) Whether or not the card is a leech
-        `learningStatus`: (GET) Learning status of the card
-        `minEase`: (GET) Minimum ease factor of the card
-        `maxEase`: (GET) Maximum ease factor of the card
-    
-    Returns:
-        A list of flashcards (FlashcardSerializer)
-    """
+def search_flashcards(user, deck_ids, tags, contains, suspended, leech, learning_status, min_ease, max_ease):
     # Get list of decks to search in
-    deck_qs = request.user.decks.all()
-    deck_ids = request.GET.get('deckIds')
+    deck_qs = user.decks.all()
+    if not deck_qs.exists():
+        return Response({}, status=200)
+
     if deck_ids:
         deck_ids = deck_ids.split(',')
         deck_qs = deck_qs.filter(pk__in=deck_ids)
 
-    if not deck_qs.exists():
-        return Response({}, status=200)
-    
     # Get flashcards
     flashcard_qs = deck_qs.first().flashcards.all()
     for deck in deck_qs[1:]:
@@ -556,7 +537,6 @@ def flashcard_search_view(request, *args, **kwargs):
     flashcard_query = Q()
 
     # Filter by tags
-    tags = request.GET.get('tags')
     if tags:
         if isinstance(tags, str):
             tag_list = [tag.strip() for tag in tags.split(',')]
@@ -576,40 +556,65 @@ def flashcard_search_view(request, *args, **kwargs):
         flashcard_query &= Q(id__in=flashcard_ids)
 
     # Filter by contains
-    contains = request.GET.get('contains')
     if contains:
         flashcard_query &= Q(front_text__icontains=contains) | Q(back_text__icontains=contains)
 
     # Filter by suspended, leech, and learning status
-    suspended = request.GET.get('suspended')
     if suspended is not None:
-        flashcard_query &= Q(is_suspended=suspended.lower() == 'true')
-    
-    leech = request.GET.get('leech')
+        flashcard_query &= Q(is_suspended=suspended.lower() == 'true' if isinstance(suspended, str) else suspended)
+
     if leech is not None:
-        if leech.lower() == 'true':
+        if (isinstance(leech, str) and leech.lower() == 'true') or (isinstance(leech, bool) and leech):
             filter_func = lambda flashcard: flashcard.is_leech()
         else:
             filter_func = lambda flashcard: not flashcard.is_leech()
 
         flashcard_ids = [flashcard.id for flashcard in flashcard_qs if filter_func(flashcard)]
         flashcard_query &= Q(id__in=flashcard_ids)
-    
-    learning_status = request.GET.get('learningStatus')
+
     if learning_status is not None:
         flashcard_query &= Q(learning_status__iexact=learning_status)
 
     # Filter by min/max ease
-    min_ease = request.GET.get('minEase')
     if min_ease is not None:
         flashcard_query &= Q(ease__gte=int(min_ease))
-    
-    max_ease = request.GET.get('maxEase')
+
     if max_ease is not None:
         flashcard_query &= Q(ease__lte=int(max_ease))
-    
+
     # Execute query
-    flashcard_qs = flashcard_qs.filter(flashcard_query)
+    return flashcard_qs.filter(flashcard_query)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def flashcard_search_view(request, *args, **kwargs):
+    """
+    Searches for flashcards based on some parameters - GET
+
+    Required information:
+        `deckIds`: (GET) IDs (plural) of decks to search in. If None, searches in all the user's decks
+        `tags`: (GET) Tags of flashcards to get
+        `contains`: (GET) Front/back of card contains these words
+        `suspended`: (GET) Whether or not the card is suspended
+        `leech`: (GET) Whether or not the card is a leech
+        `learningStatus`: (GET) Learning status of the card
+        `minEase`: (GET) Minimum ease factor of the card
+        `maxEase`: (GET) Maximum ease factor of the card
+    
+    Returns:
+        A list of flashcards (FlashcardSerializer)
+    """
+    flashcard_qs = search_flashcards(
+        request.user,
+        request.GET.get('deckIds'),
+        request.GET.get('tags'),
+        request.GET.get('contains'),
+        request.GET.get('suspended'),
+        request.GET.get('leech'),
+        request.GET.get('learningStatus'),
+        request.GET.get('minEase'),
+        request.GET.get('maxEase'),
+    )
 
     # Return
     return Response(FlashCardSerializer(flashcard_qs, many=True).data, status=200)
@@ -756,7 +761,17 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
 
         flashcards = list(chain(seen_flashcards, unseen_flashcards))
     elif isinstance(ssm, CustomStudySessionManager):
-        flashcards = ...
+        flashcards = search_flashcards(
+            request.user,
+            ssm.deck_ids,
+            ssm.tags,
+            ssm.contains,
+            False, # suspended (can't study suspended cards)
+            ssm.leech,
+            ssm.learning_status,
+            ssm.min_ease,
+            ssm.max_ease,
+        )
 
     return Response(FlashCardSerializer(flashcards, many=True).data, status=200)
 

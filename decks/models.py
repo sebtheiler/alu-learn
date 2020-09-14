@@ -135,10 +135,10 @@ class DeckStudySessionManager(StudySessionManager):
 
 class CustomStudySessionManager(StudySessionManager):
     # Filter parameters
-    deckIds = models.CharField(default='', blank=True, max_length=1024)
+    deck_ids = models.CharField(default='', blank=True, max_length=1024)
     tags = models.CharField(default='', blank=True, max_length=1024)
     contains = models.CharField(default='', blank=True, max_length=1024)
-    suspended = models.NullBooleanField(null=True)
+    # suspended = models.NullBooleanField(null=True)
     leech = models.NullBooleanField(null=True, blank=True)
     learning_status = models.CharField(null=True, blank=True, max_length=10)
     min_ease = models.PositiveSmallIntegerField(null=True, blank=True)
