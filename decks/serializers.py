@@ -139,7 +139,18 @@ class CustomStudySessionManagerSerializer(StudySessionManagerSerializer):
 
     class Meta:
         model = CustomStudySessionManager
-        fields = StudySessionManagerSerializer.Meta.fields + ['author', 'title', 'serializer_name']
+        fields = StudySessionManagerSerializer.Meta.fields + [
+            'author',
+            'title',
+            'serializer_name',
+            'deck_ids',
+            'tags',
+            'contains',
+            'leech',
+            'learning_status',
+            'min_ease',
+            'max_ease',
+        ]
 
     def get_serializer_name(self, obj):
         return 'cssm'

@@ -850,3 +850,68 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
         ssm.save()
 
     return Response(FlashCardSerializer(instance=flashcard).data, 200)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def ssm_edit_view(request, ssm_id, *args, **kwargs):
+    """
+    Edit a study session manager - POST
+
+    Required information:
+        `ssm_id`: (URL) ID of the SSM to edit
+        `title`
+        `scheduling_algorithm`
+        `shuffle_unseen_cards`
+        `daily_new_card_limit`
+        All other CSSM information
+    
+    Possible errors:
+        SSM does not exist, 400: SSM does not exist / you are unauthorized
+        Try to edit title on deck ssm: 400, This SSM does not support that feature
+        """
+    try:
+        ssm = DeckStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
+    except ObjectDoesNotExist:
+        try:
+            ssm = CustomStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
+        except ObjectDoesNotExist:
+            return Response({'message': f'SSM #{ssm_id} does not exist for {request.user.username}'}, status=404)
+
+    try:
+        ssm.title = request.data.get('title', ssm.title)
+        ssm.deck_ids = request.data.get('deck_ids', ssm.deck_ids)
+        ssm.tags = request.data.get('tags', ssm.tags)
+        ssm.contains = request.data.get('contains', ssm.contains)
+        ssm.leech = request.data.get('leech', ssm.leech)
+        ssm.learning_status = request.data.get('learning_status', ssm.learning_status)
+        ssm.min_ease = request.data.get('min_ease', ssm.min_ease)
+        ssm.max_ease = request.data.get('max_ease', ssm.max_ease)
+    except AttributeError as e:
+        return Response({'message': f'This SSM does not support that feature, "{e}"'}, status=400)
+    ssm.scheduling_algorithm = request.data.get('scheduling_algorithm', ssm.scheduling_algorithm)
+    ssm.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards', ssm.shuffle_unseen_cards)
+    ssm.daily_new_card_limit = request.data.get('daily_new_card_limit', ssm.daily_new_card_limit)
+    ssm.review_ahead_minutes = request.data.get('review_ahead_minutes', ssm.review_ahead_minutes)
+
+    ssm.save()
+    return Response(StudySessionManagerSerializer(ssm).data, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def ssm_delete_view(request, ssm_id, *args, **kwargs):
+    """
+    Delete a study session manager - POST
+
+    Required information:
+        `ssm_id`: (URL) ID of the SSM to edit
+    
+    Possible errors:
+        SSM does not exist, 400: SSM does not exist / you are unauthorized
+    """
+    try:
+        ssm = StudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
+        ssm.delete()
+        return Response({'message': 'SSM deleted'}, status=200)
+    except ObjectDoesNotExist:
+        return Response({'message': 'SSM does not exist / you are unauthorized, 400: SSM does not exist / you are unauthorized'})

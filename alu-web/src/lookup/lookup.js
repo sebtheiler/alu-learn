@@ -270,12 +270,20 @@ export function apiSSMFlashcardUpdate(studySessionmanagerId, currentCardId, next
 };
 
 // Updates a study session manager
-export function apiSSMEdit(studySessionmanagerId, title, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, callback) {
+export function apiSSMEdit(studySessionmanagerId, title, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, reviewAheadMinutes, deckIds, tags, contains, leech, learningStatus, minEase, maxEase, callback) {
   backendLookup('POST', `decks/ssm/${studySessionmanagerId}/edit/`, callback, {
     title: title,
     scheduling_algorithm: schedulingAlgo,
     shuffle_unseen_cards: shuffleUnseenCards,
     daily_new_card_limit: dailyNewCardLimit,
+    review_ahead_minutes: reviewAheadMinutes,
+    deck_ids: deckIds,
+    tags: tags,
+    contains: contains,
+    leech: leech,
+    learning_status: learningStatus,
+    min_ease: minEase,
+    max_ease: maxEase,
   });
 };
 

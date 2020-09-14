@@ -9,11 +9,11 @@ import { errorHandler } from '../../utils';
 
 
 export function SearchForm(props) {
-  const {decks, minEaseValue, setMinEaseValue, maxEaseValue, setMaxEaseValue, showRangeSlider, defaultContains, defaultTags, defaultLeech, defaultLearningStatus, defaultMinEase, defaultMaxEase} = props;
+  const {decks, minEaseValue, setMinEaseValue, maxEaseValue, setMaxEaseValue, showRangeSlider, defaultContains, defaultTags, defaultLeech, defaultLearningStatus, defaultMinEase, defaultMaxEase, as, hideSuspend} = props;
 
   return (<>
-    {decks.length && <Form.Group>
-      <Form.Label htmlFor='deckSelect' as='h5'>
+    {decks && <Form.Group>
+      <Form.Label htmlFor='deckSelect' as={as}>
         Search in the following decks (use control/command to select multiple)
       </Form.Label>
       <Form.Control as='select' multiple name='deckSelect'>
@@ -26,7 +26,7 @@ export function SearchForm(props) {
     </Form.Group>}
     <hr />
     <Form.Group>
-      <Form.Label htmlFor='contains' as='h5'>Front or back text contains...</Form.Label>
+      <Form.Label htmlFor='contains' as={as}>Front or back text contains...</Form.Label>
       <Form.Control
         type='text'
         placeholder='Roman Empire...'
@@ -36,7 +36,7 @@ export function SearchForm(props) {
     </Form.Group>
     <hr />
     <Form.Group>
-      <Form.Label htmlFor='tags' as='h5'>List of tags to search in (separate with commas)</Form.Label>
+      <Form.Label htmlFor='tags' as={as}>List of tags to search in (separate with commas)</Form.Label>
       <Form.Control
         type='text'
         placeholder='Calculus, Integrals, Exponentials, ...'
@@ -45,17 +45,17 @@ export function SearchForm(props) {
       />
     </Form.Group>
     <hr />
-    <Form.Group>
-      <Form.Label as='h5' htmlFor='isSuspended'>Is the card suspended?</Form.Label>
+    {!hideSuspend && <Form.Group>
+      <Form.Label as={as} htmlFor='isSuspended'>Is the card suspended?</Form.Label>
       <Form.Control as='select' name='isSuspended'>
         <option value='ANY'>---------</option>
         <option value='SUSPENDED'>Suspended</option>
         <option value='NOTSUSPENDED'>Not suspended</option>
       </Form.Control>
-    </Form.Group>
+    </Form.Group>}
     <hr />
     <Form.Group>
-      <Form.Label htmlFor='isLeech' as='h5'>Is the card a leech?</Form.Label>
+      <Form.Label htmlFor='isLeech' as={as}>Is the card a leech?</Form.Label>
       <Form.Control as='select' name='isLeech' defaultValue={defaultLeech}>
         <option value='ANY'>---------</option>
         <option value='LEECH'>Leech</option>
@@ -64,7 +64,7 @@ export function SearchForm(props) {
     </Form.Group>
     <hr />
     <Form.Group>
-      <Form.Label htmlFor='learningStatus' as='h5'>What is the card's learning status?</Form.Label>
+      <Form.Label htmlFor='learningStatus' as={as}>What is the card's learning status?</Form.Label>
       <Form.Control as='select' name='learningStatus' defaultValue={defaultLearningStatus}>
         <option value='ANY'>---------</option>
         <option value='UNSEEN'>Unseen/New</option>
@@ -76,7 +76,7 @@ export function SearchForm(props) {
     <hr />
     {showRangeSlider ? <>
       <Form.Group>
-        <Form.Label htmlFor='minEase' as='h5'>Minimum Ease Factor</Form.Label>
+        <Form.Label htmlFor='minEase' as={as}>Minimum Ease Factor</Form.Label>
         <RangeSlider
           value={minEaseValue}
           onChange={changeEvent => setMinEaseValue(changeEvent.target.value)}
@@ -89,7 +89,7 @@ export function SearchForm(props) {
       </Form.Group>
       <hr />
       <Form.Group>
-        <Form.Label htmlFor='maxEase' as='h5'>Maximum Ease Factor</Form.Label>
+        <Form.Label htmlFor='maxEase' as={as}>Maximum Ease Factor</Form.Label>
         <RangeSlider
           value={maxEaseValue}
           onChange={changeEvent => setMaxEaseValue(changeEvent.target.value)}
@@ -112,7 +112,7 @@ export function SearchForm(props) {
       />
     </Form.Group>
     <Form.Group>
-      <Form.Label>Minimum Ease Factor</Form.Label>
+      <Form.Label>Maximum Ease Factor</Form.Label>
       <Form.Control
         type='number'
         name='maxEase'
@@ -195,6 +195,7 @@ export function FlashCardSearchComponent(props) {
           maxEaseValue={maxEaseValue}
           setMaxEaseValue={setMaxEaseValue}
           showRangeSlider={true}
+          as='h5'
         />
         <Form.Group>
           <Button type='submit' block>{searchLoading ? 'Loading...' : 'Search!'}</Button>

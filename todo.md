@@ -113,10 +113,10 @@
   - [X] Create new TODOs
 - [ ] Paginate flashcards list
   - [X] API
-  - [ ] React
+  - [x] React
     - [X] Flashcard browse
-    - [ ] Study
-      - [ ] Study Session Manager
+    - [X] Study
+      - [X] Study Session Manager
               List of cards to be reviewed / learned
               Order of those cards
 
@@ -139,8 +139,8 @@
 
                   On exit:
                     SSM returns same cards on return
-- [ ] Fix custom study
-- [ ] Custom study: Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
+- [X] Fix custom study
+- [X] Custom study: Add more options, e.g., review ahead days, increase new card limit, shuffle new cards
 
 ### Sep 13
 - [X] Make notification reading work properly in detail

@@ -119,7 +119,7 @@ class StudySessionManager(models.Model):
     )
 
     shuffle_unseen_cards = models.BooleanField(default=True)
-    review_ahead_minutes = models.PositiveSmallIntegerField(default=120)
+    review_ahead_minutes = models.PositiveIntegerField(default=120)
 
     daily_new_card_limit = models.PositiveSmallIntegerField(default=20)
     new_cards_done_today = models.PositiveSmallIntegerField(default=0)
