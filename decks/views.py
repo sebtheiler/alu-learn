@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import generic
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Deck, DeckStudySessionManager
+from .models import Deck, DeckStudySessionManager, CustomStudySessionManager
 
 
 # Render the home-page view
@@ -95,18 +95,8 @@ def deck_import_view(request, *args, **kwargs):
     return render(request, 'decks/import.html')
 
 # Studies flashcards based on a set of criteria
-def custom_study_view(request, *args, **kwargs):
+def custom_study_view(request, ssm_id, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
-    context = {
-        'deck_ids': request.GET.get('deckIds'),
-        'tags': request.GET.get('tags'),
-        'contains': request.GET.get('contains'),
-        'suspended': request.GET.get('suspended'),
-        'leech': request.GET.get('leech'),
-        'learning_status': request.GET.get('learning_status'),
-        'min_ease': request.GET.get('minEase'),
-        'max_ease': request.GET.get('maxEase'),
-    }
 
-    return render(request, 'decks/custom-study.html', context=context)
+    return render(request, 'decks/study.html', context={'ssm_id': ssm_id})

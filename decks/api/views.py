@@ -516,7 +516,7 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
     return Response(FlashCardSerializer(flashcard).data, status=200)
 
 
-def search_flashcards(user, deck_ids, tags, contains, suspended, leech, learning_status, min_ease, max_ease):
+def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=None, leech=None, learning_status=None, min_ease=None, max_ease=None, due_before=None):
     # Get list of decks to search in
     deck_qs = user.decks.all()
     if not deck_qs.exists():
@@ -581,6 +581,10 @@ def search_flashcards(user, deck_ids, tags, contains, suspended, leech, learning
 
     if max_ease is not None:
         flashcard_query &= Q(ease__lte=int(max_ease))
+    
+    # Filter by due date
+    if due_before:
+        flashcard_query &= Q(next_review__lte=due_before)
 
     # Execute query
     return flashcard_qs.filter(flashcard_query)
@@ -616,7 +620,6 @@ def flashcard_search_view(request, *args, **kwargs):
         request.GET.get('maxEase'),
     )
 
-    # Return
     return Response(FlashCardSerializer(flashcard_qs, many=True).data, status=200)
 
 
@@ -771,6 +774,7 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
             ssm.learning_status,
             ssm.min_ease,
             ssm.max_ease,
+            timezone.now() + dt.timedelta(minutes=ssm.review_ahead_minutes),
         )
 
     return Response(FlashCardSerializer(flashcards, many=True).data, status=200)
