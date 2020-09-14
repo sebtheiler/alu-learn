@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {apiDeckDelete, apiDeckEdit, apiDeckCopy} from '../lookup';
+import {apiDeckDelete, apiDeckEdit, apiDeckCopy, apiSSMEdit, apiSSMDelete} from '../lookup';
 import {errorHandler, FormCheckbox} from '../utils';
 import {Modal, Button, Form, ButtonGroup} from 'react-bootstrap';
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -25,8 +25,10 @@ export function DeckDefaultButtonGroup(props) {
     // If nothing has changed, prevent the user from saving
     if (
         form.elements.title.value === deck.title &&
-        form.elements.description.value === deck.description &&
-        form.elements.sharingSetting.value === deck.sharing_setting &&
+        (deck.serializer_name === 'cssm' || (
+          form.elements.description.value === deck.description &&
+          form.elements.sharingSetting.value === deck.sharing_setting
+        )) &&
         form.elements.schedulingAlgo.value === deck.scheduling_algorithm &&
         form.elements.shuffleUnseenCards.checked === deck.shuffle_unseen_cards &&
         parseInt(form.elements.dailyNewCardLimit.value) === deck.daily_new_card_limit
@@ -34,34 +36,63 @@ export function DeckDefaultButtonGroup(props) {
       return;
     };
 
-    // Tell the API to update the deck
-    apiDeckEdit(
-      deck.id,
-      form.elements.title.value,
-      form.elements.description.value,
-      form.elements.sharingSetting.value,
-      form.elements.schedulingAlgo.value,
-      form.elements.shuffleUnseenCards.checked,
-      parseInt(form.elements.dailyNewCardLimit.value),
-      (response, status) => {
-        if (status === 200) {
-          window.location.reload();
-        } else {
-          // Error updating deck
-          errorHandler(response, status, 1000);
-        };
-    });
+    // Tell the API to update the deck/CSSM
+    if (deck.serializer_name === 'deck') {
+      apiDeckEdit(
+        deck.id,
+        form.elements.title.value,
+        form.elements.description.value,
+        form.elements.sharingSetting.value,
+        form.elements.schedulingAlgo.value,
+        form.elements.shuffleUnseenCards.checked,
+        parseInt(form.elements.dailyNewCardLimit.value),
+        (response, status) => {
+          if (status === 200) {
+            window.location.reload();
+          } else {
+            // Error updating deck
+            errorHandler(response, status, 1000);
+          };
+      });
+    } else {
+      apiSSMEdit(
+        deck.id,
+        form.elements.title.value,
+        form.elements.schedulingAlgo.value,
+        form.elements.shuffleUnseenCards.value,
+        parseInt(form.elements.dailyNewCardLimit.value),
+        (response, status) => {
+          if (status === 200) {
+            window.location.reload();
+          } else {
+            // Error updating CSSM
+            errorHandler(response, status, 5003);
+          };
+        },
+      );
+    };
   };
 
   const deleteHandler = () => {
-    apiDeckDelete(deck.id, (response, status) => {
-      if (status === 200) {
-        window.location.href = '/home/decks/';
-      } else {
-        // Error deleting deck
-        errorHandler(response, status, 1001);
-      };
-    });
+    if (deck.serializer_name === 'deck') {
+      apiDeckDelete(deck.id, (response, status) => {
+        if (status === 200) {
+          window.location.href = '/home/decks/';
+        } else {
+          // Error deleting deck
+          errorHandler(response, status, 1001);
+        };
+      });
+    } else {
+      apiSSMDelete(deck.id, (response, status) => {
+        if (status === 200) {
+          window.location.href = '/home/decks/';
+        } else {
+          // Error deleting SSM
+          errorHandler(response, status, 5004);
+        };
+      });
+    };
   };
 
   return (
@@ -83,15 +114,15 @@ export function DeckDefaultButtonGroup(props) {
       />
 
       {/* Other buttons */}
-      <Button href={`/decks/${deck.id}/flashcards/create/`} className='mr-1'>
+      {deck.serializer_name === 'deck' && <Button href={`/decks/${deck.id}/flashcards/create/`} className='mr-1'>
         Add Cards
-      </Button>
-      {hideBrowse ? null :
+      </Button>}
+      {(!hideBrowse && deck.serializer_name === 'deck') &&
         <Button href={`/decks/${deck.id}/flashcards/`} className='mr-1'>
           Browse
         </Button>
       }
-      <Button href={`/decks/${deck.id}/study/`} className='mr-1'>
+      <Button href={deck.serializer_name === 'deck' ? `/decks/${deck.id}/study/` : `/customstudy/${deck.id}/study/`} className='mr-1'>
         Study
       </Button>
     </ButtonGroup>
@@ -127,6 +158,7 @@ export function DeckEditCreateModal(props) {
               required
             />
           </Form.Group>
+          {deck.serializer_name === 'deck' && /* This is unavailable for CSSMs */ <>
           <Form.Group>
             <Form.Label htmlFor='description'>Description</Form.Label>
             <Form.Control
@@ -157,16 +189,11 @@ export function DeckEditCreateModal(props) {
             </span>
             <hr className='flex-grow-1' />
           </div>
+          </>}
           <Form.Group>
             <FormCheckbox name='shuffleUnseenCards' defaultChecked={deck.shuffle_unseen_cards}>
               Shuffle Unseen Cards
             </FormCheckbox>
-            {/* <Form.Check
-              type='checkbox'
-              label='Shuffle Unseen Cards'
-              name='shuffleUnseenCards'
-              defaultChecked={deck.shuffle_unseen_cards}
-            /> */}
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor='dailyNewCardLimit'>Daily new card limit</Form.Label>
@@ -193,9 +220,11 @@ export function DeckEditCreateModal(props) {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          {mode === 'edit' ?
-            <Button onClick={deleteHandler} variant='danger' className='text-left mr-auto'>Delete Deck</Button>
-          : null}
+          {mode === 'edit' &&
+            <Button onClick={deleteHandler} variant='danger' className='text-left mr-auto'>
+              Delete {deck.serializer_name === 'deck' ? 'Deck' : 'Custom Study'}
+            </Button>
+          }
           <Button onClick={closeModal} variant='secondary'>Cancel</Button>
           <Button type='submit' variant='primary'>
             {mode === 'edit' ? 'Save' : 'Create'}

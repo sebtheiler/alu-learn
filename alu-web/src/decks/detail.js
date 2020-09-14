@@ -31,7 +31,10 @@ export function Deck(props) {
     <div className={className}>
       <Card className='border-0'>
         <Card.Body>
-          <Card.Title className='mb-0'>{deck.title}</Card.Title>
+          <Card.Title className='mb-0'>
+            {deck.title}
+            {deck.serializer_name === 'cssm' && <>{' '}<i className='fas fa-filter' /></>}
+          </Card.Title>
           <Card.Text>{deck.description}</Card.Text>
           <ButtonGroup>
             {currentUsername === deck.author.username ?

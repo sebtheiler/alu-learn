@@ -35,6 +35,8 @@ import {
   apiSSMDetail,
   apiSSMFlashcards,
   apiSSMFlashcardUpdate,
+  apiSSMEdit,
+  apiSSMDelete,
 } from './lookup';
 
 export {
@@ -74,4 +76,6 @@ export {
   apiSSMDetail,
   apiSSMFlashcards,
   apiSSMFlashcardUpdate,
+  apiSSMEdit,
+  apiSSMDelete,
 };

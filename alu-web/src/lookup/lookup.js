@@ -268,3 +268,18 @@ export function apiSSMFlashcardUpdate(studySessionmanagerId, currentCardId, next
     increment_new_cards_done_today: incrementNewCardsDoneToday,
   });
 };
+
+// Updates a study session manager
+export function apiSSMEdit(studySessionmanagerId, title, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, callback) {
+  backendLookup('POST', `decks/ssm/${studySessionmanagerId}/edit/`, callback, {
+    title: title,
+    scheduling_algorithm: schedulingAlgo,
+    shuffle_unseen_cards: shuffleUnseenCards,
+    daily_new_card_limit: dailyNewCardLimit,
+  });
+};
+
+// Deletes a study session manager
+export function apiSSMDelete(studySessionmanagerId, callback) {
+  backendLookup('POST', `decks/ssm/${studySessionmanagerId}/delete/`, callback);
+};

@@ -16,7 +16,7 @@ from rest_framework.response import Response
 
 from ..forms import DeckForm
 from ..models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, DeckStudySessionManager
-from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer, StudySessionManagerSerializer
+from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer, StudySessionManagerSerializer, CustomStudySessionManagerSerializer
 from .utils import get_paginated_queryset_response
 from profiles.models import Profile
 
@@ -238,8 +238,13 @@ def deck_home_view(request, *args, **kwargs):
     Returns:
         A list of decks (DeckSerializer)
     """
-    home_qs = Deck.objects.home(request.user)
-    return get_paginated_queryset_response(home_qs, request, DeckSerializer, page_size=50)
+    home_decks = Deck.objects.home(request.user)
+    home_cssms = CustomStudySessionManager.objects.filter(user=request.user.profile)
+    home_list = list(chain(home_decks, home_cssms))
+
+    return get_paginated_queryset_response(home_list, request, {
+        Deck: DeckSerializer, CustomStudySessionManager: CustomStudySessionManagerSerializer
+    }, page_size=50)
 
 
 @api_view(['GET'])

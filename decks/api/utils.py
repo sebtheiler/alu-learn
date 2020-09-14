@@ -7,7 +7,10 @@ def get_paginated_queryset_response(qs, request, Serializer, page_size=50, other
     paginator = PageNumberPagination()
     paginator.page_size = page_size
     paginated_qs = paginator.paginate_queryset(qs, request)
-    serializer = Serializer(paginated_qs, many=True)
+    if isinstance(Serializer, dict):
+        serialized = [Serializer[type(instance)](instance).data for instance in paginated_qs]
+    else:
+        serialized = Serializer(paginated_qs, many=True).data
 
-    response = paginator.get_paginated_response(serializer.data)
-    return Response({**response.data, **other_information}, status=200)#response#
+    paginated_resp = paginator.get_paginated_response(serialized)
+    return Response({**paginated_resp.data, **other_information}, status=200)

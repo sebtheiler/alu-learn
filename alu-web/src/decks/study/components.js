@@ -273,7 +273,7 @@ export function StudyComponent(props) {
     <>
       {finishedStudying ?
         <div className='text-center'>
-          <p>Congratulations! You've finished studying this deck!</p>
+          <p>Congratulations! You've finished studying these flashcards!</p>
           {SSM.deck_id &&
             <Button href={`/decks/${SSM.deck_id}/flashcards/create/`}>Create a new flashcard</Button>
           }

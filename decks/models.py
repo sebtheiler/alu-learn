@@ -6,7 +6,7 @@ from profiles.models import Profile
 # Create your models here.
 User = settings.AUTH_USER_MODEL
 
-
+# TODO: remove this class
 class DeckQuerySet(models.QuerySet):
     # Get all decks owned by a username (case insensitive)
     def by_username(self, username):
@@ -123,7 +123,7 @@ class StudySessionManager(models.Model):
 
     daily_new_card_limit = models.PositiveSmallIntegerField(default=20)
     new_cards_done_today = models.PositiveSmallIntegerField(default=0)
-    # last_card_done = models.DateField(auto_now_add=True)
+    # last_card_done = models.DateField(auto_now_add=True) # TODO: add this / celery
 
 
 class DeckStudySessionManager(StudySessionManager):
@@ -134,11 +134,12 @@ class DeckStudySessionManager(StudySessionManager):
 
 
 class CustomStudySessionManager(StudySessionManager):
+    title = models.CharField(max_length=128)
+
     # Filter parameters
     deck_ids = models.CharField(default='', blank=True, max_length=1024)
     tags = models.CharField(default='', blank=True, max_length=1024)
     contains = models.CharField(default='', blank=True, max_length=1024)
-    # suspended = models.NullBooleanField(null=True)
     leech = models.NullBooleanField(null=True, blank=True)
     learning_status = models.CharField(null=True, blank=True, max_length=10)
     min_ease = models.PositiveSmallIntegerField(null=True, blank=True)

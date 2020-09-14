@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
-from profiles.serializers import PublicProfileSerializer
-from .models import Deck, FlashCard, DeckThank, StudySessionManager
+from profiles.serializers import MinifiedProfileSerializer
+from .models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager
 
 
 class DeckThankSerializer(serializers.ModelSerializer):
@@ -58,13 +58,14 @@ class FlashCardSerializer(serializers.ModelSerializer):
 
 
 class DeckSerializer(serializers.ModelSerializer):
-    author = PublicProfileSerializer(source='user.profile', read_only=True)
+    author = MinifiedProfileSerializer(source='user.profile', read_only=True)
     num_thanks = serializers.SerializerMethodField(read_only=True)
     you_have_thanked = serializers.SerializerMethodField(read_only=True)
     scheduling_algorithm = serializers.SerializerMethodField(read_only=True)
     shuffle_unseen_cards = serializers.SerializerMethodField(read_only=True)
     new_cards_done_today = serializers.SerializerMethodField(read_only=True)
     daily_new_card_limit = serializers.SerializerMethodField(read_only=True)
+    serializer_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Deck
@@ -75,6 +76,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'sharing_setting',
             'num_thanks',
             'you_have_thanked',
+            'serializer_name',
             'id',
             # ssm
             'scheduling_algorithm',
@@ -113,6 +115,9 @@ class DeckSerializer(serializers.ModelSerializer):
     
     def get_daily_new_card_limit(self, obj):
         return obj.study_session_manager.daily_new_card_limit
+    
+    def get_serializer_name(self, obj):
+        return 'deck'
 
 
 class StudySessionManagerSerializer(serializers.ModelSerializer):
@@ -124,4 +129,17 @@ class StudySessionManagerSerializer(serializers.ModelSerializer):
             'daily_new_card_limit',
             'new_cards_done_today',
             'review_ahead_minutes',
+            'id',
         ]
+
+
+class CustomStudySessionManagerSerializer(StudySessionManagerSerializer):
+    author = MinifiedProfileSerializer(source='user', read_only=True)
+    serializer_name = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = CustomStudySessionManager
+        fields = StudySessionManagerSerializer.Meta.fields + ['author', 'title', 'serializer_name']
+
+    def get_serializer_name(self, obj):
+        return 'cssm'

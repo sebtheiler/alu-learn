@@ -91,4 +91,6 @@ int(hexadecimal_string, 16)
 5000: Error getting SSM through apiSSMDetail in alu-web/src/decks/study/components.js
 5001: Error getting flashcards from SSM through apiSSMFlashcards in alu-web/src/decks/study/components.js
 5002: Error updating flashcard with information returned from studying through apiSSMFlashcardUpdate in alu-web/src/decks/study/components.js
+5003: Error updating SSM through apiSSMEdit in alu-web/src/decks/buttons.js
+5004: Error deleting SSM through apiSSMDelete in alu-web/src/decks/buttons.js
 */

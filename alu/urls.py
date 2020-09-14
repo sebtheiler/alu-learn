@@ -25,7 +25,7 @@ urlpatterns = [
     path('', landing_page),
     path('home/decks/', decks_home_view),
     path('decks/import/', deck_import_view),
-    path('customstudy/<int:ssm_id>/', custom_study_view),
+    path('customstudy/<int:ssm_id>/study/', custom_study_view),
     path('flashcards/search/', flashcard_search_view),
     path('decks/<int:deck_id>/', decks_detail_view),
     path('decks/<int:deck_id>/study/', deck_study_view),
