@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Form, Button} from 'react-bootstrap';
-import {apiDeckSharedList, apiFlashCardSearch} from '../../lookup';
+import {apiDeckSharedList, apiFlashCardSearch, apiSSMCreate} from '../../lookup';
 import {FlashCardsList} from '.';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css'; // or include from a CDN
@@ -116,6 +116,7 @@ export function SearchForm(props) {
       <Form.Control
         type='number'
         name='maxEase'
+        id='maxEase'
         min={130}
         max={350}
         defaultValue={defaultMaxEase}
@@ -135,6 +136,7 @@ export function FlashCardSearchComponent(props) {
   const [decksDidSet, setDecksDidSet] = useState(false);
   const [minEaseValue, setMinEaseValue] = useState(130);
   const [maxEaseValue, setMaxEaseValue] = useState(350);
+  const [creatingCSSM, setCreatingCSSM] = useState(false);
 
   // Get the user's decks
   useEffect(() => {
@@ -182,12 +184,34 @@ export function FlashCardSearchComponent(props) {
 
   const createCSSM = (event) => {
     event.preventDefault();
-    // ...
+
+    if (creatingCSSM === false) {
+      setCreatingCSSM(true);
+      const form = document.getElementById('searchForm');
+      apiSSMCreate(
+        '', // currently not using deck IDS
+        form.elements.tags.value,
+        form.elements.contains.value,
+        form.elements.isLeech.value !== 'ANY' ? form.elements.isLeech.value === 'LEECH' : null,
+        form.elements.learningStatus.value !== 'ANY' ? form.elements.learningStatus.value : null,
+        parseInt(minEaseValue),
+        parseInt(maxEaseValue),
+        (response, status) => {
+          if (status === 201) {
+            window.location.href = `/customstudy/${response.id}/study/`;
+          } else {
+            // Error creating new SSM
+            errorHandler(response, status, 5005);
+          };
+          setCreatingCSSM(false);
+        },
+      );
+    };
   };
 
   return (
     <>
-      <Form className='text-center mx-auto w-75' onSubmit={handleSubmit}>
+      <Form className='text-center mx-auto w-75' onSubmit={handleSubmit} id='searchForm'>
         <SearchForm
           decks={decks}
           minEaseValue={minEaseValue}
@@ -207,7 +231,7 @@ export function FlashCardSearchComponent(props) {
             <hr />
             <h1>Results</h1>
             <Button id='custom-study-link' onClick={createCSSM}>
-              Study these flashcards (Custom Study)
+              {creatingCSSM ? 'Loading...' : 'Study these flashcards (Custom Study)'}
             </Button>
           </div>
         }

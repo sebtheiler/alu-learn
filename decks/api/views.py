@@ -915,3 +915,24 @@ def ssm_delete_view(request, ssm_id, *args, **kwargs):
         return Response({'message': 'SSM deleted'}, status=200)
     except ObjectDoesNotExist:
         return Response({'message': 'SSM does not exist / you are unauthorized, 400: SSM does not exist / you are unauthorized'})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def ssm_create_view(request, *args, **kwargs):
+    """
+    Creates a (custom) study session manager - POST
+    """
+    ssm = CustomStudySessionManager.objects.create(
+        user=request.user.profile,
+        title=f'New Custom Study - {random.randint(0, 1000)}',
+        deck_ids=request.data.get('deck_ids'),
+        tags=request.data.get('tags'),
+        contains=request.data.get('contains'),
+        leech=request.data.get('leech'),
+        learning_status=request.data.get('learning_status'),
+        min_ease=request.data.get('min_ease'),
+        max_ease=request.data.get('max_ease'),
+    )
+
+    return Response(CustomStudySessionManagerSerializer(ssm).data, status=201)

@@ -37,6 +37,7 @@ import {
   apiSSMFlashcardUpdate,
   apiSSMEdit,
   apiSSMDelete,
+  apiSSMCreate,
 } from './lookup';
 
 export {
@@ -78,4 +79,5 @@ export {
   apiSSMFlashcardUpdate,
   apiSSMEdit,
   apiSSMDelete,
+  apiSSMCreate,
 };

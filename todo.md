@@ -111,7 +111,7 @@
 ### Sep 12
 - [X] Clean up TODOs
   - [X] Create new TODOs
-- [ ] Paginate flashcards list
+- [X] Paginate flashcards list
   - [X] API
   - [x] React
     - [X] Flashcard browse

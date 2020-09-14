@@ -291,3 +291,16 @@ export function apiSSMEdit(studySessionmanagerId, title, schedulingAlgo, shuffle
 export function apiSSMDelete(studySessionmanagerId, callback) {
   backendLookup('POST', `decks/ssm/${studySessionmanagerId}/delete/`, callback);
 };
+
+// Creates a study session manager
+export function apiSSMCreate(deckIds, tags, contains, leech, learningStatus, minEase, maxEase, callback) {
+  backendLookup('POST', `decks/ssm/create/`, callback, {
+    deck_ids: deckIds,
+    tags: tags,
+    contains: contains,
+    leech: leech,
+    learning_status: learningStatus,
+    min_ease: minEase,
+    max_ease: maxEase,
+  });
+};
