@@ -29,7 +29,7 @@ export function StudyComponent(props) {
   // Other states
   const [showAnswer, setShowAnswer] = useState(false);
   const [finishedStudying, setFinishedStudying] = useState(false);
-  const [canceledBtns, setCanceledBtns] = useState([]);
+  // const [canceledBtns, setCanceledBtns] = useState([]);
   const [message, setMessage] = useState({});
   
   // Get the flashcards to study from the SSM
@@ -103,7 +103,7 @@ export function StudyComponent(props) {
             earliestFlashcard = flashcard;
           };
         };
-        console.log('r', earliestFlashcard.front_text)
+        console.log('r', earliestFlashcard)
         setCurrentCard(earliestFlashcard);
       };
       setShowAnswer(false);
@@ -129,6 +129,7 @@ export function StudyComponent(props) {
     // Calculate when the card should be next seen
     const wasLeech = currentCard.is_leech;
     const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex, leechIndex, isLeech} = getAnkiInterval(currentCard, grade, SSM.scheduling_algorithm);
+    console.log(interval, isMinute, learningStatus, stepsIndex)
 
     if (interval !== -1) {
       // Update date in SSM
@@ -202,9 +203,12 @@ export function StudyComponent(props) {
       // Shortcuts for clicking 'Again', 'Hard', ...
       let grade = parseInt(event.key);
 
-      if (canceledBtns.toString() === 'Hard') {
+      // console.log(canceledBtns.toString())
+      const learningStatus = currentCard.learning_status.toLowerCase();
+      if (learningStatus === 'unseen' || learningStatus === 'learning') {//canceledBtns.toString() === 'Hard') {
         // If we are first learning the card
         // and the Hard button is obscured...
+        console.log('h-og', grade)
         if (grade === 2) {
           grade = 3;
         } else if (grade === 3) {
@@ -212,9 +216,10 @@ export function StudyComponent(props) {
         } else if (grade > 3) {
           return;
         };
-      } else if (canceledBtns.toString() === 'Hard,Easy') {
+      } else if (learningStatus === 'relearning') {//(canceledBtns.toString() === 'Hard,Easy') {
         // If we are relearning the card and the Hard
         // and Easy buttons are obscured...
+        console.log('he-og', grade)
         if (grade === 2) {
           grade = 3;
         } else if (grade > 2) {
@@ -282,7 +287,7 @@ export function StudyComponent(props) {
             showAnswerHandler={showAnswerHandler}
             backendGradeUpdate={backendGradeUpdate}
             handleKeyDown={handleKeyDown}
-            getCanceledBtns={setCanceledBtns}
+            // getCanceledBtns={setCanceledBtns}
             deleteFlashCardHandler={flashcardDeleteCallback}
             leechsuspendFlashCardGenerator={flashcardLeechSuspendGenerator}
             schedulingAlgorithm={SSM.scheduling_algorithm}

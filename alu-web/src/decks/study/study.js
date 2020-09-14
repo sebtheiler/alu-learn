@@ -7,8 +7,8 @@ import {BlockMath, InlineMath} from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 export function StudyElement(props) {
-  const {currentCard, showAnswer, showAnswerHandler, message, backendGradeUpdate, handleKeyDown, getCanceledBtns, schedulingAlgorithm, deleteFlashCardHandler, leechsuspendFlashCardGenerator} = props;
-  const [gotCanceledBtns, setGotCanceledBtns] = useState(false);
+  const {currentCard, showAnswer, showAnswerHandler, message, backendGradeUpdate, handleKeyDown, schedulingAlgorithm, deleteFlashCardHandler, leechsuspendFlashCardGenerator} = props;
+  // const [gotCanceledBtns, setGotCanceledBtns] = useState(false);
   const [optionButtonsExpanded, setOptionButtonsExpanded] = useState(false);
 
   
@@ -34,30 +34,30 @@ export function StudyElement(props) {
   const interval3 = getAnkiInterval(currentCard, 3, schedulingAlgorithm);
   const interval4 = getAnkiInterval(currentCard, 4, schedulingAlgorithm);
 
-  // Get canceled buttons to handle keyboard presses correctly
-  useEffect(() => {
-    if (gotCanceledBtns === false && interval1.message !== 'NULL' && interval2.message !== 'NULL' && interval3.message !== 'NULL' && interval4.message !== 'NULL') {
-      var canceledButtons = [];
-      if (interval1.interval === -1) {
-        canceledButtons.push('Again');
-      };
-      if (interval2.interval === -1) {
-        canceledButtons.push('Hard');
-      };
-      if (interval3.interval === -1) {
-        canceledButtons.push('Good');
-      };
-      if (interval4.interval === -1) {
-        canceledButtons.push('Easy');
-      };
+  // // Get canceled buttons to handle keyboard presses correctly
+  // useEffect(() => {
+  //   if (gotCanceledBtns === false && interval1.message !== 'NULL' && interval2.message !== 'NULL' && interval3.message !== 'NULL' && interval4.message !== 'NULL') {
+  //     var canceledButtons = [];
+  //     if (interval1.interval === -1) {
+  //       canceledButtons.push('Again');
+  //     };
+  //     if (interval2.interval === -1) {
+  //       canceledButtons.push('Hard');
+  //     };
+  //     if (interval3.interval === -1) {
+  //       canceledButtons.push('Good');
+  //     };
+  //     if (interval4.interval === -1) {
+  //       canceledButtons.push('Easy');
+  //     };
 
-      getCanceledBtns(canceledButtons);
-      setGotCanceledBtns(true);
-    };
-  }, [gotCanceledBtns, getCanceledBtns, setGotCanceledBtns, interval1, interval2, interval3, interval4]);
+  //     getCanceledBtns(canceledButtons);
+  //     setGotCanceledBtns(true);
+  //   };
+  // }, [gotCanceledBtns, getCanceledBtns, setGotCanceledBtns, interval1, interval2, interval3, interval4]);
 
   if (currentCard === null) {
-    return null;
+    return <>Loading...</>;
   };
 
   return (
