@@ -7,6 +7,7 @@ urlpatterns = [
     path('settings/', views.settings_view),
     path('profile/', views.profile_redirect_view),
     path('login/', views.login_view),
+    path('eli/', views.eli_view),
     # "Tutorial" pages
     path('help/welcome/', views.welcome_view),
     # Manual pages

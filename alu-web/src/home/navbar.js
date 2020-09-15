@@ -23,7 +23,10 @@ export function NavbarComponent(props) {
 
   return (
     <Navbar bg='primary' variant='dark' expand='md' collapseOnSelect>
-      <Navbar.Brand href='/home/'>Alu Flashcards</Navbar.Brand>
+      <Navbar.Brand href='/home/'>
+        <img src='/static/logo.svg' alt="Alu's Logo" width='30' height='auto' style={{transform: 'translateY(-3px)'}} />{' '}
+        Alu Flashcards
+      </Navbar.Brand>
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>
         <Nav className='mr-auto'>
