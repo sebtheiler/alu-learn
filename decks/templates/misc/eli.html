@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Home at{% endblock title %}
+
+
+{% block content %}
+<div class='container text-center'>
+<img
+  src='/static/logo.svg'
+  alt='Eli the Aluphant'
+  class='my-3'
+  id='eli-the-aluphant'
+/>
+
+<p>
+  Eli the <em>Alu</em>phant is Alu's official mascot and represents the sum of human knowledge.
+  As you use Alu, some of Eli's vast knowledge will be transferred into your mind.  
+</p>
+
+<p><em>
+  Legend says that Eli's ears get slightly bigger with each new discovery about the universe...
+</em></p>
+</div>
+
+<style>
+img#eli-the-aluphant {
+  display: block;
+  margin: auto;
+}
+</style>
+{% endblock content %}

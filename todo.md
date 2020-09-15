@@ -158,7 +158,7 @@
 - [ ] Make numeric ids into string ids like "dad2Xadw#1". Look into https://pypi.org/project/shortuuid/
 - [X] Add legal pages
   - [X] Simplify everything  
-- [ ] favicon.ico + Logo
+- [X] favicon.ico + Logo
 - [ ] Switch to PostgreSQL backend
 
 ### Sep 15
