@@ -166,7 +166,7 @@ export function DeckEditCreateModal(props) {
               required
             />
           </Form.Group>
-          {deck.serializer_name === 'deck' ? /* This is unavailable for CSSMs */ <>
+          {Object.entries(deck).length === 0 || deck.serializer_name === 'deck' ? /* This is unavailable for CSSMs */ <>
             <Form.Group>
               <Form.Label htmlFor='description'>Description</Form.Label>
               <Form.Control
@@ -224,6 +224,7 @@ export function DeckEditCreateModal(props) {
               required
             />
           </Form.Group>
+          {Object.entries(deck).length > 0 &&
           <Form.Group>
             <Form.Label htmlFor='reviewAheadMinutes'>Review Ahead Minutes</Form.Label>
             <Form.Control
@@ -234,7 +235,7 @@ export function DeckEditCreateModal(props) {
               max='5000000'
               required
             />
-          </Form.Group>
+          </Form.Group>}
           <Form.Group>
             <Form.Label htmlFor='schedulingAlgo'>Scheduling Algorithm</Form.Label>
             <Form.Control
