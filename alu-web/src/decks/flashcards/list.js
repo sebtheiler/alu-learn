@@ -80,7 +80,7 @@ export function FlashCardsList(props) {
 
   return (
     <div className={props.className}>
-      {flashcardList ? null : <h2 class='text-center mt-3'>Browsing Flashcards{deck ? ` in "${deck.title}"` : null}</h2>}
+      {flashcardList ? null : <h2 className='text-center mt-3'>Browsing Flashcards{deck ? ` in "${deck.title}"` : null}</h2>}
       <div className='text-center'>
         {flashcardList || isForeignUser || !deck ? null :
           <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />

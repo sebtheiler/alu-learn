@@ -2,13 +2,9 @@ import React, { useState } from 'react';
 import {DeckDefaultButtonGroup, DeckForeignUserButtonGroup} from './buttons';
 import {FlashCardsList} from './flashcards';
 import {apiDeckThank} from '../lookup';
-import {DisplayCountChar, errorHandler} from '../utils';
+import {DisplayCountChar, errorHandler, MarkdownRender} from '../utils';
 import {UserLink} from '../profiles';
 import {Card, ButtonGroup, Button} from 'react-bootstrap';
-import ReactMarkdown from 'react-markdown';
-import RemarkMathPlugin from 'remark-math';
-import {BlockMath, InlineMath} from 'react-katex';
-import 'katex/dist/katex.min.css';
 
 // Display an individual deck
 // This is used on pages displaying multiple decks
@@ -88,14 +84,7 @@ export function DeckDetail(props) {
         <p className='text-secondary mb-3'>
           <DisplayCountChar>{deck.num_thanks}</DisplayCountChar> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
         </p>
-        <ReactMarkdown
-          source={deck.description}
-          plugins={[RemarkMathPlugin]}
-          renderers={{
-            math: ({ value }) => <BlockMath>{value}</BlockMath>,
-            inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
-          }}
-        />
+        <MarkdownRender source={deck.description} />
         <div className={'mb-1' + (hideExtras ? ' d-none' : '')}>
           <ButtonGroup>
             <Button onClick={handleBrowseSwitch}>
@@ -109,13 +98,7 @@ export function DeckDetail(props) {
             <hr />
             <div>
               <h2>Comments</h2>
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22].map((comment, index) => {
-                return (
-                  <div key={`comment-${index}`}>
-                    <p>Comment #{index}</p>
-                  </div>
-                );
-              })}
+              <p>Comments are currently not implemented.  We hope to add this funcitonality soon.</p>
             </div>
         </div>
         <div className={browsingState !== 'FLASHCARDS' ? 'd-none' : ''}>

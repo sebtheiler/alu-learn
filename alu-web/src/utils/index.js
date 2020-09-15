@@ -9,6 +9,7 @@ import {
   range,
   FormCheckbox,
   QuestionBubble,
+  MarkdownRender,
 } from './utils';
 
 import {errorHandler} from './errorHandler';
@@ -25,4 +26,5 @@ export {
   errorHandler,
   FormCheckbox,
   QuestionBubble,
+  MarkdownRender,
 };

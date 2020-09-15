@@ -1,7 +1,10 @@
 import React from 'react';
 import numeral from 'numeral';
 import {Tooltip, OverlayTrigger} from 'react-bootstrap';
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from 'react-markdown/with-html';
+import RemarkMathPlugin from 'remark-math';
+import {BlockMath, InlineMath} from 'react-katex';
+import 'katex/dist/katex.min.css';
 
 // Creates a simple tooltip
 export const generateTooltip = (text) => {
@@ -170,5 +173,25 @@ export function QuestionBubble(props) {
     >
       <i className={`fas fa-${type}-circle text-secondary`} />
     </OverlayTrigger>
+  );
+};
+
+// Fully-featured MD rendered with KaTeX, MarkDown, and (safe-ish) HTML rendering
+export function MarkdownRender(props) {
+  const {source, disallowedTypes} = props;
+  const allowHtml = props.allowHtml ? props.allowHtml : true;
+  const allowKatex = props.allowKatex ? props.allowKatex : true;
+
+  return (
+    <ReactMarkdown
+      source={source.replaceAll('<script>', '').replaceAll('</script>', '')}
+      plugins={allowKatex ? [RemarkMathPlugin] : null}
+      escapeHtml={!Boolean(allowHtml)}
+      disallowedTypes={disallowedTypes}
+      renderers={allowKatex ? {
+        math: ({ value }) => <BlockMath>{value}</BlockMath>,
+        inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
+      } : null}
+    />
   );
 };

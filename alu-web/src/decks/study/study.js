@@ -1,10 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {getAnkiInterval} from './algorithm';
 import {Button, Collapse, Alert} from 'react-bootstrap';
-import ReactMarkdown from 'react-markdown';
-import RemarkMathPlugin from 'remark-math';
-import {BlockMath, InlineMath} from 'react-katex';
-import 'katex/dist/katex.min.css';
+import {MarkdownRender} from '../../utils';
 
 export function StudyElement(props) {
   const {currentCard, showAnswer, showAnswerHandler, message, backendGradeUpdate, handleKeyDown, schedulingAlgorithm, deleteFlashCardHandler, leechsuspendFlashCardGenerator} = props;
@@ -63,25 +60,13 @@ export function StudyElement(props) {
   return (
     <>
       <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-        <ReactMarkdown
-          source={currentCard ? currentCard.front_text : null}
-          plugins={[RemarkMathPlugin]}
-          renderers={{
-            math: ({ value }) => <BlockMath>{value}</BlockMath>,
-            inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
-          }}
-        />
+        <MarkdownRender source={currentCard && currentCard.front_text} />
       </div>
       <hr />
       <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-        <ReactMarkdown
-          source={currentCard && showAnswer ? currentCard.back_text : ''}
-          plugins={[RemarkMathPlugin]}
-          renderers={{
-            math: ({ value }) => <BlockMath>{value}</BlockMath>,
-            inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
-          }}
-        />
+        {currentCard && showAnswer &&
+          <MarkdownRender source={currentCard.back_text} />
+        }
       </div>
       <footer className='fixed-bottom mb-5'>
         <div className='mb-5'>

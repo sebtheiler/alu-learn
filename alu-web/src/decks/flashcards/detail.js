@@ -1,13 +1,8 @@
 import React, {useState} from 'react';
 import {Button} from 'react-bootstrap';
-import {QuestionBubble, errorHandler} from '../../utils';
+import {QuestionBubble, errorHandler, MarkdownRender} from '../../utils';
 import {apiFlashCardSuspendLeech, apiFlashCardDelete} from '../../lookup';
 import './detail.css';
-import ReactMarkdown from 'react-markdown';
-import RemarkMathPlugin from 'remark-math';
-import {BlockMath, InlineMath} from 'react-katex';
-import 'katex/dist/katex.min.css';
-
 
 // Display an individual flashcard
 export function FlashCard(props) {
@@ -94,24 +89,10 @@ export function FlashCard(props) {
       </div>
       <div className='row'>
         <div className='col-md-6 text-center'>
-          <ReactMarkdown
-            source={flashcard.front_text}
-            plugins={[RemarkMathPlugin]}
-            renderers={{
-              math: ({ value }) => <BlockMath>{value}</BlockMath>,
-              inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
-            }}
-          />
+          <MarkdownRender source={flashcard.front_text} />
         </div>
         <div className='col-md-6 text-center'>
-          <ReactMarkdown
-            source={flashcard.back_text}
-            plugins={[RemarkMathPlugin]}
-            renderers={{
-              math: ({ value }) => <BlockMath>{value}</BlockMath>,
-              inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
-            }}
-          />
+          <MarkdownRender source={flashcard.back_text} />
         </div>
       </div>
       <div className='text-center mx-auto w-50' style={{wordWrap: 'break-word'}}>
