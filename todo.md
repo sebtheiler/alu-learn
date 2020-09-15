@@ -156,8 +156,8 @@
   - [ ] Password reset
 - [ ] Limit API requests per user
 - [ ] Make numeric ids into string ids like "dad2Xadw#1". Look into https://pypi.org/project/shortuuid/
-- [ ] Add legal pages
-  - [ ] Simplify everything  
+- [X] Add legal pages
+  - [X] Simplify everything  
 - [ ] favicon.ico + Logo
 - [ ] Switch to PostgreSQL backend
 

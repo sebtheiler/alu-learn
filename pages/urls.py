@@ -16,8 +16,10 @@ urlpatterns = [
     path('help/leeches/', views.md_view_wrapper('decks/flashcard-leech', 'Leech Flashcards')),
     path('help/freezing-fields/', views.md_view_wrapper('decks/flashcard-field-freezing', 'Freezing Fields in Flashcard Creation')),
     # Legal pages
-    path('legal/tos/', views.md_view_wrapper('tos', 'legal')),
-    path('legal/privacypolicy/', views.md_view_wrapper('privacy-policy', 'legal')),
+    path('legal/', views.md_view_wrapper('legal/main', 'Legal Documents')),
+    path('legal/tos/', views.md_view_wrapper('legal/ToS', 'Terms of Service')),
+    path('legal/privacypolicy/', views.md_view_wrapper('legal/PrivacyPolicy', 'Privacy Policy')),
+    path('legal/dmca/', views.md_view_wrapper('legal/DMCA', 'Digital Millenium Copyright Notice')),
     # Contact pages
     path('contactus/', views.contact_view_wrapper(is_legal_issue=False)),
     path('contactus/finished/', views.contact_finished_view_wrapper(is_legal_issue=False)),
