@@ -123,7 +123,7 @@ class StudySessionManager(models.Model):
 
     daily_new_card_limit = models.PositiveSmallIntegerField(default=20)
     new_cards_done_today = models.PositiveSmallIntegerField(default=0)
-    # last_card_done = models.DateField(auto_now_add=True) # TODO: add this / celery
+    last_flashcard_date = models.DateField()
 
 
 class DeckStudySessionManager(StudySessionManager):

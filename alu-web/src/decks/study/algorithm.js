@@ -67,7 +67,6 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
     isLeech: false,
   };
   if (!card || settingsAlgorithm === null) {
-    console.log('algo', card, settingsAlgorithm)
     return {...errorResponse, message: 'NULL'};
   };
 
@@ -104,7 +103,6 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
       learningStatus = 'learned';
       interval = EASY_INTERVAL;
     } else {
-      console.error('Invalid grade',  card.front_text, grade, card.learning_status)
       return errorResponse;
     };
     if (learningStatus === 'unseen') {
@@ -141,7 +139,6 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
       interval = interval * easeFactor/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100;
       interval = Math.min(MAXIMUM_INTERVAL, interval);
     } else {
-      console.error('Invalid grade',  card.front_text, grade, card.learning_status)
       return errorResponse;
     };
   } else if (learningStatus === 'relearning') {
@@ -163,7 +160,6 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
         interval = Math.max(MINIMUM_INTERVAL, interval * NEW_INTERVAL/100);
       };
     } else {
-      console.error('Invalid grade',  card.front_text, grade, card.learning_status)
       return errorResponse;
     };
   } else {

@@ -746,6 +746,11 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
         except ObjectDoesNotExist:
             return Response({'message': f'SSM #{ssm_id} does not exist for {request.user.username}'}, status=404)
 
+    # If it is a new day since flashcards were previously done,
+    # reset the counter for new/unseen flashcards
+    if ssm.last_flashcard_date < timezone.now().date():
+        ssm.new_cards_done_today = 0
+
     if isinstance(ssm, DeckStudySessionManager):
         now = timezone.now()
         now += dt.timedelta(minutes=ssm.review_ahead_minutes)
@@ -781,6 +786,9 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
             ssm.max_ease,
             timezone.now() + dt.timedelta(minutes=ssm.review_ahead_minutes),
         )
+
+    ssm.last_flashcard_date = timezone.now().date()
+    ssm.save()
 
     return Response(FlashCardSerializer(flashcards, many=True).data, status=200)
 
