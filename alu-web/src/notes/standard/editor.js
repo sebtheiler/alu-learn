@@ -1,7 +1,8 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {createEditor, Editor, Transforms, Text} from 'slate'
-import {Slate, Editable, withReact} from 'slate-react'
-
+import {Slate, Editable, withReact, useSlate} from 'slate-react'
+import {Button, ButtonGroup} from 'react-bootstrap';
+import isHotKey from 'is-hotkey';
 
 const CustomEditor = {
   isBoldMarkActive(editor) {
@@ -40,51 +41,25 @@ const CustomEditor = {
   },
 };
 
-const CodeElement = props => {
-  return (
-    <pre {...props.attributes}>
-      <code>{props.children}</code>
-    </pre>
-  );
+const HOTKEYS = {
+  'mod+b': 'bold',
+  'mod+i': 'italic',
+  'mod+u': 'underline',
+  'mod+`': 'code',
 };
 
-const DefaultElement = props => {
-  return (
-    <p {...props.attributes}>
-      {props.children}
-    </p>
-  );
-};
-
-const Leaf = props => {
-  return (
-    <span
-      {...props.attributes}
-      style={{ fontWeight: props.leaf.bold ? 'bold' : 'normal' }}
-    >
-      {props.children}
-    </span>
-  );
-};
-
+const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
 export function StandardNoteEditor() {
-  const editor = useMemo(() => withReact(createEditor()), []);
   const [value, setValue] = useState([
     {
       type: 'paragraph',
       children: [{text: 'A line of text in a paragraph'}],
     },
   ]);
+  const editor = useMemo(() => withReact(createEditor()), []);
 
-  const renderElement = useCallback(props => {
-    switch (props.element.type) {
-      case 'code':
-        return <CodeElement {...props} />
-      default:
-        return <DefaultElement {...props} />
-    };
-  }, []);
+  const renderElement = useCallback(props => <Element {...props} />, []);
 
   const renderLeaf = useCallback(props => {
     return <Leaf {...props} />
@@ -103,49 +78,141 @@ export function StandardNoteEditor() {
           // console.log(content);
         }}
       >
-        <div>
-          <button
-            onMouseDown={event => {
-              event.preventDefault();
-              CustomEditor.toggleBoldMark(editor);
-            }}
-          >
-            Bold
-          </button>
-          <button
-            onMouseDown={event => {
-              event.preventDefault();
-              CustomEditor.toggleCodeBlock(editor);
-            }}
-          >
-            Code
-          </button>
-        </div>
+        <ButtonGroup>
+          <MarkButton format='bold' label='Bold' />
+          <MarkButton format='italic' label='Italic' />
+          <MarkButton format='underline' label='Underline' />
+          <MarkButton format='code' label='Code' />
+          <span className='mx-1' />
+          <BlockButton format='heading-one' label='H1' />
+          <BlockButton format='heading-two' label='H2' />
+          <BlockButton format='block-quote' label='Quote' />
+          <BlockButton format='numbered-list' label='OL' />
+          <BlockButton format='bulleted-list' label='UL' />
+        </ButtonGroup>
         <Editable
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           onKeyDown={event => {
-            if (!event.key) {
-              return;
-            };
-
-            switch (event.key) {
-              case '`':
+            for (const hotkey in HOTKEYS) {
+              if (isHotKey(hotkey, event)) {
                 event.preventDefault();
-                CustomEditor.toggleCodeBlock(editor);
-                break;
-
-              case 'b':
-                event.preventDefault();
-                CustomEditor.toggleBoldMark(editor);
-                break;
-              
-              default:
-                break;
+                const mark = HOTKEYS[hotkey];
+                toggleMark(editor, mark);
+              };
             };
           }}
         />
       </Slate>
     </div>
+  );
+};
+
+const toggleBlock = (editor, format) => {
+  const isActive = isBlockActive(editor, format);
+  const isList = LIST_TYPES.includes(format);
+
+  Transforms.unwrapNodes(editor, {
+    match: n => LIST_TYPES.includes(n.type),
+    split: true,
+  });
+
+  Transforms.setNodes(editor, {
+    type: isActive ? 'paragraph' : isList ? 'list-item' : format,
+  });
+
+  if (!isActive && isList) {
+    const block = { type: format, children: [] };
+    Transforms.wrapNodes(editor, block);
+  };
+};
+
+const toggleMark = (editor, format) => {
+  const isActive = isMarkActive(editor, format);
+
+  if (isActive) {
+    Editor.removeMark(editor, format);
+  } else {
+    Editor.addMark(editor, format, true);
+  };
+};
+
+const isBlockActive = (editor, format) => {
+  const [match] = Editor.nodes(editor, {
+    match: n => n.type === format,
+  });
+
+  return !!match;
+};
+
+const isMarkActive = (editor, format) => {
+  const marks = Editor.marks(editor);
+  return marks ? marks[format] === true : false;
+};
+
+const Element = ({ attributes, children, element }) => {
+  switch (element.type) {
+    case 'block-quote':
+      return <blockquote {...attributes}>{children}</blockquote>
+    case 'bulleted-list':
+      return <ul {...attributes}>{children}</ul>
+    case 'heading-one':
+      return <h1 {...attributes}>{children}</h1>
+    case 'heading-two':
+      return <h2 {...attributes}>{children}</h2>
+    case 'list-item':
+      return <li {...attributes}>{children}</li>
+    case 'numbered-list':
+      return <ol {...attributes}>{children}</ol>
+    default:
+      return <p {...attributes}>{children}</p>
+  };
+};
+
+const Leaf = ({ attributes, children, leaf }) => {
+  if (leaf.bold) {
+    children = <strong>{children}</strong>
+  };
+
+  if (leaf.code) {
+    children = <code>{children}</code>
+  };
+
+  if (leaf.italic) {
+    children = <em>{children}</em>
+  };
+
+  if (leaf.underline) {
+    children = <u>{children}</u>
+  };
+
+  return <span {...attributes}>{children}</span>
+};
+
+const BlockButton = ({ format, label }) => {
+  const editor = useSlate();
+
+  return (
+    <Button
+      variant={isBlockActive(editor, format) ? 'primary' : 'outline-primary'}
+      onClick={event => {
+        event.preventDefault();
+        toggleBlock(editor, format);
+      }}
+    >{label}</Button>
+  );
+};
+
+const MarkButton = ({ format, label }) => {
+  const editor = useSlate();
+
+  return (
+    <Button
+      variant={isMarkActive(editor, format) ? 'primary' : 'outline-primary'}
+      onClick={event => {
+        event.preventDefault();
+        toggleMark(editor, format);
+      }}
+    >{label}</Button>
   );
 };

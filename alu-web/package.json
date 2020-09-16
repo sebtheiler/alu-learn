@@ -24,6 +24,7 @@
     "rehype-katex": "^3.1.0",
     "remark-math": "^2.0.1",
     "slate": "^0.58.4",
+    "slate-hotkeys": "^0.2.11",
     "slate-plain-serializer": "^0.7.13",
     "slate-react": "^0.58.4",
     "slick-carousel": "^1.8.1"
