@@ -40,6 +40,7 @@ urlpatterns = [
     path('explore/', include('explore.urls')),
     path('api/explore/', include('explore.api.urls')),
     path('api/analytics/', include('analytics.api.urls')),
+    path('api/notes/', include('notes.api.urls')),
 ]
 
 if settings.DEBUG:

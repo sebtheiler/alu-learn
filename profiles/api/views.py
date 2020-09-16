@@ -46,6 +46,7 @@ def profile_detail_api_view(request, username, *args, **kwargs):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def friend_toggle_api_view(request, recipient_username, *args, **kwargs):
     """
     Adds or removes a friend - POST
