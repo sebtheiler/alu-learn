@@ -329,3 +329,8 @@ export function apiNoteUpdate(noteId, newTitle, newContent, callback) {
 export function apiNoteDelete(noteId, callback) {
   backendLookup('POST', `notes/delete/${noteId}/`, callback);
 };
+
+// Gets all of the user's notes
+export function apiNoteHome(callback) {
+  backendLookup('GET', 'notes/list/', callback);
+};

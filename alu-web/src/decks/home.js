@@ -16,11 +16,11 @@ export function DecksHomeList(props) {
   // Send request to the API to get decks and URLs for pagination
   useEffect(() =>  {
     if (decksDidSet === false) {
+      setDecksDidSet(true);
       apiDeckHome((response, status) => {
         if (status === 200) {
           setNextUrl(response.next);
           setDecks(response.results);
-          setDecksDidSet(true);
         } else {
           // Error getting decks
           errorHandler(response, status, 1006);

@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Note, FreeformNote
-from ..serializers import FreeformNoteSerializer
+from ..serializers import FreeformNoteSerializer, NoteSerializer
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -119,3 +119,12 @@ def note_delete_api_view(request, note_id, *args, **kwargs):
         return Response({'message': 'Deleted note successfully'}, status=200)
     except ObjectDoesNotExist:
         return Response({'message': 'Note not found'}, status=404)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_notes_api_view(request, *args, **kwargs):
+    """
+    Gets all of the current user's notes - GET
+    """
+    return Response(NoteSerializer(request.user.profile.notes, many=True).data, status=200)

@@ -11,13 +11,6 @@ import {Card, ButtonGroup, Button} from 'react-bootstrap';
 export function Deck(props) {
   const {deck, currentUsername} = props; // JSON data with attributes such as `id` and `author`
   const className = props.className ? props.className : 'col-10 mx-auto col-md-6';
-  
-  // If this is a detail view, i.e., we are not looking at a list of other decks,
-  // we do not want to display a link to this deck (since we already there)
-  // const path = window.location.pathname;
-  // const match = path.match(/(?<deckid>\d+)/);
-  // const urlDeckId = match ? match.groups.deckid : -1;
-  // const isDetail = `${deck.id}` === `${urlDeckId}`;
 
   if (deck.length === 0) {
     return <div>Loading...</div>

@@ -54,7 +54,7 @@ export function DeckDefaultButtonGroup(props) {
             errorHandler(response, status, 1000);
           };
       });
-    } else {
+    } else if (deck.serializer_name === 'cssm') {
       apiSSMEdit(
         deck.id,
         form.elements.title.value,
