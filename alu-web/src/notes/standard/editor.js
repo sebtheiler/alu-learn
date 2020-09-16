@@ -1,45 +1,8 @@
 import React, {useCallback, useMemo, useState} from 'react';
-import {createEditor, Editor, Transforms, Text} from 'slate'
+import {createEditor, Editor, Transforms} from 'slate'
 import {Slate, Editable, withReact, useSlate} from 'slate-react'
 import {Button, ButtonGroup} from 'react-bootstrap';
 import isHotKey from 'is-hotkey';
-
-const CustomEditor = {
-  isBoldMarkActive(editor) {
-    const [match] = Editor.nodes(editor, {
-      match: n => n.bold === true,
-      universal: true,
-    });
-
-    return !!match;
-  },
-
-  isCodeBlockActive(editor) {
-    const [match] = Editor.nodes(editor, {
-      match: n => n.type === 'code',
-    });
-
-    return !!match;
-  },
-
-  toggleBoldMark(editor) {
-    const isActive = CustomEditor.isBoldMarkActive(editor);
-    Transforms.setNodes(
-      editor,
-      { bold: isActive ? null : true },
-      { match: n => Text.isText(n), split: true },
-    );
-  },
-
-  toggleCodeBlock(editor) {
-    const isActive = CustomEditor.isCodeBlockActive(editor);
-    Transforms.setNodes(
-      editor,
-      { type: isActive ? null : 'code' },
-      { match: n => Editor.isBlock(editor, n) }
-    );
-  },
-};
 
 const HOTKEYS = {
   'mod+b': 'bold',
@@ -49,6 +12,10 @@ const HOTKEYS = {
 };
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
+
+function confirmExit() {
+    return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
+};
 
 export function StandardNoteEditor() {
   const [value, setValue] = useState([
@@ -61,19 +28,17 @@ export function StandardNoteEditor() {
 
   const renderElement = useCallback(props => <Element {...props} />, []);
 
-  const renderLeaf = useCallback(props => {
-    return <Leaf {...props} />
-  }, []);
+  const renderLeaf = useCallback(props => <Leaf {...props} />, []);
 
   return (
-    <div className=''>
+    <div className='container'>
       <h1>Taking Notes</h1>
       <Slate
         editor={editor}
         value={value}
         onChange={newValue => {
           setValue(newValue);
-
+          window.onbeforeunload = confirmExit;
           // const content = JSON.stringify(value);
           // console.log(content);
         }}
@@ -86,10 +51,11 @@ export function StandardNoteEditor() {
           <span className='mx-1' />
           <BlockButton format='heading-one' label='H1' />
           <BlockButton format='heading-two' label='H2' />
-          <BlockButton format='block-quote' label='Quote' />
+          {/* <BlockButton format='block-quote' label='Quote' /> */}
           <BlockButton format='numbered-list' label='OL' />
           <BlockButton format='bulleted-list' label='UL' />
         </ButtonGroup>
+        <hr />
         <Editable
           renderElement={renderElement}
           renderLeaf={renderLeaf}
@@ -101,6 +67,12 @@ export function StandardNoteEditor() {
                 toggleMark(editor, mark);
               };
             };
+          }}
+          style={{
+            borderStyle: 'dashed',
+            borderWidth: '1px',
+            padding: '20px',
+            minHeight: '500px',
           }}
         />
       </Slate>
