@@ -38,6 +38,10 @@ import {
   apiSSMEdit,
   apiSSMDelete,
   apiSSMCreate,
+  apiNoteCreate,
+  apiNoteDetail,
+  apiNoteUpdate,
+  apiNoteDelete,
 } from './lookup';
 
 export {
@@ -80,4 +84,8 @@ export {
   apiSSMEdit,
   apiSSMDelete,
   apiSSMCreate,
+  apiNoteCreate,
+  apiNoteDetail,
+  apiNoteUpdate,
+  apiNoteDelete,
 };

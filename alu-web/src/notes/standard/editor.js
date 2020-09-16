@@ -1,9 +1,10 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useState, useEffect} from 'react';
 import {createEditor, Editor, Transforms} from 'slate';
 import {Slate, Editable, withReact, useSlate} from 'slate-react';
-import {useInterval} from '../../utils';
+import {errorHandler, useInterval} from '../../utils';
 import {Button, ButtonGroup} from 'react-bootstrap';
 import isHotKey from 'is-hotkey';
+import {apiNoteDetail, apiNoteUpdate} from '../../lookup';
 
 const HOTKEYS = {
   'mod+b': 'bold',
@@ -18,30 +19,62 @@ function confirmExit() {
     return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
 };
 
-export function StandardNoteEditor() {
+export function StandardNoteEditor(props) {
+  const {noteId} = props;
+
   const [value, setValue] = useState([
     {
       type: 'paragraph',
       children: [{text: 'A line of text in a paragraph'}],
     },
   ]);
+  const [note, setNote] = useState(null);
+  const [noteDidSet, setNoteDidSet] = useState(false);
+  const [notFound, setNotFound] = useState(false);
   const [didTypeRecently, setDidTypeRecently] = useState(false);
   const [areChanges, setAreChanges] = useState(false);
   const editor = useMemo(() => withReact(createEditor()), []);
 
-  const renderElement = useCallback(props => <Element {...props} />, []);
+  useEffect(() => {
+    if (noteDidSet === false) {
+      setNoteDidSet(true);
+      apiNoteDetail(noteId, (response, status) => {
+        if (status === 200) {
+          setNote(response);
+          setValue(JSON.parse(response.content));
+        } else if (status === 404) {
+          setNotFound(true);
+        } else {
+          // Error getting note detail
+          errorHandler(response, status, 6000);
+        };
+      });
+    };
+  }, [note, noteDidSet, noteId]);
 
+  const renderElement = useCallback(props => <Element {...props} />, []);
   const renderLeaf = useCallback(props => <Leaf {...props} />, []);
 
   useInterval(() => {
     if (didTypeRecently) {
       setDidTypeRecently(false);
     } else {
-      console.log('sending to API request');
       setAreChanges(false);
-      window.onbeforeunload = undefined;
+      console.log('sending API request');
+      apiNoteUpdate(noteId, null, JSON.stringify(value), (response, status) => {
+        if (status === 200) {
+          window.onbeforeunload = undefined;
+        } else {
+          // Error updating notes
+          errorHandler(response, status, 6001);
+        };
+      });
     };
   }, areChanges ? 5000 : null);
+
+  if (notFound) {
+    return <p className='text-center'>Note not found</p>
+  };
 
   return (
     <div className='container'>

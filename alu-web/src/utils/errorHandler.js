@@ -94,4 +94,8 @@ int(hexadecimal_string, 16)
 5003: Error updating SSM through apiSSMEdit in alu-web/src/decks/buttons.js
 5004: Error deleting SSM through apiSSMDelete in alu-web/src/decks/buttons.js
 5005: Error creating SSM through apiSSMCreate in alu-web/src/decks/flashcards/search.js
+
+=== Note related errors ===
+6000: Error getting note detail through apiNoteDetail in alu-web/src/notes/standard/editor.js
+6001: Error updating note through apiNoteUpdate in alu-web/src/notes/standard/editor.js
 */

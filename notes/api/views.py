@@ -39,8 +39,18 @@ def note_create_api_view(request, *args, **kwargs):
     if version == 'freeform':
         note = FreeformNote.objects.create(
             user=request.user.profile,
-            content={},
             title=title,
+            content=
+[
+  {
+    "type": "paragraph",
+    "children": [
+      {
+        "text": "Take notes here..."
+      }
+    ]
+  }
+]
         )
         return Response(FreeformNoteSerializer(note).data, status=201)
     else:

@@ -309,3 +309,23 @@ export function apiSSMCreate(deckIds, tags, contains, leech, learningStatus, min
     max_ease: maxEase,
   });
 };
+
+// Creates a note
+export function apiNoteCreate(title, version, callback) {
+  backendLookup('POST', 'notes/create/', callback, {title: title, version: version});
+};
+
+// Gets info about a note
+export function apiNoteDetail(noteId, callback) {
+  backendLookup('GET', `notes/detail/${noteId}/`, callback);
+};
+
+// Updates a note
+export function apiNoteUpdate(noteId, newTitle, newContent, callback) {
+  backendLookup('POST', `notes/update/${noteId}/`, callback, {new_title: newTitle, new_content: newContent});
+};
+
+// Deletes a note
+export function apiNoteDelete(noteId, callback) {
+  backendLookup('POST', `notes/delete/${noteId}/`, callback);
+};
