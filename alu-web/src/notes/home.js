@@ -32,6 +32,7 @@ export function NotesHomeList(props) {
                     deck={note}
                     currentUsername={username}
                     key={`${index}-${note.id}`}
+                    type={'note'}
                     className='mb-3 mx-1 border bg-white text-dark'
                   />;
         })}

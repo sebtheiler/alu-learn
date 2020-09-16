@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {DeckDefaultButtonGroup, DeckForeignUserButtonGroup} from './buttons';
+import {NoteDefaultButtonGroup} from '../notes/buttons';
 import {FlashCardsList} from './flashcards';
 import {apiDeckThank} from '../lookup';
 import {DisplayCountChar, errorHandler, MarkdownRender} from '../utils';
@@ -9,7 +10,7 @@ import {Card, ButtonGroup, Button} from 'react-bootstrap';
 // Display an individual deck
 // This is used on pages displaying multiple decks
 export function Deck(props) {
-  const {deck, currentUsername} = props; // JSON data with attributes such as `id` and `author`
+  const {deck, currentUsername, type} = props;
   const className = props.className ? props.className : 'col-10 mx-auto col-md-6';
 
   if (deck.length === 0) {
@@ -26,9 +27,12 @@ export function Deck(props) {
           </Card.Title>
           <Card.Text>{deck.description}</Card.Text>
           <ButtonGroup>
-            {currentUsername === deck.author.username ?
-              <DeckDefaultButtonGroup deck={deck} />
-            : <Button href={`/decks/${deck.id}/`}>View</Button>
+            {type === 'note' ? 
+              <NoteDefaultButtonGroup note={deck} />
+            :
+              (currentUsername === deck.author.username ?
+                <DeckDefaultButtonGroup deck={deck} />
+              : <Button href={`/decks/${deck.id}/`}>View</Button>)
             }
           </ButtonGroup>
         </Card.Body>
