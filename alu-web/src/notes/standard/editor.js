@@ -11,6 +11,7 @@ const HOTKEYS = {
   'mod+i': 'italic',
   'mod+u': 'underline',
   'mod+`': 'code',
+  'mod+5': 'strikethrough',
 };
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
@@ -25,7 +26,7 @@ export function StandardNoteEditor(props) {
   const [value, setValue] = useState([
     {
       type: 'paragraph',
-      children: [{text: 'A line of text in a paragraph'}],
+      children: [{text: 'Loading your notes...'}],
     },
   ]);
   const [note, setNote] = useState(null);
@@ -35,6 +36,7 @@ export function StandardNoteEditor(props) {
   const [areChanges, setAreChanges] = useState(false);
   const editor = useMemo(() => withReact(createEditor()), []);
 
+  // Get note data
   useEffect(() => {
     if (noteDidSet === false) {
       setNoteDidSet(true);
@@ -55,12 +57,10 @@ export function StandardNoteEditor(props) {
   const renderElement = useCallback(props => <Element {...props} />, []);
   const renderLeaf = useCallback(props => <Leaf {...props} />, []);
 
-  useInterval(() => {
-    if (didTypeRecently) {
-      setDidTypeRecently(false);
-    } else {
+  // Function for sending a request to the API for saving
+  const sendSaveApiRequest = () => {
+    if (areChanges) {
       setAreChanges(false);
-      console.log('sending API request');
       apiNoteUpdate(noteId, null, JSON.stringify(value), (response, status) => {
         if (status === 200) {
           window.onbeforeunload = undefined;
@@ -69,6 +69,15 @@ export function StandardNoteEditor(props) {
           errorHandler(response, status, 6001);
         };
       });
+    };
+  };
+
+  // Auto-save every 5-10 seconds
+  useInterval(() => {
+    if (didTypeRecently) {
+      setDidTypeRecently(false);
+    } else {
+      sendSaveApiRequest();
     };
   }, areChanges ? 5000 : null);
 
@@ -82,54 +91,67 @@ export function StandardNoteEditor(props) {
       <p className='text-secondary'>
         {areChanges ? 'Saving...' : 'Saved'}
       </p>
-      <Slate
-        editor={editor}
-        value={value}
-        onChange={newValue => {
-          setValue(newValue);
-          window.onbeforeunload = confirmExit;
-          // const content = JSON.stringify(value);
-          // console.log(content);
-        }}
-      >
-        <ButtonGroup>
-          <MarkButton format='bold' label='Bold' />
-          <MarkButton format='italic' label='Italic' />
-          <MarkButton format='underline' label='Underline' />
-          <MarkButton format='code' label='Code' />
-          <span className='mx-1' />
-          <BlockButton format='heading-one' label='H1' />
-          <BlockButton format='heading-two' label='H2' />
-          {/* <BlockButton format='block-quote' label='Quote' /> */}
-          <BlockButton format='numbered-list' label='OL' />
-          <BlockButton format='bulleted-list' label='UL' />
-        </ButtonGroup>
-        <hr />
-        <Editable
-          renderElement={renderElement}
-          renderLeaf={renderLeaf}
-          onKeyDown={event => {
-            if (event.key !== 'Control' && event.key !== 'Alt' && event.key !== 'Shift') {
-              setDidTypeRecently(true);
-              setAreChanges(true);
-            };
-
-            for (const hotkey in HOTKEYS) {
-              if (isHotKey(hotkey, event)) {
+      <div id='note-text-editor'>
+        <Slate
+          editor={editor}
+          value={value}
+          onChange={newValue => {
+            // There have been changes now
+            setValue(newValue);
+            window.onbeforeunload = confirmExit;
+          }}
+        >
+          <ButtonGroup>
+            <MarkButton format='bold' label='Bold' />
+            <MarkButton format='italic' label='Italic' />
+            <MarkButton format='underline' label='Underline' />
+            <MarkButton format='strikethrough' label='Strikethrough' />
+            <MarkButton format='code' label='Code' />
+            <span className='mx-1' />
+            <BlockButton format='heading-one' label='H1' />
+            <BlockButton format='heading-two' label='H2' />
+            {/* <BlockButton format='block-quote' label='Quote' /> */}
+            <BlockButton format='numbered-list' label='OL' />
+            <BlockButton format='bulleted-list' label='UL' />
+            <span className='mx-1' />
+            <Button
+              variant='outline-primary'
+              onClick={(event) => {
                 event.preventDefault();
-                const mark = HOTKEYS[hotkey];
-                toggleMark(editor, mark);
+                sendSaveApiRequest();
+              }}
+            >
+              Save
+            </Button>
+          </ButtonGroup>
+          <hr />
+          <Editable
+            renderElement={renderElement}
+            renderLeaf={renderLeaf}
+            onKeyDown={event => {
+              const modifierKeys = ['Control', 'Alt', 'Shift', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown', 'ScrollLock', 'CapsLock', 'NumLock'];
+              if (!modifierKeys.includes(event.key)) {
+                setDidTypeRecently(true);
+                setAreChanges(true);
               };
-            };
-          }}
-          style={{
-            borderStyle: 'dashed',
-            borderWidth: '1px',
-            padding: '20px',
-            minHeight: '500px',
-          }}
-        />
-      </Slate>
+
+              for (const hotkey in HOTKEYS) {
+                if (isHotKey(hotkey, event)) {
+                  event.preventDefault();
+                  const mark = HOTKEYS[hotkey];
+                  toggleMark(editor, mark);
+                };
+              };
+            }}
+            style={{
+              borderStyle: 'dashed',
+              borderWidth: '1px',
+              padding: '20px',
+              minHeight: '500px',
+            }}
+          />
+        </Slate>
+      </div>
     </div>
   );
 };
@@ -210,6 +232,10 @@ const Leaf = ({ attributes, children, leaf }) => {
 
   if (leaf.underline) {
     children = <u>{children}</u>
+  };
+
+  if (leaf.strikethrough) {
+    children = <del>{children}</del>
   };
 
   return <span {...attributes}>{children}</span>
