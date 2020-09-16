@@ -14,7 +14,6 @@ export function NotesHomeList(props) {
       setNotesDidSet(true);
       apiNoteHome((response, status) => {
         if (status === 200) {
-          console.log(response)
           setNotes(response);
         } else {
           // Error getting notes home

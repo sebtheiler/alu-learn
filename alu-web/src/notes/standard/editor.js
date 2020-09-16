@@ -16,13 +16,10 @@ const HOTKEYS = {
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
-function confirmExit() {
-    return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
-};
 
 export function StandardNoteEditor(props) {
   const {noteId} = props;
-
+  
   const [value, setValue] = useState([
     {
       type: 'paragraph',
@@ -35,13 +32,19 @@ export function StandardNoteEditor(props) {
   const [didTypeRecently, setDidTypeRecently] = useState(false);
   const [areChanges, setAreChanges] = useState(false);
   const editor = useMemo(() => withReact(createEditor()), []);
-
+  
+  function confirmExit() {
+    if (!areChanges) {
+      return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
+    };
+  };
   // Get note data
   useEffect(() => {
     if (noteDidSet === false) {
       setNoteDidSet(true);
       apiNoteDetail(noteId, (response, status) => {
         if (status === 200) {
+          console.log(response)
           setNote(response);
           setValue(JSON.parse(response.content));
         } else if (status === 404) {
@@ -59,7 +62,7 @@ export function StandardNoteEditor(props) {
 
   // Function for sending a request to the API for saving
   const sendSaveApiRequest = () => {
-    if (areChanges) {
+    if (areChanges && noteDidSet) {
       setAreChanges(false);
       apiNoteUpdate(noteId, null, JSON.stringify(value), (response, status) => {
         if (status === 200) {
@@ -86,7 +89,7 @@ export function StandardNoteEditor(props) {
   };
 
   return (
-    <div className='container'>
+    <div className='container mt-5'>
       <h1>Taking Notes</h1>
       <p className='text-secondary'>
         {areChanges ? 'Saving...' : 'Saved'}
@@ -101,7 +104,7 @@ export function StandardNoteEditor(props) {
             window.onbeforeunload = confirmExit;
           }}
         >
-          <ButtonGroup>
+          <ButtonGroup style={{flexWrap: 'wrap'}}>
             <MarkButton format='bold' label='Bold' />
             <MarkButton format='italic' label='Italic' />
             <MarkButton format='underline' label='Underline' />
@@ -126,6 +129,7 @@ export function StandardNoteEditor(props) {
           </ButtonGroup>
           <hr />
           <Editable
+            readOnly={!noteDidSet}
             renderElement={renderElement}
             renderLeaf={renderLeaf}
             onKeyDown={event => {
@@ -148,6 +152,8 @@ export function StandardNoteEditor(props) {
               borderWidth: '1px',
               padding: '20px',
               minHeight: '500px',
+              overflowY: 'auto',
+              lineHeight: 1.6,
             }}
           />
         </Slate>

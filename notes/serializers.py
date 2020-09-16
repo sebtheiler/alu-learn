@@ -21,6 +21,9 @@ class NoteSerializer(serializers.ModelSerializer):
 
 
 class FreeformNoteSerializer(serializers.ModelSerializer):
+    serializer_name = serializers.SerializerMethodField(read_only=True)
+    author = MinifiedProfileSerializer(source='user', read_only=True)
+
     class Meta:
         model = FreeformNote
         fields = NoteSerializer.Meta.fields + [

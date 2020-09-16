@@ -6,10 +6,10 @@ export function NoteDefaultButtonGroup(props) {
 
   return (
     <ButtonGroup>
-      <Button href={`/notes/${note.id}/edit/`} className='mr-1'>
+      <Button href={`/notes/edit/${note.id}/`} className='mr-1'>
         Edit
       </Button>
-      <Button href={`/notes/${note.id}/study/`} className='mr-1'>
+      <Button href={`/notes/study/${note.id}/`} className='mr-1'>
         Study
       </Button>
     </ButtonGroup>
