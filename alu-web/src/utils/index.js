@@ -10,6 +10,7 @@ import {
   FormCheckbox,
   QuestionBubble,
   MarkdownRender,
+  useInterval,
 } from './utils';
 
 import {errorHandler} from './errorHandler';
@@ -27,4 +28,5 @@ export {
   FormCheckbox,
   QuestionBubble,
   MarkdownRender,
+  useInterval,
 };

@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo, useState} from 'react';
-import {createEditor, Editor, Transforms} from 'slate'
-import {Slate, Editable, withReact, useSlate} from 'slate-react'
+import {createEditor, Editor, Transforms} from 'slate';
+import {Slate, Editable, withReact, useSlate} from 'slate-react';
+import {useInterval} from '../../utils';
 import {Button, ButtonGroup} from 'react-bootstrap';
 import isHotKey from 'is-hotkey';
 
@@ -24,15 +25,30 @@ export function StandardNoteEditor() {
       children: [{text: 'A line of text in a paragraph'}],
     },
   ]);
+  const [didTypeRecently, setDidTypeRecently] = useState(false);
+  const [areChanges, setAreChanges] = useState(false);
   const editor = useMemo(() => withReact(createEditor()), []);
 
   const renderElement = useCallback(props => <Element {...props} />, []);
 
   const renderLeaf = useCallback(props => <Leaf {...props} />, []);
 
+  useInterval(() => {
+    if (didTypeRecently) {
+      setDidTypeRecently(false);
+    } else {
+      console.log('sending to API request');
+      setAreChanges(false);
+      window.onbeforeunload = undefined;
+    };
+  }, areChanges ? 5000 : null);
+
   return (
     <div className='container'>
       <h1>Taking Notes</h1>
+      <p className='text-secondary'>
+        {areChanges ? 'Saving...' : 'Saved'}
+      </p>
       <Slate
         editor={editor}
         value={value}
@@ -60,6 +76,11 @@ export function StandardNoteEditor() {
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           onKeyDown={event => {
+            if (event.key !== 'Control' && event.key !== 'Alt' && event.key !== 'Shift') {
+              setDidTypeRecently(true);
+              setAreChanges(true);
+            };
+
             for (const hotkey in HOTKEYS) {
               if (isHotKey(hotkey, event)) {
                 event.preventDefault();

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
 import numeral from 'numeral';
 import {Tooltip, OverlayTrigger} from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown/with-html';
@@ -194,4 +194,26 @@ export function MarkdownRender(props) {
       } : null}
     />
   );
+};
+
+// Calls a function every N milliseconds
+// Taken from https://overreacted.io/making-setinterval-declarative-with-react-hooks/
+export function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    };
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    };
+  }, [delay]);
 };
