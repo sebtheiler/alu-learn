@@ -65,6 +65,7 @@ def deck_create_view(request, *args, **kwargs):
         scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKI'),
         shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', False),
         daily_new_card_limit=request.data.get('daily_new_card_limit', 20),
+        last_flashcard_date=timezone.now(),
     )
 
     return Response(DeckSerializer(new_deck).data, status=201)
@@ -705,7 +706,7 @@ def txt_file_upload(request, *args, **kwargs):
     # Get/create deck with given title
     deck, created = Deck.objects.get_or_create(user=request.user, title=deck_title)
     if created:
-        DeckStudySessionManager.objects.create(deck=deck, user=request.user.profile)
+        DeckStudySessionManager.objects.create(deck=deck, user=request.user.profile, last_flashcard_date=timezone.now())
 
     # Create flashcards
     now = timezone.now()
@@ -941,6 +942,7 @@ def ssm_create_view(request, *args, **kwargs):
         learning_status=request.data.get('learning_status'),
         min_ease=request.data.get('min_ease'),
         max_ease=request.data.get('max_ease'),
+        last_flashcard_date=timezone.now(),
     )
 
     return Response(CustomStudySessionManagerSerializer(ssm).data, status=201)

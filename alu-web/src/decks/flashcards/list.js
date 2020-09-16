@@ -29,7 +29,7 @@ export function FlashCardsList(props) {
     if (flashcardsDidSet === false) {
       if (!flashcardList) {
         // API lookup if given deck ID
-        apiDeckDetail(deckId, (response, status) => {
+        apiDeckDetail(deckId, {}, (response, status) => {
           // Get deck metadata
           if (status === 200) {
             setDeck(response);
@@ -40,7 +40,7 @@ export function FlashCardsList(props) {
             errorHandler(response, status, 1015);
           };
         });
-        apiDeckFlashcards(deckId, {}, (response, status) => { // TODO: PAGINATE
+        apiDeckFlashcards(deckId, {}, (response, status) => {
           // Get flashcards
           if (status === 200) {
             setNextUrl(response.next);

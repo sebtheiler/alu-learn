@@ -103,7 +103,7 @@ export function DeckImportComponent() {
           <FormCheckbox name='convertFormatting' id='convertFormatting'>
             Convert Anki formatting to Alu formatting?{' '}
             <QuestionBubble>
-              For example: [$$] ➡ $$, [$] ➡ $, $ ➡ \$
+              For example: \[$$\] ➡ $$, \[$\] ➡ $, $ ➡ \$
             </QuestionBubble>
           </FormCheckbox>
         </Form.Group>

@@ -1,6 +1,6 @@
 from django.conf import settings
 from rest_framework import serializers
-from profiles.serializers import MinifiedProfileSerializer
+from profiles.serializers import MinifiedProfileSerializer, PublicProfileSerializer
 from .models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager
 
 
@@ -58,7 +58,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
 
 
 class DeckSerializer(serializers.ModelSerializer):
-    author = MinifiedProfileSerializer(source='user.profile', read_only=True)
+    author = serializers.SerializerMethodField(read_only=True)
     num_thanks = serializers.SerializerMethodField(read_only=True)
     you_have_thanked = serializers.SerializerMethodField(read_only=True)
     scheduling_algorithm = serializers.SerializerMethodField(read_only=True)
@@ -89,6 +89,13 @@ class DeckSerializer(serializers.ModelSerializer):
         if len(value) > settings.MAX_DECK_TITLE_LENGTH:
             raise forms.ValidationError("Your deck's title is too long!")
         return value
+
+    def get_author(self, obj):
+        request = self.context.get('request')
+        if request and request.GET.get('fullDetail') == 'true':
+            return PublicProfileSerializer(obj.user.profile).data
+        else:
+            return MinifiedProfileSerializer(obj.user.profile).data
 
     def get_you_have_thanked(self, obj):
         request = self.context.get('request')

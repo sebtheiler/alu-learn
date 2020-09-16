@@ -55,8 +55,13 @@ export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, le
 };
 
 // Gets detail information on a deck with ID `deckId`
-export function apiDeckDetail(deckId, callback) {
-  backendLookup('GET', `decks/${deckId}/`, callback);
+export function apiDeckDetail(deckId, options, callback) {
+  const {getFullDetail} = options;
+  let endpoint = `decks/${deckId}/`;
+  if (getFullDetail) {
+    endpoint += '?fullDetail=true';
+  };
+  backendLookup('GET', endpoint, callback);
 };
 
 // Gets a deck's flashcards

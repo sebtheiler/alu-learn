@@ -6,6 +6,10 @@ import {Badge, OverlayTrigger} from 'react-bootstrap';
 export function BadgeComponent(props) {
   const {profile, showAll} = props;
 
+  if (!profile.badges) {
+    return null;
+  };
+
   const individualBadge = (badge, username) => {
     return (
       <OverlayTrigger

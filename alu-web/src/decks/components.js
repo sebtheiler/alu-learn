@@ -38,7 +38,7 @@ export function DeckDetailComponent(props) {
   // `didLookup` is required so that this doesn't infinitely run
   useEffect(() => {
     if (didLookup === false) {
-      apiDeckDetail(deckId, (response, status) => {
+      apiDeckDetail(deckId, { getFullDetail: true }, (response, status) => {
         if (status === 200) {
           setDeck(response);
           setIsForbidden(false);
