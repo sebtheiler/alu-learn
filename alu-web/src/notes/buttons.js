@@ -94,3 +94,47 @@ export function NoteCreateModal(props) {
     </Modal>
   );
 };
+
+export function DeleteModal(props) {
+  const {show, hide, note, deleteApiFunction} = props;
+
+  return (
+    <Modal show={show} onHide={hide}>
+      <Modal.Header>
+        <Modal.Title>
+          DELETING "{note && note.title}"
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        This action is IRREVERSIBLE. Your note will be gone FOREVER.
+        Only continue if you are absolutely sure you want to delete this note.
+      </Modal.Body>
+      <Button
+        variant='danger'
+        className='w-75 mx-auto'
+        block
+        onClick={event => {
+          event.preventDefault();
+          deleteApiFunction(note.id, (response, status) => {
+            if (status === 200) {
+              window.location.href = '/home/notes/';
+            } else {
+              // Error deleting note
+              errorHandler(response, status, 6005);
+            };
+          });
+        }}
+      >
+        Permanently Delete this Note
+      </Button>
+      <Button
+        variant='primary'
+        className='w-75 mx-auto mb-3'
+        onClick={hide}
+        block
+      >
+        Take me back
+      </Button>
+    </Modal>
+  );
+};

@@ -4,7 +4,8 @@ import {Slate, Editable, withReact, useSlate} from 'slate-react';
 import {errorHandler, useInterval} from '../../utils';
 import {Button, ButtonGroup} from 'react-bootstrap';
 import isHotKey from 'is-hotkey';
-import {apiNoteDetail, apiNoteUpdate} from '../../lookup';
+import {apiNoteDelete, apiNoteDetail, apiNoteUpdate} from '../../lookup';
+import {DeleteModal} from '../buttons';
 
 const HOTKEYS = {
   'mod+b': 'bold',
@@ -33,6 +34,8 @@ export function StandardNoteEditor(props) {
   const [areChanges, setAreChanges] = useState(false);
   const editor = useMemo(() => withReact(createEditor()), []);
   
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   function confirmExit() {
     if (!areChanges) {
       return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
@@ -160,6 +163,19 @@ export function StandardNoteEditor(props) {
           />
         </Slate>
       </div>
+      <Button
+        variant='danger'
+        onClick={event => {event.preventDefault(); setShowDeleteModal(true)}}
+        className='mt-3'
+      >
+        Delete
+      </Button>
+      <DeleteModal
+        show={showDeleteModal}
+        hide={event => setShowDeleteModal(false)}
+        note={note}
+        deleteApiFunction={apiNoteDelete}
+      />
     </div>
   );
 };
