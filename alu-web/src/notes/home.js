@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react';
+import { ButtonGroup } from 'react-bootstrap';
 import {Deck} from '../decks/detail';
 import {apiNoteHome} from '../lookup';
 import { errorHandler } from '../utils';
+import {NoteCreateButton} from './buttons';
 
 export function NotesHomeList(props) {
   const {username} = props;
@@ -24,22 +26,28 @@ export function NotesHomeList(props) {
   }, [notes, notesDidSet]);
 
   return (
-    <>{notes.length > 0 ? <>
-      <div className='card-deck text-center mx-auto justify-content-center'>
-        {notes.map((note, index) => {
-          return <Deck 
-                    deck={note}
-                    currentUsername={username}
-                    key={`${index}-${note.id}`}
-                    type={'note'}
-                    className='mb-3 mx-1 border bg-white text-dark'
-                  />;
-        })}
+    <>
+      <div className='text-center my-3'>
+        <ButtonGroup>
+          <NoteCreateButton />
+        </ButtonGroup>
       </div>
-    </> :
-      <p className='text-center mt-3'>
-        {notesDidSet ? 'You don\'t have any notes yet.' : 'Loading...'}
-      </p>}
+    {notes && notes.length > 0 ? <>
+        <div className='card-deck text-center mx-auto justify-content-center'>
+          {notes.map((note, index) => {
+            return <Deck 
+                      deck={note}
+                      currentUsername={username}
+                      key={`${index}-${note.id}`}
+                      type={'note'}
+                      className='mb-3 mx-1 border bg-white text-dark'
+                    />;
+          })}
+        </div>
+      </> :
+        <p className='text-center mt-3'>
+          {notesDidSet ? 'You don\'t have any notes yet.' : 'Loading...'}
+        </p>}
     </>
   );
 };

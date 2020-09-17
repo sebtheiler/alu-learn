@@ -145,15 +145,15 @@ export function DeckEditCreateModal(props) {
 
   return (
     <Modal show={modalIsOpen} onHide={closeModal}>
-        <Modal.Header>
-          <Modal.Title>
-            {mode === 'edit' ?
-              <>Edit "{deck.title}"</>
-              :
-              <>Creating deck</>
-              }
-          </Modal.Title>
-        </Modal.Header>
+      <Modal.Header>
+        <Modal.Title>
+          {mode === 'edit' ?
+            <>Edit "{deck.title}"</>
+            :
+            <>Creating deck</>
+            }
+        </Modal.Title>
+      </Modal.Header>
       <Form onSubmit={submitHandler}>
         <Modal.Body>
           <Form.Group>

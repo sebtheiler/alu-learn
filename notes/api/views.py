@@ -36,7 +36,8 @@ def note_create_api_view(request, *args, **kwargs):
         pass
     
     # Create note object
-    if version == 'freeform':
+    if version == 'STND':
+        # Create standard note object
         note = FreeformNote.objects.create(
             user=request.user.profile,
             title=title,
@@ -53,8 +54,14 @@ def note_create_api_view(request, *args, **kwargs):
 ]
         )
         return Response(FreeformNoteSerializer(note).data, status=201)
-    else:
+    elif version == 'CORN':
+        # Create Cornell note object
         pass
+    elif version == 'FREE':
+        # Create Holistic note object
+        pass
+    else:
+        return Response({'message': 'Invalid note type'}, status=400)
 
 
 @api_view(['GET'])
