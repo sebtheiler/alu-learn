@@ -9,6 +9,7 @@ import {Element, Leaf} from './editor';
 export function StandardNoteViewer(props) {
   const {noteId} = props;
   const [note, setNote] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   const [noteDidSet, setNoteDidSet] = useState(false);
   const [value, setValue] = useState([
     {
@@ -24,7 +25,9 @@ export function StandardNoteViewer(props) {
       apiNoteDetail(noteId, (response, status) => {
         if (status === 200) {
           setNote(response);
-          setValue(JSON.parse(response.content));
+          setValue(response.content instanceof String ? JSON.parse(response.content) : response.content);
+        } else if (status === 404) {
+          setNotFound(true);
         } else {
           // Error getting note detail
           errorHandler(response, status, 6003);
@@ -35,6 +38,10 @@ export function StandardNoteViewer(props) {
 
   const renderElement = useCallback(props => <Element {...props} />, []);
   const renderLeaf = useCallback(props => <Leaf {...props} />, []);
+
+  if (notFound) {
+    return <p className='text-center'>Note not found</p>
+  };
 
   return (
     <div className='container mt-5'>

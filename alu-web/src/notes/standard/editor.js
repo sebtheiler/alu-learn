@@ -45,7 +45,7 @@ export function StandardNoteEditor(props) {
       apiNoteDetail(noteId, (response, status) => {
         if (status === 200) {
           setNote(response);
-          setValue(JSON.parse(response.content));
+          setValue(response.content instanceof String ? JSON.parse(response.content) : response.content);
         } else if (status === 404) {
           setNotFound(true);
         } else {

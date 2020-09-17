@@ -5,6 +5,7 @@ from rest_framework.decorators import (api_view, authentication_classes,
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+import json
 from ..models import Note, FreeformNote
 from ..serializers import FreeformNoteSerializer, NoteSerializer
 
@@ -95,7 +96,8 @@ def note_update_api_view(request, note_id, *args, **kwargs):
     """
     try:
         note = FreeformNote.objects.get(pk=note_id)
-        note.content = request.data.get('new_content', note.content)
+        content = request.data.get('new_content', note.content)
+        note.content = content if isinstance(content, dict) else json.loads(content)
         title = request.data.get('new_title')
         if title:
             # Check if title is taken
