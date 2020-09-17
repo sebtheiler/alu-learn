@@ -1,6 +1,6 @@
 import React, {useCallback, useMemo, useState, useEffect} from 'react';
 import {createEditor, Editor, Transforms, Range} from 'slate';
-import {Slate, Editable, withReact, useSlate} from 'slate-react';
+import {Slate, Editable, withReact, useSlate, useFocused, useSelected} from 'slate-react';
 import {withHistory} from 'slate-history';
 import {errorHandler, useInterval} from '../../utils';
 import {Button, ButtonGroup, OverlayTrigger, Tooltip} from 'react-bootstrap';
@@ -8,6 +8,7 @@ import isHotKey from 'is-hotkey';
 import isUrl from 'is-url'
 import {apiNoteDelete, apiNoteDetail, apiNoteUpdate} from '../../lookup';
 import {DeleteModal} from '../buttons';
+import imageExtensions from 'image-extensions';
 
 const HOTKEYS = {
   'mod+b': 'bold',
@@ -35,7 +36,7 @@ export function StandardNoteEditor(props) {
   const [didTypeRecently, setDidTypeRecently] = useState(false);
   const [areChanges, setAreChanges] = useState(false);
   const editor = useMemo(
-    () => withLinks(withHistory(withReact(createEditor()))),
+    () => withImages(withLinks(withHistory(withReact(createEditor())))),
     []
   );
   
@@ -121,6 +122,7 @@ export function StandardNoteEditor(props) {
             <MarkButton format='strikethrough' label='Strikethrough' />
             <MarkButton format='code' label='Code' />
             <LinkButton />
+            <ImageButton />
             <span className='mx-1' />
             <BlockButton format='heading-one' label='H1' />
             <BlockButton format='heading-two' label='H2' />
@@ -323,7 +325,76 @@ const LinkButton = () => {
   );
 };
 
-export const Element = ({ attributes, children, element }) => {
+const withImages = editor => {
+  const { insertData, isVoid } = editor;
+
+  editor.isVoid = element => {
+    return element.type === 'image' ? true: isVoid(element);
+  };
+
+  editor.insertData = data => {
+    const text = data.getData('text/plain');
+    const { files } = data;
+
+    if (files && files.length > 0) {
+      for (const file of files) {
+        const reader = new FileReader();
+        const [mime] = file.type.split('/');
+
+        if (mime === 'image') {
+          reader.addEventListener('load', () => {
+            const url = reader.result;
+            insertImage(editor, url);
+          });
+
+          reader.readAsDataURL(file);
+        };
+      };
+    } else if (isImageUrl(text)) {
+      insertImage(editor, text);
+    } else {
+      insertData(text);
+    };
+  };
+
+  return editor;
+};
+
+
+const isImageUrl = url => {
+  if (!url) return false;
+  if (!isUrl(url)) return false;
+  const ext = new URL(url).pathname.split('.').pop();
+  return imageExtensions.includes(ext);
+};
+
+const insertImage = (editor, url) => {
+  const text = { text: '' };
+  const image = { type: 'image', url, children: [text] };
+  Transforms.insertNodes(editor, image);
+};
+
+const ImageButton = () => {
+  const editor = useSlate();
+
+  return (
+    <Button
+      variant='outline-primary'
+      onClick={event => {
+        event.preventDefault();
+        const url = window.prompt('Enter the URL of the image:');
+        if (!url) return;
+        insertImage(editor, url);
+      }}
+    >
+      Image
+    </Button>
+  );
+};
+
+export const Element = (props) => {
+  const { attributes, children, element } = props;
+
   switch (element.type) {
     case 'block-quote':
       return <blockquote {...attributes}>{children}</blockquote>
@@ -338,26 +409,54 @@ export const Element = ({ attributes, children, element }) => {
     case 'numbered-list':
       return <ol {...attributes}>{children}</ol>
     case 'link':
-      return (
-        <OverlayTrigger
-          overlay={
-            <Tooltip className={'button-tooltip text-center'}>
-              <a href={element.url} style={{ color: 'white' }}>
-                {element.url.length > 50 ? element.url.substring(0, 15) + '   ...   ' + element.url.substring(element.url.length - 10, element.url.length) : element.url}
-              </a>
-            </Tooltip>
-          }
-          placement='top'
-          delay={{ show: 20, hide: 550 }}
-        >
-          <a {...attributes} href={element.url}>
-            {children}
-          </a>
-        </OverlayTrigger>
-      );
+      return <LinkElement {...props} />
+    case 'image':
+      return <ImageElement {...props} />
     default:
       return <p {...attributes}>{children}</p>
   };
+};
+
+const LinkElement = ({ attributes, children, element }) => {
+  return (
+    <OverlayTrigger
+      overlay={
+        <Tooltip className={'button-tooltip text-center'}>
+          <a href={element.url} style={{ color: 'white' }}>
+            {element.url.length > 50 ? element.url.substring(0, 15) + '   ...   ' + element.url.substring(element.url.length - 10, element.url.length) : element.url}
+          </a>
+        </Tooltip>
+      }
+      placement='top'
+      delay={{ show: 20, hide: 550 }}
+    >
+      <a {...attributes} href={element.url}>
+        {children}
+      </a>
+    </OverlayTrigger>
+  );
+};
+
+const ImageElement = ({ attributes, children, element }) => {
+  const selected = useSelected();
+  const focused = useFocused();
+  return (
+    <div {...attributes}>
+      <div contentEditable={false}>
+        <img
+          src={element.url}
+          style={{
+            display: 'block',
+            maxWidth: '100%',
+            maxHeight: '20em',
+            boxShadow: `${selected && focused ? '0 0 0 3px #B4D5FF' : 'none'}`,
+          }}
+          alt=''
+        />
+      </div>
+      {children}
+    </div>
+  );
 };
 
 export const Leaf = ({ attributes, children, leaf }) => {
