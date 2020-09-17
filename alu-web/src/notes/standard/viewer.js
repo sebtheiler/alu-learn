@@ -4,7 +4,7 @@ import {Slate, Editable, withReact} from 'slate-react';
 import {errorHandler} from '../../utils';
 import {Button} from 'react-bootstrap';
 import {apiNoteDetail} from '../../lookup';
-import {Element, Leaf} from './editor';
+import {Element, Leaf} from '../editor';
 
 export function StandardNoteViewer(props) {
   const {noteId} = props;
