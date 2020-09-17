@@ -33,7 +33,7 @@ export const withImages = editor => {
     } else if (isImageUrl(text)) {
       insertImage(editor, text);
     } else {
-      insertData(text);
+      insertData(data);
     };
   };
 

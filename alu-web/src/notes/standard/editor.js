@@ -6,12 +6,6 @@ import {apiNoteDelete, apiNoteDetail, apiNoteUpdate} from '../../lookup';
 import {DeleteModal} from '../buttons';
 import {createFullEditor, EditorButtons, FullEditor} from '../editor';
 
-import {createEditor} from 'slate';
-import {withReact} from 'slate-react';
-import {withHistory} from 'slate-history';
-import {withLinks} from '../editor/links';
-import {withImages} from '../editor/images';
-
 export function StandardNoteEditor(props) {
   const {noteId} = props;
   
@@ -27,7 +21,7 @@ export function StandardNoteEditor(props) {
   const [didTypeRecently, setDidTypeRecently] = useState(false);
   const [areChanges, setAreChanges] = useState(false);
   const editor = useMemo(
-    () => withImages(withLinks(withHistory(withReact(createEditor())))),
+    () => createFullEditor(),
     []
   );
   
