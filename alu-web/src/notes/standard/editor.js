@@ -89,10 +89,13 @@ export function StandardNoteEditor(props) {
 
   return (
     <div className='container mt-5'>
-      <h1>Taking Notes in "{note.title}"</h1>
+      <h1>Taking Notes in "{note ? note.title : 'Loading...'}"</h1>
       <p className='text-secondary'>
         {areChanges ? 'Saving...' : 'Saved'}
       </p>
+      <Button href={`/notes/study/${noteId}/`} className='mb-3'>
+        Study
+      </Button>
       <div id='note-text-editor'>
         <Slate
           editor={editor}

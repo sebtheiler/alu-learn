@@ -12,3 +12,9 @@ def notes_editor_view(request, note_id, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
     return render(request, 'notes/editor.html', status=200, context={'note_id': note_id})
+
+# Shows a note's contents without the ability to edit
+def notes_viewer_view(request, note_id, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    return render(request, 'notes/viewer.html', status=200, context={'note_id': note_id})
