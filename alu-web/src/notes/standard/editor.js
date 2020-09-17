@@ -44,7 +44,6 @@ export function StandardNoteEditor(props) {
       setNoteDidSet(true);
       apiNoteDetail(noteId, (response, status) => {
         if (status === 200) {
-          console.log(response)
           setNote(response);
           setValue(JSON.parse(response.content));
         } else if (status === 404) {
@@ -90,7 +89,7 @@ export function StandardNoteEditor(props) {
 
   return (
     <div className='container mt-5'>
-      <h1>Taking Notes</h1>
+      <h1>Taking Notes in "{note.title}"</h1>
       <p className='text-secondary'>
         {areChanges ? 'Saving...' : 'Saved'}
       </p>
@@ -204,7 +203,7 @@ const isMarkActive = (editor, format) => {
   return marks ? marks[format] === true : false;
 };
 
-const Element = ({ attributes, children, element }) => {
+export const Element = ({ attributes, children, element }) => {
   switch (element.type) {
     case 'block-quote':
       return <blockquote {...attributes}>{children}</blockquote>
@@ -223,7 +222,7 @@ const Element = ({ attributes, children, element }) => {
   };
 };
 
-const Leaf = ({ attributes, children, leaf }) => {
+export const Leaf = ({ attributes, children, leaf }) => {
   if (leaf.bold) {
     children = <strong>{children}</strong>
   };
