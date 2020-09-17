@@ -1,6 +1,7 @@
 import React, {useCallback, useMemo, useState, useEffect} from 'react';
 import {createEditor, Editor, Transforms} from 'slate';
 import {Slate, Editable, withReact, useSlate} from 'slate-react';
+import {withHistory} from 'slate-history';
 import {errorHandler, useInterval} from '../../utils';
 import {Button, ButtonGroup} from 'react-bootstrap';
 import isHotKey from 'is-hotkey';
@@ -32,7 +33,10 @@ export function StandardNoteEditor(props) {
   const [notFound, setNotFound] = useState(false);
   const [didTypeRecently, setDidTypeRecently] = useState(false);
   const [areChanges, setAreChanges] = useState(false);
-  const editor = useMemo(() => withReact(createEditor()), []);
+  const editor = useMemo(
+    () => withHistory(withReact(createEditor())),
+    []
+  );
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -121,6 +125,19 @@ export function StandardNoteEditor(props) {
             {/* <BlockButton format='block-quote' label='Quote' /> */}
             <BlockButton format='numbered-list' label='OL' />
             <BlockButton format='bulleted-list' label='UL' />
+            <span className='mx-1' />
+            <Button
+              variant='outline-primary'
+              onClick={() => editor.undo()}
+            >
+              Undo
+            </Button>
+            <Button
+              variant='outline-primary'
+              onClick={() => editor.redo()}
+            >
+              Redo
+            </Button>
             <span className='mx-1' />
             <Button
               variant='outline-primary'
