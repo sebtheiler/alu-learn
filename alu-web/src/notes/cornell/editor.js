@@ -4,18 +4,29 @@ import {Slate} from 'slate-react';
 import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
 import './editor.css';
 
+const basicValue = [
+  {
+    "type": "paragraph",
+    "children": [
+      {
+        "text": "Text..."
+      }
+    ]
+  }
+]
+
 export function CornellNoteEditor(props) {
   const {initialValue, isViewing, onChangeCallback, saveHandler, didTypeCallback} = props;
   const [sections, setSections] = useState([
-    { cue: "Cue #1", content: "Note #1" },
-    { cue: "Cue #2", content: "Note #2" },
-    { cue: "Cue #3", content: "Note #3" },
-    { cue: "Cue #4", content: "Note #4" },
-    { cue: "Cue #5", content: "Note #5" },
+    { cue: basicValue, content: basicValue },
+    { cue: basicValue, content: basicValue },
+    { cue: basicValue, content: basicValue },
+    { cue: basicValue, content: basicValue },
+    { cue: basicValue, content: basicValue },
   ]);
 
-  // const [value, setValue] = useState(initialValue);
-  const editor = useMemo(
+  const [summaryValue, setSummaryValue] = useState(basicValue);
+  const summaryEditor = useMemo(
     () => createFullEditor(),
     []
   );
@@ -29,51 +40,95 @@ export function CornellNoteEditor(props) {
         </tr>
       </thead>
       <tbody>
-        {sections.map(({ cue, content }, index) => { return (
+        {sections.map((value, index) => 
           <tr key={`section-${index}`}>
-            <td className='cue'>{cue}</td>
-            <td className='content'>{content}</td>
+            <CornellSection initialValue={value} />
           </tr>
-        )})}
+        )}
         <tr>
           <td colSpan='2' className='summary'>
             <Button onClick={event => {
               event.preventDefault();
               setSections([...sections, {
-                cue: 'New Section', content: 'Notes...'
+                cue: basicValue, content: basicValue
               }]);
-            }}>
+            }}
+            className='m-3'
+            >
               Create new Section
             </Button>
           </td>
         </tr>
         <tr>
           <td colSpan='2' className='summary'>
-            Summary
+            <Slate
+              editor={summaryEditor}
+              value={summaryValue}
+              onChange={newValue => {
+                setSummaryValue(newValue);
+              }}
+            >
+              <FullEditor
+                editor={summaryEditor}
+                didTypeCallback={() => {}}
+                styleOptions={{ showBorder: false, minHeight: '250px' }}
+              />
+            </Slate>
           </td>
         </tr>
       </tbody>
     </table>
-    // <Slate
-    //   editor={editor}
-    //   value={value}
-    //   onChange={newValue => {
-    //     setValue(newValue);
-    //     onChangeCallback(newValue);
-    //   }}
-    // >
-    //   {!isViewing &&
-    //     <EditorButtons
-    //       editor={editor}
-    //       saveHandler={saveHandler}
-    //     />
-    //   }
-    //   <hr />
-    //   <FullEditor
-    //     editor={editor}
-    //     readOnly={isViewing}
-    //     didTypeCallback={didTypeCallback}
-    //   />
-    // </Slate>
   );
+};
+
+
+function CornellSection(props) {
+  const {initialValue} = props;
+
+  const [cueValue, setCueValue] = useState(initialValue.cue);
+  const cueEditor = useMemo(
+    () => createFullEditor(),
+    []
+  );
+
+  const [contentValue, setContentValue] = useState(initialValue.content);
+  const contentEditor = useMemo(
+    () => createFullEditor(),
+    []
+  );
+
+  return (<>
+    <td className='cue'>
+      <Slate
+        editor={cueEditor}
+        value={cueValue}
+        onChange={newValue => {
+          setCueValue(newValue);
+          // onChangeCallback(newValue);
+        }}
+      >
+        <FullEditor
+          editor={cueEditor}
+          // readOnly={isViewing}
+          didTypeCallback={() => {}}
+          styleOptions={{ showBorder: false, minHeight: '175px' }}
+        />
+      </Slate>
+    </td>
+    <td className='content'>
+      <Slate
+        editor={contentEditor}
+        value={contentValue}
+        onChange={newValue => {
+          setContentValue(newValue);
+        }}
+      >
+        <FullEditor
+          editor={contentEditor}
+          didTypeCallback={() => {}}
+          styleOptions={{ showBorder: false, minHeight: '175px' }}
+        />
+      </Slate>
+    </td>
+  </>);
 };

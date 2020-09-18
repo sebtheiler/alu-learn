@@ -25,7 +25,8 @@ const HOTKEYS = {
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
 export function FullEditor(props) {
-  const {editor, didTypeCallback, readOnly} = props;
+  const {editor, didTypeCallback, readOnly, styleOptions} = props;
+  const {minHeight, showBorder} = styleOptions ? styleOptions : {};
 
   const renderElement = useCallback(props => <Element {...props} />, []);
   const renderLeaf = useCallback(props => <Leaf {...props} />, []);
@@ -50,10 +51,10 @@ export function FullEditor(props) {
         };
       }}
       style={{
-        borderStyle: 'dashed',
+        borderStyle: showBorder ? 'dashed' : 'none',
         borderWidth: '1px',
         padding: '20px',
-        minHeight: '500px',
+        minHeight: minHeight ? minHeight : '500px',
         overflowY: 'auto',
         lineHeight: 1.6,
       }}
