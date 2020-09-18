@@ -31,7 +31,7 @@ class FreeformNoteSerializer(serializers.ModelSerializer):
         ]
 
     def get_serializer_name(self, obj):
-        return 'note-freeform'
+        return 'note-standard'
 
 
 class CornellNoteSectionSerializer(serializers.ModelSerializer):

@@ -8,6 +8,7 @@ import {StandardNoteEditor} from './standard';
 
 export function NoteEditor(props) {
   const {noteId} = props;
+  const isViewing = props.isViewing instanceof String ? props.isViewing === 'true' : props.isViewing;
 
   const [initialValue, setInitialValue] = useState(null);
   const [valueToSave, setValueToSave] = useState(null);
@@ -69,32 +70,50 @@ export function NoteEditor(props) {
     return <p className='text-center'>Note not found</p>
   };
 
+  const renderEditor = () => {
+    switch (note.serializer_name) {
+      case 'note-standard':
+        return (
+          <StandardNoteEditor
+            initialValue={initialValue}
+            isViewing={isViewing}
+            onChangeCallback={newValue => {
+              setValueToSave(newValue);
+              window.onbeforeunload = confirmExit;
+            }}
+            saveHandler={event => {
+              event.preventDefault();
+              sendSaveApiRequest();
+            }}
+            didTypeCallback={() => {
+              setDidTypeRecently(true);
+              setAreChanges(true);
+            }}
+          />
+        );
+      default:
+        return <p>This note type isn't recognized.</p>;
+    };
+  };
+
   return (
     <div className='container mt-5'>
-      <h1>Taking Notes in "{note ? note.title : 'Loading...'}"</h1>
-      <p className='text-secondary'>
-        {areChanges ? 'Saving...' : 'Saved'}
-      </p>
-      <Button href={`/notes/study/${noteId}/`} className='mb-3'>
-        Study
-      </Button>
-      {initialValue ? <div id='note-text-editor'>
-        <StandardNoteEditor
-          initialValue={initialValue}
-          readOnly={!noteDidSet}
-          onChangeCallback={newValue => {
-            setValueToSave(newValue);
-            window.onbeforeunload = confirmExit;
-          }}
-          saveHandler={event => {
-            event.preventDefault();
-            sendSaveApiRequest();
-          }}
-          didTypeCallback={() => {
-            setDidTypeRecently(true);
-            setAreChanges(true);
-          }}
-        />
+      {isViewing ? <>
+        <h1>Studying "{note ? note.title : 'Loading...'}"</h1>
+        <Button href={`/notes/edit/${noteId}/`}>
+          Edit
+        </Button>
+      </> : <>
+        <h1>Taking Notes in "{note ? note.title : 'Loading...'}"</h1>
+        <p className='text-secondary'>
+          {areChanges ? 'Saving...' : 'Saved'}
+        </p>
+        <Button href={`/notes/study/${noteId}/`} className='mb-3'>
+          Study
+        </Button>
+      </>}
+      {initialValue ? <div id='note-editor'>
+        {renderEditor()}
       </div> : <p>Loading...</p>}
       <Button
         variant='danger'

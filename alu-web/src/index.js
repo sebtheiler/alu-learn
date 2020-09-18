@@ -10,7 +10,7 @@ import {NotificationComponent} from './profiles/notifications';
 import {ExploreComponent, DeckSearchComponent} from './explore';
 import {LandingComponent} from './landing';
 import {HomeComponent, NavbarComponent, ContactUs} from './home';
-import {NoteEditor, StandardNoteViewer, NotesHomeList} from './notes';
+import {NoteEditor, NotesHomeList} from './notes';
 
 const e = React.createElement;
 
@@ -112,11 +112,6 @@ if (noteEditorElement) {
 const notesHomeElement = document.getElementById('notes-home');
 if (notesHomeElement) {
   ReactDOM.render(e(NotesHomeList, notesHomeElement.dataset), notesHomeElement);
-};
-
-const standardNoteViewerElement = document.getElementById('standard-note-viewer');
-if (standardNoteViewerElement) {
-  ReactDOM.render(e(StandardNoteViewer, standardNoteViewerElement.dataset), standardNoteViewerElement);
 };
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

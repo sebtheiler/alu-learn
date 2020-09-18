@@ -99,7 +99,7 @@ int(hexadecimal_string, 16)
 6000: Error getting note detail through apiNoteDetail in alu-web/src/notes/standard/editor.js
 6001: Error updating note through apiNoteUpdate in alu-web/src/notes/standard/editor.js
 6002: Error getting notes home through apiNoteHome in alu-web/src/notes/home.js
-6003: Error getting note detail through apiNoteDetail in alu-web/src/notes/standard/viewer.js
+6003: 
 6004: Error creating note through apiNoteCreate in alu-web/src/notes/buttons.js
 6005: Error deleting note through apiNoteDelete in alu-web/src/notes/buttons.js
 */
