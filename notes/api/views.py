@@ -72,6 +72,7 @@ def note_create_api_view(request, *args, **kwargs):
   }
 ]
         )
+        return Response(CornellNoteSerializer(note).data, status=201)
     elif version == 'FREE':
         # Create Holistic note object
         pass

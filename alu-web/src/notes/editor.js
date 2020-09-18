@@ -5,6 +5,7 @@ import {apiNoteDelete, apiNoteDetail, apiNoteUpdate} from '../lookup';
 import {DeleteModal} from './buttons';
 
 import {StandardNoteEditor} from './standard';
+import {CornellNoteEditor} from './cornell';
 
 export function NoteEditor(props) {
   const {noteId} = props;
@@ -91,6 +92,13 @@ export function NoteEditor(props) {
             }}
           />
         );
+      case 'note-cornell':
+        console.log('cornell')
+        return (
+          <CornellNoteEditor
+
+          />
+        );
       default:
         return <p>This note type isn't recognized.</p>;
     };
@@ -112,7 +120,7 @@ export function NoteEditor(props) {
           Study
         </Button>
       </>}
-      {initialValue ? <div id='note-editor'>
+      {initialValue !== null ? <div id='note-editor'>
         {renderEditor()}
       </div> : <p>Loading...</p>}
       <Button
