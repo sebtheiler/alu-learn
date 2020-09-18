@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 import json
-from ..models import Note, FreeformNote
-from ..serializers import FreeformNoteSerializer, NoteSerializer
+from ..models import Note, FreeformNote, CornellNote, CornellNoteSection
+from ..serializers import FreeformNoteSerializer, NoteSerializer, CornellNoteSerializer
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -17,7 +17,7 @@ def note_create_api_view(request, *args, **kwargs):
 
     Required information:
         `title`: (Data) Title of the new note
-        `version`: (Data) Type of note to create. Either: 'freeform' or 'cornell'
+        `version`: (Data) Type of note to create. Either: 'STND' or 'CORN'
 
     Possible errors:
         Unspecified title/version: 400, You must specify a title and version
@@ -56,8 +56,22 @@ def note_create_api_view(request, *args, **kwargs):
         )
         return Response(FreeformNoteSerializer(note).data, status=201)
     elif version == 'CORN':
-        # Create Cornell note object
-        pass
+        # Create Cornell note object/
+        note = CornellNote.objects.create(
+            user=request.user.profile,
+            title=title,
+            summary=
+[
+  {
+    "type": "paragraph",
+    "children": [
+      {
+        "text": "Summary..."
+      }
+    ]
+  }
+]
+        )
     elif version == 'FREE':
         # Create Holistic note object
         pass
@@ -75,10 +89,14 @@ def note_detail_api_view(request, note_id, *args, **kwargs):
         `note_id`: (URL) ID of the note to return
     """
     try:
-        note = FreeformNote.objects.get(pk=note_id)
+        note = FreeformNote.objects.get(pk=note_id, user=request.user.profile)
         return Response(FreeformNoteSerializer(note).data, status=200)
     except ObjectDoesNotExist:
-        return Response({'message': 'Note not found'}, status=404)
+        try:
+            note = CornellNote.objects.get(pk=note_id, user=request.user.profile)
+            return Response(CornellNoteSerializer(note).data, status=200)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Note not found'}, status=404)
 
 
 @api_view(['POST'])
@@ -91,11 +109,11 @@ def note_update_api_view(request, note_id, *args, **kwargs):
         `note_id`: (URL) ID of the note to update
         `new_title`: (Data): New title of the note
         `new_content`: (Data):
-            If the note is freeform, then this is one object
-            If the note is cornell, this should be ...
+            If the note is freeform, then this is one object with the new rich JSON content
+            If the note is cornell, this should be a list of sections with cue and content attributes
     """
     try:
-        note = FreeformNote.objects.get(pk=note_id)
+        note = FreeformNote.objects.get(pk=note_id, user=request.user.profile)
         content = request.data.get('new_content', note.content)
         note.content = content if isinstance(content, dict) else json.loads(content)
         title = request.data.get('new_title')
@@ -111,7 +129,54 @@ def note_update_api_view(request, note_id, *args, **kwargs):
         note.save()
         return Response(FreeformNoteSerializer(note).data, status=200)
     except ObjectDoesNotExist:
-        return Response({'message': 'Note not found'}, status=404)
+        try:
+            note = CornellNote.objects.get(pk=note_id, user=request.user.profile)
+            note.summary = request.data.get('summary', note.summary)
+
+            content = request.data.get('new_content')
+            if content is not None:
+                sections = note.sections.all()
+                for i, new_section in enumerate(content):
+                    try:
+                        # Update current section
+                        current_section = sections.get(section_number=i)
+                        old_cue, new_cue, = current_section.cue, new_section['cue']
+                        old_content, new_content, = current_section.content, new_section['content']
+
+                        if old_cue != new_cue and old_content != new_content:
+                            current_section.cue = new_cue
+                            current_section.content = new_content
+                            current_section.save()
+                    except ObjectDoesNotExist:
+                        # Create new section
+                        CornellNoteSection.objects.create(
+                            parent_note=note,
+                            cue=new_section['cue'],
+                            content=new_section['content'],
+                            section_number=i,
+                        )
+
+                # Delete extra sections
+                num_sections = sections.count()
+                if num_sections > len(content):
+                    sections.filter(pk__in=
+                        sections[num_sections - (num_sections - len(content)):]
+                    .values_list('pk')).delete()
+
+            title = request.data.get('new_title')
+            if title:
+                # Check if title is taken
+                try:
+                    Note.objects.get(user=request.user.profile, title=title)
+                    return Response({'message': 'Title is taken'}, status=400)
+                except ObjectDoesNotExist:
+                    pass
+                note.title = title
+
+            note.save()
+            return Response(CornellNoteSerializer(note).data, status=200)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Note not found'}, status=404)
 
 
 @api_view(['POST'])
@@ -124,7 +189,7 @@ def note_delete_api_view(request, note_id, *args, **kwargs):
         `note_id`: (URL) ID of the note to return
     """
     try:
-        Note.objects.get(pk=note_id).delete()
+        Note.objects.get(pk=note_id, user=request.user.profile).delete()
         return Response({'message': 'Deleted note successfully'}, status=200)
     except ObjectDoesNotExist:
         return Response({'message': 'Note not found'}, status=404)

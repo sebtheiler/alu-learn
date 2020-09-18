@@ -22,6 +22,10 @@ const randomTips = [
   'When creating cards, click the snowflake icon to "freeze" a field',
   'You can write MarkDown, LaTeX, and HTML when creating flashcards and deck descriptions',
   'You can import flashcards from other popular flashcard programs using the "import" feature',
+  'When taking notes, we recommend you disable spell checking, and focus more on the content than spelling and grammar',
+  'Turning off notifications when taking notes or attending class can help you focus and create better notes',
+  'Use the "Flashcard Search" feature to find flashcards',
+  'You can create a "filtered deck" out of flashcards with the "Flashcard Search" feature. This is useful if you are trying to study a specific topic you need extra help on.',
   // Random stuff
   '42 (forty-two) is the natural number that follows 41 and precedes 43.',
   'Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid of Giza.',
