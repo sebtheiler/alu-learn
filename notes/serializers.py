@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from profiles.serializers import MinifiedProfileSerializer
-from .models import FreeformNote
+from .models import FreeformNote, CornellNote, CornellNoteSection
 
 
 class NoteSerializer(serializers.ModelSerializer):
@@ -32,3 +32,29 @@ class FreeformNoteSerializer(serializers.ModelSerializer):
 
     def get_serializer_name(self, obj):
         return 'note-freeform'
+
+
+class CornellNoteSectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CornellNoteSection
+        fields = [
+            'cue',
+            'content',
+            'id',
+        ]
+
+
+class CornellNoteSerializer(serializers.ModelSerializer):
+    author = MinifiedProfileSerializer(source='user', read_only=True)
+    sections = CornellNoteSectionSerializer(many=True, read_only=True)
+    serializer_name = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = CornellNote
+        fields = NoteSerializer.Meta.fields + [
+            'sections',
+            'summary',
+        ]
+    
+    def get_serializer_name(self, obj):
+        return 'note-cornell'

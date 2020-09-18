@@ -12,3 +12,14 @@ class Note(models.Model):
 
 class FreeformNote(Note):
     content = JSONField()
+
+
+class CornellNote(Note):
+    summary = JSONField()
+
+
+class CornellNoteSection(models.Model):
+    parent_note = models.ForeignKey(CornellNote, on_delete=models.CASCADE, related_name='sections')
+    cue = JSONField()
+    content = JSONField()
+    section_number = models.PositiveSmallIntegerField() # counts from 0
