@@ -10,7 +10,7 @@ import {NotificationComponent} from './profiles/notifications';
 import {ExploreComponent, DeckSearchComponent} from './explore';
 import {LandingComponent} from './landing';
 import {HomeComponent, NavbarComponent, ContactUs} from './home';
-import {StandardNoteEditor, StandardNoteViewer, NotesHomeList} from './notes';
+import {NoteEditor, StandardNoteViewer, NotesHomeList} from './notes';
 
 const e = React.createElement;
 
@@ -104,9 +104,9 @@ if (contactElement) {
   ReactDOM.render(e(ContactUs, contactElement.dataset), contactElement);
 };
 
-const standardNoteEditorElement = document.getElementById('standard-note-editor');
-if (standardNoteEditorElement) {
-  ReactDOM.render(e(StandardNoteEditor, standardNoteEditorElement.dataset), standardNoteEditorElement);
+const noteEditorElement = document.getElementById('note-editor');
+if (noteEditorElement) {
+  ReactDOM.render(e(NoteEditor, noteEditorElement.dataset), noteEditorElement);
 };
 
 const notesHomeElement = document.getElementById('notes-home');
