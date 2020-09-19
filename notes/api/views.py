@@ -145,8 +145,8 @@ def note_update_api_view(request, note_id, *args, **kwargs):
                     try:
                         # Update current section
                         current_section = sections.get(section_number=i)
-                        old_cue, new_cue, = current_section.cue, new_section['cue']
-                        old_content, new_content, = current_section.content, new_section['content']
+                        old_cue, new_cue = current_section.cue, new_section['cue']
+                        old_content, new_content = current_section.content, new_section['content']
 
                         if old_cue != new_cue or old_content != new_content:
                             current_section.cue = new_cue

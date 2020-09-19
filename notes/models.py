@@ -23,3 +23,6 @@ class CornellNoteSection(models.Model):
     cue = JSONField()
     content = JSONField()
     section_number = models.PositiveSmallIntegerField() # counts from 0
+
+    class Meta:
+        ordering = ['section_number']

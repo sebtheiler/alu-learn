@@ -42,7 +42,7 @@ export function CornellNoteEditor(props) {
         // Index is removed
       ...sections.slice(index + 1, sections.length)];
       setSections(newSections);
-      document.body.click();
+      document.body.click(); // remove the popup
       updateAllSectionsCallback(newSections);
       didTypeCallback();
     };
@@ -177,6 +177,7 @@ function CornellSection(props) {
               border: 'none',
               float: 'right'
             }}
+            tabIndex='-1'
           >
             <i className='far fa-trash-alt fa-sm' style={{ padding: '0', color: '#dc3545' }} />
           </Button>
