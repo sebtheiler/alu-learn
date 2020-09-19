@@ -1,5 +1,5 @@
-import React, {useMemo, useState} from 'react';
-import { Button } from 'react-bootstrap';
+import React, {useMemo, useRef, useState} from 'react';
+import { Button, Overlay, OverlayTrigger, Popover } from 'react-bootstrap';
 import {Slate} from 'slate-react';
 import {createFullEditor, FullEditor} from '../editor-components';
 import './editor.css';
@@ -31,6 +31,19 @@ export function CornellNoteEditor(props) {
     });
   };
 
+  const deleteHandler = (index) => {
+    return (event) => {
+      event.preventDefault();
+      const newSections = [...sections.slice(0, index),
+        // Index is removed
+      ...sections.slice(index+1, sections.length)]
+      setSections(newSections);
+      document.body.click();
+      onChangeCallback(newSections);
+      didTypeCallback();
+    };
+  };
+
   return (
     <table>
       <thead>
@@ -39,6 +52,10 @@ export function CornellNoteEditor(props) {
           <th>Notes</th>
         </tr>
       </thead>
+      <colgroup>
+        <col style={{ width: '25%' }} />
+        <col style={{ width: '75%' }} />
+      </colgroup>
       <tbody>
         {sections.map((value, index) => 
           <tr key={`section-${index}`}>
@@ -47,6 +64,7 @@ export function CornellNoteEditor(props) {
               isViewing={isViewing}
               didTypeCallback={didTypeCallback}
               onChangeCallback={onChangeCallback}
+              deleteHandler={deleteHandler(index)}
               updateCue={newValue => {
                 setSections([...sections.slice(0, index),
                   {content: sections[index].content, cue: newValue},
@@ -102,7 +120,7 @@ export function CornellNoteEditor(props) {
 
 
 function CornellSection(props) {
-  const {value, updateContent, updateCue, didTypeCallback, onChangeCallback, isViewing} = props;
+  const {value, updateContent, updateCue, didTypeCallback, onChangeCallback, isViewing, deleteHandler} = props;
 
   const styleOptions = { showBorder: false, minHeight: '175px' };
   const cueEditor = useMemo(
@@ -112,6 +130,24 @@ function CornellSection(props) {
   const contentEditor = useMemo(
     () => createFullEditor(),
     []
+  );
+
+  const deletePopover = (
+    <Popover>
+      <Popover.Title as='h3'>Delete Section</Popover.Title>
+      <Popover.Content>
+        Please confirm that you want to delete this section. This action is IRREVERSIBLE.
+        Only continue if you are absolutely sure you do not want this section.
+        <Button
+          variant='danger'
+          className='mt-2'
+          onClick={deleteHandler}
+          block
+        >
+          Permanently Delete Section
+        </Button>
+      </Popover.Content>
+    </Popover>
   );
 
   return (<>
@@ -124,6 +160,18 @@ function CornellSection(props) {
           onChangeCallback();
         }}
       >
+        <OverlayTrigger trigger='click' placement='bottom' overlay={deletePopover} rootClose>
+          <Button
+            style={{
+              background: 'none',
+              border: 'none',
+              float: 'right'
+            }}
+          >
+            <i className='far fa-trash-alt fa-sm' style={{ padding: '0', color: '#dc3545' }} />
+          </Button>
+        </OverlayTrigger>
+        <br />
         <FullEditor
           editor={cueEditor}
           readOnly={isViewing}
