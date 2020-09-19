@@ -1,5 +1,5 @@
 import React, {useMemo, useState} from 'react';
-import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { Button, ButtonGroup, OverlayTrigger, Popover } from 'react-bootstrap';
 import {Slate} from 'slate-react';
 import {createFullEditor, FullEditor} from '../editor-components';
 import './editor.css';
@@ -70,7 +70,8 @@ export function CornellNoteEditor(props) {
               value={value}
               isViewing={isViewing}
               didTypeCallback={didTypeCallback}
-              // onChangeCallback={onChangeCallback}
+              index={index}
+              numSections={sections.length}
               deleteHandler={sectionDeleteHandler(index)}
               updateCue={newValue => {
                 const newSections = [...sections.slice(0, index),
@@ -86,6 +87,18 @@ export function CornellNoteEditor(props) {
                 setSections(newSections);
                 updateAllSectionsCallback(newSections);
               }}
+              moveUp={index !== 0 ? () => {
+                [sections[index-1], sections[index]] = [sections[index], sections[index-1]];
+                setSections(sections);
+                updateAllSectionsCallback(sections);
+                didTypeCallback();
+              } : undefined}
+              moveDown={index !== sections.length - 1 ? () => {
+                [sections[index+1], sections[index]] = [sections[index], sections[index+1]];
+                setSections(sections);
+                updateAllSectionsCallback(sections);
+                didTypeCallback();
+              } : undefined}
             />
           </tr>
         )}
@@ -131,7 +144,7 @@ export function CornellNoteEditor(props) {
 
 // This is used for rendering an individual "section" (cue and note) of the Cornell editor
 function CornellSection(props) {
-  const {value, updateContent, updateCue, didTypeCallback, isViewing, deleteHandler} = props;
+  const {value, moveUp, moveDown, updateContent, updateCue, didTypeCallback, isViewing, deleteHandler} = props;
 
   const styleOptions = { showBorder: false, minHeight: '175px' };
   const cueEditor = useMemo(
@@ -170,18 +183,42 @@ function CornellSection(props) {
           updateCue(newValue);
         }}
       >
-        {!isViewing && <OverlayTrigger trigger='click' placement='bottom' overlay={deletePopover} rootClose>
-          <Button
+        {!isViewing && <ButtonGroup style={{ float: 'right' }}>
+          {moveUp && <Button
             style={{
               background: 'none',
               border: 'none',
               float: 'right'
             }}
             tabIndex='-1'
+            onClick={moveUp}
           >
-            <i className='far fa-trash-alt fa-sm' style={{ padding: '0', color: '#dc3545' }} />
-          </Button>
-        </OverlayTrigger>}
+            <i className='fas fa-caret-up' style={{ padding: '0', color: '#001100' }} />
+          </Button>}
+          {moveDown && <Button
+            style={{
+              background: 'none',
+              border: 'none',
+              float: 'right',
+            }}
+            tabIndex='-1'
+            onClick={moveDown}
+          >
+            <i className='fas fa-caret-down' style={{ padding: '0', color: '#001100' }} />
+          </Button>}
+          <OverlayTrigger trigger='click' placement='bottom' overlay={deletePopover} rootClose>
+            <Button
+              style={{
+                background: 'none',
+                border: 'none',
+                float: 'right'
+              }}
+              tabIndex='-1'
+            >
+              <i className='far fa-trash-alt fa-sm' style={{ padding: '0', color: '#dc3545' }} />
+            </Button>
+          </OverlayTrigger>
+        </ButtonGroup>}
         <br />
         <FullEditor
           editor={cueEditor}
