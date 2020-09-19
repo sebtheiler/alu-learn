@@ -53,6 +53,7 @@ export function NoteEditor(props) {
   // Function for sending a request to the API for saving
   const sendSaveApiRequest = () => {
     if (areChanges && noteDidSet) {
+      console.log(valueToSave)
       setAreChanges(false);
       apiNoteUpdate(noteId, null, JSON.stringify(valueToSave), (response, status) => {
         if (status === 200) {
@@ -98,13 +99,9 @@ export function NoteEditor(props) {
 
     switch (note.serializer_name) {
       case 'note-standard':
-        return (
-          <StandardNoteEditor {...editorProps} />
-        );
+        return <StandardNoteEditor {...editorProps} />
       case 'note-cornell':
-        return (
-          <CornellNoteEditor {...editorProps} />
-        );
+        return <CornellNoteEditor {...editorProps} />
       default:
         return <p>This note type isn't recognized.</p>;
     };
@@ -114,7 +111,7 @@ export function NoteEditor(props) {
     <div className='container mt-5'>
       {isViewing ? <>
         <h1>Studying "{note ? note.title : 'Loading...'}"</h1>
-        <Button href={`/notes/edit/${noteId}/`}>
+        <Button href={`/notes/edit/${noteId}/`} className='mb-3'>
           Edit
         </Button>
       </> : <>
