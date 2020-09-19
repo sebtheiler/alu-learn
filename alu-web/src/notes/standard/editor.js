@@ -3,7 +3,7 @@ import {Slate} from 'slate-react';
 import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
 
 export function StandardNoteEditor(props) {
-  const {initialValue, isViewing, onChangeCallback, saveHandler, didTypeCallback} = props;
+  const {initialValue, isViewing, updateValueToSave, saveHandler, didTypeCallback} = props;
 
   const [value, setValue] = useState(initialValue);
   const editor = useMemo(
@@ -17,7 +17,7 @@ export function StandardNoteEditor(props) {
       value={value}
       onChange={newValue => {
         setValue(newValue);
-        onChangeCallback(newValue);
+        updateValueToSave(newValue);
       }}
     >
       {!isViewing &&

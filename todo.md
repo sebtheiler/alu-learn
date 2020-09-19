@@ -174,3 +174,8 @@
 
 ### Sep 16
 - [ ] Spread the word
+
+
+TODO: some cornell things aren't saving
+check that creating new section works
+add deleting sections

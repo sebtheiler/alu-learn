@@ -32,7 +32,14 @@ export function NoteEditor(props) {
       apiNoteDetail(noteId, (response, status) => {
         if (status === 200) {
           setNote(response);
-          setInitialValue(response.content instanceof String ? JSON.parse(response.content) : response.content);
+          if (response.serializer_name === 'note-standard') {
+            setInitialValue(response.content instanceof String ? JSON.parse(response.content) : response.content);
+          } else if (response.serializer_name === 'note-cornell') {
+            setInitialValue({
+              sections: response.sections,
+              summary: response.summary,
+            });
+          };
         } else if (status === 404) {
           setNotFound(true);
         } else {
@@ -47,6 +54,7 @@ export function NoteEditor(props) {
   const sendSaveApiRequest = () => {
     if (areChanges && noteDidSet) {
       setAreChanges(false);
+      console.log(valueToSave)
       apiNoteUpdate(noteId, null, JSON.stringify(valueToSave), (response, status) => {
         if (status === 200) {
           window.onbeforeunload = undefined;
@@ -72,32 +80,31 @@ export function NoteEditor(props) {
   };
 
   const renderEditor = () => {
+    const editorProps = {
+      initialValue: initialValue,
+      isViewing: isViewing,
+      updateValueToSave: newValue => {
+        setValueToSave(newValue);
+        window.onbeforeunload = confirmExit;
+      },
+      saveHandler: event => {
+        event.preventDefault();
+        sendSaveApiRequest();
+      },
+      didTypeCallback: () => {
+        setDidTypeRecently(true);
+        setAreChanges(true);
+      },
+    };
+
     switch (note.serializer_name) {
       case 'note-standard':
         return (
-          <StandardNoteEditor
-            initialValue={initialValue}
-            isViewing={isViewing}
-            onChangeCallback={newValue => {
-              setValueToSave(newValue);
-              window.onbeforeunload = confirmExit;
-            }}
-            saveHandler={event => {
-              event.preventDefault();
-              sendSaveApiRequest();
-            }}
-            didTypeCallback={() => {
-              setDidTypeRecently(true);
-              setAreChanges(true);
-            }}
-          />
+          <StandardNoteEditor {...editorProps} />
         );
       case 'note-cornell':
-        console.log('cornell')
         return (
-          <CornellNoteEditor
-
-          />
+          <CornellNoteEditor {...editorProps} />
         );
       default:
         return <p>This note type isn't recognized.</p>;

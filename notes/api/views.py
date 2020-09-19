@@ -132,19 +132,23 @@ def note_update_api_view(request, note_id, *args, **kwargs):
     except ObjectDoesNotExist:
         try:
             note = CornellNote.objects.get(pk=note_id, user=request.user.profile)
-            note.summary = request.data.get('summary', note.summary)
 
             content = request.data.get('new_content')
+            content = content if isinstance(content, dict) else json.loads(content)
             if content is not None:
+                # Update summary
+                note.summary = content['summary'] if content['summary'] else note.summary
+
+                # Update sections
                 sections = note.sections.all()
-                for i, new_section in enumerate(content):
+                for i, new_section in enumerate(content['sections']):
                     try:
                         # Update current section
                         current_section = sections.get(section_number=i)
                         old_cue, new_cue, = current_section.cue, new_section['cue']
                         old_content, new_content, = current_section.content, new_section['content']
 
-                        if old_cue != new_cue and old_content != new_content:
+                        if old_cue != new_cue or old_content != new_content:
                             current_section.cue = new_cue
                             current_section.content = new_content
                             current_section.save()
@@ -159,9 +163,9 @@ def note_update_api_view(request, note_id, *args, **kwargs):
 
                 # Delete extra sections
                 num_sections = sections.count()
-                if num_sections > len(content):
+                if num_sections > len(content['sections']):
                     sections.filter(pk__in=
-                        sections[num_sections - (num_sections - len(content)):]
+                        sections[num_sections - (num_sections - len(content['sections'])):]
                     .values_list('pk')).delete()
 
             title = request.data.get('new_title')
