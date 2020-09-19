@@ -21,7 +21,7 @@ export function NoteEditor(props) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   function confirmExit() {
-    if (!areChanges) {
+    if (areChanges) {
       return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
     };
   };
@@ -54,7 +54,6 @@ export function NoteEditor(props) {
   const sendSaveApiRequest = () => {
     if (areChanges && noteDidSet) {
       setAreChanges(false);
-      console.log(valueToSave)
       apiNoteUpdate(noteId, null, JSON.stringify(valueToSave), (response, status) => {
         if (status === 200) {
           window.onbeforeunload = undefined;

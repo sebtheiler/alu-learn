@@ -24,9 +24,9 @@ export function CornellNoteEditor(props) {
     []
   );
 
-  const onChangeCallback = () => {
+  const onChangeCallback = (newSections) => {
     updateValueToSave({
-      sections: sections,
+      sections: newSections ? newSections : sections,
       summary: summaryValue,
     });
   };
@@ -64,9 +64,12 @@ export function CornellNoteEditor(props) {
           <td colSpan='2' className='summary'>
             <Button onClick={event => {
               event.preventDefault();
-              setSections([...sections, {
+              const newSections = [...sections, {
                 cue: basicValue, content: basicValue
-              }]);
+              }];
+              setSections(newSections);
+              onChangeCallback(newSections);
+              didTypeCallback();
             }}
             className='m-3'
             >
