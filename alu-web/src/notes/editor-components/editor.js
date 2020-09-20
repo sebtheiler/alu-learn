@@ -26,7 +26,7 @@ const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
 export function FullEditor(props) {
   const {editor, didTypeCallback, readOnly, styleOptions} = props;
-  const {minHeight, showBorder} = styleOptions ? styleOptions : {};
+  const {minHeight, showBorder} = styleOptions ? styleOptions : { showBorder: true };
 
   const renderElement = useCallback(props => <Element {...props} />, []);
   const renderLeaf = useCallback(props => <Leaf {...props} />, []);
@@ -51,10 +51,10 @@ export function FullEditor(props) {
         };
       }}
       style={{
-        borderStyle: showBorder ? 'dashed' : 'none',
+        borderStyle: showBorder ? 'solid' : 'none',
         borderWidth: '1px',
         padding: '20px',
-        minHeight: minHeight ? minHeight : '500px',
+        minHeight: minHeight ? minHeight : '600px',
         overflowY: 'auto',
         lineHeight: 1.6,
       }}

@@ -190,43 +190,45 @@ function CornellSection(props) {
           updateCue(newValue);
         }}
       >
-        {!isViewing && <ButtonGroup style={{ float: 'right' }}>
-          {moveUp && <Button
-            style={{
-              background: 'none',
-              border: 'none',
-              float: 'right'
-            }}
-            tabIndex='-1'
-            onClick={moveUp}
-          >
-            <i className='fas fa-caret-up' style={{ padding: '0', color: '#001100' }} />
-          </Button>}
-          {moveDown && <Button
-            style={{
-              background: 'none',
-              border: 'none',
-              float: 'right',
-            }}
-            tabIndex='-1'
-            onClick={moveDown}
-          >
-            <i className='fas fa-caret-down' style={{ padding: '0', color: '#001100' }} />
-          </Button>}
-          <OverlayTrigger trigger='click' placement='bottom' overlay={deletePopover} rootClose>
-            <Button
+        {!isViewing && <>
+          <ButtonGroup style={{ float: 'right' }}>
+            {moveUp && <Button
               style={{
                 background: 'none',
                 border: 'none',
                 float: 'right'
               }}
               tabIndex='-1'
+              onClick={moveUp}
             >
-              <i className='far fa-trash-alt fa-sm' style={{ padding: '0', color: '#dc3545' }} />
-            </Button>
-          </OverlayTrigger>
-        </ButtonGroup>}
-        <br />
+              <i className='fas fa-caret-up' style={{ padding: '0', color: '#001100' }} />
+            </Button>}
+            {moveDown && <Button
+              style={{
+                background: 'none',
+                border: 'none',
+                float: 'right',
+              }}
+              tabIndex='-1'
+              onClick={moveDown}
+            >
+              <i className='fas fa-caret-down' style={{ padding: '0', color: '#001100' }} />
+            </Button>}
+            <OverlayTrigger trigger='click' placement='bottom' overlay={deletePopover} rootClose>
+              <Button
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  float: 'right'
+                }}
+                tabIndex='-1'
+              >
+                <i className='far fa-trash-alt fa-sm' style={{ padding: '0', color: '#dc3545' }} />
+              </Button>
+            </OverlayTrigger>
+          </ButtonGroup>
+          <br />
+        </>}
         <FullEditor
           editor={cueEditor}
           readOnly={isViewing}
@@ -245,15 +247,18 @@ function CornellSection(props) {
       >
         {showButtons && <EditorButtons
           editor={contentEditor}
-          className='pl-2 pt-2'
+          className='pl-2 pt-2 mb-0'
         />}
-        <Button
-          className='float-right mt-2 mr-2'
-          onClick={() => setShowButtons(!showButtons)}
-          variant='light'
-        >
-          <i className='fas fa-bars fa-sm' />
-        </Button>
+        {!isViewing && <>
+          <Button
+            className='float-right mt-2 mr-2'
+            onClick={() => setShowButtons(!showButtons)}
+            variant='light'
+          >
+            <i className='fas fa-bars fa-sm' />
+          </Button>
+          <br />
+        </>}
         <FullEditor
           editor={contentEditor}
           readOnly={isViewing}

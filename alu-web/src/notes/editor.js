@@ -128,7 +128,7 @@ export function NoteEditor(props) {
       <Button
         variant='danger'
         onClick={event => {event.preventDefault(); setShowDeleteModal(true)}}
-        className='mt-3'
+        className='mt-3 mb-5'
       >
         Delete
       </Button>
