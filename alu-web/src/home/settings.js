@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Button, Form} from 'react-bootstrap';
-import { apiProfileDetail } from '../lookup';
+import { apiProfileDetail, apiProfileSettingsUpdate } from '../lookup';
 import { UserLink } from '../profiles';
 import { errorHandler, FormCheckbox } from '../utils';
 
@@ -15,6 +15,7 @@ export function SettingsPage(props) {
       setProfileDidSet(true);
       apiProfileDetail(username, (response, status) => {
         if (status === 200) {
+          console.log(response.settings.disable_all_tooltips)
           setProfile(response);
         } else {
           // Error getting profile in settings
@@ -26,11 +27,19 @@ export function SettingsPage(props) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // const form = event.target;
+    const form = event.target;
 
-    console.log(
-      // form.elements.
-    )
+    apiProfileSettingsUpdate(
+      form.elements.disableTooltips.checked,
+      (response, status) => {
+        if (status === 200) {
+          window.location.reload();
+        } else {
+          // Error updating profile
+          errorHandler(response, status, 3016);
+        };
+      },
+    );
   };
 
   if (!profile) {
@@ -48,7 +57,7 @@ export function SettingsPage(props) {
         <UserLink user={profile} showAllBadges noLink />
         <br />
         <p>
-          Your email: {profile.email} <br />
+          Your email: {profile.email_address} <br />
         </p>
         <ul>
           <li><a href='/settings/changeemail/'>
@@ -64,12 +73,14 @@ export function SettingsPage(props) {
       </Form.Group>
       <Form.Group>
         <Form.Label as='h3'>Misc.</Form.Label>
-        <FormCheckbox name='expertMode'>
+        <FormCheckbox name='disableTooltips' defaultChecked={profile.settings.disable_all_tooltips}>
           Disable all tooltips (not recommended for beginners)
         </FormCheckbox>
       </Form.Group>
       <Form.Group>
-        <Button type='submit' block>Save Changes</Button>
+        <Button type='submit' block>
+          Save Changes
+        </Button>
       </Form.Group>
     </Form>
   </>);

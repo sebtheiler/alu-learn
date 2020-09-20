@@ -190,6 +190,13 @@ export function apiProfileHistory(username, callback) {
   backendLookup('GET', `profiles/${username.toLowerCase()}/history/`, callback);
 };
 
+// Update's a profiles settings
+export function apiProfileSettingsUpdate(disableTooltips, callback) {
+  backendLookup('POST', 'pages/settings/', callback, {
+    disable_all_tooltips: disableTooltips,
+  });
+};
+
 // Send a friend request
 export function apiSendFriendReq(recipientUsername, callback) {
   backendLookup('POST', `profiles/${recipientUsername.toLowerCase()}/friendrequest/`, callback);
