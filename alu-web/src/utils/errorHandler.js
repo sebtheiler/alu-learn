@@ -82,6 +82,7 @@ int(hexadecimal_string, 16)
 3012: Error logging out the user through apiProfileLogout in alu-web/src/home/navbar.js
 3013: Error getting user history through apiProfileHistory in alu-web/src/home/home.js
 3014: Error handling next set of notifications (pagination) through apiNotificationList in alu-web/src/profiles/notifications/components.js
+3015: Error getting profile in settings through apiProfiuleDetail in alu-web/src/home/settings.js
 
 === Misc ===
 4000: Error submitting feedback through apiFeedbackSubmit in alu-web/src/home/contactus.js

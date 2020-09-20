@@ -10,8 +10,13 @@ import {
   ContactUs,
 } from './contactus';
 
+import {
+  SettingsPage,
+} from './settings';
+
 export {
   HomeComponent,
   NavbarComponent,
   ContactUs,
+  SettingsPage,
 };
