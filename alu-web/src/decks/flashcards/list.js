@@ -16,6 +16,7 @@ export function FlashCardsList(props) {
   const [flashcards, setFlashCards] = useState([]);
   const [flashcardsDidSet, setFlashCardsDidSet] = useState(false);
   const [nextUrl, setNextUrl] = useState(null);
+  const [flashcardsLoading, setFlashCardsLoading] = useState(false);
 
   useEffect(() => {
     // Re-renders flashcardList whenever updated, if specified
@@ -64,7 +65,8 @@ export function FlashCardsList(props) {
   // Handle next set of flashcards (pagination)
   const handleLoadNext = (event) => {
     event.preventDefault();
-    if (nextUrl !== null) {
+    setFlashCardsLoading(true);
+    if (nextUrl !== null && flashcardsLoading === false) {
       apiDeckFlashcards(deckId, {}, (response, status) => {
         if (status === 200) {
           setNextUrl(response.next);
@@ -74,6 +76,7 @@ export function FlashCardsList(props) {
           // Error handling next set of flashcards (pagination)
           errorHandler(response, status, 1018);
         };
+        setFlashCardsLoading(false);
       }, nextUrl);
     };
   };
@@ -107,7 +110,7 @@ export function FlashCardsList(props) {
           block
           className='mb-5'
         >
-          Load more flashcards
+          {flashcardsLoading ? 'Loading...' : 'Load more Flashcards'}
         </Button>
       }
     </div>
