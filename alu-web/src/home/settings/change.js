@@ -81,7 +81,7 @@ export function ChangePasswordEmail(props) {
           <small className='text-danger' id='passwordsDoNotMatch'></small>
         </Form.Group>
       </> : <>
-        {/* TODO: Email change field */}
+        {/* Email change field */}
       </>}
       <Button type='submit' className='my-5' block>Update</Button>
     </Form>

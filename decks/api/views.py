@@ -239,7 +239,7 @@ def deck_home_view(request, *args, **kwargs):
     Returns:
         A list of decks (DeckSerializer)
     """
-    home_decks = Deck.objects.home(request.user)
+    home_decks = Deck.objects.filter(user__username=request.user.username).order_by('title')
     home_cssms = CustomStudySessionManager.objects.filter(user=request.user.profile)
     home_list = list(chain(home_decks, home_cssms))
 
@@ -739,7 +739,6 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
         SSM does not exist: 404, SSM does not exist
     """
     try:
-        # TODO: Must be some way to optimize this...
         ssm = DeckStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
     except ObjectDoesNotExist:
         try:

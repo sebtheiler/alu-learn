@@ -109,8 +109,8 @@
   - [X] Freeze
 
 ### Sep 12
-- [X] Clean up TODOs
-  - [X] Create new TODOs
+- [X] Clean up TO-DOs
+  - [X] Create new TO-DOs
 - [X] Paginate flashcards list
   - [X] API
   - [x] React
@@ -174,8 +174,3 @@
 
 ### Sep 16
 - [ ] Spread the word
-
-
-TODO: some cornell things aren't saving
-check that creating new section works
-add deleting sections

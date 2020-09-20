@@ -6,26 +6,6 @@ from profiles.models import Profile
 # Create your models here.
 User = settings.AUTH_USER_MODEL
 
-# TODO: remove this class
-class DeckQuerySet(models.QuerySet):
-    # Get all decks owned by a username (case insensitive)
-    def by_username(self, username):
-        return self.filter(user__username__iexact=username)
-
-    # Get the home deck page for a user
-    def home(self, user):
-        # Order alphabetically, not by order added
-        home_qs = self.filter(user__username=user.username).order_by('title')
-        return home_qs
-
-
-class DeckManager(models.Manager):
-    def get_queryset(self, *args, **kwargs):
-        return DeckQuerySet(self.model, using=self._db)
-
-    def home(self, user):
-        return self.get_queryset().home(user)
-
 
 class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
@@ -43,7 +23,6 @@ class Deck(models.Model):
         default='PRIVATE',
     )
 
-    objects = DeckManager()
     class Meta:
         ordering = ['-id']
 

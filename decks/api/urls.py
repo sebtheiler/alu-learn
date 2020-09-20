@@ -26,6 +26,6 @@ urlpatterns = [
     path('ssm/<int:ssm_id>/delete/', views.ssm_delete_view),
     path('ssm/<int:ssm_id>/flashcards/', views.ssm_flashcards_view),
     path('ssm/<int:ssm_id>/flashcards/<int:flashcard_id>/update/', views.ssm_flashcard_update_view),
-    path('flashcards/search/', views.flashcard_search_view), # TODO: PAGINATE
+    path('flashcards/search/', views.flashcard_search_view),
     path('home/', views.deck_home_view),
 ]
