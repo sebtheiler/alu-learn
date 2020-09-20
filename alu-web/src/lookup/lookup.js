@@ -103,7 +103,7 @@ export function apiDeckSharedList(username, callback) {
 // Gets a page of decks from the API
 export function apiDeckHome(callback, nextUrl) {
   let endpoint = 'decks/home/';
-  if (nextUrl !== null && nextUrl !== undefined) {
+  if (nextUrl) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   };
   backendLookup('GET', endpoint, callback);
@@ -122,7 +122,7 @@ export function apiDeckThank(deckId, callback) {
 // Searches for decks based on a query
 export function apiDeckSearch(query, callback, nextUrl) {
   let endpoint = `decks/search/?q=${query}`;
-  if (nextUrl !== null && nextUrl !== undefined) {
+  if (nextUrl) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   };
   backendLookup('GET', endpoint, callback);
@@ -214,7 +214,7 @@ export function apiNotificationCreate(username, title, description, category, ca
 // Gets list of notifications for a user
 export function apiNotificationList(username, callback, nextUrl) {
   let endpoint = `profiles/${username.toLowerCase()}/notifications/`;
-  if (nextUrl !== null && nextUrl !== undefined) { // TODO: replace this with just if (nextUrl) {}
+  if (nextUrl) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   };
   backendLookup('GET', endpoint, callback);

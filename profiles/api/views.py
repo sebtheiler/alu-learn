@@ -451,20 +451,20 @@ def profile_history_view(request, username, *args, **kwargs):
 
     return Response(HistorySerializer(profile.history, many=True).data, status=200)
 
-# from django.core.mail import send_mail
-# from django.conf import settings
-# @api_view(['GET'])
-# def test_my_email_api_view(request, *args, **kwargs):
-#     subject = 'Thank you for registering to our site'
-#     message = 'Body text Body text Body text Body text Body text'
-#     email_from = settings.EMAIL_HOST_USER
-#     recipient_list = ['user@company.com',]
+from django.conf import settings
+from django.core.mail import send_mail
+@api_view(['GET'])
+def test_my_email_api_view(request, *args, **kwargs):
+    subject = 'Thank you for registering to our site'
+    message = 'Body text Body text Body text Body text Body text'
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = ['',]
 
-#     return Response(
-#         send_mail(
-#             subject,
-#             message,
-#             email_from,
-#             recipient_list,
-#             fail_silently=False,
-#         ))
+    x = send_mail(
+            subject,
+            message,
+            email_from,
+            recipient_list,
+            fail_silently=False,
+        )
+    return Response({'message': x})
