@@ -80,7 +80,7 @@ export function ImageButton(props) {
 
   return (
     <Button
-      variant='outline-primary'
+      variant='light'
       onClick={event => {
         event.preventDefault();
         const url = window.prompt('Enter the URL of the image:');
@@ -88,7 +88,7 @@ export function ImageButton(props) {
         insertImage(editor, url);
       }}
     >
-      Image
+      <i className='fas fa-image' />
     </Button>
   );
 };

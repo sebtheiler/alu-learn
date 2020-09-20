@@ -92,7 +92,7 @@ export function LinkButton(props) {
 
   return (
     <Button
-      variant='outline-primary'
+      variant='light'
       onClick={event => {
         event.preventDefault();
         const url = window.prompt('Enter the URL of the link:');
@@ -100,7 +100,7 @@ export function LinkButton(props) {
         insertLink(editor, url);
       }}
     >
-      Hyperlink
+      <i className='fas fa-link' />
     </Button>
   );
 };

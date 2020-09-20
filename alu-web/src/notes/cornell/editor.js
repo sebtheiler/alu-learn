@@ -9,7 +9,7 @@ const basicValue = [
     "type": "paragraph",
     "children": [
       {
-        "text": "Text..."
+        "text": ""
       }
     ]
   }

@@ -53,7 +53,6 @@ export function NoteEditor(props) {
   // Function for sending a request to the API for saving
   const sendSaveApiRequest = () => {
     if (areChanges && noteDidSet) {
-      console.log(valueToSave)
       setAreChanges(false);
       apiNoteUpdate(noteId, null, JSON.stringify(valueToSave), (response, status) => {
         if (status === 200) {
