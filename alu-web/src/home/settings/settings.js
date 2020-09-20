@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {Button, Form} from 'react-bootstrap';
-import { apiProfileDetail, apiProfileSettingsUpdate } from '../lookup';
-import { UserLink } from '../profiles';
-import { errorHandler, FormCheckbox } from '../utils';
+import { apiProfileDetail, apiProfileSettingsUpdate } from '../../lookup';
+import { UserLink } from '../../profiles';
+import { errorHandler, FormCheckbox } from '../../utils';
 
 export function SettingsPage(props) {
   const {username} = props;
@@ -15,7 +15,6 @@ export function SettingsPage(props) {
       setProfileDidSet(true);
       apiProfileDetail(username, (response, status) => {
         if (status === 200) {
-          console.log(response.settings.disable_all_tooltips)
           setProfile(response);
         } else {
           // Error getting profile in settings

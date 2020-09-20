@@ -12,6 +12,7 @@ import {
 
 import {
   SettingsPage,
+  ChangePasswordEmail,
 } from './settings';
 
 export {
@@ -19,4 +20,5 @@ export {
   NavbarComponent,
   ContactUs,
   SettingsPage,
+  ChangePasswordEmail,
 };
