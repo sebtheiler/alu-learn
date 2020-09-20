@@ -4,10 +4,12 @@ from . import views
 urlpatterns = [
     # General pages
     path('home/', views.home_page),
-    path('settings/', views.settings_view),
     path('profile/', views.profile_redirect_view),
     path('login/', views.login_view),
     path('eli/', views.eli_view),
+    # Settings
+    path('settings/', views.settings_view),
+    path('settings/changepassword/', views.changepassword_view),
     # "Tutorial" pages
     path('help/welcome/', views.welcome_view),
     # Manual pages

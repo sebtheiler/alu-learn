@@ -12,6 +12,7 @@ from ..models import Profile, Notification, ProfileBadge
 from ..serializers import PublicProfileSerializer, MinifiedProfileSerializer, NotificationSerializer, ProfileBadgeSerializer, HistorySerializer
 from analytics.models import ExperimentController
 from decks.api.utils import get_paginated_queryset_response
+from django.shortcuts import redirect
 
 import datetime
 
@@ -413,7 +414,8 @@ def change_password(request, *args, **kwargs):
         else:
             user.set_password(new_password)
             user.save()
-            return Response({'message': 'Updated password'}, status=200)
+
+            return redirect('/login/')
     else:
         return Response({'message': 'You must specify `old_password` and `new_password`'}, status=400)
 

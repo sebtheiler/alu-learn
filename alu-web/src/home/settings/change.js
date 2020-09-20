@@ -21,7 +21,7 @@ export function ChangePasswordEmail(props) {
       };
       apiPasswordChange(form.elements.oldPassword.value, form.elements.newPassword.value, (response, status) => {
         if (status === 200) {
-          window.location.href = '/settings/';
+          window.location.href = '/login/';
         } else if (response.message === 'Invalid credentials') {
           document.getElementById('invalidCreds').innerHTML = `
             Your password appears to be incorrect. You can reset it

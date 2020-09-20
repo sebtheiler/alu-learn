@@ -47,7 +47,14 @@ def settings_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
 
-    return render(request, 'misc/settings.html')
+    return render(request, 'misc/settings/settings.html')
+
+
+def changepassword_view(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+
+    return render(request, 'misc/settings/change-password.html')
 
 
 def profile_redirect_view(request, *args, **kwargs):

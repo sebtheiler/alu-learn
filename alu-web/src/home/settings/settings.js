@@ -56,7 +56,7 @@ export function SettingsPage(props) {
         <UserLink user={profile} showAllBadges noLink />
         <br />
         <p>
-          Your email: {profile.email_address} <br />
+          Your email: {profile.email} <br />
         </p>
         <ul>
           <li><a href='/settings/changeemail/'>
