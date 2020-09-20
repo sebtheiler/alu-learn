@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {errorHandler, useInterval} from '../utils';
-import {Button} from 'react-bootstrap';
+import {Button, Form} from 'react-bootstrap';
 import {apiNoteDelete, apiNoteDetail, apiNoteUpdate} from '../lookup';
 import {DeleteModal} from './buttons';
 
@@ -83,7 +83,7 @@ export function NoteEditor(props) {
       initialValue: initialValue,
       isViewing: isViewing,
       updateValueToSave: newValue => {
-        setValueToSave(newValue);
+        setValueToSave({...valueToSave, newValue});
         window.onbeforeunload = confirmExit;
       },
       saveHandler: event => {
@@ -114,13 +114,33 @@ export function NoteEditor(props) {
           Edit
         </Button>
       </> : <>
-        <h1>Taking Notes in "{note ? note.title : 'Loading...'}"</h1>
+        <Form.Label as='h4'>Title</Form.Label>
+        <Form.Control
+          type='text'
+          id='titleForm'
+          name='titleForm'
+          style={{ fontSize: '28px' }}
+          placeholder='Untitled...'
+          className='mb-3'
+          defaultValue={note && note.title}
+          onChange={event => {
+            event.preventDefault();
+            // console.log(event.target.value)
+            // console.log({...valueToSave, title: event.target.value})
+            // console.log(valueToSave)
+            setValueToSave({...valueToSave, title: event.target.value})
+            setDidTypeRecently(true);
+            setAreChanges(true);
+          }}
+        />
+        <hr />
         <p className='text-secondary'>
           {areChanges ? 'Saving...' : 'Saved'}
         </p>
         <Button href={`/notes/study/${noteId}/`} className='mb-3'>
           Study
         </Button>
+        {/* </Form.Group> */}
       </>}
       {initialValue !== null ? <div id='note-editor'>
         {renderEditor()}

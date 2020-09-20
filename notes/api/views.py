@@ -108,17 +108,16 @@ def note_update_api_view(request, note_id, *args, **kwargs):
 
     Required information:
         `note_id`: (URL) ID of the note to update
-        `new_title`: (Data): New title of the note
         `new_content`: (Data):
+            `new_title`: (Data): New title of the note
             If the note is freeform, then this is one object with the new rich JSON content
             If the note is cornell, this should be a list of sections with cue and content attributes
     """
-    try:
-        note = FreeformNote.objects.get(pk=note_id, user=request.user.profile)
-        content = request.data.get('new_content', note.content)
-        note.content = content if isinstance(content, dict) else json.loads(content)
-        title = request.data.get('new_title')
-        if title:
+    content = request.data.get('new_content')
+    content = content if isinstance(content, dict) else json.loads(content)
+
+    def update_note_title(note, title):
+        if title and title != note.title: # this also prevents a blank title from being saved
             # Check if title is taken
             try:
                 Note.objects.get(user=request.user.profile, title=title)
@@ -127,19 +126,26 @@ def note_update_api_view(request, note_id, *args, **kwargs):
                 pass
             note.title = title
 
+    try:
+        note = FreeformNote.objects.get(pk=note_id, user=request.user.profile)
+
+        note.content = content.get('content', note.content)
+        update_note_title(note, content.get('title'))
+
         note.save()
         return Response(FreeformNoteSerializer(note).data, status=200)
     except ObjectDoesNotExist:
         try:
             note = CornellNote.objects.get(pk=note_id, user=request.user.profile)
 
-            content = request.data.get('new_content')
-            content = content if isinstance(content, dict) else json.loads(content)
-            if content is not None:
-                # Update summary
-                note.summary = content['summary'] if content['summary'] else note.summary
+            # Update summary
+            note.summary = content.get('summary', note.summary)
 
-                # Update sections
+            # Update title
+            update_note_title(note, content.get('title'))
+
+            # Update sections
+            if content.get('sections'):
                 sections = note.sections.all()
                 for i, new_section in enumerate(content['sections']):
                     try:
@@ -167,16 +173,6 @@ def note_update_api_view(request, note_id, *args, **kwargs):
                     sections.filter(pk__in=
                         sections[num_sections - (num_sections - len(content['sections'])):]
                     .values_list('pk')).delete()
-
-            title = request.data.get('new_title')
-            if title:
-                # Check if title is taken
-                try:
-                    Note.objects.get(user=request.user.profile, title=title)
-                    return Response({'message': 'Title is taken'}, status=400)
-                except ObjectDoesNotExist:
-                    pass
-                note.title = title
 
             note.save()
             return Response(CornellNoteSerializer(note).data, status=200)
