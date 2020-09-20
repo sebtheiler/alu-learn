@@ -5,10 +5,10 @@ import {ImageButton} from './images';
 import {LinkButton} from './links';
 
 export function EditorButtons(props) {
-  const {editor, saveHandler} = props;
+  const {editor, saveHandler, className} = props;
 
   return (
-    <ButtonGroup style={{ flexWrap: 'wrap' }}>
+    <ButtonGroup style={{ flexWrap: 'wrap' }} className={className}>
       <MarkButton format='bold' icon='bold' editor={editor} />
       <MarkButton format='italic' icon='italic' editor={editor} />
       <MarkButton format='underline' icon='underline' editor={editor} />
@@ -45,12 +45,12 @@ export function EditorButtons(props) {
 
       <span className='mx-2' />
 
-      <Button
+      {saveHandler && <Button
         variant='light'
         onClick={saveHandler}
       >
         <i className='far fa-save' />
-      </Button>
+      </Button>}
     </ButtonGroup>
   );
 };
@@ -58,10 +58,8 @@ export function EditorButtons(props) {
 function MarkButton(props) {
   const {format, icon, editor} = props;
 
-  console.log(isMarkActive(editor, format))
   return (
     <Button
-      // variant={isMarkActive(editor, format) ? 'primary' : 'outline-primary'}
       variant='light'
       onClick={event => {
         event.preventDefault();

@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import { Button, ButtonGroup, OverlayTrigger, Popover } from 'react-bootstrap';
 import {Slate} from 'slate-react';
-import {createFullEditor, FullEditor} from '../editor-components';
+import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
 import './editor.css';
 
 const basicValue = [
@@ -128,6 +128,11 @@ export function CornellNoteEditor(props) {
                 setSummaryValue(newValue);
               }}
             >
+              <EditorButtons
+                editor={summaryEditor}
+                saveHandler={saveHandler}
+                className='pl-2 pt-2'
+              />
               <FullEditor
                 editor={summaryEditor}
                 readOnly={isViewing}
@@ -155,6 +160,8 @@ function CornellSection(props) {
     () => createFullEditor(),
     []
   );
+
+  const [showButtons, setShowButtons] = useState(false);
 
   const deletePopover = (
     <Popover>
@@ -236,6 +243,17 @@ function CornellSection(props) {
           updateContent(newValue);
         }}
       >
+        {showButtons && <EditorButtons
+          editor={contentEditor}
+          className='pl-2 pt-2'
+        />}
+        <Button
+          className='float-right mt-2 mr-2'
+          onClick={() => setShowButtons(!showButtons)}
+          variant='light'
+        >
+          <i className='fas fa-bars fa-sm' />
+        </Button>
         <FullEditor
           editor={contentEditor}
           readOnly={isViewing}
