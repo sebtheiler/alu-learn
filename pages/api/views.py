@@ -7,7 +7,6 @@ from rest_framework.response import Response
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def contact_us_api_view(request, *args, **kwargs):
     """
     Gives feedback - POST
@@ -32,3 +31,18 @@ def contact_us_api_view(request, *args, **kwargs):
     )
 
     return Response({'message': 'Feedback submitted successfully'}, status=201)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def update_settings_api_view(request, *args, **kwargs):
+    """
+    Update an accounts settings - POST
+
+    Required information:
+        `disable_all_tooltips`: (Data) Whether or not to disable all tooltips
+    """
+    request.user.profile.settings.disable_all_tooltips = \
+        request.data.get('disable_all_tooltips', request.user.profile.settings.disable_all_tooltips)
+
+    return Response({'message': 'Updated account settings'})

@@ -1,7 +1,16 @@
 from django.conf import settings
 from rest_framework import serializers
 
-from .models import Profile, Notification, ProfileBadge, ProfileHistorySegment
+from .models import Profile, Notification, ProfileBadge, ProfileHistorySegment, ProfileSettings
+
+
+class ProfileSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfileSettings
+        fields = [
+            'disable_all_tooltips',
+            'id',
+        ]
 
 
 class ProfileBadgeSerializer(serializers.ModelSerializer):
@@ -22,6 +31,7 @@ class PublicProfileSerializer(serializers.ModelSerializer):
     is_friend = serializers.SerializerMethodField(read_only=True)
     you_are_pending = serializers.SerializerMethodField(read_only=True)
     badges = ProfileBadgeSerializer(read_only=True, many=True)
+    settings = ProfileSettingsSerializer(read_only=True)
 
     class Meta:
         # Don't forget to update documentation in profiles/api/views.py!
@@ -36,6 +46,7 @@ class PublicProfileSerializer(serializers.ModelSerializer):
             'friend_count',
             'is_friend',
             'you_are_pending',
+            'settings',
             'badges',
             'total_thanks_recieved',
             'longest_streak',

@@ -90,6 +90,11 @@ class ProfileHistorySegment(models.Model):
         return self.cards_done
 
 
+class ProfileSettings(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='settings')
+    disable_all_tooltips = models.BooleanField(default=False)
+
+
 # When a user is saved, create a corresponding Profile object and an initial notification
 def user_did_save(sender, instance, created, *args, **kwargs):
     if created:
