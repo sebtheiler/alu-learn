@@ -34,7 +34,6 @@ class PublicProfileSerializer(serializers.ModelSerializer):
     settings = ProfileSettingsSerializer(read_only=True)
 
     class Meta:
-        # Don't forget to update documentation in profiles/api/views.py!
         model = Profile
         fields = [
             'first_name',

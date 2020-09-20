@@ -45,4 +45,5 @@ def update_settings_api_view(request, *args, **kwargs):
     request.user.profile.settings.disable_all_tooltips = \
         request.data.get('disable_all_tooltips', request.user.profile.settings.disable_all_tooltips)
 
+    request.user.profile.settings.save()
     return Response({'message': 'Updated account settings'})

@@ -91,14 +91,18 @@ class ProfileHistorySegment(models.Model):
 
 
 class ProfileSettings(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='settings')
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='settings')
     disable_all_tooltips = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'Settings for {self.profile.user.username}'
 
 
 # When a user is saved, create a corresponding Profile object and an initial notification
 def user_did_save(sender, instance, created, *args, **kwargs):
     if created:
-        profile, created = Profile.objects.get_or_create(user=instance)
+        profile, _ = Profile.objects.get_or_create(user=instance)
+        ProfileSettings.objects.create(profile=profile)
         Notification.objects.create(
             profile=profile,
             title='Need help?',

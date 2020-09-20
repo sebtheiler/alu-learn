@@ -39,10 +39,10 @@ def profile_detail_api_view(request, username, *args, **kwargs):
     # Find the user in question
     try:
         profile = Profile.objects.get(user__username=username.lower())
+
+        return Response(PublicProfileSerializer(profile, context={'request': request}).data, status=200)
     except ObjectDoesNotExist:
         return Response({'message': 'User not found'}, status=404)
-
-    return Response(PublicProfileSerializer(profile, context={'request': request}).data, status=200)
 
 
 @api_view(['POST'])
