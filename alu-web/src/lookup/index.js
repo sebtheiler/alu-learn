@@ -44,6 +44,7 @@ import {
   apiNoteUpdate,
   apiNoteDelete,
   apiNoteHome,
+  apiPasswordChange,
 } from './lookup';
 
 export {
@@ -92,4 +93,5 @@ export {
   apiNoteUpdate,
   apiNoteDelete,
   apiNoteHome,
+  apiPasswordChange,
 };

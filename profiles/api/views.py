@@ -167,6 +167,7 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def notification_api_view(request, username, *args, **kwargs):
     """
     Get notifications for a user, or create notifications - GET/POST
@@ -188,10 +189,11 @@ def notification_api_view(request, username, *args, **kwargs):
         Unknown username: 404, User "`username`" not found
     """
     # Get user
-    try:
-        user = User.objects.get(username=username.lower())
-    except ObjectDoesNotExist:
-        return Response({'message': f'User "{username}" not found'}, status=404)
+    # try:
+    #     user = User.objects.get(username=username.lower())
+    # except ObjectDoesNotExist:
+    #     return Response({'message': f'User "{username}" not found'}, status=404)
+    user = request.user
 
     if request.method == 'POST':
         # Create notification object
@@ -216,6 +218,7 @@ def notification_api_view(request, username, *args, **kwargs):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def notification_read_api_view(request, username, *args, **kwargs):
     """
     Get unread notifications for a user, or mark notifications as read - GET/POST
@@ -379,17 +382,40 @@ def login_api_view(request, *args, **kwargs):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def logout_api_view(request, *args, **kwargs):
     """
     Logs out a user - POST
-
-    Possible errors:
-        User is not logged in: 400, User is not logged in
     """
-    if not request.user.is_authenticated:
-        return Response({'message': 'User is not logged in'}, status=400)
     logout(request)
     return Response({'message': 'Successfully unauthenticated user'}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request, *args, **kwargs):
+    """
+    Changes a user's password - POST
+
+    Required information:
+        `old_password`: (Data) The user's current password
+        `new_password`: (Data) Password to be changed to
+
+    Possible errors:
+        Old password invalid: 401, Invalid credentials
+    """
+    old_password = request.data.get('old_password')
+    new_password = request.data.get('new_password')
+    if None not in (old_password, new_password):
+        user = authenticate(username=request.user.username, password=old_password)
+        if user is None:
+            return Response({'message': 'Invalid credentials'}, status=401)
+        else:
+            user.set_password(new_password)
+            user.save()
+            return Response({'message': 'Updated password'}, status=200)
+    else:
+        return Response({'message': 'You must specify `old_password` and `new_password`'}, status=400)
 
 
 @api_view(['GET'])

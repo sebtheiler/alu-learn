@@ -341,3 +341,11 @@ export function apiNoteDelete(noteId, callback) {
 export function apiNoteHome(callback) {
   backendLookup('GET', 'notes/list/', callback);
 };
+
+// Changes a user's password
+export function apiPasswordChange(oldPassword, newPassword, callback) {
+  backendLookup('POST', 'profiles/changepassword/', callback, {
+    old_password: oldPassword,
+    new_password: newPassword,
+  });
+};

@@ -1,5 +1,7 @@
 import React from 'react';
 import {Button, Form, Row, Col} from 'react-bootstrap';
+import { apiPasswordChange } from '../../lookup';
+import {errorHandler} from '../../utils';
 
 
 export function ChangePasswordEmail(props) {
@@ -10,11 +12,25 @@ export function ChangePasswordEmail(props) {
     const form = event.target;
 
     if (type === 'password') {
-      console.log(
-        form.elements.oldPassword.value,
-        form.elements.newPassword.value,
-        form.elements.confirmPassword.value,
-      );
+      if (form.elements.newPassword.value !== form.elements.confirmPassword.value) {
+        document.getElementById('passwordsDoNotMatch').innerHTML =
+          `Passwords do not match`
+        return;
+      } else {
+        document.getElementById('passwordsDoNotMatch').innerHTML = '';
+      };
+      apiPasswordChange(form.elements.oldPassword.value, form.elements.newPassword.value, (response, status) => {
+        if (status === 200) {
+          window.location.href = '/settings/';
+        } else if (response.message === 'Invalid credentials') {
+          document.getElementById('invalidCreds').innerHTML = `
+            Your password appears to be incorrect. You can reset it
+          <a href='/settings/resetpassword/'>here</a>.`
+        } else {
+          // Error changing password
+          errorHandler(response, status, 3017);
+        };
+      });
     } else if (type === 'email') {
       console.log(
         form.elements.newEmail.value,
@@ -37,6 +53,7 @@ export function ChangePasswordEmail(props) {
             maxLength={1024}
             required
           />
+          <small className='text-danger' id='invalidCreds'></small>
         </Form.Group>
         <Form.Group>
           <Row>
@@ -61,6 +78,7 @@ export function ChangePasswordEmail(props) {
               />
             </Col>
           </Row>
+          <small className='text-danger' id='passwordsDoNotMatch'></small>
         </Form.Group>
       </> : <>
         {/* TODO: Email change field */}
