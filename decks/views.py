@@ -8,6 +8,8 @@ from .models import Deck, DeckStudySessionManager, CustomStudySessionManager
 def decks_home_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
     return render(request, 'decks/home.html', status=200)
 
 
@@ -25,6 +27,8 @@ def decks_detail_view(request, deck_id, *args, **kwargs):
 def flashcard_create_view(request, deck_id, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
 
     # Check that the user has permission to create flashcards
     try:
@@ -45,6 +49,8 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
 
     # Check that the user has permission to create flashcards
     try:
@@ -75,12 +81,16 @@ def flashcard_list_view(request, deck_id, *args, **kwargs):
 def flashcard_search_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
     return render(request, 'flashcards/search.html', context={'username': request.user.username})
 
 # Renders when studying an individual deck
 def deck_study_view(request, deck_id, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
     try:
         deck = Deck.objects.get(pk=deck_id)
     except ObjectDoesNotExist:
@@ -92,11 +102,15 @@ def deck_study_view(request, deck_id, *args, **kwargs):
 def deck_import_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
     return render(request, 'decks/import.html')
 
 # Studies flashcards based on a set of criteria
 def custom_study_view(request, ssm_id, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
 
     return render(request, 'decks/study.html', context={'ssm_id': ssm_id})

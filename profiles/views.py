@@ -8,6 +8,8 @@ from django.shortcuts import render, redirect
 def profile_update_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
     user = request.user
     my_profile = user.profile
     user_data = {
@@ -59,4 +61,6 @@ def profile_detail_view(request, username, *args, **kwargs):
 def notifications_list_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
     return render(request, 'profiles/notifications.html', {'username': request.user.username})
