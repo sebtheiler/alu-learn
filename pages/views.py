@@ -56,6 +56,12 @@ def changepassword_view(request, *args, **kwargs):
 
     return render(request, 'misc/settings/change-password.html')
 
+def confirm_email_view(request, *args, **kwargs):
+    if request.user.is_confirmed:
+        return redirect('/home/')
+
+    return render(request, 'misc/settings/confirm-email.html')
+
 
 def profile_redirect_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
