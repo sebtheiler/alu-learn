@@ -84,6 +84,7 @@ int(hexadecimal_string, 16)
 3014: Error handling next set of notifications (pagination) through apiNotificationList in alu-web/src/profiles/notifications/components.js
 3015: Error getting profile in settings through apiProfileDetail in alu-web/src/home/settings/settings.js
 3016: Error updating profile settings through apiProfileSettingsUpdate in alu-web/src/home/settings/settings.js
+3017: Error confirming email through apiEmailConfirm in alu-web/src/home/settings/confirmEmail.js
 
 === Misc ===
 4000: Error submitting feedback through apiFeedbackSubmit in alu-web/src/home/contactus.js

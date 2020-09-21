@@ -349,3 +349,8 @@ export function apiPasswordChange(oldPassword, newPassword, callback) {
     new_password: newPassword,
   });
 };
+
+// Confirm user's email
+export function apiEmailConfirm(username, confirmationKey, callback) {
+  backendLookup('POST', `profiles/confirmemail/${username}/`, callback, {confirmation_key: confirmationKey});
+};

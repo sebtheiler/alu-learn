@@ -13,7 +13,8 @@ from .views import (
     get_user_friends_api_view,
     profile_history_view,
     change_password,
-    test_my_email_api_view,
+    # test_my_email_api_view,
+    confirm_email_api_view,
 )
 
 # Base endpoint = /api/profiles/
@@ -30,5 +31,6 @@ urlpatterns = [
     path('login/', login_api_view),
     path('logout/', logout_api_view),
     path('changepassword/', change_password),
-    path('emailtest/', test_my_email_api_view)
+    # path('emailtest/', test_my_email_api_view)
+    path('confirmemail/<str:username>/', confirm_email_api_view),
 ]

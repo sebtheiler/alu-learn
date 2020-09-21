@@ -471,18 +471,45 @@ def profile_history_view(request, username, *args, **kwargs):
 
 from django.conf import settings
 from django.core.mail import send_mail
-@api_view(['GET'])
-def test_my_email_api_view(request, *args, **kwargs):
-    subject = 'Thank you for registering to our site'
-    message = 'Body text Body text Body text Body text Body text'
-    email_from = settings.EMAIL_HOST_USER
-    recipient_list = ['',]
+# @api_view(['GET'])
+# def test_my_email_api_view(request, *args, **kwargs):
+#     subject = 'Thank you for registering to our site'
+#     message = 'Body text Body text Body text Body text Body text'
+#     email_from = settings.EMAIL_HOST_USER
+#     recipient_list = ['',]
 
-    x = send_mail(
-            subject,
-            message,
-            email_from,
-            recipient_list,
-            fail_silently=False,
-        )
-    return Response({'message': x})
+#     x = send_mail(
+#             subject,
+#             message,
+#             email_from,
+#             recipient_list,
+#             fail_silently=False,
+#         )
+#     return Response({'message': x})
+
+@api_view(['POST'])
+def confirm_email_api_view(request, username, *args, **kwargs):
+    """
+    Confirms an email with a verification code - POST
+
+    Required information:
+        `username`: (ULR) Username of the profile to confirm
+        `confirmation_key`: (Data) Key to confirm email
+    
+    Possible errors:
+        Profile does not exist: 404, User not found
+        Invalid key: 400, Confirmation key invalid
+    """
+    # Get user
+    try:
+        profile = Profile.objects.get(user__username=username)
+    except ObjectDoesNotExist:
+        return Response({'message': 'User not found'}, status=404)
+
+    # Check key
+    try:
+        profile.user.confirm_email(request.data.get('confirmation_key'))
+    except ObjectDoesNotExist:
+        return Response({'message': 'Confirmation key invalid'}, status=400)
+
+    return Response({'message': 'Email authenticated'})
