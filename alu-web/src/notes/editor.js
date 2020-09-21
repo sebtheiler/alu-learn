@@ -83,7 +83,7 @@ export function NoteEditor(props) {
       initialValue: initialValue,
       isViewing: isViewing,
       updateValueToSave: newValue => {
-        setValueToSave({...valueToSave, newValue});
+        setValueToSave({...valueToSave, ...newValue});
         window.onbeforeunload = confirmExit;
       },
       saveHandler: event => {

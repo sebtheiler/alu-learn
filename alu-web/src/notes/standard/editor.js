@@ -17,7 +17,7 @@ export function StandardNoteEditor(props) {
       value={value}
       onChange={newValue => {
         setValue(newValue);
-        updateValueToSave(newValue);
+        updateValueToSave({ content: newValue });
       }}
     >
       {!isViewing &&
