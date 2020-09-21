@@ -329,7 +329,7 @@ def create_profile_api_view(request, *args, **kwargs):
     months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
     birthdate = datetime.date(
         year=birthdate.get('year'),
-        month=months.index(birthdate.get('month').lower()),
+        month=months.index(birthdate.get('month').lower()) + 1,
         day=birthdate.get('day'),
     )
 
@@ -348,6 +348,24 @@ def create_profile_api_view(request, *args, **kwargs):
     # Add data to the analytics tracker
     controller = ExperimentController.objects.get(short_name='landing1')
     controller.add_data_piece(parameters=experiment_params, successful=True)
+
+    # Send confirmation email
+    subject = 'Welcome to Alu!'
+    message = f"""
+We're glad you signed up.
+Here's a confirmation code, to make sure this email is really you: {user.confirmation_key}
+If this wasn't you, you can safely ignore this email.
+    """
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [email]
+
+    send_mail(
+        subject,
+        message,
+        email_from,
+        recipient_list,
+        fail_silently=False,
+    )
 
     return Response(PublicProfileSerializer(user.profile).data, status=201)
 

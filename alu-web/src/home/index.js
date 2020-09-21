@@ -13,6 +13,7 @@ import {
 import {
   SettingsPage,
   ChangePasswordEmail,
+  ConfirmEmail,
 } from './settings';
 
 export {
@@ -21,4 +22,5 @@ export {
   ContactUs,
   SettingsPage,
   ChangePasswordEmail,
+  ConfirmEmail,
 };
