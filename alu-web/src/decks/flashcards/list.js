@@ -10,13 +10,14 @@ export function FlashCardsList(props) {
   // flashcardList: If not deckId, specify a raw list of flashcards
   // foreignUser: True if a user who does not own the deck is viewing it
   // showParnetDeckTitle: If True, show the title of the deck for each flashcard
-  const {deckId, flashcardList, showParentDeckTitle} = props;
+  const {deckId, flashcardList, showParentDeckTitle, artificialPaginationNumFlashcards} = props;
   const isForeignUser = typeof props.foreignUser === 'string' ? props.foreignUser.toLowerCase() === 'true' : props.foreignUser;
   const [deck, setDeck] = useState(null);
   const [flashcards, setFlashCards] = useState([]);
   const [flashcardsDidSet, setFlashCardsDidSet] = useState(false);
   const [nextUrl, setNextUrl] = useState(null);
   const [flashcardsLoading, setFlashCardsLoading] = useState(false);
+  const [artificialPaginationNumFlashcardsShown, setArtificialPaginationNumFlashcardsShown] = useState(artificialPaginationNumFlashcards);
 
   useEffect(() => {
     // Re-renders flashcardList whenever updated, if specified
@@ -66,18 +67,23 @@ export function FlashCardsList(props) {
   const handleLoadNext = (event) => {
     event.preventDefault();
     setFlashCardsLoading(true);
-    if (nextUrl !== null && flashcardsLoading === false) {
-      apiDeckFlashcards(deckId, {}, (response, status) => {
-        if (status === 200) {
-          setNextUrl(response.next);
-          const newFlashcards = [...flashcards].concat(response.results);
-          setFlashCards(newFlashcards);
-        } else {
-          // Error handling next set of flashcards (pagination)
-          errorHandler(response, status, 1018);
-        };
-        setFlashCardsLoading(false);
-      }, nextUrl);
+    if (artificialPaginationNumFlashcards) {
+      setArtificialPaginationNumFlashcardsShown(artificialPaginationNumFlashcardsShown + artificialPaginationNumFlashcards);
+      setFlashCardsLoading(false);
+    } else {
+      if (nextUrl !== null && flashcardsLoading === false) {
+        apiDeckFlashcards(deckId, {}, (response, status) => {
+          if (status === 200) {
+            setNextUrl(response.next);
+            const newFlashcards = [...flashcards].concat(response.results);
+            setFlashCards(newFlashcards);
+          } else {
+            // Error handling next set of flashcards (pagination)
+            errorHandler(response, status, 1018);
+          };
+          setFlashCardsLoading(false);
+        }, nextUrl);
+      };
     };
   };
 
@@ -89,7 +95,7 @@ export function FlashCardsList(props) {
           <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />
         }
       </div>
-      {flashcards.length > 0 ? flashcards.map((flashcard, index) => {
+      {flashcards.length > 0 ? flashcards.slice(0, artificialPaginationNumFlashcardsShown).map((flashcard, index) => {
         return <FlashCard
                 flashcard={flashcard}
                 key={index}
@@ -103,7 +109,7 @@ export function FlashCardsList(props) {
         <p className='text-center mt-3'>
           {flashcardsDidSet ? 'This deck has no flashcards yet.' : 'Loading...'}
         </p>}
-      {nextUrl && 
+      {(nextUrl || artificialPaginationNumFlashcards) && 
         <Button
           onClick={handleLoadNext}
           variant='outline-primary'
