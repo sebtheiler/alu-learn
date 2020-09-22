@@ -72,6 +72,11 @@ def confirm_email_view(request, *args, **kwargs):
 
     return render(request, 'misc/settings/confirm-email.html')
 
+def send_password_reset(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        return redirect('/home/')
+
+    return render(request, 'misc/settings/send-password-reset.html')
 
 def profile_redirect_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
