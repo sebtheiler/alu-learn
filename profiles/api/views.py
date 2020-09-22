@@ -427,12 +427,13 @@ def change_password(request, *args, **kwargs):
     Changes a user's password - POST
 
     Required information:
-        `old_password`: (Data) The user's current password
         `new_password`: (Data) Password to be changed to
 
         If the user is not authenticated, you must supply:
             `email`: (Data) Username of the profile to change
             `reset_key`: (Data) Key for password reset
+        otherwise:
+            `old_password`: (Data) The user's current password
 
     Possible errors:
         Old password invalid: 401, Invalid credentials
@@ -442,34 +443,44 @@ def change_password(request, *args, **kwargs):
         # confirm that the key they supplied was valid
         email = request.data.get('email')
         reset_key = request.data.get('reset_key')
+        new_password = request.data.get('new_password')
 
+        # Get user
         try:
             profile = Profile.objects.get(user__email=email)
         except ObjectDoesNotExist:
             return Response({'message': 'Email not found'}, status=404)
 
-        if reset_key != profile.user.password_reset_key:
+        # Check key valid
+        if reset_key and reset_key != profile.user.password_reset_key:
             return Response({'message': 'Invalid reset key'}, status=401)
         
-        username = profile.user.username
-    else:
-        username = request.user.username
+        # Update password
+        profile.user.set_password(new_password)
+        profile.user.save()
 
-    old_password = request.data.get('old_password')
-    new_password = request.data.get('new_password')
-    if None not in (old_password, new_password):
-        user = authenticate(username=username, password=old_password)
-        if user is None:
-            return Response({'message': 'Invalid credentials'}, status=401)
+        # Invalidate key
+        profile.user.password_reset_key = None
+        profile.user.save()
+
+        return redirect('/login/')
+    else:
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+        if None not in (old_password, new_password):
+            user = authenticate(username=request.user.username, password=old_password)
+            if user is None:
+                return Response({'message': 'Invalid credentials'}, status=401)
+            else:
+                user.set_password(new_password)
+                user.save()
+
+                return redirect('/login/')
         else:
-            user.set_password(new_password)
-            user.save()
-
-            return redirect('/login/')
-    else:
-        return Response({'message': 'You must specify `old_password` and `new_password`'}, status=400)
+            return Response({'message': 'You must specify `old_password` and `new_password`'}, status=400)
 
 import string
+import random
 @api_view(['POST'])
 def password_reset_email_api_view(request, email, *args, **kwargs):
     """
@@ -497,7 +508,7 @@ def password_reset_email_api_view(request, email, *args, **kwargs):
     message = f"""
 Looks like you forgot your password—don't worry, it happens to all of us.
 
-Click this link to reset your password: http://127.0.0.1:8000/reset-password/{unique_id}/
+Click this link to reset your password: http://127.0.0.1:8000/reset-password/confirm/?k={unique_id}&email={profile.user.email}
 If this wasn't you, you can safely ignore this email.
     """
     email_from = settings.EMAIL_HOST_USER

@@ -60,11 +60,11 @@ def change_reset_password_view_wrapper(is_reset):
     def change_reset_password_view(request, *args, **kwargs):
         if (is_reset and request.user.is_authenticated) or \
           (not is_reset and not request.user.is_authenticated) or \
-           not request.user.is_confirmed:
+          (request.user.is_authenticated and not request.user.is_confirmed):
             return redirect('/confirm-email/')
 
         return render(request, 'misc/settings/change-reset-password.html', context={'is_reset': is_reset})
-    
+    return change_reset_password_view
 
 def confirm_email_view(request, *args, **kwargs):
     if not request.user.is_authenticated or request.user.is_confirmed:
