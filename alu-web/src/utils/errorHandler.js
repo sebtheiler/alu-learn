@@ -1,6 +1,14 @@
 export function errorHandler(response, status, errorCode) {
   if (status === 403) {
     window.location.href = `/?showLoginRequired=true&returnUrl=${window.location.href}`;
+  } else if (status === 429) {
+    alert(
+`
+You have exceeded the number of requests authorized by your account.
+We do this to prevent hackers and malicious users from slowing down your experience.
+Please try again in a few minutes.
+`
+    );
   } else {
     console.log(response, status);
 
