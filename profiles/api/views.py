@@ -333,6 +333,17 @@ def create_profile_api_view(request, *args, **kwargs):
         day=birthdate.get('day'),
     )
 
+    # Check email and username available
+    try:
+        Profile.objects.get(user__username=username)
+        return Response({'message': 'Username taken'})
+    except ObjectDoesNotExist:
+        try:
+            Profile.objects.get(user__email=email)
+            return Response({'message': 'Email taken'})
+        except ObjectDoesNotExist:
+            pass
+
     # Create user
     user = User.objects.create_user(
         first_name=first_name,
@@ -411,7 +422,6 @@ def logout_api_view(request, *args, **kwargs):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def change_password(request, *args, **kwargs):
     """
     Changes a user's password - POST
@@ -420,13 +430,35 @@ def change_password(request, *args, **kwargs):
         `old_password`: (Data) The user's current password
         `new_password`: (Data) Password to be changed to
 
+        If the user is not authenticated, you must supply:
+            `email`: (Data) Username of the profile to change
+            `reset_key`: (Data) Key for password reset
+
     Possible errors:
         Old password invalid: 401, Invalid credentials
     """
+    if not request.user.is_authenticated:
+        # If the user is resetting their password,
+        # confirm that the key they supplied was valid
+        email = request.data.get('email')
+        reset_key = request.data.get('reset_key')
+
+        try:
+            profile = Profile.objects.get(user__email=email)
+        except ObjectDoesNotExist:
+            return Response({'message': 'Email not found'}, status=404)
+
+        if reset_key != profile.user.password_reset_key:
+            return Response({'message': 'Invalid reset key'}, status=401)
+        
+        username = profile.user.username
+    else:
+        username = request.user.username
+
     old_password = request.data.get('old_password')
     new_password = request.data.get('new_password')
     if None not in (old_password, new_password):
-        user = authenticate(username=request.user.username, password=old_password)
+        user = authenticate(username=username, password=old_password)
         if user is None:
             return Response({'message': 'Invalid credentials'}, status=401)
         else:
@@ -436,6 +468,49 @@ def change_password(request, *args, **kwargs):
             return redirect('/login/')
     else:
         return Response({'message': 'You must specify `old_password` and `new_password`'}, status=400)
+
+import string
+@api_view(['POST'])
+def password_reset_email_api_view(request, email, *args, **kwargs):
+    """
+    Sends a reset password email and generates a secure code - POST
+
+    Possible errors:
+        Invalid username: 404, User not found
+    """
+    try:
+        profile = Profile.objects.get(user__email=email)
+    except ObjectDoesNotExist:
+        return Response({'message': 'User not found'}, status=404)
+
+    # Generate impossible to guess, one-time-password
+    allowed_chars = ''.join((string.ascii_letters, string.digits, '-_'))
+    unique_id = ''.join(random.choice(allowed_chars) for _ in range(128))
+
+    # Update the user's profile with the one-time-password
+    profile.user.password_reset_key = unique_id
+    profile.user.save()
+
+    # Send an email with a link including the one-time-password
+    # Send confirmation email
+    subject = 'Alu Password Reset'
+    message = f"""
+Looks like you forgot your password—don't worry, it happens to all of us.
+
+Click this link to reset your password: http://127.0.0.1:8000/reset-password/{unique_id}/
+If this wasn't you, you can safely ignore this email.
+    """
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [profile.user.email]
+
+    send_mail(
+        subject,
+        message,
+        email_from,
+        recipient_list,
+        fail_silently=False,
+    )
+    return Response({'message': 'Sent reset email'}, status=200)
 
 
 @api_view(['GET'])

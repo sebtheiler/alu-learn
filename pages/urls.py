@@ -10,7 +10,8 @@ urlpatterns = [
     path('confirm-email/', views.confirm_email_view),
     # Settings
     path('settings/', views.settings_view),
-    path('settings/changepassword/', views.changepassword_view),
+    path('settings/change-password/', views.change_reset_password_view_wrapper(False)),
+    path('settings/reset-password/', views.change_reset_password_view_wrapper(True)),
     # "Tutorial" pages
     path('help/welcome/', views.welcome_view),
     # Manual pages

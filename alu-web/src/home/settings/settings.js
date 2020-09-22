@@ -62,7 +62,7 @@ export function SettingsPage(props) {
           <li><a href='/settings/changeemail/'>
             Change email
           </a></li>
-          <li><a href='/settings/changepassword/'>
+          <li><a href='/settings/change-password/'>
             Change password
           </a></li>
           <li><a href='/profiles/edit/'>

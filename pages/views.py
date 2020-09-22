@@ -56,13 +56,15 @@ def settings_view(request, *args, **kwargs):
     return render(request, 'misc/settings/settings.html')
 
 
-def changepassword_view(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect('/')
-    elif not request.user.is_confirmed:
-        return redirect('/confirm-email/')
+def change_reset_password_view_wrapper(is_reset):
+    def change_reset_password_view(request, *args, **kwargs):
+        if (is_reset and request.user.is_authenticated) or \
+          (not is_reset and not request.user.is_authenticated) or \
+           not request.user.is_confirmed:
+            return redirect('/confirm-email/')
 
-    return render(request, 'misc/settings/change-password.html')
+        return render(request, 'misc/settings/change-reset-password.html', context={'is_reset': is_reset})
+    
 
 def confirm_email_view(request, *args, **kwargs):
     if not request.user.is_authenticated or request.user.is_confirmed:
