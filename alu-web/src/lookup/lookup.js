@@ -350,6 +350,15 @@ export function apiPasswordChange(oldPassword, newPassword, callback) {
   });
 };
 
+// Resets a user's password
+export function apiPasswordReset(email, resetKey, newPassword, callback) {
+  backendLookup('POST', 'profiles/changepassword/', callback, {
+    email: email,
+    reset_key: resetKey,
+    new_password: newPassword,
+  });
+};
+
 // Confirm user's email
 export function apiEmailConfirm(username, confirmationKey, callback) {
   backendLookup('POST', `profiles/confirmemail/${username}/`, callback, {confirmation_key: confirmationKey});
