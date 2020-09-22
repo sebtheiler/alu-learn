@@ -52,7 +52,7 @@ export function ChangePasswordEmail(props) {
           } else if (response.message === 'Invalid credentials') {
             document.getElementById('invalidCreds').innerHTML = `
               Your password appears to be incorrect. You can reset it
-            <a href='/settings/resetpassword/'>here</a>.`
+            <a href='/reset-password/'>here</a>.`
           } else {
             // Error changing password
             errorHandler(response, status, 3017);

@@ -14,6 +14,7 @@ import {
   SettingsPage,
   ChangePasswordEmail,
   ConfirmEmail,
+  SendPasswordReset,
 } from './settings';
 
 export {
@@ -23,4 +24,5 @@ export {
   SettingsPage,
   ChangePasswordEmail,
   ConfirmEmail,
+  SendPasswordReset,
 };

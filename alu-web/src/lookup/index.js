@@ -46,6 +46,7 @@ import {
   apiNoteHome,
   apiPasswordChange,
   apiPasswordReset,
+  apiSendPasswordReset,
   apiEmailConfirm,
 } from './lookup';
 
@@ -97,5 +98,6 @@ export {
   apiNoteHome,
   apiPasswordChange,
   apiPasswordReset,
+  apiSendPasswordReset,
   apiEmailConfirm,
 };

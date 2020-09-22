@@ -9,7 +9,7 @@ import {StudyComponent, CustomStudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
 import {ExploreComponent, DeckSearchComponent} from './explore';
 import {LandingComponent} from './landing';
-import {HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail} from './home';
+import {HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset} from './home';
 import {NoteEditor, NotesHomeList} from './notes';
 
 const e = React.createElement;
@@ -127,6 +127,11 @@ if (updatePasswordEmailElement) {
 const confirmEmailElement = document.getElementById('confirm-email');
 if (confirmEmailElement) {
   ReactDOM.render(e(ConfirmEmail, confirmEmailElement.dataset), confirmEmailElement);
+};
+
+const sendPasswordResetElement = document.getElementById('send-password-reset');
+if (sendPasswordResetElement) {
+  ReactDOM.render(e(SendPasswordReset, sendPasswordResetElement.dataset), sendPasswordResetElement);
 };
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

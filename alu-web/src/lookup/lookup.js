@@ -359,6 +359,11 @@ export function apiPasswordReset(email, resetKey, newPassword, callback) {
   });
 };
 
+// Sends a password reset email
+export function apiSendPasswordReset(email, callback) {
+  backendLookup('POST', `profiles/resetpassword/${email}/`, callback);
+};
+
 // Confirm user's email
 export function apiEmailConfirm(username, confirmationKey, callback) {
   backendLookup('POST', `profiles/confirmemail/${username}/`, callback, {confirmation_key: confirmationKey});
