@@ -20,6 +20,7 @@ class Profile(models.Model):
 
     longest_streak = models.PositiveSmallIntegerField(default=0)
     current_streak = models.PositiveSmallIntegerField(default=0)
+    has_done_cards_today = models.BooleanField(default=False)
 
     def __str__(self):
         if self.user.first_name and self.user.last_name:
@@ -45,7 +46,10 @@ class Profile(models.Model):
             # Update the longest streak if the current streak is longer
             if self.current_streak > self.longest_streak:
                 self.longest_streak = self.current_streak
-            
+
+            # Register that the profile has studied today
+            self.has_done_cards_today = True
+
             # Save
             self.save()
 
