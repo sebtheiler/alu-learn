@@ -174,3 +174,14 @@
 
 ### Sep 16
 - [ ] Spread the word
+
+
+# Random
+- [ ] Fix random bugs in notes -> disable spell correct in firefox
+- [ ] Fix bugs with lists
+- [ ] Horizontal break
+- [ ] Automatic header to paragraphs on enter press
+- [ ] Soft break
+- [ ] Issues with images being the last thing
+- [ ] The toolbar always at the top
+- [ ] Keyboard-shortcuts for headers

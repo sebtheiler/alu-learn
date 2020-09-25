@@ -33,7 +33,6 @@ class ExceptionalUserRateThrottle(UserRateThrottle):
             self.history.pop()
 
         if len(self.history) >= self.num_requests:
-            print('failure')
             return self.throttle_failure()
         
         return self.throttle_success()
