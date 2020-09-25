@@ -35,8 +35,12 @@ yarn-error.log*
 .vscode/
 alu-web/package-lock.json
 
-# --- Celery ---
+# --- Celery & Redis ---
 celerybeat-schedule.bak
 celerybeat-schedule.dat
 celerybeat-schedule.dir
 celerybeat.pid
+dump.rdb
+
+# --- Generated Files ---
+top_deck_ids.json
