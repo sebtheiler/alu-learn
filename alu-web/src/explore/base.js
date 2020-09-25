@@ -32,8 +32,8 @@ export function ExploreComponent(props) {
       <ExploreButtonGroup />
       <hr />
       <div className={'mb-5' + (decks.EDITOR && decks.EDITOR.length === 0 ? ' d-none' : '')}>
-        <h3>Editor's picks</h3>
-        <p className='text-secondary'>Here are some decks our editors thought deserved the spotlight</p>
+        <h3>Cool Decks</h3>
+        <p className='text-secondary'>Some hand-chosen decks that are awesome</p>
         <DeckSlider decks={decks.EDITOR} loading={!decksDidSet} />
       </div>
       <div className={'mb-5' + (decks.HOT && decks.HOT.length === 0 ? ' d-none' : '')}>
@@ -42,8 +42,8 @@ export function ExploreComponent(props) {
         <DeckSlider decks={decks.HOT} loading={!decksDidSet} />
       </div>
       <div className={'mb-5' + (decks.TOP && decks.TOP.length === 0 ? ' d-none' : '')}>
-        <h3>Top decks of all time</h3>
-        <p className='text-secondary'>Everyone should take a look at these immortal decks!</p>
+        <h3>Most Thanked Decks</h3>
+        <p className='text-secondary'>Decks with the total highest number of thanks</p>
         <DeckSlider decks={decks.TOP} loading={!decksDidSet} />
       </div>
     </>

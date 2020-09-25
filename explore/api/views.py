@@ -9,7 +9,7 @@ from django.views.decorators.cache import cache_page
 from django.conf import settings
 import json
 
-EDITOR_PICKS_DECK_IDS = [20, 21, 18, 22]
+EDITOR_PICKS_DECK_IDS = [1, 2]
 with open('top_deck_ids.json', 'r') as f:
     TOP_DECK_IDS = json.loads(f.read())
 # HOT_DECK_IDS = []
