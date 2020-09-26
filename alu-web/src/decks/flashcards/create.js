@@ -52,7 +52,7 @@ export function FlashCardCreate(props) {
     });
   };
 
-  // Called after the request is sent to the backend to create a flashcard
+  // Called after the request is sent to the backend to create or edit a flashcard
   const handleBackendUpdate = (response, status) => {
     if (status === 201 || status === 200) {
       // If the user should be redirected, redirect them
@@ -86,8 +86,10 @@ export function FlashCardCreate(props) {
       apiFlashCardEdit(
         deckId,
         flashcardId,
-        frontTextRef.current.value,
-        backTextRef.current.value,
+        [
+          frontTextRef.current.value,
+          backTextRef.current.value,
+        ],
         tagsRef.current.value,
         handleBackendUpdate,
       );
