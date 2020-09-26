@@ -40,6 +40,7 @@ class FlashCardCreatorSerializer(serializers.ModelSerializer):
         model = FlashCardCreator
         fields = [
             'fields',
+            'flashcard_type',
             'tags',
             'id',
         ]

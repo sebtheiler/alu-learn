@@ -91,7 +91,7 @@ export function FlashCardsList(props) {
     <div className={props.className}>
       {flashcardList ? null : <h2 className='text-center mt-3'>Browsing Flashcards{deck ? ` in "${deck.title}"` : null}</h2>}
       <div className='text-center'>
-        {flashcardList || isForeignUser || !deck ? null :
+        {!(flashcardList || isForeignUser || !deck) &&
           <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />
         }
       </div>
@@ -104,7 +104,7 @@ export function FlashCardsList(props) {
                 suspendCallback={() => setFlashCardsDidSet(false)}
                 deleteCallback={() => {flashcards.splice(index); setFlashCardsDidSet(false);}}
                 foreignUser={isForeignUser}
-              />;
+              />
       }) :
         <p className='text-center mt-3'>
           {flashcardsDidSet ? 'This deck has no flashcards yet.' : 'Loading...'}

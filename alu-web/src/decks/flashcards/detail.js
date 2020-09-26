@@ -7,7 +7,6 @@ import './detail.css';
 // Display an individual flashcard
 export function FlashCard(props) {
   const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser} = props;
-  let date = new Date(flashcard.next_review)
 
   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
   const [suspendIsLoading, setSuspendIsLoading] = useState(false);
@@ -17,7 +16,7 @@ export function FlashCard(props) {
 
     if (suspendIsLoading === false) {
       setSuspendIsLoading(true);
-  
+
       const action = flashcard.is_suspended ? 'unsuspend' : 'suspend';
       apiFlashCardSuspendLeech(flashcard.parent_deck_id, flashcard.id, action, (response, status) => {
         if (status === 200) {
@@ -54,13 +53,33 @@ export function FlashCard(props) {
     return null;
   };
 
+  const flashcardTextRender = (flashcard) => {
+    switch (flashcard.flashcard_type) {
+      case 'basic': case 'reversed':
+        return (<>
+          <div className='col-md-6 text-center'>
+            <MarkdownRender source={flashcard.fields[0].text} />
+          </div>
+          <div className='col-md-6 text-center'>
+            <MarkdownRender source={flashcard.fields[1].text} />
+          </div>
+        </>)
+      default:
+        return (
+          <div className='col-md-12 text-center'>
+            <strong>Invalid flashcard type "{flashcard.flashcard_type}". Please report this issue.</strong>
+          </div>
+        );
+    };
+  };
+
   return (
     <div className={'container-fluid border my-3' + (foreignUser ? '' : (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : ''))}>
       <div className='row mt-3 text-center'>
         <div className='col-md-12'>
           <p className='mb-0'>
             <strong>Flashcard - #{number + 1}</strong>
-            {flashcard.learning_status !== 'UNSEEN' && !foreignUser ? <> | Due {date.toString().substring(0, 10)}</> : null}
+            {flashcard.learning_status !== 'UNSEEN' && !foreignUser ? <> | Type: "{flashcard.flashcard_type}"</> : null}
           </p>
           {showParentDeckTitle ? 
             <small className='text-secondary'>
@@ -88,14 +107,9 @@ export function FlashCard(props) {
         </div>
       </div>
       <div className='row'>
-        <div className='col-md-6 text-center'>
-          <MarkdownRender source={flashcard.front_text} />
-        </div>
-        <div className='col-md-6 text-center'>
-          <MarkdownRender source={flashcard.back_text} />
-        </div>
+        {flashcardTextRender(flashcard)}
       </div>
-      <div className='text-center mx-auto w-50' style={{wordWrap: 'break-word'}}>
+      <div className='text-center mx-auto w-50' style={{ wordWrap: 'break-word' }}>
         {flashcard.tags ? 
           <>
             Tags: <br />

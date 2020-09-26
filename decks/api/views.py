@@ -346,7 +346,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
     limit = request.GET.get('limit')
     if limit:
         # Return set number of flashcards (not paginated)
-        serializer = FlashCardSerializer(deck.flashcards.all()[:int(limit)], context={'request': request}, many=True)
+        serializer = FlashCardCreatorSerializer(deck.flashcards.all()[:int(limit)], context={'request': request}, many=True)
         return Response({
             'results': serializer.data,
             'count': deck.flashcards.count(),
@@ -356,7 +356,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
         return get_paginated_queryset_response(
             deck.flashcards.order_by('pk'),
             request,
-            FlashCardSerializer,
+            FlashCardCreatorSerializer,
             page_size=250
         )
 

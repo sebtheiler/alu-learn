@@ -27,8 +27,11 @@ export function apiFlashCardDelete(deckId, flashcardId, callback) {
 };
 
 // Edit a flashcard
-export function apiFlashCardEdit(deckId, flashcardId, frontText, backText, tags, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {front_text: frontText, back_text: backText, tags: tags});
+export function apiFlashCardEdit(deckId, flashcardId, fields, tags, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {
+    fields: fields,
+    tags: tags,
+  });
 };
 
 // Gets specific information about a flashcard
