@@ -45,6 +45,9 @@ class FlashCardField(models.Model):
     text = models.TextField()
     field_number = models.PositiveSmallIntegerField()
 
+    class Meta:
+        ordering = ['field_number']
+
     def __str__(self):
         return self.text
 

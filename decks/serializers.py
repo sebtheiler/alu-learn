@@ -34,9 +34,12 @@ class FlashCardFieldSerializer(serializers.ModelSerializer):
 
 
 class FlashCardCreatorSerializer(serializers.ModelSerializer):
+    fields = FlashCardFieldSerializer(many=True, read_only=True)
+
     class Meta:
         model = FlashCardCreator
         fields = [
+            'fields',
             'tags',
             'id',
         ]

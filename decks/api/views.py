@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Deck, FlashCardCreator, FlashCardField, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, DeckStudySessionManager
-from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer, StudySessionManagerSerializer, CustomStudySessionManagerSerializer
+from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer, StudySessionManagerSerializer, CustomStudySessionManagerSerializer, FlashCardCreatorSerializer
 from .utils import get_paginated_queryset_response
 from profiles.models import Profile
 
@@ -145,28 +145,34 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
 
     Required information:
         `deck_id`: (URL) ID of the deck in which we are editing the flashcard (unused)
-        `flashcard_id`: (URL) ID of the flashcard we are editing
-        `front_text`: (Data) What to set the front text to
-        `back_text`: (Data) What to set the back text to
+        `flashcard_id`: (URL) ID of the flashcard creator we are editing
+        `fields`: (Data) List of the fields for the flashcard
         `tags`: (Data) Raw string of tags, separated by commas
 
     Possible errors:
-        Current user does not own deck: 401, You are not authorized to edit this flashcard
-        Flashcard does not exist: 400, Flashcard not found / you are unauthorized
+        Flashcard does not exist or unauthorized: 400, Flashcard not found / you are unauthorized
     """
     # Get the flashcard
     try:
-        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
+        flashcard = FlashCardCreator.objects.get(pk=flashcard_id, deck__user=request.user) # TODO: change .get(x=x) to .get(x__id=x.id)
     except ObjectDoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
     # Edit the flashcard
-    flashcard.front_text = request.data.get('front_text')
-    flashcard.back_text = request.data.get('back_text')
     flashcard.tags = request.data.get('tags', '')
-    flashcard.save()
 
-    return Response(FlashCardSerializer(instance=flashcard).data, 200)
+    new_fields = request.data.get('fields')
+    if new_fields is not None:
+        fields = flashcard.fields.all()
+        if len(new_fields) == fields.count():
+            for i, text in enumerate(new_fields):
+                fields[i].text = text
+            FlashCardField.objects.bulk_update(fields, ['text'])
+        else:
+            return Response({'message': 'Incorrect number of fields specified'}, status=400)
+
+    flashcard.save()
+    return Response(FlashCardCreatorSerializer(instance=flashcard).data, 200)
 
 
 @api_view(['DELETE', 'POST'])
