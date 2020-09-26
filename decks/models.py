@@ -36,8 +36,6 @@ class FlashCard(models.Model):
 
     front_text = models.TextField()
     back_text = models.TextField()
-    # audio (front/back)
-    # image (front/back)
 
     LEARNING_STATUS_CHOICES = [
         ('UNSEEN', 'Unseen/New'),

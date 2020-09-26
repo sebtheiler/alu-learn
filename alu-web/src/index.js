@@ -11,6 +11,7 @@ import {ExploreComponent, DeckSearchComponent} from './explore';
 import {LandingComponent} from './landing';
 import {HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset} from './home';
 import {NoteEditor, NotesHomeList} from './notes';
+import {AutoNote} from './autonote';
 
 const e = React.createElement;
 
@@ -133,6 +134,12 @@ const sendPasswordResetElement = document.getElementById('send-password-reset');
 if (sendPasswordResetElement) {
   ReactDOM.render(e(SendPasswordReset, sendPasswordResetElement.dataset), sendPasswordResetElement);
 };
+
+const autoNoteElement = document.getElementById('auto-note');
+if (autoNoteElement) {
+  ReactDOM.render(e(AutoNote, autoNoteElement.dataset), autoNoteElement);
+};
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
