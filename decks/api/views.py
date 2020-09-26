@@ -91,7 +91,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
         return Response({'message': 'Deck not found / unauthorized'}, status=400)
 
     content = request.data.get('content')
-    flashcard_type = request.data.get('flashcard_type')
+    flashcard_type = request.data.get('flashcard_type', 'basic')
     tags = request.data.get('tags')
     if content is not None:
         now = timezone.now()
@@ -104,11 +104,12 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
         #     next_review=this_morning,
         # )
         # return Response(FlashCardSerializer(instance=created).data, 201)
-        creator = FlashCardCreator(
+        creator = FlashCardCreator.objects.create(
             deck=deck,
             tags=tags,
             flashcard_type=flashcard_type,
         )
+        print(creator)
         fields = FlashCardField.objects.bulk_create([
             FlashCardField(
                 creator=creator,
@@ -117,19 +118,32 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             )
             for i, text in enumerate(content)
         ])
+        print(fields)
+        if flashcard_type == 'basic':
+            # Front to back
+            all_content_indicies = [
+                [0, 1],
+            ]
+        elif flashcard_type == 'reversed':
+            # Front to back and back to front
+            all_content_indicies = [
+                [0, 1],
+                [1, 0],
+            ]
+        else:
+            return Response({'message': 'Invalid flashcard type'}, status=400)
         flashcards = FlashCard.objects.bulk_create([
             FlashCard(
                 creator=creator,
                 next_review=this_morning,
+                content_indicies=all_content_indicies[i],
             )
-            for _ in range(len(fields))
+            for i in range(len(all_content_indicies))
         ])
-        print(creator)
-        print(fields)
         print(flashcards)
-        return Response({'m': 'm'})
+        return Response({'m': 'm'}, status=201)
     else:
-        return Response({'message': 'Content must not be None'}, 400)
+        return Response({'message': 'Content must not be None'}, status=400)
 
 
 @api_view(['POST'])
@@ -809,6 +823,8 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
             ssm.max_ease,
             timezone.now() + dt.timedelta(minutes=ssm.review_ahead_minutes),
         )
+    else:
+        return Response({'message': 'Unrecognized SSM'}, status=400)
 
     ssm.last_flashcard_date = timezone.now().date()
     ssm.save()

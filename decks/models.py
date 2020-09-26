@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from profiles.models import Profile
+from django.contrib.postgres.fields import ArrayField, JSONField
 
 # Create your models here.
 User = settings.AUTH_USER_MODEL
@@ -35,8 +36,8 @@ class FlashCardCreator(models.Model):
     flashcard_type = models.CharField(default='basic', max_length=16)
     # Also contains information about fields and generated flashcards
 
-    # def __str__(self):
-    #     return f
+    def __str__(self):
+        return f'Flashcard Creator in Deck #{self.deck.id}'
 
 
 class FlashCardField(models.Model):
@@ -50,6 +51,7 @@ class FlashCardField(models.Model):
 
 class FlashCard(models.Model):
     creator = models.ForeignKey(FlashCardCreator, on_delete=models.CASCADE, related_name='review_instances')
+    content_indicies = ArrayField(models.PositiveSmallIntegerField())
 
     LEARNING_STATUS_CHOICES = [
         ('UNSEEN', 'Unseen/New'),
@@ -69,8 +71,12 @@ class FlashCard(models.Model):
     leech_index = models.PositiveSmallIntegerField(default=0)
 
 
-    # def __str__(self):
-    #     return self.front_text + '  ---  ' + self.back_text
+    def get_content(self):
+        fields = self.creator.fields.all()
+        return [fields[i] for i in self.content_indicies]
+
+    def __str__(self):
+        return str(self.get_content())
     
     def is_leech(self):
         # Get whether the card is a leech or not, based on whether
