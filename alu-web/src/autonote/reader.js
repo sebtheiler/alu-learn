@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import {Form} from 'react-bootstrap';
+import {Button, Form} from 'react-bootstrap';
 
 export function AutoNote(props) {
   const [selectedPar, setSelectedPar] = useState(0);
+  const [finished, setFinished] = useState(false);
 
   const text = `
 On the frontier of Armenia towards the south-east is the kingdom of Mosul. It is a very great kingdom, and inhabited by several different kinds of people whom we shall now describe.
@@ -14,17 +15,19 @@ There is yet another race of people who inhabit the mountains in that quarter, a
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (selectedPar < text.length - 1) {
+      setSelectedPar(selectedPar + 1);
+    } else {
+      setFinished(true);
+    };
   };
 
   return (<div className='container'>
     <h3 className='text-center'>Content</h3>
-    <div style={{ border: '1px solid gray', padding: '30px' }}>
-      {text.map((paragraph, index) =>
-        <p
-          key={`paragraph-${index}`}
-          style={{ color: index === selectedPar ? 'black' : '#e0e0e0' }}
-        >{paragraph}</p>
-      )}
+    <div style={{ border: '1px solid gray', padding: '30px', height: '250px', overflow: 'hidden' }}>
+      <p style={{ color: '#e0e0e0' }}>...{text[selectedPar - 1] && text[selectedPar - 1].substr(text[selectedPar - 1].length - 150, text[selectedPar - 1].length)}</p>
+      <p style={{ color: '#000000' }}>{text[selectedPar]}</p>
+      <p style={{ color: '#e0e0e0' }}>...{text[selectedPar + 1] && text[selectedPar + 1].substr(0, 150)}</p>
     </div>
     <Form onSubmit={handleSubmit} className='mt-4'>
       <Form.Group className='w-75 mx-auto'>
@@ -33,6 +36,7 @@ There is yet another race of people who inhabit the mountains in that quarter, a
           type='text'
           name='sectionTitle'
           placeholder='B.F. Skinner > Skinner Box'
+          required
         />
       </Form.Group>
       <Form.Group>
@@ -43,6 +47,11 @@ There is yet another race of people who inhabit the mountains in that quarter, a
           rows='10'
         />
       </Form.Group>
+      {!finished ?
+      <Button type='submit' block>Add Notes</Button>
+      :
+      <p className='text-center'>You've finished reviewing this paper!</p>
+      }
     </Form>
   </div>);
 };
