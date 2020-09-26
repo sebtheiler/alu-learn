@@ -75,7 +75,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 
     Required information:
         `deck_id`: (URL) ID of the deck to create a flashcard in
-        `content`: (Data) List of the content for each field of the flashcard
+        `fields`: (Data) List of the fields and their data for the flashcard
         `tags`: (Data) Raw string of tags, separated by commas
         `flashcard_type`: (Data) Type of flashcard
     
@@ -88,10 +88,10 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     except ObjectDoesNotExist:
         return Response({'message': 'Deck not found / unauthorized'}, status=400)
 
-    content = request.data.get('content')
+    fields = request.data.get('fields')
     flashcard_type = request.data.get('flashcard_type', 'basic')
     tags = request.data.get('tags')
-    if content is not None:
+    if fields is not None:
         now = timezone.now()
         this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
@@ -107,7 +107,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
                 text=text,
                 field_number=i,
             )
-            for i, text in enumerate(content)
+            for i, text in enumerate(fields)
         ])
 
         if flashcard_type == 'basic':
@@ -175,27 +175,26 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     return Response(FlashCardCreatorSerializer(instance=flashcard).data, 200)
 
 
-@api_view(['DELETE', 'POST'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_delete_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
-    Deletes a flashcard - DELETE/POST
+    Deletes a flashcard - POST
 
     Required information:
         `deck_id`: (URL) The ID of the deck in which the flashcard is located
-        `flashcard_id`: (URL) The ID of the flashcard to delete
+        `flashcard_id`: (URL) The ID of the flashcard creator to delete
     
     Returns:
         `message`: Flashcard deleted successfully
         `status`: 200
     
     Possible errors:
-        Current user does not own deck: 401, You are not authorized to delete this deck
         Flashcard does not exist or user does not own it: 400, Flashcard not found / you are unauthorized
     """
     # Get the flashcard
     try:
-        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
+        flashcard = FlashCardCreator.objects.get(pk=flashcard_id, deck__user=request.user)
     except ObjectDoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
@@ -207,7 +206,7 @@ def flashcard_delete_view(request, deck_id, flashcard_id, *args, **kwargs):
 @api_view(['GET'])
 def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
-    Get specific information about a deck - GET
+    Get specific information about a flashcard - GET
 
     Required information:
         `deck_id`: (URL) The ID of the deck (unused)

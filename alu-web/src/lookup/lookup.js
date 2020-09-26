@@ -14,8 +14,11 @@ export function apiDeckCreate(title, description, sharingSetting, shuffleUnseenC
 };
 
 // Creates a flashcard in a deck
-export function apiFlashCardCreate(deckId, frontText, backText, tags, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/create/`, callback, {front_text: frontText, back_text: backText, tags: tags})
+export function apiFlashCardCreate(deckId, fields, tags, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/create/`, callback, {
+    fields: fields,
+    tags: tags,
+  });
 };
 
 // Deletes a flashcard in a deck

@@ -95,8 +95,10 @@ export function FlashCardCreate(props) {
       // This implies we are creating a card
       apiFlashCardCreate(
         deckId,
-        frontTextRef.current.value,
-        backTextRef.current.value,
+        [
+          frontTextRef.current.value,
+          backTextRef.current.value,
+        ],
         tagsRef.current.value,
         handleBackendUpdate,
       );
@@ -112,7 +114,7 @@ export function FlashCardCreate(props) {
             {returnToPreviousPage ? null : <FreezeOverlay><i
                 className='far fa-snowflake mb-1 mr-1 fa-lg'
                 onClick={event => {event.preventDefault(); setFreezeFront(!freezeFront)}}
-                style={{cursor: 'pointer', color: freezeFront ? '#89ACFF' : '#6C757D'}}
+                style={{ cursor: 'pointer', color: freezeFront ? '#89ACFF' : '#6C757D' }}
               /></FreezeOverlay>}
               Front
             </p>
