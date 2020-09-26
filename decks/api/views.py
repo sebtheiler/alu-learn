@@ -141,7 +141,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             for i in range(len(all_content_indicies))
         ])
         print(flashcards)
-        return Response({'m': 'm'}, status=201)
+        return Response(FlashCardSerializer(instance=flashcards, many=True).data, 201)
     else:
         return Response({'message': 'Content must not be None'}, status=400)
 

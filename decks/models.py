@@ -83,7 +83,7 @@ class FlashCard(models.Model):
         # it has the tag 'leech'
         # The split is required so that the tag 'daoijdaleechadajda' is not
         # marked as a leech.
-        return 'leech' in [tag.strip() for tag in self.tags.split(',')]
+        return False # TODO: 'leech' in [tag.strip() for tag in self.tags.split(',')]
     
     def set_is_leech(self, is_leech, save=True):
         if is_leech:

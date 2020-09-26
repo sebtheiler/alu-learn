@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework import serializers
 from profiles.serializers import MinifiedProfileSerializer, PublicProfileSerializer
-from .models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager
+from .models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator
 
 
 class DeckThankSerializer(serializers.ModelSerializer):
@@ -23,16 +23,36 @@ class DeckThankSerializer(serializers.ModelSerializer):
         return obj.profile.user.username
 
 
+class FlashCardFieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FlashCardField
+        fields = [
+            'text',
+            'field_number',
+            'id',
+        ]
+
+
+class FlashCardCreatorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FlashCardCreator
+        fields = [
+            'tags',
+            'id',
+        ]
+
+
 class FlashCardSerializer(serializers.ModelSerializer):
+    content = serializers.SerializerMethodField(read_only=True)
     parent_deck_id = serializers.SerializerMethodField(read_only=True)
     parent_deck_title = serializers.SerializerMethodField(read_only=True)
+    tags = serializers.SerializerMethodField(read_only=True)
     is_leech = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FlashCard
         fields = [
-            'front_text',
-            'back_text',
+            'content',
             'tags',
             'next_review',
             'steps_index',
@@ -48,13 +68,19 @@ class FlashCardSerializer(serializers.ModelSerializer):
         ]
     
     def get_parent_deck_id(self, obj):
-        return obj.deck.id
+        return obj.creator.deck.id
     
     def get_parent_deck_title(self, obj):
-        return obj.deck.title
+        return obj.creator.deck.title
     
     def get_is_leech(self, obj):
         return obj.is_leech()
+    
+    def get_tags(self, obj):
+        return obj.creator.tags
+    
+    def get_content(self, obj):
+        return FlashCardFieldSerializer(obj.get_content(), many=True).data
 
 
 class DeckSerializer(serializers.ModelSerializer):
@@ -84,11 +110,6 @@ class DeckSerializer(serializers.ModelSerializer):
             'new_cards_done_today',
             'daily_new_card_limit',
         ]
-    
-    def validate_title(self, value):
-        if len(value) > settings.MAX_DECK_TITLE_LENGTH:
-            raise forms.ValidationError("Your deck's title is too long!")
-        return value
 
     def get_author(self, obj):
         request = self.context.get('request')
