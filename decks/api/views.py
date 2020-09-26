@@ -11,7 +11,6 @@ from rest_framework.decorators import (api_view, authentication_classes,
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..forms import DeckForm
 from ..models import Deck, FlashCardCreator, FlashCardField, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, DeckStudySessionManager
 from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer, StudySessionManagerSerializer, CustomStudySessionManagerSerializer
 from .utils import get_paginated_queryset_response
@@ -68,7 +67,6 @@ def deck_create_view(request, *args, **kwargs):
     return Response(DeckSerializer(new_deck).data, status=201)
 
 
-# {"content": ["a", "b", "c"], "tags": "alphabet"}
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_create_view(request, deck_id, *args, **kwargs):
@@ -96,21 +94,14 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     if content is not None:
         now = timezone.now()
         this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        # created = FlashCard.objects.create(
-        #     deck=deck,
-        #     front_text=front_text,
-        #     back_text=back_text,
-        #     tags=tags if tags else '',
-        #     next_review=this_morning,
-        # )
-        # return Response(FlashCardSerializer(instance=created).data, 201)
+
         creator = FlashCardCreator.objects.create(
             deck=deck,
             tags=tags,
             flashcard_type=flashcard_type,
         )
-        print(creator)
-        fields = FlashCardField.objects.bulk_create([
+
+        FlashCardField.objects.bulk_create([
             FlashCardField(
                 creator=creator,
                 text=text,
@@ -118,7 +109,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             )
             for i, text in enumerate(content)
         ])
-        print(fields)
+
         if flashcard_type == 'basic':
             # Front to back
             all_content_indicies = [
@@ -140,7 +131,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             )
             for i in range(len(all_content_indicies))
         ])
-        print(flashcards)
+
         return Response(FlashCardSerializer(instance=flashcards, many=True).data, 201)
     else:
         return Response({'message': 'Content must not be None'}, status=400)

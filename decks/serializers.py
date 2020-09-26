@@ -103,12 +103,11 @@ class DeckSerializer(serializers.ModelSerializer):
             'num_thanks',
             'you_have_thanked',
             'serializer_name',
-            'id',
-            # ssm
             'scheduling_algorithm',
             'shuffle_unseen_cards',
             'new_cards_done_today',
             'daily_new_card_limit',
+            'id',
         ]
 
     def get_author(self, obj):
