@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from django.db.models import Q
 from profiles.models import Profile
 
 # Create your models here.
@@ -30,12 +29,27 @@ class Deck(models.Model):
         return self.title
 
 
-class FlashCard(models.Model):
+class FlashCardCreator(models.Model):
     deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='flashcards')
     tags = models.CharField(default='', max_length=1024, blank=True)
+    flashcard_type = models.CharField(default='basic', max_length=16)
+    # Also contains information about fields and generated flashcards
 
-    front_text = models.TextField()
-    back_text = models.TextField()
+    # def __str__(self):
+    #     return f
+
+
+class FlashCardField(models.Model):
+    creator = models.ForeignKey(FlashCardCreator, on_delete=models.CASCADE, related_name='fields')
+    text = models.TextField()
+    field_number = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return self.text
+
+
+class FlashCard(models.Model):
+    creator = models.ForeignKey(FlashCardCreator, on_delete=models.CASCADE, related_name='review_instances')
 
     LEARNING_STATUS_CHOICES = [
         ('UNSEEN', 'Unseen/New'),
@@ -55,8 +69,8 @@ class FlashCard(models.Model):
     leech_index = models.PositiveSmallIntegerField(default=0)
 
 
-    def __str__(self):
-        return self.front_text + '  ---  ' + self.back_text
+    # def __str__(self):
+    #     return self.front_text + '  ---  ' + self.back_text
     
     def is_leech(self):
         # Get whether the card is a leech or not, based on whether

@@ -1,11 +1,8 @@
-from django.conf import settings
-from django.http import JsonResponse
-from django.utils.http import is_safe_url
 from django.utils import timezone
 from django.db.models import Q
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-from django.views.decorators.cache import cache_page, cache_control
+from django.views.decorators.cache import cache_control
 from django.views.decorators.vary import vary_on_cookie
 
 from rest_framework.authentication import SessionAuthentication
@@ -15,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..forms import DeckForm
-from ..models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, DeckStudySessionManager
+from ..models import Deck, FlashCardCreator, FlashCardField, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, DeckStudySessionManager
 from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer, StudySessionManagerSerializer, CustomStudySessionManagerSerializer
 from .utils import get_paginated_queryset_response
 from profiles.models import Profile
@@ -71,7 +68,8 @@ def deck_create_view(request, *args, **kwargs):
     return Response(DeckSerializer(new_deck).data, status=201)
 
 
-@api_view(['GET', 'POST'])
+# {"content": ["a", "b", "c"], "tags": "alphabet"}
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_create_view(request, deck_id, *args, **kwargs):
     """
@@ -79,34 +77,59 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 
     Required information:
         `deck_id`: (URL) ID of the deck to create a flashcard in
-        `front_text`: (Data) Text to go on the front of the flashcard
-        `back_text`: (Data) Text to go on the back of the flashcard
+        `content`: (Data) List of the content for each field of the flashcard
         `tags`: (Data) Raw string of tags, separated by commas
+        `flashcard_type`: (Data) Type of flashcard
     
     Possible errors:
         Deck ID does not exist or the user is unauthenticated: 400, Deck not found / unauthorized
-        Front/back text is None: 400, Front and back text must not be None
+        Content is None: 400, Content must not be None
     """
     try:
         deck = Deck.objects.get(pk=deck_id, user=request.user)
     except ObjectDoesNotExist:
         return Response({'message': 'Deck not found / unauthorized'}, status=400)
 
-    front_text = request.data.get('front_text')
-    back_text = request.data.get('back_text')
+    content = request.data.get('content')
+    flashcard_type = request.data.get('flashcard_type')
     tags = request.data.get('tags')
-    if front_text is not None and back_text is not None:
+    if content is not None:
         now = timezone.now()
         this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
-        created = FlashCard.objects.create(
+        # created = FlashCard.objects.create(
+        #     deck=deck,
+        #     front_text=front_text,
+        #     back_text=back_text,
+        #     tags=tags if tags else '',
+        #     next_review=this_morning,
+        # )
+        # return Response(FlashCardSerializer(instance=created).data, 201)
+        creator = FlashCardCreator(
             deck=deck,
-            front_text=front_text,
-            back_text=back_text,
-            tags=tags if tags else '',
-            next_review=this_morning,
+            tags=tags,
+            flashcard_type=flashcard_type,
         )
-        return Response(FlashCardSerializer(instance=created).data, 201)
-    return Response({'message': 'Front and back text must not be None'}, 400)
+        fields = FlashCardField.objects.bulk_create([
+            FlashCardField(
+                creator=creator,
+                text=text,
+                field_number=i,
+            )
+            for i, text in enumerate(content)
+        ])
+        flashcards = FlashCard.objects.bulk_create([
+            FlashCard(
+                creator=creator,
+                next_review=this_morning,
+            )
+            for _ in range(len(fields))
+        ])
+        print(creator)
+        print(fields)
+        print(flashcards)
+        return Response({'m': 'm'})
+    else:
+        return Response({'message': 'Content must not be None'}, 400)
 
 
 @api_view(['POST'])
