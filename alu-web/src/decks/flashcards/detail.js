@@ -58,10 +58,10 @@ export function FlashCard(props) {
       case 'basic': case 'reversed':
         return (<>
           <div className='col-md-6 text-center'>
-            <MarkdownRender source={flashcard.fields[0].text} />
+            <MarkdownRender source={flashcard.deck_fields[0].text} />
           </div>
           <div className='col-md-6 text-center'>
-            <MarkdownRender source={flashcard.fields[1].text} />
+            <MarkdownRender source={flashcard.deck_fields[1].text} />
           </div>
         </>)
       default:

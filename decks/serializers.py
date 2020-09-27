@@ -34,13 +34,13 @@ class FlashCardFieldSerializer(serializers.ModelSerializer):
 
 
 class FlashCardCreatorSerializer(serializers.ModelSerializer):
-    fields = FlashCardFieldSerializer(many=True, read_only=True)
+    deck_fields = FlashCardFieldSerializer(source='fields', many=True, read_only=True)
     parent_deck_id = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FlashCardCreator
         fields = [
-            'fields',
+            'deck_fields',
             'flashcard_type',
             'tags',
             'parent_deck_id',
@@ -52,7 +52,7 @@ class FlashCardCreatorSerializer(serializers.ModelSerializer):
 
 
 class FlashCardSerializer(serializers.ModelSerializer):
-    content = serializers.SerializerMethodField(read_only=True)
+    deck_fields = serializers.SerializerMethodField(read_only=True)
     parent_deck_id = serializers.SerializerMethodField(read_only=True)
     parent_deck_title = serializers.SerializerMethodField(read_only=True)
     tags = serializers.SerializerMethodField(read_only=True)
@@ -62,7 +62,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlashCard
         fields = [
-            'content',
+            'deck_fields',
             'tags',
             'next_review',
             'steps_index',
@@ -90,7 +90,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
     def get_tags(self, obj):
         return obj.creator.tags
     
-    def get_content(self, obj):
+    def get_deck_fields(self, obj):
         return FlashCardFieldSerializer(obj.get_content(), many=True).data
     
     def get_flashcard_type(self, obj):

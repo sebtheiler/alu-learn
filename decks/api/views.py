@@ -559,42 +559,51 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
 
 def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=None, leech=None, learning_status=None, min_ease=None, max_ease=None, due_before=None):
     # Get list of decks to search in
-    deck_qs = user.decks.all()
-    if not deck_qs.exists():
-        return Response({}, status=200)
+    # deck_qs = user.decks.all()
+    # if not deck_qs.exists():
+    #     return Response({}, status=200)
 
-    if deck_ids:
-        deck_ids = deck_ids.split(',')
-        deck_qs = deck_qs.filter(pk__in=deck_ids)
+    # if deck_ids:
+    #     deck_ids = deck_ids.split(',')
+    #     deck_qs = deck_qs.filter(pk__in=deck_ids)
 
     # Get flashcards
-    flashcard_qs = deck_qs.first().flashcards.all()
-    for deck in deck_qs[1:]:
-        flashcard_qs |= deck.flashcards.all()
+    # flashcard_qs = deck_qs.first().flashcards.all()
+    # for deck in deck_qs[1:]:
+    #     flashcard_qs |= deck.flashcards.all()
+    # flashcard_qs = FlashCard.objects.filter(
+    #     creator__deck__user__pk=user.pk,
+    #     creator__deck__pk__in=deck_ids.split(',')
+    # )
 
     # Search flashcards
     # We will be ANDing (&=) a bunch more queries to this
     # and using it as a filter in the end.
-    flashcard_query = Q()
+    flashcard_query = Q(creator__deck__user__pk=user.pk)
 
-    # Filter by tags
-    if tags:
-        if isinstance(tags, str):
-            tag_list = [tag.strip() for tag in tags.split(',')]
-        else:
-            tag_list = tags
+    # Filter by deck Id
+    if deck_ids:
+        flashcard_query &= Q(creator__deck__pk__in=deck_ids.split(','))
 
-        # Gets a list of flashcard IDs, if the
-        # flashcard has a tag that is in `tag_list`
-        flashcard_ids = [
-            flashcard.id for flashcard in flashcard_qs if len( # each flashcard if...
-                set(
-                    [ # (set form of all tags in a card)
-                        tag.strip() for tag in flashcard.tags.split(',')
-                    ] # ...has any shared elements in `tag_list`
-                ).intersection(set(tag_list))) > 0
-        ] 
-        flashcard_query &= Q(id__in=flashcard_ids)
+    # TODO: fix and re-add this
+    # # Filter by tags
+    # if tags:
+    #     if isinstance(tags, str):
+    #         tag_list = [tag.strip() for tag in tags.split(',')]
+    #     else:
+    #         tag_list = tags
+
+    #     # Gets a list of flashcard IDs, if the
+    #     # flashcard has a tag that is in `tag_list`
+    #     flashcard_ids = [
+    #         flashcard.id for flashcard in flashcard_qs if len( # each flashcard if...
+    #             set(
+    #                 [ # (set form of all tags in a card)
+    #                     tag.strip() for tag in flashcard.tags.split(',')
+    #                 ] # ...has any shared elements in `tag_list`
+    #             ).intersection(set(tag_list))) > 0
+    #     ] 
+    #     flashcard_query &= Q(id__in=flashcard_ids)
 
     # Filter by contains
     if contains:
@@ -604,14 +613,15 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
     if suspended is not None:
         flashcard_query &= Q(is_suspended=suspended.lower() == 'true' if isinstance(suspended, str) else suspended)
 
-    if leech is not None:
-        if (isinstance(leech, str) and leech.lower() == 'true') or (isinstance(leech, bool) and leech):
-            filter_func = lambda flashcard: flashcard.is_leech()
-        else:
-            filter_func = lambda flashcard: not flashcard.is_leech()
+    # TODO: fix and re-add this
+    # if leech is not None:
+    #     if (isinstance(leech, str) and leech.lower() == 'true') or (isinstance(leech, bool) and leech):
+    #         filter_func = lambda flashcard: flashcard.is_leech()
+    #     else:
+    #         filter_func = lambda flashcard: not flashcard.is_leech()
 
-        flashcard_ids = [flashcard.id for flashcard in flashcard_qs if filter_func(flashcard)]
-        flashcard_query &= Q(id__in=flashcard_ids)
+    #     flashcard_ids = [flashcard.id for flashcard in flashcard_qs if filter_func(flashcard)]
+    #     flashcard_query &= Q(id__in=flashcard_ids)
 
     if learning_status is not None:
         flashcard_query &= Q(learning_status__iexact=learning_status)
@@ -628,7 +638,7 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
         flashcard_query &= Q(next_review__lte=due_before)
 
     # Execute query
-    return flashcard_qs.filter(flashcard_query)
+    return FlashCard.objects.filter(flashcard_query)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -774,7 +784,6 @@ def txt_file_upload(request, *args, **kwargs):
     return Response(DeckSerializer(deck).data, status=201)
 
 
-from django.db.models.query import QuerySet
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ssm_flashcards_view(request, ssm_id, *args, **kwargs):

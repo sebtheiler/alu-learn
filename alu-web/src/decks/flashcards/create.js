@@ -45,8 +45,8 @@ export function FlashCardCreate(props) {
       if (status === 200) {
         switch (response.flashcard_type) {
           case 'basic': case 'reversed':
-            frontTextRef.current.value = response.fields[0].text;
-            backTextRef.current.value = response.fields[1].text;
+            frontTextRef.current.value = response.deck_fields[0].text;
+            backTextRef.current.value = response.deck_fields[1].text;
             break;
           default:
             return;
