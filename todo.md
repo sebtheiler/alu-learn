@@ -177,10 +177,13 @@
 
 
 # Random
-- [ ] Fix deck upload
+- [X] Fix deck upload
 - [ ] Fix flashcard search / custom study
+- [ ] Maybe display all flashcards (not creators) in browse???
+
 - [ ] Fix random bugs in notes -> disable spell correct in firefox
 - [ ] Fix bugs with lists
+
 - [ ] Horizontal break
 - [ ] Automatic header to paragraphs on enter press
 - [ ] Soft break

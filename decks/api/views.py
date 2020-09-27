@@ -605,11 +605,13 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
     #     ] 
     #     flashcard_query &= Q(id__in=flashcard_ids)
 
-    # Filter by contains
-    if contains:
-        flashcard_query &= Q(front_text__icontains=contains) | Q(back_text__icontains=contains)
+    # TODO: fix and re-add
+    # # Filter by contains
+    # if contains:
+    #     flashcard_query &= Q(front_text__icontains=contains) | Q(back_text__icontains=contains)
 
     # Filter by suspended, leech, and learning status
+    # TODO: this doesn't work
     if suspended is not None:
         flashcard_query &= Q(is_suspended=suspended.lower() == 'true' if isinstance(suspended, str) else suspended)
 

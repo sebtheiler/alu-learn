@@ -109,7 +109,7 @@ export function FlashCardsList(props) {
         <p className='text-center mt-3'>
           {flashcardsDidSet ? 'This deck has no flashcards yet.' : 'Loading...'}
         </p>}
-      {(nextUrl || artificialPaginationNumFlashcards) && 
+      {(nextUrl || (artificialPaginationNumFlashcards && flashcardList.length > artificialPaginationNumFlashcardsShown)) && 
         <Button
           onClick={handleLoadNext}
           variant='outline-primary'
