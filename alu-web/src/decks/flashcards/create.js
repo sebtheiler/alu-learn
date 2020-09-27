@@ -41,9 +41,16 @@ export function FlashCardCreate(props) {
   if (isNaN(flashcardId) === false) {
     btn_label = 'Save';
     apiFlashCardDetail(deckId, flashcardId, (response, status) => {
+      console.log(response)
       if (status === 200) {
-        frontTextRef.current.value = response.front_text;
-        backTextRef.current.value = response.back_text;
+        switch (response.flashcard_type) {
+          case 'basic': case 'reversed':
+            frontTextRef.current.value = response.fields[0].text;
+            backTextRef.current.value = response.fields[1].text;
+            break;
+          default:
+            return;
+        };
         tagsRef.current.value = response.tags;
       } else {
         // Error getting flashcard detail

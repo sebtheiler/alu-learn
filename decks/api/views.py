@@ -165,6 +165,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     if new_fields is not None:
         fields = flashcard.fields.all()
         if len(new_fields) == fields.count():
+            _ = (f.text for f in fields) # for some reason, this line is needed
             for i, text in enumerate(new_fields):
                 fields[i].text = text
             FlashCardField.objects.bulk_update(fields, ['text'])
@@ -210,7 +211,7 @@ def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
 
     Required information:
         `deck_id`: (URL) The ID of the deck (unused)
-        `flashcard_id`: (URL) The ID of the flashcard
+        `flashcard_id`: (URL) The ID of the flashcard creator
 
     Returns:
         Front text of the flashcard: 'front_text'
@@ -221,11 +222,11 @@ def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
         Invalid flashcard or user is unauthorized: 404, Flashcard not found / you are unauthorized
     """
     try:
-        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
+        flashcard = FlashCardCreator.objects.get(pk=flashcard_id, deck__user=request.user)
     except ObjectDoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=404)
 
-    return Response(FlashCardSerializer(flashcard).data)
+    return Response(FlashCardCreatorSerializer(flashcard).data)
 
 
 @api_view(['GET'])
@@ -549,6 +550,7 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
     if action in ('suspend', 'unsuspend'):
         flashcard.is_suspended = (action == 'suspend')
     elif action in ('leech', 'unleech'):
+        # TODO: fix this
         flashcard.set_is_leech(action == 'leech', save=False)
     flashcard.save()
 
