@@ -791,10 +791,7 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
         now = timezone.now()
         now += dt.timedelta(minutes=ssm.review_ahead_minutes)
 
-        ssm_flashcards = QuerySet(FlashCard)
-        for flashcard_creator in ssm.deck.flashcards.all():
-            ssm_flashcards |= flashcard_creator.review_instances.all()
-
+        ssm_flashcards = FlashCard.objects.filter(creator__deck__pk=ssm.deck.pk)
         seen_flashcards = ssm_flashcards.filter(
             Q(next_review__lte=now) &
             ~Q(learning_status__iexact='UNSEEN') &

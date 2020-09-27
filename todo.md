@@ -177,6 +177,8 @@
 
 
 # Random
+- [ ] Fix deck upload
+- [ ] Fix flashcard search / custom study
 - [ ] Fix random bugs in notes -> disable spell correct in firefox
 - [ ] Fix bugs with lists
 - [ ] Horizontal break
