@@ -1,7 +1,7 @@
-const content = [{"type": "heading-one", "children": [{"text": "Header 1"}]}, {"type": "paragraph", "children": [{"text": "Content 1 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "heading-two", "children": [{"text": "Header 2"}]}, {"type": "paragraph", "children": [{"text": "Content 2 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "heading-one", "children": [{"text": "Second Header 1"}]}, {"type": "paragraph", "children": [{"text": "Content 1 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "heading-two", "children": [{"text": "Second Header 2"}]}, {"type": "paragraph", "children": [{"text": "Content 2 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}];
+const content = [{"type": "heading-one", "children": [{"text": "Header 1"}]}, {"type": "paragraph", "children": [{"text": "Content 1 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "heading-two", "children": [{"text": "Header 2"}]}, {"type": "paragraph", "children": [{"text": "Content 2 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "heading-two", "children": [{"text": "Another Header 2"}]}, {"type": "paragraph", "children": [{"text": "Text"}]}, {"type": "heading-one", "children": [{"text": "Second Header 1"}]}, {"type": "paragraph", "children": [{"text": "Content 1 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "heading-two", "children": [{"text": "Second Header 2"}]}, {"type": "paragraph", "children": [{"text": "Content 2 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}];
 const wordToNum = { 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9 };
 const numToWord = { 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine' };
-const sectionString = 'Third Header 1 > Third Header 2 '//#'Second Header 1 >  Second Header 2';
+const sectionString = 'Header 2 > Non-existant Header > I doubt this works'//#'Second Header 1 >  Second Header 2';
 const contentToAdd = [{"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}];
 const parsedSection = sectionString.split('>').map(sec => sec.trim());
 
@@ -14,7 +14,7 @@ const checkHeadingMatch = (element, targetText, targetHeadingSize) => {
 };
 
 const insertElement = (data, headingSize, startingIndex=0) => {
-  var elementMatch;
+  let elementMatch;
   for (let [index, element] of data.slice(startingIndex).entries()) {
     index += startingIndex;
     if (elementMatch) {
@@ -23,13 +23,20 @@ const insertElement = (data, headingSize, startingIndex=0) => {
         const newHeadingSize = wordToNum[element.type.substring(8)];
         console.log(headingSize, newHeadingSize, data)
         if (newHeadingSize <= headingSize || parsedSection.length === headingSize) {
-          console.log('inserting at', index)
+          console.log('inserting at', index, newHeadingSize, headingSize, parsedSection.length)
           // If the next same (or larger) level section has begun,
           // append the data right before it
           // OR
           // If we have no more subsections to search
+
+          // Prepare new sections to insert (if any)
+          const headings = parsedSection.slice(headingSize).map((sectionTitle, index) => {
+            return {"type": `heading-${numToWord[headingSize + 1 + index]}`, "children": [{"text": sectionTitle}]};
+          });
+
           return [
             ...data.slice(0, index),
+            ...headings,
             ...contentToAdd,
             ...data.slice(index),
           ];
@@ -63,7 +70,6 @@ const insertElement = (data, headingSize, startingIndex=0) => {
             wordToNum[element.type.substring(8)] < headingSize
           ) || index === data.length - 1
         ) {
-        console.log('inserting')
         // No matches at all; insert new heading
         const headings = parsedSection.slice(headingSize - 1).map((sectionTitle, index) => {
           return {"type": `heading-${numToWord[headingSize + index]}`, "children": [{"text": sectionTitle}]};
@@ -78,4 +84,5 @@ const insertElement = (data, headingSize, startingIndex=0) => {
     };
   };
 };
+console.log(content)
 console.log(insertElement(content, 1));
