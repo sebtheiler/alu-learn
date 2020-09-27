@@ -880,7 +880,7 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
 
     # Get the flashcard
     try:
-        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
+        flashcard = FlashCard.objects.get(pk=flashcard_id, creator__deck__user=request.user)
     except ObjectDoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
@@ -890,11 +890,11 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
     flashcard.interval = request.data.get('interval', flashcard.interval)
     flashcard.steps_index = request.data.get('steps_index', flashcard.steps_index)
     flashcard.leech_index = request.data.get('leech_index', flashcard.leech_index)
-    flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
+    # TODO: flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
     flashcard.save()
 
     # Increment the number of cards that the profile and SSM are registed as doing today
-    flashcard.deck.user.profile.increment_cards_done_today()
+    flashcard.creator.deck.user.profile.increment_cards_done_today()
     if request.data.get('increment_new_cards_done_today'):
         ssm.new_cards_done_today += 1
         ssm.save()
