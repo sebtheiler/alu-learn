@@ -744,18 +744,31 @@ def txt_file_upload(request, *args, **kwargs):
         DeckStudySessionManager.objects.create(deck=deck, user=request.user.profile, last_flashcard_date=timezone.now())
 
     # Create flashcards
+    creators = FlashCardCreator.objects.bulk_create([
+        FlashCardCreator(
+            deck=deck,
+            flashcard_type='basic',
+        )
+        for _ in front_and_back
+    ])
+    FlashCardField.objects.bulk_create([
+        FlashCardField(
+            creator=creator,
+            text=front_and_back[i][num],
+            field_number=num,
+        )
+        for i, creator in enumerate(creators) for num in range(2)
+    ])
     now = timezone.now()
     this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    flashcards = [
+    FlashCard.objects.bulk_create([
         FlashCard(
-            deck=deck,
-            front_text=front,
-            back_text=back,
+            creator=creator,
             next_review=this_morning,
+            content_indicies=[0, 1],
         )
-        for front, back in front_and_back
-    ]
-    FlashCard.objects.bulk_create(flashcards)
+        for creator in creators
+    ])
 
     # Return
     return Response(DeckSerializer(deck).data, status=201)
