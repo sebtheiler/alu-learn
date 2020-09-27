@@ -761,6 +761,7 @@ def txt_file_upload(request, *args, **kwargs):
     return Response(DeckSerializer(deck).data, status=201)
 
 
+from django.db.models.query import QuerySet
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
@@ -790,12 +791,16 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
         now = timezone.now()
         now += dt.timedelta(minutes=ssm.review_ahead_minutes)
 
-        seen_flashcards = ssm.deck.flashcards.filter(
+        ssm_flashcards = QuerySet(FlashCard)
+        for flashcard_creator in ssm.deck.flashcards.all():
+            ssm_flashcards |= flashcard_creator.review_instances.all()
+
+        seen_flashcards = ssm_flashcards.filter(
             Q(next_review__lte=now) &
             ~Q(learning_status__iexact='UNSEEN') &
             Q(is_suspended=False)
         )
-        unseen_flashcards = ssm.deck.flashcards.filter(learning_status__iexact='UNSEEN', is_suspended=False)
+        unseen_flashcards = ssm_flashcards.filter(learning_status__iexact='UNSEEN', is_suspended=False)
 
         if unseen_flashcards.count() > ssm.daily_new_card_limit:
             if ssm.shuffle_unseen_cards:

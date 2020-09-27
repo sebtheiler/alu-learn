@@ -34,17 +34,32 @@ export function StudyElement(props) {
     return <>Loading...</>;
   };
 
+  const renderFlashCard = () => {
+    switch (currentCard.flashcard_type) {
+      case 'basic': case 'reversed':
+        return (<>
+          <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
+            <MarkdownRender source={currentCard && currentCard.content[0].text} />
+          </div>
+          <hr />
+          <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
+            {currentCard && showAnswer &&
+              <MarkdownRender source={currentCard.content[1].text} />
+            }
+          </div>
+        </>);
+      default:
+        return (
+          <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
+            <strong>This flashcard type, "{currentCard.flashcard_type}", is unrecognized. Please report this issue.</strong>
+          </div>
+        );
+    };
+  };
+
   return (
     <>
-      <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-        <MarkdownRender source={currentCard && currentCard.front_text} />
-      </div>
-      <hr />
-      <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-        {currentCard && showAnswer &&
-          <MarkdownRender source={currentCard.back_text} />
-        }
-      </div>
+      {renderFlashCard()}
       <footer className='fixed-bottom mb-5'>
         <div className='mb-5'>
           <div className={'col-md-12 text-center btn-group mb-1' + (showAnswer || currentCard === null ? ' d-none' : '')}>

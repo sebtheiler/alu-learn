@@ -29,6 +29,7 @@ export function StudyComponent(props) {
   // Other states
   const [showAnswer, setShowAnswer] = useState(false);
   const [finishedStudying, setFinishedStudying] = useState(false);
+  const [notFound, setNotFound] = useState(false);
   // const [canceledBtns, setCanceledBtns] = useState([]);
   const [message, setMessage] = useState({});
   
@@ -39,6 +40,8 @@ export function StudyComponent(props) {
       apiSSMFlashcards(studySessionManagerId, (response, status) => {
         if (status === 200) {
           setFlashcards(response);
+        } else if (status === 404) {
+          setNotFound(true);
         } else {
           // Error getting flashcards from SSM
           errorHandler(response, status, 5001);
@@ -54,6 +57,8 @@ export function StudyComponent(props) {
         if (status === 200) {
           setSSM(response);
           setSSMDidSet(true);
+        } else if (status === 404) {
+          setNotFound(true);
         } else {
           // Error getting SSM
           errorHandler(response, status, 5000);
@@ -246,9 +251,11 @@ export function StudyComponent(props) {
       });
     };
   };
-
-  if (SSM === null) {
-    return <>Loading...</>
+  
+  if (notFound) {
+    return <p className='text-center'>Couldn't find this deck</p>
+  } else if (SSM === null) {
+    return <p className='text-center'>Loading...</p>
   };
 
   return (
@@ -283,6 +290,7 @@ export function StudyComponent(props) {
 // Instead of taking in a specific deck id, this component takes in a number of
 // attributes, searches for all flashcards with those attributes and studies those
 // cards.
+// TODO: I don't think this is used anymore
 export function CustomStudyComponent(props) {
   const {deckIds, tags, contains, suspended, leech, learningStatus, minEase, maxEase} = props;
   const [flashcards, setFlashcards] = useState([]);
