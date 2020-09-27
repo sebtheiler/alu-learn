@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {Button, Form} from 'react-bootstrap';
-import './adder';
+import './inserter';
 
 export function AutoNote(props) {
   const [selectedPar, setSelectedPar] = useState(0);
