@@ -1,7 +1,7 @@
 const content = [{"type": "heading-one", "children": [{"text": "Header 1"}]}, {"type": "paragraph", "children": [{"text": "Content 1 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "heading-two", "children": [{"text": "Header 2"}]}, {"type": "paragraph", "children": [{"text": "Content 2 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "heading-one", "children": [{"text": "Second Header 1"}]}, {"type": "paragraph", "children": [{"text": "Content 1 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "heading-two", "children": [{"text": "Second Header 2"}]}, {"type": "paragraph", "children": [{"text": "Content 2 - "}, {"bold": true, "text": "Various"}, {"text": " "}, {"text": "words and phrases", "italic": true}, {"text": " "}, {"text": "created", "strikethrough": true}, {"text": " brought to life "}, {"url": "https://google.com", "type": "link", "children": [{"text": "using"}]}, {"text": " a "}, {"text": "powerful", "underline": true}, {"text": " "}, {"code": true, "text": "rich text editor"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}];
 const wordToNum = { 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9 };
 const numToWord = { 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine' };
-const sectionString = 'Third Header'//#'Second Header 1 >  Second Header 2';
+const sectionString = 'Third Header 1 > Third Header 2 '//#'Second Header 1 >  Second Header 2';
 const contentToAdd = [{"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}, {"type": "paragraph", "children": [{"text": "This also has support for "}, {"bold": true, "text": "multiple paragraphs"}]}];
 const parsedSection = sectionString.split('>').map(sec => sec.trim());
 
@@ -65,11 +65,14 @@ const insertElement = (data, headingSize, startingIndex=0) => {
         ) {
         console.log('inserting')
         // No matches at all; insert new heading
+        const headings = parsedSection.slice(headingSize - 1).map((sectionTitle, index) => {
+          return {"type": `heading-${numToWord[headingSize + index]}`, "children": [{"text": sectionTitle}]};
+        });
         return [
-          ...data.slice(0, index),
-          {"type": `heading-${numToWord[headingSize]}`, "children": [{"text": parsedSection[headingSize - 1]}]},
+          ...data.slice(0, index + 1),
+          ...headings,
           ...contentToAdd,
-          ...data.slice(index),
+          ...data.slice(index + 1),
         ];
       };
     };
