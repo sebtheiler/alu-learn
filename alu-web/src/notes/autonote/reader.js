@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {Button, Form} from 'react-bootstrap';
+import {Button, ButtonGroup, Form} from 'react-bootstrap';
 import {Slate, ReactEditor} from 'slate-react';
 import {Transforms} from 'slate';
 import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
@@ -36,64 +36,24 @@ const parseText = (text, version='paragraph') => {
       for (const par of splitByPar) {
         // If there is no period, we assume it is a header
         if (par.includes('.') === false) {
-          console.log(par)
-          finalText.push(`<h1>${par}</h1>`);
+          finalText.push(`<h4>${par}</h4>`);
         } else {
           const splitPar = par.split(/\.\s/gm);
           if (splitPar.length > numSentences) {
+            // If it is a long paragraph, we will split it
+            // into sentences determined by `numSentences`
             const numConcatSentences = Math.ceil(splitPar.length / numSentences);
             for (let i = 0; i < numConcatSentences; i++) {
               const toPush = splitPar.slice(i*numConcatSentences, (i+1)*numConcatSentences).join('. ');
-              console.log(toPush)
               finalText.push(toPush);
             };
           } else {
-            console.log(par)
             finalText.push(par);
           };
         };
       };
 
       return finalText;
-      // const splitText = text.split(/(\.\s)|(\n)/gm); // split by '.' followed by whitespace or newline
-      // const numSentences = 3; // maximum number of sentences to display at a time
-      // let textArray = [];
-      // let sentenceIndex = 0;
-
-      // // console.log(splitText)
-
-      // do {
-      //   const sentenceGroup = splitText.slice(sentenceIndex, sentenceIndex + numSentences);
-      //   // console.log(sentenceGroup)        
-
-      //   // Get sentences from the sentence group, unless it has a newline in it
-      //   let pair = [];
-      //   let newlinePairIndex;
-      //   for (const [i, sentence] of sentenceGroup.entries()) {
-      //     // console.log(sentence, sentence.includes('\n'))
-      //     if (!sentence || sentence.includes('\n') || sentence === '. ') {
-      //       if (pair.length > 0) {
-      //         newlinePairIndex = i;
-      //         break;
-      //       };
-      //     } else {
-      //       pair.push(sentence);
-      //     };
-      //   };
-
-      //   // console.log(pair)
-
-      //   // Merge the sentences together
-      //   const mergedPair = pair.join('. ', '');
-      //   if (mergedPair) {
-      //     textArray.push(mergedPair + mergedPair.endsWith('.') ? '' : '.');
-      //   };
-
-      //   // Increase the sentence index by the number of sentences shown
-      //   sentenceIndex += newlinePairIndex ? newlinePairIndex : numSentences;
-      // } while (sentenceIndex < splitText.length * numSentences);
-
-      // return textArray;
     default:
       return;
   };
@@ -249,6 +209,13 @@ export function AutoNote(props) {
         }} />
       }
     </div>
+    <ButtonGroup className='mt-1 float-right'>
+      <Button
+        variant='secondary'
+        disabled={selectedPar === 0}
+        onClick={event => {event.preventDefault(); setSelectedPar(selectedPar - 1);}}
+      >Go Back</Button>
+    </ButtonGroup>
     {!finished ? <>
       <Form onSubmit={handleSubmit} className='mt-4'>
         <Form.Group className='w-75 mx-auto'>
