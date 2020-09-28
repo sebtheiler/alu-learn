@@ -1,10 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {Button, Form} from 'react-bootstrap';
+import {Slate, ReactEditor} from 'slate-react';
+// import {Editor} from 'slate';
+import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
 import './inserter';
+
+const emptyValue = [
+  {
+    "type": "paragraph",
+    "children": [
+      {
+        "text": ""
+      }
+    ]
+  }
+]
 
 export function AutoNote(props) {
   const [selectedPar, setSelectedPar] = useState(0);
   const [finished, setFinished] = useState(false);
+
+  const [value, setValue] = useState(emptyValue);
+  const editor = useMemo(
+    () => createFullEditor(),
+    []
+  );
 
   const text = `
 Tauris is a great and noble city, situated in a great province called IRAQ, in which are many other towns and villages. But as Tauris is the most noble I will tell you about it.
@@ -17,7 +37,12 @@ Now we will quit Tauris, and speak of the great country of Persia. [From Tauris 
     event.preventDefault();
     const form = event.target;
 
-    form.elements.notes.value = '';
+    // document.activeElement.blur();
+    // editor.blur();
+    // ReactEditor.blur(editor);
+    // editor.moveTo([0, 0], 0
+    form.elements.sectionTitle.select();
+    setValue(emptyValue);
 
     if (selectedPar < text.length - 1) {
       setSelectedPar(selectedPar + 1);
@@ -45,11 +70,23 @@ Now we will quit Tauris, and speak of the great country of Persia. [From Tauris 
       </Form.Group>
       <Form.Group>
         <Form.Label as='h3'>Notes</Form.Label>
-        <Form.Control
-          as='textarea'
-          name='notes'
-          rows='10'
-        />
+        <div style={{ borderStyle: 'solid', borderWidth: '1px', paddingTop: '5px', paddingLeft: '5px' }}>
+          <Slate
+            editor={editor}
+            value={value}
+            onChange={newValue => {
+              setValue(newValue);
+            }}
+          >
+            <EditorButtons
+              editor={editor}
+            />
+            <FullEditor
+              editor={editor}
+              styleOptions={{ minHeight: '200px' }}
+            />
+          </Slate>
+        </div>
       </Form.Group>
       {!finished ?
       <Button type='submit' block>Add Notes</Button>

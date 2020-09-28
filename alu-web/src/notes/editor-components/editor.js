@@ -38,7 +38,7 @@ export function FullEditor(props) {
       renderLeaf={renderLeaf}
       onKeyDown={event => {
         const modifierKeys = ['Control', 'Alt', 'Shift', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown', 'ScrollLock', 'CapsLock', 'NumLock'];
-        if (!modifierKeys.includes(event.key)) {
+        if (didTypeCallback && !modifierKeys.includes(event.key)) {
           didTypeCallback();
         };
 

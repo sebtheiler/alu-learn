@@ -11,7 +11,7 @@ import {ExploreComponent, DeckSearchComponent} from './explore';
 import {LandingComponent} from './landing';
 import {HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset} from './home';
 import {NoteEditor, NotesHomeList} from './notes';
-import {AutoNote} from './autonote';
+import {AutoNote} from './notes/autonote';
 
 const e = React.createElement;
 
