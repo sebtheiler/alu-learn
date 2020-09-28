@@ -153,6 +153,7 @@ export function AutoNote(props) {
   const [selectedPar, setSelectedPar] = useState(0);
   const [finished, setFinished] = useState(false);
   const [noteDocument, setNoteDocument] = useState(emptyValue);
+  const [showCompiledNotes, setShowCompiledNotes] = useState(false);
 
   const [value, setValue] = useState(emptyValue);
   const editor = useMemo(
@@ -215,8 +216,13 @@ export function AutoNote(props) {
         disabled={selectedPar === 0}
         onClick={event => {event.preventDefault(); setSelectedPar(selectedPar - 1);}}
       >Go Back</Button>
+      <Button
+        variant='secondary'
+        onClick={event => {event.preventDefault(); setShowCompiledNotes(!showCompiledNotes);}}
+        className='ml-1'
+      >{showCompiledNotes ? 'Hide' : 'Show'} Compiled Notes</Button>
     </ButtonGroup>
-    {!finished ? <>
+    {!finished && <>
       <Form onSubmit={handleSubmit} className='mt-4'>
         <Form.Group className='w-75 mx-auto'>
           <Form.Label as='h3'>Section (subsection with "&gt;")</Form.Label>
@@ -249,20 +255,21 @@ export function AutoNote(props) {
         </Form.Group>
         <Button type='submit' block>Add Notes</Button>
       </Form>
-      </> :
-      <div className='my-5'>
-        <h3 className='text-center'>Here are the notes you took for this paper:</h3>
-        <Slate
-          editor={noteEditor}
-          value={noteDocument}
-          onChange={newValue => setNoteDocument(newValue)}
-        >
-          <FullEditor
+      </>}
+      {(finished || showCompiledNotes) && 
+        <div className='my-5'>
+          <h3 className='text-center'>Here are the notes you {finished ? 'took' : 'are taking'} for this paper:</h3>
+          <Slate
             editor={noteEditor}
-            readOnly={true}
-          />
-        </Slate>
-      </div>
+            value={noteDocument}
+            onChange={newValue => setNoteDocument(newValue)}
+          >
+            <FullEditor
+              editor={noteEditor}
+              readOnly={true}
+            />
+          </Slate>
+        </div>
       }
   </div>);
 };
