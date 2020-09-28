@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import {Button, Form} from 'react-bootstrap';
 import {Slate, ReactEditor} from 'slate-react';
-// import {Editor} from 'slate';
+import {Transforms} from 'slate';
 import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
 import './inserter';
 
@@ -37,11 +37,12 @@ Now we will quit Tauris, and speak of the great country of Persia. [From Tauris 
     event.preventDefault();
     const form = event.target;
 
-    // document.activeElement.blur();
-    // editor.blur();
-    // ReactEditor.blur(editor);
-    // editor.moveTo([0, 0], 0
-    form.elements.sectionTitle.select();
+    // Move the cursor to the beginning to avoid crash
+    Transforms.move(editor, { edge: 'anchor', distance: 9999999, reverse: true });
+    Transforms.move(editor, { edge: 'focus', distance: 9999999, reverse: true });
+    ReactEditor.focus(editor);
+
+    // Clear editor
     setValue(emptyValue);
 
     if (selectedPar < text.length - 1) {
