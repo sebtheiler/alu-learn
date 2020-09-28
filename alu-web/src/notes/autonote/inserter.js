@@ -10,7 +10,7 @@ const checkHeadingMatch = (element, targetText, targetHeadingSize) => {
   );
 };
 
-// Returns a new array with `data` inserted in the correct position
+// Returns a new array with `contentToAdd` inserted in the correct position
 const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, startingIndex=0) => {
   let elementMatch; // this is the heading we are looking for
 
@@ -80,10 +80,11 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
   };
 };
 
-export const insertElement = (element, data, sectionString) => {
+// Actual function for inserting `element` into `content` at `sectionString`
+export const insertElement = (element, document, sectionString) => {
   const parsedSection = sectionString.split('>').map(sec => sec.trim());
   return findElementInsertion(
-    data,
+    document,
     element,
     parsedSection,
   );

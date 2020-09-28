@@ -3,7 +3,7 @@ import {Button, Form} from 'react-bootstrap';
 import {Slate, ReactEditor} from 'slate-react';
 import {Transforms} from 'slate';
 import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
-import './inserter';
+import {insertElement} from './inserter';
 
 const emptyValue = [
   {
@@ -19,6 +19,7 @@ const emptyValue = [
 export function AutoNote(props) {
   const [selectedPar, setSelectedPar] = useState(0);
   const [finished, setFinished] = useState(false);
+  const [noteDocument, setNoteDocument] = useState(emptyValue);
 
   const [value, setValue] = useState(emptyValue);
   const editor = useMemo(
@@ -37,6 +38,15 @@ Now we will quit Tauris, and speak of the great country of Persia. [From Tauris 
     event.preventDefault();
     const form = event.target;
 
+    // Add the new notes to the document
+    const newDocument = insertElement(
+      value,
+      noteDocument,
+      form.elements.sectionTitle.value,
+    );
+    console.log(newDocument)
+    setNoteDocument(newDocument);
+
     // Move the cursor to the beginning to avoid crash
     Transforms.move(editor, { edge: 'anchor', distance: 9999999, reverse: true });
     Transforms.move(editor, { edge: 'focus', distance: 9999999, reverse: true });
@@ -45,6 +55,7 @@ Now we will quit Tauris, and speak of the great country of Persia. [From Tauris 
     // Clear editor
     setValue(emptyValue);
 
+    // Move selected paragraph
     if (selectedPar < text.length - 1) {
       setSelectedPar(selectedPar + 1);
     } else {
