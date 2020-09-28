@@ -40,10 +40,10 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
           
           if (debug) {console.log(`Stopping point found, inserting ${headings.length} headings`)};
           return [
-            ...data.slice(0, index),
+            ...data.slice(0, index + 1),
             ...headings,
             ...contentToAdd,
-            ...data.slice(index),
+            ...data.slice(index + 1),
           ];
         } else if (index === data.length - 1) {
           // If this is the very last section,
@@ -97,7 +97,6 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
 
 // Actual function for inserting `element` into `content` at `sectionString`
 export const insertElement = (element, noteDocument, sectionString) => {
-  console.log(element)
   if (element) {
     const parsedSection = sectionString.split('>').map(sec => sec.trim());
     return findElementInsertion(

@@ -35,7 +35,7 @@ export function AutoNote(props) {
 Tauris is a great and noble city, situated in a great province called IRAQ, in which are many other towns and villages. But as Tauris is the most noble I will tell you about it.
 The men of Tauris get their living by trade and handicrafts, for they weave many kinds of beautiful and valuable stuffs of silk and gold. The city has such a good position that merchandize is brought thither from India, Baudas, CREMESOR, and many other regions; and that attracts many Latin merchants, especially Genoese, to buy goods and transact other business there; the more as it is also a great market for precious stones. It is a city in fact where merchants make large profits.
 The people of the place are themselves poor creatures; and are a great medley of different classes. There are Armenians, Nestorians, Jacobites, Georgians, Persians, and finally the natives of the city themselves, who are worshippers of Mahommet. These last are a very evil generation; they are known as TAURIZI.] The city is all girt round with charming gardens, full of many varieties of large and excellent fruits.
-Now we will quit Tauris, and speak of the great country of Persia. [From Tauris to Persia is a journey of twelve days.]  
+Now we will quit Tauris, and speak of the great country of Persia. [From Tauris to Persia is a journey of twelve days.]
 `.trim().replace('\n\n', '\n').split('\n');
 
   const handleSubmit = (event) => {
@@ -49,7 +49,6 @@ Now we will quit Tauris, and speak of the great country of Persia. [From Tauris 
         noteDocument,
         form.elements.sectionTitle.value,
       );
-      console.log(newDocument)
       setNoteDocument(newDocument);
     };
 
