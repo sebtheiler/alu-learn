@@ -63,7 +63,13 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
           // that matches the next listed subsection
           // recursively check it
           if (debug) {console.log('Found new section to recursively check')};
-          return insertElement(data, headingSize + 1, index - 1);
+          return findElementInsertion(
+            data,
+            contentToAdd,
+            parsedSection,
+            headingSize + 1,
+            index - 1
+          );
         };
       };
     } else {
