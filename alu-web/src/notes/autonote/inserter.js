@@ -97,13 +97,18 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
 
 // Actual function for inserting `element` into `content` at `sectionString`
 export const insertElement = (element, noteDocument, sectionString) => {
-  const parsedSection = sectionString.split('>').map(sec => sec.trim());
-  return findElementInsertion(
-    noteDocument,
-    element,
-    parsedSection,
-    1,
-    0,
-    false, // debug
-  );
+  console.log(element)
+  if (element) {
+    const parsedSection = sectionString.split('>').map(sec => sec.trim());
+    return findElementInsertion(
+      noteDocument,
+      element,
+      parsedSection,
+      1,
+      0,
+      false, // debug
+    );
+  } else {
+    return noteDocument;
+  };
 };

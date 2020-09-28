@@ -11,10 +11,10 @@ const emptyValue = [
     "children": [
       {
         "text": ""
-      }
-    ]
-  }
-]
+      },
+    ],
+  },
+];
 
 export function AutoNote(props) {
   const [selectedPar, setSelectedPar] = useState(0);
@@ -23,6 +23,10 @@ export function AutoNote(props) {
 
   const [value, setValue] = useState(emptyValue);
   const editor = useMemo(
+    () => createFullEditor(),
+    []
+  );
+  const noteEditor = useMemo(
     () => createFullEditor(),
     []
   );
@@ -39,13 +43,15 @@ Now we will quit Tauris, and speak of the great country of Persia. [From Tauris 
     const form = event.target;
 
     // Add the new notes to the document
-    const newDocument = insertElement(
-      value,
-      noteDocument,
-      form.elements.sectionTitle.value,
-    );
-    console.log(newDocument)
-    setNoteDocument(newDocument);
+    if (value !== emptyValue) {
+      const newDocument = insertElement(
+        value,
+        noteDocument,
+        form.elements.sectionTitle.value,
+      );
+      console.log(newDocument)
+      setNoteDocument(newDocument);
+    };
 
     // Move the cursor to the beginning to avoid crash
     Transforms.move(editor, { edge: 'anchor', distance: 9999999, reverse: true });
@@ -70,41 +76,53 @@ Now we will quit Tauris, and speak of the great country of Persia. [From Tauris 
       <p style={{ color: '#000000' }}>{text[selectedPar]}</p>
       <p style={{ color: '#e0e0e0' }}>...{text[selectedPar + 1] && text[selectedPar + 1].substr(0, 150)}</p>
     </div>
-    <Form onSubmit={handleSubmit} className='mt-4'>
-      <Form.Group className='w-75 mx-auto'>
-        <Form.Label as='h3'>Section (subsection with "&gt;")</Form.Label>
-        <Form.Control
-          type='text'
-          name='sectionTitle'
-          placeholder='B.F. Skinner > Skinner Box'
-          required
-        />
-      </Form.Group>
-      <Form.Group>
-        <Form.Label as='h3'>Notes</Form.Label>
-        <div style={{ borderStyle: 'solid', borderWidth: '1px', paddingTop: '5px', paddingLeft: '5px' }}>
-          <Slate
-            editor={editor}
-            value={value}
-            onChange={newValue => {
-              setValue(newValue);
-            }}
-          >
-            <EditorButtons
+    {!finished ? <>
+      <Form onSubmit={handleSubmit} className='mt-4'>
+        <Form.Group className='w-75 mx-auto'>
+          <Form.Label as='h3'>Section (subsection with "&gt;")</Form.Label>
+          <Form.Control
+            type='text'
+            name='sectionTitle'
+            placeholder='B.F. Skinner > Skinner Box'
+            required
+          />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label as='h3'>Notes</Form.Label>
+          <div style={{ borderStyle: 'solid', borderWidth: '1px', paddingTop: '5px', paddingLeft: '5px' }}>
+            <Slate
               editor={editor}
-            />
-            <FullEditor
-              editor={editor}
-              styleOptions={{ minHeight: '200px' }}
-            />
-          </Slate>
-        </div>
-      </Form.Group>
-      {!finished ?
-      <Button type='submit' block>Add Notes</Button>
-      :
-      <p className='text-center'>You've finished reviewing this paper!</p>
+              value={value}
+              onChange={newValue => {
+                setValue(newValue);
+              }}
+            >
+              <EditorButtons
+                editor={editor}
+              />
+              <FullEditor
+                editor={editor}
+                styleOptions={{ minHeight: '200px' }}
+              />
+            </Slate>
+          </div>
+        </Form.Group>
+        <Button type='submit' block>Add Notes</Button>
+      </Form>
+      </> :
+      <div className='mt-5'>
+        <h3 className='text-center'>Here are the notes you took for this paper:</h3>
+        <Slate
+          editor={noteEditor}
+          value={noteDocument}
+          onChange={newValue => setNoteDocument(newValue)}
+        >
+          <FullEditor
+            editor={noteEditor}
+            readOnly={true}
+          />
+        </Slate>
+      </div>
       }
-    </Form>
   </div>);
 };
