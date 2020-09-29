@@ -11,6 +11,11 @@ const checkHeadingMatch = (element, targetText, targetHeadingSize) => {
 };
 
 // Returns a new array with `contentToAdd` inserted in the correct position
+// `data` the note document to insert on
+// `contentToAdd` data to insert
+// `parsedSection` Section in format ['Section', 'Subsection', 'SubSubsection']
+// `headingSize` INTERNAL: Current size of the heading (section) to insert
+// `startingIndex` INTERNAL: Index to start search at
 const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, startingIndex=0, debug=false) => {
   let elementMatch; // this is the heading we are looking for
   if (debug) {console.log('Beginning insertion')};
@@ -27,18 +32,32 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
         // If the element is heading or end of data, we might insert the data
         const newHeadingSize = wordToNum[element.type.substring(8)];
 
-        if (newHeadingSize <= headingSize || parsedSection.length === headingSize) {
+        if (newHeadingSize <= headingSize) {
           // If the next same (or larger) level section has begun,
           // append the data right before it
-          // OR
-          // If we have no more subsections to search
 
           // Prepare new sections to insert (if any)
           const headings = parsedSection.slice(headingSize).map((sectionTitle, index) => {
             return {"type": `heading-${numToWord[headingSize + 1 + index]}`, "children": [{"text": sectionTitle}]};
           });
-          
+
           if (debug) {console.log(`Stopping point found, inserting ${headings.length} headings`)};
+          return [
+            ...data.slice(0, index),
+            ...headings,
+            ...contentToAdd,
+            ...data.slice(index),
+          ];
+        } else if (parsedSection.length === headingSize) {
+          // If we have no more subsections to search
+          // (the number of sections specified is equal to the section we are on)
+
+          // Prepare new sections to insert
+          const headings = parsedSection.slice(headingSize).map((sectionTitle, index) => {
+            return {"type": `heading-${numToWord[headingSize + 1 + index]}`, "children": [{"text": sectionTitle}]};
+          });
+          
+          if (debug) {console.log(`No more subsections, inserting ${headings.length} headings`)};
           return [
             ...data.slice(0, index + 1),
             ...headings,
@@ -111,7 +130,7 @@ export const insertElement = (element, noteDocument, sectionString) => {
       parsedSection,
       1,
       0,
-      false, // debug
+      true, // debug
     );
   } else {
     return noteDocument;
