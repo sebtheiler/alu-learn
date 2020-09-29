@@ -4,24 +4,10 @@ import {Slate, ReactEditor} from 'slate-react';
 import {Transforms} from 'slate';
 import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
 import {insertElement} from './inserter';
+import './reader.css';
 
 // Progress bar
 // More headers
-// Possible insertion error with this layout
-/*
-Header 1
-Text
-Text
-Text
-*SHOULD BE HERE
-Header 2
-*INSERTED HERE
-Text
-Text
-Text
-
-When trying to insert to header 1, it would go where the "*" is
-*/
 
 const emptyValue = [
   {
@@ -67,7 +53,7 @@ const parseText = (text, version='paragraph') => {
       return text.split('\n');
     case 'sentence':
       const periodCleanFunction = (str) => {
-        return str.replace('Ph.D.', 'PhD').replace('PhD.', 'PhD').replace('Ph.D', 'PhD')
+        return str.replace('Ph.D.', 'PhD').replace('Ph.D', 'PhD')
         .replace('Mr.', 'Mr').replace('Ms.', 'Ms').replace('Mrs.', 'Mrs')
         .replace('U.S.A.', 'USA').replace('U.S.', 'US');
       };
@@ -159,6 +145,7 @@ export function AutoNote(props) {
   const [finished, setFinished] = useState(false);
   const [noteDocument, setNoteDocument] = useState(initialValue);
   const [showCompiledNotes, setShowCompiledNotes] = useState(false);
+  const [percentComplete, setPercentComplete] = useState(0);
 
   const [value, setValue] = useState(emptyValue);
   const editor = useMemo(
@@ -169,6 +156,12 @@ export function AutoNote(props) {
     () => createFullEditor(),
     []
   );
+
+  const updateProgressBar = (newSelectedPar) => {
+    const newPercentComplete = Math.ceil(newSelectedPar / (text.length - 1) * 100);
+    setPercentComplete(newPercentComplete);
+    document.getElementById('contentProgressBar').style.width = Math.max(newPercentComplete, 4) + '%';
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -199,6 +192,9 @@ export function AutoNote(props) {
       } else {
         setFinished(true);
       };
+
+      // Update progress bar
+      updateProgressBar(selectedPar + 1);
     } catch (e) {
       console.log(noteDocument);
       alert(`Something "${e}" went wrong inserting your new note.  Please save now.`);
@@ -207,6 +203,9 @@ export function AutoNote(props) {
 
   return (<div className='container mt-5'>
     <h3 className='text-center'>Content</h3>
+    <div id='contentProgress' className='mb-1'>
+      <div id='contentProgressBar'>{percentComplete}%</div>
+    </div>
     <div style={{ border: '1px solid gray', padding: '30px', height: '250px', overflow: 'hidden', borderRadius: '5px' }}>
       {selectedPar !== 0 &&
         <p style={{ color: '#e0e0e0' }} dangerouslySetInnerHTML={{__html:
@@ -224,8 +223,13 @@ export function AutoNote(props) {
       <Button
         variant='secondary'
         disabled={selectedPar === 0}
-        onClick={event => {event.preventDefault(); setSelectedPar(selectedPar - 1);}}
+        onClick={event => {event.preventDefault(); setSelectedPar(selectedPar - 1); updateProgressBar(selectedPar - 1)}}
       >Go Back</Button>
+      <Button
+        variant='secondary'
+        disabled={selectedPar === text.length - 1}
+        onClick={event => {event.preventDefault(); setSelectedPar(selectedPar + 1); updateProgressBar(selectedPar + 1)}}
+      >Go Forwards</Button>
       <Button
         variant='secondary'
         onClick={event => {event.preventDefault(); setShowCompiledNotes(!showCompiledNotes);}}
