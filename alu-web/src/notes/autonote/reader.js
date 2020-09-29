@@ -6,9 +6,6 @@ import {createFullEditor, EditorButtons, FullEditor} from '../editor-components'
 import {insertElement} from './inserter';
 import './reader.css';
 
-// Progress bar
-// More headers
-
 const emptyValue = [
   {
     "type": "paragraph",
