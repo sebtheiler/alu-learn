@@ -207,9 +207,6 @@ export function AutoNote(props) {
 
   return (<div className='container mt-5'>
     <h3 className='text-center'>Content</h3>
-    <div id='contentProgress' className='mb-1'>
-      <div id='contentProgressBar'>{percentComplete}%</div>
-    </div>
     <div style={{ border: '1px solid gray', padding: '30px', height: '250px', overflow: 'hidden', borderRadius: '5px' }}>
       {selectedPar !== 0 &&
         <p style={{ color: '#e0e0e0' }} dangerouslySetInnerHTML={{__html:
@@ -273,6 +270,9 @@ export function AutoNote(props) {
           </div>
         </Form.Group>
         <Button type='submit' block>Add Notes</Button>
+        <div id='contentProgress' className='mt-1'>
+          <div id='contentProgressBar'>{percentComplete}%</div>
+        </div>
       </Form>
       </>}
       {(finished || showCompiledNotes) && 
