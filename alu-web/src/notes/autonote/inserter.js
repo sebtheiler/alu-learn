@@ -130,7 +130,7 @@ export const insertElement = (element, noteDocument, sectionString) => {
       parsedSection,
       1,
       0,
-      true, // debug
+      false, // debug
     );
   } else {
     return noteDocument;

@@ -168,6 +168,13 @@ export function AutoNote(props) {
     // Add the new notes to the document
     try {
       if (value !== emptyValue) {
+        if (form.elements.sectionTitle.value.split('>').length > 6) {
+          // If there are 5 or more '>'s, we can't handle it
+          document.getElementById('tooManySectionsError').innerHTML = 'You can have a maximum of six subsections';
+          return;
+        } else {
+          document.getElementById('tooManySectionsError').innerHTML = '';
+        };
         const newDocument = insertElement(
           value,
           noteDocument,
@@ -243,6 +250,7 @@ export function AutoNote(props) {
             placeholder='B.F. Skinner > Skinner Box'
             required
           />
+          <p id='tooManySectionsError' className='text-danger' />
         </Form.Group>
         <Form.Group>
           <Form.Label as='h3'>Notes</Form.Label>
