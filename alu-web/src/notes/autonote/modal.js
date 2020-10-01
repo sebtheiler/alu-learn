@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Button, Form, Modal} from 'react-bootstrap';
-import {AutoNote} from './reader';
+import {AutoNote} from './autonote';
 import './modal.css';
 
 export function AutoNoteModal(props) {

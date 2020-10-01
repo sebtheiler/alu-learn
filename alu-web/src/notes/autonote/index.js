@@ -1,4 +1,4 @@
-import {AutoNote} from './reader';
+import {AutoNote} from './autonote';
 import {AutoNoteModal} from './modal';
 import {AutoFlashCard} from './autoflashcard';
 

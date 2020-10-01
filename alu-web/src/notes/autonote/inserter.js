@@ -16,18 +16,18 @@ const checkHeadingMatch = (element, targetText, targetHeadingSize) => {
 // `parsedSection` Section in format ['Section', 'Subsection', 'SubSubsection']
 // `headingSize` INTERNAL: Current size of the heading (section) to insert
 // `startingIndex` INTERNAL: Index to start search at
-const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, startingIndex=0, debug=false) => {
+const findElementInsertion = (noteDocument, contentToAdd, parsedSection, headingSize=1, startingIndex=0, debug=false) => {
   let elementMatch; // this is the heading we are looking for
   if (debug) {console.log('Beginning insertion')};
 
-  for (let [index, element] of data.slice(startingIndex).entries()) {
+  for (let [index, element] of noteDocument.slice(startingIndex).entries()) {
     index += startingIndex;
     if (debug) {console.log('Index:', index, 'Element:', element)};
 
     if (elementMatch) {
       // Match has been found
       if (debug) {console.log('Match has been found')};
-      if (checkHeadingMatch(element) || index === data.length - 1) {
+      if (checkHeadingMatch(element) || index === noteDocument.length - 1) {
         if (debug) {console.log('Element is header')};
         // If the element is heading or end of data, we might insert the data
         const newHeadingSize = wordToNum[element.type.substring(8)];
@@ -43,10 +43,10 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
 
           if (debug) {console.log(`Stopping point found, inserting ${headings.length} headings`)};
           return [
-            ...data.slice(0, index),
+            ...noteDocument.slice(0, index),
             ...headings,
             ...contentToAdd,
-            ...data.slice(index),
+            ...noteDocument.slice(index),
           ];
         } else if (parsedSection.length === headingSize) {
           // If we have no more subsections to search
@@ -59,12 +59,12 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
           
           if (debug) {console.log(`No more subsections, inserting ${headings.length} headings`)};
           return [
-            ...data.slice(0, index + 1),
+            ...noteDocument.slice(0, index + 1),
             ...headings,
             ...contentToAdd,
-            ...data.slice(index + 1),
+            ...noteDocument.slice(index + 1),
           ];
-        } else if (index === data.length - 1) {
+        } else if (index === noteDocument.length - 1) {
           // If this is the very last section,
           // append the content
 
@@ -73,7 +73,7 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
           });
           if (debug) {console.log(`Appending content to very end with ${headings.length} new headings`)};
           return [
-            ...data,
+            ...noteDocument,
             ...headings,
             ...contentToAdd,
           ];
@@ -83,7 +83,7 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
           // recursively check it
           if (debug) {console.log('Found new section to recursively check')};
           return findElementInsertion(
-            data,
+            noteDocument,
             contentToAdd,
             parsedSection,
             headingSize + 1,
@@ -102,7 +102,7 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
           (
             checkHeadingMatch(element) &&
             wordToNum[element.type.substring(8)] < headingSize
-          ) || index === data.length - 1
+          ) || index === noteDocument.length - 1
         ) {
           // No matches at all; insert new heading
           const headings = parsedSection.slice(headingSize - 1).map((sectionTitle, index) => {
@@ -110,10 +110,10 @@ const findElementInsertion = (data, contentToAdd, parsedSection, headingSize=1, 
           });
         if (debug) {console.log(`Never found a match, inserting ${headings.length} headings`)};
         return [
-          ...data.slice(0, index + 1),
+          ...noteDocument.slice(0, index + 1),
           ...headings,
           ...contentToAdd,
-          ...data.slice(index + 1),
+          ...noteDocument.slice(index + 1),
         ];
       };
     };
