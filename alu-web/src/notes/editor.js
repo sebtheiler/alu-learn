@@ -125,10 +125,7 @@ export function NoteEditor(props) {
           defaultValue={note && note.title}
           onChange={event => {
             event.preventDefault();
-            // console.log(event.target.value)
-            // console.log({...valueToSave, title: event.target.value})
-            // console.log(valueToSave)
-            setValueToSave({...valueToSave, title: event.target.value})
+            setValueToSave({...valueToSave, title: event.target.value});
             setDidTypeRecently(true);
             setAreChanges(true);
           }}
@@ -140,7 +137,6 @@ export function NoteEditor(props) {
         <Button href={`/notes/study/${noteId}/`} className='mb-3'>
           Study
         </Button>
-        {/* </Form.Group> */}
       </>}
       {initialValue !== null ? <div id='note-editor'>
         {renderEditor()}

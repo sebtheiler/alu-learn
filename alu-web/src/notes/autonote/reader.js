@@ -87,54 +87,37 @@ const parseText = (text, version='paragraph') => {
   };
 };
 
-window.onbeforeunload = function() {
-  return "Data will be lost if you leave the page, are you sure?";
-};
-
 const text = parseText(`
-Ivan Pavlov was a Russian physiologist best known in psychology for his discovery of classical conditioning. During his studies on the digestive systems of dogs, Pavlov noted that the animals salivated naturally upon the presentation of food.
+Jigsaw text 1: Carbohydrates 
+*****Additional resources: Watch this video if you prefer a video over a text*****
+What’s in a potato? Besides water, which makes up most of the potato’s weight, there’s a little fat, a little protein…and a whole lot of carbohydrate (about 37 grams in a medium potato).
+Some of that carbohydrate is in the form of sugars. These provide the potato, and the person eating the potato, with a great energy fuel source. Most of the carbohydrate, though, is in the form of starch- long chains of linked glucose molecules that are a storage form of fuel. When you eat French fries, potato chips, or a baked potato with all the fixings, enzymes in your digestive tract get to work on the long glucose chains, breaking them down into smaller sugars that your cells can use.
 
-However, he also noted that the animals began to salivate whenever they saw the white lab coat of an experimental assistant. It was through this observation that Pavlov discovered that by associating the presentation of food with the lab assistant, a conditioned response occurred.
-Overview
+Carbohydrates are biological molecules made of carbon, hydrogen, and oxygen in a ratio of 1:2:1 (for every 1 Carbon, there are 2 hydrogens and 1 oxygen). This composition gives carbohydrates their name: they are made up of carbon (carbo-) plus water (-hydrate). Carbohydrate chains come in different lengths, and biologically important carbohydrates belong to three categories: monosaccharides, disaccharides, and polysaccharides. In this article, we’ll learn more about each type of carbohydrates, as well as the essential energetic and structural roles they play in humans and other organisms.
 
-This discovery had a reverberating influence on psychology. Pavlov was also able to demonstrate that the animals could be conditioned to salivate to the sound of a tone as well. Pavlov's discovery had a major influence on other thinkers including John B. Watson and contributed significantly to the development of the school of thought known as behaviorism.
+Monosaccharides
+Monosaccharides (mono- = “one”; sacchar- = “sugar”) are simple sugars, the most common of which is glucose. Monosaccharides are single sugar molecules, which can link together to make larger polysaccharides (poly=many). 
 
-Take a closer look at Ivan Pavlov's life and career in this brief biography.
+One important monosaccharide is glucose, a six-carbon sugar with the formula C6H1206. 
+Other common monosaccharides include galactose (which forms part of lactose, the sugar found in milk) and fructose (found in fruit).
 
-Ivan Pavlov is best known for:
+Glucose, galactose, and fructose have the same chemical formula but they differ in the organization of their atoms, making them isomers of one another..
 
-    Classical conditioning
-    Research on physiology and digestion
-    1904 Nobel Prize in Physiology
 
-His Early Life
+Ring forms of sugars
+You may have noticed that the sugars we’ve looked at so far are linear molecules (straight chains). That may seem odd because sugars are often drawn as rings. As it turns out both are correct: many five- and six-carbon sugars can exist either as a linear chain or in one or more ring-shaped forms.
 
-Ivan Petrovich Pavlov was born on September 14, 1849, in the village of Ryazan, Russia, where his father was the village priest. His earliest studies were focused on theology, but reading Charles Darwin's On the Origin of the Species had a powerful influence on his future interests.
+Disaccharides
+Disaccharides (di- = “two”) form when two monosaccharides join together via dehydration synthesis (a water molecule is removed to allow 2 molecules to join together). For instance, the diagram above shows glucose and fructose monomers combining via dehydration synthesis to form sucrose, a disaccharide we know as table sugar.
 
-He soon abandoned his religious studies and devoted himself to the study of science. In 1870, he began studying the natural sciences at St. Petersburg University.
-Pavlov's Career
+Common disaccharides include lactose, maltose, and sucrose. Lactose is a disaccharide consisting of glucose and galactose and is found naturally in milk. Many people can't digest lactose as adults, resulting in lactose intolerance (which you or your friends may be all too familiar with).
 
-Pavlov's primary interests were the study of physiology and natural sciences. He helped found the Department of Physiology at the Institute of Experimental Medicine and continued to oversee the program for the next 45 years.1﻿
 
-"Science demands from a man all his life. If you had two lives that would not be enough for you. Be passionate in your work and in your searching," Pavlov once suggested.
+Polysaccharides
+A long chain of monosaccharides linked by glycosidic bonds is known as a polysaccharide (poly- = “many”). The chain may be branched or unbranched and may contain different types of monosaccharides. Starch, glycogen, cellulose, and chitin are some major examples of polysaccharides important in living organisms.
 
-So, how did his work in physiology lead to his discovery of classical conditioning?
-Discovery of Classical Conditioning
-
-While researching the digestive function of dogs, he noted his subjects would salivate before the delivery of food.2﻿ In a series of well-known experiments, he presented a variety of stimuli before the presentation of food, eventually finding that, after repeated association, a dog would salivate to the presence of a stimulus other than food.
-
-Pavlov termed this response a conditional reflex. Pavlov also discovered that these reflexes originate in the cerebral cortex of the brain.3﻿
-
-Pavlov received considerable acclaim for his work, including a 1901 appointment to the Russian Academy of Sciences and the 1904 Nobel Prize in Physiology.4﻿﻿ The Soviet government also offered substantial support for Pavlov's work, and the Soviet Union soon became a leading center of physiology research.
-
-He died on February 27, 1936.
-Contributions to Psychology
-
-Many outside of psychology may be surprised to learn that Pavlov was not a psychologist at all. Not only was he not a psychologist; he reportedly was skeptical of the emerging field of psychology altogether.
-
-However, his work had a major influence on the field, particularly on the development of behaviorism. His discovery and research on reflexes influenced the growing behaviorist movement, and his work was often cited in John B. Watson's writings.
-
-Other researchers utilized Pavlov's work in the study of conditioning as a form of learning. His research also demonstrated techniques of studying reactions to the environment in an objective scientific method. 
+Starch is the stored form of sugars in plants and is made up of a mixture of two polysaccharides, amylose and amylopectin (both polymers of glucose). 
+Plants are able to synthesize glucose using light energy gathered in photosynthesis, and the excess glucose, beyond the plant’s immediate energy needs, is stored as starch in different plant parts, including roots and seeds. The starch in the seeds provides food for the embryo as it develops and can also serve as a food source for humans and animals, who will break it down into glucose monomers using digestive enzymes.
 `.trim(), 'sentence');
 
 export function AutoNote(props) {
@@ -143,6 +126,10 @@ export function AutoNote(props) {
   const [noteDocument, setNoteDocument] = useState(initialValue);
   const [showCompiledNotes, setShowCompiledNotes] = useState(false);
   const [percentComplete, setPercentComplete] = useState(0);
+
+  window.onbeforeunload = function() {
+    return "Data will be lost if you leave the page, are you sure?";
+  };
 
   const [value, setValue] = useState(emptyValue);
   const editor = useMemo(
