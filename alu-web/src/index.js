@@ -11,7 +11,7 @@ import {ExploreComponent, DeckSearchComponent} from './explore';
 import {LandingComponent} from './landing';
 import {HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset} from './home';
 import {NoteEditor, NotesHomeList} from './notes';
-import {AutoNote} from './notes/autonote';
+import {AutoNote, AutoFlashCard} from './notes/autonote';
 
 const e = React.createElement;
 
@@ -138,6 +138,11 @@ if (sendPasswordResetElement) {
 const autoNoteElement = document.getElementById('auto-note');
 if (autoNoteElement) {
   ReactDOM.render(e(AutoNote, autoNoteElement.dataset), autoNoteElement);
+};
+
+const autoFlashCardElement = document.getElementById('auto-flashcard');
+if (autoFlashCardElement) {
+  ReactDOM.render(e(AutoFlashCard, autoFlashCardElement.dataset), autoFlashCardElement);
 };
 
 // If you want your app to work offline and load faster, you can change

@@ -183,6 +183,8 @@
 
 - [ ] Fix random bugs in notes -> disable spell correct in firefox
 - [ ] Fix bugs with lists
+- [ ] Change how whether saving is needed is calculated
+  - [ ] Make save with autonote
 
 - [ ] Horizontal break
 - [ ] Automatic header to paragraphs on enter press
