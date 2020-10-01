@@ -7,7 +7,7 @@ import {createFullEditor, EditorButtons, FullEditor} from '../editor-components'
 import {insertElement} from './inserter';
 import './reader.css';
 
-const emptyValue = [
+export const emptyValue = [
   {
     "type": "paragraph",
     "children": [

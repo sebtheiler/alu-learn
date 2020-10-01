@@ -1,4 +1,4 @@
-import {AutoFlashCard} from './creator';
+import {AutoFlashCard} from './autoflashcard';
 
 export {
   AutoFlashCard,
