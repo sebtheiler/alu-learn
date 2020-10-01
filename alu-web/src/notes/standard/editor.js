@@ -25,7 +25,11 @@ export function StandardNoteEditor(props) {
     <AutoNoteModal
       show={showAutoNoteModal}
       hide={() => setShowAutoNoteModal(false)}
-      updateNoteCallback={(newValue) => setValue(newValue)}
+      updateNoteCallback={(newValue) => {
+        setValue(newValue);
+        updateValueToSave({ content: newValue });
+        didTypeCallback();
+      }}
       initialValue={value}
     />
     <br />
@@ -35,6 +39,7 @@ export function StandardNoteEditor(props) {
       onChange={newValue => {
         setValue(newValue);
         updateValueToSave({ content: newValue });
+        didTypeCallback();
       }}
     >
       {!isViewing &&

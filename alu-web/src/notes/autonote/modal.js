@@ -12,13 +12,12 @@ export function AutoNoteModal(props) {
     event.preventDefault();
     const form = event.target;
 
-    console.log(form.elements.textInput.value);
     setInputText(form.elements.textInput.value);
     setGaveInputText(true);
   };
 
   return (
-    <Modal show={show} onHide={hide} size='90w'>
+  <Modal show={show} onHide={hide} size='90w'>
       <Modal.Header>
         <Modal.Title>
           Creating Auto-notes from Document
