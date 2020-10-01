@@ -17,33 +17,6 @@ const emptyValue = [
   },
 ];
 
-const initialValue = emptyValue // [
-//   {
-//     "type": "paragraph",
-//     "children": [
-//       {
-//         "text": ""
-//       }
-//     ]
-//   },
-//   {
-//     "type": "heading-one",
-//     "children": [
-//       {
-//         "text": "Mary Whiton Calkins"
-//       }
-//     ]
-//   },
-//   {
-//     "type": "paragraph",
-//     "children": [
-//       {
-//         "text": "Female philosopher and psychologist, when women were heavily discriminated against"
-//       }
-//     ]
-//   }
-// ]
-
 const parseText = (text, version='paragraph') => {
   switch (version) {
     case 'paragraph':
@@ -87,40 +60,43 @@ const parseText = (text, version='paragraph') => {
   };
 };
 
-const text = parseText(`
-Jigsaw text 1: Carbohydrates 
-*****Additional resources: Watch this video if you prefer a video over a text*****
-What’s in a potato? Besides water, which makes up most of the potato’s weight, there’s a little fat, a little protein…and a whole lot of carbohydrate (about 37 grams in a medium potato).
-Some of that carbohydrate is in the form of sugars. These provide the potato, and the person eating the potato, with a great energy fuel source. Most of the carbohydrate, though, is in the form of starch- long chains of linked glucose molecules that are a storage form of fuel. When you eat French fries, potato chips, or a baked potato with all the fixings, enzymes in your digestive tract get to work on the long glucose chains, breaking them down into smaller sugars that your cells can use.
+// const text = parseText(`
+// Jigsaw text 1: Carbohydrates 
+// *****Additional resources: Watch this video if you prefer a video over a text*****
+// What’s in a potato? Besides water, which makes up most of the potato’s weight, there’s a little fat, a little protein…and a whole lot of carbohydrate (about 37 grams in a medium potato).
+// Some of that carbohydrate is in the form of sugars. These provide the potato, and the person eating the potato, with a great energy fuel source. Most of the carbohydrate, though, is in the form of starch- long chains of linked glucose molecules that are a storage form of fuel. When you eat French fries, potato chips, or a baked potato with all the fixings, enzymes in your digestive tract get to work on the long glucose chains, breaking them down into smaller sugars that your cells can use.
 
-Carbohydrates are biological molecules made of carbon, hydrogen, and oxygen in a ratio of 1:2:1 (for every 1 Carbon, there are 2 hydrogens and 1 oxygen). This composition gives carbohydrates their name: they are made up of carbon (carbo-) plus water (-hydrate). Carbohydrate chains come in different lengths, and biologically important carbohydrates belong to three categories: monosaccharides, disaccharides, and polysaccharides. In this article, we’ll learn more about each type of carbohydrates, as well as the essential energetic and structural roles they play in humans and other organisms.
+// Carbohydrates are biological molecules made of carbon, hydrogen, and oxygen in a ratio of 1:2:1 (for every 1 Carbon, there are 2 hydrogens and 1 oxygen). This composition gives carbohydrates their name: they are made up of carbon (carbo-) plus water (-hydrate). Carbohydrate chains come in different lengths, and biologically important carbohydrates belong to three categories: monosaccharides, disaccharides, and polysaccharides. In this article, we’ll learn more about each type of carbohydrates, as well as the essential energetic and structural roles they play in humans and other organisms.
 
-Monosaccharides
-Monosaccharides (mono- = “one”; sacchar- = “sugar”) are simple sugars, the most common of which is glucose. Monosaccharides are single sugar molecules, which can link together to make larger polysaccharides (poly=many). 
+// Monosaccharides
+// Monosaccharides (mono- = “one”; sacchar- = “sugar”) are simple sugars, the most common of which is glucose. Monosaccharides are single sugar molecules, which can link together to make larger polysaccharides (poly=many). 
 
-One important monosaccharide is glucose, a six-carbon sugar with the formula C6H1206. 
-Other common monosaccharides include galactose (which forms part of lactose, the sugar found in milk) and fructose (found in fruit).
+// One important monosaccharide is glucose, a six-carbon sugar with the formula C6H1206. 
+// Other common monosaccharides include galactose (which forms part of lactose, the sugar found in milk) and fructose (found in fruit).
 
-Glucose, galactose, and fructose have the same chemical formula but they differ in the organization of their atoms, making them isomers of one another..
-
-
-Ring forms of sugars
-You may have noticed that the sugars we’ve looked at so far are linear molecules (straight chains). That may seem odd because sugars are often drawn as rings. As it turns out both are correct: many five- and six-carbon sugars can exist either as a linear chain or in one or more ring-shaped forms.
-
-Disaccharides
-Disaccharides (di- = “two”) form when two monosaccharides join together via dehydration synthesis (a water molecule is removed to allow 2 molecules to join together). For instance, the diagram above shows glucose and fructose monomers combining via dehydration synthesis to form sucrose, a disaccharide we know as table sugar.
-
-Common disaccharides include lactose, maltose, and sucrose. Lactose is a disaccharide consisting of glucose and galactose and is found naturally in milk. Many people can't digest lactose as adults, resulting in lactose intolerance (which you or your friends may be all too familiar with).
+// Glucose, galactose, and fructose have the same chemical formula but they differ in the organization of their atoms, making them isomers of one another..
 
 
-Polysaccharides
-A long chain of monosaccharides linked by glycosidic bonds is known as a polysaccharide (poly- = “many”). The chain may be branched or unbranched and may contain different types of monosaccharides. Starch, glycogen, cellulose, and chitin are some major examples of polysaccharides important in living organisms.
+// Ring forms of sugars
+// You may have noticed that the sugars we’ve looked at so far are linear molecules (straight chains). That may seem odd because sugars are often drawn as rings. As it turns out both are correct: many five- and six-carbon sugars can exist either as a linear chain or in one or more ring-shaped forms.
 
-Starch is the stored form of sugars in plants and is made up of a mixture of two polysaccharides, amylose and amylopectin (both polymers of glucose). 
-Plants are able to synthesize glucose using light energy gathered in photosynthesis, and the excess glucose, beyond the plant’s immediate energy needs, is stored as starch in different plant parts, including roots and seeds. The starch in the seeds provides food for the embryo as it develops and can also serve as a food source for humans and animals, who will break it down into glucose monomers using digestive enzymes.
-`.trim(), 'sentence');
+// Disaccharides
+// Disaccharides (di- = “two”) form when two monosaccharides join together via dehydration synthesis (a water molecule is removed to allow 2 molecules to join together). For instance, the diagram above shows glucose and fructose monomers combining via dehydration synthesis to form sucrose, a disaccharide we know as table sugar.
+
+// Common disaccharides include lactose, maltose, and sucrose. Lactose is a disaccharide consisting of glucose and galactose and is found naturally in milk. Many people can't digest lactose as adults, resulting in lactose intolerance (which you or your friends may be all too familiar with).
+
+
+// Polysaccharides
+// A long chain of monosaccharides linked by glycosidic bonds is known as a polysaccharide (poly- = “many”). The chain may be branched or unbranched and may contain different types of monosaccharides. Starch, glycogen, cellulose, and chitin are some major examples of polysaccharides important in living organisms.
+
+// Starch is the stored form of sugars in plants and is made up of a mixture of two polysaccharides, amylose and amylopectin (both polymers of glucose). 
+// Plants are able to synthesize glucose using light energy gathered in photosynthesis, and the excess glucose, beyond the plant’s immediate energy needs, is stored as starch in different plant parts, including roots and seeds. The starch in the seeds provides food for the embryo as it develops and can also serve as a food source for humans and animals, who will break it down into glucose monomers using digestive enzymes.
+// `.trim(), 'sentence');
 
 export function AutoNote(props) {
+  const {updateNoteCallback, initialValue} = props;
+  const text = parseText(props.text.trim(), 'sentence');
+
   const [selectedPar, setSelectedPar] = useState(0);
   const [finished, setFinished] = useState(false);
   const [noteDocument, setNoteDocument] = useState(initialValue);
@@ -168,6 +144,7 @@ export function AutoNote(props) {
           form.elements.sectionTitle.value,
         );
         setNoteDocument(newDocument);
+        updateNoteCallback(newDocument);
 
         // Move the cursor to the beginning to avoid crash
         Transforms.move(editor, { edge: 'anchor', distance: 9999999, reverse: true });

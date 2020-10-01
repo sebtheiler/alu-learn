@@ -26,6 +26,7 @@ export function StandardNoteEditor(props) {
       show={showAutoNoteModal}
       hide={() => setShowAutoNoteModal(false)}
       updateNoteCallback={(newValue) => setValue(newValue)}
+      initialValue={value}
     />
     <br />
     <Slate
