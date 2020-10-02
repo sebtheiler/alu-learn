@@ -18,7 +18,8 @@ export const emptyValue = [
   },
 ];
 
-const parseText = (text, version='paragraph') => {
+export const parseText = (text, version='paragraph') => {
+  let finalText = [];
   switch (version) {
     case 'paragraph':
       return text.split('\n');
@@ -30,7 +31,6 @@ const parseText = (text, version='paragraph') => {
       };
       const splitByPar = periodCleanFunction(text).split('\n').filter(par => par && par.length > 3);
       const numSentences = 3;
-      let finalText = [];
 
       for (const par of splitByPar) {
         // If there is no period, we assume it is a header
@@ -55,6 +55,43 @@ const parseText = (text, version='paragraph') => {
         };
       };
 
+      return finalText;
+    case 'json':
+      for (const object of text) {
+        switch (object.type) {
+          case 'paragraph':
+            let htmlString = '';
+            for (const child of object.children) {
+              let childText = child.text;
+              if (child.bold) {
+                childText = `<strong>${childText}</strong>`;
+              };
+              if (child.italic) {
+                childText = `<em>${childText}</em>`;
+              };
+              if (child.underline) {
+                childText = `<u>${childText}</u>`;
+              };
+              if (child.strikethrough) {
+                childText = `<del>${childText}</del>`;
+              };
+              htmlString += childText;
+            };
+            finalText.push(htmlString);
+            break;
+          case 'heading-one':
+            finalText.push(`<h1>${object.children[0].text}</h1>`);
+            break;
+          case 'heading-two':
+            finalText.push(`<h2>${object.children[0].text}</h2>`);
+            break;
+          case 'heading-three':
+            finalText.push(`<h3>${object.children[0].text}</h3>`);
+            break;
+          default:
+            break;
+        };
+      };
       return finalText;
     default:
       return;
