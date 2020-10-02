@@ -1,12 +1,30 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {AutoReader} from '../reader';
 import {FlashCardCreate} from '../../../decks/flashcards';
+import { apiNoteDetail } from '../../../lookup';
+import { errorHandler } from '../../../utils';
 import '../reader.css';
 
 export function AutoFlashCard(props) {
-  // const {noteId} = props;
+  const {noteId} = props;
   const text = ['a', 'b', 'c'];
   const [selectedPar, setSelectedPar] = useState(0);
+  const [note, setNote] = useState(null);
+  const [noteDidSet, setNoteDidSet] = useState(false);
+
+  useEffect(() => {
+    if (noteDidSet === false) {
+      setNoteDidSet(true);
+      apiNoteDetail(noteId, (response, status) => {
+        if (status === 200) {
+          setNote(response);
+        } else {
+          // Error getting note detail in auto-flashcard
+          errorHandler(response, status, 6003);
+        };
+      });
+    };
+  }, [noteId, note, noteDidSet]);
 
   const [percentComplete, setPercentComplete] = useState(0);
   const updateProgressBar = (newSelectedPar) => {
