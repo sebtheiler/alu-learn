@@ -48,10 +48,17 @@ export function StudyElement(props) {
             }
           </div>
         </>);
+      case 'cloze':
+        // TODO: add cloze answer displaying
+        return (
+          <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
+            <MarkdownRender source={currentCard && currentCard.content[0].text} />
+          </div>
+        );
       default:
         return (
           <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-            <strong>This flashcard type, "{currentCard.flashcard_type}", is unrecognized. Please report this issue.</strong>
+            <strong>The flashcard type, "{currentCard.flashcard_type}", is unrecognized. Please report this issue.</strong>
           </div>
         );
     };

@@ -29,6 +29,7 @@ export function FlashCardCreate(props) {
   // `flashcardId`: If not null/undefined, the ID of the flashcard to EDIT
   const {deckId, returnToPreviousPage, flashcardId} = props;
   let btn_label = 'Create';
+  const [flashcardType, setFlashCardType] = useState('');
 
   const [freezeFront, setFreezeFront] = useState(false);
   const [freezeBack, setFreezeBack] = useState(false);
@@ -41,17 +42,20 @@ export function FlashCardCreate(props) {
   if (isNaN(flashcardId) === false) {
     btn_label = 'Save';
     apiFlashCardDetail(deckId, flashcardId, (response, status) => {
-      console.log(response)
       if (status === 200) {
         switch (response.flashcard_type) {
           case 'basic': case 'reversed':
             frontTextRef.current.value = response.deck_fields[0].text;
             backTextRef.current.value = response.deck_fields[1].text;
             break;
+          case 'cloze':
+            frontTextRef.current.value = response.deck_fields[0].text;
+            break;
           default:
             return;
         };
         tagsRef.current.value = response.tags;
+        setFlashCardType(response.flashcard_type);
       } else {
         // Error getting flashcard detail
         errorHandler(response, status, 2000);
@@ -88,15 +92,25 @@ export function FlashCardCreate(props) {
   // Sends a request to the backend to create a flashcard
   const handleSubmit = (event) => {
     event.preventDefault();
+    const content = (() => {switch (flashcardType) {
+      case 'basic': case 'reversed':
+        return [
+          frontTextRef.current.value,
+          backTextRef.current.value,
+        ];
+      case 'cloze':
+        return [
+          frontTextRef.current.value,
+        ];
+      default:
+        return [];
+    }})();
     if (isNaN(flashcardId) === false) {
       // This implies we are editing a card
       apiFlashCardEdit(
         deckId,
         flashcardId,
-        [
-          frontTextRef.current.value,
-          backTextRef.current.value,
-        ],
+        content,
         tagsRef.current.value,
         handleBackendUpdate,
       );
@@ -104,10 +118,7 @@ export function FlashCardCreate(props) {
       // This implies we are creating a card
       apiFlashCardCreate(
         deckId,
-        [
-          frontTextRef.current.value,
-          backTextRef.current.value,
-        ],
+        content,
         tagsRef.current.value,
         handleBackendUpdate,
       );
@@ -117,10 +128,22 @@ export function FlashCardCreate(props) {
   return (
     <div className={props.className}>
       <Form onSubmit={handleSubmit}>
+        {!returnToPreviousPage && <Form.Group>
+          <Form.Label>Flashcard Type</Form.Label>
+          <Form.Control
+            as='select'
+            onChange={event => setFlashCardType(event.target.value)}
+            custom
+          >
+            <option value='basic'>Basic</option>
+            <option value='reversed'>Basic and Reversed</option>
+            <option value='cloze'>Cloze</option>
+          </Form.Control>
+        </Form.Group>}
         <Form.Group className='blue-border-focus'>
           <Form.Label htmlFor='frontText' className='mb-0 mt-3 w-100'>
             <p className='mb-1'>
-            {returnToPreviousPage ? null : <FreezeOverlay><i
+            {!returnToPreviousPage && <FreezeOverlay><i
                 className='far fa-snowflake mb-1 mr-1 fa-lg'
                 onClick={event => {event.preventDefault(); setFreezeFront(!freezeFront)}}
                 style={{ cursor: 'pointer', color: freezeFront ? '#89ACFF' : '#6C757D' }}
@@ -137,24 +160,26 @@ export function FlashCardCreate(props) {
             autoFocus
             required
           />
-          <Form.Label htmlFor='backText' className='mb-0 mt-3 w-100'>
-            <p className='mb-0'>
-              {returnToPreviousPage ? null : <FreezeOverlay><i
-                className='far fa-snowflake mb-1 mr-1 fa-lg'
-                onClick={event => {event.preventDefault(); setFreezeBack(!freezeBack)}}
-                style={{cursor: 'pointer', color: freezeBack ? '#89ACFF' : '#6C757D'}}
-              /></FreezeOverlay>}
-              Back
-            </p>
-          </Form.Label>
-          <Form.Control
-            as='textarea'
-            rows='8'
-            name='backText'
-            placeholder='Back Text'
-            ref={backTextRef}
-            required
-          />
+          {['cloze'].includes(flashcardType) === false && <>
+            <Form.Label htmlFor='backText' className='mb-0 mt-3 w-100'>
+              <p className='mb-0'>
+                {!returnToPreviousPage && <FreezeOverlay><i
+                  className='far fa-snowflake mb-1 mr-1 fa-lg'
+                  onClick={event => {event.preventDefault(); setFreezeBack(!freezeBack)}}
+                  style={{cursor: 'pointer', color: freezeBack ? '#89ACFF' : '#6C757D'}}
+                /></FreezeOverlay>}
+                Back
+              </p>
+            </Form.Label>
+            <Form.Control
+              as='textarea'
+              rows='8'
+              name='backText'
+              placeholder='Back Text'
+              ref={backTextRef}
+              required
+            />
+          </>}
         </Form.Group>
         <Form.Group>
           <Form.Label htmlFor='tags' className='mb-0 w-100'>

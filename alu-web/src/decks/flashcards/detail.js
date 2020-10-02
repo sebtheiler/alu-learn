@@ -55,7 +55,7 @@ export function FlashCard(props) {
 
   const flashcardTextRender = (flashcard) => {
     switch (flashcard.flashcard_type) {
-      case 'basic': case 'reversed':
+      case 'basic': case 'reversed': // two-sided
         return (<>
           <div className='col-md-6 text-center'>
             <MarkdownRender source={flashcard.deck_fields[0].text} />
@@ -64,6 +64,12 @@ export function FlashCard(props) {
             <MarkdownRender source={flashcard.deck_fields[1].text} />
           </div>
         </>)
+      case 'cloze': // one-sided
+        return (<>
+          <div className='col-md-12 text-center'>
+            <MarkdownRender source={flashcard.deck_fields[0].text} />
+          </div>
+        </>);
       default:
         return (
           <div className='col-md-12 text-center'>

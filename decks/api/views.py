@@ -121,6 +121,11 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
                 [0, 1],
                 [1, 0],
             ]
+        elif flashcard_type == 'cloze':
+            # Only one side (parsing is done by front-end)
+            all_content_indicies = [
+                [0],
+            ]
         else:
             return Response({'message': 'Invalid flashcard type'}, status=400)
         flashcards = FlashCard.objects.bulk_create([
