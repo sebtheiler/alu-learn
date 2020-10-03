@@ -56,6 +56,11 @@ class FlashCard(models.Model):
     creator = models.ForeignKey(FlashCardCreator, on_delete=models.CASCADE, related_name='review_instances')
     content_indicies = ArrayField(models.PositiveSmallIntegerField())
 
+    # `name` can be used for many purposes
+    # Cloze cards use it to dfferentiate which "number cloze" the flashcard is for
+    # Basic and Reversed cards do not use this value
+    name = models.CharField(blank=True, null=True, default=None, max_length=12)
+
     LEARNING_STATUS_CHOICES = [
         ('UNSEEN', 'Unseen/New'),
         ('LEARNING', 'Learning'),

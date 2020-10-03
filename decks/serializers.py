@@ -75,6 +75,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'parent_deck_id',
             'parent_deck_title',
             'flashcard_type',
+            'name',
             'id',
         ]
     

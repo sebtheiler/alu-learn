@@ -128,14 +128,25 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             ]
         else:
             return Response({'message': 'Invalid flashcard type'}, status=400)
-        flashcards = FlashCard.objects.bulk_create([
-            FlashCard(
-                creator=creator,
-                next_review=this_morning,
-                content_indicies=all_content_indicies[i],
-            )
-            for i in range(len(all_content_indicies))
-        ])
+        if flashcard_type == 'cloze':
+            flashcards = FlashCard.objects.bulk_create([
+                FlashCard(
+                    creator=creator,
+                    next_review=this_morning,
+                    content_indicies=[0],
+                    name=f'cloze-{match.group().split(":")[0][3:]}'
+                )
+                for match in re.finditer(r"{{c\d*:.*?}}", fields[0], re.MULTILINE)
+            ])
+        else:
+            flashcards = FlashCard.objects.bulk_create([
+                FlashCard(
+                    creator=creator,
+                    next_review=this_morning,
+                    content_indicies=all_content_indicies[i],
+                )
+                for i in range(len(all_content_indicies))
+            ])
 
         return Response(FlashCardSerializer(instance=flashcards, many=True).data, 201)
     else:
