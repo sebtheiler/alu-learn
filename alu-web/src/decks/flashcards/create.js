@@ -29,7 +29,7 @@ export function FlashCardCreate(props) {
   // `flashcardId`: If not null/undefined, the ID of the flashcard to EDIT
   const {deckId, returnToPreviousPage, flashcardId} = props;
   let btn_label = 'Create';
-  const [flashcardType, setFlashCardType] = useState('');
+  const [flashcardType, setFlashCardType] = useState('basic');
 
   const [freezeFront, setFreezeFront] = useState(false);
   const [freezeBack, setFreezeBack] = useState(false);
@@ -76,7 +76,7 @@ export function FlashCardCreate(props) {
       if (freezeFront === false) {
         frontTextRef.current.value = '';
       };
-      if (freezeBack === false) {
+      if (freezeBack === false && backTextRef.current) {
         backTextRef.current.value = '';
       };
       if (freezeTags === false) {
@@ -120,6 +120,7 @@ export function FlashCardCreate(props) {
         deckId,
         content,
         tagsRef.current.value,
+        flashcardType,
         handleBackendUpdate,
       );
     };
