@@ -58,6 +58,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField(read_only=True)
     is_leech = serializers.SerializerMethodField(read_only=True)
     flashcard_type = serializers.SerializerMethodField(read_only=True)
+    creator_id = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FlashCard
@@ -74,6 +75,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'leech_index',
             'parent_deck_id',
             'parent_deck_title',
+            'creator_id',
             'flashcard_type',
             'name',
             'id',
@@ -96,6 +98,9 @@ class FlashCardSerializer(serializers.ModelSerializer):
     
     def get_flashcard_type(self, obj):
         return obj.creator.flashcard_type
+    
+    def get_creator_id(self, obj):
+        return obj.creator.id
 
 
 class DeckSerializer(serializers.ModelSerializer):

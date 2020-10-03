@@ -51,7 +51,7 @@ export function StudyElement(props) {
       case 'cloze':
         const currentCardText = currentCard.deck_fields[0].text;
         const targetClozeNum = parseInt(currentCard.name.split('-')[1]);
-        const regex = /{{c\d*:.*?}}/gm;
+        const regex = /{{c\d*::.*?}}/gm;
         const str = currentCard.deck_fields[0].text;
         
         let answerHiddenText = currentCardText;
@@ -67,8 +67,8 @@ export function StudyElement(props) {
           // eslint-disable-next-line
           m.forEach(match => {
             const clozeMatch = str.slice(m.index, m.index + match.length);
-            const clozeMatchNum = parseInt(clozeMatch.split(':')[0].slice(3));
-            const clozeMatchText = clozeMatch.split(':').slice(1).join('').slice(0, -2);
+            const clozeMatchNum = parseInt(clozeMatch.split('::')[0].slice(3));
+            const clozeMatchText = clozeMatch.split('::').slice(1).join('').slice(0, -2);
             if (clozeMatchNum === targetClozeNum) {
               if (inMatch(m.index, str, /(\$\$.*?\$\$)|(\$.*?\$)/gm)) {
                 answerHiddenText = answerHiddenText.replace(clozeMatch, '\\textbf{...}');
@@ -165,7 +165,7 @@ export function StudyElement(props) {
                   Suspend
                 </Button>
                 <Button
-                  href={`/decks/${currentCard.parent_deck_id}/flashcards/${currentCard.id}/edit/`}
+                  href={`/decks/${currentCard.parent_deck_id}/flashcards/${currentCard.creator_id}/edit/`}
                   className='mr-1'
                   variant='success'
                 >

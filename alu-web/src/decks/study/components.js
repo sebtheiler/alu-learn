@@ -226,7 +226,7 @@ export function StudyComponent(props) {
   // Callback for when the user presses delete flashcard
   const flashcardDeleteCallback = (event) => {
     event.preventDefault();
-    apiFlashCardDelete(currentCard.parent_deck_id, currentCard.id, (response, status) => {
+    apiFlashCardDelete(currentCard.parent_deck_id, currentCard.creator_id, (response, status) => {
       if (status === 200) {
         window.location.reload();
       } else {
