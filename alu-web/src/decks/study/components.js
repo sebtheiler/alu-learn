@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {apiFlashCardSearch,
-        apiFlashCardSuspendLeech,
+import {apiFlashCardSuspendLeech,
         apiFlashCardDelete,
         apiSSMDetail,
         apiSSMFlashcards,

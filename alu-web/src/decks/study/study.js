@@ -39,20 +39,48 @@ export function StudyElement(props) {
       case 'basic': case 'reversed':
         return (<>
           <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-            <MarkdownRender source={currentCard && currentCard.content[0].text} />
+            <MarkdownRender source={currentCard && currentCard.deck_fields[0].text} />
           </div>
           <hr />
           <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
             {currentCard && showAnswer &&
-              <MarkdownRender source={currentCard.content[1].text} />
+              <MarkdownRender source={currentCard.deck_fields[1].text} />
             }
           </div>
         </>);
       case 'cloze':
-        // TODO: add cloze answer displaying
+        const currentCardText = currentCard.deck_fields[0].text;
+        const targetClozeNum = parseInt(currentCard.name.split('-')[1]);
+        const regex = /{{c\d*:.*?}}/gm;
+        const str = currentCard.deck_fields[0].text;
+        
+        let answerHiddenText = currentCardText;
+        let answerRevealedText = currentCardText;
+        let m;
+        while ((m = regex.exec(str)) !== null) {
+          // This is necessary to avoid infinite loops with zero-width matches
+          if (m.index === regex.lastIndex) {
+            regex.lastIndex++;
+          };
+          
+          // The result can be accessed through the `m`-variable.
+          // eslint-disable-next-line
+          m.forEach(match => {
+            const clozeMatch = str.slice(m.index, m.index + match.length);
+            const clozeMatchNum = parseInt(clozeMatch.split(':')[0].slice(3));
+            const clozeMatchText = clozeMatch.split(':').slice(1).join('').slice(0, -2);
+            if (clozeMatchNum === targetClozeNum) {
+              answerHiddenText = answerHiddenText.replace(clozeMatch, '`_____`'); // obfuscate
+              answerRevealedText = answerRevealedText.replace(clozeMatch, `**${clozeMatchText}**`); // bold
+            } else {
+              answerHiddenText = answerHiddenText.replace(clozeMatch, clozeMatchText);
+              answerRevealedText = answerRevealedText.replace(clozeMatch, clozeMatchText);
+            };
+          });
+        };
         return (
           <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-            <MarkdownRender source={currentCard && currentCard.content[0].text} />
+            <MarkdownRender source={showAnswer ? answerRevealedText : answerHiddenText} />
           </div>
         );
       default:
