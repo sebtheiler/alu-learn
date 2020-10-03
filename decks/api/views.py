@@ -129,6 +129,8 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
         else:
             return Response({'message': 'Invalid flashcard type'}, status=400)
         if flashcard_type == 'cloze':
+            # Create a flashcard for each cloze segment
+
             cloze_ids = []
             def cloze_flashcard(match):
                 cloze_id = int(match.group().split(":")[0][3:])
@@ -139,12 +141,14 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
                     content_indicies=[0],
                     name=f'cloze-{cloze_id}'
                 )
+
             flashcards = FlashCard.objects.bulk_create([
                 cloze_flashcard(match)
                 for match in re.finditer(r"{{c\d*:.*?}}", fields[0], re.MULTILINE) \
                     if int(match.group().split(":")[0][3:]) not in cloze_ids
             ])
         else:
+            # Create a flashcard for each field
             flashcards = FlashCard.objects.bulk_create([
                 FlashCard(
                     creator=creator,
@@ -187,6 +191,44 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     if new_fields is not None:
         fields = flashcard.fields.all()
         if len(new_fields) == fields.count():
+            if flashcard.flashcard_type == 'cloze':
+                # Create or delete new flashcards depending on how the cloze has changed
+                now = timezone.now()
+                this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+                flashcards = flashcard.review_instances.all()
+                flashcards_to_create = []
+                created_flashcard_cloze_nums = []
+                flashcards_to_delete = [fc.id for fc in flashcards]
+
+                # Go through all segments identified as a cloze
+                for match in re.finditer(r"{{c\d*:.*?}}", new_fields[0], re.MULTILINE):
+                    cloze_id = int(match.group().split(":")[0][3:])
+                    try:
+                        # If the flashcard already exists, mark it as not needing deletion
+                        fc = flashcards.get(name=f'cloze-{cloze_id}')
+                        try:
+                            flashcards_to_delete.remove(fc.id) # the flashcard is still used, so we shouldn't delete it
+                        except ValueError:
+                            pass
+                    except ObjectDoesNotExist:
+                        # If the flashcard does not exist, create it
+                        if cloze_id not in created_flashcard_cloze_nums:
+                            created_flashcard_cloze_nums.append(cloze_id)
+                            flashcards_to_create.append(
+                                FlashCard(
+                                    creator=flashcard,
+                                    next_review=this_morning,
+                                    content_indicies=[0],
+                                    name=f'cloze-{cloze_id}'
+                                )
+                            )
+
+                # Apply delete and create operations
+                FlashCard.objects.bulk_create(flashcards_to_create)
+                flashcards.filter(id__in=flashcards_to_delete).delete()
+
+            # Update text fields
             _ = (f.text for f in fields) # for some reason, this line is needed
             for i, text in enumerate(new_fields):
                 fields[i].text = text
