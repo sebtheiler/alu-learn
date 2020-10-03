@@ -11,6 +11,7 @@ import {
   QuestionBubble,
   MarkdownRender,
   useInterval,
+  inMatch,
 } from './utils';
 
 import {errorHandler} from './errorHandler';
@@ -29,4 +30,5 @@ export {
   QuestionBubble,
   MarkdownRender,
   useInterval,
+  inMatch,
 };

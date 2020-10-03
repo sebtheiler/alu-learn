@@ -217,3 +217,20 @@ export function useInterval(callback, delay) {
     };
   }, [delay]);
 };
+
+// Returns whether or not an index of a string is in a regex match
+// Taken from https://stackoverflow.com/a/64188089/13042142
+export function inMatch(pos, str, regex) {
+  let match;
+  while ((match = regex.exec(str)) !== null) {
+    // regex.lastIndex is the position after the last match.
+    // And match[0] is the whole last match.
+    if (pos >= regex.lastIndex - match[0].length && pos < regex.lastIndex) {
+      // if pos is between the beginning and the end of the last match,
+      // it is within a match, therefore, return true.
+      return true;
+    };
+  };
+  // pos is not within any match, so, return false.
+  return false;
+};

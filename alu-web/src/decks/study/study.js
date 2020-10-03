@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {getAnkiInterval} from './algorithm';
 import {Button, Collapse, Alert} from 'react-bootstrap';
-import {MarkdownRender} from '../../utils';
+import {inMatch, MarkdownRender} from '../../utils';
 
 export function StudyElement(props) {
   const {currentCard, showAnswer, showAnswerHandler, message, backendGradeUpdate, handleKeyDown, schedulingAlgorithm, deleteFlashCardHandler, leechsuspendFlashCardGenerator, numRemainingFlashcards} = props;
@@ -70,8 +70,13 @@ export function StudyElement(props) {
             const clozeMatchNum = parseInt(clozeMatch.split(':')[0].slice(3));
             const clozeMatchText = clozeMatch.split(':').slice(1).join('').slice(0, -2);
             if (clozeMatchNum === targetClozeNum) {
-              answerHiddenText = answerHiddenText.replace(clozeMatch, '`_____`'); // obfuscate
-              answerRevealedText = answerRevealedText.replace(clozeMatch, `**${clozeMatchText}**`); // bold
+              if (inMatch(m.index, str, /(\$\$.*?\$\$)|(\$.*?\$)/gm)) {
+                answerHiddenText = answerHiddenText.replace(clozeMatch, '\\textbf{...}');
+                answerRevealedText = answerRevealedText.replace(clozeMatch, `\\boldsymbol{${clozeMatchText}}`);
+              } else {
+                answerHiddenText = answerHiddenText.replace(clozeMatch, '`...`'); // obfuscate
+                answerRevealedText = answerRevealedText.replace(clozeMatch, `**${clozeMatchText}**`); // bold
+              };
             } else {
               answerHiddenText = answerHiddenText.replace(clozeMatch, clozeMatchText);
               answerRevealedText = answerRevealedText.replace(clozeMatch, clozeMatchText);
