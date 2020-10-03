@@ -1,6 +1,5 @@
-import {StudyComponent, CustomStudyComponent} from './components';
+import {StudyComponent} from './components';
 
 export {
-    StudyComponent,
-    CustomStudyComponent,
+  StudyComponent,
 };

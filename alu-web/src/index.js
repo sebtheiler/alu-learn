@@ -5,7 +5,7 @@ import * as serviceWorker from './serviceWorker';
 import {ProfileInformationComponent, LoginComponent} from './profiles';
 import {DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent} from './decks';
 import {FlashCardCreate, FlashCardsList, FlashCardSearchComponent} from './decks/flashcards';
-import {StudyComponent, CustomStudyComponent} from './decks/study';
+import {StudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
 import {ExploreComponent, DeckSearchComponent} from './explore';
 import {LandingComponent} from './landing';
@@ -48,11 +48,6 @@ flashcardListElement.forEach(container => {
 const flashcardStudyElement = document.getElementById('study-component');
 if (flashcardStudyElement) {
   ReactDOM.render(e(StudyComponent, flashcardStudyElement.dataset), flashcardStudyElement);
-};
-
-const customFlashcardStudyElement = document.getElementById('custom-study-component');
-if (customFlashcardStudyElement) {
-  ReactDOM.render(e(CustomStudyComponent, customFlashcardStudyElement.dataset), customFlashcardStudyElement);
 };
 
 const notificationElements = document.querySelectorAll('.notification-component');
