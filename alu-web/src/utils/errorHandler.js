@@ -95,6 +95,7 @@ int(hexadecimal_string, 16)
 3017: Error confirming email through apiEmailConfirm in alu-web/src/home/settings/confirmEmail.js
 3018: Error resetting password through apiPasswordReset in alu-web/src/home/settings/change.js
 3019: Error sending password reset through apiSendPasswordReset in alu-web/src/home/settings/sendPasswordReset.js
+3020: Error changing email through apiEmailChange in alu-web/src/home/settings/change.js
 
 === Misc ===
 4000: Error submitting feedback through apiFeedbackSubmit in alu-web/src/home/contactus.js

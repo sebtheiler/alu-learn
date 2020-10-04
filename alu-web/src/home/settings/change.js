@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Button, Form, Row, Col} from 'react-bootstrap';
-import { apiPasswordChange, apiPasswordReset } from '../../lookup';
+import { apiPasswordChange, apiPasswordReset, apiEmailChange } from '../../lookup';
 import {errorHandler} from '../../utils';
 
 
@@ -11,9 +11,16 @@ export function ChangePasswordEmail(props) {
   const resetKey = isReset && urlSearch.get('k');
   const email = isReset && urlSearch.get('email');
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.target;
+
+    if (isLoading === true) {
+      return;
+    };
+    setIsLoading(true);
 
     if (isReset) {
       if (form.elements.newPassword.value !== form.elements.confirmPassword.value) {
@@ -37,6 +44,11 @@ export function ChangePasswordEmail(props) {
         };
       });
     } else {
+      const setInvalidCreds = () => {
+        document.getElementById('invalidCreds').innerHTML = `
+          Your password appears to be incorrect. You can reset it
+          <a href='/reset-password/'>here</a>.`
+      };
       if (type === 'password') {
         if (form.elements.newPassword.value !== form.elements.confirmPassword.value) {
           document.getElementById('passwordsDoNotMatch').innerHTML =
@@ -49,18 +61,25 @@ export function ChangePasswordEmail(props) {
           if (status === 200) {
             window.location.href = '/login/';
           } else if (response.message === 'Invalid credentials') {
-            document.getElementById('invalidCreds').innerHTML = `
-              Your password appears to be incorrect. You can reset it
-            <a href='/reset-password/'>here</a>.`
+            setInvalidCreds();
+            return;
           } else {
             // Error changing password
             errorHandler(response, status, 3017);
           };
         });
       } else if (type === 'email') {
-        console.log(
-          form.elements.newEmail.value,
-        );
+        apiEmailChange(form.elements.oldPassword.value, form.elements.newEmail.value, (response, status) => {
+          if (status === 200) {
+            window.location.href = '/confirm-email/';
+          } else if (response.message === 'Invalid credentials') {
+            setInvalidCreds();
+            return;
+          } else {
+            // Error changing email
+            errorHandler(response, status, 3020);
+          };
+        });
       };
     };
   };
@@ -95,7 +114,7 @@ export function ChangePasswordEmail(props) {
     return (<>
       <h1 className='my-5'>Reset password for "{email}"</h1>
       <small className='text-danger' id='invalidKey'></small>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={event => {handleSubmit(event); setIsLoading(false);}}>
         {newPasswordConfirm}
         <Button type='submit' className='my-5' block>Reset</Button>
       </Form>
@@ -105,7 +124,7 @@ export function ChangePasswordEmail(props) {
       <h1 className='text-center mt-5'>
         Update {type[0].toUpperCase() + type.substring(1)}
       </h1>
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={event => {handleSubmit(event); setIsLoading(false);}}>
         <Form.Group>
           <Form.Label as='h4'>Current Password</Form.Label>
           <Form.Control
@@ -134,7 +153,9 @@ export function ChangePasswordEmail(props) {
             <small className='text-danger' id='emailTaken'></small>
           </Form.Group>
         </>}
-        <Button type='submit' className='my-5' block>Update</Button>
+        <Button type='submit' className='my-5' block>
+          {isLoading ? 'Loading...' : 'Update'}
+        </Button>
       </Form>
     </>);
   };

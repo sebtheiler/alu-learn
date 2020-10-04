@@ -5,13 +5,13 @@ import {errorHandler} from '../../utils';
 
 
 export function ConfirmEmail(props) {
-  const {username} = props;
+  const {username, email} = props;
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.target;
 
-    apiEmailConfirm(username, form.elements.confirmationCode.value, (response, status) => {
+    apiEmailConfirm(username, form.elements.confirmationCode.value, email, (response, status) => {
       if (status === 200) {
         window.location.href = '/help/welcome/';
       } else if (response.message === 'Confirmation key invalid') {
@@ -30,8 +30,11 @@ export function ConfirmEmail(props) {
       Confirm Email for "{username}"
     </h1>
     <p className='text-center'>
-      An email should have been sent to the email address you specified.
+      An email should have been sent to {email}.
       Please enter the code to continue. <br />Make sure to check your "Spam" folder.
+    </p>
+    <p className='text-center'>
+      Incorrect email? Change your email <a href='/settings/change-email/'>here</a>.
     </p>
     <Form onSubmit={handleSubmit}>
       <Form.Group>

@@ -48,6 +48,7 @@ import {
   apiPasswordReset,
   apiSendPasswordReset,
   apiEmailConfirm,
+  apiEmailChange,
 } from './lookup';
 
 export {
@@ -100,4 +101,5 @@ export {
   apiPasswordReset,
   apiSendPasswordReset,
   apiEmailConfirm,
+  apiEmailChange,
 };
