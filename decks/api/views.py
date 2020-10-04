@@ -605,7 +605,7 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
 
     # Get flashcard
     try:
-        flashcard = FlashCard.objects.get(pk=flashcard_id, deck__user=request.user)
+        flashcard = FlashCard.objects.get(pk=flashcard_id, creator__deck__user=request.user)
     except ObjectDoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=404)
 

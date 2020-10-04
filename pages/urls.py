@@ -1,3 +1,4 @@
+from pages.views import change_email_view
 from django.urls import path
 
 from . import views
@@ -13,6 +14,7 @@ urlpatterns = [
     # Settings
     path('settings/', views.settings_view),
     path('settings/change-password/', views.change_reset_password_view_wrapper(False)),
+    path('settings/change-email/', views.change_email_view),
     # "Tutorial" pages
     path('help/welcome/', views.welcome_view),
     # Manual pages

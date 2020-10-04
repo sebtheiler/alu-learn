@@ -59,7 +59,7 @@ export function SettingsPage(props) {
           Your email: {profile.email} <br />
         </p>
         <ul>
-          <li><a href='/settings/changeemail/'>
+          <li><a href='/settings/change-email/'>
             Change email
           </a></li>
           <li><a href='/settings/change-password/'>

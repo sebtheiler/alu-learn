@@ -55,6 +55,13 @@ def settings_view(request, *args, **kwargs):
 
     return render(request, 'misc/settings/settings.html')
 
+def change_email_view(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
+    
+    return render(request, 'misc/settings/change-email.html')
 
 def change_reset_password_view_wrapper(is_reset):
     def change_reset_password_view(request, *args, **kwargs):

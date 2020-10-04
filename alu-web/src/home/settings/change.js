@@ -16,7 +16,6 @@ export function ChangePasswordEmail(props) {
     const form = event.target;
 
     if (isReset) {
-      console.log('resetting')
       if (form.elements.newPassword.value !== form.elements.confirmPassword.value) {
         document.getElementById('passwordsDoNotMatch').innerHTML =
           `Passwords do not match`
@@ -24,7 +23,7 @@ export function ChangePasswordEmail(props) {
       } else {
         document.getElementById('passwordsDoNotMatch').innerHTML = '';
       };
-      console.log(email, resetKey, form.elements.newPassword.value)
+
       apiPasswordReset(email, resetKey, form.elements.newPassword.value, (response, status) => {
         if (status === 200) {
           window.location.href = '/login/';
@@ -107,23 +106,33 @@ export function ChangePasswordEmail(props) {
         Update {type[0].toUpperCase() + type.substring(1)}
       </h1>
       <Form onSubmit={handleSubmit}>
+        <Form.Group>
+          <Form.Label as='h4'>Current Password</Form.Label>
+          <Form.Control
+            type='password'
+            name='oldPassword'
+            className='mx-auto'
+            maxLength={1024}
+            required
+          />
+          <small className='text-danger' id='invalidCreds'></small>
+        </Form.Group>
         {type === 'password' ? <>
-          <Form.Group>
-            <Form.Label as='h4'>Current Password</Form.Label>
-            <Form.Control
-              type='password'
-              name='oldPassword'
-              className='mx-auto'
-              maxLength={1024}
-              required
-            />
-            <small className='text-danger' id='invalidCreds'></small>
-          </Form.Group>
           <Form.Group>
             {newPasswordConfirm}
           </Form.Group>
         </> : <>
-          {/* Email change field */}
+          <Form.Group>
+            <Form.Label as='h4'>New Email</Form.Label>
+            <Form.Control
+              type='email'
+              name='newEmail'
+              className='mx-auto'
+              maxLength={64}
+              required
+            />
+            <small className='text-danger' id='emailTaken'></small>
+          </Form.Group>
         </>}
         <Button type='submit' className='my-5' block>Update</Button>
       </Form>
