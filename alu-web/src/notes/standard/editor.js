@@ -1,11 +1,11 @@
 import React, {useMemo, useState} from 'react';
-import {Button} from 'react-bootstrap';
+import {Button, ButtonGroup} from 'react-bootstrap';
 import {Slate} from 'slate-react';
 import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
 import {AutoNoteModal} from '../autonote';
 
 export function StandardNoteEditor(props) {
-  const {initialValue, isViewing, updateValueToSave, saveHandler, didTypeCallback} = props;
+  const {initialValue, isViewing, updateValueToSave, saveHandler, didTypeCallback, noteId} = props;
   const [showAutoNoteModal, setShowAutoNoteModal] = useState(false);
 
   const [value, setValue] = useState(initialValue);
@@ -15,13 +15,22 @@ export function StandardNoteEditor(props) {
   );
 
   return (<>
-    <Button
-      onClick={(event) => {event.preventDefault(); setShowAutoNoteModal(true)}}
-      variant='success'
-      className='mt-0 mb-2'
-    >
-      Import Text Document
-    </Button>
+    <ButtonGroup>
+      {!isViewing && <Button
+        onClick={(event) => {event.preventDefault(); setShowAutoNoteModal(true)}}
+        variant='success'
+        className='mt-0 mb-2'
+      >
+        Import Text Document
+      </Button>}
+      <Button
+        href={`/notes/create-flashcards/${noteId}`}
+        variant='success'
+        className='mt-0 mb-2 ml-1'
+      >
+        Create Flashcards from This Document
+      </Button>
+    </ButtonGroup>
     <AutoNoteModal
       show={showAutoNoteModal}
       hide={() => setShowAutoNoteModal(false)}

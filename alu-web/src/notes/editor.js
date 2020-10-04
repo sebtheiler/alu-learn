@@ -94,6 +94,7 @@ export function NoteEditor(props) {
         setDidTypeRecently(true);
         setAreChanges(true);
       },
+      noteId: noteId,
     };
 
     switch (note.serializer_name) {

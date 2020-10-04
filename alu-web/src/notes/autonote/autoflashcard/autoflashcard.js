@@ -50,6 +50,7 @@ export function AutoFlashCard(props) {
       showCompiledNotes={false}
       setShowCompiledNotes={() => {}}
     >
+      <br />
       <FlashCardCreate deckId={1} />
       <div id='contentProgress' className='mt-1 mb-5'>
         <div id='contentProgressBar'>{percentComplete}%</div>
