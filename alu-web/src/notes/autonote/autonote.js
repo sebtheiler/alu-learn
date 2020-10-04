@@ -62,7 +62,10 @@ export const parseText = (text, version='paragraph') => {
           case 'paragraph':
             let htmlString = '';
             for (const child of object.children) {
-              let childText = child.text;
+              let childText = child.text || child.children[0].text;
+              if (child.type === 'link') {
+                childText = `<a href=${child.url} target='_blank'>${childText}</a>`;//`<a href=${child.url}>${childText}</a>`
+              };
               if (child.bold) {
                 childText = `<strong>${childText}</strong>`;
               };
