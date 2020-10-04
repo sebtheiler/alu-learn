@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.utils.http import is_safe_url
 from django.contrib.auth import get_user_model, authenticate, login, logout
@@ -422,6 +423,49 @@ def logout_api_view(request, *args, **kwargs):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_email(request, *args, **kwargs):
+    """
+    Goes through the process of changing emails - POST
+
+    Required information:
+        `password`: (Data) Password of the user for security reasons
+        `new_email`: (Data) Email to set the user's new email to
+    
+    Possible errors:
+        Password invalid: 401, Invalid credentials
+    """
+    password = request.data.get('password')
+    new_email = request.data.get('new_email')
+    user = authenticate(username=request.user.username, password=password)
+    if user is None:
+        return Response({'message': 'Invalid credentials'}, status=401)
+    else:
+        confirmation_key = user.add_unconfirmed_email(new_email)
+
+        # Send confirmation email
+        subject = 'Change Email'
+        message = f"""
+Look's like you want to change your email.
+Here's a confirmation code, to make sure this email is really you: {confirmation_key}
+If this wasn't you, you can safely ignore this email.
+        """
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [new_email]
+
+        send_mail(
+            subject,
+            message,
+            email_from,
+            recipient_list,
+            fail_silently=False,
+        )
+
+        return redirect('/confirm-email/')
+
+
+
+@api_view(['POST'])
 def change_password(request, *args, **kwargs):
     """
     Changes a user's password - POST
@@ -494,6 +538,7 @@ def password_reset_email_api_view(request, email, *args, **kwargs):
     except ObjectDoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 
+    # TODO: what happened to non-bad-words strings???
     # Generate impossible to guess, one-time-password
     allowed_chars = ''.join((string.ascii_letters, string.digits, '-_'))
     unique_id = ''.join(random.choice(allowed_chars) for _ in range(128))
@@ -595,6 +640,12 @@ def confirm_email_api_view(request, username, *args, **kwargs):
     # Check key
     try:
         profile.user.confirm_email(request.data.get('confirmation_key'))
+
+        email = request.data.get('email')
+        if email:
+            profile.user.set_primary_email(profile.user.unconfirmed_emails[0])
+            profile.user.email = profile.user.unconfirmed_emails[0]
+            profile.user.save()
     except ObjectDoesNotExist:
         return Response({'message': 'Confirmation key invalid'}, status=400)
 

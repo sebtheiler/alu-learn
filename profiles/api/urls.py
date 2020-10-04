@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (
-    profile_detail_api_view,
+    change_email, profile_detail_api_view,
     notification_api_view,
     notification_read_api_view,
     friend_request_api_view,
@@ -31,8 +31,8 @@ urlpatterns = [
     path('create/', create_profile_api_view),
     path('login/', login_api_view),
     path('logout/', logout_api_view),
+    path('changeemail/', change_email),
     path('changepassword/', change_password),
     path('resetpassword/<str:email>/', password_reset_email_api_view),
-    # path('emailtest/', test_my_email_api_view)
     path('confirmemail/<str:username>/', confirm_email_api_view),
 ]

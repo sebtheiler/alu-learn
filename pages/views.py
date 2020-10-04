@@ -58,8 +58,7 @@ def settings_view(request, *args, **kwargs):
 def change_email_view(request, *args, **kwargs):
     if not request.user.is_authenticated:
         return redirect('/')
-    elif not request.user.is_confirmed:
-        return redirect('/confirm-email/')
+    # Even if the user is not confirmed, they can still change email
     
     return render(request, 'misc/settings/change-email.html')
 
@@ -74,10 +73,12 @@ def change_reset_password_view_wrapper(is_reset):
     return change_reset_password_view
 
 def confirm_email_view(request, *args, **kwargs):
-    if not request.user.is_authenticated or request.user.is_confirmed:
+    if not request.user.is_authenticated or (request.user.is_confirmed and len(request.user.unconfirmed_emails) == 0):
         return redirect('/home/')
 
-    return render(request, 'misc/settings/confirm-email.html')
+    return render(request, 'misc/settings/confirm-email.html', {
+        'email': request.user.unconfirmed_emails[0] if request.user.unconfirmed_emails else request.user.email
+    })
 
 def send_password_reset(request, *args, **kwargs):
     if request.user.is_authenticated:
@@ -97,6 +98,8 @@ def profile_redirect_view(request, *args, **kwargs):
 @cache_page(timeout=60*15)
 def login_view(request, *args, **kwars):
     if request.user.is_authenticated:
+        if not request.user.is_confirmed:
+            return redirect('/confirm-email/')
         return redirect('/home/')
     
     return render(request, 'profiles/login.html')
