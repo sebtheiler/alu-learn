@@ -22,8 +22,9 @@ export function NotificationComponent(props) {
       if (username === '') {
         // If the user is not logged in make a fake notification
         const fakeNotifDesc = `
-        Welcome to Alu! Alu uses spaced reptition algorithms to help you learnand study most effectively.
-        Learn more at [here](/help/tutorial/).`;
+Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study most effectively.
+Learn more at [here](/help/tutorial/).
+`.trim();
         setNotifList([{
           title: 'Hey there!',
           description: fakeNotifDesc,
@@ -34,6 +35,7 @@ export function NotificationComponent(props) {
         }]);
         setNotifsDidSet(true);
         setNumUnreadNotifs(1);
+        setTotalUnreadNotifs(1);
       } else {
         // If the user is logged in, get notifications
         apiNotificationList(username, (response, status) => {
