@@ -128,11 +128,11 @@ export function CornellNoteEditor(props) {
                 setSummaryValue(newValue);
               }}
             >
-              <EditorButtons
+              {!isViewing && <EditorButtons
                 editor={summaryEditor}
                 saveHandler={saveHandler}
                 className='pl-2 pt-2'
-              />
+              />}
               <FullEditor
                 editor={summaryEditor}
                 readOnly={isViewing}

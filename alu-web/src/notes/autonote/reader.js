@@ -4,6 +4,7 @@ import './reader.css';
 
 export function AutoReader(props) {
   const {selectedPar, setSelectedPar, updateProgressBar, finished, text, showCompiledNotes, setShowCompiledNotes} = props;
+  const compiledNotesButton = props.compiledNotesButton !== undefined ? props.compiledNotesButton : true;
 
   return (<div className='container mt-5'>
     <h3 className='text-center'>Content</h3>
@@ -31,11 +32,11 @@ export function AutoReader(props) {
         disabled={selectedPar === text.length - 1}
         onClick={event => {event.preventDefault(); setSelectedPar(selectedPar + 1); updateProgressBar(selectedPar + 1)}}
       >Go Forwards</Button>
-      <Button
+      {compiledNotesButton && <Button
         variant='secondary'
         onClick={event => {event.preventDefault(); setShowCompiledNotes(!showCompiledNotes);}}
         className='ml-1'
-      >{showCompiledNotes ? 'Hide' : 'Show'} Compiled Notes</Button>
+      >{showCompiledNotes ? 'Hide' : 'Show'} Compiled Notes</Button>}
     </ButtonGroup>
     {!finished && <>
       {props.children}

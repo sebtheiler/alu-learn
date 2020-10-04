@@ -87,7 +87,7 @@ export function ContactUs(props) {
           <Form.Label className='mb-0'>
             How urgent is this? (optional)<br />
             <small className='text-secondary'>
-              0 is not urgent at all, 10 is very urgent. This helps our support team prioritize the most pressing issues. Please don't lie about this.
+              0 is not urgent at all, 10 is very urgent. This helps us prioritize the most pressing issues. Please don't lie about this.
             </small>
           </Form.Label>
           <Form.Control type='number' name='urgency' min={0} max={10} />

@@ -40,15 +40,14 @@ export function AutoFlashCard(props) {
 
 
   return (<>
-    <h1 className='text-center'>Turning Your Notes into Flashcards</h1>
+    <h1 className='text-center mt-2'>Turning Your Notes into Flashcards</h1>
     <AutoReader
       text={text}
       selectedPar={selectedPar}
       setSelectedPar={setSelectedPar}
       updateProgressBar={updateProgressBar}
       finished={false}
-      showCompiledNotes={false}
-      setShowCompiledNotes={() => {}}
+      compiledNotesButton={false}
     >
       <br />
       <FlashCardCreate deckId={1} />
