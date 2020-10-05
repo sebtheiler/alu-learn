@@ -4,13 +4,18 @@ import re
 
 base_dir = os.getcwd()
 REACT_DIRECTORY = os.path.join(base_dir, 'alu-web/')
-PYTHON_PATH = '~/anaconda3/envs/webdev/bin/python'
+if os.environ.get('ALU_PRODUCTION') == 'True':
+    PYTHON_PATH = '~/aludir/aluenv/bin/python3'
+else:
+    PYTHON_PATH = '~/anaconda3/envs/webdev/bin/python'
+COMPILE_REACT = not os.environ.get('ALU_PRODUCTION') == 'True'
 
 # Compile react
-print('Compiling React...')
-os.chdir(REACT_DIRECTORY)
-os.system('npm run build')
-os.chdir(base_dir)
+if COMPILE_REACT:
+    print('Compiling React...')
+    os.chdir(REACT_DIRECTORY)
+    os.system('npm run build')
+    os.chdir(base_dir)
 
 # Copy static files
 print('Copying static files...')
