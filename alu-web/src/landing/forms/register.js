@@ -152,6 +152,13 @@ export function ModalRegisterForm(props) {
                   };
                 },
               );
+            } else if (response.message === 'Email not allowed') {
+              // If the user's email is not allowed
+              document.getElementById('emailNotAllowed').innerHTML =
+                `You email is not currently in the list of allowed emails.
+                To apply, please fill out the
+                <a href='https://forms.gle/7MNRvNfa4yfQinTL7' target='_blank'>
+                Google Form</a>.`
             } else {
               // Error creating the user profile
               errorHandler(response, status, 3008);
@@ -262,6 +269,7 @@ export function ModalRegisterForm(props) {
           maxLength={100}
           required
         />
+        <small className='text-danger' id='emailNotAllowed' />
       </Form.Group>
       <Form.Group>
         <div className='row'>

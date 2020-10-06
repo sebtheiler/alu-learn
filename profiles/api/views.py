@@ -333,6 +333,9 @@ def create_profile_api_view(request, *args, **kwargs):
         month=months.index(birthdate.get('month').lower()) + 1,
         day=birthdate.get('day'),
     )
+    # Check that the email is among the list of allowed emails
+    if email not in settings.ALLOWED_EMAILS:
+        return Response({'message': 'Email not allowed'}, status=400)
 
     # Check email and username available
     try:
@@ -639,12 +642,14 @@ def confirm_email_api_view(request, username, *args, **kwargs):
 
     # Check key
     try:
-        profile.user.confirm_email(request.data.get('confirmation_key'))
+        email = profile.user.confirm_email(request.data.get('confirmation_key'))
 
-        email = request.data.get('email')
+        # TODO: change this now that we can
+        # get email from above confirmaiton
+        # email = request.data.get('email')
         if email:
-            profile.user.set_primary_email(profile.user.unconfirmed_emails[0])
-            profile.user.email = profile.user.unconfirmed_emails[0]
+            profile.user.email = email##profile.user.unconfirmed_emails[0]
+            profile.user.set_primary_email(email)#profile.user.unconfirmed_emails[0])
             profile.user.save()
     except ObjectDoesNotExist:
         return Response({'message': 'Confirmation key invalid'}, status=400)
