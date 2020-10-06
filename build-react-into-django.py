@@ -11,7 +11,7 @@ REACT_DIRECTORY = os.path.join(base_dir, 'alu-web/')
 if PRODUCTION:
     PYTHON_PATH = '/home/aluadmin/aludir/aluenv/bin/python3'
 else:
-    PYTHON_PATH = '~/anaconda3/envs/webdev/bin/python'
+    PYTHON_PATH = '/media/evolvedsquid/2.0\ TB\ HDD/code/in-progress/alu/aluenv/bin/python3'
 COMPILE_REACT = not PRODUCTION
 
 # Compile react

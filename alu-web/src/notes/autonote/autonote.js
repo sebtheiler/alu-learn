@@ -68,7 +68,7 @@ export const parseText = (text, version='paragraph') => {
                 break;
               };
               if (child.type === 'link') {
-                childText = `<a href=${child.url} target='_blank'>${childText}</a>`;
+                childText = `<a href=${child.url} target='_blank' rel='noopener noreferrer'>${childText}</a>`;
               };
               if (child.bold) {
                 childText = `<strong>${childText}</strong>`;

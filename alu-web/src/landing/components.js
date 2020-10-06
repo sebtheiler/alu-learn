@@ -111,8 +111,10 @@ export function CoolFeaturesList(_props) {
   // const {} = props;
 
   return (
-    <iframe width="80%" height="100%"
-      src="https://www.youtube.com/embed/VIDEO-ID"
+    <iframe width="80%" height="120%"
+      title='Alu Introduction Video'
+      allowFullScreen='allowFullScreen'
+      src="https://www.youtube.com/embed/maoqzbPv4jg"
       className='mx-auto'
       // style={{ transform: 'translateX(-100px)' }}
     />

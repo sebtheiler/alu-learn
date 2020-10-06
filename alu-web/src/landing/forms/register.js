@@ -157,7 +157,7 @@ export function ModalRegisterForm(props) {
               document.getElementById('emailNotAllowed').innerHTML =
                 `You email is not currently in the list of allowed emails.
                 To apply, please fill out the
-                <a href='https://forms.gle/7MNRvNfa4yfQinTL7' target='_blank'>
+                <a href='https://forms.gle/7MNRvNfa4yfQinTL7' target='_blank' rel='noopener noreferrer'>
                 Google Form</a>.`
             } else {
               // Error creating the user profile

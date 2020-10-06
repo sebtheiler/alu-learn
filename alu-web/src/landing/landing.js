@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {MainHook, CoolFeaturesList, MiniRegisterForm} from './components';
-import {HowItWorks} from './cards';
+import {MainHook, CoolFeaturesList} from './components';
+// import {HowItWorks} from './cards';
 import {RegisterLoginModal} from './forms';
 import {apiCreateBlankExperiment} from '../lookup';
 
@@ -92,6 +92,7 @@ export function LandingComponent(props) {
       <div className='row' style={{marginTop: '100px'}}>
         <div className='text-center mx-auto'>
           <iframe  width="640" height="1423" frameborder="0" marginheight="0" marginwidth="0"
+            title='Alu Apply Form'
             src="https://docs.google.com/forms/d/e/1FAIpQLSf_TIiDiIX_6vQbVFxiQJYwxjy2kpemtbGjD7MQ28rusDzNZQ/viewform?embedded=true"
           >Loading…</iframe>
           {/* <h2>Here's how it works</h2>

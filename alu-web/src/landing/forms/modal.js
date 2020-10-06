@@ -51,7 +51,7 @@ export function RegisterLoginModal(props) {
           <p className='text-center'>
             Create your account to start using Alu <br /><br />
             Alu is currently only accepting a limited number of individuals.
-            Please fill out <a href='https://forms.gle/7MNRvNfa4yfQinTL7' target='_blank'>
+            Please fill out <a href='https://forms.gle/7MNRvNfa4yfQinTL7' target='_blank' rel='noopener noreferrer'>
             this Google Form</a> to apply.
           </p>
           <ModalRegisterForm

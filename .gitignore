@@ -48,3 +48,5 @@ top_deck_ids.json
 # --- Production Things ---
 sites-enabled
 env-vars.json
+aluenv
+Pipfile
