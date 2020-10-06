@@ -1,14 +1,19 @@
+from alu.settings import PRODUCTION
+import json
 import os
 from shutil import copytree, copyfile, rmtree
 import re
 
 base_dir = os.getcwd()
+with open(os.path.join(base_dir, 'alu/env-vars.json'), 'r') as f:
+    PRODUCTION = json.loads(f.read())['ALU_PRODUCTION']
 REACT_DIRECTORY = os.path.join(base_dir, 'alu-web/')
-if os.environ.get('ALU_PRODUCTION') == 'True':
+
+if PRODUCTION:
     PYTHON_PATH = '~/aludir/aluenv/bin/python3'
 else:
     PYTHON_PATH = '~/anaconda3/envs/webdev/bin/python'
-COMPILE_REACT = not os.environ.get('ALU_PRODUCTION') == 'True'
+COMPILE_REACT = not PRODUCTION
 
 # Compile react
 if COMPILE_REACT:
