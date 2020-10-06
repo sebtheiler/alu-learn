@@ -91,16 +91,16 @@ export function LandingComponent(props) {
       </div>
       <div className='row' style={{marginTop: '100px'}}>
         <div className='text-center mx-auto'>
-          <h2>Here's how it works</h2>
-          <HowItWorks isMobile={screenWidth < 770} experimentParams={experimentParams} />
+          {/* <h2>Here's how it works</h2>
+          <HowItWorks isMobile={screenWidth < 770} experimentParams={experimentParams} /> */}
 
-          <h2>Start Learning</h2>
+          {/* <h2>Start Learning</h2>
           <MiniRegisterForm
             callback={openModalCallback}
             experimentParams={experimentParams}
             autoFocus={false}
             hideNoSpam
-          />
+          /> */}
         </div>
       </div>
     </>

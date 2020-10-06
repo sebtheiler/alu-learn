@@ -141,11 +141,11 @@ LANDING_EXPERIMENT_PROBABILITIES = [
     0, # Order of 'main hook' and 'cool features'
     0.5, # Join us vs apply for alpha
     0.5, # Disable enter email field
-    0, # It's free! instead of Register soon!
+    1.0, # Hide Register soon!
     0, # Main title control #1
     0.5, # Main title control #2
     0, # Remove Boldface in description
-    0, # Hide FA icons
+    1.0, # Hide FA icons
 ]
 
 @vary_on_cookie

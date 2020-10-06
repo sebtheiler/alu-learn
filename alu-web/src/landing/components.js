@@ -1,5 +1,5 @@
 import React from 'react';
-import {Form, Button, ListGroup, OverlayTrigger} from 'react-bootstrap';
+import {Form, Button, OverlayTrigger} from 'react-bootstrap';
 import {generateTooltip} from '../utils';
 
 export function MiniRegisterForm(props) {
@@ -23,7 +23,8 @@ export function MiniRegisterForm(props) {
               <OverlayTrigger
                 overlay={generateTooltip(
                   `We promse not to spam, sell, rent, or share
-                  your email address without your explicit permission.`
+                  your email address without your explicit permission.
+                  See our privacy policy and ToS for more information.`
                 )}
                 placement='right'
                 delay={{ show: 20, hide: 800 }}
@@ -87,11 +88,7 @@ export function MainHook(props) {
         autoFocus={true}
       />
       <p className='text-secondary mt-1'>
-        {experimentParams[4] === '1' ?
-          <>
-            It's free
-          </>
-          :
+        {!experimentParams[4] === '1' &&
           <>
             Only {alphaSpotsRemaining} spots remaining in the Alpha!<br />
             Register soon!
@@ -114,19 +111,24 @@ export function CoolFeaturesList(_props) {
   // const {} = props;
 
   return (
-    <ListGroup className='text-left w-75 mx-auto'>
-      <ListGroup.Item className='py-5 px-5'>
-        <i className="fas fa-brain" style={{width: '25px', color: '#E292C0'}}></i>
-         Take digital notes
-      </ListGroup.Item>
-      <ListGroup.Item className='py-5 px-5'>
-        <i className="fas fa-chess-knight" style={{width: '25px', color: '#82C91E'}}></i>
-         Focus on what you need most with powerful <em>spaced repetition</em>
-      </ListGroup.Item>
-      <ListGroup.Item className='py-5 px-5'>
-        <i className="fas fa-users" style={{width: '25px', color: '#FBA129'}}></i>
-         Interact with a community of dedicated learners
-      </ListGroup.Item>
-    </ListGroup>
+    <iframe width="80%" height="100%"
+      src="https://www.youtube.com/embed/VIDEO-ID"
+      className='mx-auto'
+      // style={{ transform: 'translateX(-100px)' }}
+    />
+    // <ListGroup className='text-left w-75 mx-auto'>
+    //   <ListGroup.Item className='py-5 px-5'>
+    //     <i className="fas fa-brain" style={{width: '25px', color: '#E292C0'}}></i>
+    //      Take digital notes
+    //   </ListGroup.Item>
+    //   <ListGroup.Item className='py-5 px-5'>
+    //     <i className="fas fa-chess-knight" style={{width: '25px', color: '#82C91E'}}></i>
+    //      Focus on what you need most with powerful <em>spaced repetition</em>
+    //   </ListGroup.Item>
+    //   <ListGroup.Item className='py-5 px-5'>
+    //     <i className="fas fa-users" style={{width: '25px', color: '#FBA129'}}></i>
+    //      Interact with a community of dedicated learners
+    //   </ListGroup.Item>
+    // </ListGroup>
   );
 };
