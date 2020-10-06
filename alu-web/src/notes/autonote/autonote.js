@@ -62,9 +62,9 @@ export const parseText = (text, version='paragraph') => {
           case 'paragraph':
             let htmlString = '';
             for (const child of object.children) {
-              let childText = child.text || child.children[0].text;
+              let childText = child.text || (child.children && child.children[0].text);
               if (!childText) {
-                // If the child is empty, continue withou adding
+                // If the child is empty, continue without adding
                 break;
               };
               if (child.type === 'link') {
