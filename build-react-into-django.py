@@ -9,7 +9,7 @@ with open(os.path.join(base_dir, 'alu/env-vars.json'), 'r') as f:
 REACT_DIRECTORY = os.path.join(base_dir, 'alu-web/')
 
 if PRODUCTION:
-    PYTHON_PATH = '~/aludir/aluenv/bin/python3'
+    PYTHON_PATH = '/home/aluadmin/aludir/aluenv/bin/python3'
 else:
     PYTHON_PATH = '~/anaconda3/envs/webdev/bin/python'
 COMPILE_REACT = not PRODUCTION
