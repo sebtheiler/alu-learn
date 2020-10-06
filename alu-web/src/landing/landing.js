@@ -91,6 +91,9 @@ export function LandingComponent(props) {
       </div>
       <div className='row' style={{marginTop: '100px'}}>
         <div className='text-center mx-auto'>
+          <iframe  width="640" height="1423" frameborder="0" marginheight="0" marginwidth="0"
+            src="https://docs.google.com/forms/d/e/1FAIpQLSf_TIiDiIX_6vQbVFxiQJYwxjy2kpemtbGjD7MQ28rusDzNZQ/viewform?embedded=true"
+          >Loading…</iframe>
           {/* <h2>Here's how it works</h2>
           <HowItWorks isMobile={screenWidth < 770} experimentParams={experimentParams} /> */}
 

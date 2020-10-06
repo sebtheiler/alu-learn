@@ -49,7 +49,10 @@ export function RegisterLoginModal(props) {
       <Modal.Body>
         <div className={formToDisplay !== 'REGISTER' ? 'd-none' : ''}>
           <p className='text-center'>
-            Create your account to start using Alu
+            Create your account to start using Alu <br /><br />
+            Alu is currently only accepting a limited number of individuals.
+            Please fill out <a href='https://forms.gle/7MNRvNfa4yfQinTL7' target='_blank'>
+            this Google Form</a> to apply.
           </p>
           <ModalRegisterForm
             defaultEmail={defaultEmail}

@@ -21,7 +21,7 @@ const randomTips = [
   'You can share decks with others by changing the "Sharing Setting" value',
   'When creating cards, click the snowflake icon to "freeze" a field',
   'You can write MarkDown, LaTeX, and HTML when creating flashcards and deck descriptions',
-  'You can import flashcards from other popular flashcard programs using the "import" feature',
+  // 'You can import flashcards from other popular flashcard programs using the "import" feature',
   'When taking notes, we recommend you disable spell checking, and focus more on the content than spelling and grammar',
   'Turning off notifications when taking notes or attending class can help you focus and create better notes',
   'Use the "Flashcard Search" feature to find flashcards',
