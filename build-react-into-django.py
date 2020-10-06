@@ -76,6 +76,6 @@ write_file('decks/templates/react/js.html', js_html)
 write_file('decks/templates/react/css.html', css_html)
 
 print('Clearing cache...')
-os.system('./manage.py shell -c "from django.core.cache import cache; cache.clear()"')
+os.system(f'{PYTHON_PATH} manage.py shell -c "from django.core.cache import cache; cache.clear()"')
 
 print('Finished')
