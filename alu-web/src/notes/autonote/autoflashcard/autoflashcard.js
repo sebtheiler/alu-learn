@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import {AutoReader} from '../reader';
 import {parseText} from '../autonote';
 import {FlashCardCreate} from '../../../decks/flashcards';
-import { apiNoteDetail } from '../../../lookup';
+import { apiDeckHome, apiNoteDetail } from '../../../lookup';
 import { errorHandler } from '../../../utils';
 import '../reader.css';
+import { Form } from 'react-bootstrap';
 
 export function AutoFlashCard(props) {
   const {noteId} = props;
@@ -12,6 +13,9 @@ export function AutoFlashCard(props) {
   const [selectedPar, setSelectedPar] = useState(0);
   const [note, setNote] = useState(null);
   const [noteDidSet, setNoteDidSet] = useState(false);
+  const [decks, setDecks] = useState(null);
+  const [decksDidSet, setDecksDidSet] = useState(false);
+  const [selectedDeckId, setSelectedDeckId] = useState(0);
 
   useEffect(() => {
     if (noteDidSet === false) {
@@ -27,6 +31,22 @@ export function AutoFlashCard(props) {
       });
     };
   }, [noteId, note, noteDidSet]);
+
+  useEffect(() => {
+    if (decksDidSet === false) {
+      setDecksDidSet(true);
+      apiDeckHome((response, status) => {
+        if (status === 200) {
+          setDecks(response.results.filter(
+            deck => deck.serializer_name === 'deck'
+          ).sort(deck => deck.title));
+        } else {
+          // Error getting list of decks for autoflashcard
+          errorHandler(response, status, 1009);
+        };
+      });
+    };
+  }, [decksDidSet, decks]);
 
   const [percentComplete, setPercentComplete] = useState(0);
   const updateProgressBar = (newSelectedPar) => {
@@ -50,10 +70,25 @@ export function AutoFlashCard(props) {
       compiledNotesButton={false}
     >
       <br />
-      <FlashCardCreate deckId={1} />
+      <FlashCardCreate deckId={selectedDeckId} />
       <div id='contentProgress' className='mt-1 mb-5'>
         <div id='contentProgressBar'>{percentComplete}%</div>
       </div>
+      <br />
+      <Form.Label>Flashcard Destination</Form.Label>
+      <Form.Control
+        as='select'
+        name='sharingSetting'
+        className='mb-5'
+        onChange={event => {event.preventDefault(); setSelectedDeckId(parseInt(event.target.value))}}
+        custom
+      >
+        {decks ? decks.map(deck => 
+          <option value={deck.id} key={deck.id}>{deck.title}</option>
+        ) :
+          <option value='-1'>Loading...</option>
+        }
+      </Form.Control>
     </AutoReader>
   </>);
 };

@@ -52,7 +52,7 @@ int(hexadecimal_string, 16)
 1006: Error getting deck through apiDeckHome in alu-web/src/decks/home.js
 1007: Error handling next set of decks (pagination, decks home page) through apiDeckHome in alu-web/src/decks/home.js
 1008: Error getting shared decks through apiDeckSharedList in alu-web/src/decks/list.js
-1009: 
+1009: Error getting a profile's list of decks for autoflashcard through apiDeckHome in alu-web/src/notes/autonote/autoflashcard/autoflashcard.js
 1010: Error getting explore deck lists through apiExploreLists in alu-web/src/explore/base.js
 1011: Error performing deck search through apiDeckSearch in alu-web/src/explore/search.js
 1012: Error handling next set of decks (pagination, decks search) through apiDeckSearch in alu-web/src/explore/search.js
