@@ -493,6 +493,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     deck.study_session_manager.scheduling_algorithm = scheduling_algorithm
     deck.study_session_manager.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards', deck.study_session_manager.shuffle_unseen_cards)
     deck.study_session_manager.daily_new_card_limit = request.data.get('daily_new_card_limit', deck.study_session_manager.daily_new_card_limit)
+    deck.study_session_manager.review_ahead_minutes = request.data.get('review_ahead_minutes')
 
     deck.save()
     deck.study_session_manager.save()
@@ -1013,6 +1014,7 @@ def ssm_edit_view(request, ssm_id, *args, **kwargs):
             return Response({'message': f'SSM #{ssm_id} does not exist for {request.user.username}'}, status=404)
 
     try:
+        # For CSSMs
         ssm.title = request.data.get('title', ssm.title)
         ssm.deck_ids = request.data.get('deck_ids', ssm.deck_ids)
         ssm.tags = request.data.get('tags', ssm.tags)
@@ -1023,6 +1025,8 @@ def ssm_edit_view(request, ssm_id, *args, **kwargs):
         ssm.max_ease = request.data.get('max_ease', ssm.max_ease)
     except AttributeError as e:
         return Response({'message': f'This SSM does not support that feature, "{e}"'}, status=400)
+
+    # For all SSMs
     ssm.scheduling_algorithm = request.data.get('scheduling_algorithm', ssm.scheduling_algorithm)
     ssm.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards', ssm.shuffle_unseen_cards)
     ssm.daily_new_card_limit = request.data.get('daily_new_card_limit', ssm.daily_new_card_limit)

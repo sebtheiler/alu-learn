@@ -31,7 +31,8 @@ export function DeckDefaultButtonGroup(props) {
         form.elements.sharingSetting.value === deck.sharing_setting &&
         form.elements.schedulingAlgo.value === deck.scheduling_algorithm &&
         form.elements.shuffleUnseenCards.checked === deck.shuffle_unseen_cards &&
-        parseInt(form.elements.dailyNewCardLimit.value) === deck.daily_new_card_limit
+        parseInt(form.elements.dailyNewCardLimit.value) === deck.daily_new_card_limit &&
+        parseInt(form.reviewAheadMinutes.value) === deck.review_ahead_minutes
     ) {
       return;
     };
@@ -46,6 +47,7 @@ export function DeckDefaultButtonGroup(props) {
         form.elements.schedulingAlgo.value,
         form.elements.shuffleUnseenCards.checked,
         parseInt(form.elements.dailyNewCardLimit.value),
+        parseInt(form.elements.reviewAheadMinutes.value),
         (response, status) => {
           if (status === 200) {
             window.location.reload();

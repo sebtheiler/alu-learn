@@ -89,7 +89,7 @@ export function apiDeckDelete(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/delete/`, callback);
 };
 
-export function apiDeckEdit(deckId, newTitle, newDescription, sharingSetting, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, callback) {
+export function apiDeckEdit(deckId, newTitle, newDescription, sharingSetting, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, reviewAheadMinutes, callback) {
   backendLookup('POST', `decks/${deckId}/edit/`, callback, {
     new_title: newTitle,
     description: newDescription,
@@ -97,6 +97,7 @@ export function apiDeckEdit(deckId, newTitle, newDescription, sharingSetting, sc
     scheduling_algorithm: schedulingAlgo,
     shuffle_unseen_cards: shuffleUnseenCards,
     daily_new_card_limit: dailyNewCardLimit,
+    review_ahead_minutes: reviewAheadMinutes,
   });
 };
 
