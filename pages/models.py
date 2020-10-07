@@ -8,6 +8,7 @@ class ContactFeedback(models.Model):
     email_address = models.EmailField(max_length=64)
     urgency = models.PositiveSmallIntegerField(null=True)
     is_legal_issue = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ('-urgency',)
