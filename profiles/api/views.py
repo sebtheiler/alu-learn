@@ -642,7 +642,7 @@ def confirm_email_api_view(request, username, *args, **kwargs):
 
     # Check key
     try:
-        email = profile.user.confirm_email(request.data.get('confirmation_key'))
+        email = profile.user.confirm_email(request.data.get('confirmation_key').replace(' ', ''))
 
         # TODO: change this now that we can
         # get email from above confirmaiton

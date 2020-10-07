@@ -1,6 +1,6 @@
 ## Gist
 
-The Alu website and all its mobile version (“**the Website**”) is a hosted service operated by Alu Education LLC (“**Alu**” or “**ALU**”).  Any use of the Service is subject to the following Terms and Conditions of Service (“Terms of Service” or “Terms”), as well as to Alu’s [Privacy Policy](/legal/privacypolicy/). Your use of the Service will constitute your acceptance of these Terms of Service.
+The Alu website and all its mobile version (“**the Website**”) is a hosted service operated by ____COMPANY NAME___ (“**Alu**” or “**ALU**”).  Any use of the Service is subject to the following Terms and Conditions of Service (“Terms of Service” or “Terms”), as well as to Alu’s [Privacy Policy](/legal/privacypolicy/). Your use of the Service will constitute your acceptance of these Terms of Service.
 
 Alu is meant for learning, please do not post non-educational content (including spam or hate-content), or we will remove your content and possibly terminate your account.
 
