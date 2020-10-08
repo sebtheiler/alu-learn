@@ -104,6 +104,7 @@ export function FlashCardsList(props) {
                 suspendCallback={() => setFlashCardsDidSet(false)}
                 deleteCallback={() => {flashcards.splice(index); setFlashCardsDidSet(false);}}
                 foreignUser={isForeignUser}
+                hideSuspend={!!deckId}
               />
       }) :
         <p className='text-center mt-3'>

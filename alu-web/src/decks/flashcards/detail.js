@@ -6,7 +6,7 @@ import './detail.css';
 
 // Display an individual flashcard
 export function FlashCard(props) {
-  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser} = props;
+  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser, hideSuspend} = props;
 
   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
   const [suspendIsLoading, setSuspendIsLoading] = useState(false);
@@ -127,9 +127,9 @@ export function FlashCard(props) {
         <div className='col-md-12 mb-3 text-center'>
           <div className='btn-group'>
             <Button href={`/decks/${flashcard.parent_deck_id}/flashcards/${flashcard.id}/edit/`} variant='primary'>Edit</Button>
-            <Button onClick={handleSuspend} variant='primary' className='ml-1'>
+            {!hideSuspend && <Button onClick={handleSuspend} variant='primary' className='ml-1'>
               {suspendIsLoading ? (flashcard.is_suspended ? 'Unsuspending...' : 'Suspending...') : (flashcard.is_suspended ? 'Unsuspend' : 'Suspend')}
-            </Button>
+            </Button>}
             <Button onClick={handleDelete} variant='danger' className='ml-1'>
               {deleteIsLoading ? 'Deleting...' : 'Delete'}
             </Button>
