@@ -623,24 +623,6 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
 
 
 def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=None, leech=None, learning_status=None, min_ease=None, max_ease=None, due_before=None):
-    # Get list of decks to search in
-    # deck_qs = user.decks.all()
-    # if not deck_qs.exists():
-    #     return Response({}, status=200)
-
-    # if deck_ids:
-    #     deck_ids = deck_ids.split(',')
-    #     deck_qs = deck_qs.filter(pk__in=deck_ids)
-
-    # Get flashcards
-    # flashcard_qs = deck_qs.first().flashcards.all()
-    # for deck in deck_qs[1:]:
-    #     flashcard_qs |= deck.flashcards.all()
-    # flashcard_qs = FlashCard.objects.filter(
-    #     creator__deck__user__pk=user.pk,
-    #     creator__deck__pk__in=deck_ids.split(',')
-    # )
-
     # Search flashcards
     # We will be ANDing (&=) a bunch more queries to this
     # and using it as a filter in the end.
@@ -650,7 +632,6 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
     if deck_ids:
         flashcard_query &= Q(creator__deck__pk__in=deck_ids.split(','))
 
-    # TODO: fix and re-add this
     # # Filter by tags
     # if tags:
     #     if isinstance(tags, str):
@@ -670,13 +651,11 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
     #     ] 
     #     flashcard_query &= Q(id__in=flashcard_ids)
 
-    # TODO: fix and re-add
-    # # Filter by contains
-    # if contains:
-    #     flashcard_query &= Q(front_text__icontains=contains) | Q(back_text__icontains=contains)
+    # Filter by contains
+    if contains:
+        flashcard_query &= Q(creator__fields__text__icontains=contains)
 
     # Filter by suspended, leech, and learning status
-    # TODO: this doesn't work
     if suspended is not None:
         flashcard_query &= Q(is_suspended=suspended.lower() == 'true' if isinstance(suspended, str) else suspended)
 

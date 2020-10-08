@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import generic
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Deck, DeckStudySessionManager, CustomStudySessionManager
+from django.http import Http404
 
 
 # Render the home-page view

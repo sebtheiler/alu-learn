@@ -3,18 +3,6 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-from decks.views import (
-    decks_detail_view,
-    decks_home_view,
-    deck_study_view,
-    deck_import_view,
-    custom_study_view,
-    flashcard_create_view,
-    flashcard_list_view,
-    flashcard_edit_view,
-    flashcard_search_view,
-)
-
 from pages.views import (
     landing_page,
 )
