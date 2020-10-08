@@ -616,7 +616,7 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
         flashcard.is_suspended = (action == 'suspend')
     elif action in ('leech', 'unleech'):
         # TODO: fix this
-        flashcard.set_is_leech(action == 'leech', save=False)
+        flashcard.set_is_leech(action == 'leech')
     flashcard.save()
 
     return Response(FlashCardSerializer(flashcard).data, status=200)

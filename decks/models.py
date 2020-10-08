@@ -88,21 +88,24 @@ class FlashCard(models.Model):
     def is_leech(self):
         # Get whether the card is a leech or not, based on whether
         # it has the tag 'leech'
-        return bool('leech' in [field.text.lower() for field in self.creator.fields.all()])
+        return 'leech' in [tag.strip() for tag in self.creator.tags.split(',')]
     
     def set_is_leech(self, is_leech, save=True):
         if is_leech:
             if self.is_leech():
                 return
-            if self.tags.strip() == '':
-                self.tags = 'leech'
+            elif self.creator.tags.strip() == '':
+                self.creator.tags = 'leech'
             else:
-                self.tags += ', leech'
+                self.creator.tags += ', leech'
         else:
-            self.tags = self.tags.replace(', leech', '')
+            if self.creator.tags.strip() == 'leech':
+                self.creator.tags = ''
+            else:
+                self.creator.tags = self.creator.tags.replace(', leech', '')
 
         if save:
-            self.save()
+            self.creator.save()
 
 
 class StudySessionManager(models.Model):
