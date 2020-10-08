@@ -632,24 +632,19 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
     if deck_ids:
         flashcard_query &= Q(creator__deck__pk__in=deck_ids.split(','))
 
-    # # Filter by tags
-    # if tags:
-    #     if isinstance(tags, str):
-    #         tag_list = [tag.strip() for tag in tags.split(',')]
-    #     else:
-    #         tag_list = tags
+    # Filter by tags
+    if tags:
+        if isinstance(tags, str):
+            tag_list = [tag.strip() for tag in tags.split(',')]
+        else:
+            tag_list = tags
 
-    #     # Gets a list of flashcard IDs, if the
-    #     # flashcard has a tag that is in `tag_list`
-    #     flashcard_ids = [
-    #         flashcard.id for flashcard in flashcard_qs if len( # each flashcard if...
-    #             set(
-    #                 [ # (set form of all tags in a card)
-    #                     tag.strip() for tag in flashcard.tags.split(',')
-    #                 ] # ...has any shared elements in `tag_list`
-    #             ).intersection(set(tag_list))) > 0
-    #     ] 
-    #     flashcard_query &= Q(id__in=flashcard_ids)
+        tag_query = Q()
+        for tag in tag_list:
+            # TODO: improve this to allow for AND and OR
+            tag_query |= Q(creator__tags__icontains=tag)
+
+        flashcard_query &= tag_query
 
     # Filter by contains
     if contains:
