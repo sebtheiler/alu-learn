@@ -75,7 +75,6 @@ class FlashCard(models.Model):
     interval = models.PositiveSmallIntegerField(default=0) # in days
 
     is_suspended = models.BooleanField(default=False)
-
     leech_index = models.PositiveSmallIntegerField(default=0)
 
 
@@ -89,9 +88,7 @@ class FlashCard(models.Model):
     def is_leech(self):
         # Get whether the card is a leech or not, based on whether
         # it has the tag 'leech'
-        # The split is required so that the tag 'daoijdaleechadajda' is not
-        # marked as a leech.
-        return False # TODO: 'leech' in [tag.strip() for tag in self.tags.split(',')]
+        return bool('leech' in [field.text.lower() for field in self.creator.fields.all()])
     
     def set_is_leech(self, is_leech, save=True):
         if is_leech:

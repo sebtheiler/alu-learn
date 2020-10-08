@@ -632,17 +632,24 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
     if deck_ids:
         flashcard_query &= Q(creator__deck__pk__in=deck_ids.split(','))
 
-    # Filter by tags
-    if tags:
-        if isinstance(tags, str):
-            tag_list = [tag.strip() for tag in tags.split(',')]
-        else:
-            tag_list = tags
-
+    # Filter by tags (and leech)
+    if tags or leech is not None:
         tag_query = Q()
-        for tag in tag_list:
-            # TODO: improve this to allow for AND and OR
-            tag_query |= Q(creator__tags__icontains=tag)
+        if tags:
+            if isinstance(tags, str):
+                tag_list = [tag.strip() for tag in tags.split(',')]
+            else:
+                tag_list = tags
+
+            for tag in tag_list:
+                # TODO: improve this to allow for AND, OR, and NOT
+                tag_query |= Q(creator__tags__icontains=tag)
+
+        # Also filter by leech, since it's a tag
+        if str(leech).lower() == 'true':
+            tag_query |= Q(creator__tags__icontains='leech')
+        elif str(leech).lower() == 'false':
+            tag_query |= ~Q(creator__tags__icontains='leech')
 
         flashcard_query &= tag_query
 
@@ -650,19 +657,9 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
     if contains:
         flashcard_query &= Q(creator__fields__text__icontains=contains)
 
-    # Filter by suspended, leech, and learning status
+    # Filter by suspended and learning status
     if suspended is not None:
         flashcard_query &= Q(is_suspended=suspended.lower() == 'true' if isinstance(suspended, str) else suspended)
-
-    # TODO: fix and re-add this
-    # if leech is not None:
-    #     if (isinstance(leech, str) and leech.lower() == 'true') or (isinstance(leech, bool) and leech):
-    #         filter_func = lambda flashcard: flashcard.is_leech()
-    #     else:
-    #         filter_func = lambda flashcard: not flashcard.is_leech()
-
-    #     flashcard_ids = [flashcard.id for flashcard in flashcard_qs if filter_func(flashcard)]
-    #     flashcard_query &= Q(id__in=flashcard_ids)
 
     if learning_status is not None:
         flashcard_query &= Q(learning_status__iexact=learning_status)
@@ -679,7 +676,7 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
         flashcard_query &= Q(next_review__lte=due_before)
 
     # Execute query
-    return FlashCard.objects.filter(flashcard_query)
+    return FlashCard.objects.filter(flashcard_query).prefetch_related('creator')
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

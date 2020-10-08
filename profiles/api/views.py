@@ -582,7 +582,7 @@ def get_user_friends_api_view(request, username, *args, **kwargs):
     """
     try:
         profile = Profile.objects.get(user__username=username.lower())
-    except ObjectDoesNotExist:
+    except ObjectDoesNotExist: # TODO: replace all of these to `ModelName.DoesNotExist`
         return Response({'message': 'User not found'}, status=404)
 
     return Response(MinifiedProfileSerializer(profile.friends, many=True).data, status=200)
