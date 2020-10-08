@@ -3,7 +3,9 @@ __pycache__/
 */migrations/
 db.sqlite3
 
-static/
+static/*
+!static/favicon.ico
+!static/images/
 static-root/
 decks/templates/react.html
 decks/templates/react/
