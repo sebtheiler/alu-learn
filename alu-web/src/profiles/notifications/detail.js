@@ -15,6 +15,10 @@ export function Notification(props) {
     const senderUsername = match.substring(1, match.length);
 
     // Check if you are already friends
+    // TODO: this needs to be optimized
+    // marking as read also needs to be optimized
+    // since it is always sent, even if nothiing
+    // is now read
     apiProfileDetail(senderUsername, (response, status) => {
       if (status === 200) {
         if (response.is_friend) {
@@ -57,7 +61,14 @@ export function Notification(props) {
         {notif.title}
       </h4>
       <ReactMarkdown source={notif.description} />
-      {notif.category === 'friend_request' ? <Button onClick={handleFriendAccepted} size='sm' className='mt-2'>{friendBtnLabel}</Button> : ''}
+      {notif.category === 'friend_request' ?
+        <Button
+          onClick={handleFriendAccepted}
+          size='sm'
+          className='mt-2'
+        >
+          {friendBtnLabel}
+        </Button> : ''}
     </div>
   );
 };

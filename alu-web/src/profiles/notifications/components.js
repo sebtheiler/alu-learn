@@ -104,7 +104,7 @@ Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study
         <Popover id='notification-popover'>
           <Popover.Title as='h3'>Notifications</Popover.Title>
           <Popover.Content>
-            <div>
+            <div id='notification-popover-list'>
               {notifList.length > 0 ? notifList.map((notif, index) => {
                 return <Notification notif={notif} read={notif.read} key={index} />
               })
@@ -121,7 +121,7 @@ Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study
                   size='sm'
                 >
                   See older notifications {(totalUnreadNotifs - numUnreadNotifs) > 0 &&
-      ` (${totalUnreadNotifs - numUnreadNotifs})`}
+                  ` (${totalUnreadNotifs - numUnreadNotifs})`}
                 </Button>
               </div>
             </>}
@@ -133,7 +133,22 @@ Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study
         <>
           <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
             <Button
-              onClick={(event) => {event.preventDefault(); setTotalUnreadNotifs(totalUnreadNotifs - numUnreadNotifs); setNumUnreadNotifs(0);}}
+              onClick={(event) => {
+                setTotalUnreadNotifs(totalUnreadNotifs - numUnreadNotifs);
+                setNumUnreadNotifs(0);
+
+                // For some reason, link clicking doesn't work
+                // by default, so we need this annoying
+                // workaround
+                setTimeout(() => {
+                  const links = 
+                    document.getElementById('notification-popover-list').getElementsByTagName('a');
+                  
+                  for (const link of links) {
+                    link.onclick = _ => window.location.href = link.href;
+                  };
+                }, 250);
+              }}
               style={{transform: 'translate(2px, 1px)'}}
               className='p-0'
               size='sm'
