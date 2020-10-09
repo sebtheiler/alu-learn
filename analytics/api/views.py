@@ -1,10 +1,5 @@
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.decorators import (api_view, authentication_classes,
-                                       permission_classes)
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.core.exceptions import ObjectDoesNotExist
 
 from ..models import ExperimentController
 
@@ -22,7 +17,7 @@ def create_blank_experiment_api_view(request, *args, **kwargs):
     # Get experiment controller
     try:
         controller = ExperimentController.objects.get(short_name=request.data.get('controller_short_name'))
-    except ObjectDoesNotExist:
+    except ExperimentController.DoesNotExist:
         return Response({'message': 'Experiment not found'}, status=404)
 
     # Add experiment

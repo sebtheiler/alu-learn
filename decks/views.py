@@ -1,7 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views import generic
-from django.core.exceptions import ObjectDoesNotExist
-from .models import Deck, DeckStudySessionManager, CustomStudySessionManager
+from .models import Deck
 from django.http import Http404
 
 
@@ -34,7 +32,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     # Check that the user has permission to create flashcards
     try:
         deck = Deck.objects.get(pk=deck_id, user=request.user)
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         return redirect('/home/')
 
     context = {
@@ -56,7 +54,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     # Check that the user has permission to create flashcards
     try:
         deck = Deck.objects.get(pk=deck_id, user=request.user)
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         return redirect('/home/')
 
     context = {
@@ -73,7 +71,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
 def flashcard_list_view(request, deck_id, *args, **kwargs):
     try:
         is_foreign_user = not Deck.objects.get(pk=deck_id).user == request.user
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         return redirect('/home/')
 
     return render(request, 'flashcards/list.html', context={'deck_id': deck_id, 'is_foreign_user': is_foreign_user})
@@ -94,7 +92,7 @@ def deck_study_view(request, deck_id, *args, **kwargs):
         return redirect('/confirm-email/')
     try:
         deck = Deck.objects.get(pk=deck_id)
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         raise Http404()
 
     return render(request, 'decks/study.html', context={'ssm_id': deck.study_session_manager.id})

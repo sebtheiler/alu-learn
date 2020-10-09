@@ -1,21 +1,17 @@
+import datetime
+
+from analytics.models import ExperimentController
+from decks.api.utils import get_paginated_queryset_response
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.mail import send_mail
-from django.http import JsonResponse
-from django.utils.http import is_safe_url
-from django.contrib.auth import get_user_model, authenticate, login, logout
-from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.decorators import (api_view, authentication_classes,
-                                       permission_classes)
+from django.shortcuts import redirect
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import Profile, Notification, ProfileBadge
-from ..serializers import PublicProfileSerializer, MinifiedProfileSerializer, NotificationSerializer, ProfileBadgeSerializer, HistorySerializer
-from analytics.models import ExperimentController
-from decks.api.utils import get_paginated_queryset_response
-from django.shortcuts import redirect
-
-import datetime
+from ..models import Notification, Profile
+from ..serializers import (HistorySerializer, MinifiedProfileSerializer,
+                           NotificationSerializer, PublicProfileSerializer)
 
 User = get_user_model()
 
@@ -43,7 +39,7 @@ def profile_detail_api_view(request, username, *args, **kwargs):
         profile = Profile.objects.get(user__username=username.lower())
 
         return Response(PublicProfileSerializer(profile, context={'request': request}).data, status=200)
-    except ObjectDoesNotExist:
+    except Profile.DoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 
 
@@ -67,7 +63,7 @@ def friend_toggle_api_view(request, recipient_username, *args, **kwargs):
     # Find the user in question
     try:
         recipient_user = User.objects.get(username=recipient_username.lower())
-    except ObjectDoesNotExist:
+    except User.DoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 
     # Get action
@@ -190,17 +186,10 @@ def notification_api_view(request, username, *args, **kwargs):
     Possible errors:
         Unknown username: 404, User "`username`" not found
     """
-    # Get user
-    # try:
-    #     user = User.objects.get(username=username.lower())
-    # except ObjectDoesNotExist:
-    #     return Response({'message': f'User "{username}" not found'}, status=404)
-    user = request.user
-
     if request.method == 'POST':
         # Create notification object
         notif = Notification.objects.create(
-            profile=user.profile,
+            profile=request.user.profile,
             title=request.data.get('title'),
             description=request.data.get('description'),
             category=request.data.get('category'),
@@ -208,7 +197,7 @@ def notification_api_view(request, username, *args, **kwargs):
         return Response(NotificationSerializer(instance=notif).data, status=201)
     elif request.method == 'GET':
         # List all notifications
-        notif_qs = Notification.objects.filter(profile__user=user).order_by('-timestamp')
+        notif_qs = Notification.objects.filter(profile__user=request.user).order_by('-timestamp')
 
         return get_paginated_queryset_response(
             notif_qs,
@@ -240,19 +229,13 @@ def notification_read_api_view(request, username, *args, **kwargs):
     Possible errors:
         Unknown username: 404, User not found
     """
-    # Get user
-    try:
-        user = User.objects.get(username=username.lower())
-    except ObjectDoesNotExist:
-        return Response({'message': f'User "{username}" not found'}, status=404)
-
     if request.method == 'POST':
         notification_id = request.data.get('notification_id')
         if isinstance(notification_id, int):
             # Get notification
             try:
-                notif = Notification.objects.get(profile__user=user, pk=notification_id)
-            except ObjectDoesNotExist:
+                notif = Notification.objects.get(profile__user=request.user, pk=notification_id)
+            except Notification.DoesNotExist:
                 return Response({'message': 'Please specify a valid notification ID'}, status=400)
 
             # Mark notification as read
@@ -273,7 +256,7 @@ def notification_read_api_view(request, username, *args, **kwargs):
     elif request.method == 'GET':
         # List all unread notifications
         return Response(NotificationSerializer(
-            Notification.objects.filter(profile__user=user, read=False),
+            Notification.objects.filter(profile__user=request.user, read=False),
             many=True,
         ).data, status=200)
 
@@ -341,11 +324,11 @@ def create_profile_api_view(request, *args, **kwargs):
     try:
         Profile.objects.get(user__username=username)
         return Response({'message': 'Username taken'})
-    except ObjectDoesNotExist:
+    except Profile.DoesNotExist:
         try:
             Profile.objects.get(user__email=email)
             return Response({'message': 'Email taken'})
-        except ObjectDoesNotExist:
+        except Profile.DoesNotExist:
             pass
 
     # Create user
@@ -495,7 +478,7 @@ def change_password(request, *args, **kwargs):
         # Get user
         try:
             profile = Profile.objects.get(user__email=email)
-        except ObjectDoesNotExist:
+        except Profile.DoesNotExist:
             return Response({'message': 'Email not found'}, status=404)
 
         # Check key valid
@@ -526,8 +509,10 @@ def change_password(request, *args, **kwargs):
         else:
             return Response({'message': 'You must specify `old_password` and `new_password`'}, status=400)
 
-import string
 import random
+import string
+
+
 @api_view(['POST'])
 def password_reset_email_api_view(request, email, *args, **kwargs):
     """
@@ -538,7 +523,7 @@ def password_reset_email_api_view(request, email, *args, **kwargs):
     """
     try:
         profile = Profile.objects.get(user__email=email)
-    except ObjectDoesNotExist:
+    except Profile.DoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 
     # TODO: what happened to non-bad-words strings???
@@ -582,7 +567,7 @@ def get_user_friends_api_view(request, username, *args, **kwargs):
     """
     try:
         profile = Profile.objects.get(user__username=username.lower())
-    except ObjectDoesNotExist: # TODO: replace all of these to `ModelName.DoesNotExist`
+    except Profile.DoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 
     return Response(MinifiedProfileSerializer(profile.friends, many=True).data, status=200)
@@ -598,13 +583,14 @@ def profile_history_view(request, username, *args, **kwargs):
     """
     try:
         profile = Profile.objects.get(user__username=username.lower())
-    except ObjectDoesNotExist:
+    except Profile.DoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 
     return Response(HistorySerializer(profile.history, many=True).data, status=200)
 
 from django.conf import settings
 from django.core.mail import send_mail
+
 # @api_view(['GET'])
 # def test_my_email_api_view(request, *args, **kwargs):
 #     subject = 'Thank you for registering to our site'
@@ -637,21 +623,18 @@ def confirm_email_api_view(request, username, *args, **kwargs):
     # Get user
     try:
         profile = Profile.objects.get(user__username=username)
-    except ObjectDoesNotExist:
+    except Profile.DoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 
     # Check key
     try:
         email = profile.user.confirm_email(request.data.get('confirmation_key').replace(' ', ''))
 
-        # TODO: change this now that we can
-        # get email from above confirmaiton
-        # email = request.data.get('email')
         if email:
             profile.user.email = email##profile.user.unconfirmed_emails[0]
             profile.user.set_primary_email(email)#profile.user.unconfirmed_emails[0])
             profile.user.save()
-    except ObjectDoesNotExist:
+    except Profile.DoesNotExist:
         return Response({'message': 'Confirmation key invalid'}, status=400)
 
     return Response({'message': 'Email authenticated'})

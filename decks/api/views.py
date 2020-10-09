@@ -1,29 +1,33 @@
-from django.utils import timezone
-from django.db.models import Q
+import datetime as dt
+import random
+import re
+from itertools import chain
+
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+from django.utils import timezone
 from django.views.decorators.cache import cache_control
 from django.views.decorators.vary import vary_on_cookie
+# For calculating advanced string similarities (used in searching)
+# pip install fuzzywuzzy
+# pip install fuzzywuzzy[speedup]
+from fuzzywuzzy import fuzz
 
+from profiles.models import Profile
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import Deck, FlashCardCreator, FlashCardField, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, DeckStudySessionManager
-from ..serializers import DeckSerializer, FlashCardSerializer, DeckThankSerializer, StudySessionManagerSerializer, CustomStudySessionManagerSerializer, FlashCardCreatorSerializer
+from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
+                      DeckThank, FlashCard, FlashCardCreator, FlashCardField,
+                      StudySessionManager)
+from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
+                           DeckThankSerializer, FlashCardCreatorSerializer,
+                           FlashCardSerializer, StudySessionManagerSerializer)
 from .utils import get_paginated_queryset_response
-from profiles.models import Profile
 
-import re
-import datetime as dt
-import random
-from itertools import chain
-# For calculating advanced string similarities (used in searching)
-# pip install fuzzywuzzy
-# pip install fuzzywuzzy[speedup]
-from fuzzywuzzy import process, fuzz
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -85,7 +89,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     """
     try:
         deck = Deck.objects.get(pk=deck_id, user=request.user)
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         return Response({'message': 'Deck not found / unauthorized'}, status=400)
 
     fields = request.data.get('fields')
@@ -180,8 +184,8 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
     # Get the flashcard
     try:
-        flashcard = FlashCardCreator.objects.get(pk=flashcard_id, deck__user=request.user) # TODO: change .get(x=x) to .get(x__id=x.id)
-    except ObjectDoesNotExist:
+        flashcard = FlashCardCreator.objects.get(pk=flashcard_id, deck__user=request.user)
+    except FlashCardCreator.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
     # Edit the flashcard
@@ -211,7 +215,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
                             flashcards_to_delete.remove(fc.id) # the flashcard is still used, so we shouldn't delete it
                         except ValueError:
                             pass
-                    except ObjectDoesNotExist:
+                    except FlashCard.DoesNotExist:
                         # If the flashcard does not exist, create it
                         if cloze_id not in created_flashcard_cloze_nums:
                             created_flashcard_cloze_nums.append(cloze_id)
@@ -260,7 +264,7 @@ def flashcard_delete_view(request, deck_id, flashcard_id, *args, **kwargs):
     # Get the flashcard
     try:
         flashcard = FlashCardCreator.objects.get(pk=flashcard_id, deck__user=request.user)
-    except ObjectDoesNotExist:
+    except FlashCardCreator.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
     # Delete the flashcard
@@ -287,7 +291,7 @@ def flashcard_detail_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
     try:
         flashcard = FlashCardCreator.objects.get(pk=flashcard_id, deck__user=request.user)
-    except ObjectDoesNotExist:
+    except FlashCardCreator.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=404)
 
     return Response(FlashCardCreatorSerializer(flashcard).data)
@@ -309,7 +313,7 @@ def deck_shared_view(request, username, *args, **kwargs):
     # Get user
     try:
         profile = Profile.objects.get(user__username=username)
-    except ObjectDoesNotExist:
+    except Profile.DoesNotExist:
         return Response({'message': f'Invalid username "{username}"'}, status=404)
 
     # Get user's decks that are either public or shared
@@ -366,7 +370,7 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
     # Get deck
     try:
         deck = Deck.objects.get(pk=deck_id)
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
@@ -401,7 +405,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
     # Get deck
     try:
         deck = Deck.objects.get(pk=deck_id)
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
@@ -445,7 +449,7 @@ def deck_delete_view(request, deck_id, *args, **kwargs):
     # Get deck
     try:
         deck = Deck.objects.get(pk=deck_id, user=request.user)
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         return Response({'message': 'Deck not found / you are unauthorized'}, status=400)
 
     # Delete
@@ -474,7 +478,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     # Get deck
     try:
         deck = Deck.objects.get(pk=deck_id, user=request.user)
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         return Response({'message': 'Deck not found / you are unauthorized'}, status=400)
 
     # Get data
@@ -517,7 +521,7 @@ def deck_copy_view(request, deck_id, *args, **kwargs):
     # Get deck
     try:
         deck = Deck.objects.get(pk=deck_id)
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
     print(deck.flashcards.all())
 
@@ -563,7 +567,7 @@ def deck_thank_view(request, deck_id, *args, **kwargs):
     # Get deck
     try:
         deck = Deck.objects.get(pk=deck_id)
-    except ObjectDoesNotExist:
+    except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
 
     # Check that the user is not thanking themselves
@@ -607,7 +611,7 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
     # Get flashcard
     try:
         flashcard = FlashCard.objects.get(pk=flashcard_id, creator__deck__user=request.user)
-    except ObjectDoesNotExist:
+    except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=404)
 
     # Set flashcard as (un)suspended/leeched
@@ -615,7 +619,6 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
     if action in ('suspend', 'unsuspend'):
         flashcard.is_suspended = (action == 'suspend')
     elif action in ('leech', 'unleech'):
-        # TODO: fix this
         flashcard.set_is_leech(action == 'leech')
     flashcard.save()
 
@@ -642,7 +645,6 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
                 tag_list = tags
 
             for tag in tag_list:
-                # TODO: improve this to allow for AND, OR, and NOT
                 tag_query |= Q(creator__tags__icontains=tag)
 
         # Also filter by leech, since it's a tag
@@ -836,10 +838,10 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
     """
     try:
         ssm = DeckStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
-    except ObjectDoesNotExist:
+    except DeckStudySessionManager.DoesNotExist:
         try:
             ssm = CustomStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
-        except ObjectDoesNotExist:
+        except CustomStudySessionManager.DoesNotExist:
             return Response({'message': f'SSM #{ssm_id} does not exist for {request.user.username}'}, status=404)
 
     # If it is a new day since flashcards were previously done,
@@ -904,7 +906,7 @@ def ssm_detail_view(request, ssm_id, *args, **kwargs):
     """
     try:
         ssm = StudySessionManager.objects.get(pk=ssm_id)
-    except ObjectDoesNotExist:
+    except StudySessionManager.DoesNotExist:
         return Response({'message': 'SSM does not exist'}, status=404)
     
     return Response(StudySessionManagerSerializer(ssm).data, status=200)
@@ -932,13 +934,13 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
     # Get the SSM
     try:
         ssm = StudySessionManager.objects.get(pk=ssm_id)
-    except ObjectDoesNotExist:
+    except StudySessionManager.DoesNotExist:
         return Response({'message': 'SSM not found / you are unauthorized'}, status=400)
 
     # Get the flashcard
     try:
         flashcard = FlashCard.objects.get(pk=flashcard_id, creator__deck__user=request.user)
-    except ObjectDoesNotExist:
+    except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
     # Edit the flashcard
@@ -979,10 +981,10 @@ def ssm_edit_view(request, ssm_id, *args, **kwargs):
         """
     try:
         ssm = DeckStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
-    except ObjectDoesNotExist:
+    except DeckStudySessionManager.DoesNotExist:
         try:
             ssm = CustomStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
-        except ObjectDoesNotExist:
+        except CustomStudySessionManager.DoesNotExist:
             return Response({'message': f'SSM #{ssm_id} does not exist for {request.user.username}'}, status=404)
 
     try:
@@ -1024,7 +1026,7 @@ def ssm_delete_view(request, ssm_id, *args, **kwargs):
         ssm = StudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
         ssm.delete()
         return Response({'message': 'SSM deleted'}, status=200)
-    except ObjectDoesNotExist:
+    except StudySessionManager.DoesNotExist:
         return Response({'message': 'SSM does not exist / you are unauthorized, 400: SSM does not exist / you are unauthorized'})
 
 
