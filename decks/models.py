@@ -99,7 +99,9 @@ class FlashCard(models.Model):
             else:
                 self.creator.tags += ', leech'
         else:
-            if self.creator.tags.strip() == 'leech':
+            if not self.is_leech():
+                return
+            elif self.creator.tags.strip() == 'leech':
                 self.creator.tags = ''
             else:
                 self.creator.tags = self.creator.tags.replace(', leech', '')

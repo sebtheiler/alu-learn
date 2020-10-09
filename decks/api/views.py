@@ -945,9 +945,10 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
     flashcard.next_review = request.data.get('next_review', flashcard.next_review)
     flashcard.learning_status = request.data.get('learning_status', flashcard.learning_status).upper()
     flashcard.interval = request.data.get('interval', flashcard.interval)
+    flashcard.ease = request.data.get('ease', flashcard.ease)
     flashcard.steps_index = request.data.get('steps_index', flashcard.steps_index)
     flashcard.leech_index = request.data.get('leech_index', flashcard.leech_index)
-    # TODO: flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
+    flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
     flashcard.save()
 
     # Increment the number of cards that the profile and SSM are registed as doing today
