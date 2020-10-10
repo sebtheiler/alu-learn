@@ -5,6 +5,7 @@ from decks.api.utils import get_paginated_queryset_response
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.mail import send_mail
 from django.shortcuts import redirect
+from django.utils.crypto import get_random_string
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -509,9 +510,6 @@ def change_password(request, *args, **kwargs):
         else:
             return Response({'message': 'You must specify `old_password` and `new_password`'}, status=400)
 
-import random
-import string
-
 
 @api_view(['POST'])
 def password_reset_email_api_view(request, email, *args, **kwargs):
@@ -526,10 +524,9 @@ def password_reset_email_api_view(request, email, *args, **kwargs):
     except Profile.DoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 
-    # TODO: what happened to non-bad-words strings???
     # Generate impossible to guess, one-time-password
-    allowed_chars = ''.join((string.ascii_letters, string.digits, '-_'))
-    unique_id = ''.join(random.choice(allowed_chars) for _ in range(128))
+    allowed_chars = 'bcdfghjkmpqrtvwxyBCDFGHJKMPQRTVWXY346789-_'
+    unique_id = get_random_string(128, allowed_chars)
 
     # Update the user's profile with the one-time-password
     profile.user.password_reset_key = unique_id
