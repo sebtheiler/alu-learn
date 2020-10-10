@@ -38,6 +38,7 @@ yarn-error.log*
 alu-web/package-lock.json
 
 # --- Celery & Redis ---
+celerybeat-schedule
 celerybeat-schedule.bak
 celerybeat-schedule.dat
 celerybeat-schedule.dir
