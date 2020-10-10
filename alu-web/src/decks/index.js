@@ -6,12 +6,12 @@ import {DeckDefaultButtonGroup} from './buttons';
 import {DeckImportComponent} from './import';
 
 export {
-    DeckDefaultButtonGroup,
-    Deck,
-    DeckPublicList,
-    DeckCreate,
-    DeckDetailComponent,
-    DecksHomeComponent,
-    DeckDetail,
-    DeckImportComponent,
+  DeckDefaultButtonGroup,
+  Deck,
+  DeckPublicList,
+  DeckCreate,
+  DeckDetailComponent,
+  DecksHomeComponent,
+  DeckDetail,
+  DeckImportComponent,
 };

@@ -1,6 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import { Button, ButtonGroup, OverlayTrigger, Popover } from 'react-bootstrap';
 import {Slate} from 'slate-react';
+import { QuestionBubble } from '../../utils';
 import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
 import './editor.css';
 
@@ -52,6 +53,22 @@ export function CornellNoteEditor(props) {
     {!isViewing && <Button className='mb-3' onClick={saveHandler}>
       Save
     </Button>}
+    {navigator.userAgent.toLowerCase().includes('firefox') && <>
+      <br />
+      <small className='text-danger'>
+        Auto-correct is currently broken on Firefox.
+        {' '}
+        <QuestionBubble>
+          We truly apologize about this,
+          however, our backend text editor's
+          auto-correct does not work in Firefox.
+          We hope to support Firefox as soon as possible,
+          but for the time being you can switch to a
+          Chrome-based browser (Google Chrome, Brave, etc.)
+          for autocorrect capabilities.
+        </QuestionBubble>
+      </small>
+    </>}
     <table>
       <thead>
         <tr>

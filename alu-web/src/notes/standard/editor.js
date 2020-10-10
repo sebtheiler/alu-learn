@@ -3,6 +3,7 @@ import {Button, ButtonGroup} from 'react-bootstrap';
 import {Slate} from 'slate-react';
 import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
 import {AutoNoteModal} from '../autonote';
+import { QuestionBubble } from '../../utils';
 
 export function StandardNoteEditor(props) {
   const {initialValue, isViewing, updateValueToSave, saveHandler, didTypeCallback, noteId} = props;
@@ -41,6 +42,22 @@ export function StandardNoteEditor(props) {
       }}
       initialValue={value}
     />
+    {navigator.userAgent.toLowerCase().includes('firefox') && <>
+      <br />
+      <small className='text-danger'>
+        Auto-correct is currently broken on Firefox.
+        {' '}
+        <QuestionBubble>
+          We truly apologize about this,
+          however, our backend text editor's
+          auto-correct does not work in Firefox.
+          We hope to support Firefox as soon as possible,
+          but for the time being you can switch to a
+          Chrome-based browser (Google Chrome, Brave, etc.)
+          for autocorrect capabilities.
+        </QuestionBubble>
+      </small>
+    </>}
     <br />
     <Slate
       editor={editor}
