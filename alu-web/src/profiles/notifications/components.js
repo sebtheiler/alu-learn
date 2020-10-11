@@ -133,7 +133,7 @@ Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study
         <>
           <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
             <Button
-              onClick={(event) => {
+              onClick={(_event) => {
                 setTotalUnreadNotifs(totalUnreadNotifs - numUnreadNotifs);
                 setNumUnreadNotifs(0);
 
@@ -149,15 +149,15 @@ Welcome to Alu! Alu uses spaced reptition algorithms to help you learn and study
                   };
                 }, 250);
               }}
-              style={{transform: 'translate(2px, 1px)'}}
+              style={{ transform: 'translate(2px, 1px)' }}
               className='p-0'
               size='sm'
             >
               {totalUnreadNotifs > 0 ? <>
-                <i className='fas fa-bell fa-2x'></i>
+                <i className='fas fa-bell fa-2x' />
                 <span className='notification-badge'>{totalUnreadNotifs < 10 ? totalUnreadNotifs : '9+'}</span>
               </>:
-                <i className='far fa-bell fa-2x'></i>
+                <i className='far fa-bell fa-2x' />
               }
             </Button>
           </OverlayTrigger>

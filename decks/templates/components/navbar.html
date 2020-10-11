@@ -2,4 +2,6 @@
   id='navbar-component'
   data-username='{{ request.user.username }}'
   data-first-name='{{ request.user.first_name }}'
+  data-current-streak='{{ request.user.profile.current_streak }}'
+  data-done-reviews-today='{{ request.user.profile.has_done_cards_today }}'
 ></div>

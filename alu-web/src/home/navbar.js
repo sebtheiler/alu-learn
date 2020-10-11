@@ -8,6 +8,8 @@ import {NotificationComponent} from '../profiles/notifications'
 export function NavbarComponent(props) {
   const firstName = props.firstName ? props.firstName : '';
   const username = props.username ? props.username : '';
+  const currentStreak = parseInt(props.currentStreak);
+  const doneReviewsToday = props.doneReviewsToday === 'True';
 
   const logoutHandler = (event) => {
     event.preventDefault();
@@ -48,6 +50,26 @@ export function NavbarComponent(props) {
           </Nav.Link>
           {username ?
             <>
+              <Nav.Link
+                className='mr-2'
+                style={{
+                  width: '57px',
+                  height: '57px',
+                  cursor: 'default',
+                  color: doneReviewsToday ? '#fd9626' : '#e5e5e5',
+                }}
+              >
+                <i className='fas fa-fire-alt fa-2x' />
+                <span
+                  className='streak-number'
+                  style={{
+                    background: doneReviewsToday ? '#fd9626' : '#e5e5e5',
+                    color: doneReviewsToday ? 'white' : '#36474f',
+                  }}
+                >
+                  {currentStreak}
+                </span>
+              </Nav.Link>
               <NavDropdown
                 title={
                   <i className='fas fa-user-circle text-light fa-2x'></i>

@@ -10,3 +10,13 @@
   background: red;
   color: white;
 }
+
+.streak-number {
+  position: absolute;
+  text-align: center;
+  transform: translate(-24px, 8px);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+}
