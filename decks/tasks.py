@@ -28,6 +28,6 @@ def midnight_reset():
         f.write(json.dumps(top_deck_ids))
 
 
-@periodic_task(run_every=crontab(minute=16, hour=0))
+@periodic_task(run_every=crontab(minute=0, hour=0))
 def run_midnight_reset():
     midnight_reset.delay()

@@ -20,14 +20,14 @@ export function StandardNoteEditor(props) {
       {!isViewing && <Button
         onClick={(event) => {event.preventDefault(); setShowAutoNoteModal(true)}}
         variant='success'
-        className='mt-0 mb-2'
+        className='mt-0 mb-2 mr-1'
       >
         Import Text Document
       </Button>}
       <Button
         href={`/notes/create-flashcards/${noteId}`}
         variant='success'
-        className='mt-0 mb-2 ml-1'
+        className='mt-0 mb-2'
       >
         Create Flashcards from This Document
       </Button>

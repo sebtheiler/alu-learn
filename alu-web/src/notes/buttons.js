@@ -12,7 +12,7 @@ export function NoteDefaultButtonGroup(props) {
         Edit
       </Button>
       <Button href={`/notes/study/${note.id}/`} className='mr-1'>
-        Study
+        View
       </Button>
     </ButtonGroup>
   );

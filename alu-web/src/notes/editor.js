@@ -136,7 +136,7 @@ export function NoteEditor(props) {
           {areChanges ? 'Saving...' : 'Saved'}
         </p>
         <Button href={`/notes/study/${noteId}/`} className='mb-3'>
-          Study
+          View
         </Button>
       </>}
       {initialValue !== null ? <div id='note-editor'>
