@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { apiManualSRTaskList } from '../lookup';
-import { errorHandler, timeSince } from '../utils';
+import { errorHandler, timeUntil } from '../utils';
 
 
 export function ManualSRHome(props) {
@@ -26,27 +26,25 @@ export function ManualSRHome(props) {
   return (<>
     <h1 className='text-center'>Manual Spaced Repetition</h1>
     <h2>Tasks</h2>
-    {manualSRTasks ? manualSRTasks.map(task => {
+    {manualSRTasks ? manualSRTasks.map((task, index) => {
       const nextReviewDate = new Date(task.next_review);
-      console.log(timeSince(nextReviewDate))
-      console.log(task.next_review)
-      console.log(nextReviewDate)
 
-      return (<>
+      return (<React.Fragment key={`task-${index}`}>
         <div
           className='py-5 px-3'
           style={{
             border: '1px solid black',
+            borderRadius: '5px',
           }}
         >
           <h3 className='mb-0'>{task.title}</h3>
           <small className='text-secondary'>
-            Due {nextReviewDate.toString().substring(0, 15)}
+            Due {timeUntil(nextReviewDate)} ({nextReviewDate.toString().substring(0, 15)})
           </small>
           <p className='mt-3'>Description...</p>
         </div>
         <br />
-      </>)
+      </React.Fragment>)
     }) : 'Loading...'}
   </>);
 };

@@ -19,5 +19,5 @@ class ManualSRTask(models.Model):
     learning_status = models.CharField(max_length=10, choices=LEARNING_STATUS_CHOICES, default='UNSEEN')
     steps_index = models.PositiveSmallIntegerField(default=0)
     ease = models.PositiveSmallIntegerField(default=250)
-    next_review = models.DateTimeField()
+    next_review = models.DateField()
     interval = models.PositiveSmallIntegerField(default=0) # in days
