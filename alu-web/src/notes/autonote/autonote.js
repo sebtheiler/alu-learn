@@ -138,7 +138,7 @@ export function AutoNote(props) {
     event.preventDefault();
     const form = event.target;
 
-    console.log(selectedPar, noteDocument);
+    console.log(selectedPar, noteDocument); // TODO: remove this
     // Add the new notes to the document
     try {
       if (value !== emptyValue) {

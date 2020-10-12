@@ -1,3 +1,5 @@
+from datetime import datetime as dt
+
 from decks.api.utils import get_paginated_queryset_response
 from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
@@ -25,13 +27,9 @@ def manual_sr_create_view(request, *args, **kwargs):
     desc = request.data.get('description')
     if title is None:
         return Response({'message': 'Title must not be none'}, status=400)
-    
-    now = timezone.now()
-    this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
     created_obj = ManualSRTask.objects.create(
         user=request.user.profile,
-        next_review=this_morning,
         title=title,
         description=desc if desc else [
   {

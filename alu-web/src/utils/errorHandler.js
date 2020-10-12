@@ -120,4 +120,5 @@ int(hexadecimal_string, 16)
 === Manual SR Task related errors ===
 7000: Error getting list of manual sr tasks through apiManualSRTaskList in alu-web/src/manual-sr/home.js
 7001: Error getting next set of tasks (pagination) through apiManualSRTaskList in alu-web/src/manual-sr/home.js
+7002: Error creating manual SR task through apiManualSRTaskCreate in alu-web/src/manual-sr/home.js
 */
