@@ -50,6 +50,7 @@ export function timeSince(date, reverse=false) {
 // export const oneDay = 24*60*60*1000;
 
 export function timeUntil(date) {
+  // The second thing returned is 0 if it is today, -1 if it is in past, 1 in future
   date.setMinutes(date.getMinutes() + (new Date()).getTimezoneOffset());
   const today = new Date(new Date().setHours(0, 0, 0));
 
@@ -57,7 +58,7 @@ export function timeUntil(date) {
       date.getMonth() === today.getMonth() &&
       date.getDate() === today.getDate()
     ) {
-      return 'today';
+      return ['today', 0];
   } else if (date < today) {
     let yesterday = today;
     yesterday.setDate(today.getDate() - 1);
@@ -66,9 +67,9 @@ export function timeUntil(date) {
         date.getMonth() === yesterday.getMonth() &&
         date.getDate() === yesterday.getDate()
     ) {
-      return 'yesterday';
+      return ['yesterday', -1];
     } else {
-      return timeSince(date) + ' ago';
+      return [timeSince(date) + ' ago', -1];
     };
   } else {
     let tomorrow = today;
@@ -79,9 +80,9 @@ export function timeUntil(date) {
       date.getMonth() === tomorrow.getMonth() &&
       date.getDate() === tomorrow.getDate()
     ) {
-      return 'tomorrow';
+      return ['tomorrow', 1];
     } else {
-      return 'in ' + timeSince(date, true);
+      return ['in ' + timeSince(date, true), 1];
     };
   };
 };

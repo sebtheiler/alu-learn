@@ -1,11 +1,12 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { apiManualSRTaskCreate, apiManualSRTaskList } from '../lookup';
-import { errorHandler, timeUntil } from '../utils';
+import { errorHandler } from '../utils';
 import {Slate, ReactEditor} from 'slate-react';
 import {Transforms} from 'slate';
 import {createFullEditor, EditorButtons, FullEditor} from '../notes/editor-components';
 import { emptyValue } from '../notes/autonote/autonote';
+import { ManualSRTask } from './task';
 
 
 export function ManualSRHome(props) {
@@ -86,7 +87,7 @@ export function ManualSRHome(props) {
     };
   };
 
-  return (<>
+  return (<div className='container'>
     <h1 className='text-center'>Manual Spaced Repetition</h1>
     <h2>Create new Task</h2>
     <Form onSubmit={handleCreate}>
@@ -128,25 +129,14 @@ export function ManualSRHome(props) {
     {manualSRTasks ? manualSRTasks.map((task, index) => {
       const nextReviewDate = new Date(task.next_review);
 
-      return (<React.Fragment key={`task-${index}`}>
-        <div
-          className='py-5 px-3'
-          style={{
-            border: '1px solid black',
-            borderRadius: '5px',
-          }}
-        >
-          <h3 className='mb-0'>{task.title}</h3>
-          <small className='text-secondary'>
-            Due {timeUntil(nextReviewDate)} ({nextReviewDate.toString().substring(0, 15)})
-          </small>
-          <p className='mt-3'>Description...</p>
-        </div>
-        <br />
-      </React.Fragment>)
+      return <ManualSRTask
+        key={index}
+        nextReviewDate={nextReviewDate}
+        task={task}
+      />
     }) : 'Loading...'}
     {nextUrl && <Button variant='outline-primary' onClick={handleLoadNext}>
       {loadingNext ? 'Loading...' : 'Load More'}
     </Button>}
-  </>);
+  </div>);
 };
