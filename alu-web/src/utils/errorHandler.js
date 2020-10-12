@@ -116,4 +116,7 @@ int(hexadecimal_string, 16)
 6003: Error getting note detail through apiNoteDetail in alu-web/src/notes/autonote/autoflashcard/autoflashcard.js
 6004: Error creating note through apiNoteCreate in alu-web/src/notes/buttons.js
 6005: Error deleting note through apiNoteDelete in alu-web/src/notes/buttons.js
+
+=== Manual SR Task related errors ===
+7000: Error getting list of manual sr tasks through apiManualSRTaskList in alu-web/src/manual-sr/home.js
 */
