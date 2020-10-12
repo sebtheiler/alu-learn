@@ -389,8 +389,12 @@ export function apiEmailChange(password, newEmail, callback) {
 };
 
 // Gets the current user's Manual SR Tasks
-export function apiManualSRTaskList(callback) {
-  backendLookup('GET', 'manual-sr/list/', callback);
+export function apiManualSRTaskList(callback, nextUrl) {
+  let endpoint = 'manual-sr/list/';
+  if (nextUrl) {
+    endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
+  };
+  backendLookup('GET', endpoint, callback);
 };
 
 // Creates a new Manual SR Task

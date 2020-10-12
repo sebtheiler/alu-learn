@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { Button } from 'react-bootstrap';
 import { apiManualSRTaskList } from '../lookup';
 import { errorHandler, timeUntil } from '../utils';
 
@@ -7,6 +8,7 @@ export function ManualSRHome(props) {
   const [manualSRTasks, setManualSRTasks] = useState(null);
   const [manualSRTasksDidSet, setManualSRTasksDidSet] = useState(false);
   const [nextUrl, setNextUrl] = useState(null);
+  const [loadingNext, setLoadingNext] = useState(false);
 
   useEffect(() => {
     if (manualSRTasksDidSet === false) {
@@ -22,6 +24,24 @@ export function ManualSRHome(props) {
       });
     };
   }, [manualSRTasks, manualSRTasksDidSet]);
+
+  const handleLoadNext = (event) => {
+    event.preventDefault();
+    if (nextUrl !== null && !loadingNext) {
+      setLoadingNext(true);
+      apiManualSRTaskList((response, status) => {
+        if (status === 200) {
+          setNextUrl(response.next);
+          const newTasks = [...manualSRTasks].concat(response.results);
+          setManualSRTasks(newTasks);
+        } else {
+          // Error handling next set of manual sr tasks (pagination)
+          errorHandler(response, status, 7001);
+        };
+        setLoadingNext(false);
+      }, nextUrl);
+    };
+  };
 
   return (<>
     <h1 className='text-center'>Manual Spaced Repetition</h1>
@@ -46,5 +66,8 @@ export function ManualSRHome(props) {
         <br />
       </React.Fragment>)
     }) : 'Loading...'}
+    {nextUrl && <Button variant='outline-primary' onClick={handleLoadNext}>
+      {loadingNext ? 'Loading...' : 'Load More'}
+    </Button>}
   </>);
 };
