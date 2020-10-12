@@ -387,3 +387,23 @@ export function apiEmailChange(password, newEmail, callback) {
     new_email: newEmail,
   });
 };
+
+// Gets the current user's Manual SR Tasks
+export function apiManualSRTaskList(callback) {
+  backendLookup('GET', 'manual-sr/list/', callback);
+};
+
+// Creates a new Manual SR Task
+export function apiManualSRTaskCreate(title, description, callback) {
+  backendLookup('POST', 'manual-sr/create/', callback, {
+    title: title,
+    description: description,
+  });
+};
+
+// Deletes a Manual SR Task
+export function apiManualSRTaskDelete(id, callback) {
+  backendLookup('POST', 'manual-sr/delete', callback, {
+    manual_sr_id: id,
+  });
+};

@@ -3,7 +3,7 @@ from django.db import models
 from profiles.models import Profile
 
 
-class ManualSRObject(models.Model):
+class ManualSRTask(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='manual_sr_objects')
     title = models.CharField(max_length=128)
     description = JSONField()

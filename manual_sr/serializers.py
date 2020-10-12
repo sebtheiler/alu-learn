@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import ManualSRObject
+from .models import ManualSRTask
 
 
-class ManualSRObjectSerializer(serializers.ModelSerializer):
+class ManualSRTaskSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ManualSRObject
+        model = ManualSRTask
         fields = [
             'title',
             'description',

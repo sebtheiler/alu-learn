@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import ManualSRObject
-from ..serializers import ManualSRObjectSerializer
+from ..models import ManualSRTask
+from ..serializers import ManualSRTaskSerializer
 
 
 @api_view(['POST'])
@@ -29,7 +29,7 @@ def manual_sr_create_view(request, *args, **kwargs):
     now = timezone.now()
     this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    created_obj = ManualSRObject.objects.create(
+    created_obj = ManualSRTask.objects.create(
         user=request.user.profile,
         next_review=this_morning,
         title=title,
@@ -45,7 +45,7 @@ def manual_sr_create_view(request, *args, **kwargs):
 ],
     )
 
-    return Response(ManualSRObjectSerializer(created_obj).data, status=201)
+    return Response(ManualSRTaskSerializer(created_obj).data, status=201)
 
 
 @api_view(['GET'])
@@ -57,7 +57,7 @@ def manual_sr_list_view(request, *args, **kwargs):
     return get_paginated_queryset_response(
         qs=request.user.profile.manual_sr_objects.all().order_by('-next_review'),
         request=request,
-        Serializer=ManualSRObjectSerializer,
+        Serializer=ManualSRTaskSerializer,
         page_size=25,
     )
 
@@ -82,11 +82,11 @@ def manual_sr_delete_view(request, *args, **kwargs):
     """
 
     try:
-        ManualSRObject.objects.get(
+        ManualSRTask.objects.get(
             user=request.user.profile,
             pk=request.data.get('manual_sr_id'),
         ).delete()
         
         return Response({'message': 'Object deleted'}, status=200)
-    except ManualSRObject.DoesNotExist:
+    except ManualSRTask.DoesNotExist:
         return Response({'message': 'Specified Manual SR Object does not exist'}, status=404)

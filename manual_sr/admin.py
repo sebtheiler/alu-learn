@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import ManualSRObject
+from .models import ManualSRTask
 
-admin.site.register(ManualSRObject)
+admin.site.register(ManualSRTask)
