@@ -13,4 +13,5 @@ class ManualSRObjectSerializer(serializers.ModelSerializer):
             'ease',
             'next_review',
             'interval',
+            'id',
         ]
