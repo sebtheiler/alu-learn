@@ -13,10 +13,10 @@ export function ManualSRTask(props) {
   
   const [dueDateString, timePosition] = timeUntil(nextReviewDate);
   const [isEditing, setIsEditing] = useState(false);
-  const interval1 = getAnkiInterval(task, 1);
-  const interval2 = getAnkiInterval(task, 2);
-  const interval3 = getAnkiInterval(task, 3);
-  const interval4 = getAnkiInterval(task, 4);
+  const interval1 = getAnkiInterval(task, 1, 'MANUAL-SR');
+  const interval2 = getAnkiInterval(task, 2, 'MANUAL-SR');
+  const interval3 = getAnkiInterval(task, 3, 'MANUAL-SR');
+  const interval4 = getAnkiInterval(task, 4, 'MANUAL-SR');
 
   const [value, setValue] = useState(task.description);
   console.log(value, value === emptyValue)
