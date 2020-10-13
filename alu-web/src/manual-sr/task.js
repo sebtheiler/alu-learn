@@ -1,11 +1,11 @@
 import React from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { Button, ButtonGroup, Popover, OverlayTrigger } from 'react-bootstrap';
 import { getAnkiInterval } from '../decks/study/algorithm';
-import { apiManualSRTaskUpdate } from '../lookup';
+import { apiManualSRTaskDelete, apiManualSRTaskUpdate } from '../lookup';
 import {errorHandler, timeUntil} from '../utils';
 
 export function ManualSRTask(props) {
-  const {task, sortListCallback} = props;
+  const {task, sortListCallback, deleteCallback} = props;
   const nextReviewDate = new Date(task.next_review);
   
   const [dueDateString, timePosition] = timeUntil(nextReviewDate);
@@ -33,8 +33,6 @@ export function ManualSRTask(props) {
         reviewInfo.interval,
         (response, status) => {
           if (status === 200) {
-            console.log(task.next_review)
-            console.log((new Date(response.next_review)).toISOString().substring(0, 10))
             task.next_review = (new Date(response.next_review)).toISOString().substring(0, 10);
             sortListCallback();
           } else {
@@ -46,6 +44,36 @@ export function ManualSRTask(props) {
     };
   };
 
+  const deleteHandler = (event) => {
+    event.preventDefault();
+    apiManualSRTaskDelete(task.id, (response, status) => {
+      if (status === 200) {
+        deleteCallback(task.id);
+      } else {
+        // Error deleting manual SR task
+        errorHandler(response, status, 7004);
+      };
+    });
+  };
+
+  const deletePopover = (
+    <Popover>
+      <Popover.Title as='h3'>Delete Task</Popover.Title>
+      <Popover.Content>
+        Please confirm that you want to delete this task. This action is IRREVERSIBLE.
+        Only continue if you are absolutely sure you do not want this task.
+        <Button
+          variant='danger'
+          className='mt-2'
+          onClick={deleteHandler}
+          block
+        >
+          Permanently Delete Task
+        </Button>
+      </Popover.Content>
+    </Popover>
+  );
+
   return (<>
     <div
       className='p-3'
@@ -54,6 +82,18 @@ export function ManualSRTask(props) {
         borderRadius: '5px',
       }}
     >
+      <OverlayTrigger trigger='click' placement='bottom' overlay={deletePopover} rootClose>
+        <Button
+          style={{
+            background: 'none',
+            border: 'none',
+            float: 'right'
+          }}
+          tabIndex='-1'
+        >
+          <i className='far fa-trash-alt fa-sm' style={{ padding: '0', color: '#dc3545' }} />
+        </Button>
+      </OverlayTrigger>
       <h3 className='mb-0'>{task.title}</h3>
       <small className='text-secondary'>
         Due {dueDateString} ({nextReviewDate.toString().substring(0, 15)})

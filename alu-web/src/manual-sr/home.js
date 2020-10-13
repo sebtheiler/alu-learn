@@ -89,10 +89,15 @@ export function ManualSRHome(props) {
 
   // Sorts the tasks by their due date
   const sortListCallback = () => {
-    console.log('sorting...')
     const newTasks = [...manualSRTasks].sort((a, b) => (b.next_review < a.next_review) ? 1 : -1);
-    console.log(newTasks)
     setManualSRTasks(newTasks);
+  };
+
+  // Deletes the task in the frontend
+  const deleteCallback = (id) => {
+    const newTasks = [...manualSRTasks].filter(task => task.id !== id);
+    setManualSRTasks(newTasks);
+    document.body.click();
   };
 
   return (<div className='container'>
@@ -139,6 +144,7 @@ export function ManualSRHome(props) {
         key={index}
         task={task}
         sortListCallback={sortListCallback}
+        deleteCallback={deleteCallback}
       />
     )) : 'Loading...'}
     {nextUrl && <Button variant='outline-primary' onClick={handleLoadNext}>
