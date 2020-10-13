@@ -1,18 +1,28 @@
-import React from 'react';
-import { Button, ButtonGroup, Popover, OverlayTrigger } from 'react-bootstrap';
+import React, {useState, useMemo} from 'react';
+import { Button, ButtonGroup, Popover, OverlayTrigger, Form } from 'react-bootstrap';
 import { getAnkiInterval } from '../decks/study/algorithm';
 import { apiManualSRTaskDelete, apiManualSRTaskUpdate } from '../lookup';
 import {errorHandler, timeUntil} from '../utils';
+import {Slate} from 'slate-react';
+import {createFullEditor, EditorButtons, FullEditor} from '../notes/editor-components';
+import { emptyValue } from '../notes/autonote/autonote';
 
 export function ManualSRTask(props) {
   const {task, sortListCallback, deleteCallback} = props;
   const nextReviewDate = new Date(task.next_review);
   
   const [dueDateString, timePosition] = timeUntil(nextReviewDate);
+  const [isEditing, setIsEditing] = useState(false);
   const interval1 = getAnkiInterval(task, 1);
   const interval2 = getAnkiInterval(task, 2);
   const interval3 = getAnkiInterval(task, 3);
   const interval4 = getAnkiInterval(task, 4);
+
+  const [value, setValue] = useState(task.description);
+  const editor = useMemo(
+    () => createFullEditor(),
+    []
+  );
 
   const buttonIntervalWrapper = (grade) => {
     const reviewInfo = {
@@ -82,6 +92,17 @@ export function ManualSRTask(props) {
         borderRadius: '5px',
       }}
     >
+      <Button
+        style={{
+          background: 'none',
+          border: 'none',
+          float: 'right'
+        }}
+        onClick={() => setIsEditing(!isEditing)}
+        tabIndex='-1'
+      >
+        <i className='fas fa-pen-square float-right' style={{ transform: 'translateY(5px)', color: '#4a91c7' }} />
+      </Button>
       <OverlayTrigger trigger='click' placement='bottom' overlay={deletePopover} rootClose>
         <Button
           style={{
@@ -94,11 +115,32 @@ export function ManualSRTask(props) {
           <i className='far fa-trash-alt fa-sm' style={{ padding: '0', color: '#dc3545' }} />
         </Button>
       </OverlayTrigger>
-      <h3 className='mb-0'>{task.title}</h3>
+      {isEditing ?
+        <Form.Control type='text' className='w-75' defaultValue={task.title} />
+      :
+        <h3 className='mb-0'>{task.title}</h3>
+      }
       <small className='text-secondary'>
         Due {dueDateString} ({nextReviewDate.toString().substring(0, 15)})
       </small>
-      <p className='mt-3'>Description...</p>
+      <div style={{ borderStyle: 'solid', borderWidth: '1px', paddingTop: '5px', paddingLeft: '5px' }}>
+        <Slate
+          editor={editor}
+          value={value}
+          onChange={newValue => {
+            setValue(newValue);
+          }}
+        >
+          {isEditing && <EditorButtons
+            editor={editor}
+          />}
+          <FullEditor
+            editor={editor}
+            styleOptions={{ minHeight: '200px' }}
+            readOnly={!isEditing}
+          />
+        </Slate>
+      </div>
       {timePosition <= 0 && <>
         <hr />
         How did you do?
