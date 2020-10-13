@@ -139,14 +139,15 @@ export function ManualSRHome(props) {
     </Form>
     <hr />
     <h2>Tasks</h2>
-    {manualSRTasks ? manualSRTasks.map((task, index) => (
-      <ManualSRTask
-        key={index}
-        task={task}
-        sortListCallback={sortListCallback}
-        deleteCallback={deleteCallback}
-      />
-    )) : 'Loading...'}
+    {manualSRTasks ? (manualSRTasks.length > 0 ?
+      manualSRTasks.map((task, index) => (
+        <ManualSRTask
+          key={index}
+          task={task}
+          sortListCallback={sortListCallback}
+          deleteCallback={deleteCallback}
+        />
+    )) : 'You don\'t have any tasks yet.') : 'Loading...'}
     {nextUrl && <Button variant='outline-primary' onClick={handleLoadNext}>
       {loadingNext ? 'Loading...' : 'Load More'}
     </Button>}
