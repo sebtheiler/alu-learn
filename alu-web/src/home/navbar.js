@@ -90,6 +90,10 @@ export function NavbarComponent(props) {
                   <i className='fas fa-edit'></i>{' '}
                   Notes
                 </NavDropdown.Item>
+                <NavDropdown.Item href='/home/manual-sr/'>
+                  <i className='fas fa-clock'></i>{' '}
+                  Manual Spaced Repetition
+                </NavDropdown.Item>
 
                 <NavDropdown.Divider />
                 <NavDropdown.Item href='/settings/'>
