@@ -49,6 +49,11 @@ import {
   apiSendPasswordReset,
   apiEmailConfirm,
   apiEmailChange,
+  apiManualSRTaskList,
+  apiManualSRTaskCreate,
+  apiManualSRTaskDelete,
+  apiManualSRTaskUpdate,
+  apiManualSRTaskEdit,
 } from './lookup';
 
 export {
@@ -102,4 +107,9 @@ export {
   apiSendPasswordReset,
   apiEmailConfirm,
   apiEmailChange,
+  apiManualSRTaskList,
+  apiManualSRTaskCreate,
+  apiManualSRTaskDelete,
+  apiManualSRTaskUpdate,
+  apiManualSRTaskEdit,
 };

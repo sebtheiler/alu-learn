@@ -17,8 +17,8 @@ export const generateTooltip = (text) => {
 
 // Displays the time since a date in a pretty format
 // Modified from https://stackoverflow.com/questions/3177836/how-to-format-time-since-xxx-e-g-4-minutes-ago-similar-to-stack-exchange-site
-export function timeSince(date) {
-  const seconds = Math.floor((new Date() - date) / 1000);
+export function timeSince(date, reverse=false) {
+  const seconds = Math.floor((reverse ? (date - new Date()) : (new Date() - date)) / 1000);
   let interval = seconds / 31536000;
 
   if (interval > 1) {
@@ -48,6 +48,44 @@ export function timeSince(date) {
   return Math.floor(seconds) + (Math.floor(seconds) === 1 ? " second" : " seconds");
 };
 // export const oneDay = 24*60*60*1000;
+
+export function timeUntil(date) {
+  // The second thing returned is 0 if it is today, -1 if it is in past, 1 in future
+  date.setMinutes(date.getMinutes() + (new Date()).getTimezoneOffset());
+  const today = new Date(new Date().setHours(0, 0, 0));
+
+  if (date.getFullYear() === today.getFullYear() &&
+      date.getMonth() === today.getMonth() &&
+      date.getDate() === today.getDate()
+    ) {
+      return ['today', 0];
+  } else if (date < today) {
+    let yesterday = today;
+    yesterday.setDate(today.getDate() - 1);
+
+    if (date.getFullYear() === yesterday.getFullYear() &&
+        date.getMonth() === yesterday.getMonth() &&
+        date.getDate() === yesterday.getDate()
+    ) {
+      return ['yesterday', -1];
+    } else {
+      return [timeSince(date) + ' ago', -1];
+    };
+  } else {
+    let tomorrow = today;
+    tomorrow.setDate(today.getDate() + 1);
+
+    if (
+      date.getFullYear() === tomorrow.getFullYear() &&
+      date.getMonth() === tomorrow.getMonth() &&
+      date.getDate() === tomorrow.getDate()
+    ) {
+      return ['tomorrow', 1];
+    } else {
+      return ['in ' + timeSince(date, true), 1];
+    };
+  };
+};
 
 
 // Makes the passed number appear in the format: 1231 -> 1k, 123 -> 123, 4124124 -> 4m

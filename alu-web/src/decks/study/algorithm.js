@@ -5,50 +5,71 @@ function minutesToDays(minutes) {
 };
 
 function generateConfig(method='ANKI') {
-  if (method === 'ANKI') {
-    // Default Anki settings
-    return {
-      // General
-      NEW_CARDS_PER_DAY: 20,
-      // "New Cards" tab
-      NEW_STEPS: [1, 10], // in minutes
-      GRADUATING_INTERVAL: 1, // in days
-      EASY_INTERVAL: 4, // in days
-      STARTING_EASE: 250, // in percent
-      // "Reviews" tab
-      EASY_BONUS: 130, // in percent
-      INTERVAL_MODIFIER: 100, // in percent
-      MAXIMUM_INTERVAL: 36500, // in days
-      // "Lapses" tab
-      LAPSES_STEPS: [10], // in minutes
-      NEW_INTERVAL: 70, // in percent
-      MINIMUM_INTERVAL: 1, // in days
-      LEECH_THRESHOLD: 8, // number wrong
-    };
-  } else if (method === 'ANKING') {
-    // Optimized Anki settings from https://www.youtube.com/watch?v=wvF5Y2101Lk
-    return {
-      // General
-      NEW_CARDS_PER_DAY: 20,
-      // "New Cards" tab
-      NEW_STEPS: [25, 1440], // in minutes
-      GRADUATING_INTERVAL: 3, // in days
-      EASY_INTERVAL: 4, // in days
-      STARTING_EASE: 250, // in percent
-      // "Reviews" tab
-      EASY_BONUS: 150, // in percent
-      INTERVAL_MODIFIER: 100, // in percent
-      MAXIMUM_INTERVAL: 180, // in days
-      // "Lapses" tab
-      LAPSES_STEPS: [30, 1440], // in minutes
-      NEW_INTERVAL: 20, // in percent
-      MINIMUM_INTERVAL: 1, // in days
-      LEECH_THRESHOLD: 8, // number wrong
-    };
-  } else {
-    // Invalid deck config
-    console.error('Invalid deck config');
-    errorHandler({}, 0, 4001);
+  switch (method) {
+    case 'ANKI':
+      // Default Anki settings
+      return {
+        // General
+        NEW_CARDS_PER_DAY: 20,
+        // "New Cards" tab
+        NEW_STEPS: [1, 10], // in minutes
+        GRADUATING_INTERVAL: 1, // in days
+        EASY_INTERVAL: 4, // in days
+        STARTING_EASE: 250, // in percent
+        // "Reviews" tab
+        EASY_BONUS: 130, // in percent
+        INTERVAL_MODIFIER: 100, // in percent
+        MAXIMUM_INTERVAL: 36500, // in days
+        // "Lapses" tab
+        LAPSES_STEPS: [10], // in minutes
+        NEW_INTERVAL: 70, // in percent
+        MINIMUM_INTERVAL: 1, // in days
+        LEECH_THRESHOLD: 8, // number wrong
+      };
+    case 'ANKING':
+      // Optimized Anki settings from https://www.youtube.com/watch?v=wvF5Y2101Lk
+      return {
+        // General
+        NEW_CARDS_PER_DAY: 20,
+        // "New Cards" tab
+        NEW_STEPS: [25, 1440], // in minutes
+        GRADUATING_INTERVAL: 3, // in days
+        EASY_INTERVAL: 4, // in days
+        STARTING_EASE: 250, // in percent
+        // "Reviews" tab
+        EASY_BONUS: 150, // in percent
+        INTERVAL_MODIFIER: 100, // in percent
+        MAXIMUM_INTERVAL: 180, // in days
+        // "Lapses" tab
+        LAPSES_STEPS: [30, 1440], // in minutes
+        NEW_INTERVAL: 20, // in percent
+        MINIMUM_INTERVAL: 1, // in days
+        LEECH_THRESHOLD: 8, // number wrong
+      };
+    case 'MANUAL-SR':
+      // Settings for Manual SR Tasks
+      return {
+        // General
+        NEW_CARDS_PER_DAY: 20,
+        // "New Cards" tab
+        NEW_STEPS: [1440, 4320], // in minutes
+        GRADUATING_INTERVAL: 3, // in days
+        EASY_INTERVAL: 7, // in days
+        STARTING_EASE: 350, // in percent
+        // "Reviews" tab
+        EASY_BONUS: 150, // in percent
+        INTERVAL_MODIFIER: 200, // in percent
+        MAXIMUM_INTERVAL: 730, // in days
+        // "Lapses" tab
+        LAPSES_STEPS: [1440, 4320], // in minutes
+        NEW_INTERVAL: 40, // in percent
+        MINIMUM_INTERVAL: 2, // in days
+        LEECH_THRESHOLD: 8, // number wrong
+      };
+    default:
+      // Invalid deck config
+      console.error('Invalid deck config');
+      errorHandler({}, 0, 4001);
   };
 };
 

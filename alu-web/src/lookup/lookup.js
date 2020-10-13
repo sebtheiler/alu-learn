@@ -387,3 +387,45 @@ export function apiEmailChange(password, newEmail, callback) {
     new_email: newEmail,
   });
 };
+
+// Gets the current user's Manual SR Tasks
+export function apiManualSRTaskList(callback, nextUrl) {
+  let endpoint = 'manual-sr/list/';
+  if (nextUrl) {
+    endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
+  };
+  backendLookup('GET', endpoint, callback);
+};
+
+// Creates a new Manual SR Task
+export function apiManualSRTaskCreate(title, description, callback) {
+  backendLookup('POST', 'manual-sr/create/', callback, {
+    title: title,
+    description: description,
+  });
+};
+
+// Deletes a Manual SR Task
+export function apiManualSRTaskDelete(id, callback) {
+  backendLookup('POST', 'manual-sr/delete/', callback, {
+    manual_sr_id: id,
+  });
+};
+
+// Updates a Manual SR Task's review information
+export function apiManualSRTaskUpdate(id, nextReviewDate, learningStatus, ease, interval, callback) {
+  backendLookup('POST', `manual-sr/update/${id}/`, callback, {
+    next_review: nextReviewDate,
+    learning_status: learningStatus,
+    ease: ease,
+    interval: interval,
+  });
+};
+
+// Edits the title and description of a Manual SR Task
+export function apiManualSRTaskEdit(id, newTitle, newDescription, callback) {
+  backendLookup('POST', `manual-sr/edit/${id}/`, callback, {
+    new_title: newTitle,
+    new_description: newDescription,
+  });
+};

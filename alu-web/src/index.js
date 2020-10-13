@@ -12,6 +12,7 @@ import {LandingComponent} from './landing';
 import {HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset} from './home';
 import {NoteEditor, NotesHomeList} from './notes';
 import {AutoNote, AutoFlashCard} from './notes/autonote';
+import {ManualSRHome} from './manual-sr';
 
 const e = React.createElement;
 
@@ -138,6 +139,11 @@ if (autoNoteElement) {
 const autoFlashCardElement = document.getElementById('auto-flashcard');
 if (autoFlashCardElement) {
   ReactDOM.render(e(AutoFlashCard, autoFlashCardElement.dataset), autoFlashCardElement);
+};
+
+const manualSRHomeElement = document.getElementById('manual-sr-home');
+if (manualSRHomeElement) {
+  ReactDOM.render(e(ManualSRHome, manualSRHomeElement.dataset), manualSRHomeElement);
 };
 
 // If you want your app to work offline and load faster, you can change

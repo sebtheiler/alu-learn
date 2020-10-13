@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework import serializers
 from profiles.serializers import MinifiedProfileSerializer, PublicProfileSerializer
 from .models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator
