@@ -92,7 +92,7 @@ export function NavbarComponent(props) {
                 </NavDropdown.Item>
                 <NavDropdown.Item href='/home/manual-sr/'>
                   <i className='fas fa-clock'></i>{' '}
-                  Manual Spaced Repetition
+                  Tasks
                 </NavDropdown.Item>
 
                 <NavDropdown.Divider />

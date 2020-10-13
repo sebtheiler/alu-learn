@@ -116,7 +116,7 @@ export function HomeComponent(props) {
         <a href='/home/manual-sr/' className='card'>
           <i className='fas fa-clock fa-10x card-img-top mx-auto text-center my-3'></i>
           <Card.Title>
-            Manual Spaced Repetition
+            Tasks
           </Card.Title>
         </a>
       </CardDeck>

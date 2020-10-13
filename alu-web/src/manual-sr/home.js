@@ -101,7 +101,7 @@ export function ManualSRHome(props) {
   };
 
   return (<div className='container'>
-    <h1 className='text-center'>Manual Spaced Repetition</h1>
+    <h1 className='text-center'>Tasks</h1>
     <h2>Create new Task</h2>
     <Form onSubmit={handleCreate}>
       <Form.Group>
@@ -138,7 +138,7 @@ export function ManualSRHome(props) {
       </Button>
     </Form>
     <hr />
-    <h2>Tasks</h2>
+    <h2>Your Tasks</h2>
     {manualSRTasks ? (manualSRTasks.length > 0 ?
       manualSRTasks.map((task, index) => (
         <ManualSRTask
