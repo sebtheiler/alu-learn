@@ -87,6 +87,14 @@ export function ManualSRHome(props) {
     };
   };
 
+  // Sorts the tasks by their due date
+  const sortListCallback = () => {
+    console.log('sorting...')
+    const newTasks = [...manualSRTasks].sort((a, b) => (b.next_review < a.next_review) ? 1 : -1);
+    console.log(newTasks)
+    setManualSRTasks(newTasks);
+  };
+
   return (<div className='container'>
     <h1 className='text-center'>Manual Spaced Repetition</h1>
     <h2>Create new Task</h2>
@@ -126,15 +134,13 @@ export function ManualSRHome(props) {
     </Form>
     <hr />
     <h2>Tasks</h2>
-    {manualSRTasks ? manualSRTasks.map((task, index) => {
-      const nextReviewDate = new Date(task.next_review);
-
-      return <ManualSRTask
+    {manualSRTasks ? manualSRTasks.map((task, index) => (
+      <ManualSRTask
         key={index}
-        nextReviewDate={nextReviewDate}
         task={task}
+        sortListCallback={sortListCallback}
       />
-    }) : 'Loading...'}
+    )) : 'Loading...'}
     {nextUrl && <Button variant='outline-primary' onClick={handleLoadNext}>
       {loadingNext ? 'Loading...' : 'Load More'}
     </Button>}

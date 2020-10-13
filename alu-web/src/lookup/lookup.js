@@ -407,7 +407,17 @@ export function apiManualSRTaskCreate(title, description, callback) {
 
 // Deletes a Manual SR Task
 export function apiManualSRTaskDelete(id, callback) {
-  backendLookup('POST', 'manual-sr/delete', callback, {
+  backendLookup('POST', 'manual-sr/delete/', callback, {
     manual_sr_id: id,
+  });
+};
+
+// Updates a Manual SR Task's review information
+export function apiManualSRTaskUpdate(id, nextReviewDate, learningStatus, ease, interval, callback) {
+  backendLookup('POST', `manual-sr/update/${id}/`, callback, {
+    next_review: nextReviewDate,
+    learning_status: learningStatus,
+    ease: ease,
+    interval: interval,
   });
 };

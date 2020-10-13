@@ -53,7 +53,7 @@ def manual_sr_list_view(request, *args, **kwargs):
     Get's all of the current user's Manual SR Objects (Paginated) - GET
     """
     return get_paginated_queryset_response(
-        qs=request.user.profile.manual_sr_objects.all().order_by('-next_review'),
+        qs=request.user.profile.manual_sr_objects.all().order_by('next_review'),
         request=request,
         Serializer=ManualSRTaskSerializer,
         page_size=25,
@@ -62,8 +62,41 @@ def manual_sr_list_view(request, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def manual_sr_update_view(request, *args, **kwargs):
-    ...
+def manual_sr_update_view(request, manual_sr_id, *args, **kwargs):
+    """
+    Update a manual SR task's review information - POST
+
+    Required information:
+        `manual_sr_id`: (URL) ID of the study session manager
+        `next_review`: (Data) ISO string date for next review
+        `learning_status`: (Data) Learning status of the card, either 'UNSEEN', 'LEARNING', 'LEARNED', or 'RELEARNING'
+        `ease`: (Data) Ease of card
+        `interval`: (Data) The new interval for the flashcard
+
+        # TODO: maybe add this???
+        `increment_new_cards_done_today`: (Data) Whether or not to increment the SSM's `new_cards_done_today` attribute
+
+    Possible errors:
+        Manual SR Task does not exist or user is unauth: 400, Manual SR Task not found / unauthorized
+    """
+    try:
+        manual_sr_task = ManualSRTask.objects.get(
+            pk=manual_sr_id,
+            user=request.user.profile,
+        )
+        manual_sr_task.next_review = request.data.get('next_review', manual_sr_task.next_review)
+        manual_sr_task.learning_status = request.data.get('learning_status', manual_sr_task.learning_status).upper()
+        manual_sr_task.interval = request.data.get('interval', manual_sr_task.interval)
+        manual_sr_task.ease = request.data.get('ease', manual_sr_task.ease)
+        manual_sr_task.steps_index = request.data.get('steps_index', manual_sr_task.steps_index)
+        # TODO: add leeching to manual sr
+        # manual_sr_task.leech_index = request.data.get('leech_index', manual_sr_task.leech_index)
+        # manual_sr_task.set_is_leech(request.data.get('is_leech', manual_sr_task.is_leech), save=False)
+        manual_sr_task.save()
+
+        return Response(ManualSRTaskSerializer(manual_sr_task).data, status=200)
+    except ManualSRTask.DoesNotExist:
+        return Response({'message': 'Manual SR Task not found / unauthorized'}, status=400)
 
 
 @api_view(['POST'])

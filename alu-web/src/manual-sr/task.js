@@ -1,23 +1,48 @@
 import React from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { getAnkiInterval } from '../decks/study/algorithm';
-import {timeUntil} from '../utils';
+import { apiManualSRTaskUpdate } from '../lookup';
+import {errorHandler, timeUntil} from '../utils';
 
 export function ManualSRTask(props) {
-  const {nextReviewDate, task} = props;
+  const {task, sortListCallback} = props;
+  const nextReviewDate = new Date(task.next_review);
+  
   const [dueDateString, timePosition] = timeUntil(nextReviewDate);
-
   const interval1 = getAnkiInterval(task, 1);
   const interval2 = getAnkiInterval(task, 2);
   const interval3 = getAnkiInterval(task, 3);
   const interval4 = getAnkiInterval(task, 4);
 
   const buttonIntervalWrapper = (grade) => {
-    const reviewInfo = eval(`interval${grade};`);
+    const reviewInfo = {
+      1: interval1,
+      2: interval2,
+      3: interval3,
+      4: interval4,
+    }[grade];
 
     return (event) => {
-      console.log(reviewInfo)
       event.preventDefault();
+      console.log(reviewInfo)
+      apiManualSRTaskUpdate(
+        task.id,
+        (new Date(reviewInfo.nextReviewDate)).toISOString().substring(0, 10),
+        reviewInfo.learningStatus,
+        reviewInfo.easeFactor,
+        reviewInfo.interval,
+        (response, status) => {
+          if (status === 200) {
+            console.log(task.next_review)
+            console.log((new Date(response.next_review)).toISOString().substring(0, 10))
+            task.next_review = (new Date(response.next_review)).toISOString().substring(0, 10);
+            sortListCallback();
+          } else {
+            // Error updating manual SR task's review information
+            errorHandler(response, status, 7003);
+          };
+        },
+      );
     };
   };
 
