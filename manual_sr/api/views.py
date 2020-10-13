@@ -73,7 +73,7 @@ def manual_sr_update_view(request, manual_sr_id, *args, **kwargs):
         `ease`: (Data) Ease of card
         `interval`: (Data) The new interval for the flashcard
 
-        # TODO: maybe add this???
+        # Currently unused
         `increment_new_cards_done_today`: (Data) Whether or not to increment the SSM's `new_cards_done_today` attribute
 
     Possible errors:
@@ -89,7 +89,8 @@ def manual_sr_update_view(request, manual_sr_id, *args, **kwargs):
         manual_sr_task.interval = request.data.get('interval', manual_sr_task.interval)
         manual_sr_task.ease = request.data.get('ease', manual_sr_task.ease)
         manual_sr_task.steps_index = request.data.get('steps_index', manual_sr_task.steps_index)
-        # TODO: add leeching to manual sr
+
+        # This will eventually be re-added
         # manual_sr_task.leech_index = request.data.get('leech_index', manual_sr_task.leech_index)
         # manual_sr_task.set_is_leech(request.data.get('is_leech', manual_sr_task.is_leech), save=False)
         manual_sr_task.save()

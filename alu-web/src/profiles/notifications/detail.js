@@ -15,7 +15,7 @@ export function Notification(props) {
     const senderUsername = match.substring(1, match.length);
 
     // Check if you are already friends
-    // TODO: this needs to be optimized
+    // This needs to be optimized
     // marking as read also needs to be optimized
     // since it is always sent, even if nothiing
     // is now read
