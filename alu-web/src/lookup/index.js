@@ -53,6 +53,7 @@ import {
   apiManualSRTaskCreate,
   apiManualSRTaskDelete,
   apiManualSRTaskUpdate,
+  apiManualSRTaskEdit,
 } from './lookup';
 
 export {
@@ -110,4 +111,5 @@ export {
   apiManualSRTaskCreate,
   apiManualSRTaskDelete,
   apiManualSRTaskUpdate,
+  apiManualSRTaskEdit,
 };

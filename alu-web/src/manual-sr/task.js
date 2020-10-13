@@ -1,7 +1,7 @@
 import React, {useState, useMemo} from 'react';
 import { Button, ButtonGroup, Popover, OverlayTrigger, Form } from 'react-bootstrap';
 import { getAnkiInterval } from '../decks/study/algorithm';
-import { apiManualSRTaskDelete, apiManualSRTaskUpdate } from '../lookup';
+import { apiManualSRTaskDelete, apiManualSRTaskUpdate, apiManualSRTaskEdit } from '../lookup';
 import {errorHandler, timeUntil} from '../utils';
 import {Slate} from 'slate-react';
 import {createFullEditor, EditorButtons, FullEditor} from '../notes/editor-components';
@@ -19,6 +19,7 @@ export function ManualSRTask(props) {
   const interval4 = getAnkiInterval(task, 4);
 
   const [value, setValue] = useState(task.description);
+  console.log(value, value === emptyValue)
   const editor = useMemo(
     () => createFullEditor(),
     []
@@ -52,6 +53,25 @@ export function ManualSRTask(props) {
         },
       );
     };
+  };
+
+  const editHandler = (event) => {
+    event.preventDefault();
+
+    apiManualSRTaskEdit(
+      task.id,
+      document.getElementById('titleText').value,
+      value,
+      (response, status) => {
+        if (status === 200) {
+          task.title = response.title;
+          setIsEditing(false);
+        } else {
+          // Error editing manual SR task
+          errorHandler(response, status, 7005);
+        };
+      },
+    );
   };
 
   const deleteHandler = (event) => {
@@ -116,14 +136,14 @@ export function ManualSRTask(props) {
         </Button>
       </OverlayTrigger>
       {isEditing ?
-        <Form.Control type='text' className='w-75' defaultValue={task.title} />
+        <Form.Control type='text' className='w-75' defaultValue={task.title} id='titleText' />
       :
         <h3 className='mb-0'>{task.title}</h3>
       }
       <small className='text-secondary'>
         Due {dueDateString} ({nextReviewDate.toString().substring(0, 15)})
       </small>
-      <div style={{ borderStyle: 'solid', borderWidth: '1px', paddingTop: '5px', paddingLeft: '5px' }}>
+      {(value !== emptyValue || isEditing) && <div style={{ paddingTop: '2px', paddingLeft: '2px' }}>
         <Slate
           editor={editor}
           value={value}
@@ -136,11 +156,12 @@ export function ManualSRTask(props) {
           />}
           <FullEditor
             editor={editor}
-            styleOptions={{ minHeight: '200px' }}
+            styleOptions={{ minHeight: '10px' }}
             readOnly={!isEditing}
           />
         </Slate>
-      </div>
+      </div>}
+      {isEditing && <Button onClick={editHandler} className='mt-2'>Save</Button>}
       {timePosition <= 0 && <>
         <hr />
         How did you do?

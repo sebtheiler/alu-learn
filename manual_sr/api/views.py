@@ -101,6 +101,31 @@ def manual_sr_update_view(request, manual_sr_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def manual_sr_edit_view(request, manual_sr_id, *args, **kwargs):
+    """
+    Edits an SR Task - POST
+
+    Required information:
+        `manual_sr_id`: (URL) Id of the Manual SR task to edit
+        `new_title`: (Data) New title of the manual sr task
+        `new_description`: (Data) New description of the manual sr task
+    """
+    try:
+        task = ManualSRTask.objects.get(
+            user=request.user.profile,
+            pk=manual_sr_id,
+        )
+
+        task.title = request.data.get('new_title', task.title)
+        task.description = request.data.get('new_description', task.description)
+        task.save()
+
+        return Response(ManualSRTaskSerializer(task).data, status=200)
+    except ManualSRTask.DoesNotExist:
+        return Response({'message': 'Specified Manual SR Object does not exist'}, status=404)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def manual_sr_delete_view(request, *args, **kwargs):
     """
     Deletes an SR Object - POST

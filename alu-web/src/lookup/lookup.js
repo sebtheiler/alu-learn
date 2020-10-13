@@ -421,3 +421,11 @@ export function apiManualSRTaskUpdate(id, nextReviewDate, learningStatus, ease, 
     interval: interval,
   });
 };
+
+// Edits the title and description of a Manual SR Task
+export function apiManualSRTaskEdit(id, newTitle, newDescription, callback) {
+  backendLookup('POST', `manual-sr/edit/${id}/`, callback, {
+    new_title: newTitle,
+    new_description: newDescription,
+  });
+};
