@@ -22,7 +22,7 @@ from rest_framework.response import Response
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
                       DeckThank, FlashCard, FlashCardCreator, FlashCardField,
-                      StudySessionManager)
+                      SharedDeck, StudySessionManager)
 from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
                            DeckThankSerializer, FlashCardCreatorSerializer,
                            FlashCardSerializer, StudySessionManagerSerializer)
@@ -1050,3 +1050,115 @@ def ssm_create_view(request, *args, **kwargs):
     )
 
     return Response(CustomStudySessionManagerSerializer(ssm).data, status=201)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def shared_deck_create_view(request, *args, **kwargs):
+    """
+    Creates a shared deck - POST
+
+    Required information:
+        `title`: (Data) Title of the public deck to create
+        `description`: (Data) Description of the public deck to create
+        `sharing_setting`: (Data) 'FRIENDS' or 'PUBLIC'
+    """
+    # Create shared deck object
+    title = request.data.get('title')
+    if title is None:
+        return Response({'message': 'Title must not be None'}, status=400)
+    # SharedDeck.objects.create(
+    #     user=request.user,
+    #     title=title,
+    #     description=request.data.get('description'),
+    #     sharing_setting=request.data.get('sharing_setting', 'PUBLIC')
+    # )
+    # Clone flashcard creators and fields
+    # ...
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def shared_deck_clone_view(request, *args, **kwargs):
+    """
+    Clones a shared deck for a user that is not the author to use it - POST
+
+    Required information:
+        `shared_deck_id`: (Data) Id of the shared deck
+        `destination_title`: (Data) Title of the destination deck to clone into
+    """
+    # Get shared deck
+    try:
+        shared_deck = SharedDeck.objects.get(pk=request.data.get('shared_deck_id'))
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'Shared deck does not exist'}, status=404)
+
+    # Check that the current user is authorized to access this shared deck
+    # (either the deck is public or the current user is a friend of the author)
+    if not (shared_deck.sharing_setting == 'PUBLIC' or request.user in shared_deck.user.friends):
+        return Response({'message': 'You are not authorized to clone this deck'})
+
+    # Get the deck that we will create a link in
+    destination_deck, created = Deck.objects.get_or_create(
+        user=request.user,
+        title=request.data.get('destination_title'),
+    )
+
+    # Create the link to the shared deck
+    destination_deck.includes_shared_decks.add(shared_deck)
+
+    # Return success
+    return Response({'message': 'Deck copied successfully'}, status=200)
+
+
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def shared_deck_update_view(request, *args, **kwargs):
+#     """
+#     Allows the author of a shared deck to update it - POST
+
+#     Required information:
+#         `shared_deck_id`: (Data) Id of the shared deck
+#         `upload_deck_id`: (Data) Id of the deck to get new changes from
+#     """
+
+
+"""
+Create
+    * Select deck to upload
+    * Select public / friends
+    --
+    * Shared Deck Obj is created (keeps track of shared flashcards and the edit history)
+    * Flashcard creators and fields are cloned to shared flashcard object
+
+Clone
+    * Select deck to clone
+    * Select whether to make a new deck or clone into existing
+    --
+    * Adds the shared deck into the list of decks to inherit from
+    * Creates flashcards (not creators) for each new flashcard, each with a special link to the shared deck and shared flashcard it inherits from
+
+Study
+    * Study normally
+    --
+    * Each flashcard gets its informtion from its creator, regardless of whether that creator is a shared creator or not
+    * If using an old version, undo all updates and deletes after that version (shared flashcards have a deleted in version tag)
+
+Update
+    User side:
+        * See new changes for each shared deck (new cards, deleted cards)
+        * Choice to update
+    Editor side:
+        * Option to push changes
+        * When pushing, see diff
+    --
+    Calculating diff:
+        * Each non-shared flashcard creator keeps track of which shared flashcard creator it updates
+        * New flashcards are marked as having no corresponding creator
+        * Modified flashcards are marked as having no corresponding creator
+        * When pushing changes, shared flashcards that have no correspondance are marked as deleted
+        * Flashcards that have no associated shared are created
+
+Updating:
+    * Specefic flashcards are created or deleted
+"""
