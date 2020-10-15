@@ -12,6 +12,8 @@ class Deck(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(default='')
 
+    # TODO: move these sharing options to shared deck,
+    # remove private, and update the ability to change it as it was previously done
     SHARING_OPTIONS = [
         ('PRIVATE', 'Private'),
         ('FRIENDS', 'Friends only'),
@@ -151,6 +153,18 @@ class CustomStudySessionManager(StudySessionManager):
     learning_status = models.CharField(null=True, blank=True, max_length=10)
     min_ease = models.PositiveSmallIntegerField(null=True, blank=True)
     max_ease = models.PositiveSmallIntegerField(null=True, blank=True)
+
+
+class SharedDeck(Deck):
+    # A foreign key of decks that use flashcards from this shared deck
+    children_decks = models.ManyToManyField(Deck, related_name='includes_shared_decks')
+
+    # The changes that have been made to this deck
+    # edit_history = ...
+
+
+class SharedFlashCardCreator(FlashCardCreator):
+    is_deleted = models.BooleanField(default=False)
 
 
 # Used to like/thank a person for making a deck
