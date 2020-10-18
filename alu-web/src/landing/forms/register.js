@@ -58,7 +58,7 @@ export function ModalRegisterForm(props) {
         };
         if (!emailAvailable) {
           document.getElementById('registerEmailTakenError').innerHTML = 
-          'That email is already taken! Click <a href="/reset_password/">here</a> to reset your password.'
+          'That email is already taken! Click <a href="/reset-password/">here</a> to reset your password.'
         } else {
           document.getElementById('registerEmailTakenError').innerHTML = '';
         };

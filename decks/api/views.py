@@ -1,6 +1,7 @@
 import datetime as dt
 import random
 import re
+from copy import deepcopy
 from itertools import chain
 import json
 
@@ -1053,6 +1054,7 @@ def ssm_create_view(request, *args, **kwargs):
     return Response(CustomStudySessionManagerSerializer(ssm).data, status=201)
 
 
+# {"origin_deck_id": 4, "title": "testing shared decks", "description": "...", "sharing_setting": "PUBLIC"}
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def shared_deck_create_view(request, *args, **kwargs):
@@ -1060,22 +1062,44 @@ def shared_deck_create_view(request, *args, **kwargs):
     Creates a shared deck - POST
 
     Required information:
+        `origin_deck_id`: (Data) Id of the deck that will be made shared
         `title`: (Data) Title of the public deck to create
         `description`: (Data) Description of the public deck to create
         `sharing_setting`: (Data) 'FRIENDS' or 'PUBLIC'
     """
+    # Get deck to originate from
+    try:
+        origin_deck = Deck.objects.get(
+            pk=request.data.get('origin_deck_id'),
+            user=request.user,
+        )
+    except Deck.DoesNotExist:
+        return Response({'message': 'This deck does not exist / you are unauthorized'}, status=400)
+
     # Create shared deck object
     title = request.data.get('title')
     if title is None:
         return Response({'message': 'Title must not be None'}, status=400)
-    # SharedDeck.objects.create(
-    #     user=request.user,
-    #     title=title,
-    #     description=request.data.get('description'),
-    #     sharing_setting=request.data.get('sharing_setting', 'PUBLIC')
-    # )
+
+    shared_deck = SharedDeck.objects.create(
+        user=request.user,
+        title=title,
+        description=request.data.get('description'),
+        sharing_setting=request.data.get('sharing_setting', 'PUBLIC')
+    )
+
     # Clone flashcard creators and fields
-    # ...
+    flashcard_creators = deepcopy(origin_deck.flashcards)
+    flashcard_creators.update(
+        id=None,# pk=None, # copy them
+        deck=shared_deck, # set their new creator to the shared deck
+    )
+
+    fields = flashcard_creators.fields # FlashCardField.filter(creator__deck=origin_deck)
+    fields.update(
+        id=None,# pk=None,
+    )
+
 
 
 @api_view(['POST'])
