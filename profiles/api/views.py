@@ -538,7 +538,7 @@ def password_reset_email_api_view(request, email, *args, **kwargs):
     message = f"""
 Looks like you forgot your password—don't worry, it happens to all of us.
 
-Click this link to reset your password: http://127.0.0.1:8000/reset-password/confirm/?k={unique_id}&email={profile.user.email}
+Click this link to reset your password: https://www.alulearn.com/reset-password/confirm/?k={unique_id}&email={profile.user.email}
 If this wasn't you, you can safely ignore this email.
     """
     email_from = settings.EMAIL_HOST_USER
