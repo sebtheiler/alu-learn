@@ -76,7 +76,7 @@ const insertImage = (editor, url) => {
 };
 
 export function ImageButton(props) {
-  const editor = {props};
+  const {editor, untabbable} = props;
 
   return (
     <Button
@@ -87,6 +87,7 @@ export function ImageButton(props) {
         if (!url) return;
         insertImage(editor, url);
       }}
+      tabIndex={untabbable && '-1'}
     >
       <i className='fas fa-image' />
     </Button>

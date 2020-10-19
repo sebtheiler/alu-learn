@@ -1,8 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import {apiFlashCardCreate, apiFlashCardEdit, apiFlashCardDetail} from '../../lookup';
 import {Button, Form, OverlayTrigger} from 'react-bootstrap';
 import {generateTooltip, errorHandler, QuestionBubble} from '../../utils';
-
+import {createFullEditor, EditorButtons, FullEditor} from '../../notes/editor-components';
+import { emptyValue } from '../../notes/autonote/autonote';
+import {Slate, ReactEditor} from 'slate-react';
+import {Transforms} from 'slate';
 
 function FreezeOverlay(props) {
   return (
@@ -21,14 +24,21 @@ function FreezeOverlay(props) {
 
 // Function for card create form
 export function FlashCardCreate(props) {
-  const frontTextRef = React.createRef();
-  const backTextRef = React.createRef();
-  const tagsRef = React.createRef();
+  const [frontValue, setFrontValue] = useState(emptyValue);
+  const frontEditor = useMemo(
+    () => createFullEditor(),
+    []
+  );
+  const [backValue, setBackValue] = useState(emptyValue);
+  const backEditor = useMemo(
+    () => createFullEditor(),
+    []
+  );
   // `deckId`: ID of the deck in which to create flashcard
   // `returnToPreviousPage`: If true, redirect the user to the previous page (used for editing)
   // `flashcardId`: If not null/undefined, the ID of the flashcard to EDIT
   const {deckId, returnToPreviousPage, flashcardId} = props;
-  let btn_label = 'Create';
+  const btnLabel = isNaN(flashcardId) ? 'Create' : 'Save';
   const [flashcardType, setFlashCardType] = useState('basic');
 
   const [freezeFront, setFreezeFront] = useState(false);
@@ -40,21 +50,20 @@ export function FlashCardCreate(props) {
 
   // If we are editing a card, get its current values
   if (isNaN(flashcardId) === false) {
-    btn_label = 'Save';
     apiFlashCardDetail(deckId, flashcardId, (response, status) => {
       if (status === 200) {
         switch (response.flashcard_type) {
           case 'basic': case 'reversed':
-            frontTextRef.current.value = response.deck_fields[0].text;
-            backTextRef.current.value = response.deck_fields[1].text;
+            setFrontValue(response.deck_fields[0].text);
+            setBackValue(response.deck_fields[1].text);
             break;
           case 'cloze':
-            frontTextRef.current.value = response.deck_fields[0].text;
+            setFrontValue(response.deck_fields[0].text);
             break;
           default:
             return;
         };
-        tagsRef.current.value = response.tags;
+        document.getElementById('tags').value = response.tags;
         setFlashCardType(response.flashcard_type);
       } else {
         // Error getting flashcard detail
@@ -69,18 +78,19 @@ export function FlashCardCreate(props) {
       // If the user should be redirected, redirect them
       if (returnToPreviousPage) {
         window.history.back();
-      };
-
-      // Make the textareas empty
-      frontTextRef.current.focus();
-      if (freezeFront === false) {
-        frontTextRef.current.value = '';
-      };
-      if (freezeBack === false && backTextRef.current) {
-        backTextRef.current.value = '';
-      };
-      if (freezeTags === false) {
-        tagsRef.current.value = '';
+      } else {
+        // Make the textareas empty
+        Transforms.move(backEditor, { edge: 'anchor', distance: 9999999, reverse: true });
+        Transforms.move(backEditor, { edge: 'focus', distance: 9999999, reverse: true });
+        Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999, reverse: true });
+        Transforms.move(frontEditor, { edge: 'focus', distance: 9999999, reverse: true });
+        ReactEditor.focus(frontEditor);
+        if (!freezeFront) {setFrontValue(emptyValue)};
+        if (!freezeBack) {setBackValue(emptyValue)};
+        if (!freezeTags) {document.getElementById('tags').value = ''};
+        Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999 });
+        Transforms.move(frontEditor, { edge: 'focus', distance: 9999999 });
+        document.getElementById('frontText').focus()
       };
     } else {
       // Error creating/editing flashcard
@@ -94,24 +104,20 @@ export function FlashCardCreate(props) {
     event.preventDefault();
     const content = (() => {switch (flashcardType) {
       case 'basic': case 'reversed':
-        return [
-          frontTextRef.current.value,
-          backTextRef.current.value,
-        ];
+        return [frontValue, backValue];
       case 'cloze':
-        return [
-          frontTextRef.current.value,
-        ];
+        return [frontValue];
       default:
         return [];
     }})();
+
     if (isNaN(flashcardId) === false) {
       // This implies we are editing a card
       apiFlashCardEdit(
         deckId,
         flashcardId,
         content,
-        tagsRef.current.value,
+        document.getElementById('tags').value,
         handleBackendUpdate,
       );
     } else {
@@ -119,7 +125,7 @@ export function FlashCardCreate(props) {
       apiFlashCardCreate(
         deckId,
         content,
-        tagsRef.current.value,
+        document.getElementById('tags').value,
         flashcardType,
         handleBackendUpdate,
       );
@@ -152,15 +158,24 @@ export function FlashCardCreate(props) {
               Front
             </p>
           </Form.Label>
-          <Form.Control
-            as='textarea'
-            rows='8'
-            name='frontText'
-            placeholder='Front Text'
-            ref={frontTextRef}
-            autoFocus
-            required
-          />
+          <div style={{ borderStyle: 'solid', borderWidth: '1px', paddingTop: '5px', paddingLeft: '5px' }}>
+            <Slate
+              editor={frontEditor}
+              value={frontValue}
+              onChange={newValue => {
+                setFrontValue(newValue);
+              }}
+            >
+              <EditorButtons
+                editor={frontEditor}
+              />
+              <FullEditor
+                id='frontText'
+                editor={frontEditor}
+                styleOptions={{ minHeight: '200px' }}
+              />
+            </Slate>
+          </div>
           {['cloze'].includes(flashcardType) === false && <>
             <Form.Label htmlFor='backText' className='mb-0 mt-3 w-100'>
               <p className='mb-0'>
@@ -172,14 +187,24 @@ export function FlashCardCreate(props) {
                 Back
               </p>
             </Form.Label>
-            <Form.Control
-              as='textarea'
-              rows='8'
-              name='backText'
-              placeholder='Back Text'
-              ref={backTextRef}
-              required
-            />
+            <div style={{ borderStyle: 'solid', borderWidth: '1px', paddingTop: '5px', paddingLeft: '5px' }}>
+              <Slate
+                editor={backEditor}
+                value={backValue}
+                onChange={newValue => {
+                  setBackValue(newValue);
+                }}
+              >
+                <EditorButtons
+                  editor={backEditor}
+                  untabbable
+                />
+                <FullEditor
+                  editor={backEditor}
+                  styleOptions={{ minHeight: '200px' }}
+                />
+              </Slate>
+            </div>
           </>}
         </Form.Group>
         <Form.Group>
@@ -200,13 +225,12 @@ export function FlashCardCreate(props) {
           <Form.Control
             type="text"
             placeholder='Calculus, Integrals, Exponentials, ...'
-            ref={tagsRef}
-            name='tags'
+            id='tags' name='tags'
             maxLength='1024'
           />
         </Form.Group>
         <Form.Group className='text-center mt-1'>
-          <Button type='submit' variant='primary' block>{btn_label}</Button>
+          <Button type='submit' variant='primary' block>{btnLabel}</Button>
         </Form.Group>
       </Form>
     </div>

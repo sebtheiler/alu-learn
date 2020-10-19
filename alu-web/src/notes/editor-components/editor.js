@@ -25,7 +25,7 @@ const HOTKEYS = {
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
 export function FullEditor(props) {
-  const {editor, didTypeCallback, readOnly, styleOptions} = props;
+  const {editor, didTypeCallback, readOnly, styleOptions, id} = props;
   const {minHeight, showBorder} = styleOptions ? styleOptions : { showBorder: true };
 
   const renderElement = useCallback(props => <Element {...props} />, []);
@@ -33,6 +33,7 @@ export function FullEditor(props) {
 
   return (
     <Editable
+      id={id}
       readOnly={readOnly}
       renderElement={renderElement}
       renderLeaf={renderLeaf}

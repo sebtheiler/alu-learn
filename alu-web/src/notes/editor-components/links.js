@@ -88,7 +88,7 @@ const wrapLink = (editor, url) => {
 };
 
 export function LinkButton(props) {
-  const {editor} = props;
+  const {editor, untabbable} = props;
 
   return (
     <Button
@@ -99,6 +99,7 @@ export function LinkButton(props) {
         if (!url) return;
         insertLink(editor, url);
       }}
+      tabIndex={untabbable && '-1'}
     >
       <i className='fas fa-link' />
     </Button>
