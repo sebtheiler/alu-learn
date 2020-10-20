@@ -2,6 +2,7 @@ import datetime as dt
 import random
 import re
 from itertools import chain
+import json
 
 from django.core.cache import cache
 from django.db.models import Q
@@ -148,7 +149,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 
             flashcards = FlashCard.objects.bulk_create([
                 cloze_flashcard(match)
-                for match in re.finditer(r"{{c\d*::.*?}}", fields[0], re.MULTILINE) \
+                for match in re.finditer(r"{{c\d*::.*?}}", json.dumps(fields[0]), re.MULTILINE) \
                     if int(match.group().split("::")[0][3:]) not in cloze_ids
             ])
         else:
@@ -206,7 +207,7 @@ def flashcard_edit_view(request, deck_id, flashcard_id, *args, **kwargs):
                 flashcards_to_delete = [fc.id for fc in flashcards]
 
                 # Go through all segments identified as a cloze
-                for match in re.finditer(r"{{c\d*::.*?}}", new_fields[0], re.MULTILINE):
+                for match in re.finditer(r"{{c\d*::.*?}}", json.dumps(new_fields[0]), re.MULTILINE):
                     cloze_id = int(match.group().split("::")[0][3:])
                     try:
                         # If the flashcard already exists, mark it as not needing deletion
