@@ -40,6 +40,7 @@ export function FlashCardCreate(props) {
   const {deckId, returnToPreviousPage, flashcardId} = props;
   const btnLabel = isNaN(flashcardId) ? 'Create' : 'Save';
   const [flashcardType, setFlashCardType] = useState('basic');
+  const [gotFlashcardDetail, setGotFlashcardDetail] = useState(false);
 
   const [freezeFront, setFreezeFront] = useState(false);
   const [freezeBack, setFreezeBack] = useState(false);
@@ -49,28 +50,33 @@ export function FlashCardCreate(props) {
   window.addEventListener("beforeunload", () => {});
 
   // If we are editing a card, get its current values
-  if (isNaN(flashcardId) === false) {
-    apiFlashCardDetail(deckId, flashcardId, (response, status) => {
-      if (status === 200) {
-        switch (response.flashcard_type) {
-          case 'basic': case 'reversed':
-            setFrontValue(response.deck_fields[0].text);
-            setBackValue(response.deck_fields[1].text);
-            break;
-          case 'cloze':
-            setFrontValue(response.deck_fields[0].text);
-            break;
-          default:
-            return;
-        };
-        document.getElementById('tags').value = response.tags;
-        setFlashCardType(response.flashcard_type);
-      } else {
-        // Error getting flashcard detail
-        errorHandler(response, status, 2000);
+  useState(() => {
+    if (gotFlashcardDetail === false) {
+      setGotFlashcardDetail(true);
+      if (isNaN(flashcardId) === false) {
+        apiFlashCardDetail(deckId, flashcardId, (response, status) => {
+          if (status === 200) {
+            switch (response.flashcard_type) {
+              case 'basic': case 'reversed':
+                setFrontValue(response.deck_fields[0].text);
+                setBackValue(response.deck_fields[1].text);
+                break;
+              case 'cloze':
+                setFrontValue(response.deck_fields[0].text);
+                break;
+              default:
+                return;
+            };
+            document.getElementById('tags').value = response.tags;
+            setFlashCardType(response.flashcard_type);
+          } else {
+            // Error getting flashcard detail
+            errorHandler(response, status, 2000);
+          };
+        });
       };
-    });
-  };
+    };
+  });
 
   // Called after the request is sent to the backend to create or edit a flashcard
   const handleBackendUpdate = (response, status) => {
@@ -78,7 +84,7 @@ export function FlashCardCreate(props) {
       // If the user should be redirected, redirect them
       if (returnToPreviousPage) {
         window.history.back();
-      } else {
+      } else if (isNaN(flashcardId)) {
         // Make the textareas empty
         Transforms.move(backEditor, { edge: 'anchor', distance: 9999999, reverse: true });
         Transforms.move(backEditor, { edge: 'focus', distance: 9999999, reverse: true });

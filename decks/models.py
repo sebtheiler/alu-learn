@@ -42,7 +42,7 @@ class FlashCardCreator(models.Model):
 
 class FlashCardField(models.Model):
     creator = models.ForeignKey(FlashCardCreator, on_delete=models.CASCADE, related_name='fields')
-    text = models.TextField()
+    text = JSONField(null=True)
     field_number = models.PositiveSmallIntegerField()
 
     class Meta:
