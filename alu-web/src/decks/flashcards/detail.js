@@ -1,8 +1,87 @@
-import React, {useState} from 'react';
+import React, {useState, useMemo} from 'react';
 import {Button} from 'react-bootstrap';
-import {QuestionBubble, errorHandler, MarkdownRender} from '../../utils';
+import {QuestionBubble, errorHandler} from '../../utils';
 import {apiFlashCardSuspendLeech, apiFlashCardDelete} from '../../lookup';
+import {createFullEditor, FullEditor} from '../../notes/editor-components';
+import {Slate} from 'slate-react';
 import './detail.css';
+
+
+export function RenderFlashCardText(props) {
+  const {flashcard} = props;
+
+  const [frontValue, setFrontValue] = useState(flashcard.deck_fields[0].text);
+  const frontEditor = useMemo(
+    () => createFullEditor(),
+    []
+  );
+  const [backValue, setBackValue] = useState(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
+  const backEditor = useMemo(
+    () => createFullEditor(),
+    []
+  );
+
+  switch (flashcard.flashcard_type) {
+    case 'basic': case 'reversed': // two-sided
+      return (<>
+        <div className='col-md-6 text-center'>
+          <Slate
+            editor={frontEditor}
+            value={frontValue}
+            onChange={newValue => {
+              setFrontValue(newValue);
+            }}
+          >
+            <FullEditor
+              editor={frontEditor}
+              readOnly={true}
+              styleOptions={{ showBorder: false, minHeight: '0px' }}
+            />
+          </Slate>
+        </div>
+        <div className='col-md-6 text-center'>
+          <Slate
+            editor={backEditor}
+            value={backValue}
+            onChange={newValue => {
+              setBackValue(newValue);
+            }}
+          >
+            <FullEditor
+              editor={backEditor}
+              readOnly={true}
+              styleOptions={{ showBorder: false, minHeight: '0px' }}
+            />
+          </Slate>
+        </div>
+      </>)
+    case 'cloze': // one-sided
+      return (<>
+        <div className='col-md-12 text-center'>
+          <Slate
+            editor={frontEditor}
+            value={frontValue}
+            onChange={newValue => {
+              setFrontValue(newValue);
+            }}
+          >
+            <FullEditor
+              editor={frontEditor}
+              readOnly={true}
+              styleOptions={{ showBorder: false, minHeight: '0px' }}
+            />
+          </Slate>
+        </div>
+      </>);
+    default:
+      return (
+        <div className='col-md-12 text-center'>
+          <strong>Invalid flashcard type "{flashcard.flashcard_type}". Please report this issue.</strong>
+        </div>
+      );
+  };
+};
+
 
 // Display an individual flashcard
 export function FlashCard(props) {
@@ -53,32 +132,6 @@ export function FlashCard(props) {
     return null;
   };
 
-  const flashcardTextRender = (flashcard) => {
-    switch (flashcard.flashcard_type) {
-      case 'basic': case 'reversed': // two-sided
-        return (<>
-          <div className='col-md-6 text-center'>
-            <MarkdownRender source={flashcard.deck_fields[0].text} />
-          </div>
-          <div className='col-md-6 text-center'>
-            <MarkdownRender source={flashcard.deck_fields[1].text} />
-          </div>
-        </>)
-      case 'cloze': // one-sided
-        return (<>
-          <div className='col-md-12 text-center'>
-            <MarkdownRender source={flashcard.deck_fields[0].text} />
-          </div>
-        </>);
-      default:
-        return (
-          <div className='col-md-12 text-center'>
-            <strong>Invalid flashcard type "{flashcard.flashcard_type}". Please report this issue.</strong>
-          </div>
-        );
-    };
-  };
-
   return (
     <div className={'container-fluid border my-3' + (foreignUser ? '' : (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : ''))}>
       <div className='row mt-3 text-center'>
@@ -113,7 +166,7 @@ export function FlashCard(props) {
         </div>
       </div>
       <div className='row'>
-        {flashcardTextRender(flashcard)}
+        <RenderFlashCardText flashcard={flashcard} />
       </div>
       <div className='text-center mx-auto w-50' style={{ wordWrap: 'break-word' }}>
         {flashcard.tags ? 
