@@ -1,7 +1,6 @@
 import React, {useEffect, useState, useMemo} from 'react';
 import {getAnkiInterval} from './algorithm';
 import {Button, Collapse, Alert} from 'react-bootstrap';
-import {inMatch, MarkdownRender} from '../../utils';
 import {createFullEditor, FullEditor} from '../../notes/editor-components';
 import {Slate} from 'slate-react';
 import { emptyValue } from '../../notes/autonote/autonote';
@@ -13,10 +12,10 @@ const processFront = (flashcard, showAnswer) => {
     case 'basic': case 'reversed':
       return flashcard.deck_fields[0].text;
     case 'cloze':
-      const currentCardText = flashcard.deck_fields[0].text;
+      const currentCardText = JSON.stringify(flashcard.deck_fields[0].text);
       const targetClozeNum = parseInt(flashcard.name.split('-')[1]);
       const regex = /{{c\d*::.*?}}/gm;
-      const str = flashcard.deck_fields[0].text;
+      const str = JSON.stringify(flashcard.deck_fields[0].text);
       
       let answerHiddenText = currentCardText;
       let answerRevealedText = currentCardText;
@@ -34,13 +33,8 @@ const processFront = (flashcard, showAnswer) => {
           const clozeMatchNum = parseInt(clozeMatch.split('::')[0].slice(3));
           const clozeMatchText = clozeMatch.split('::').slice(1).join('').slice(0, -2);
           if (clozeMatchNum === targetClozeNum) {
-            if (inMatch(m.index, str, /(\$\$.*?\$\$)|(\$.*?\$)/gm)) {
-              answerHiddenText = answerHiddenText.replace(clozeMatch, '\\textbf{...}');
-              answerRevealedText = answerRevealedText.replace(clozeMatch, `\\boldsymbol{${clozeMatchText}}`);
-            } else {
-              answerHiddenText = answerHiddenText.replace(clozeMatch, '`...`'); // obfuscate
-              answerRevealedText = answerRevealedText.replace(clozeMatch, `**${clozeMatchText}**`); // bold
-            };
+            answerHiddenText = answerHiddenText.replace(clozeMatch, '[ ... ]'); // obfuscate
+            answerRevealedText = answerRevealedText.replace(clozeMatch, `${clozeMatchText}`); // reveal
           } else {
             answerHiddenText = answerHiddenText.replace(clozeMatch, clozeMatchText);
             answerRevealedText = answerRevealedText.replace(clozeMatch, clozeMatchText);
@@ -48,6 +42,8 @@ const processFront = (flashcard, showAnswer) => {
         });
       };
 
+      answerHiddenText = JSON.parse(answerHiddenText);
+      answerRevealedText = JSON.parse(answerRevealedText);
       console.log(showAnswer, answerRevealedText, answerHiddenText)
       return showAnswer ? answerRevealedText : answerHiddenText;
     default:
@@ -74,7 +70,6 @@ function RenderFlashCardStudy(props) {
     case 'basic': case 'reversed':
       return (<>
         <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
-          {/* <MarkdownRender source={flashcard && flashcard.deck_fields[0].text} /> */}
           <Slate
             editor={frontEditor}
             value={frontValue}
@@ -92,7 +87,6 @@ function RenderFlashCardStudy(props) {
         <hr />
         <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
           {flashcard && showAnswer &&
-            // <MarkdownRender source={flashcard.deck_fields[1].text} />
             <Slate
               editor={backEditor}
               value={backValue}
@@ -110,20 +104,20 @@ function RenderFlashCardStudy(props) {
         </div>
       </>);
     case 'cloze':
+      console.log(frontValue)
       return (
         <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
-          {/* <MarkdownRender source={showAnswer ? answerRevealedText : answerHiddenText} /> */}
           <Slate
             editor={frontEditor}
-            value={frontValue}
+            value={processFront(flashcard, showAnswer)}
             onChange={newValue => {
-              setBackValue(newValue);
+              setFrontValue(newValue);
             }}
           >
             <FullEditor
               editor={frontEditor}
-              readOnly={true}
               styleOptions={{ showBorder: false, minHeight: '0px' }}
+              readOnly
             />
           </Slate>
         </div>
