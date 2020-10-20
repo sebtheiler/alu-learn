@@ -19,7 +19,6 @@ export function ManualSRTask(props) {
   const interval4 = getAnkiInterval(task, 4, 'MANUAL-SR');
 
   const [value, setValue] = useState(task.description);
-  console.log(value, value === emptyValue)
   const editor = useMemo(
     () => createFullEditor(),
     []

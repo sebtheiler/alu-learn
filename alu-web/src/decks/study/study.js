@@ -7,7 +7,6 @@ import { emptyValue } from '../../notes/autonote/autonote';
 
 
 const processFront = (flashcard, showAnswer) => {
-  console.log(flashcard)
   switch (flashcard.flashcard_type) {
     case 'basic': case 'reversed':
       return flashcard.deck_fields[0].text;
@@ -44,7 +43,7 @@ const processFront = (flashcard, showAnswer) => {
 
       answerHiddenText = JSON.parse(answerHiddenText);
       answerRevealedText = JSON.parse(answerRevealedText);
-      console.log(showAnswer, answerRevealedText, answerHiddenText)
+
       return showAnswer ? answerRevealedText : answerHiddenText;
     default:
       return emptyValue;
@@ -53,7 +52,6 @@ const processFront = (flashcard, showAnswer) => {
 
 function RenderFlashCardStudy(props) {
   const {flashcard, showAnswer} = props;
-  console.log(props)
 
   const [frontValue, setFrontValue] = useState(processFront(flashcard, showAnswer));
   const frontEditor = useMemo(
@@ -104,7 +102,6 @@ function RenderFlashCardStudy(props) {
         </div>
       </>);
     case 'cloze':
-      console.log(frontValue)
       return (
         <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
           <Slate
