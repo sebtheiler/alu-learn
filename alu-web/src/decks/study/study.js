@@ -1,7 +1,142 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import {getAnkiInterval} from './algorithm';
 import {Button, Collapse, Alert} from 'react-bootstrap';
 import {inMatch, MarkdownRender} from '../../utils';
+import {createFullEditor, FullEditor} from '../../notes/editor-components';
+import {Slate} from 'slate-react';
+import { emptyValue } from '../../notes/autonote/autonote';
+
+
+const processFront = (flashcard, showAnswer) => {
+  console.log(flashcard)
+  switch (flashcard.flashcard_type) {
+    case 'basic': case 'reversed':
+      return flashcard.deck_fields[0].text;
+    case 'cloze':
+      const currentCardText = flashcard.deck_fields[0].text;
+      const targetClozeNum = parseInt(flashcard.name.split('-')[1]);
+      const regex = /{{c\d*::.*?}}/gm;
+      const str = flashcard.deck_fields[0].text;
+      
+      let answerHiddenText = currentCardText;
+      let answerRevealedText = currentCardText;
+      let m;
+      while ((m = regex.exec(str)) !== null) {
+        // This is necessary to avoid infinite loops with zero-width matches
+        if (m.index === regex.lastIndex) {
+          regex.lastIndex++;
+        };
+        
+        // The result can be accessed through the `m`-variable.
+        // eslint-disable-next-line
+        m.forEach(match => {
+          const clozeMatch = str.slice(m.index, m.index + match.length);
+          const clozeMatchNum = parseInt(clozeMatch.split('::')[0].slice(3));
+          const clozeMatchText = clozeMatch.split('::').slice(1).join('').slice(0, -2);
+          if (clozeMatchNum === targetClozeNum) {
+            if (inMatch(m.index, str, /(\$\$.*?\$\$)|(\$.*?\$)/gm)) {
+              answerHiddenText = answerHiddenText.replace(clozeMatch, '\\textbf{...}');
+              answerRevealedText = answerRevealedText.replace(clozeMatch, `\\boldsymbol{${clozeMatchText}}`);
+            } else {
+              answerHiddenText = answerHiddenText.replace(clozeMatch, '`...`'); // obfuscate
+              answerRevealedText = answerRevealedText.replace(clozeMatch, `**${clozeMatchText}**`); // bold
+            };
+          } else {
+            answerHiddenText = answerHiddenText.replace(clozeMatch, clozeMatchText);
+            answerRevealedText = answerRevealedText.replace(clozeMatch, clozeMatchText);
+          };
+        });
+      };
+
+      console.log(showAnswer, answerRevealedText, answerHiddenText)
+      return showAnswer ? answerRevealedText : answerHiddenText;
+    default:
+      return emptyValue;
+  };
+};
+
+function RenderFlashCardStudy(props) {
+  const {flashcard, showAnswer} = props;
+  console.log(props)
+
+  const [frontValue, setFrontValue] = useState(processFront(flashcard, showAnswer));
+  const frontEditor = useMemo(
+    () => createFullEditor(),
+    []
+  );
+  const [backValue, setBackValue] = useState(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
+  const backEditor = useMemo(
+    () => createFullEditor(),
+    []
+  );
+
+  switch (flashcard.flashcard_type) {
+    case 'basic': case 'reversed':
+      return (<>
+        <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
+          {/* <MarkdownRender source={flashcard && flashcard.deck_fields[0].text} /> */}
+          <Slate
+            editor={frontEditor}
+            value={frontValue}
+            onChange={newValue => {
+              setFrontValue(newValue);
+            }}
+          >
+            <FullEditor
+              editor={frontEditor}
+              styleOptions={{ showBorder: false, minHeight: '0px' }}
+              readOnly
+            />
+          </Slate>
+        </div>
+        <hr />
+        <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
+          {flashcard && showAnswer &&
+            // <MarkdownRender source={flashcard.deck_fields[1].text} />
+            <Slate
+              editor={backEditor}
+              value={backValue}
+              onChange={newValue => {
+                setBackValue(newValue);
+              }}
+            >
+              <FullEditor
+                editor={backEditor}
+                readOnly={true}
+                styleOptions={{ showBorder: false, minHeight: '0px' }}
+              />
+            </Slate>
+          }
+        </div>
+      </>);
+    case 'cloze':
+      return (
+        <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
+          {/* <MarkdownRender source={showAnswer ? answerRevealedText : answerHiddenText} /> */}
+          <Slate
+            editor={frontEditor}
+            value={frontValue}
+            onChange={newValue => {
+              setBackValue(newValue);
+            }}
+          >
+            <FullEditor
+              editor={frontEditor}
+              readOnly={true}
+              styleOptions={{ showBorder: false, minHeight: '0px' }}
+            />
+          </Slate>
+        </div>
+      );
+    default:
+      return (
+        <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
+          <strong>The flashcard type, "{flashcard.flashcard_type}", is unrecognized. Please report this issue.</strong>
+        </div>
+      );
+  };
+};
+
 
 export function StudyElement(props) {
   const {currentCard, showAnswer, showAnswerHandler, message, backendGradeUpdate, handleKeyDown, schedulingAlgorithm, deleteFlashCardHandler, leechsuspendFlashCardGenerator, numRemainingFlashcards} = props;
@@ -34,72 +169,9 @@ export function StudyElement(props) {
     return <>Loading...</>;
   };
 
-  const renderFlashCard = () => {
-    switch (currentCard.flashcard_type) {
-      case 'basic': case 'reversed':
-        return (<>
-          <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-            <MarkdownRender source={currentCard && currentCard.deck_fields[0].text} />
-          </div>
-          <hr />
-          <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-            {currentCard && showAnswer &&
-              <MarkdownRender source={currentCard.deck_fields[1].text} />
-            }
-          </div>
-        </>);
-      case 'cloze':
-        const currentCardText = currentCard.deck_fields[0].text;
-        const targetClozeNum = parseInt(currentCard.name.split('-')[1]);
-        const regex = /{{c\d*::.*?}}/gm;
-        const str = currentCard.deck_fields[0].text;
-        
-        let answerHiddenText = currentCardText;
-        let answerRevealedText = currentCardText;
-        let m;
-        while ((m = regex.exec(str)) !== null) {
-          // This is necessary to avoid infinite loops with zero-width matches
-          if (m.index === regex.lastIndex) {
-            regex.lastIndex++;
-          };
-          
-          // The result can be accessed through the `m`-variable.
-          // eslint-disable-next-line
-          m.forEach(match => {
-            const clozeMatch = str.slice(m.index, m.index + match.length);
-            const clozeMatchNum = parseInt(clozeMatch.split('::')[0].slice(3));
-            const clozeMatchText = clozeMatch.split('::').slice(1).join('').slice(0, -2);
-            if (clozeMatchNum === targetClozeNum) {
-              if (inMatch(m.index, str, /(\$\$.*?\$\$)|(\$.*?\$)/gm)) {
-                answerHiddenText = answerHiddenText.replace(clozeMatch, '\\textbf{...}');
-                answerRevealedText = answerRevealedText.replace(clozeMatch, `\\boldsymbol{${clozeMatchText}}`);
-              } else {
-                answerHiddenText = answerHiddenText.replace(clozeMatch, '`...`'); // obfuscate
-                answerRevealedText = answerRevealedText.replace(clozeMatch, `**${clozeMatchText}**`); // bold
-              };
-            } else {
-              answerHiddenText = answerHiddenText.replace(clozeMatch, clozeMatchText);
-              answerRevealedText = answerRevealedText.replace(clozeMatch, clozeMatchText);
-            };
-          });
-        };
-        return (
-          <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-            <MarkdownRender source={showAnswer ? answerRevealedText : answerHiddenText} />
-          </div>
-        );
-      default:
-        return (
-          <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-            <strong>The flashcard type, "{currentCard.flashcard_type}", is unrecognized. Please report this issue.</strong>
-          </div>
-        );
-    };
-  };
-
   return (
     <>
-      {renderFlashCard()}
+      <RenderFlashCardStudy flashcard={currentCard} showAnswer={showAnswer} />
       <footer className='fixed-bottom mb-5'>
         <div className='mb-5'>
           <div className={'col-md-12 text-center btn-group mb-1' + (showAnswer || currentCard === null ? ' d-none' : '')}>
