@@ -29,7 +29,12 @@ class Deck(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return self.title
+        return f'{self.title} by @{self.user.username}'
+
+
+class FlashCardCreatorManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('deck')
 
 
 class FlashCardCreator(models.Model):
@@ -38,8 +43,10 @@ class FlashCardCreator(models.Model):
     flashcard_type = models.CharField(default='basic', max_length=16)
     # Also contains information about fields and generated flashcards
 
+    objects = FlashCardCreatorManager()
+
     def __str__(self):
-        return f'Flashcard Creator in Deck #{self.deck.id}'
+        return f'Flashcard Creator in {self.deck.title} by @{self.deck.user.username}'
 
 
 class FlashCardField(models.Model):
@@ -51,7 +58,12 @@ class FlashCardField(models.Model):
         ordering = ['field_number']
 
     def __str__(self):
-        return self.text
+        return str(self.text[0]['children'][0]['text'])
+
+
+class FlashCardManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('creator__fields')
 
 
 class FlashCard(models.Model):
@@ -79,6 +91,8 @@ class FlashCard(models.Model):
     is_suspended = models.BooleanField(default=False)
     leech_index = models.PositiveSmallIntegerField(default=0)
 
+
+    objects = FlashCardManager()
 
     def get_content(self):
         fields = self.creator.fields.all()
@@ -135,11 +149,18 @@ class StudySessionManager(models.Model):
     last_flashcard_date = models.DateField()
 
 
+class DeckStudySessionManagerModelManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('deck')
+
+
 class DeckStudySessionManager(StudySessionManager):
     deck = models.OneToOneField(Deck, on_delete=models.CASCADE, related_name='study_session_manager')
 
+    objects = DeckStudySessionManagerModelManager()
+
     def __str__(self):
-        return f'SSM for "{self.deck.title}"'
+        return f'SSM for "{self.deck.title}" by @{self.deck.user.username}'
 
 
 class CustomStudySessionManager(StudySessionManager):

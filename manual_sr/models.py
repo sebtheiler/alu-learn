@@ -21,3 +21,6 @@ class ManualSRTask(models.Model):
     ease = models.PositiveSmallIntegerField(default=250)
     next_review = models.DateField(default=dt.date.today)
     interval = models.PositiveSmallIntegerField(default=0) # in days
+
+    def __str__(self):
+        return f'Task "{self.title}" for @{self.user.user.username}'
