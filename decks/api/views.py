@@ -27,7 +27,8 @@ from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
                       SharedDeck, StudySessionManager)
 from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
                            DeckThankSerializer, FlashCardCreatorSerializer,
-                           FlashCardSerializer, StudySessionManagerSerializer)
+                           FlashCardSerializer, StudySessionManagerSerializer,
+                           SharedDeckSerializer)
 from .utils import get_paginated_queryset_response
 
 
@@ -1089,17 +1090,20 @@ def shared_deck_create_view(request, *args, **kwargs):
     )
 
     # Clone flashcard creators and fields
-    flashcard_creators = deepcopy(origin_deck.flashcards)
-    flashcard_creators.update(
-        id=None,# pk=None, # copy them
-        deck=shared_deck, # set their new creator to the shared deck
-    )
+    flashcard_creators = deepcopy(origin_deck.flashcards.prefetch_related('fields'))
+    for flashcard_creator in flashcard_creators:
+        flashcard_creator.pk = None
+        flashcard_creator.deck = shared_deck
 
-    fields = flashcard_creators.fields # FlashCardField.filter(creator__deck=origin_deck)
-    fields.update(
-        id=None,# pk=None,
-    )
+    fields = FlashCardField.objects.filter(creator__deck=origin_deck)
+    for field in fields:
+        field.pk = None
 
+    # Execute those creations
+    FlashCardCreator.objects.bulk_create(flashcard_creators)
+    FlashCardField.objects.bulk_create(fields)
+
+    return Response(SharedDeckSerializer(shared_deck).data, status=201)
 
 
 @api_view(['POST'])
