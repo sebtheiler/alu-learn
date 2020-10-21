@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import Deck, FlashCard, DeckThank, DeckStudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator
 
-class FlashCardFieldAdmin(admin.TabularInline):
+class FlashCardFieldTabAdmin(admin.TabularInline):
     fields = [
         'text',
         'field_number',
@@ -11,28 +11,25 @@ class FlashCardFieldAdmin(admin.TabularInline):
     model = FlashCardField
 
 
+class FlashCardFieldAdmin(admin.ModelAdmin):
+    search_fields = ['text']
+    model = FlashCardField
+
+
 class FlashCardCreatorAdmin(admin.ModelAdmin):
+    search_fields = ['tags']
     fields = [
         'deck',
         'tags',
         'flashcard_type',
     ]
-    inlines = [FlashCardFieldAdmin]
+    inlines = [FlashCardFieldTabAdmin]
     model = FlashCardCreator
 
 
-class FlashCardTabAdmin(admin.TabularInline):
-    fields = [
-        'front_text',
-        'back_text',
-        'tags',
-        'next_review',
-    ]
-    model = FlashCard
-
-
 class FlashCardAdmin(admin.ModelAdmin):
-    search_fields = ['front_text', 'back_text', 'deck__title']
+    list_display = ['__str__', 'creator']
+    search_fields = ['creator__deck__title']
     
     class Meta:
         model = FlashCard
@@ -48,6 +45,7 @@ class DeckAdmin(admin.ModelAdmin):
 admin.site.register(Deck, DeckAdmin)
 admin.site.register(FlashCardCreator, FlashCardCreatorAdmin)
 admin.site.register(FlashCard, FlashCardAdmin)
+admin.site.register(FlashCardField, FlashCardFieldAdmin)
 admin.site.register(DeckThank)
 admin.site.register(DeckStudySessionManager)
 admin.site.register(CustomStudySessionManager)

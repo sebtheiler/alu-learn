@@ -29,7 +29,7 @@ class Deck(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return f'{self.title} by @{self.user.username}'
+        return self.title
 
 
 class FlashCardCreatorManager(models.Manager):
