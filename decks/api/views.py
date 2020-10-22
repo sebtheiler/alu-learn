@@ -74,6 +74,21 @@ def deck_create_view(request, *args, **kwargs):
     return Response(DeckSerializer(new_deck).data, status=201)
 
 
+CONTENT_INDICIES_DICT = {
+    'BASIC': [
+        # Front to back
+        [0, 1],
+    ],
+    'REVERSED': [
+        # Front to back and back to front
+        [0, 1],
+        [1, 0],
+    ],
+    'CLOZE': [
+        # One sided
+        [0],
+    ],
+}
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_create_view(request, deck_id, *args, **kwargs):
@@ -117,27 +132,13 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             for i, text in enumerate(fields)
         ])
 
-        if flashcard_type == 'basic':
-            # Front to back
-            all_content_indicies = [
-                [0, 1],
-            ]
-        elif flashcard_type == 'reversed':
-            # Front to back and back to front
-            all_content_indicies = [
-                [0, 1],
-                [1, 0],
-            ]
-        elif flashcard_type == 'cloze':
-            # Only one side (parsing is done by front-end)
-            all_content_indicies = [
-                [0],
-            ]
-        else:
-            return Response({'message': 'Invalid flashcard type'}, status=400)
+        try:
+            content_indicies = CONTENT_INDICIES_DICT[flashcard_type.upper()]
+        except KeyError:
+            return Response({'message': 'Unrecognized flashcard type'}, status=400)
+
         if flashcard_type == 'cloze':
             # Create a flashcard for each cloze segment
-
             cloze_ids = []
             def cloze_flashcard(match):
                 cloze_id = int(match.group().split(":")[0][3:])
@@ -831,7 +832,7 @@ def txt_file_upload(request, *args, **kwargs):
 @permission_classes([IsAuthenticated])
 def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
     """
-    Gets metadata about a study session manager - GET
+    Gets the due flashcards from a SSM 
 
     Required information:
         `ssm_id`: (URL) ID of the study session manager
@@ -1167,6 +1168,47 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
     # Add the deck into the destination decks list of shared decks
     deck.inherits_flashcards_from.add(shared_deck)
     deck.save()
+
+    # Create flashcards for each creator in the cloned deck
+    now = timezone.now()
+    this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    flashcards = []
+    for flashcard_creator in shared_deck.flashcards.all():
+        if flashcard_creator.flashcard_type == 'cloze':
+            # Create a flashcard for each cloze segment
+            cloze_ids = []
+            def cloze_flashcard(match):
+                cloze_id = int(match.group().split(":")[0][3:])
+                cloze_ids.append(cloze_id)
+                return FlashCard(
+                    creator=flashcard_creator,
+                    next_review=this_morning,
+                    content_indicies=[0],
+                    name=f'cloze-{cloze_id}'
+                )
+
+            flashcards += [
+                FlashCard(cloze_flashcard(match))
+                for match in re.finditer(r"{{c\d*::.*?}}", json.dumps(fields[0]), re.MULTILINE) \
+                    if int(match.group().split("::")[0][3:]) not in cloze_ids
+            ]
+        else:
+            # Create a flashcard for each field
+            try:
+                all_content_indicies = CONTENT_INDICIES_DICT[flashcard_creator.flashcard_type.upper()]
+            except KeyError:
+                return Response({'message': f'Flashcard type "{flashcard_creator.flashcard_type}" unrecognized'}, status=400)
+
+            flashcards += [
+                FlashCard(
+                    creator=flashcard_creator,
+                    next_review=this_morning,
+                    content_indicies=all_content_indicies[i],
+                )
+                for i in range(len(all_content_indicies))
+            ]
+    FlashCard.objects.bulk_create(flashcards)
+
 
     return Response({'message': 'Sucessfully cloned deck'}, status=200)
 

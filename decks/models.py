@@ -17,9 +17,9 @@ class DeckManager(models.Manager):
 class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
-    description = models.TextField(default='')
+    description = models.TextField(default='', blank=True, null=True)
 
-    inherits_flashcards_from = models.ManyToManyField('SharedDeck', related_name='children_decks')
+    inherits_flashcards_from = models.ManyToManyField('SharedDeck', related_name='children_decks', null=True, blank=True)
 
     # TODO: move these sharing options to shared deck,
     # remove private, and update the ability to change it as it was previously done
