@@ -7,10 +7,19 @@ from django.contrib.postgres.fields import ArrayField, JSONField
 User = settings.AUTH_USER_MODEL
 
 
+class DeckManager(models.Manager):
+    def get_or_new(self, **kwargs):
+        try:
+            return self.get(**kwargs), False
+        except self.model.DoesNotExist:
+            return self.model(**kwargs), True
+
 class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
     description = models.TextField(default='')
+
+    inherits_flashcards_from = models.ManyToManyField('SharedDeck', related_name='children_decks')
 
     # TODO: move these sharing options to shared deck,
     # remove private, and update the ability to change it as it was previously done
@@ -25,11 +34,13 @@ class Deck(models.Model):
         default='PRIVATE',
     )
 
+    objects = DeckManager()
+
     class Meta:
         ordering = ['-id']
 
     def __str__(self):
-        return self.title
+        return str(self.title)
 
 
 class FlashCardCreatorManager(models.Manager):
@@ -177,11 +188,10 @@ class CustomStudySessionManager(StudySessionManager):
 
 
 class SharedDeck(Deck):
-    # A foreign key of decks that use flashcards from this shared deck
-    children_decks = models.ManyToManyField(Deck, related_name='includes_shared_decks')
-
+    # description = ...
     # The changes that have been made to this deck
     # edit_history = ...
+    ...
 
 
 class SharedFlashCardCreator(FlashCardCreator):

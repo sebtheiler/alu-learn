@@ -1140,6 +1140,37 @@ def shared_deck_clone_view(request, *args, **kwargs):
     return Response({'message': 'Deck copied successfully'}, status=200)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
+    """
+    Allows the author of a shared deck to update it - POST
+
+    Required information:
+        `shared_deck_id`: (URL) Id of the shared deck
+        `destination_deck_title`: (Data) Title of the deck to clone into (this can also be a new title) 
+    """
+    # Get the shared deck
+    try:
+        shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
+        if shared_deck.sharing_setting == 'FRIENDS' and request.user not in shared_deck.user.friends:
+            return Response({'message': 'You are unauthorized to clone this deck'}, status=403)
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'Shared deck not found'}, status=404)
+
+    # Get or create the deck that the shared deck will be cloned into
+    deck, is_new = Deck.objects.get_or_create(
+        user=request.user,
+        title=request.data.get('destination_deck_title'),
+    ) 
+
+    # Add the deck into the destination decks list of shared decks
+    deck.inherits_flashcards_from.add(shared_deck)
+    deck.save()
+
+    return Response({'message': 'Sucessfully cloned deck'}, status=200)
+
+
 # @api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 # def shared_deck_update_view(request, *args, **kwargs):

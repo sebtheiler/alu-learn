@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Deck, FlashCard, DeckThank, DeckStudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator
+from .models import Deck, FlashCard, DeckThank, DeckStudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator, SharedDeck
 
 class FlashCardFieldTabAdmin(admin.TabularInline):
     fields = [
@@ -38,11 +38,28 @@ class FlashCardAdmin(admin.ModelAdmin):
 class DeckAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'user']
     search_fields = ['title', 'user__username', 'user__email']
+    fields = [
+        'user',
+        'title',
+        'description',
+        'sharing_setting',
+        'inherits_flashcards_from',
+    ]
 
     class Meta:
         model = Deck
 
+
+class SharedDeckAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'user']
+    search_fields = ['title', 'user__username', 'user__email']
+
+    class Meta:
+        model = SharedDeck
+
+
 admin.site.register(Deck, DeckAdmin)
+admin.site.register(SharedDeck, SharedDeckAdmin)
 admin.site.register(FlashCardCreator, FlashCardCreatorAdmin)
 admin.site.register(FlashCard, FlashCardAdmin)
 admin.site.register(FlashCardField, FlashCardFieldAdmin)
