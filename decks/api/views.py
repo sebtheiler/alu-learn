@@ -345,7 +345,10 @@ def deck_home_view(request, *args, **kwargs):
     Returns:
         A list of decks (DeckSerializer)
     """
-    home_decks = Deck.objects.filter(user__username=request.user.username).order_by('title')
+    home_decks = Deck.objects.filter(
+        user__username=request.user.username,
+        deck_type='standard',
+    ).order_by('title')
     home_cssms = CustomStudySessionManager.objects.filter(user=request.user.profile)
     home_list = list(chain(home_decks, home_cssms))
 
@@ -1087,7 +1090,8 @@ def shared_deck_create_view(request, *args, **kwargs):
         user=request.user,
         title=title,
         description=request.data.get('description'),
-        sharing_setting=request.data.get('sharing_setting', 'PUBLIC')
+        sharing_setting=request.data.get('sharing_setting', 'PUBLIC'),
+        deck_type='shared',
     )
 
     # Clone flashcard creators and fields
@@ -1160,10 +1164,21 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
         return Response({'message': 'Shared deck not found'}, status=404)
 
     # Get or create the deck that the shared deck will be cloned into
-    deck, is_new = Deck.objects.get_or_create(
+    deck, created = Deck.objects.get_or_create(
         user=request.user,
         title=request.data.get('destination_deck_title'),
-    ) 
+    )
+
+    if created:
+        # Create deck SSM
+        ssm = DeckStudySessionManager.objects.create(
+            deck=deck,
+            user=request.user.profile,
+            scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKI'),
+            shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', False),
+            daily_new_card_limit=request.data.get('daily_new_card_limit', 20),
+            last_flashcard_date=timezone.now(),
+        )
 
     # Add the deck into the destination decks list of shared decks
     deck.inherits_flashcards_from.add(shared_deck)

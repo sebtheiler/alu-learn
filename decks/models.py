@@ -19,7 +19,7 @@ class Deck(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(default='', blank=True, null=True)
 
-    inherits_flashcards_from = models.ManyToManyField('SharedDeck', related_name='children_decks', null=True, blank=True)
+    inherits_flashcards_from = models.ManyToManyField('SharedDeck', related_name='children_decks', blank=True)
 
     # TODO: move these sharing options to shared deck,
     # remove private, and update the ability to change it as it was previously done
@@ -34,6 +34,7 @@ class Deck(models.Model):
         default='PRIVATE',
     )
 
+    deck_type = models.CharField(default='standard', max_length=12)
     objects = DeckManager()
 
     class Meta:
