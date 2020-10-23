@@ -132,9 +132,8 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             for i, text in enumerate(fields)
         ])
 
-        try:
-            content_indicies = CONTENT_INDICIES_DICT[flashcard_type.upper()]
-        except KeyError:
+        content_indicies = CONTENT_INDICIES_DICT.get('flashcard_type.upper()')
+        if content_indicies is None:
             return Response({'message': 'Unrecognized flashcard type'}, status=400)
 
         if flashcard_type == 'cloze':
@@ -1126,22 +1125,19 @@ def shared_deck_create_view(request, *args, **kwargs):
     )
 
     # Clone flashcard creators and fields
+    # This is very inefficient, but as it will seldomly be called,
+    # I'm alright with that for now
     flashcard_creators = deepcopy(origin_deck.flashcards.prefetch_related('fields'))
     for flashcard_creator in flashcard_creators:
         flashcard_creator.pk = None
         flashcard_creator.deck = shared_deck
+        flashcard_creator.save()
 
-    fields = FlashCardField.objects.filter(creator__deck=origin_deck)
-    for field in fields:
-        field.pk = None
-
-    # Execute those creations
-    print(flashcard_creators)
-    print(fields)
-    FlashCardCreator.objects.bulk_create(flashcard_creators)
-    FlashCardField.objects.bulk_create(fields)
-
-    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~', shared_deck.flashcards.all())
+        creator_fields = flashcard_creator.fields.all()
+        for field in creator_fields:
+            field.pk = None
+            field.creator = flashcard_creator
+            field.save()
 
     return Response(SharedDeckSerializer(shared_deck).data, status=201)
 
