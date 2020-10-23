@@ -429,3 +429,8 @@ export function apiManualSRTaskEdit(id, newTitle, newDescription, callback) {
     new_description: newDescription,
   });
 };
+
+// Gets detail information for a shared deck
+export function apiSharedDeckDetail(id, callback) {
+  backendLookup('GET', `decks/shared/detail/${id}/`, callback);
+};

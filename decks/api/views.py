@@ -388,6 +388,37 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
     serializer = DeckSerializer(deck, context={'request': request})
     return Response(serializer.data, status=200)
 
+
+@api_view(['GET'])
+def shared_deck_detail_view(request, shared_deck_id, *args, **kwargs):
+    """
+    Get specific information about a deck - GET
+
+    Required information:
+        `deck_id`: (URL) The ID of the deck
+
+    Returns:
+        Author of the deck (PublicProfileSerializer): 'author'
+        Title of the deck: 'title'
+        ID of the deck: 'id'
+
+    Possible errors:
+        Invalid deck: 404, Deck not found
+        Deck is not shared with user: 403, You are unauthorized to view this deck
+    """
+    # Get deck
+    try:
+        shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    # Make sure the user is authorized
+    if not (request.user == shared_deck.user or shared_deck.sharing_setting == 'PUBLIC' or (shared_deck.sharing_setting == 'FRIENDS' and request.user in shared_deck.user.profile.friends.all())):
+        return Response({'message': 'You are unauthorized to view this deck'}, status=403)
+
+    return Response(SharedDeckSerializer(shared_deck, context={'request': request}).data, status=200)
+
+
 @api_view(['GET'])
 def deck_flashcards_view(request, deck_id, *args, **kwargs):
     """
@@ -1059,7 +1090,7 @@ def ssm_create_view(request, *args, **kwargs):
     return Response(CustomStudySessionManagerSerializer(ssm).data, status=201)
 
 
-# {"origin_deck_id": 4, "title": "testing shared decks", "description": "...", "sharing_setting": "PUBLIC"}
+# {"origin_deck_id": 3, "title": "a new copy of cloze", "description": "...", "sharing_setting": "PUBLIC"}
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def shared_deck_create_view(request, *args, **kwargs):
@@ -1105,44 +1136,48 @@ def shared_deck_create_view(request, *args, **kwargs):
         field.pk = None
 
     # Execute those creations
+    print(flashcard_creators)
+    print(fields)
     FlashCardCreator.objects.bulk_create(flashcard_creators)
     FlashCardField.objects.bulk_create(fields)
+
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~', shared_deck.flashcards.all())
 
     return Response(SharedDeckSerializer(shared_deck).data, status=201)
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def shared_deck_clone_view(request, *args, **kwargs):
-    """
-    Clones a shared deck for a user that is not the author to use it - POST
+#@api_view(['POST'])
+#@permission_classes([IsAuthenticated])
+#def shared_deck_clone_view(request, *args, **kwargs):
+    #"""
+    #Clones a shared deck for a user that is not the author to use it - POST
 
-    Required information:
-        `shared_deck_id`: (Data) Id of the shared deck
-        `destination_title`: (Data) Title of the destination deck to clone into
-    """
-    # Get shared deck
-    try:
-        shared_deck = SharedDeck.objects.get(pk=request.data.get('shared_deck_id'))
-    except SharedDeck.DoesNotExist:
-        return Response({'message': 'Shared deck does not exist'}, status=404)
+    #Required information:
+        #`shared_deck_id`: (Data) Id of the shared deck
+        #`destination_title`: (Data) Title of the destination deck to clone into
+    #"""
+    ## Get shared deck
+    #try:
+        #shared_deck = SharedDeck.objects.get(pk=request.data.get('shared_deck_id'))
+    #except SharedDeck.DoesNotExist:
+        #return Response({'message': 'Shared deck does not exist'}, status=404)
 
-    # Check that the current user is authorized to access this shared deck
-    # (either the deck is public or the current user is a friend of the author)
-    if not (shared_deck.sharing_setting == 'PUBLIC' or request.user in shared_deck.user.friends):
-        return Response({'message': 'You are not authorized to clone this deck'})
+    ## Check that the current user is authorized to access this shared deck
+    ## (either the deck is public or the current user is a friend of the author)
+    #if not (shared_deck.sharing_setting == 'PUBLIC' or request.user in shared_deck.user.friends):
+        #return Response({'message': 'You are not authorized to clone this deck'})
 
-    # Get the deck that we will create a link in
-    destination_deck, created = Deck.objects.get_or_create(
-        user=request.user,
-        title=request.data.get('destination_title'),
-    )
+    ## Get the deck that we will create a link in
+    #destination_deck, created = Deck.objects.get_or_create(
+        #user=request.user,
+        #title=request.data.get('destination_title'),
+    #)
 
-    # Create the link to the shared deck
-    destination_deck.includes_shared_decks.add(shared_deck)
+    ## Create the link to the shared deck
+    #destination_deck.includes_shared_decks.add(shared_deck)
 
-    # Return success
-    return Response({'message': 'Deck copied successfully'}, status=200)
+    ## Return success
+    #return Response({'message': 'Deck copied successfully'}, status=200)
 
 
 @api_view(['POST'])

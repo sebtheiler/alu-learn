@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {DeckCreate,} from './create';
 import {DeckDetail} from './detail';
-import {apiDeckDetail, apiDeckFlashcards} from '../lookup';
+import {apiSharedDeckDetail, apiDeckFlashcards} from '../lookup';
 import {DecksHomeList} from './home';
 import {Button, ButtonGroup} from 'react-bootstrap';
 import { errorHandler } from '../utils';
@@ -38,7 +38,7 @@ export function DeckDetailComponent(props) {
   // `didLookup` is required so that this doesn't infinitely run
   useEffect(() => {
     if (didLookup === false) {
-      apiDeckDetail(deckId, { getFullDetail: true }, (response, status) => {
+      apiSharedDeckDetail(deckId, (response, status) => {
         if (status === 200) {
           setDeck(response);
           setIsForbidden(false);

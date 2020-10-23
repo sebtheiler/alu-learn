@@ -45,7 +45,7 @@ class FlashCardCreatorSerializer(serializers.ModelSerializer):
             'parent_deck_id',
             'id',
         ]
-    
+
     def get_parent_deck_id(self, obj):
         return obj.deck.id
 
