@@ -1127,12 +1127,18 @@ def shared_deck_create_view(request, *args, **kwargs):
     # Clone flashcard creators and fields
     # This is very inefficient, but as it will seldomly be called,
     # I'm alright with that for now
-    flashcard_creators = deepcopy(origin_deck.flashcards.prefetch_related('fields'))
+    flashcard_creators = origin_deck.flashcards.prefetch_related('fields')
     for flashcard_creator in flashcard_creators:
-        flashcard_creator.pk = None
-        flashcard_creator.deck = shared_deck
-        flashcard_creator.save()
+        # Clone flashcard creator
+        shared_flashcard_creator = flashcard_creator
+        shared_flashcard_creator.pk = None
+        shared_flashcard_creator.deck = shared_deck
+        # Create a link between the origin flashcard creator and the shared flashcard creator
+        shared_flashcard_creator.origin_creator = flashcard_creator
 
+        shared_flashcard_creator.save()
+
+        # Clone flashcard creator fields
         creator_fields = flashcard_creator.fields.all()
         for field in creator_fields:
             field.pk = None
@@ -1140,40 +1146,6 @@ def shared_deck_create_view(request, *args, **kwargs):
             field.save()
 
     return Response(SharedDeckSerializer(shared_deck).data, status=201)
-
-
-#@api_view(['POST'])
-#@permission_classes([IsAuthenticated])
-#def shared_deck_clone_view(request, *args, **kwargs):
-    #"""
-    #Clones a shared deck for a user that is not the author to use it - POST
-
-    #Required information:
-        #`shared_deck_id`: (Data) Id of the shared deck
-        #`destination_title`: (Data) Title of the destination deck to clone into
-    #"""
-    ## Get shared deck
-    #try:
-        #shared_deck = SharedDeck.objects.get(pk=request.data.get('shared_deck_id'))
-    #except SharedDeck.DoesNotExist:
-        #return Response({'message': 'Shared deck does not exist'}, status=404)
-
-    ## Check that the current user is authorized to access this shared deck
-    ## (either the deck is public or the current user is a friend of the author)
-    #if not (shared_deck.sharing_setting == 'PUBLIC' or request.user in shared_deck.user.friends):
-        #return Response({'message': 'You are not authorized to clone this deck'})
-
-    ## Get the deck that we will create a link in
-    #destination_deck, created = Deck.objects.get_or_create(
-        #user=request.user,
-        #title=request.data.get('destination_title'),
-    #)
-
-    ## Create the link to the shared deck
-    #destination_deck.includes_shared_decks.add(shared_deck)
-
-    ## Return success
-    #return Response({'message': 'Deck copied successfully'}, status=200)
 
 
 @api_view(['POST'])
@@ -1273,16 +1245,85 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
     return Response({'message': 'Sucessfully cloned deck'}, status=200)
 
 
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def shared_deck_update_view(request, *args, **kwargs):
-#     """
-#     Allows the author of a shared deck to update it - POST
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def shared_deck_update_view(request, *args, **kwargs):
+    """
+    Allows the author of a shared deck to update it - POST
 
-#     Required information:
-#         `shared_deck_id`: (Data) Id of the shared deck
-#         `upload_deck_id`: (Data) Id of the deck to get new changes from
-#     """
+    Required information:
+        `shared_deck_id`: (Data) Id of the shared deck
+        `origin_deck_id`: (Data) Id of the deck to get new changes from
+    """
+    # Get shared deck
+    try:
+        shared_deck = SharedDeck.objects.get(pk=request.data.get('shared_deck_id'))
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'Could not find the specified shared deck'}, status=404)
+    
+    # Get origin deck
+    try:
+        origin_deck = Deck.objects.get(
+            pk=request.data.get('origin_deck_id'),
+            user=request.user,
+        )
+    except Deck.DoesNotExist:
+        return Response({'message': 'This deck does not exist / you are unauthorized'}, status=400)
+
+    # Update the shared deck's flashcard creators
+    origin_flashcard_creators = origin_deck.flashcards.prefetch_related('fields', 'shared_mirror')
+    shared_mirrors = FlashCardCreator.objects.filter(origin_creator__in=origin_flashcard_creators)
+    print(shared_mirrors)
+    for origin_flashcard_creator in origin_flashcard_creators:
+        try:
+            origin_flashcard_creator.shared_mirror
+            has_mirror = True
+        except FlashCardCreator.DoesNotExist as e:
+            print(e)
+            has_mirror = False
+
+        if has_mirror: 
+            shared_mirror = origin_flashcard_creator.shared_mirror
+            print('mirror already exists, attempting to edit')
+            # If the flashcard creator already has a corresponding shared mirror, update it
+            for origin_field, shared_field in zip(origin_flashcard_creator.fields.all(), shared_mirror.fields.all()):
+                if shared_field.text != origin_field.text:
+                    print('mirror updated')
+                    shared_field.text = origin_field.text
+                    shared_field.save()
+                    shared_mirror.was_updated = True
+                    shared_mirror.save()
+        else:
+            print('creating new mirror')
+            # Clone flashcard creator
+            shared_flashcard_creator = deepcopy(origin_flashcard_creator)
+            shared_flashcard_creator.pk = None
+            shared_flashcard_creator.deck = shared_deck
+            shared_flashcard_creator.was_updated = True
+            shared_flashcard_creator.save()
+
+            shared_flashcard_creator.origin_creator = origin_flashcard_creator
+            shared_flashcard_creator.save()
+            origin_flashcard_creator.save()
+
+            print(shared_flashcard_creator.origin_creator.id)
+            print(origin_flashcard_creator.shared_mirror.id)
+
+            # Clone flashcard creator fields
+            creator_fields = origin_flashcard_creator.fields.all()
+            for field in creator_fields:
+                field.pk = None
+                field.creator = origin_flashcard_creator
+                field.save()
+
+    # Delete all flashcards that weren't updated
+    not_updated = shared_mirrors.filter(was_updated=False)
+    print('flashcard creators not updated:', not_updated)
+    not_updated.delete()
+    print(not_updated)
+    shared_mirrors.update(was_updated=False)
+
+    return Response(SharedDeckSerializer(shared_deck).data, status=201)
 
 
 """

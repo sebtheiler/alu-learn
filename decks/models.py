@@ -53,6 +53,8 @@ class FlashCardCreator(models.Model):
     deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='flashcards')
     tags = models.CharField(default='', max_length=1024, blank=True)
     flashcard_type = models.CharField(default='basic', max_length=16)
+    origin_creator = models.OneToOneField('self', on_delete=models.SET_NULL, null=True, related_name='shared_mirror')
+    was_updated = models.BooleanField(default=False) # used when updating shared decks
     # Also contains information about fields and generated flashcards
 
     objects = FlashCardCreatorManager()
