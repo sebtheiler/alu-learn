@@ -113,3 +113,12 @@ def custom_study_view(request, ssm_id, *args, **kwargs):
         return redirect('/confirm-email/')
 
     return render(request, 'decks/study.html', context={'ssm_id': ssm_id})
+
+# Form for making a shared deck
+def deck_share_view(request, deck_id, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
+    
+    return render(request, 'decks/shared/share.html', context={'deck_id': deck_id})
