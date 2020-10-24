@@ -131,9 +131,9 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             for i, text in enumerate(fields)
         ])
 
-        content_indicies = CONTENT_INDICIES_DICT.get('flashcard_type.upper()')
-        if content_indicies is None:
-            return Response({'message': 'Unrecognized flashcard type'}, status=400)
+        all_content_indicies = CONTENT_INDICIES_DICT.get(flashcard_type.upper())
+        if all_content_indicies is None:
+            return Response({'message': f'Unrecognized flashcard type "{flashcard_type.upper()}"'}, status=400)
 
         if flashcard_type == 'cloze':
             # Create a flashcard for each cloze segment
@@ -436,12 +436,23 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
     """
     # Get deck
     try:
-        deck = Deck.objects.get(pk=deck_id)
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck not found'}, status=404)
+        deck = SharedDeck.objects.get(pk=deck_id)
+    except SharedDeck.DoesNotExist:
+        try:
+            deck = Deck.objects.get(pk=deck_id)
+        except Deck.DoesNotExist:
+            return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
-    if not (request.user == deck.user or deck.sharing_setting == 'PUBLIC' or (deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all())):
+    if not (
+        request.user == deck.user or ( # Viewing own profile
+            isinstance(deck, SharedDeck) and ( # Is a shared deck and...
+                deck.sharing_setting == 'PUBLIC' or ( # The deck is public or...
+                    deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all() # the user is a friend
+                )
+            )
+        )
+    ):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
     limit = request.GET.get('limit')

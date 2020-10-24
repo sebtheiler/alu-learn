@@ -45,13 +45,13 @@ export function Deck(props) {
 export function DeckDetail(props) {
   const {deck, flashcards, numFlashcards, currentUsername, hideExtras, titleLink} = props;
   const textAlign = props.textAlign ? props.textAlign : 'center';
-  const [browsingState, setBrowsingState] = useState('FLASHCARDS');
+  // const [browsingState, setBrowsingState] = useState('FLASHCARDS');
   const [thankBtnLabel, setThankBtnLabel] = useState(deck.you_have_thanked ? 'Thanked' : 'Thank');
 
-  const handleBrowseSwitch = (event) => {
-    event.preventDefault();
-    setBrowsingState(browsingState === 'FLASHCARDS' ? 'COMMENTS' : 'FLASHCARDS');
-  };
+  // const handleBrowseSwitch = (event) => {
+  //   event.preventDefault();
+  //   setBrowsingState(browsingState === 'FLASHCARDS' ? 'COMMENTS' : 'FLASHCARDS');
+  // };
 
   const handleThankDeck = (event) => {
     event.preventDefault();
@@ -82,23 +82,23 @@ export function DeckDetail(props) {
           <DisplayCountChar>{deck.num_thanks}</DisplayCountChar> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
         </p>
         <MarkdownRender source={deck.description} />
-        <div className={'mb-1' + (hideExtras ? ' d-none' : '')}>
+        {/* <div className={'mb-1' + (hideExtras ? ' d-none' : '')}>
           <ButtonGroup>
             <Button onClick={handleBrowseSwitch}>
               {browsingState === 'FLASHCARDS' ? 'Display Comments' : 'Display Flashcards'}
             </Button>
           </ButtonGroup>
-        </div>
+        </div> */}
       </div>
       {hideExtras ? null : <div>
-        <div className={browsingState !== 'COMMENTS' ? 'd-none' : ''}>
+        {/* <div className={browsingState !== 'COMMENTS' ? 'd-none' : ''}>
             <hr />
             <div>
               <h2>Comments</h2>
               <p>Comments are currently not implemented.  We hope to add this funcitonality soon.</p>
             </div>
-        </div>
-        <div className={browsingState !== 'FLASHCARDS' ? 'd-none' : ''}>
+        </div> */}
+        <div>{/* className={browsingState !== 'FLASHCARDS' ? 'd-none' : ''}> */}
           <hr />
           <div className='text-center'>
             <h2>Example flashcards</h2>
