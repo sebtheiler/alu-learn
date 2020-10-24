@@ -1244,6 +1244,31 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+def shared_deck_edit_view(request, shared_deck_id, *args, **kwargs):
+    """
+    Edits the metadata of a shared deck - POST
+
+    Required information:
+        `new_title`: New title of the deck
+        `new_description`: New description of the deck
+        `new_sharing_setting`: New sharing setting of the deck
+    """
+    # Get shared deck
+    try:
+        shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'Could not find the specified shared deck'}, status=404)
+
+    # Update shared deck
+    shared_deck.title = request.data.get('new_title', shared_deck.title) 
+    shared_deck.description = request.data.get('new_description', shared_deck.description)
+    shared_deck.sharing_setting = request.data.get('new_sharing_setting', shared_deck.sharing_setting)
+    shared_deck.save()
+
+    return Response(SharedDeckSerializer(shared_deck).data, status=200)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def shared_deck_update_view(request, *args, **kwargs):
     """
     Allows the author of a shared deck to update it - POST

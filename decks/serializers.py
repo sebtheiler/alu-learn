@@ -126,6 +126,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'new_cards_done_today',
             'daily_new_card_limit',
             'review_ahead_minutes',
+            'shared_deck',
             'id',
         ]
 

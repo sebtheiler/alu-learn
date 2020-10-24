@@ -447,3 +447,12 @@ export function apiSharedDeckClone(sharedDeckId, destinationDeckTitle, callback)
     destination_deck_title: destinationDeckTitle,
   });
 };
+
+// Edits a shared deck's metadata
+export function apiSharedDeckEdit(sharedDeckId, newTitle, newDescription, newSharingSetting, callback) {
+  backendLookup('POST', `decks/shared/edit/${sharedDeckId}/`, callback, {
+    new_title: newTitle,
+    new_description: newDescription,
+    new_sharing_setting: newSharingSetting,
+  });
+};

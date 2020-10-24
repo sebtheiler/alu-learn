@@ -32,4 +32,5 @@ urlpatterns = [
     path('shared/create/', views.shared_deck_create_view),
     path('shared/clone/<int:shared_deck_id>/', views.shared_deck_clone_view),
     path('shared/update/', views.shared_deck_update_view),
+    path('shared/edit/<int:shared_deck_id>/', views.shared_deck_edit_view),
 ]

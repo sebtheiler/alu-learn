@@ -57,6 +57,7 @@ import {
   apiSharedDeckDetail,
   apiCreateSharedDeck,
   apiSharedDeckClone,
+  apiSharedDeckEdit,
 } from './lookup';
 
 export {
@@ -118,4 +119,5 @@ export {
   apiSharedDeckDetail,
   apiCreateSharedDeck,
   apiSharedDeckClone,
+  apiSharedDeckEdit,
 };

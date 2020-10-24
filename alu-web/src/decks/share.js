@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { apiCreateSharedDeck, apiDeckDetail } from '../lookup';
+import { apiCreateSharedDeck, apiDeckDetail, apiSharedDeckEdit } from '../lookup';
 import { errorHandler } from '../utils';
 
 
@@ -30,14 +30,25 @@ export function ShareDeck(props) {
 
     if (makingPublic === false) {
       setMakingPublic(true);
-      apiCreateSharedDeck(deckId, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
-        if (status === 201) {
-          window.location.href = `/decks/${response.id}/` 
-        } else {
-          // Error creating shared deck
-          errorHandler(response, status, 1019);
-        };
-      });
+      if (deck.shared_deck) { 
+        apiSharedDeckEdit(deck.shared_deck, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
+          if (status === 200) {
+            window.location.href = `/decks/${response.id}/`;
+          } else {
+            // Error editing shared deck metadata
+            errorHandler(response, status, 1020);
+          };
+        });
+      } else {
+        apiCreateSharedDeck(deckId, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
+          if (status === 201) {
+            window.location.href = `/decks/${response.id}/`;
+          } else {
+            // Error creating shared deck
+            errorHandler(response, status, 1019);
+          };
+        });
+      };
     };
   };
 
@@ -76,7 +87,11 @@ export function ShareDeck(props) {
           <option value='FRIENDS'>Friends only</option>
         </Form.Control>
       </Form.Group>
-      <Button type='submit'>{makingPublic ? 'Loading...' : 'Make Public'}</Button>
+      <Button type='submit'>
+        {makingPublic ? 'Loading...' : (
+          deck.shared_deck ? 'Update Sharing Settings' : 'Make Public'
+        )}
+      </Button>
     </Form> : <>Loading...</>}
   </>);
 };
