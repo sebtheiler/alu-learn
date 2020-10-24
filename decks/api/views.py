@@ -777,7 +777,7 @@ def deck_search_view(request, *args, **kwargs):
 
     if sorted_qs is None:
         # Get all public decks
-        deck_qs = Deck.objects.filter(sharing_setting='PUBLIC')
+        deck_qs = SharedDeck.objects.filter(sharing_setting='PUBLIC')
 
         # Function for calculating how "relevant" each search result is
         THRESHOLD = 80
@@ -794,7 +794,7 @@ def deck_search_view(request, *args, **kwargs):
         # Cache result for 6 hours
         cache.set(CACHE_KEY, sorted_qs, 60*60*6)
 
-    return get_paginated_queryset_response(sorted_qs, request, DeckSerializer, 5)
+    return get_paginated_queryset_response(sorted_qs, request, SharedDeckSerializer, 5)
 
 
 @api_view(['POST'])
