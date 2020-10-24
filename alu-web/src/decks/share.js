@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Alert } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import { apiCreateSharedDeck, apiDeckDetail } from '../lookup';
 import { errorHandler } from '../utils';
 
@@ -9,7 +9,6 @@ export function ShareDeck(props) {
   const [deckDidSet, setDeckDidSet] = useState(false);
   const [deck, setDeck] = useState(null);
   const [makingPublic, setMakingPublic] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     if (deckDidSet === false) {
@@ -33,7 +32,7 @@ export function ShareDeck(props) {
       setMakingPublic(true);
       apiCreateSharedDeck(deckId, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
         if (status === 201) {
-          setShowAlert(true);
+          window.location.href = `/decks/${response.id}/` 
         } else {
           // Error creating shared deck
           errorHandler(response, status, 1019);
@@ -44,7 +43,6 @@ export function ShareDeck(props) {
 
   return (<>
     <h1>Sharing Deck "{deck ? deck.title : 'Loading...'}"</h1>
-    {showAlert && <Alert id='createdShared' variant='info'>Created Shared Deck</Alert>}
     {deck ? <Form onSubmit={submitHandler}>
       <Form.Group>
         <Form.Label htmlFor='title'>Title</Form.Label>

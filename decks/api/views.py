@@ -1127,10 +1127,10 @@ def shared_deck_create_view(request, *args, **kwargs):
     # Clone flashcard creators and fields
     # This is very inefficient, but as it will seldomly be called,
     # I'm alright with that for now
-    flashcard_creators = origin_deck.flashcards.prefetch_related('fields')
+    flashcard_creators = deepcopy(origin_deck.flashcards.prefetch_related('fields'))
     for flashcard_creator in flashcard_creators:
         # Clone flashcard creator
-        shared_flashcard_creator = flashcard_creator
+        shared_flashcard_creator = deepcopy(flashcard_creator)
         shared_flashcard_creator.pk = None
         shared_flashcard_creator.deck = shared_deck
         # Create a link between the origin flashcard creator and the shared flashcard creator
@@ -1142,7 +1142,7 @@ def shared_deck_create_view(request, *args, **kwargs):
         creator_fields = flashcard_creator.fields.all()
         for field in creator_fields:
             field.pk = None
-            field.creator = flashcard_creator
+            field.creator = shared_flashcard_creator
             field.save()
 
     return Response(SharedDeckSerializer(shared_deck).data, status=201)
