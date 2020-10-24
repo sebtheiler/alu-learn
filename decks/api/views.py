@@ -1242,7 +1242,7 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
     FlashCard.objects.bulk_create(flashcards)
 
 
-    return Response({'message': 'Sucessfully cloned deck'}, status=200)
+    return Response(DeckSerializer(Deck).data, status=200)
 
 
 @api_view(['POST'])

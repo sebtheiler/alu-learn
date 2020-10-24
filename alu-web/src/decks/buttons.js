@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {apiDeckDelete, apiDeckEdit, apiDeckCopy, apiSSMEdit, apiSSMDelete} from '../lookup';
+import {apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete} from '../lookup';
 import {errorHandler, FormCheckbox} from '../utils';
 import {SearchForm} from './flashcards/search';
 import {Modal, Button, Form, ButtonGroup} from 'react-bootstrap';
@@ -274,32 +274,51 @@ export function DeckEditCreateModal(props) {
 
 // Buttons displayed when a user that does not own the deck views a deck
 export function DeckForeignUserButtonGroup(props) {
-  const {deck, handleThankDeck, thankBtnLabel} = props;
-  const [copyState, setCopyState] = useState('Copy deck');
+  const {deck} = props;
+  const [copyLoading, setCopyLoading] = useState(false);
+  const [showCopyModal, setShowCopyModal] = useState(false);
 
   const handleCopyDeck = (event) => {
     event.preventDefault();
-    setCopyState('Loading...');
-    apiDeckCopy(deck.id, (response, status) => {
-      if (status === 200) {
-        setCopyState('Copied');
-      } else {
-        // Error copying deck
-        setCopyState('Copy');
-        errorHandler(response, status, 1002)
-      };
-    });
+    const form = event.target;
+
+    if (copyLoading === false) {
+      setCopyLoading(true);
+      apiSharedDeckClone(deck.id, form.elements.destinationTitle.value, (response, status) => {
+        if (status === 200) {
+          window.location.href = `/decks/${response.id}/flashcards/`;
+        } else {
+          // Error copying deck
+          errorHandler(response, status, 1002)
+        };
+        setCopyLoading(false);
+      });
+    };
   };
 
   return (
     <div className='text-center'>
       <ButtonGroup>
-        <Button onClick={handleCopyDeck}>
-          {copyState}
+        <Button onClick={() => setShowCopyModal(true)}>
+          Copy Deck 
         </Button>
-        <Button onClick={handleThankDeck} className='ml-1'>
+        <Modal show={showCopyModal} onHide={() => setShowCopyModal(false)}>
+          <Modal.Header>
+            <Modal.Title>Copying "{deck.title}</Modal.Title>
+          </Modal.Header>
+          <Form onSubmit={handleCopyDeck}>
+            <Modal.Body>
+              <Form.Label>Destination</Form.Label>
+              <Form.Control type='text' placeholder={`Copy of "${deck.title}"`} name='destinationTitle' required />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button type='submit'>Copy Deck</Button>
+            </Modal.Footer>
+          </Form>
+        </Modal>
+        {/* <Button onClick={handleThankDeck} className='ml-1'>
           {thankBtnLabel}
-        </Button>
+        </Button> */}
       </ButtonGroup>
     </div>
   );

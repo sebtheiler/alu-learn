@@ -444,3 +444,10 @@ export function apiCreateSharedDeck(originDeckId, title, description, sharingSet
     sharing_setting: sharingSetting,
   });
 };
+
+// Clones a shared deck
+export function apiSharedDeckClone(sharedDeckId, destinationDeckTitle, callback) {
+  backendLookup('POST', `decks/shared/clone/${sharedDeckId}/`, callback, {
+    destination_deck_title: destinationDeckTitle,
+  });
+};
