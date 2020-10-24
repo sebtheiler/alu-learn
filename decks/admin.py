@@ -41,8 +41,6 @@ class DeckAdmin(admin.ModelAdmin):
     fields = [
         'user',
         'title',
-        'description',
-        'sharing_setting',
         'inherits_flashcards_from',
     ]
 
@@ -53,6 +51,7 @@ class DeckAdmin(admin.ModelAdmin):
 class SharedDeckAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'user']
     search_fields = ['title', 'user__username', 'user__email']
+    exclude = ['inherits_flashcards_from', 'shared_deck']
 
     class Meta:
         model = SharedDeck

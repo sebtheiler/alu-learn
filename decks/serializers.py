@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from profiles.serializers import MinifiedProfileSerializer, PublicProfileSerializer
-from .models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator
+from .models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator, SharedDeck
 
 
 class DeckThankSerializer(serializers.ModelSerializer):
@@ -177,7 +177,7 @@ class SharedDeckSerializer(serializers.ModelSerializer):
     serializer_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = Deck
+        model = SharedDeck
         fields = [
             'author',
             'title',

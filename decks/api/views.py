@@ -325,7 +325,7 @@ def deck_shared_view(request, username, *args, **kwargs):
     else:
         decks_qs = SharedDeck.objects.filter(user=profile.user, sharing_setting='PUBLIC')
 
-    return Response(DeckSerializer(decks_qs, many=True).data, status=200)
+    return Response(SharedDeckSerializer(decks_qs, many=True).data, status=200)
 
 
 @vary_on_cookie
@@ -1118,6 +1118,8 @@ def shared_deck_create_view(request, *args, **kwargs):
         sharing_setting=request.data.get('sharing_setting', 'PUBLIC'),
         deck_type='shared',
     )
+
+    shared_deck.creators.set([origin_deck])
 
     # Clone flashcard creators and fields
     # This is very inefficient, but as it will seldomly be called,

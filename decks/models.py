@@ -19,6 +19,7 @@ class Deck(models.Model):
     title = models.CharField(max_length=128)
     inherits_flashcards_from = models.ManyToManyField('SharedDeck', related_name='children_decks', blank=True)
     deck_type = models.CharField(default='standard', max_length=12)
+    shared_deck = models.ForeignKey('SharedDeck', on_delete=models.SET_NULL, null=True, related_name='creators') # note that although this allows for multiple creators, it is currently only using one
 
     objects = DeckManager()
     class Meta:
