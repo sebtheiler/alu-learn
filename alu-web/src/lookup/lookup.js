@@ -434,3 +434,13 @@ export function apiManualSRTaskEdit(id, newTitle, newDescription, callback) {
 export function apiSharedDeckDetail(id, callback) {
   backendLookup('GET', `decks/shared/detail/${id}/`, callback);
 };
+
+// Creates a shared deck
+export function apiCreateSharedDeck(originDeckId, title, description, sharingSetting, callback) {
+  backendLookup('POST', 'decks/shared/create/', callback, {
+    origin_deck_id: originDeckId,
+    title: title,
+    description: description,
+    sharing_setting: sharingSetting,
+  });
+};

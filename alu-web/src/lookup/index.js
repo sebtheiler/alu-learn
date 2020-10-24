@@ -55,6 +55,7 @@ import {
   apiManualSRTaskUpdate,
   apiManualSRTaskEdit,
   apiSharedDeckDetail,
+  apiCreateSharedDeck,
 } from './lookup';
 
 export {
@@ -114,4 +115,5 @@ export {
   apiManualSRTaskUpdate,
   apiManualSRTaskEdit,
   apiSharedDeckDetail,
+  apiCreateSharedDeck,
 };
