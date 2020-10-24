@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {ProfileInformationComponent, LoginComponent} from './profiles';
-import {DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent} from './decks';
+import {DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, ShareDeck} from './decks';
 import {FlashCardCreate, FlashCardsList, FlashCardSearchComponent} from './decks/flashcards';
 import {StudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
@@ -144,6 +144,11 @@ if (autoFlashCardElement) {
 const manualSRHomeElement = document.getElementById('manual-sr-home');
 if (manualSRHomeElement) {
   ReactDOM.render(e(ManualSRHome, manualSRHomeElement.dataset), manualSRHomeElement);
+};
+
+const shareDeckElement = document.getElementById('share-deck');
+if (shareDeckElement) {
+  ReactDOM.render(e(ShareDeck, shareDeckElement.dataset), shareDeckElement);
 };
 
 // If you want your app to work offline and load faster, you can change

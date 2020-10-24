@@ -4,6 +4,7 @@ import {DeckPublicList} from './list';
 import {DeckCreate} from './create';
 import {DeckDefaultButtonGroup} from './buttons';
 import {DeckImportComponent} from './import';
+import {ShareDeck} from './share';
 
 export {
   DeckDefaultButtonGroup,
@@ -14,4 +15,5 @@ export {
   DecksHomeComponent,
   DeckDetail,
   DeckImportComponent,
+  ShareDeck,
 };

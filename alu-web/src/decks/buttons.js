@@ -169,7 +169,7 @@ export function DeckEditCreateModal(props) {
             />
           </Form.Group>
           {Object.entries(deck).length === 0 || deck.serializer_name === 'deck' ? /* This is unavailable for CSSMs */ <>
-            <Form.Group>
+            {/* <Form.Group>
               <Form.Label htmlFor='description'>Description</Form.Label>
               <Form.Control
                 as='textarea'
@@ -178,20 +178,25 @@ export function DeckEditCreateModal(props) {
                 name='description'
                 defaultValue={deck.description}
               />
-            </Form.Group>
-            <Form.Group>
-              <Form.Label htmlFor='sharingSetting'>Sharing Setting</Form.Label>
-              <Form.Control
-                as='select'
-                name='sharingSetting'
-                defaultValue={deck.sharing_setting}
-                custom
-              >
-                <option value='PRIVATE'>Private</option>
-                <option value='FRIENDS'>Friends only</option>
-                <option value='PUBLIC'>Public</option>
-              </Form.Control>
-            </Form.Group>
+            </Form.Group> */}
+            {mode === 'edit' &&
+              <Button href={`/decks/${deck.id}/share/`}>
+                Make Deck Public
+              </Button>
+              // <Form.Group>
+              //   <Form.Label htmlFor='sharingSetting'>Sharing Setting</Form.Label>
+              //   <Form.Control
+              //     as='select'
+              //     name='sharingSetting'
+              //     defaultValue={deck.sharing_setting}
+              //     custom
+              //   >
+              //     <option value='PRIVATE'>Private</option>
+              //     <option value='FRIENDS'>Friends only</option>
+              //     <option value='PUBLIC'>Public</option>
+              //   </Form.Control>
+              // </Form.Group>
+            }
             <div className='text-center d-flex'>
               <hr className='flex-grow-1' />
               <span className='px-2 align-self-center'>
