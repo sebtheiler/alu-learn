@@ -25,8 +25,6 @@ export function DeckCreate(props) {
 
     apiDeckCreate(
       form.elements.title.value,
-      form.elements.description.value,
-      form.elements.sharingSetting.value,
       form.elements.shuffleUnseenCards.checked,
       parseInt(form.elements.dailyNewCardLimit.value),
       form.elements.schedulingAlgo.value,

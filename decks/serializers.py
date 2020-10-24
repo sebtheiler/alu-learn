@@ -118,8 +118,6 @@ class DeckSerializer(serializers.ModelSerializer):
         fields = [
             'author',
             'title',
-            'description',
-            'sharing_setting',
             'num_thanks',
             'you_have_thanked',
             'serializer_name',

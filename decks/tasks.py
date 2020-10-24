@@ -6,7 +6,7 @@ from celery.task.schedules import crontab
 from django.db.models import Count
 from profiles.models import Profile
 
-from decks.models import Deck, StudySessionManager
+from decks.models import SharedDeck, StudySessionManager
 
 
 @shared_task
@@ -22,7 +22,7 @@ def midnight_reset():
     StudySessionManager.objects.all().update(new_cards_done_today=0)
 
     # Calculate top deck Ids
-    sorted_decks = Deck.objects.annotate(num_thanks=Count('thanks')).order_by('-num_thanks').filter(sharing_setting='PUBLIC')
+    sorted_decks = SharedDeck.objects.annotate(num_thanks=Count('thanks')).order_by('-num_thanks')
     top_deck_ids = [deck.id for deck in sorted_decks[:5]]
     with open('top_deck_ids.json', 'w+') as f:
         f.write(json.dumps(top_deck_ids))

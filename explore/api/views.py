@@ -17,7 +17,7 @@ with open('top_deck_ids.json', 'r') as f:
 def get_decks_from_ids(id_list, public_only=False):
     query = Q(pk__in=id_list)
     if public_only:
-        query &= Q(sharing_setting='PUBLIC')
+        query &= Q(deck_type='shared')
 
     decks_qs = Deck.objects.filter(query)
     return DeckSerializer(decks_qs, many=True).data

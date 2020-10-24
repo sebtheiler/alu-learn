@@ -17,26 +17,10 @@ class DeckManager(models.Manager):
 class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
-    description = models.TextField(default='', blank=True, null=True)
-
     inherits_flashcards_from = models.ManyToManyField('SharedDeck', related_name='children_decks', blank=True)
-
-    # TODO: move these sharing options to shared deck,
-    # remove private, and update the ability to change it as it was previously done
-    SHARING_OPTIONS = [
-        ('PRIVATE', 'Private'),
-        ('FRIENDS', 'Friends only'),
-        ('PUBLIC', 'Public'),
-    ]
-    sharing_setting = models.CharField(
-        max_length=7,
-        choices=SHARING_OPTIONS,
-        default='PRIVATE',
-    )
-
     deck_type = models.CharField(default='standard', max_length=12)
-    objects = DeckManager()
 
+    objects = DeckManager()
     class Meta:
         ordering = ['-id']
 
@@ -191,10 +175,17 @@ class CustomStudySessionManager(StudySessionManager):
 
 
 class SharedDeck(Deck):
-    # description = ...
-    # The changes that have been made to this deck
-    # edit_history = ...
-    ...
+    description = models.TextField(default='', blank=True, null=True)
+    SHARING_OPTIONS = [
+        ('PRIVATE', 'Private'),
+        ('FRIENDS', 'Friends only'),
+        ('PUBLIC', 'Public'),
+    ]
+    sharing_setting = models.CharField(
+        max_length=7,
+        choices=SHARING_OPTIONS,
+        default='PRIVATE',
+    )
 
 
 class SharedFlashCardCreator(FlashCardCreator):

@@ -2,11 +2,9 @@ import {backendLookup, baseUrl} from './components';
 
 
 // Creates a new deck
-export function apiDeckCreate(title, description, sharingSetting, shuffleUnseenCards, dailyNewCardLimit, schedulingAlgo, callback) {
+export function apiDeckCreate(title, shuffleUnseenCards, dailyNewCardLimit, schedulingAlgo, callback) {
   backendLookup('POST', 'decks/create/', callback, {
     title: title,
-    description: description,
-    sharing_setting: sharingSetting,
     shuffle_unseen_cards: shuffleUnseenCards,
     daily_new_card_limit: dailyNewCardLimit,
     scheduling_algorithm: schedulingAlgo,
@@ -89,11 +87,9 @@ export function apiDeckDelete(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/delete/`, callback);
 };
 
-export function apiDeckEdit(deckId, newTitle, newDescription, sharingSetting, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, reviewAheadMinutes, callback) {
+export function apiDeckEdit(deckId, newTitle, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, reviewAheadMinutes, callback) {
   backendLookup('POST', `decks/${deckId}/edit/`, callback, {
     new_title: newTitle,
-    description: newDescription,
-    sharing_setting: sharingSetting,
     scheduling_algorithm: schedulingAlgo,
     shuffle_unseen_cards: shuffleUnseenCards,
     daily_new_card_limit: dailyNewCardLimit,

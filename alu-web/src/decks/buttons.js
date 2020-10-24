@@ -27,8 +27,6 @@ export function DeckDefaultButtonGroup(props) {
     if (
         deck.serializer_name === 'deck' &&
         form.elements.title.value === deck.title &&
-        form.elements.description.value === deck.description &&
-        form.elements.sharingSetting.value === deck.sharing_setting &&
         form.elements.schedulingAlgo.value === deck.scheduling_algorithm &&
         form.elements.shuffleUnseenCards.checked === deck.shuffle_unseen_cards &&
         parseInt(form.elements.dailyNewCardLimit.value) === deck.daily_new_card_limit &&
@@ -42,8 +40,6 @@ export function DeckDefaultButtonGroup(props) {
       apiDeckEdit(
         deck.id,
         form.elements.title.value,
-        form.elements.description.value,
-        form.elements.sharingSetting.value,
         form.elements.schedulingAlgo.value,
         form.elements.shuffleUnseenCards.checked,
         parseInt(form.elements.dailyNewCardLimit.value),

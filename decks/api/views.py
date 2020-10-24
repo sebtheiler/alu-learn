@@ -40,8 +40,6 @@ def deck_create_view(request, *args, **kwargs):
 
     Required information:
         `title`: (Data) Title of the deck to create
-        `description`: (Data) Description fo the deck to create
-        `sharing_setting`: (Data) Sharing setting of the new deck
         `shuffle_unseen_cards`: (Data) Whether or not to shuffle unseen cards in the new deck
         `daily_new_card_limit`: (Data) Number of new cards to be done daily in the deck,
         `scheduling_algorithm`: (Data) Scheduling algo for the new deck,
@@ -51,18 +49,19 @@ def deck_create_view(request, *args, **kwargs):
         Title of the deck: 'title'
         ID of the deck: 'id'
     """
+    # Get deck title
     title = request.data.get('title')
     if title is None:
         return Response({'message': 'You must specify a title'}, status=400)
 
+    # Create deck
     new_deck = Deck.objects.create(
         user=request.user,
         title=title,
-        description=request.data.get('description', ''),
-        sharing_setting=request.data.get('sharing_setting', 'PRIVATE'),
     )
 
-    ssm = DeckStudySessionManager.objects.create(
+    # Create deck study session manager
+    DeckStudySessionManager.objects.create(
         deck=new_deck,
         user=request.user.profile,
         scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKI'),
@@ -320,15 +319,11 @@ def deck_shared_view(request, username, *args, **kwargs):
         return Response({'message': f'Invalid username "{username}"'}, status=404)
 
     # Get user's decks that are either public or shared
-    if profile.user == request.user:
-        # If the user is viewing their own decks, just return everything
-        return Response(DeckSerializer(Deck.objects.filter(user=profile.user), many=True).data, status=200)
-
     is_friend = request.user in profile.friends.all()
-    if is_friend:
-        decks_qs = Deck.objects.filter(Q(user=profile.user) & (Q(sharing_setting='PUBLIC') | Q(sharing_setting='FRIENDS')))
+    if is_friend or profile.user.id == request.user.id:
+        decks_qs = SharedDeck.objects.filter(Q(user=profile.user) & (Q(sharing_setting='PUBLIC') | Q(sharing_setting='FRIENDS')))
     else:
-        decks_qs = Deck.objects.filter(user=profile.user, sharing_setting='PUBLIC')
+        decks_qs = SharedDeck.objects.filter(user=profile.user, sharing_setting='PUBLIC')
 
     return Response(DeckSerializer(decks_qs, many=True).data, status=200)
 
