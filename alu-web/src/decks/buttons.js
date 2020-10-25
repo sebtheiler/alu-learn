@@ -165,34 +165,15 @@ export function DeckEditCreateModal(props) {
             />
           </Form.Group>
           {Object.entries(deck).length === 0 || deck.serializer_name === 'deck' ? /* This is unavailable for CSSMs */ <>
-            {/* <Form.Group>
-              <Form.Label htmlFor='description'>Description</Form.Label>
-              <Form.Control
-                as='textarea'
-                rows='3'
-                placeholder="My deck's description"
-                name='description'
-                defaultValue={deck.description}
-              />
-            </Form.Group> */}
-            {mode === 'edit' &&
-              <Button href={`/decks/${deck.id}/share/`}>
+            {mode === 'edit' && <ButtonGroup className='w-100 mb-2'>
+              <Button href={`/decks/${deck.id}/get-updates/`} className='float-right'>
+                Check for Updates
+              </Button>
+              <span className='mx-1'></span>
+              <Button href={`/decks/${deck.id}/share/`} className='float-left'>
                 Make Deck Public
               </Button>
-              // <Form.Group>
-              //   <Form.Label htmlFor='sharingSetting'>Sharing Setting</Form.Label>
-              //   <Form.Control
-              //     as='select'
-              //     name='sharingSetting'
-              //     defaultValue={deck.sharing_setting}
-              //     custom
-              //   >
-              //     <option value='PRIVATE'>Private</option>
-              //     <option value='FRIENDS'>Friends only</option>
-              //     <option value='PUBLIC'>Public</option>
-              //   </Form.Control>
-              // </Form.Group>
-            }
+            </ButtonGroup>}
             <div className='text-center d-flex'>
               <hr className='flex-grow-1' />
               <span className='px-2 align-self-center'>

@@ -1351,4 +1351,6 @@ def shared_deck_update_view(request, *args, **kwargs):
     if check_diff_only:
         return Response(diff, status=200)
     else:
+        shared_deck.version_number += 1
+        shared_deck.save()
         return Response(SharedDeckSerializer(shared_deck).data, status=200)

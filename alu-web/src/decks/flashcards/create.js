@@ -174,6 +174,7 @@ export function FlashCardCreate(props) {
             >
               <EditorButtons
                 editor={frontEditor}
+                untabbable
               />
               <FullEditor
                 id='frontText'

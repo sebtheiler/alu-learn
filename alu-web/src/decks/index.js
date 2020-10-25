@@ -6,6 +6,7 @@ import {DeckDefaultButtonGroup} from './buttons';
 import {DeckImportComponent} from './import';
 import {ShareDeck} from './share';
 import {PushSharedDeck} from './push';
+import {UpdateDeck} from './update';
 
 export {
   DeckDefaultButtonGroup,
@@ -18,4 +19,5 @@ export {
   DeckImportComponent,
   ShareDeck,
   PushSharedDeck,
+  UpdateDeck,
 };

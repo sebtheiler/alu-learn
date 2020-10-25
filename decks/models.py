@@ -17,7 +17,6 @@ class DeckManager(models.Manager):
 class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
-    inherits_flashcards_from = models.ManyToManyField('SharedDeck', related_name='children_decks', blank=True)
     deck_type = models.CharField(default='standard', max_length=12)
     shared_deck = models.ForeignKey('SharedDeck', on_delete=models.SET_NULL, null=True, related_name='creators') # note that although this allows for multiple creators, it is currently only using one
 
@@ -27,6 +26,12 @@ class Deck(models.Model):
 
     def __str__(self):
         return str(self.title)
+
+
+class SharedDeckRelation(models.Model):
+    deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='shared_deck_relations')
+    shared_deck = models.ForeignKey('SharedDeck', on_delete=models.CASCADE, related_name='children_decks')
+    cloned_at_version = models.IntegerField(default=0) # used to know when the deck is outdated
 
 
 class FlashCardCreatorManager(models.Manager):
@@ -177,6 +182,8 @@ class CustomStudySessionManager(StudySessionManager):
 
 class SharedDeck(Deck):
     description = models.TextField(default='', blank=True, null=True)
+    version_number = models.IntegerField(default=0) # this number is incremented anytime changes are pushed
+
     SHARING_OPTIONS = [
         ('PRIVATE', 'Private'),
         ('FRIENDS', 'Friends only'),
@@ -187,10 +194,6 @@ class SharedDeck(Deck):
         choices=SHARING_OPTIONS,
         default='PRIVATE',
     )
-
-
-class SharedFlashCardCreator(FlashCardCreator):
-    is_deleted = models.BooleanField(default=False)
 
 
 # Used to like/thank a person for making a deck

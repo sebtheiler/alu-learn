@@ -11,6 +11,7 @@ class DevAuthentication(authentication.BasicAuthentication):
         # user = user_qs.order_by('?').first()
 
         # Specific username
-        user = user_qs.filter(username='evolvedsquid').first()
+        user = user_qs.get(username='evolvedsquid')
+        user = user_qs.get(username='123456')
 
         return (user, None)

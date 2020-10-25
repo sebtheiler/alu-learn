@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import {ProfileInformationComponent, LoginComponent} from './profiles';
-import {DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, ShareDeck, PushSharedDeck} from './decks';
+import {DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, ShareDeck, PushSharedDeck, UpdateDeck} from './decks';
 import {FlashCardCreate, FlashCardsList, FlashCardSearchComponent} from './decks/flashcards';
 import {StudyComponent} from './decks/study';
 import {NotificationComponent} from './profiles/notifications';
@@ -154,6 +154,11 @@ if (shareDeckElement) {
 const pushDeckElement = document.getElementById('push-deck');
 if (pushDeckElement) {
   ReactDOM.render(e(PushSharedDeck, pushDeckElement.dataset), pushDeckElement);
+};
+
+const updateDeckElement = document.getElementById('update-deck');
+if (updateDeckElement) {
+  ReactDOM.render(e(UpdateDeck, updateDeckElement.dataset), updateDeckElement);
 };
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
