@@ -27,6 +27,7 @@ urlpatterns = [
     path('ssm/<int:ssm_id>/flashcards/<int:flashcard_id>/update/', views.ssm_flashcard_update_view),
     path('flashcards/search/', views.flashcard_search_view),
     path('home/', views.deck_home_view),
+    path('get-updates/<int:deck_id>/', views.deck_get_updates_view),
     path('shared/detail/<int:shared_deck_id>/', views.shared_deck_detail_view),
     path('shared/create/', views.shared_deck_create_view),
     path('shared/clone/<int:shared_deck_id>/', views.shared_deck_clone_view),

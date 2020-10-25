@@ -465,3 +465,8 @@ export function apiSharedPushChanges(originDeckId, sharedDeckId, checkDiffOnly, 
     check_diff_only: checkDiffOnly,
   });
 };
+
+// Gets required updates for a deck
+export function apiDeckGetUpdates(deckId, callback) {
+  backendLookup('GET', `decks/get-updates/${deckId}/`, callback);
+};

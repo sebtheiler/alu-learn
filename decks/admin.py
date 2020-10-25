@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Deck, FlashCard, DeckThank, DeckStudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator, SharedDeck
+from .models import Deck, FlashCard, DeckThank, DeckStudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator, SharedDeck, SharedDeckRelation
 
 class FlashCardFieldTabAdmin(admin.TabularInline):
     fields = [
@@ -59,6 +59,7 @@ class SharedDeckAdmin(admin.ModelAdmin):
 
 admin.site.register(Deck, DeckAdmin)
 admin.site.register(SharedDeck, SharedDeckAdmin)
+admin.site.register(SharedDeckRelation)
 admin.site.register(FlashCardCreator, FlashCardCreatorAdmin)
 admin.site.register(FlashCard, FlashCardAdmin)
 admin.site.register(FlashCardField, FlashCardFieldAdmin)

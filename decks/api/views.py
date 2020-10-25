@@ -24,7 +24,7 @@ from rest_framework.response import Response
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
                       DeckThank, FlashCard, FlashCardCreator, FlashCardField,
-                      SharedDeck, StudySessionManager)
+                      SharedDeck, SharedDeckRelation, StudySessionManager)
 from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
                            DeckThankSerializer, FlashCardCreatorSerializer,
                            FlashCardSerializer, StudySessionManagerSerializer,
@@ -1155,8 +1155,11 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
         )
 
     # Add the deck into the destination decks list of shared decks
-    deck.inherits_flashcards_from.add(shared_deck)
-    deck.save()
+    SharedDeckRelation.objects.create(
+        deck=deck,
+        shared_deck=shared_deck,
+        cloned_at_version=shared_deck.version_number,
+    )
 
     # Create flashcards for each creator in the cloned deck
     # This process is very inefficient and needs future optimizations
@@ -1354,3 +1357,34 @@ def shared_deck_update_view(request, *args, **kwargs):
         shared_deck.version_number += 1
         shared_deck.save()
         return Response(SharedDeckSerializer(shared_deck).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def deck_get_updates_view(request, deck_id, *args, **kwargs):
+    """
+    Gets the updates for a deck - GET
+
+    Required information:
+        `deck_id`: (URL) Id of the deck to get updates for
+    """
+    # Get deck
+    try:
+        deck = Deck.objects.get(
+            pk=deck_id,
+            user=request.user,
+        )
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck does not exist / you are unauthorized'}, status=400)
+
+    # Find decks that need updating
+    needs_updating = []
+    for shared_deck_relation in deck.shared_deck_relations.all().prefetch_related('shared_deck'):
+        if shared_deck_relation.cloned_at_version < shared_deck_relation.shared_deck.version_number:
+            needs_updating.append({
+                'title': shared_deck_relation.shared_deck.title,
+                'id': shared_deck_relation.shared_deck.id,
+            })
+
+    print(needs_updating)
+    return Response({'needs_updating': needs_updating}, status=200)
