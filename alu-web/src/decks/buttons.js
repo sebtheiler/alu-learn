@@ -312,6 +312,9 @@ export function DeckForeignUserButtonGroup(props) {
             </Modal.Footer>
           </Form>
         </Modal>
+        <Button href={`/decks/${deck.id}/flashcards/`} className='ml-1'>
+          View Flashcards
+        </Button>
         {/* <Button onClick={handleThankDeck} className='ml-1'>
           {thankBtnLabel}
         </Button> */}

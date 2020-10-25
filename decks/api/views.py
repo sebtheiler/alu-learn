@@ -370,17 +370,28 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
     """
     # Get deck
     try:
-        deck = Deck.objects.get(pk=deck_id)
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck not found'}, status=404)
+        deck = SharedDeck.objects.get(pk=deck_id)
+    except SharedDeck.DoesNotExist:
+        try:
+            deck = Deck.objects.get(pk=deck_id)
+        except Deck.DoesNotExist:
+            return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
-    if not (request.user == deck.user or deck.sharing_setting == 'PUBLIC' or (deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all())):
+    if not (
+        request.user == deck.user or ( # Viewing own profile
+            isinstance(deck, SharedDeck) and ( # Is a shared deck and...
+                deck.sharing_setting == 'PUBLIC' or ( # The deck is public or...
+                    deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all() # the user is a friend
+                )
+            )
+        )
+    ):
+        print(isinstance(deck, SharedDeck), deck.sharing_setting)
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
-    # Return
-    serializer = DeckSerializer(deck, context={'request': request})
-    return Response(serializer.data, status=200)
+    Serializer = SharedDeckSerializer if isinstance(deck, SharedDeck) else DeckSerializer
+    return Response(Serializer(deck, context={'request': request}).data, status=200)
 
 
 @api_view(['GET'])
@@ -1205,8 +1216,8 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
 
         # Clone the flashcard creator
         # I don't know why using .pk = None doesn't work, for some reason you need to get the latest ID
-        local_flashcard_creator.pk = FlashCardCreator.objects.all().order_by('-id').first().id
-        local_flashcard_creator.id = FlashCardCreator.objects.all().order_by('-id').first().id
+        local_flashcard_creator.pk = FlashCardCreator.objects.all().order_by('-id').first().id + 1
+        local_flashcard_creator.id = FlashCardCreator.objects.all().order_by('-id').first().id + 1
         local_flashcard_creator.deck = deck
         local_flashcard_creator.save()
 
