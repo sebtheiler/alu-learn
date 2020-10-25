@@ -387,7 +387,6 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
             )
         )
     ):
-        print(isinstance(deck, SharedDeck), deck.sharing_setting)
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
     Serializer = SharedDeckSerializer if isinstance(deck, SharedDeck) else DeckSerializer
@@ -1256,7 +1255,12 @@ def shared_deck_update_view(request, *args, **kwargs):
     Required information:
         `shared_deck_id`: (Data) Id of the shared deck
         `origin_deck_id`: (Data) Id of the deck to get new changes from
+        `check_diff_only`: (Data) If True, this will get the difference between the
+            shared deck and the origin deck, and not actually enact the changes
     """
+    check_diff_only = request.data.get('check_diff_only', False)
+    diff = {'created': 0, 'modified': 0, 'deleted': 0}
+
     # Get shared deck
     try:
         shared_deck = SharedDeck.objects.get(
@@ -1289,6 +1293,7 @@ def shared_deck_update_view(request, *args, **kwargs):
             # If the flashcard creator already has a corresponding shared mirror, update it
             # The "possibly unbound" warning are wrong
 
+            edited = False
             shared_fields = shared_mirror.fields.all()
             for origin_field in origin_flashcard_creator.fields.all():
                 try:
@@ -1306,32 +1311,44 @@ def shared_deck_update_view(request, *args, **kwargs):
                     shared_mirror.save()
 
                 if shared_field.text != origin_field.text:
-                    shared_field.text = origin_field.text
-                    shared_field.save()
+                    if not check_diff_only:
+                        shared_field.text = origin_field.text
+                        shared_field.save()
+                    if not edited:
+                        diff['modified'] += 1
+                        edited = True
         else:
-            # Clone flashcard creator
-            shared_flashcard_creator = deepcopy(origin_flashcard_creator)
-            shared_flashcard_creator.pk = None
-            shared_flashcard_creator.id = None
-            shared_flashcard_creator.deck = shared_deck
-            shared_flashcard_creator.was_updated = True
-            shared_flashcard_creator.save()
+            if not check_diff_only:
+                # Clone flashcard creator
+                shared_flashcard_creator = deepcopy(origin_flashcard_creator)
+                shared_flashcard_creator.pk = None
+                shared_flashcard_creator.id = None
+                shared_flashcard_creator.deck = shared_deck
+                shared_flashcard_creator.was_updated = True
+                shared_flashcard_creator.save()
 
-            # Create link between the shared and the origin flashcard creators
-            shared_flashcard_creator.origin_creator = origin_flashcard_creator
-            shared_flashcard_creator.save()
-            origin_flashcard_creator.save()
+                # Create link between the shared and the origin flashcard creators
+                shared_flashcard_creator.origin_creator = origin_flashcard_creator
+                shared_flashcard_creator.save()
+                origin_flashcard_creator.save()
 
-            # Clone flashcard creator fields
-            creator_fields = origin_flashcard_creator.fields.all()
-            for field in creator_fields:
-                field.pk = None
-                field.creator = shared_flashcard_creator
-                field.save()
+                # Clone flashcard creator fields
+                creator_fields = origin_flashcard_creator.fields.all()
+                for field in creator_fields:
+                    field.pk = None
+                    field.creator = shared_flashcard_creator
+                    field.save()
+            
+            diff['created'] += 1
 
     # Delete all flashcards that weren't updated
     not_updated = shared_mirrors.filter(was_updated=False)
-    not_updated.delete()
+    diff['deleted'] += not_updated.count()
+    if not check_diff_only:
+        not_updated.delete()
     shared_mirrors.update(was_updated=False)
 
-    return Response(SharedDeckSerializer(shared_deck).data, status=200)
+    if check_diff_only:
+        return Response(diff, status=200)
+    else:
+        return Response(SharedDeckSerializer(shared_deck).data, status=200)
