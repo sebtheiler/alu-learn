@@ -97,11 +97,14 @@ export function ShareDeck(props) {
             deck.shared_deck ? 'Update Sharing Settings' : 'Make Public'
           )}
         </Button>
-        {deck.shared_deck &&
+        {deck.shared_deck && <>
           <Button href={`/decks/${deck.shared_deck}/`} className='ml-1'>
             Deck Shared Page
           </Button>
-        }
+          <Button href={`/decks/${deck.id}/share/push/`} className='ml-1'>
+            Push New Changes
+          </Button>
+        </>}
       </ButtonGroup>
     </Form> : <>Loading...</>}
   </>);

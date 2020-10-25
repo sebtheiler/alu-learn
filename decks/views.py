@@ -122,3 +122,12 @@ def deck_share_view(request, deck_id, *args, **kwargs):
         return redirect('/confirm-email/')
     
     return render(request, 'decks/shared/share.html', context={'deck_id': deck_id})
+
+# Form for pushing updates to a shared deck
+def deck_push_view(request, deck_id, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
+    
+    return render(request, 'decks/shared/push.html', context={'deck_id': deck_id})

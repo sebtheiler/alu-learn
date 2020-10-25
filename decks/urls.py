@@ -13,4 +13,5 @@ urlpatterns = [
     path('decks/<int:deck_id>/flashcards/create/', flashcard_create_view),
     path('decks/<int:deck_id>/flashcards/<int:flashcard_id>/edit/', flashcard_edit_view),
     path('decks/<int:deck_id>/share/', deck_share_view),
+    path('decks/<int:deck_id>/share/push/', deck_push_view),
 ]
