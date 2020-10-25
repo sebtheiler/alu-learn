@@ -560,52 +560,6 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def deck_copy_view(request, deck_id, *args, **kwargs):
-    """
-    Copy a deck to a user's own list of decks - POST
-
-    Required information:
-        `deck_id`: (URL): ID of the deck to copy
-    
-    Possible errors:
-        Invalid deck ID: 404, Deck not found
-        User attempts to copy a deck they don't have access to: 403, You cannot copy a private deck
-        User not authenticated: 403
-    """
-    # Get deck
-    try:
-        deck = Deck.objects.get(pk=deck_id)
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck not found'}, status=404)
-    print(deck.flashcards.all())
-
-    # Check if the user has permission to copy the deck
-    if deck.sharing_setting == 'PRIVATE' or (\
-       deck.sharing_setting == 'FRIENDS' and request.user not in deck.user.profile.friends.all()):
-        return Response({'message': 'You cannot copy a private deck'}, status=403)
-
-    # Copy deck
-    # This ALL needs to be redone when the git-like algorithm is implemented
-    # deck.flashcards.update(
-    #     id=None,
-    #     tags='', # this also makes it not a leech
-    #     learning_status='UNSEEN',
-    #     ease=250,
-    #     next_review=timezone.now(),
-    #     interval=0,
-    #     is_suspended=False,
-    #     leech_index=0,
-    # )
-    deck.pk = None; deck.id = None
-    deck.user = request.user
-    deck.sharing_setting = 'PRIVATE'
-    deck.title = f'Copy of {deck.title}'
-    deck.save()
-    return Response(DeckSerializer(deck).data, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def deck_thank_view(request, deck_id, *args, **kwargs):
     """
     Create a thank object for a deck - POST
@@ -1215,10 +1169,11 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
         local_flashcard_creator = deepcopy(shared_flashcard_creator)
 
         # Clone the flashcard creator
-        # I don't know why using .pk = None doesn't work, for some reason you need to get the latest ID
-        local_flashcard_creator.pk = FlashCardCreator.objects.all().order_by('-id').first().id + 1
-        local_flashcard_creator.id = FlashCardCreator.objects.all().order_by('-id').first().id + 1
-        local_flashcard_creator.deck = deck
+        local_flashcard_creator.pk = None
+        local_flashcard_creator.id = None
+        local_flashcard_creator.shared_mirror = None # reset the one2one relation
+        local_flashcard_creator.origin_creator = None
+        local_flashcard_creator.deck = deck # change to now belonging to the new deck
         local_flashcard_creator.save()
 
         # Clone the flashcard creator's fields

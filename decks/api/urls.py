@@ -12,7 +12,6 @@ urlpatterns = [
     path('<int:deck_id>/', views.deck_detail_view),
     path('<int:deck_id>/delete/', views.deck_delete_view),
     path('<int:deck_id>/edit/', views.deck_edit_view),
-    path('<int:deck_id>/copy/', views.deck_copy_view),
     path('<int:deck_id>/thank/', views.deck_thank_view),
     path('<int:deck_id>/flashcards/', views.deck_flashcards_view),
     path('<int:deck_id>/flashcards/create/', views.flashcard_create_view),
