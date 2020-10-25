@@ -456,3 +456,12 @@ export function apiSharedDeckEdit(sharedDeckId, newTitle, newDescription, newSha
     new_sharing_setting: newSharingSetting,
   });
 };
+
+// Pushes changes to a shared deck (or checks diff)
+export function apiSharedPushChanges(originDeckId, sharedDeckId, checkDiffOnly, callback) {
+  backendLookup('POST', `decks/shared/update/`, callback, {
+    origin_deck_id: originDeckId,
+    shared_deck_id: sharedDeckId,
+    check_diff_only: checkDiffOnly,
+  });
+};

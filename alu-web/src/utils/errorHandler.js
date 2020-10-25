@@ -63,6 +63,9 @@ int(hexadecimal_string, 16)
 1017: Error getting deck detail for sharing through apiDeckDetail in alu-web/src/decks/share.js
 1018: Error handling next set of deck's flashcards (pagination) through apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
 1019: Error creating shared deck through apiCreateShareddeck in alu-web/src/decks/share.js
+1020: Error checking diff between shared and origin deck through apiSharedPushChanges in alu-web/src/decks/push.js
+1021: Error getting deck detail for sharing through apiDeckDetail in alu-web/src/decks/push.js
+1022: Error pushing changes to new deck through apiSharedPushChanges in alu-web/src/decks/push.js
 
 === Flashcard related errors ===
 2000: Error getting flashcard detail through apiFlashCardDetail in alu-web/src/decks/flashcards/create.js
