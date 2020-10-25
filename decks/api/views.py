@@ -1060,7 +1060,6 @@ def ssm_create_view(request, *args, **kwargs):
     return Response(CustomStudySessionManagerSerializer(ssm).data, status=201)
 
 
-# {"origin_deck_id": 3, "title": "a new copy of cloze", "description": "...", "sharing_setting": "PUBLIC"}
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def shared_deck_create_view(request, *args, **kwargs):
@@ -1247,6 +1246,7 @@ def shared_deck_edit_view(request, shared_deck_id, *args, **kwargs):
 
     return Response(SharedDeckSerializer(shared_deck).data, status=200)
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def shared_deck_update_view(request, *args, **kwargs):
@@ -1259,7 +1259,10 @@ def shared_deck_update_view(request, *args, **kwargs):
     """
     # Get shared deck
     try:
-        shared_deck = SharedDeck.objects.get(pk=request.data.get('shared_deck_id'))
+        shared_deck = SharedDeck.objects.get(
+            pk=request.data.get('shared_deck_id'),
+            user=request.user,
+        )
     except SharedDeck.DoesNotExist:
         return Response({'message': 'Could not find the specified shared deck'}, status=404)
     
@@ -1275,57 +1278,63 @@ def shared_deck_update_view(request, *args, **kwargs):
     # Update the shared deck's flashcard creators
     origin_flashcard_creators = origin_deck.flashcards.prefetch_related('fields', 'shared_mirror')
     shared_mirrors = FlashCardCreator.objects.filter(origin_creator__in=origin_flashcard_creators)
-    print(shared_mirrors)
     for origin_flashcard_creator in origin_flashcard_creators:
         try:
-            origin_flashcard_creator.shared_mirror
+            shared_mirror = origin_flashcard_creator.shared_mirror
             has_mirror = True
         except FlashCardCreator.DoesNotExist as e:
-            print(e)
             has_mirror = False
 
         if has_mirror: 
-            shared_mirror = origin_flashcard_creator.shared_mirror
-            print('mirror already exists, attempting to edit')
             # If the flashcard creator already has a corresponding shared mirror, update it
-            for origin_field, shared_field in zip(origin_flashcard_creator.fields.all(), shared_mirror.fields.all()):
-                if shared_field.text != origin_field.text:
-                    print('mirror updated')
-                    shared_field.text = origin_field.text
-                    shared_field.save()
+            # The "possibly unbound" warning are wrong
+
+            shared_fields = shared_mirror.fields.all()
+            for origin_field in origin_flashcard_creator.fields.all():
+                try:
+                    shared_field = shared_fields.get(field_number=origin_field.field_number)
+                except FlashCardField.DoesNotExist:
+                    FlashCardField.objects.create(
+                        creator=shared_mirror,
+                        text=origin_field.text,
+                        field_number=origin_field.field_number,
+                    )
+                    continue
+
+                if not shared_mirror.was_updated:
                     shared_mirror.was_updated = True
                     shared_mirror.save()
+
+                if shared_field.text != origin_field.text:
+                    shared_field.text = origin_field.text
+                    shared_field.save()
         else:
-            print('creating new mirror')
             # Clone flashcard creator
             shared_flashcard_creator = deepcopy(origin_flashcard_creator)
             shared_flashcard_creator.pk = None
+            shared_flashcard_creator.id = None
             shared_flashcard_creator.deck = shared_deck
             shared_flashcard_creator.was_updated = True
             shared_flashcard_creator.save()
 
+            # Create link between the shared and the origin flashcard creators
             shared_flashcard_creator.origin_creator = origin_flashcard_creator
             shared_flashcard_creator.save()
             origin_flashcard_creator.save()
-
-            print(shared_flashcard_creator.origin_creator.id)
-            print(origin_flashcard_creator.shared_mirror.id)
 
             # Clone flashcard creator fields
             creator_fields = origin_flashcard_creator.fields.all()
             for field in creator_fields:
                 field.pk = None
-                field.creator = origin_flashcard_creator
+                field.creator = shared_flashcard_creator
                 field.save()
 
     # Delete all flashcards that weren't updated
     not_updated = shared_mirrors.filter(was_updated=False)
-    print('flashcard creators not updated:', not_updated)
     not_updated.delete()
-    print(not_updated)
     shared_mirrors.update(was_updated=False)
 
-    return Response(SharedDeckSerializer(shared_deck).data, status=201)
+    return Response(SharedDeckSerializer(shared_deck).data, status=200)
 
 
 """
