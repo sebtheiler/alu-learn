@@ -1182,7 +1182,7 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
 
     if created:
         # Create deck SSM
-        ssm = DeckStudySessionManager.objects.create(
+        DeckStudySessionManager.objects.create(
             deck=deck,
             user=request.user.profile,
             scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKI'),
@@ -1200,28 +1200,32 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
     now = timezone.now()
     this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
     flashcards = []
-    for flashcard_creator in shared_deck.flashcards.all().prefetch_related('fields'):
+    for shared_flashcard_creator in shared_deck.flashcards.all().prefetch_related('fields'):
+        local_flashcard_creator = deepcopy(shared_flashcard_creator)
+
         # Clone the flashcard creator
-        flashcard_creator.pk = None
-        flashcard_creator.deck = deck
-        flashcard_creator.save()
+        # I don't know why using .pk = None doesn't work, for some reason you need to get the latest ID
+        local_flashcard_creator.pk = FlashCardCreator.objects.all().order_by('-id').first().id
+        local_flashcard_creator.id = FlashCardCreator.objects.all().order_by('-id').first().id
+        local_flashcard_creator.deck = deck
+        local_flashcard_creator.save()
 
         # Clone the flashcard creator's fields
-        creator_fields = flashcard_creator.fields.all()
-        for field in creator_fields:
+        local_creator_fields = deepcopy(shared_flashcard_creator.fields.all())
+        for field in local_creator_fields:
             field.pk = None
-            field.creator = flashcard_creator
+            field.creator = local_flashcard_creator
             field.save()
 
         # Clone the flashcards review instances from the creator
-        if flashcard_creator.flashcard_type == 'cloze':
+        if local_flashcard_creator.flashcard_type == 'cloze':
             # Create a flashcard for each cloze segment
             cloze_ids = []
             def cloze_flashcard(match):
                 cloze_id = int(match.group().split(":")[0][3:])
                 cloze_ids.append(cloze_id)
                 return FlashCard(
-                    creator=flashcard_creator,
+                    creator=local_flashcard_creator,
                     next_review=this_morning,
                     content_indicies=[0],
                     name=f'cloze-{cloze_id}'
@@ -1229,19 +1233,19 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
 
             flashcards += [
                 cloze_flashcard(match)
-                for match in re.finditer(r"{{c\d*::.*?}}", json.dumps(flashcard_creator.fields.first().text), re.MULTILINE) \
+                for match in re.finditer(r"{{c\d*::.*?}}", json.dumps(local_flashcard_creator.fields.first().text), re.MULTILINE) \
                     if int(match.group().split("::")[0][3:]) not in cloze_ids
             ]
         else:
             # Create a flashcard for each field
             try:
-                all_content_indicies = CONTENT_INDICIES_DICT[flashcard_creator.flashcard_type.upper()]
+                all_content_indicies = CONTENT_INDICIES_DICT[local_flashcard_creator.flashcard_type.upper()]
             except KeyError:
-                return Response({'message': f'Flashcard type "{flashcard_creator.flashcard_type}" unrecognized'}, status=400)
+                return Response({'message': f'Flashcard type "{local_flashcard_creator.flashcard_type}" unrecognized'}, status=400)
 
             flashcards += [
                 FlashCard(
-                    creator=flashcard_creator,
+                    creator=local_flashcard_creator,
                     next_review=this_morning,
                     content_indicies=all_content_indicies[i],
                 )
@@ -1249,8 +1253,7 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
             ]
     FlashCard.objects.bulk_create(flashcards)
 
-
-    return Response(DeckSerializer(Deck).data, status=200)
+    return Response(DeckSerializer(deck).data, status=200)
 
 
 @api_view(['POST'])
