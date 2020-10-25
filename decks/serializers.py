@@ -127,6 +127,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'daily_new_card_limit',
             'review_ahead_minutes',
             'shared_deck',
+            'deck_type',
             'id',
         ]
 
@@ -187,6 +188,8 @@ class SharedDeckSerializer(serializers.ModelSerializer):
             'num_thanks',
             'you_have_thanked',
             'serializer_name',
+            'deck_type',
+            'creators',
             'id',
         ]
 

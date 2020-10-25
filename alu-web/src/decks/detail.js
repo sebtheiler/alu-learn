@@ -101,11 +101,18 @@ export function DeckDetail(props) {
         <div>{/* className={browsingState !== 'FLASHCARDS' ? 'd-none' : ''}> */}
           <hr />
           <div className='text-center'>
-            <h2>Example flashcards</h2>
+            <h2>Example Flashcards</h2>
             {flashcards && <>
               <h5>{`(${numFlashcards} in total, ${Math.min(numFlashcards, 10)} displayed)`}</h5>
               {currentUsername === deck.author.username ?
-                <DeckDefaultButtonGroup deck={deck} />
+                <ButtonGroup>
+                  <Button href={`/decks/${deck.creators[0]}/share/`}>
+                    Update Settings
+                  </Button>
+                  <Button href={`/decks/${deck.id}/flashcards/`} className='ml-1'>
+                    View Flashcards
+                  </Button>
+                </ButtonGroup> 
               :
                 <DeckForeignUserButtonGroup deck={deck} handleThankDeck={handleThankDeck} thankBtnLabel={thankBtnLabel} />
               }
