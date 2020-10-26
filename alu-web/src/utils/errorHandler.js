@@ -68,6 +68,7 @@ int(hexadecimal_string, 16)
 1022: Error pushing changes to new deck through apiSharedPushChanges in alu-web/src/decks/push.js
 1023: Error getting deck detail for updating through apiDeckDetail in alu-web/src/decks/update.js
 1024: Error getting deck updates through apiDeckGetUpdates in alu-web/src/decks/update.js
+1024: Error pulling deck updates through apiDeckPullUpdates in alu-web/src/decks/update.js
 
 === Flashcard related errors ===
 2000: Error getting flashcard detail through apiFlashCardDetail in alu-web/src/decks/flashcards/create.js

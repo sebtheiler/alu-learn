@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { errorHandler } from '../utils';
-import { apiDeckDetail, apiDeckGetUpdates } from '../lookup';
+import { apiDeckDetail, apiDeckGetUpdates, apiDeckPullUpdates } from '../lookup';
 import { Button } from 'react-bootstrap';
 
 export function UpdateDeck(props) {
@@ -32,12 +32,19 @@ export function UpdateDeck(props) {
         };
       });
     };
-  }, [deckDidSet, deckId]);
+  }, [deckDidSet, deckId, notFound]);
 
   const pullHandleWrapper = (sharedDeckId) => {
     return (event) => {
       event.preventDefault();
-      console.log(sharedDeckId)
+      apiDeckPullUpdates(deckId, sharedDeckId, (response, status) => {
+        if (status === 200) {
+          window.location.href = `/decks/${deckId}/flashcards/`;
+        } else {
+          // Error pulling deck updates
+          errorHandler(response, status, 1025);
+        };
+      }); 
     };
   };
 
@@ -58,9 +65,9 @@ export function UpdateDeck(props) {
         <hr />
       </div>)
       )}
-      <Button onClick={pullHandleWrapper(updates.map(update => update.id))}>
+      {/* <Button onClick={pullHandleWrapper(updates.map(update => update.id))}>
         Pull All Changes
-      </Button>
+      </Button> */}
       </> : <p>This deck is fully updated</p>
     ) : <p>Loading...</p>}
   </>);

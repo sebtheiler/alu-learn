@@ -470,3 +470,8 @@ export function apiSharedPushChanges(originDeckId, sharedDeckId, checkDiffOnly, 
 export function apiDeckGetUpdates(deckId, callback) {
   backendLookup('GET', `decks/get-updates/${deckId}/`, callback);
 };
+
+// Pulls specified updates for a deck
+export function apiDeckPullUpdates(deckId, toPullFrom, callback) {
+  backendLookup('POST', `decks/pull-updates/${deckId}/`, callback, {to_pull_from: toPullFrom});
+};

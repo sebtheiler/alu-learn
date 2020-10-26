@@ -1100,6 +1100,9 @@ def shared_deck_create_view(request, *args, **kwargs):
     # I'm alright with that for now
     flashcard_creators = deepcopy(origin_deck.flashcards.prefetch_related('fields'))
     for flashcard_creator in flashcard_creators:
+        if flashcard_creator.copied_from_creator:
+            continue
+ 
         # Clone flashcard creator
         shared_flashcard_creator = deepcopy(flashcard_creator)
         shared_flashcard_creator.pk = None
@@ -1174,6 +1177,7 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
         local_flashcard_creator.id = None
         local_flashcard_creator.shared_mirror = None # reset the one2one relation
         local_flashcard_creator.origin_creator = None
+        local_flashcard_creator.copied_from_creator = shared_flashcard_creator # keep track of where this flashcard creator came from
         local_flashcard_creator.deck = deck # change to now belonging to the new deck
         local_flashcard_creator.save()
 
@@ -1298,7 +1302,8 @@ def shared_deck_update_view(request, *args, **kwargs):
 
             edited = False
             shared_fields = shared_mirror.fields.all()
-            for origin_field in origin_flashcard_creator.fields.all():
+            origin_fields = origin_flashcard_creator.fields.all()
+            for origin_field in origin_fields:
                 try:
                     shared_field = shared_fields.get(field_number=origin_field.field_number)
                 except FlashCardField.DoesNotExist:
@@ -1386,5 +1391,98 @@ def deck_get_updates_view(request, deck_id, *args, **kwargs):
                 'id': shared_deck_relation.shared_deck.id,
             })
 
-    print(needs_updating)
     return Response({'needs_updating': needs_updating}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deck_pull_updates_view(request, deck_id, *args, **kwargs):
+    """
+    Gets the updates for a deck - POST
+
+    Required information:
+        `deck_id`: (URL) Id of the deck to updates
+        `to_pull_from`: (Data) Id of the shared deck to pull changes from (can be a list)
+    """
+    # Get deck
+    try:
+        deck = Deck.objects.get(
+            pk=deck_id,
+            user=request.user,
+        )
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck does not exist / you are unauthorized'}, status=400)
+    
+    # Get shared deck(s)
+    to_pull_from = request.data.get('to_pull_from')
+    if isinstance(to_pull_from, int):
+        try:
+            shared_deck = SharedDeck.objects.get(pk=to_pull_from)
+        except SharedDeck.DoesNotExist:
+            return Response({'message': 'Deck does not exist / you are unauthorized'}, status=400)
+
+        local_flashcard_creators = FlashCardCreator.objects.filter(deck=deck, copied_from_creator__deck=shared_deck)
+        shared_flashcard_creators = shared_deck.flashcards.all().prefetch_related('fields')
+        for shared_flashcard_creator in shared_flashcard_creators:
+            try:
+                local_flashcard_creator = local_flashcard_creators.get(copied_from_creator=shared_flashcard_creator)
+                to_create = False
+            except FlashCardCreator.DoesNotExist:
+                to_create = True
+            
+            if to_create:
+                # Create new flashcard creator
+                local_flashcard_creator = deepcopy(shared_flashcard_creator)
+                local_flashcard_creator.pk = None
+                local_flashcard_creator.id = None
+                local_flashcard_creator.deck = deck
+                local_flashcard_creator.was_updated = True
+                local_flashcard_creator.origin_creator = None
+                local_flashcard_creator.copied_from_creator = shared_flashcard_creator # keep track of where this flashcard creator came from
+                local_flashcard_creator.save()
+
+                # Create link between the shared and the origin flashcard creators
+                local_flashcard_creator.copied_from_creator = shared_flashcard_creator
+                local_flashcard_creator.save()
+
+                # Clone flashcard creator fields
+                creator_fields = shared_flashcard_creator.fields.all()
+                for field in creator_fields:
+                    field.pk = None
+                    field.creator = local_flashcard_creator
+                    field.save()
+            else:
+                # Attempt to update existing flashcard creator
+                local_fields = local_flashcard_creator.fields.all()
+                shared_fields = shared_flashcard_creator.fields.all()
+                for shared_field in shared_fields:
+                    try:
+                        local_field = local_fields.get(field_number=shared_field.field_number)
+                    except FlashCardField.DoesNotExist:
+                        FlashCardField.objects.create(
+                            creator=local_flashcard_creator,
+                            text=shared_field.text,
+                            field_number=shared_field.field_number,
+                        )
+                        continue
+ 
+                    if not local_flashcard_creator.was_updated:
+                        local_flashcard_creator.was_updated = True
+                        local_flashcard_creator.save()
+ 
+                    if local_field.text != shared_field.text:
+                        local_field.text = shared_field.text
+                        local_field.save()
+
+        # Delete all flashcards that weren't updated
+        not_updated = local_flashcard_creators.filter(was_updated=False)
+        not_updated.delete()
+        local_flashcard_creators.update(was_updated=False)
+
+        # Bump version number and return
+        shared_deck_relation = deck.shared_deck_relations.get(shared_deck=shared_deck)
+        shared_deck_relation.cloned_at_version = shared_deck.version_number
+        shared_deck_relation.save()
+        return Response(DeckSerializer(deck).data, status=200)
+    else:
+        return Response({}, status=501)
