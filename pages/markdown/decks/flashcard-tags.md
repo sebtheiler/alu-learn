@@ -7,7 +7,6 @@ Tags should be separated by commas. For example:
 `Calculus, Integrals, Exponentials`.  This makes tags case sensitive. `calculus` =/= `Calculus` - be careful when creating tags or it will be a pain to change them. Trailing and prefixing white space, however, is entirely irrelevant.
 
 The field for creating tags is located below the "Back" side when creating or editing flashcards, and above the submit button.
-!!!IMG!!!
 
 As with the front and back sides of a card, the tags field can be [frozen](/help/freezing-fields/), making it easier to create multiple flashcards with similar or identical tags.
 

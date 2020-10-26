@@ -1,4 +1,4 @@
-from pages.views import change_email_view
+from pages.views import change_email_view, md_view_wrapper
 from django.urls import path
 
 from . import views
@@ -23,6 +23,7 @@ urlpatterns = [
     path('help/suspended/', views.md_view_wrapper('decks/flashcard-suspended', 'Suspended Flashcards')),
     path('help/leeches/', views.md_view_wrapper('decks/flashcard-leech', 'Leech Flashcards')),
     path('help/freezing-fields/', views.md_view_wrapper('decks/flashcard-field-freezing', 'Freezing Fields in Flashcard Creation')),
+    path('help/cloze-deletion/', views.md_view_wrapper('decks/cloze-deletion', 'Cloze Deletion')),
     # Legal pages
     path('legal/', views.md_view_wrapper('legal/main', 'Legal Documents')),
     path('legal/tos/', views.md_view_wrapper('legal/ToS', 'Terms of Service')),
