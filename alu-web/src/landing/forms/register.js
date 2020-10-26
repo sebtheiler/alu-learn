@@ -176,7 +176,10 @@ export function ModalRegisterForm(props) {
   return (
     <Form onSubmit={registerHandler}>
       <Form.Group>
-        <Form.Label className='mb-0'>Date of Birth</Form.Label>
+        <Form.Label className='mb-0'>
+          Date of Birth<br />
+          <small>If you are under 13, you can still use Alu, but some features will be limited</small>
+        </Form.Label>
         <p id='dateError' className='text-danger mb-0'></p>
         <div className='row'>
           <div className='col-4'>

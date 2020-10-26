@@ -20,7 +20,7 @@ Certain visitors to Alu's websites choose to interact with Alu in ways that requ
 
 ## Aggregated Statistics
 
-Alu may collect statistics about the behavior of visitors to its websites. For instance, Alu may monitor the most popular word sets on the Alu site. Alu may display this information publicly or provide it to others. However, Alu does not disclose personally-identifying information other than as described below.
+Alu may collect statistics about the behavior of visitors to its websites. For instance, Alu may monitor the most popular flashcard decks on the Alu site. Alu may display this information publicly or provide it to others. However, Alu does not disclose personally-identifying information other than as described below.
 
 ## Protection of Certain Personally-Identifying Information
 
@@ -28,7 +28,7 @@ Alu discloses potentially personally-identifying and personally-identifying info
 
 ## Cookies
 
-A cookie is a string of information that a website stores on a visitor's computer, and that the visitor's browser provides to the website each time the visitor returns. Alu uses cookies to help Alu identify and track visitors, their usage of the Alu website, and their website access preferences. Alu visitors who do not wish to have cookies placed on their computers should set their browsers to refuse cookies before using Alu's websites, with the drawback that certain features of Alu's websites may not function properly without the aid of cookies.
+A cookie is a string of information that a website stores on a visitor's computer, and that the visitor's browser provides to the website each time the visitor returns. Alu uses cookies to help Alu identify and track visitors, their usage of the Alu website, and their website access preferences. Alu visitors who do not wish to have cookies placed on their computers should set their browsers to refuse cookies before using Alu's websites, with the drawback that certain features of Alu's websites may not function properly without the aid of cookies.  Cookies are, for example, required to keep the current user logged in.
 
 ## Privacy Policy Changes
 

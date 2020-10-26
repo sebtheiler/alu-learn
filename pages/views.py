@@ -28,7 +28,7 @@ def md_view_wrapper(path, title, redirect_if_unauth=False):
     def help_view(request, *args, **kwargs):
         if redirect_if_unauth and not request.user.is_authenticated:
             return redirect('/')
-        elif not request.user.is_confirmed:
+        elif request.user.is_authenticated and not request.user.is_confirmed:
             return redirect('/confirm-email/')
 
         # Read the MD file from disk, and send it to the template
