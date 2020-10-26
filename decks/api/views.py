@@ -1288,7 +1288,7 @@ def shared_deck_update_view(request, *args, **kwargs):
 
     # Update the shared deck's flashcard creators
     origin_flashcard_creators = origin_deck.flashcards.prefetch_related('fields', 'shared_mirror')
-    shared_mirrors = FlashCardCreator.objects.filter(origin_creator__in=origin_flashcard_creators)
+    shared_mirrors = FlashCardCreator.objects.filter(deck=shared_deck)
     for origin_flashcard_creator in origin_flashcard_creators:
         try:
             shared_mirror = origin_flashcard_creator.shared_mirror
@@ -1421,7 +1421,10 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
         except SharedDeck.DoesNotExist:
             return Response({'message': 'Deck does not exist / you are unauthorized'}, status=400)
 
+        # Pulled deletions are not happening because when the shared flashcard creator is deleted,
+        # the copied_from_creator is set to null, and it is then seen in the following line
         local_flashcard_creators = FlashCardCreator.objects.filter(deck=deck, copied_from_creator__deck=shared_deck)
+        print(local_flashcard_creators)
         shared_flashcard_creators = shared_deck.flashcards.all().prefetch_related('fields')
         for shared_flashcard_creator in shared_flashcard_creators:
             try:
@@ -1476,6 +1479,8 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
 
         # Delete all flashcards that weren't updated
         not_updated = local_flashcard_creators.filter(was_updated=False)
+        print(local_flashcard_creators)
+        print(not_updated)
         not_updated.delete()
         local_flashcard_creators.update(was_updated=False)
 

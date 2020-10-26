@@ -50,6 +50,9 @@ top_deck_ids.json
 
 # --- Production Things ---
 sites-enabled
-env-vars.json
 aluenv
 Pipfile
+
+# --- JSON Files ---
+env-vars.json
+allowed-emails.json
