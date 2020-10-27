@@ -70,12 +70,12 @@ export function SettingsPage(props) {
           </a></li>
         </ul>
       </Form.Group>
-      <Form.Group>
+      {/* <Form.Group>
         <Form.Label as='h3'>Misc.</Form.Label>
         <FormCheckbox name='disableTooltips' defaultChecked={profile.settings.disable_all_tooltips}>
           Disable all tooltips (not recommended for beginners)
         </FormCheckbox>
-      </Form.Group>
+      </Form.Group> */}
       <Form.Group>
         <Button type='submit' block>
           Save Changes

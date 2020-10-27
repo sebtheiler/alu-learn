@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Deck
+from .models import Deck, SharedDeck
 from django.http import Http404
 
 
@@ -14,8 +14,17 @@ def decks_home_view(request, *args, **kwargs):
 
 # Renders information on a specific deck
 def decks_detail_view(request, deck_id, *args, **kwargs):
+    try:
+        deck = SharedDeck.objects.get(pk=deck_id)
+        if deck.sharing_setting == 'FRIENDS' and request.user not in deck.user.profile.friends:
+            raise Http404("You are not authorized to view this deck")
+        shared_deck = True
+    except SharedDeck.DoesNotExist:
+        shared_deck = False
+
     context = {
         'deck_id': deck_id,
+        'deck_title': deck.title if shared_deck else 'Deck',
         'current_username': request.user.username,
     }
 
@@ -95,7 +104,7 @@ def deck_study_view(request, deck_id, *args, **kwargs):
     except Deck.DoesNotExist:
         raise Http404()
 
-    return render(request, 'decks/study.html', context={'ssm_id': deck.study_session_manager.id})
+    return render(request, 'decks/study.html', context={'ssm_id': deck.study_session_manager.id, 'deck_title': deck.title})
 
 # Renders the view for importing decks
 def deck_import_view(request, *args, **kwargs):
