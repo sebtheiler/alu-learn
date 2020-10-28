@@ -1,26 +1,25 @@
-from rest_framework.decorators import (api_view, authentication_classes,
-                                       permission_classes)
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from decks.models import Deck
-from decks.serializers import DeckSerializer
+from decks.models import SharedDeck
+from decks.serializers import SharedDeckSerializer
 from django.db.models import Q
 from django.views.decorators.cache import cache_page
-from django.conf import settings
 import json
 
-EDITOR_PICKS_DECK_IDS = [1, 2]
+with open('editor_deck_ids.json', 'r') as f:
+    EDITOR_PICKS_DECK_IDS = json.loads(f.read())
+
 with open('top_deck_ids.json', 'r') as f:
     TOP_DECK_IDS = json.loads(f.read())
-# HOT_DECK_IDS = []
 
 def get_decks_from_ids(id_list, public_only=False):
     query = Q(pk__in=id_list)
     if public_only:
         query &= Q(deck_type='shared')
 
-    decks_qs = Deck.objects.filter(query)
-    return DeckSerializer(decks_qs, many=True).data
+    decks_qs = SharedDeck.objects.filter(query)
+    return SharedDeckSerializer(decks_qs, many=True).data
 
 @cache_page(60*15)
 @api_view(['GET'])

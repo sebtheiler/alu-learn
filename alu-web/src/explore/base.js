@@ -36,11 +36,11 @@ export function ExploreComponent(props) {
         <p className='text-secondary'>Some hand-chosen decks that are awesome</p>
         <DeckSlider decks={decks.EDITOR} loading={!decksDidSet} />
       </div>
-      <div className={'mb-5' + (decks.HOT && decks.HOT.length === 0 ? ' d-none' : '')}>
+      {/* <div className={'mb-5' + (decks.HOT && decks.HOT.length === 0 ? ' d-none' : '')}>
         <h3>Hottest weekly decks</h3>
         <p className='text-secondary'>Decks that have recieved the most thanks in the past week</p>
         <DeckSlider decks={decks.HOT} loading={!decksDidSet} />
-      </div>
+      </div> */}
       <div className={'mb-5' + (decks.TOP && decks.TOP.length === 0 ? ' d-none' : '')}>
         <h3>Most Thanked Decks</h3>
         <p className='text-secondary'>Decks with the total highest number of thanks</p>

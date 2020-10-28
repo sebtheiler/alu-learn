@@ -47,6 +47,7 @@ dump.rdb
 
 # --- Generated Files ---
 top_deck_ids.json
+editor_deck_ids.json
 
 # --- Production Things ---
 sites-enabled
