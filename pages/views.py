@@ -122,19 +122,6 @@ def contact_finished_view_wrapper(is_legal_issue):
 def eli_view(request, *args, **kwargs):
     return render(request, 'misc/eli.html')
 
-# def handler404(request, *args, **kwargs):
-#     response = render_to_response('misc/404_500.html', {},
-#                                   context_instance=RequestContext(request))
-#     response.status_code = 404
-#     return response
-
-
-# def handler500(request, *args, **kwargs):
-#     response = render_to_response('misc/404_500.html', {},
-#                                   context_instance=RequestContext(request))
-#     response.status_code = 500
-#     return response
-
 
 LANDING_EXPERIMENT_PROBABILITIES = [
     0, # Apply button color
