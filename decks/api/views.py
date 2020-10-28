@@ -1,9 +1,9 @@
 import datetime as dt
+import json
 import random
 import re
 from copy import deepcopy
 from itertools import chain
-import json
 
 from django.core.cache import cache
 from django.db.models import Q
@@ -22,13 +22,14 @@ from rest_framework.decorators import (api_view, authentication_classes,
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
-                      DeckThank, FlashCard, FlashCardCreator, FlashCardField,
-                      SharedDeck, SharedDeckRelation, StudySessionManager)
+from ..models import (CustomStudySessionManager, Deck, DeckClone,
+                      DeckStudySessionManager, DeckThank, FlashCard,
+                      FlashCardCreator, FlashCardField, SharedDeck,
+                      SharedDeckRelation, StudySessionManager)
 from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
                            DeckThankSerializer, FlashCardCreatorSerializer,
-                           FlashCardSerializer, StudySessionManagerSerializer,
-                           SharedDeckSerializer)
+                           FlashCardSerializer, SharedDeckSerializer,
+                           StudySessionManagerSerializer)
 from .utils import get_paginated_queryset_response
 
 
@@ -1162,6 +1163,11 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
         deck=deck,
         shared_deck=shared_deck,
         cloned_at_version=shared_deck.version_number,
+    )
+
+    DeckClone.objects.create(
+        deck=shared_deck,
+        profile=request.user.profile,
     )
 
     # Create flashcards for each creator in the cloned deck

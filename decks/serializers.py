@@ -175,6 +175,7 @@ class DeckSerializer(serializers.ModelSerializer):
 class SharedDeckSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField(read_only=True)
     num_thanks = serializers.SerializerMethodField(read_only=True)
+    num_clones = serializers.SerializerMethodField(read_only=True)
     you_have_thanked = serializers.SerializerMethodField(read_only=True)
     serializer_name = serializers.SerializerMethodField(read_only=True)
 
@@ -186,6 +187,7 @@ class SharedDeckSerializer(serializers.ModelSerializer):
             'description',
             'sharing_setting',
             'num_thanks',
+            'num_clones',
             'you_have_thanked',
             'serializer_name',
             'deck_type',
@@ -214,6 +216,9 @@ class SharedDeckSerializer(serializers.ModelSerializer):
     def get_num_thanks(self, obj):
         return obj.thanks.count()
     
+    def get_num_clones(self, obj):
+        return obj.clones.count()
+
     def get_serializer_name(self, obj):
         return 'shared_deck'
     

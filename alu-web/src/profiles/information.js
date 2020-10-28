@@ -35,9 +35,9 @@ function ProfileInformation(props) {
   return user ? (
     <>
       <UserLink user={user} noLink showAllBadges/>
-      <small className='mt-0 text-secondary'>
+      {/* <small className='mt-0 text-secondary'>
         <DisplayCountChar>{user.total_thanks_recieved}</DisplayCountChar> thank{user.total_thanks_recieved === 1 ? '' : 's'} recieved
-      </small>
+      </small> */}
       <div className={'mt-3' + (user.location ? '' : ' d-none')}>
         <h5 className='mb-0'>Location</h5>
         <p>{user.location}</p>

@@ -206,3 +206,12 @@ class DeckThank(models.Model):
 
     def __str__(self):
         return f'Thank from @{self.profile.user.username} for Deck #{self.deck.id}'
+
+
+class DeckClone(models.Model):
+    deck = models.ForeignKey(SharedDeck, on_delete=models.CASCADE, related_name='clones')
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='clones')
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Clone from @{self.profile.user.username} for Deck #{self.deck.id}'

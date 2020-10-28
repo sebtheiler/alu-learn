@@ -79,7 +79,9 @@ export function DeckDetail(props) {
         </a>
         <UserLink user={deck.author} />
         <p className='text-secondary mb-3'>
-          <DisplayCountChar>{deck.num_thanks}</DisplayCountChar> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
+          {/* <DisplayCountChar>{deck.num_thanks}</DisplayCountChar> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
+          {' --- '} */}
+          <DisplayCountChar>{deck.num_clones}</DisplayCountChar> {deck.num_clones !== 1 ? 'copies' : 'copy'}
         </p>
         <MarkdownRender source={deck.description} />
         {/* <div className={'mb-1' + (hideExtras ? ' d-none' : '')}>
