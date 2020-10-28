@@ -96,7 +96,7 @@ export function FlashCardCreate(props) {
         if (!freezeTags) {document.getElementById('tags').value = ''};
         Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999 });
         Transforms.move(frontEditor, { edge: 'focus', distance: 9999999 });
-        document.getElementById('frontText').focus()
+        document.getElementById('flashcardType').focus()
       };
     } else {
       // Error creating/editing flashcard
@@ -146,6 +146,8 @@ export function FlashCardCreate(props) {
           <Form.Control
             as='select'
             onChange={event => setFlashCardType(event.target.value)}
+            id='flashcardType'
+            autofocus
             custom
           >
             <option value='basic'>Basic</option>

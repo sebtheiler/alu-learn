@@ -13,6 +13,7 @@ class FlashCardFieldTabAdmin(admin.TabularInline):
 
 class FlashCardFieldAdmin(admin.ModelAdmin):
     search_fields = ['text']
+    ordering = ['-id']
     model = FlashCardField
 
 
@@ -41,7 +42,6 @@ class DeckAdmin(admin.ModelAdmin):
     fields = [
         'user',
         'title',
-        'inherits_flashcards_from',
     ]
 
     class Meta:

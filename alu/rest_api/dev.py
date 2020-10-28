@@ -12,6 +12,6 @@ class DevAuthentication(authentication.BasicAuthentication):
 
         # Specific username
         user = user_qs.get(username='evolvedsquid')
-        user = user_qs.get(username='123456')
+        # user = user_qs.get(username='123456')
 
         return (user, None)

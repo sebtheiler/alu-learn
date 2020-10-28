@@ -4,7 +4,11 @@ import {Button, Collapse, Alert} from 'react-bootstrap';
 import {createFullEditor, FullEditor} from '../../notes/editor-components';
 import {Slate} from 'slate-react';
 import { emptyValue } from '../../notes/autonote/autonote';
+import {Transforms} from 'slate';
 
+// Does some magic with SlateJS that prevents weird errors
+// DO NOT REMOVE
+// @refresh reset
 
 const processFront = (flashcard, showAnswer) => {
   switch (flashcard.flashcard_type) {
@@ -63,6 +67,22 @@ function RenderFlashCardStudy(props) {
     () => createFullEditor(),
     []
   );
+
+  useEffect(() => {
+    // Slate is lazy and won't automatically update the editor when the flashcard
+    // prop is changed, so we manually have to check if it has changed
+    // The frontValue dependency is excluded on purpose - including it causes infinite loop
+    if (processFront(flashcard, showAnswer) !== frontValue) {
+      setFrontValue(processFront(flashcard, showAnswer));
+      setBackValue(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
+    };
+    // eslint-disable-next-line
+  }, [flashcard, showAnswer]);
+
+  Transforms.move(backEditor, { edge: 'anchor', distance: 9999999, reverse: true });
+  Transforms.move(backEditor, { edge: 'focus', distance: 9999999, reverse: true });
+  Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999, reverse: true });
+  Transforms.move(frontEditor, { edge: 'focus', distance: 9999999, reverse: true });
 
   switch (flashcard.flashcard_type) {
     case 'basic': case 'reversed':
@@ -133,7 +153,7 @@ export function StudyElement(props) {
   const {currentCard, showAnswer, showAnswerHandler, message, backendGradeUpdate, handleKeyDown, schedulingAlgorithm, deleteFlashCardHandler, leechsuspendFlashCardGenerator, numRemainingFlashcards} = props;
   const [optionButtonsExpanded, setOptionButtonsExpanded] = useState(false);
 
-  
+
   // Used for handling keypresses
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);

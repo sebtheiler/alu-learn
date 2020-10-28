@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Button, Form} from 'react-bootstrap';
 import { apiProfileDetail, apiProfileSettingsUpdate } from '../../lookup';
 import { UserLink } from '../../profiles';
-import { errorHandler, FormCheckbox } from '../../utils';
+import { errorHandler } from '../../utils';
 
 export function SettingsPage(props) {
   const {username} = props;

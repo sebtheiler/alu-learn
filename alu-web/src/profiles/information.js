@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {apiProfileDetail, apiProfileFriendToggle, apiSendFriendReq} from '../lookup';
 import {UserLink} from './components';
-import {DisplayCountChar, errorHandler} from '../utils';
+import {errorHandler} from '../utils';
 import {Button} from 'react-bootstrap';
 
 
