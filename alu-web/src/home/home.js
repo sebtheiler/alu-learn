@@ -135,24 +135,27 @@ export function HomeComponent(props) {
             values={userHistory}
             tooltipDataAttrs={value => {
               return {
-                'data-tip': `You reviewed ${value.cardsDone} flashcards on ${
+                'data-tip': value && value.date ? `You reviewed ${value.cardsDone} flashcards on ${
                   value.date.toISOString().slice(0, 10)
-                }`,
+                }` : 'Error, please report this',
               };
             }}
             classForValue={(value) => {
-              const unit = maxReviews / 7; // 7 = number of colors that aren't zero
-              const cardsDone = value.cardsDone;
               var colorValue;
-              if (cardsDone === 0) {colorValue = 0} else
-              if (cardsDone > maxReviews - unit*1) {colorValue = 7} else
-              if (cardsDone > maxReviews - unit*2) {colorValue = 6} else
-              if (cardsDone > maxReviews - unit*3) {colorValue = 5} else
-              if (cardsDone > maxReviews - unit*4) {colorValue = 4} else
-              if (cardsDone > maxReviews - unit*5) {colorValue = 3} else
-              if (cardsDone > maxReviews - unit*6) {colorValue = 2} else
-              {colorValue = 1}
-
+              if (!value) {
+                colorValue = 0;
+              } else {
+                const unit = maxReviews / 7; // 7 = number of colors that aren't zero
+                const cardsDone = value.cardsDone;
+                if (cardsDone === 0) {colorValue = 0} else
+                if (cardsDone > maxReviews - unit*1) {colorValue = 7} else
+                if (cardsDone > maxReviews - unit*2) {colorValue = 6} else
+                if (cardsDone > maxReviews - unit*3) {colorValue = 5} else
+                if (cardsDone > maxReviews - unit*4) {colorValue = 4} else
+                if (cardsDone > maxReviews - unit*5) {colorValue = 3} else
+                if (cardsDone > maxReviews - unit*6) {colorValue = 2} else
+                {colorValue = 1}
+              };
               return `color-scale-${Math.min(colorValue, 7)}`;
             }}
           />
