@@ -9,7 +9,7 @@ from pages.views import (
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('super-secret-admin-123/', admin.site.urls),
     path('', landing_page),
     path('', include('decks.urls')), path('api/decks/', include('decks.api.urls')),
     path('', include('notes.urls')), path('api/notes/', include('notes.api.urls')),
