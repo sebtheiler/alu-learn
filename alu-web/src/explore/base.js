@@ -33,7 +33,7 @@ export function ExploreComponent(props) {
       <hr />
       <div className={'mb-5' + (decks.EDITOR && decks.EDITOR.length === 0 ? ' d-none' : '')}>
         <h3>Cool Decks</h3>
-        <p className='text-secondary'>Some hand-chosen decks that are awesome</p>
+        <p className='text-secondary'>Some hand-chosen decks that are cool</p>
         <DeckSlider decks={decks.EDITOR} loading={!decksDidSet} />
       </div>
       {/* <div className={'mb-5' + (decks.HOT && decks.HOT.length === 0 ? ' d-none' : '')}>

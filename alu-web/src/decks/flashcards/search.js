@@ -3,10 +3,13 @@ import {Form, Button} from 'react-bootstrap';
 import {apiDeckSharedList, apiFlashCardSearch, apiSSMCreate} from '../../lookup';
 import {FlashCardsList} from '.';
 import RangeSlider from 'react-bootstrap-range-slider';
-import 'bootstrap/dist/css/bootstrap.css'; // or include from a CDN
+import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import { errorHandler } from '../../utils';
 
+// Does some magic with SlateJS that prevents weird errors
+// DO NOT REMOVE
+// @refresh reset
 
 export function SearchForm(props) {
   const {decks, minEaseValue, setMinEaseValue, maxEaseValue, setMaxEaseValue, showRangeSlider, defaultContains, defaultTags, defaultLeech, defaultLearningStatus, defaultMinEase, defaultMaxEase, as, hideSuspend} = props;
