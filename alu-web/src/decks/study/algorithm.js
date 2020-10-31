@@ -100,6 +100,10 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
   var {learning_status: learningStatus, steps_index: stepsIndex, ease: easeFactor, interval, is_leech: isLeech, leech_index: leechIndex} = card;
   learningStatus = learningStatus.toLowerCase();
 
+  if (!learningStatus) {
+    console.error(card);
+  };
+
   // Algorithm
   if (learningStatus === 'learning' || learningStatus === 'unseen') {
     // For learning cards, there is no "hard" response available (if this is changed `handleKeyDown` also needs to be changed in components.js)
