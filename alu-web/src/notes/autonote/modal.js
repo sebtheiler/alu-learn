@@ -9,12 +9,22 @@ export function AutoNoteModal(props) {
   const [gaveInputText, setGaveInputText] = useState(false);
   const [inputText, setInputText] = useState('');
   const [removeLinebreak, setRemoveLinebreak] = useState(false);
+  const [inputType, setInputType] = useState('text');
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.target;
 
-    setInputText(form.elements.textInput.value);
+    switch (inputType) {
+      case 'text':
+        setInputText(form.elements.textInput.value);
+        break;
+      case 'video':
+        setInputText(form.elements.videoLink.value);
+        break;
+      default:
+        break;
+    }; 
     setGaveInputText(true);
   };
 
@@ -30,17 +40,48 @@ export function AutoNoteModal(props) {
           updateNoteCallback={updateNoteCallback}
           initialValue={initialValue}
           text={inputText}
+          inputType={inputType}
           removeLinebreak={removeLinebreak}
         />
       :
         <Form onSubmit={handleSubmit} className='w-75 mx-auto'>
-          <Form.Group>
-            <Form.Label as='h3' className='mt-3'>Input Text</Form.Label>
-            <Form.Control as='textarea' name='textInput' rows='10' />
+          <Form.Group className='row'>
+            <Form.Label
+              as='h3'
+              onClick={() => setInputType('text')}
+              className={'mt-3 text-center col-6 cursor-pointer' + (inputType === 'text' ? ' underline' : ' text-muted')}
+            >
+              Text
+            </Form.Label>
+            <Form.Label
+              as='h3'
+              onClick={() => setInputType('video')}
+              className={'mt-3 text-center col-6 cursor-pointer' + (inputType === 'video' ? ' underline' : ' text-muted')}
+            >
+              Video
+            </Form.Label>
           </Form.Group>
-          <FormCheckbox onChange={() => setRemoveLinebreak(!removeLinebreak)}>
-            Remove linebreaks? (Recommended for PDFs)
-          </FormCheckbox><br />
+          {inputType === 'text' && <>
+            <Form.Group>
+              <Form.Control as='textarea' name='textInput' rows='10' />
+            </Form.Group>
+            <Form.Group>
+              <FormCheckbox onChange={() => setRemoveLinebreak(!removeLinebreak)}>
+                Remove linebreaks? (Recommended for PDFs)
+              </FormCheckbox><br />
+            </Form.Group>
+          </>}
+          {inputType === 'video' && <>
+            <Form.Group>
+              <Form.Label>Video to Take Notes On</Form.Label>
+              <Form.Control
+                type='text'
+                name='videoLink'
+                placeholder='https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+                required
+              />
+            </Form.Group>
+          </>}
           <Button type='submit' className='mt-2'>Take Notes on This Text</Button>
         </Form>
       }

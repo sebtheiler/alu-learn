@@ -105,7 +105,7 @@ export const parseText = (text, version='paragraph') => {
 };
 
 export function AutoNote(props) {
-  const {updateNoteCallback, initialValue, removeLinebreak} = props;
+  const {updateNoteCallback, initialValue, inputType, removeLinebreak} = props;
   const text = parseText((removeLinebreak ? props.text.replaceAll('\n', ' ') : props.text).trim(), 'sentence');
 
   const [selectedPar, setSelectedPar] = useState(0);
@@ -187,6 +187,7 @@ export function AutoNote(props) {
       updateProgressBar={updateProgressBar}
       showCompiledNotes={showCompiledNotes}
       setShowCompiledNotes={setShowCompiledNotes}
+      inputType={inputType}
     >
       <Form onSubmit={handleSubmit} className='mt-4'>
         <Form.Group className='w-75 mx-auto'>
