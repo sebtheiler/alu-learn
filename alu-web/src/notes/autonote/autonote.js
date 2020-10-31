@@ -43,9 +43,8 @@ export const parseText = (text, version='paragraph') => {
           if (splitPar.length > numSentences) {
             // If it is a long paragraph, we will split it
             // into sentences determined by `numSentences`
-            const numConcatSentences = Math.ceil(splitPar.length / numSentences);
-            for (let i = 0; i < numConcatSentences; i++) {
-              toPush = splitPar.slice(i*numConcatSentences, (i+1)*numConcatSentences).join('. ');
+            for (let i = 0; i < splitPar.length; i+=numSentences) {
+              toPush = splitPar.slice(i, i+numSentences).join('. ');
               finalText.push(toPush + (toPush.endsWith('.') ? '' : '.'));
             };
           } else {
@@ -106,8 +105,8 @@ export const parseText = (text, version='paragraph') => {
 };
 
 export function AutoNote(props) {
-  const {updateNoteCallback, initialValue} = props;
-  const text = parseText(props.text.trim(), 'sentence');
+  const {updateNoteCallback, initialValue, removeLinebreak} = props;
+  const text = parseText((removeLinebreak ? props.text.replaceAll('\n', ' ') : props.text).trim(), 'sentence');
 
   const [selectedPar, setSelectedPar] = useState(0);
   const [finished, setFinished] = useState(false);

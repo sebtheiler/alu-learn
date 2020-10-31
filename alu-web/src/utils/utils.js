@@ -181,12 +181,19 @@ export function range(start, end) {
 // it is fixed we can replace this with proper React-
 // Bootstrap
 export function FormCheckbox(props) {
-  const {required, name, defaultChecked} = props;
+  const {required, name, defaultChecked, id, onChange} = props;
   const type = props.type ? props.type : 'checkbox';
 
   return (
     <label className='form-check-label'>
-      <input type={type} required={required ? 'required' : ''} defaultChecked={defaultChecked} name={name} />{' '}
+      <input
+        type={type}
+        required={required ? 'required' : ''}
+        defaultChecked={defaultChecked}
+        name={name}
+        id={id}
+        onChange={onChange}
+      />{' '}
       {props.children}
     </label>
   );

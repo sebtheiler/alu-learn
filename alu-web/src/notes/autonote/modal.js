@@ -1,12 +1,14 @@
-import React, {useState} from 'react';
-import {Button, Form, Modal} from 'react-bootstrap';
-import {AutoNote} from './autonote';
+import React, { useState } from 'react';
+import { Button, Form, Modal } from 'react-bootstrap';
+import { FormCheckbox } from '../../utils';
+import { AutoNote } from './autonote';
 import './modal.css';
 
 export function AutoNoteModal(props) {
   const {show, hide, updateNoteCallback, initialValue} = props;
   const [gaveInputText, setGaveInputText] = useState(false);
   const [inputText, setInputText] = useState('');
+  const [removeLinebreak, setRemoveLinebreak] = useState(false);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -17,7 +19,7 @@ export function AutoNoteModal(props) {
   };
 
   return (
-  <Modal show={show} onHide={hide} size='90w'>
+    <Modal show={show} onHide={hide} size='90w'>
       <Modal.Header>
         <Modal.Title>
           Creating Auto-notes from Document
@@ -28,14 +30,18 @@ export function AutoNoteModal(props) {
           updateNoteCallback={updateNoteCallback}
           initialValue={initialValue}
           text={inputText}
+          removeLinebreak={removeLinebreak}
         />
       :
         <Form onSubmit={handleSubmit} className='w-75 mx-auto'>
           <Form.Group>
-            <Form.Label as='h3'>Input Text</Form.Label>
+            <Form.Label as='h3' className='mt-3'>Input Text</Form.Label>
             <Form.Control as='textarea' name='textInput' rows='10' />
           </Form.Group>
-          <Button type='submit'>Take Notes on This Text</Button>
+          <FormCheckbox onChange={() => setRemoveLinebreak(!removeLinebreak)}>
+            Remove linebreaks? (Recommended for PDFs)
+          </FormCheckbox><br />
+          <Button type='submit' className='mt-2'>Take Notes on This Text</Button>
         </Form>
       }
       <Modal.Footer className='mt-3'>

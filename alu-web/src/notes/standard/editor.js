@@ -25,7 +25,7 @@ export function StandardNoteEditor(props) {
         Import Text Document
       </Button>}
       <Button
-        href={`/notes/create-flashcards/${noteId}`}
+        href={`/notes/create-flashcards/${noteId}/`}
         variant='success'
         className='mt-0 mb-2'
       >
