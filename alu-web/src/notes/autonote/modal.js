@@ -20,7 +20,14 @@ export function AutoNoteModal(props) {
         setInputText(form.elements.textInput.value);
         break;
       case 'video':
-        setInputText(form.elements.videoLink.value);
+        const videoUrl = form.elements.videoLink.value;
+        const match = videoUrl.match(/watch\?v=.{11}/gm);
+        if (!match) {
+          document.getElementById('videoUrlError').innerHTML = 'We can\'t recognize this URL, please try reformatting it';
+          return;
+        };
+        const videoId = match[0].slice(-11);
+        setInputText(videoId);
         break;
       default:
         break;
@@ -87,6 +94,7 @@ export function AutoNoteModal(props) {
           {inputType === 'video' && <>
             <Form.Group>
               <Form.Label>Video to Take Notes On</Form.Label>
+              <p id='videoUrlError' className='text-danger' />
               <Form.Control
                 type='text'
                 name='videoLink'
