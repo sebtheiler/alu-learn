@@ -45,24 +45,37 @@ export function AutoNoteModal(props) {
         />
       :
         <Form onSubmit={handleSubmit} className='w-75 mx-auto'>
-          <Form.Group className='row'>
-            <Form.Label
-              as='h3'
-              onClick={() => setInputType('text')}
-              className={'mt-3 text-center col-6 cursor-pointer' + (inputType === 'text' ? ' underline' : ' text-muted')}
-            >
-              Text
-            </Form.Label>
-            <Form.Label
-              as='h3'
-              onClick={() => setInputType('video')}
-              className={'mt-3 text-center col-6 cursor-pointer' + (inputType === 'video' ? ' underline' : ' text-muted')}
-            >
-              Video
-            </Form.Label>
+          <Form.Group className='row mt-3'>
+            <div className='col-6 text-center'>
+              <h3><Form.Label
+                as='a'
+                onClick={() => setInputType('text')}
+                style={{
+                  textDecoration: inputType === 'text' ? 'underline' : '',
+                  color: inputType === 'text' ? 'black' : 'grey',
+                  cursor: 'pointer',
+                }}
+              >
+                Text
+              </Form.Label></h3>
+            </div>
+            <div className='col-6 text-center'>
+              <h3><Form.Label
+                as='a'
+                onClick={() => setInputType('video')}
+                style={{
+                  textDecoration: inputType === 'video' ? 'underline' : '',
+                  color: inputType === 'video' ? 'black' : 'grey',
+                  cursor: 'pointer',
+                }}
+              >
+                Video
+              </Form.Label></h3>
+            </div>
           </Form.Group>
           {inputType === 'text' && <>
             <Form.Group>
+              <Form.Label>Text to Take Notes On</Form.Label>
               <Form.Control as='textarea' name='textInput' rows='10' />
             </Form.Group>
             <Form.Group>
