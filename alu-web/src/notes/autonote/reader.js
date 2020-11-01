@@ -39,6 +39,8 @@ export function AutoReader(props) {
             </iframe> 
           </div>
         );
+      default:
+        return;
     };
   };
 
@@ -46,16 +48,18 @@ export function AutoReader(props) {
     <h3 className='text-center'>Content</h3>
     {content()}
     <ButtonGroup className='mt-1 float-right'>
-      <Button
-        variant='secondary'
-        disabled={selectedPar === 0}
-        onClick={event => {event.preventDefault(); setSelectedPar(selectedPar - 1); updateProgressBar(selectedPar - 1)}}
-      >Go Back</Button>
-      <Button
-        variant='secondary'
-        disabled={selectedPar === text.length - 1}
-        onClick={event => {event.preventDefault(); setSelectedPar(selectedPar + 1); updateProgressBar(selectedPar + 1)}}
-      >Go Forwards</Button>
+      {inputType === 'text' && <>
+        <Button
+          variant='secondary'
+          disabled={selectedPar === 0}
+          onClick={event => {event.preventDefault(); setSelectedPar(selectedPar - 1); updateProgressBar(selectedPar - 1)}}
+        >Go Back</Button>
+        <Button
+          variant='secondary'
+          disabled={selectedPar === text.length - 1}
+          onClick={event => {event.preventDefault(); setSelectedPar(selectedPar + 1); updateProgressBar(selectedPar + 1)}}
+        >Go Forwards</Button>
+      </>}
       {compiledNotesButton && <Button
         variant='secondary'
         onClick={event => {event.preventDefault(); setShowCompiledNotes(!showCompiledNotes);}}
