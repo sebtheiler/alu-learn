@@ -28,8 +28,13 @@ export function AutoReader(props) {
         const videoUrl = text[0];
         const videoId = videoUrl.match(/watch\?v=.{11}/gm)[0].slice(-11);
         return (
-          <div>
-            <iframe width="420" height="315"
+          <div className='video-container'>
+            <iframe
+              title='video'
+              width='560' height='315'
+              frameBorder='0'
+              allow='accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
+              allowFullScreen
               src={`https://www.youtube.com/embed/${videoId}`}>
             </iframe> 
           </div>
