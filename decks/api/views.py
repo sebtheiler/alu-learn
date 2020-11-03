@@ -1319,7 +1319,12 @@ def shared_deck_update_view(request, *args, **kwargs):
                     continue
 
                 if not shared_mirror.was_updated:
-                    shared_mirror.tags = origin_flashcard_creator.tags
+                    if shared_mirror.tags != origin_flashcard_creator.tags:
+                        shared_mirror.tags = origin_flashcard_creator.tags
+                        if not edited:
+                            diff['modified'] += 1
+                            edited = True
+
                     shared_mirror.was_updated = True
                     shared_mirror.save()
 
@@ -1429,7 +1434,6 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
         # Pulled deletions are not happening because when the shared flashcard creator is deleted,
         # the copied_from_creator is set to null, and it is then seen in the following line
         local_flashcard_creators = FlashCardCreator.objects.filter(deck=deck, copied_from_creator__deck=shared_deck)
-        print(local_flashcard_creators)
         shared_flashcard_creators = shared_deck.flashcards.all().prefetch_related('fields')
         for shared_flashcard_creator in shared_flashcard_creators:
             try:
@@ -1475,6 +1479,7 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
                         continue
  
                     if not local_flashcard_creator.was_updated:
+                        local_flashcard_creator.tags = shared_flashcard_creator.tags
                         local_flashcard_creator.was_updated = True
                         local_flashcard_creator.save()
  
@@ -1484,8 +1489,6 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
 
         # Delete all flashcards that weren't updated
         not_updated = local_flashcard_creators.filter(was_updated=False)
-        print(local_flashcard_creators)
-        print(not_updated)
         not_updated.delete()
         local_flashcard_creators.update(was_updated=False)
 
