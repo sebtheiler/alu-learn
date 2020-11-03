@@ -1261,7 +1261,7 @@ def shared_deck_edit_view(request, shared_deck_id, *args, **kwargs):
 @permission_classes([IsAuthenticated])
 def shared_deck_update_view(request, *args, **kwargs):
     """
-    Allows the author of a shared deck to update it - POST
+    Allows the author of a shared deck to push flashcard changes - POST
 
     Required information:
         `shared_deck_id`: (Data) Id of the shared deck
@@ -1319,6 +1319,7 @@ def shared_deck_update_view(request, *args, **kwargs):
                     continue
 
                 if not shared_mirror.was_updated:
+                    shared_mirror.tags = origin_flashcard_creator.tags
                     shared_mirror.was_updated = True
                     shared_mirror.save()
 
