@@ -74,13 +74,14 @@ export function MainHook(props) {
         }
       </h1>
       <p>
-        {
+        Learn anything. Remember everything.
+        {/* {
           experimentParams[7] === '1'
             ? <>Whether you're a student, life-long learner,{' '}
               or both, Alu can help you takes notes and study.</>
             : <>Whether you're a <strong>student, life-long learner,</strong>{' '}
               or <strong>both</strong>, Alu can help you takes notes and study.</>
-        }
+        } */}
       </p>
       <MiniRegisterForm
         callback={callback}
