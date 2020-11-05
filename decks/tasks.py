@@ -2,7 +2,7 @@ import json
 
 from celery import shared_task
 from celery.decorators import periodic_task
-from celery.task.schedules import crontab
+from celery.schedules import crontab
 from django.db.models import Count
 from profiles.models import Profile
 
@@ -28,6 +28,6 @@ def midnight_reset():
         f.write(json.dumps(top_deck_ids))
 
 
-@periodic_task(run_every=crontab(minute=0, hour=0))
+@periodic_task(run_every=crontab(minute=0, hour=4))
 def run_midnight_reset():
     midnight_reset.delay()
