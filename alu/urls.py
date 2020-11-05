@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic.base import TemplateView
 
 from pages.views import (
     landing_page,
@@ -10,6 +11,7 @@ from pages.views import (
 
 urlpatterns = [
     path('super-secret-admin-123/', admin.site.urls),
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     path('', landing_page),
     path('', include('decks.urls')), path('api/decks/', include('decks.api.urls')),
     path('', include('notes.urls')), path('api/notes/', include('notes.api.urls')),

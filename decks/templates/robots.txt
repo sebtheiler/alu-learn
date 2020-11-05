@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /public-api/
+Disallow: /private-api/
+Disallow: /logging/
+Disallow: /super-secret-admin-123/
+Disallow: /cache/
