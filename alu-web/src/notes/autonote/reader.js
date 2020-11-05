@@ -10,7 +10,7 @@ export function AutoReader(props) {
     switch (inputType) {
       case 'text':
         return (
-          <div style={{ border: '1px solid gray', padding: '30px', height: '250px', overflow: 'hidden', borderRadius: '5px' }}>
+          <div style={{ border: '1px solid gray', padding: '30px', height: '250px', overflow: 'auto', borderRadius: '5px' }}>
             {selectedPar !== 0 &&
               <p style={{ color: '#e0e0e0' }} dangerouslySetInnerHTML={{__html:
                 `...${text[selectedPar - 1] && text[selectedPar - 1].substr(text[selectedPar - 1].length - 150, text[selectedPar - 1].length)}`
@@ -44,7 +44,9 @@ export function AutoReader(props) {
 
   return (<div className='container mt-5'>
     <h3 className='text-center'>Content</h3>
-    {content()}
+    <div style={{ wordBreak: 'break-word', overflowY: 'auto' }}>
+      {content()}
+    </div>
     <ButtonGroup className='mt-1 float-right'>
       {inputType === 'text' && <>
         <Button

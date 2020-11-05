@@ -39,13 +39,13 @@ export const parseText = (text, version='paragraph') => {
           toPush = `<h4>${par}</h4>`;
           finalText.push(toPush);
         } else {
-          const splitPar = par.split(/\.[^a-zA-Z`_]*?\s/gm); // breaks on '. ' and '.[xx] '
+          const splitPar = par.match(/.*?((\.[^a-zA-Z`_]*)|(\?)|(!))/gm); // break it apart by punction (., !, ?)
           if (splitPar.length > numSentences) {
             // If it is a long paragraph, we will split it
             // into sentences determined by `numSentences`
             for (let i = 0; i < splitPar.length; i+=numSentences) {
-              toPush = splitPar.slice(i, i+numSentences).join('. ');
-              finalText.push(toPush + (toPush.endsWith('.') ? '' : '.'));
+              toPush = splitPar.slice(i, i+numSentences).join(' ');
+              finalText.push(toPush.trim() + ((toPush.endsWith('.') || toPush.endsWith('!') || toPush.endsWith('?')) ? '' : '.'));
             };
           } else {
             toPush = par;
