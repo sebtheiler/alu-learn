@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useEffect} from 'react';
 import {Button} from 'react-bootstrap';
 import {QuestionBubble, errorHandler} from '../../utils';
 import {apiFlashCardSuspendLeech, apiFlashCardDelete} from '../../lookup';
@@ -8,7 +8,7 @@ import './detail.css';
 
 
 export function RenderFlashCardText(props) {
-  const {flashcard} = props;
+  const {flashcard, fixSlateLazy} = props;
 
   const [frontValue, setFrontValue] = useState(flashcard.deck_fields[0].text);
   const frontEditor = useMemo(
@@ -20,6 +20,19 @@ export function RenderFlashCardText(props) {
     () => createFullEditor(),
     []
   );
+
+  useEffect(() => {
+    if (fixSlateLazy) {
+      // Slate is lazy and won't automatically update the editor when the flashcard
+      // prop is changed, so we manually have to check if it has changed
+      // The frontValue dependency is excluded on purpose - including it causes infinite loop
+      if (flashcard.deck_fields[0].text !== frontValue || (flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text !== backValue)) {
+        setFrontValue(flashcard.deck_fields[0].text);
+        setBackValue(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
+      }
+    }
+    // eslint-disable-next-line
+  }, [flashcard]);
 
   switch (flashcard.flashcard_type) {
     case 'basic': case 'reversed': // two-sided
@@ -85,7 +98,7 @@ export function RenderFlashCardText(props) {
 
 // Display an individual flashcard
 export function FlashCard(props) {
-  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser, hideSuspend} = props;
+  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser, hideSuspend, fixSlateLazy} = props;
 
   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
   const [suspendIsLoading, setSuspendIsLoading] = useState(false);
@@ -166,7 +179,7 @@ export function FlashCard(props) {
         </div>
       </div>
       <div className='row'>
-        <RenderFlashCardText flashcard={flashcard} />
+        <RenderFlashCardText flashcard={flashcard} fixSlateLazy={fixSlateLazy} />
       </div>
       <div className='text-center mx-auto w-50' style={{ wordWrap: 'break-word' }}>
         {flashcard.tags ? 

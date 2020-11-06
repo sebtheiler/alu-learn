@@ -10,7 +10,7 @@ export function FlashCardsList(props) {
   // flashcardList: If not deckId, specify a raw list of flashcards
   // foreignUser: True if a user who does not own the deck is viewing it
   // showParnetDeckTitle: If True, show the title of the deck for each flashcard
-  const {deckId, flashcardList, showParentDeckTitle, artificialPaginationNumFlashcards} = props;
+  const {deckId, flashcardList, showParentDeckTitle, artificialPaginationNumFlashcards, fixSlateLazy} = props;
   const isForeignUser = typeof props.foreignUser === 'string' ? props.foreignUser.toLowerCase() === 'true' : props.foreignUser;
   const [deck, setDeck] = useState(null);
   const [flashcards, setFlashCards] = useState([]);
@@ -105,6 +105,7 @@ export function FlashCardsList(props) {
                 deleteCallback={() => {flashcards.splice(index); setFlashCardsDidSet(false);}}
                 foreignUser={isForeignUser}
                 hideSuspend={!!deckId}
+                fixSlateLazy={fixSlateLazy}
               />
       }) :
         <p className='text-center mt-3'>
