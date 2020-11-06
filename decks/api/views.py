@@ -329,6 +329,14 @@ def deck_shared_view(request, username, *args, **kwargs):
     return Response(SharedDeckSerializer(decks_qs, many=True).data, status=200)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def deck_private_list(request, *args, **kwargs):
+    """
+    Gets a list of the current user's private decks - GET
+    """
+    return Response(DeckSerializer(Deck.objects.filter(user=request.user, deck_type='standard'), many=True).data, status=200)
+
 @vary_on_cookie
 @cache_control(private=True)
 @api_view(['GET'])

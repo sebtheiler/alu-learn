@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
-import {Form, Button} from 'react-bootstrap';
-import {apiDeckSharedList, apiFlashCardSearch, apiSSMCreate} from '../../lookup';
-import {FlashCardsList} from '.';
+import React, { useState, useEffect } from 'react';
+import { Form, Button } from 'react-bootstrap';
+import { apiFlashCardSearch, apiSSMCreate, apiDeckPrivateList } from '../../lookup';
+import { FlashCardsList} from '.';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
@@ -144,10 +144,13 @@ export function FlashCardSearchComponent(props) {
   // Get the user's decks
   useEffect(() => {
     if (decksDidSet === false) {
-      apiDeckSharedList(username, (response, status) => {
+      apiDeckPrivateList((response, status) => {
         if (status === 200) {
           setDecksDidSet(true);
           setDecks(response);
+        } else {
+          // Error getting list of private decks for searching
+          errorHandler(response, status, 1025);
         };
       });
     };

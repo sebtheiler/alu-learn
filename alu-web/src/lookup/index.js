@@ -61,6 +61,7 @@ import {
   apiSharedPushChanges,
   apiDeckGetUpdates,
   apiDeckPullUpdates,
+  apiDeckPrivateList,
 } from './lookup';
 
 export {
@@ -126,4 +127,5 @@ export {
   apiSharedPushChanges,
   apiDeckGetUpdates,
   apiDeckPullUpdates,
+  apiDeckPrivateList,
 };

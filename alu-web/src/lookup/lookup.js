@@ -103,6 +103,10 @@ export function apiDeckSharedList(username, callback) {
   backendLookup('GET', `decks/detail/${username.toLowerCase()}/`, callback);
 };
 
+// Gets a list of the current user's decks
+export function apiDeckPrivateList(callback) {
+  backendLookup('GET', 'decks/list/', callback);
+}
 
 // Gets a page of decks from the API
 export function apiDeckHome(callback, nextUrl) {
