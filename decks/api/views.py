@@ -528,8 +528,6 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     Required information:
         `deck_id`: (URL) ID of the deck in which we are editing the flashcard
         `new_title`: (Data) New title of the deck
-        `description`: (Data) New description of the deck
-        `sharing_setting`: (Data) PRIVATE, FRIENDS, or PUBLIC
         `scheduling_algorithm`: (Data) Which scheduling algorithm to use, ANKI or ANKING
         `shufle_unseen_cards`: (Data) Whether or not to shuffle unseen cards
 
@@ -544,18 +542,13 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         return Response({'message': 'Deck not found / you are unauthorized'}, status=400)
 
     # Get data
-    sharing_setting = request.data.get('sharing_setting', deck.sharing_setting)
     scheduling_algorithm = request.data.get('scheduling_algorithm', deck.study_session_manager.scheduling_algorithm)
 
-    if sharing_setting not in ('PRIVATE', 'FRIENDS', 'PUBLIC'):
-        return Response({'message': 'Invalid `sharing_setting`.  Must be `PRIVATE`, `FRIENDS`, or `PUBLIC`'}, status=400)
     if scheduling_algorithm not in ('ANKI', 'ANKING'):
         return Response({'message': 'Invalid `scheduling_algorithm`.  Must be `ANKI` or `ANKING`'}, status=400)
 
     # Edit the deck
     deck.title = request.data.get('new_title', deck.title)
-    deck.description = request.data.get('description', deck.description)
-    deck.sharing_setting = sharing_setting
     deck.study_session_manager.scheduling_algorithm = scheduling_algorithm
     deck.study_session_manager.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards', deck.study_session_manager.shuffle_unseen_cards)
     deck.study_session_manager.daily_new_card_limit = request.data.get('daily_new_card_limit', deck.study_session_manager.daily_new_card_limit)
