@@ -38,10 +38,10 @@ function ProfileInformation(props) {
       {/* <small className='mt-0 text-secondary'>
         <DisplayCountChar>{user.total_thanks_recieved}</DisplayCountChar> thank{user.total_thanks_recieved === 1 ? '' : 's'} recieved
       </small> */}
-      <div className={'mt-3' + (user.location ? '' : ' d-none')}>
+      {/* <div className={'mt-3' + (user.location ? '' : ' d-none')}>
         <h5 className='mb-0'>Location</h5>
         <p>{user.location}</p>
-      </div>
+      </div> */}
       <h5 className='mb-0'>Bio</h5>
       <p>{user.bio ? user.bio : "This user hasn't set a bio yet..."}</p>
       {viewingOwnProfile === false ?

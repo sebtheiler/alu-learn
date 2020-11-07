@@ -286,7 +286,7 @@ export function DeckForeignUserButtonGroup(props) {
           <Form onSubmit={handleCopyDeck}>
             <Modal.Body>
               <Form.Label>Destination</Form.Label>
-              <Form.Control type='text' placeholder={`Copy of "${deck.title}"`} name='destinationTitle' required />
+              <Form.Control type='text' defaultValue={`Copy of "${deck.title}"`} name='destinationTitle' required />
             </Modal.Body>
             <Modal.Footer>
               <Button type='submit'>Copy Deck</Button>

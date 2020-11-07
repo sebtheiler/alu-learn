@@ -189,10 +189,7 @@ export function HomeComponent(props) {
                 };
               })
             :
-            <p>
-              You don't have any friends yet.<br /> Look for some to make your learning
-              experience even better!
-            </p>
+            <p>You don't have any friends yet</p>
             }</>
             :
             <p>Loading...</p>
