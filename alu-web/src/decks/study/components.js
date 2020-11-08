@@ -144,6 +144,7 @@ export function StudyComponent(props) {
         leechIndex,
         isLeech,
         currentCard.learning_status === 'UNSEEN', // incrementNewCardsDoneToday
+        new Date().getTimezoneOffset(), // timezoneOffset
         (response, status) => {
           if (status === 200) {
             // setCurrentCardDidSet(true);

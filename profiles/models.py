@@ -35,9 +35,12 @@ class Profile(models.Model):
         self.save()
         return self.total_thanks_recieved
     
-    def increment_cards_done_today(self):
+    def increment_cards_done_today(self, utc_timezone_offset=None):
         # Get or create history for today
-        history_obj, created = self.history.get_or_create(date=datetime.date.today())
+        date = datetime.datetime.now()
+        if utc_timezone_offset is not None:
+            date -= datetime.timedelta(minutes=utc_timezone_offset)
+        history_obj, created = self.history.get_or_create(date=date.date())
 
         # Increment the current streak if this is the first card done today
         if created:
@@ -80,7 +83,7 @@ class ProfileBadge(models.Model):
 
 class ProfileHistorySegment(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='history')
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField(default=datetime.date.today)
     cards_done = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):

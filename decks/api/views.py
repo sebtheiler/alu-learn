@@ -932,6 +932,7 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
         `ease`: (Data) Ease of card
         `interval`: (Data) The new interval for the flashcard
         `increment_new_cards_done_today`: (Data) Whether or not to increment the SSM's `new_cards_done_today` attribute
+        `utc_timezone_offset`: (Data) (Optional) UTC timezone offset used to mark date for completing flashcard
 
     Possible errors:
         SSM does not exist: 404, SSM not found
@@ -961,7 +962,7 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
     flashcard.save()
 
     # Increment the number of cards that the profile and SSM are registed as doing today
-    flashcard.creator.deck.user.profile.increment_cards_done_today()
+    flashcard.creator.deck.user.profile.increment_cards_done_today(request.data.get('utc_timezone_offset'))
     if request.data.get('increment_new_cards_done_today'):
         ssm.new_cards_done_today += 1
         ssm.save()

@@ -276,7 +276,7 @@ export function apiSSMFlashcards(studySessionmanagerId, callback) {
 };
 
 // Updates a flashcard in an SSM's database
-export function apiSSMFlashcardUpdate(studySessionmanagerId, currentCardId, nextReviewDate, interval, easeFactor, learningStatus, stepsIndex, leechIndex, isLeech, incrementNewCardsDoneToday, callback) {
+export function apiSSMFlashcardUpdate(studySessionmanagerId, currentCardId, nextReviewDate, interval, easeFactor, learningStatus, stepsIndex, leechIndex, isLeech, incrementNewCardsDoneToday, timezoneOffset, callback) {
   backendLookup('POST', `decks/ssm/${studySessionmanagerId}/flashcards/${currentCardId}/update/`, callback, {
     next_review: nextReviewDate,
     interval: interval,
@@ -286,6 +286,7 @@ export function apiSSMFlashcardUpdate(studySessionmanagerId, currentCardId, next
     leech_index: leechIndex,
     is_leech: isLeech,
     increment_new_cards_done_today: incrementNewCardsDoneToday,
+    utc_timezone_offset: timezoneOffset,
   });
 };
 
