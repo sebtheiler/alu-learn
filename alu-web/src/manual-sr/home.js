@@ -147,7 +147,19 @@ export function ManualSRHome(props) {
           sortListCallback={sortListCallback}
           deleteCallback={deleteCallback}
         />
-    )) : 'You don\'t have any tasks yet.') : 'Loading...'}
+    )) : <>
+        <p>You don't have any tasks yet</p>
+        <div>
+          <iframe
+            width="100%" height="400px"
+            title='Introduction to Tasks'
+            allowFullScreen='allowFullScreen'
+            src="https://www.youtube.com/embed/15jt-oQSJ8c"
+            className='mx-auto'
+          />
+        </div>
+      </>
+    ) : 'Loading...'}
     {nextUrl && <Button variant='outline-primary' onClick={handleLoadNext}>
       {loadingNext ? 'Loading...' : 'Load More'}
     </Button>}

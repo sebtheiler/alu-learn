@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
-import {apiDeckHome} from '../lookup';
-import {Deck} from './detail';
-import {Button} from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { apiDeckHome } from '../lookup';
+import { Deck } from './detail';
+import { Button, Row, Col } from 'react-bootstrap';
 import { errorHandler } from '../utils';
 
 
@@ -69,6 +69,31 @@ export function DecksHomeList(props) {
           </Button>
         : null}
       </div>
-    </> : <p className='text-center mt-3'>{decksDidSet ? 'You don\'t have any decks yet.' : 'Loading...'}</p>}</>
+    </> : <>
+        <p className='text-center mt-3'>
+          {decksDidSet ? 'You don\'t have any decks yet.' : 'Loading...'}
+        </p>
+        {decksDidSet && <Row className='text-center'>
+          <Col md={6} xs={12}>
+            <iframe
+              width='90%' height='200%'
+              title='Introduction to Decks'
+              allowFullScreen='allowFullScreen'
+              src="https://www.youtube.com/embed/T2jA--y0ggk"
+              className='mx-auto mb-5'
+            />
+          </Col>
+          <Col md={6} xs={12}>
+            <iframe
+              width='90%' height='200%'
+              title='Introduction to Copying Decks'
+              allowFullScreen='allowFullScreen'
+              src="https://www.youtube.com/embed/XO2myZbhJxQ"
+              className='mx-auto mb-5'
+            />
+          </Col>
+        </Row>}
+      </>
+    }</>
   );
 };
