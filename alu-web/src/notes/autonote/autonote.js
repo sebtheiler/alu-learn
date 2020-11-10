@@ -164,19 +164,21 @@ export function AutoNote(props) {
         setValue(emptyValue);
       };
       // Move selected paragraph
-      if (selectedPar < text.length - 1) {
-        setSelectedPar(selectedPar + 1);
-      } else {
-        setFinished(true);
-      };
+      if (inputType === 'text') {
+        if (selectedPar < text.length - 1) {
+          setSelectedPar(selectedPar + 1);
+        } else {
+          setFinished(true);
+        }
+      }
 
       // Update progress bar
       updateProgressBar(selectedPar + 1);
     } catch (e) {
       console.log(noteDocument);
       alert(`Something "${e}" went wrong inserting your new note.  Please save now.`);
-    };
-  };
+    }
+  }
 
   return (<>
     <AutoReader
@@ -221,9 +223,9 @@ export function AutoNote(props) {
           </div>
         </Form.Group>
         <Button type='submit' block>Add Notes</Button>
-        <div id='contentProgress' className='mt-1'>
+        {inputType === 'text' && <div id='contentProgress' className='mt-1'>
           <div id='contentProgressBar'>{percentComplete}%</div>
-        </div>
+        </div>}
       </Form>
     </AutoReader>
     {(finished || showCompiledNotes) && <div className='container'>
@@ -242,4 +244,4 @@ export function AutoNote(props) {
       </div>
     </div>}
   </>);
-};
+}

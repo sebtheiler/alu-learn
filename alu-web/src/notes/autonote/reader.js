@@ -39,8 +39,8 @@ export function AutoReader(props) {
         );
       default:
         return;
-    };
-  };
+    }
+  }
 
   return (<div className='container mt-5'>
     <h3 className='text-center'>Content</h3>
@@ -70,4 +70,4 @@ export function AutoReader(props) {
       {props.children}
     </>}
   </div>);
-};
+}
