@@ -9,7 +9,7 @@ import { errorHandler } from '../utils';
 // in the user's home page
 export function DecksHomeList(props) {
   const {username} = props;
-  const [decks, setDecks] = useState([]); // Current set of decks
+  const [decks, setDecks] = useState(null); // Current set of decks
   const [decksDidSet, setDecksDidSet] = useState(false);
   const [nextUrl, setNextUrl] = useState(null); // URLS used for pagination
 
@@ -46,6 +46,10 @@ export function DecksHomeList(props) {
     };
   };
 
+  if (decks === null) {
+    return <p className='text-center'>Loading...</p>
+  }
+
   return (
     <>{decks.length > 0 ? <>
       <div className='card-deck text-center mx-auto justify-content-center'>
@@ -71,9 +75,9 @@ export function DecksHomeList(props) {
       </div>
     </> : <>
         <p className='text-center mt-3'>
-          {decksDidSet ? 'You don\'t have any decks yet.' : 'Loading...'}
+          You don't have any decks yet.
         </p>
-        {decksDidSet && <Row className='text-center'>
+        <Row className='text-center'>
           <Col md={6} xs={12}>
             <iframe
               width='90%' height='200%'
@@ -92,8 +96,8 @@ export function DecksHomeList(props) {
               className='mx-auto mb-5'
             />
           </Col>
-        </Row>}
+        </Row>
       </>
     }</>
   );
-};
+}
