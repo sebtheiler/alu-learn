@@ -4,6 +4,7 @@ from django.urls import path
 from . import views
 urlpatterns = [
     # General pages
+    path('', views.landing_page),
     path('home/', views.home_page),
     path('profile/', views.profile_redirect_view),
     path('login/', views.login_view),

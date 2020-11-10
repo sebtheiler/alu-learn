@@ -1,18 +1,16 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
-from django.views.generic.base import TemplateView
+from django.urls import include, path, re_path
+from django.views.generic.base import TemplateView, RedirectView
 
-from pages.views import (
-    landing_page,
-)
+favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 
 
 urlpatterns = [
     path('super-secret-admin-123/', admin.site.urls),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
-    path('', landing_page),
+    re_path(r'^favicon\.ico$', favicon_view),
     path('', include('decks.urls')), path('api/decks/', include('decks.api.urls')),
     path('', include('notes.urls')), path('api/notes/', include('notes.api.urls')),
     path('', include('pages.urls')), path('api/pages/', include('pages.api.urls')),
