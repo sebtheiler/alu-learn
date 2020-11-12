@@ -1,9 +1,9 @@
-import React, {useState, useMemo, useEffect} from 'react';
-import {Button} from 'react-bootstrap';
-import {QuestionBubble, errorHandler} from '../../utils';
-import {apiFlashCardSuspendLeech, apiFlashCardDelete} from '../../lookup';
-import {createFullEditor, FullEditor} from '../../notes/editor-components';
-import {Slate} from 'slate-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Button } from 'react-bootstrap';
+import { QuestionBubble, errorHandler } from '../../utils';
+import { apiFlashCardSuspendLeech, apiFlashCardDelete } from '../../lookup';
+import { createFullEditor, FullEditor } from '../../notes/editor-components';
+import { Slate } from 'slate-react';
 import './detail.css';
 
 
@@ -92,8 +92,8 @@ export function RenderFlashCardText(props) {
           <strong>Invalid flashcard type "{flashcard.flashcard_type}". Please report this issue.</strong>
         </div>
       );
-  };
-};
+  }
+}
 
 
 // Display an individual flashcard
@@ -118,10 +118,10 @@ export function FlashCard(props) {
         } else {
           // Error suspending/leeching flashcard
           errorHandler(response, status, 2003);
-        };
+        }
       });
-    };
-  };
+    }
+  }
 
   const handleDelete = (event) => {
     event.preventDefault();
@@ -129,21 +129,27 @@ export function FlashCard(props) {
     if (deleteIsLoading === false) {
       setDeleteIsLoading(true);
 
-      apiFlashCardDelete(flashcard.parent_deck_id, flashcard.id, (response, status) => {
+      apiFlashCardDelete(flashcard.parent_deck_id, flashcard.creator_id || flashcard.id, (response, status) => {
         if (status === 200) {
+          deleteCallback();
+          setDeleteIsLoading(false);
+        } else if (status === 400) {
+          // Act like its been deleted even if it hasn't
+          // might be bad practice, but it works for when you delete a single creator that deletes multiple flashcards
           deleteCallback();
           setDeleteIsLoading(false);
         } else {
           // Error deleting flashcard
           errorHandler(response, status, 2004);
-        };
+        }
       });
-    };
-  };
+    }
+
+  }
 
   if (!flashcard) {
     return null;
-  };
+  }
 
   return (
     <div className={'container-fluid border my-3' + (foreignUser ? '' : (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : ''))}>
@@ -204,4 +210,4 @@ export function FlashCard(props) {
       }
     </div>
   );
-};
+}

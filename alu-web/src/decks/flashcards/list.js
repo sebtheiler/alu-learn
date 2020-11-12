@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import {apiDeckDetail, apiDeckFlashcards} from '../../lookup';
-import {FlashCard} from './detail';
+import React, { useState, useEffect } from 'react';
+import { apiDeckDetail, apiDeckFlashcards } from '../../lookup';
+import { FlashCard } from './detail';
 import { errorHandler } from '../../utils';
-import {DeckDefaultButtonGroup} from '../buttons';
+import { DeckDefaultButtonGroup } from '../buttons';
 import { Button } from 'react-bootstrap';
 
 export function FlashCardsList(props) {
@@ -83,9 +83,9 @@ export function FlashCardsList(props) {
           };
           setFlashCardsLoading(false);
         }, nextUrl);
-      };
-    };
-  };
+      }
+    }
+  }
 
   return (
     <div className={props.className}>
@@ -96,17 +96,23 @@ export function FlashCardsList(props) {
         }
       </div>
       {flashcards.length > 0 ? flashcards.slice(0, artificialPaginationNumFlashcardsShown).map((flashcard, index) => {
-        return <FlashCard
-                flashcard={flashcard}
-                key={index}
-                number={index}
-                showParentDeckTitle={showParentDeckTitle}
-                suspendCallback={() => setFlashCardsDidSet(false)}
-                deleteCallback={() => {flashcards.splice(index); setFlashCardsDidSet(false);}}
-                foreignUser={isForeignUser}
-                hideSuspend={!!deckId}
-                fixSlateLazy={fixSlateLazy}
-              />
+        return (
+          <FlashCard
+            flashcard={flashcard}
+            key={index}
+            number={index}
+            showParentDeckTitle={showParentDeckTitle}
+            suspendCallback={() => setFlashCardsDidSet(false)}
+            deleteCallback={() => {
+              const newFlashcards = [...flashcards.slice(0, index), ...flashcards.slice(index + 1)];
+              console.log(newFlashcards)
+              setFlashCards(newFlashcards);
+            }}
+            foreignUser={isForeignUser}
+            hideSuspend={!!deckId}
+            fixSlateLazy={fixSlateLazy}
+          />
+        );
       }) :
         <p className='text-center mt-3'>
           {flashcardsDidSet ? 'This deck has no flashcards yet.' : 'Loading...'}

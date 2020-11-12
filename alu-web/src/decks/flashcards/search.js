@@ -212,8 +212,10 @@ export function FlashCardSearchComponent(props) {
           setCreatingCSSM(false);
         },
       );
-    };
-  };
+    }
+  }
+
+  console.log(searchedFlashcards)
 
   return (
     <>
@@ -249,4 +251,4 @@ export function FlashCardSearchComponent(props) {
       </div>
     </>
   );
-};
+}
