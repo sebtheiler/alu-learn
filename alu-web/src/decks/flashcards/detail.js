@@ -198,7 +198,7 @@ export function FlashCard(props) {
       {foreignUser ? null : 
         <div className='col-md-12 mb-3 text-center'>
           <div className='btn-group'>
-            <Button href={`/decks/${flashcard.parent_deck_id}/flashcards/${flashcard.id}/edit/`} variant='primary'>Edit</Button>
+            <Button href={`/decks/${flashcard.parent_deck_id}/flashcards/${flashcard.creator_id || flashcard.id}/edit/`} variant='primary'>Edit</Button>
             {!hideSuspend && <Button onClick={handleSuspend} variant='primary' className='ml-1'>
               {suspendIsLoading ? (flashcard.is_suspended ? 'Unsuspending...' : 'Suspending...') : (flashcard.is_suspended ? 'Unsuspend' : 'Suspend')}
             </Button>}

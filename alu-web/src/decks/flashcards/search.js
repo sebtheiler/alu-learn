@@ -215,8 +215,6 @@ export function FlashCardSearchComponent(props) {
     }
   }
 
-  console.log(searchedFlashcards)
-
   return (
     <>
       <Form className='text-center mx-auto w-75' onSubmit={handleSubmit} id='searchForm'>

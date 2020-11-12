@@ -105,7 +105,6 @@ export function FlashCardsList(props) {
             suspendCallback={() => setFlashCardsDidSet(false)}
             deleteCallback={() => {
               const newFlashcards = [...flashcards.slice(0, index), ...flashcards.slice(index + 1)];
-              console.log(newFlashcards)
               setFlashCards(newFlashcards);
             }}
             foreignUser={isForeignUser}
