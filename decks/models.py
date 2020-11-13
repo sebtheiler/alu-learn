@@ -33,6 +33,9 @@ class SharedDeckRelation(models.Model):
     shared_deck = models.ForeignKey('SharedDeck', on_delete=models.CASCADE, related_name='children_decks')
     cloned_at_version = models.IntegerField(default=0) # used to know when the deck is outdated
 
+    def __str__(self):
+        return f'{self.shared_deck.title} ==> {self.deck.title}'
+
 
 class FlashCardCreatorManager(models.Manager):
     def get_queryset(self):

@@ -12,7 +12,7 @@ if PRODUCTION:
     PYTHON_PATH = '/home/aluadmin/aludir/aluenv/bin/python3'
 else:
     PYTHON_PATH = '/media/evolvedsquid/2.0\ TB\ HDD/code/in-progress/alu/aluenv/bin/python3'
-COMPILE_REACT = not PRODUCTION
+COMPILE_REACT = True # not PRODUCTION
 
 # Compile react
 if COMPILE_REACT:

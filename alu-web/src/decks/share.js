@@ -23,9 +23,9 @@ export function ShareDeck(props) {
         } else {
           // Error getting deck detail for sharing deck
           errorHandler(response, status, 1017);
-        };
+        }
       });
-    };
+    }
   }, [deckDidSet, deckId]);
 
   const submitHandler = (event) => {
@@ -41,7 +41,7 @@ export function ShareDeck(props) {
           } else {
             // Error editing shared deck metadata
             errorHandler(response, status, 1020);
-          };
+          }
         });
       } else {
         apiCreateSharedDeck(deckId, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
@@ -50,11 +50,11 @@ export function ShareDeck(props) {
           } else {
             // Error creating shared deck
             errorHandler(response, status, 1019);
-          };
+          }
         });
-      };
-    };
-  };
+      }
+    }
+  }
 
   return (<>
     <h1>Sharing Deck "{deck ? deck.title : 'Loading...'}"</h1>
@@ -72,7 +72,7 @@ export function ShareDeck(props) {
         <Form.Label htmlFor='description'>Description</Form.Label>
         <Form.Control
           as='textarea'
-          rows='3'
+          rows='10'
           placeholder="My shared deck's description"
           name='description'
           defaultValue={deck.description}
@@ -108,4 +108,4 @@ export function ShareDeck(props) {
       </ButtonGroup>
     </Form> : <>Loading...</>}
   </>);
-};
+}
