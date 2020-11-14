@@ -40,6 +40,7 @@ const randomTips = [
   'Only turn information you truly understand into flashcards',
   'Learn before you memorize',
   'Start from the basics before going into complex subjects',
+  'You can drag and drop images into the flashcard and note editors',
   // Random stuff
   'You got this!',
   '42 (forty-two) is the natural number that follows 41 and precedes 43.',
