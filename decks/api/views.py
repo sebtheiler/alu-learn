@@ -813,7 +813,7 @@ def txt_file_upload(request, *args, **kwargs):
     FlashCardField.objects.bulk_create([
         FlashCardField(
             creator=creator,
-            text=front_and_back[i][num],
+            text=[{"type": "paragraph", "children": [{"text": front_and_back[i][num]}]}],
             field_number=num,
         )
         for i, creator in enumerate(creators) for num in range(2)

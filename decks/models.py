@@ -67,7 +67,10 @@ class FlashCardField(models.Model):
         ordering = ['field_number']
 
     def __str__(self):
-        return str(self.text[0]['children'][0]['text'])
+        try:
+            return str(self.text[0]['children'][0]['text'])
+        except KeyError:
+            return '<< Couldn\'t get text easily >>'
 
 
 class FlashCardManager(models.Manager):

@@ -41,11 +41,17 @@ const randomTips = [
   'Learn before you memorize',
   'Start from the basics before going into complex subjects',
   'You can drag and drop images into the flashcard and note editors',
+  'If you press "Add Notes" in autonote, without adding any notes, it will simply skip to the next section',
+  'Always keep in mind the "20 Rules of Formulating Knowledge" when creating flashcards (found on the welcome page)',
+  'Making flashcards personal to you will help you remember them better',
+  'Make sure your flashcards are all connected - don\'t have random pieces of knowledge floating around',
   // Random stuff
-  'You got this!',
-  '42 (forty-two) is the natural number that follows 41 and precedes 43.',
-  'Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid of Giza.',
-  'Some static you see on TV screens is residual radiation from the big-bang.',
+  'Hermann Ebbinghaus discovered the forgetting curve, which Alu is based on, in the 1800s',
+  'Dr. Piotr Wozniak developed one of the first digital SR apps in the 1990s. His work has made Alu possible.',
+  // 'You got this!',
+  // '42 (forty-two) is the natural number that follows 41 and precedes 43.',
+  // 'Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid of Giza.',
+  // 'Some static you see on TV screens is residual radiation from the big-bang.',
 ];
 
 export const randomTip = randomTips[Math.floor(Math.random()*randomTips.length)];
