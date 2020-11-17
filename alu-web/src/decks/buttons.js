@@ -1,9 +1,9 @@
-import React, {useState} from 'react';
-import {apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete} from '../lookup';
-import {errorHandler, FormCheckbox} from '../utils';
-import {SearchForm} from './flashcards/search';
-import {Modal, Button, Form, ButtonGroup} from 'react-bootstrap';
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from 'react';
+import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete } from '../lookup';
+import { errorHandler, FormCheckbox } from '../utils';
+import { SearchForm } from './flashcards/search';
+import { Modal, Button, Form, ButtonGroup } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 // Buttons for when an owner views their deck
@@ -13,11 +13,11 @@ export function DeckDefaultButtonGroup(props) {
 
   const openModal = () => {
     setModalIsOpen(true);
-  };
+  }
 
   const closeModal = () => {
     setModalIsOpen(false);
-  };
+  }
 
   const saveHandler = (event) => {
     event.preventDefault();
@@ -33,7 +33,7 @@ export function DeckDefaultButtonGroup(props) {
         parseInt(form.reviewAheadMinutes.value) === deck.review_ahead_minutes
     ) {
       return;
-    };
+    }
 
     // Tell the API to update the deck/CSSM
     if (deck.serializer_name === 'deck') {
@@ -50,7 +50,7 @@ export function DeckDefaultButtonGroup(props) {
           } else {
             // Error updating deck
             errorHandler(response, status, 1000);
-          };
+          }
       });
     } else if (deck.serializer_name === 'cssm') {
       apiSSMEdit(
@@ -73,22 +73,24 @@ export function DeckDefaultButtonGroup(props) {
           } else {
             // Error updating CSSM
             errorHandler(response, status, 5003);
-          };
+          }
         },
       );
-    };
-  };
+    }
+  }
 
   const deleteHandler = () => {
     if (deck.serializer_name === 'deck') {
-      apiDeckDelete(deck.id, (response, status) => {
-        if (status === 200) {
-          window.location.href = '/home/decks/';
-        } else {
-          // Error deleting deck
-          errorHandler(response, status, 1001);
-        };
-      });
+      if (window.confirm('Are you sure you want to delete this deck and all of its flashcards? This action is irreversible')) {
+        apiDeckDelete(deck.id, (response, status) => {
+          if (status === 200) {
+            window.location.href = '/home/decks/';
+          } else {
+            // Error deleting deck
+            errorHandler(response, status, 1001);
+          }
+        });
+      }
     } else {
       apiSSMDelete(deck.id, (response, status) => {
         if (status === 200) {
@@ -96,10 +98,10 @@ export function DeckDefaultButtonGroup(props) {
         } else {
           // Error deleting SSM
           errorHandler(response, status, 5004);
-        };
+        }
       });
-    };
-  };
+    }
+  }
 
   return (
     <ButtonGroup vertical={vertical} style={vertical ? {display: 'block', margin: '0 auto', 'text-align': 'center', width: '50%'} : {}}>
@@ -302,4 +304,4 @@ export function DeckForeignUserButtonGroup(props) {
       </ButtonGroup>
     </div>
   );
-};
+}
