@@ -1,11 +1,28 @@
-import React, {useEffect, useState} from 'react';
-import {errorHandler, useInterval} from '../utils';
-import {Button, Form} from 'react-bootstrap';
-import {apiNoteDelete, apiNoteDetail, apiNoteUpdate} from '../lookup';
-import {DeleteModal} from './buttons';
+import React, { useEffect, useState } from 'react';
+import { errorHandler, useInterval } from '../utils';
+import { Button, Form } from 'react-bootstrap';
+import { apiNoteDelete, apiNoteDetail, apiNoteUpdate } from '../lookup';
+import { DeleteModal } from './buttons';
+import { StandardNoteEditor } from './standard';
+import { CornellNoteEditor } from './cornell';
+import './editor.css';
 
-import {StandardNoteEditor} from './standard';
-import {CornellNoteEditor} from './cornell';
+const testPages = [
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+  { title: 'wasd' },
+];
 
 export function NoteEditor(props) {
   const {noteId} = props;
@@ -23,8 +40,9 @@ export function NoteEditor(props) {
   function confirmExit() {
     if (areChanges) {
       return 'This page is asking you to confirm that you want to leave - data you have entered may not be saved.';
-    };
-  };
+    }
+  }
+
   // Get note data
   useEffect(() => {
     if (noteDidSet === false) {
@@ -39,15 +57,15 @@ export function NoteEditor(props) {
               sections: response.sections,
               summary: response.summary,
             });
-          };
+          }
         } else if (status === 404) {
           setNotFound(true);
         } else {
           // Error getting note detail
           errorHandler(response, status, 6000);
-        };
+        }
       });
-    };
+    }
   }, [note, noteDidSet, noteId]);
 
   // Function for sending a request to the API for saving
@@ -60,10 +78,10 @@ export function NoteEditor(props) {
         } else {
           // Error updating notes
           errorHandler(response, status, 6001);
-        };
+        }
       });
-    };
-  };
+    }
+  }
 
   // Auto-save every 5-10 seconds if the user hasn't typed recently
   useInterval(() => {
@@ -76,7 +94,7 @@ export function NoteEditor(props) {
 
   if (notFound) {
     return <p className='text-center'>Note not found</p>
-  };
+  }
 
   const renderEditor = () => {
     const editorProps = {
@@ -104,8 +122,8 @@ export function NoteEditor(props) {
         return <CornellNoteEditor {...editorProps} />
       default:
         return <p>This note type isn't recognized.</p>;
-    };
-  };
+    }
+  }
 
   return (
     <div className='container mt-5'>
@@ -155,6 +173,34 @@ export function NoteEditor(props) {
         note={note}
         deleteApiFunction={apiNoteDelete}
       />
+      <h3 className='text-center'>Page Browser</h3>
+      <div
+        className='mx-auto text-center mb-5'
+        style={{
+          width: '100%',
+          overflowX: 'auto',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {testPages.map((page, index) => (
+          <div
+            key={index}
+            className='page-selector mx-3 p-3 my-3'
+            onClick={(event => {
+              event.preventDefault();
+              console.log(testPages[index]);
+            })}
+          >
+            <strong>{page.title}</strong>
+            <p
+              className='align-text-bottom float-right'
+              style={{
+                transform: 'translateY(150px)',
+              }}
+            >{index + 1}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
-};
+}

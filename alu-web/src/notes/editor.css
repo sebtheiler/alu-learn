@@ -1,0 +1,11 @@
+.page-selector {
+  border: 1px solid;
+  width: 150px;
+  height: 200px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.page-selector:hover {
+  box-shadow: 5px 5px 5px gray;
+}
