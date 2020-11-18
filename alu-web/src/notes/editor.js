@@ -8,20 +8,33 @@ import { CornellNoteEditor } from './cornell';
 import './editor.css';
 
 const testPages = [
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
-  { title: 'wasd' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
+  { title: 'wasd', type: 'standard', content: 'test' },
 ];
 
 export function NoteEditor(props) {
@@ -69,17 +82,25 @@ export function NoteEditor(props) {
   }, [note, noteDidSet, noteId]);
 
   // Function for sending a request to the API for saving
-  const sendSaveApiRequest = () => {
+  const sendSaveApiRequest = (callback) => {
     if (areChanges && noteDidSet) {
       setAreChanges(false);
       apiNoteUpdate(noteId, null, JSON.stringify(valueToSave), (response, status) => {
         if (status === 200) {
           window.onbeforeunload = undefined;
+          console.log(callback)
+          if (callback) {
+            callback();
+          }
         } else {
           // Error updating notes
           errorHandler(response, status, 6001);
         }
       });
+    } else {
+      if (callback) {
+        callback();
+      }
     }
   }
 
@@ -174,7 +195,7 @@ export function NoteEditor(props) {
         deleteApiFunction={apiNoteDelete}
       />
       <h3 className='text-center'>Page Browser</h3>
-      <div
+      {note && <div
         className='mx-auto text-center mb-5'
         style={{
           width: '100%',
@@ -183,24 +204,33 @@ export function NoteEditor(props) {
         }}
       >
         {testPages.map((page, index) => (
-          <div
+          <a
             key={index}
-            className='page-selector mx-3 p-3 my-3'
+            // TODO: check that the user is not already on the page they clicked to avoid, un-needed reloading
+            href={`/notes/edit/${note.id}/page/${index + 1}/`}
             onClick={(event => {
+              // Stop the link from immediately working, to first save the document
+              // and then redirect the user regularly
               event.preventDefault();
-              console.log(testPages[index]);
+              sendSaveApiRequest(() => {
+                window.location.href = `/notes/edit/${note.id}/page/${index + 1}/`;
+              });
             })}
           >
-            <strong>{page.title}</strong>
-            <p
-              className='align-text-bottom float-right'
-              style={{
-                transform: 'translateY(150px)',
-              }}
-            >{index + 1}</p>
-          </div>
+            <div className='page-selector mx-3 p-3 my-3'>
+              <strong>{page.title}</strong>
+              <p
+                className='align-text-bottom float-right'
+                style={{
+                  transform: 'translateY(150px)',
+                }}
+              >
+                {index + 1}
+              </p>
+            </div>
+          </a>
         ))}
-      </div>
+      </div>}
     </div>
   );
 }
