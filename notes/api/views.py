@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import CornellNote, CornellNoteSection, FreeformNote, Note
+from ..models import CornellNotePage, CornellNotePageSection, FreeformNotePage, NotePage
 from ..serializers import (CornellNoteSerializer, FreeformNoteSerializer,
                            NoteSerializer)
 
@@ -31,15 +31,15 @@ def note_create_api_view(request, *args, **kwargs):
     
     # Check if the user already has other notes with the same name
     try:
-        Note.objects.get(user=request.user.profile, title=title)
+        NotePage.objects.get(user=request.user.profile, title=title)
         return Response({'message': 'Title is taken'}, status=400)
-    except Note.DoesNotExist:
+    except NotePage.DoesNotExist:
         pass
     
     # Create note object
     if version == 'STND':
         # Create standard note object
-        note = FreeformNote.objects.create(
+        note = FreeformNotePage.objects.create(
             user=request.user.profile,
             title=title,
             content=
@@ -57,7 +57,7 @@ def note_create_api_view(request, *args, **kwargs):
         return Response(FreeformNoteSerializer(note).data, status=201)
     elif version == 'CORN':
         # Create Cornell note object/
-        note = CornellNote.objects.create(
+        note = CornellNotePage.objects.create(
             user=request.user.profile,
             title=title,
             summary=
@@ -90,13 +90,13 @@ def note_detail_api_view(request, note_id, *args, **kwargs):
         `note_id`: (URL) ID of the note to return
     """
     try:
-        note = FreeformNote.objects.get(pk=note_id, user=request.user.profile)
+        note = FreeformNotePage.objects.get(pk=note_id, user=request.user.profile)
         return Response(FreeformNoteSerializer(note).data, status=200)
-    except FreeformNote.DoesNotExist:
+    except FreeformNotePage.DoesNotExist:
         try:
-            note = CornellNote.objects.get(pk=note_id, user=request.user.profile)
+            note = CornellNotePage.objects.get(pk=note_id, user=request.user.profile)
             return Response(CornellNoteSerializer(note).data, status=200)
-        except CornellNote.DoesNotExist:
+        except CornellNotePage.DoesNotExist:
             return Response({'message': 'Note not found'}, status=404)
 
 
@@ -120,23 +120,23 @@ def note_update_api_view(request, note_id, *args, **kwargs):
         if title and title != note.title: # this also prevents a blank title from being saved
             # Check if title is taken
             try:
-                Note.objects.get(user=request.user.profile, title=title)
+                NotePage.objects.get(user=request.user.profile, title=title)
                 return Response({'message': 'Title is taken'}, status=400)
-            except Note.DoesNotExist:
+            except NotePage.DoesNotExist:
                 pass
             note.title = title
 
     try:
-        note = FreeformNote.objects.get(pk=note_id, user=request.user.profile)
+        note = FreeformNotePage.objects.get(pk=note_id, user=request.user.profile)
 
         note.content = content.get('content', note.content)
         update_note_title(note, content.get('title'))
 
         note.save()
         return Response(FreeformNoteSerializer(note).data, status=200)
-    except FreeformNote.DoesNotExist:
+    except FreeformNotePage.DoesNotExist:
         try:
-            note = CornellNote.objects.get(pk=note_id, user=request.user.profile)
+            note = CornellNotePage.objects.get(pk=note_id, user=request.user.profile)
 
             # Update summary
             note.summary = content.get('summary', note.summary)
@@ -158,9 +158,9 @@ def note_update_api_view(request, note_id, *args, **kwargs):
                             current_section.cue = new_cue
                             current_section.content = new_content
                             current_section.save()
-                    except CornellNoteSection.DoesNotExist:
+                    except CornellNotePageSection.DoesNotExist:
                         # Create new section
-                        CornellNoteSection.objects.create(
+                        CornellNotePageSection.objects.create(
                             parent_note=note,
                             cue=new_section['cue'],
                             content=new_section['content'],
@@ -176,7 +176,7 @@ def note_update_api_view(request, note_id, *args, **kwargs):
 
             note.save()
             return Response(CornellNoteSerializer(note).data, status=200)
-        except CornellNote.DoesNotExist:
+        except CornellNotePage.DoesNotExist:
             return Response({'message': 'Note not found'}, status=404)
 
 
@@ -190,9 +190,9 @@ def note_delete_api_view(request, note_id, *args, **kwargs):
         `note_id`: (URL) ID of the note to return
     """
     try:
-        Note.objects.get(pk=note_id, user=request.user.profile).delete()
+        NotePage.objects.get(pk=note_id, user=request.user.profile).delete()
         return Response({'message': 'Deleted note successfully'}, status=200)
-    except Note.DoesNotExist:
+    except NotePage.DoesNotExist:
         return Response({'message': 'Note not found'}, status=404)
 
 

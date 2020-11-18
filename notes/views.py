@@ -1,6 +1,6 @@
 from django.http.response import Http404
 from django.shortcuts import render, redirect
-from .models import Note
+from .models import NotePage
 from django.http import Http404
 
 # Render the home-page view
@@ -20,8 +20,8 @@ def notes_editor_view(request, note_id, *args, **kwargs):
         return redirect('/confirm-email/')
     
     try:
-        note = Note.objects.get(pk=note_id, user=request.user.profile)
-    except Note.DoesNotExist:
+        note = NotePage.objects.get(pk=note_id, user=request.user.profile)
+    except NotePage.DoesNotExist:
         raise Http404("Note does not exist")
 
     return render(request, 'notes/editor.html', status=200, context={'note_id': note_id, 'note_title': note.title})

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FreeformNote, CornellNote, CornellNoteSection
+from .models import FreeformNotePage, CornellNotePage, CornellNotePageSection
 
 
 class CornellNoteSectionAdmin(admin.TabularInline):
@@ -8,7 +8,7 @@ class CornellNoteSectionAdmin(admin.TabularInline):
         'content',
         'section_number',
     ]
-    model = CornellNoteSection
+    model = CornellNotePageSection
 
 
 class CornellNoteAdmin(admin.ModelAdmin):
@@ -18,7 +18,9 @@ class CornellNoteAdmin(admin.ModelAdmin):
         'summary',
     ]
     inlines = [CornellNoteSectionAdmin]
-    model = CornellNote
+    model = CornellNotePage
 
-admin.site.register(FreeformNote)
-admin.site.register(CornellNote, CornellNoteAdmin)
+
+# admin.site.register(Note)
+admin.site.register(FreeformNotePage)
+admin.site.register(CornellNotePage, CornellNoteAdmin)
