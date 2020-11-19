@@ -317,8 +317,8 @@ def create_profile_api_view(request, *args, **kwargs):
         month=months.index(birthdate.get('month').lower()) + 1,
         day=birthdate.get('day'),
     )
-    # Check that the email is among the list of allowed emails
-    if email not in settings.ALLOWED_EMAILS:
+    # Check that the email is in the list of allowed emails or ends with @westendsecondary.com
+    if email not in settings.ALLOWED_EMAILS and email[-21:] != '@westendsecondary.com':
         return Response({'message': 'Email not allowed'}, status=400)
 
     # Check email and username available

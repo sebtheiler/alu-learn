@@ -59,7 +59,7 @@ export function DeckImportComponent() {
           <option value='QUIZLET'>Upload from Quizlet</option>
         </Form.Control>
       </Form.Group>
-      {uploadType === 'TXT' ? <>
+      {uploadType === 'TXT' && <>
         <Form.Group>
           <Form.Label className={widthClass} style={{lineHeight: '15px'}}>
             <p className='mb-1'>Title of deck</p>
@@ -114,9 +114,28 @@ export function DeckImportComponent() {
             block
           >{isLoading ? 'Loading...' : 'Import!'}</Button>
         </Form.Group>
-      </> : 
-      <p>We currently don't support imports of this type. We are working hard to implement this functionality as soon as possible.</p>
-      }
+      </>}
+      {uploadType === 'QUIZLET' && <>
+        <p>
+          We are working hard to get easy Quizlet imports working as soon as possible.<br />
+          In the meanwhile, please use these steps:
+        </p>
+        <ol>
+          <li>Go to the Quizlet set you would like to import</li>
+          <li>Click the three dots button, to see the more options dropdown</li>
+          <li>Click "Export"</li>
+          <li>Without changing any settings, click the "Copy text" button</li>
+          <li>Create a .txt file on your computer</li>
+          <li>Open the .txt file and paste all the terms</li>
+          <li>Change the Alu import type to .txt and import the deck</li>
+        </ol>
+      </>}
+      {uploadType === 'APKG' && <>
+        <p>
+          We currently don't support Anki imports, but are working hard to implement them as soon as possible.<br />
+          In the meanwhile, you can export your deck as a .txt file and import it to Alu through the .txt upload.
+        </p>
+      </>}
     </Form>
   );
 };
