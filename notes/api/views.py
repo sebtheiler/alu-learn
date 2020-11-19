@@ -42,47 +42,63 @@ def note_create_api_view(request, *args, **kwargs):
     )
 
     return Response(NoteSerializer(note).data, status=201)
-#     if version == 'STND':
-#         # Create standard note object
-#         note = FreeformNotePage.objects.create(
-#             user=request.user.profile,
-#             title=title,
-#             content=
-# [
-#   {
-#     "type": "paragraph",
-#     "children": [
-#       {
-#         "text": "Take notes here..."
-#       }
-#     ]
-#   }
-# ]
-#         )
-#         return Response(FreeformNoteSerializer(note).data, status=201)
-#     elif version == 'CORN':
-#         # Create Cornell note object/
-#         note = CornellNotePage.objects.create(
-#             user=request.user.profile,
-#             title=title,
-#             summary=
-# [
-#   {
-#     "type": "paragraph",
-#     "children": [
-#       {
-#         "text": "Summary..."
-#       }
-#     ]
-#   }
-# ]
-#         )
-#         return Response(CornellNoteSerializer(note).data, status=201)
-#     elif version == 'FREE':
-#         # Create Holistic note object
-#         pass
-#     else:
-#         return Response({'message': 'Invalid note type'}, status=400)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def note_page_create_api_view(request, *args, **kwargs):
+    """
+    Make a single note page - POST
+
+    Required information
+        `note_id`: (Data) ID of the note to create a new page in
+        `title`: (Data) Title of the new note page
+        `version`: (Data) What type of note page this should be
+    """
+    note_id = request.data.get('note_id')
+    version = request.data.get('version')
+    title = request.data.get('title')
+    if None in (note_id, version, title):
+        return Response({'message': 'You must specify a note id, version, and title'}, status=400)
+
+    if version == 'STND':
+        # Create standard note object
+        note = FreeformNotePage.objects.create(
+            user=request.user.profile,
+            title=title,
+            content=
+[
+  {
+    "type": "paragraph",
+    "children": [
+      {
+        "text": "Take notes here..."
+      }
+    ]
+  }
+]
+        )
+        return Response(FreeformNotePageSerializer(note).data, status=201)
+    elif version == 'CORN':
+        # Create Cornell note object/
+        note = CornellNotePage.objects.create(
+            user=request.user.profile,
+            title=title,
+            summary=
+[
+  {
+    "type": "paragraph",
+    "children": [
+      {
+        "text": "Summary..."
+      }
+    ]
+  }
+]
+        )
+        return Response(CornellNotePageSerializer(note).data, status=201)
+    else:
+        return Response({'message': 'Invalid note type'}, status=400)
 
 
 @api_view(['GET'])
@@ -103,11 +119,58 @@ def note_detail_api_view(request, note_id, *args, **kwargs):
         return Response({'message': 'Note not found'}, status=404)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def note_page_detail_api_view(request, note_id, page_number, *args, **kwargs):
+    """
+    Gets detail information about a note page, in a note object - GET
+
+    Required information:
+        `note_id`: (URL) ID of the note to return
+    """
+    try:
+        note = FreeformNotePage.objects.get(
+            note__pk=note_id,
+            page_number=page_number,
+            note__user=request.user
+        )
+        return Response(FreeformNotePageSerializer(note).data, status=200)
+    except FreeformNotePage.DoesNotExist:
+        try:
+            note = CornellNotePage.objects.get(
+                note__pk=note_id,
+                page_number=page_number,
+                note__user=request.user
+            )
+            return Response(CornellNotePageSerializer(note).data, status=200)
+        except CornellNotePage.DoesNotExist:
+            return Response({'message': 'Note not found'}, status=404)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def note_page_update_api_view(request, note_id, *args, **kwargs):
+def note_update_api_view(request, note_id, *args, **kwargs):
     """
-    Updates a note's content - POST
+    Update a note's title and other metadata - POST
+
+    Required information:
+        `note_id`: (URL) Id of the note object to update
+        `title`: (Data) New title of the note
+    """
+    try:
+        note = Note.objects.get(pk=note_id, user=request.user.profile)
+    except Note.DoesNotExist:
+        return Response({'message': 'Note not found / you are unauthorized'}, status=400)
+    
+    note.title = request.data.get('title', note.title)
+    note.save()
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def note_page_update_api_view(request, note_page_id, *args, **kwargs):
+    """
+    Updates a note page's content - POST
 
     Required information:
         `note_id`: (URL) ID of the note to update
@@ -130,7 +193,7 @@ def note_page_update_api_view(request, note_id, *args, **kwargs):
             note.title = title
 
     try:
-        note = FreeformNotePage.objects.get(pk=note_id, user=request.user.profile)
+        note = FreeformNotePage.objects.get(pk=note_page_id, user=request.user.profile)
 
         note.content = content.get('content', note.content)
         update_note_title(note, content.get('title'))
@@ -139,7 +202,7 @@ def note_page_update_api_view(request, note_id, *args, **kwargs):
         return Response(FreeformNotePageSerializer(note).data, status=200)
     except FreeformNotePage.DoesNotExist:
         try:
-            note = CornellNotePage.objects.get(pk=note_id, user=request.user.profile)
+            note = CornellNotePage.objects.get(pk=note_page_id, user=request.user.profile)
 
             # Update summary
             note.summary = content.get('summary', note.summary)
@@ -194,6 +257,27 @@ def note_delete_api_view(request, note_id, *args, **kwargs):
     """
     try:
         Note.objects.get(pk=note_id, user=request.user.profile).delete()
+        return Response({'message': 'Deleted note successfully'}, status=200)
+    except NotePage.DoesNotExist:
+        return Response({'message': 'Note not found'}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def note_page_delete_api_view(request, note_id, page_number, *args, **kwargs):
+    """
+    Gets detail information about a note object - GET
+
+    Required information:
+        `note_id`: (URL) ID of the note to return
+        `page_number`: (URL) Page number of the note page to delete
+    """
+    try:
+        NotePage.objects.get(
+            note__pk=note_id,
+            page_number=page_number,
+            user=request.user.profile,
+        ).delete()
         return Response({'message': 'Deleted note successfully'}, status=200)
     except NotePage.DoesNotExist:
         return Response({'message': 'Note not found'}, status=404)
