@@ -4,9 +4,9 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import CornellNotePage, CornellNotePageSection, FreeformNotePage, NotePage
-from ..serializers import (CornellNoteSerializer, FreeformNoteSerializer,
-                           NoteSerializer)
+from ..models import CornellNotePage, CornellNotePageSection, FreeformNotePage, NotePage, Note
+from ..serializers import (CornellNotePageSerializer, FreeformNotePageSerializer,
+                           NoteSerializer, FullNoteSerializer)
 
 
 @api_view(['POST'])
@@ -25,59 +25,64 @@ def note_create_api_view(request, *args, **kwargs):
     """
     # Get data
     title = request.data.get('title')
-    version = request.data.get('version')
-    if None in (title, version):
+    if title is None:
         return Response({'message': 'You must specify a title and version'}, status=400)
     
     # Check if the user already has other notes with the same name
     try:
-        NotePage.objects.get(user=request.user.profile, title=title)
+        Note.objects.get(user=request.user.profile, title=title)
         return Response({'message': 'Title is taken'}, status=400)
-    except NotePage.DoesNotExist:
+    except Note.DoesNotExist:
         pass
     
     # Create note object
-    if version == 'STND':
-        # Create standard note object
-        note = FreeformNotePage.objects.create(
-            user=request.user.profile,
-            title=title,
-            content=
-[
-  {
-    "type": "paragraph",
-    "children": [
-      {
-        "text": "Take notes here..."
-      }
-    ]
-  }
-]
-        )
-        return Response(FreeformNoteSerializer(note).data, status=201)
-    elif version == 'CORN':
-        # Create Cornell note object/
-        note = CornellNotePage.objects.create(
-            user=request.user.profile,
-            title=title,
-            summary=
-[
-  {
-    "type": "paragraph",
-    "children": [
-      {
-        "text": "Summary..."
-      }
-    ]
-  }
-]
-        )
-        return Response(CornellNoteSerializer(note).data, status=201)
-    elif version == 'FREE':
-        # Create Holistic note object
-        pass
-    else:
-        return Response({'message': 'Invalid note type'}, status=400)
+    note = Note.objects.create(
+        title=title,
+        user=request.user.profile,
+    )
+
+    return Response(NoteSerializer(note).data, status=201)
+#     if version == 'STND':
+#         # Create standard note object
+#         note = FreeformNotePage.objects.create(
+#             user=request.user.profile,
+#             title=title,
+#             content=
+# [
+#   {
+#     "type": "paragraph",
+#     "children": [
+#       {
+#         "text": "Take notes here..."
+#       }
+#     ]
+#   }
+# ]
+#         )
+#         return Response(FreeformNoteSerializer(note).data, status=201)
+#     elif version == 'CORN':
+#         # Create Cornell note object/
+#         note = CornellNotePage.objects.create(
+#             user=request.user.profile,
+#             title=title,
+#             summary=
+# [
+#   {
+#     "type": "paragraph",
+#     "children": [
+#       {
+#         "text": "Summary..."
+#       }
+#     ]
+#   }
+# ]
+#         )
+#         return Response(CornellNoteSerializer(note).data, status=201)
+#     elif version == 'FREE':
+#         # Create Holistic note object
+#         pass
+#     else:
+#         return Response({'message': 'Invalid note type'}, status=400)
 
 
 @api_view(['GET'])
@@ -90,19 +95,17 @@ def note_detail_api_view(request, note_id, *args, **kwargs):
         `note_id`: (URL) ID of the note to return
     """
     try:
-        note = FreeformNotePage.objects.get(pk=note_id, user=request.user.profile)
-        return Response(FreeformNoteSerializer(note).data, status=200)
+        note = Note.objects.get(pk=note_id, user=request.user.profile)
+        if request.data.get('get_pages'):
+            return Response(FullNoteSerializer(note).data, status=200)
+        return Response(NoteSerializer(note).data, status=200)
     except FreeformNotePage.DoesNotExist:
-        try:
-            note = CornellNotePage.objects.get(pk=note_id, user=request.user.profile)
-            return Response(CornellNoteSerializer(note).data, status=200)
-        except CornellNotePage.DoesNotExist:
-            return Response({'message': 'Note not found'}, status=404)
+        return Response({'message': 'Note not found'}, status=404)
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def note_update_api_view(request, note_id, *args, **kwargs):
+def note_page_update_api_view(request, note_id, *args, **kwargs):
     """
     Updates a note's content - POST
 
@@ -133,7 +136,7 @@ def note_update_api_view(request, note_id, *args, **kwargs):
         update_note_title(note, content.get('title'))
 
         note.save()
-        return Response(FreeformNoteSerializer(note).data, status=200)
+        return Response(FreeformNotePageSerializer(note).data, status=200)
     except FreeformNotePage.DoesNotExist:
         try:
             note = CornellNotePage.objects.get(pk=note_id, user=request.user.profile)
@@ -175,7 +178,7 @@ def note_update_api_view(request, note_id, *args, **kwargs):
                     .values_list('pk')).delete()
 
             note.save()
-            return Response(CornellNoteSerializer(note).data, status=200)
+            return Response(CornellNotePageSerializer(note).data, status=200)
         except CornellNotePage.DoesNotExist:
             return Response({'message': 'Note not found'}, status=404)
 
@@ -190,7 +193,7 @@ def note_delete_api_view(request, note_id, *args, **kwargs):
         `note_id`: (URL) ID of the note to return
     """
     try:
-        NotePage.objects.get(pk=note_id, user=request.user.profile).delete()
+        Note.objects.get(pk=note_id, user=request.user.profile).delete()
         return Response({'message': 'Deleted note successfully'}, status=200)
     except NotePage.DoesNotExist:
         return Response({'message': 'Note not found'}, status=404)

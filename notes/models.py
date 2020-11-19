@@ -13,8 +13,8 @@ class Note(models.Model):
 
 class NotePage(models.Model):
     title = models.CharField(max_length=128)
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='notes_pages')
     note = models.ForeignKey(Note, on_delete=models.CASCADE, related_name='pages', null=True)
+    page_number = models.PositiveSmallIntegerField()
 
     def __str__(self) -> str:
         return self.title

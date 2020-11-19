@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from profiles.serializers import MinifiedProfileSerializer
-from .models import FreeformNotePage, CornellNotePage, CornellNotePageSection
+from .models import FreeformNotePage, CornellNotePage, CornellNotePageSection, NotePage
 
 
 class NoteSerializer(serializers.ModelSerializer):
@@ -20,7 +20,8 @@ class NoteSerializer(serializers.ModelSerializer):
         return 'note-base'
 
 
-class FreeformNoteSerializer(serializers.ModelSerializer):
+
+class FreeformNotePageSerializer(serializers.ModelSerializer):
     serializer_name = serializers.SerializerMethodField(read_only=True)
     author = MinifiedProfileSerializer(source='user', read_only=True)
 
@@ -34,7 +35,7 @@ class FreeformNoteSerializer(serializers.ModelSerializer):
         return 'note-standard'
 
 
-class CornellNoteSectionSerializer(serializers.ModelSerializer):
+class CornellNotePageSectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CornellNotePageSection
         fields = [
@@ -44,9 +45,9 @@ class CornellNoteSectionSerializer(serializers.ModelSerializer):
         ]
 
 
-class CornellNoteSerializer(serializers.ModelSerializer):
+class CornellNotePageSerializer(serializers.ModelSerializer):
     author = MinifiedProfileSerializer(source='user', read_only=True)
-    sections = CornellNoteSectionSerializer(many=True, read_only=True)
+    sections = CornellNotePageSectionSerializer(many=True, read_only=True)
     serializer_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -58,3 +59,45 @@ class CornellNoteSerializer(serializers.ModelSerializer):
     
     def get_serializer_name(self, obj):
         return 'note-cornell'
+
+
+class NotePageSerializer(serializers.ModelSerializer):
+    page = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = NotePage
+        fields = [
+            'page',
+            'title',
+            'id',
+        ]
+
+    def get_page(self, obj):
+        try:
+            FreeformNotePage.objects.get(pk=obj.id)
+            return FreeformNotePageSerializer(obj)
+        except FreeformNotePage.DoesNotExist:
+            try:
+                CornellNotePage.objects.get(pk=obj.id)
+                return CornellNotePageSerializer(obj)
+            except CornellNotePageSerializer.DoesNotExist:
+                raise ValueError(f'Could not find note page with id "{obj.id}"')
+
+
+class FullNoteSerializer(serializers.ModelSerializer):
+    serializer_name = serializers.SerializerMethodField(read_only=True)
+    author = MinifiedProfileSerializer(source='user', read_only=True)
+    pages = NotePageSerializer(source='pages', many=True, read_only=True)
+
+    class Meta:
+        model = FreeformNotePage
+        fields = [
+            'author',
+            'title',
+            'serializer_name',
+            'pages',
+            'id',
+        ]
+
+    def get_serializer_name(self, obj):
+        return 'note-base'
