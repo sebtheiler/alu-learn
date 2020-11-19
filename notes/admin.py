@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FreeformNotePage, CornellNotePage, CornellNotePageSection
+from .models import FreeformNotePage, CornellNotePage, CornellNotePageSection, Note
 
 
 class CornellNoteSectionAdmin(admin.TabularInline):
@@ -21,6 +21,6 @@ class CornellNoteAdmin(admin.ModelAdmin):
     model = CornellNotePage
 
 
-# admin.site.register(Note)
+admin.site.register(Note)
 admin.site.register(FreeformNotePage)
 admin.site.register(CornellNotePage, CornellNoteAdmin)
