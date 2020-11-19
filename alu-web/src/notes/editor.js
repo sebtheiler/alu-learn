@@ -60,7 +60,7 @@ export function NoteEditor(props) {
   useEffect(() => {
     if (noteDidSet === false) {
       setNoteDidSet(true);
-      apiNoteDetail(noteId, (response, status) => {
+      apiNoteDetail(noteId, true, (response, status) => {
         if (status === 200) {
           setNote(response);
           if (response.serializer_name === 'note-standard') {

@@ -7,17 +7,17 @@ function getCookie(cname) {
     let c = ca[i];
     while (c.charAt(0) === ' ') {
       c = c.substring(1);
-    };
+    }
     if (c.indexOf(name) === 0) {
       return c.substring(name.length, c.length);
-    };
-  };
+    }
+  }
   return "";
-};
+}
 
 
 const host = window.location.host === 'localhost:3000' || window.location.host === '127.0.0.1:3000' ? '127.0.0.1:8000' : window.location.host;
-export const baseUrl = `${window.location.protocol}//${host}` // http://127.0.0.1:8000
+export const baseUrl = `${window.location.protocol}//${host}`; // http://127.0.0.1:8000
 
 // Function for getting and receiving data from the backend
 // This is used in all api-lookup functions, and should not be
@@ -26,7 +26,7 @@ export function backendLookup(method, endpoint, callback, data) {
   let jsonData;
   if (data) {
     jsonData = JSON.stringify(data);
-  };
+  }
   const xhr = new XMLHttpRequest();
   const endpointUrl = `${baseUrl}/api/${endpoint}`;
   
@@ -37,13 +37,13 @@ export function backendLookup(method, endpoint, callback, data) {
   if (csrftoken) {
     xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     xhr.setRequestHeader('X-CSRFTOKEN', csrftoken);
-  };
+  }
   xhr.onload = function() {
     callback(xhr.response, xhr.status);
-  };
+  }
   xhr.onerror = function(e) {
     console.log('Error', e);
     callback({'message': 'The request was an error'}, 400);
-  };
+  }
   xhr.send(jsonData);
-};
+}

@@ -332,8 +332,12 @@ export function apiNoteCreate(title, callback) {
 }
 
 // Gets info about a note
-export function apiNoteDetail(noteId, callback) {
-  backendLookup('GET', `notes/detail/${noteId}/`, callback);
+export function apiNoteDetail(noteId, getPages, callback) {
+  let backend = `notes/detail/${noteId}/`;
+  if (getPages) {
+    backend += '?getPages=true';
+  }
+  backendLookup('GET', backend, callback);
 }
 
 // Updates a note

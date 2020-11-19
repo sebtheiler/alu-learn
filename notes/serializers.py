@@ -87,7 +87,7 @@ class NotePageSerializer(serializers.ModelSerializer):
 class FullNoteSerializer(serializers.ModelSerializer):
     serializer_name = serializers.SerializerMethodField(read_only=True)
     author = MinifiedProfileSerializer(source='user', read_only=True)
-    pages = NotePageSerializer(source='pages', many=True, read_only=True)
+    pages = NotePageSerializer(many=True, read_only=True)
 
     class Meta:
         model = FreeformNotePage

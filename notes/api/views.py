@@ -108,13 +108,14 @@ def note_detail_api_view(request, note_id, *args, **kwargs):
 
     Required information:
         `note_id`: (URL) ID of the note to return
+        `get_pages`: (Data) If True, returns information on the note pages, disabled to save bandwith
     """
     try:
         note = Note.objects.get(pk=note_id, user=request.user.profile)
-        if request.data.get('get_pages'):
+        if request.GET.get('getPages').lower() == 'true':
             return Response(FullNoteSerializer(note).data, status=200)
         return Response(NoteSerializer(note).data, status=200)
-    except FreeformNotePage.DoesNotExist:
+    except Note.DoesNotExist:
         return Response({'message': 'Note not found'}, status=404)
 
 
