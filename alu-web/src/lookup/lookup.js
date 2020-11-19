@@ -1,4 +1,4 @@
-import {backendLookup, baseUrl} from './components';
+import { backendLookup, baseUrl } from './components';
 
 
 // Creates a new deck
@@ -9,7 +9,7 @@ export function apiDeckCreate(title, shuffleUnseenCards, dailyNewCardLimit, sche
     daily_new_card_limit: dailyNewCardLimit,
     scheduling_algorithm: schedulingAlgo,
   });
-};
+}
 
 // Creates a flashcard in a deck
 export function apiFlashCardCreate(deckId, fields, tags, flashcardType, callback) {
@@ -18,12 +18,12 @@ export function apiFlashCardCreate(deckId, fields, tags, flashcardType, callback
     tags: tags,
     flashcard_type: flashcardType,
   });
-};
+}
 
 // Deletes a flashcard in a deck
 export function apiFlashCardDelete(deckId, flashcardId, callback) {
   backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/delete/`, callback);
-};
+}
 
 // Edit a flashcard
 export function apiFlashCardEdit(deckId, flashcardId, fields, tags, callback) {
@@ -31,17 +31,17 @@ export function apiFlashCardEdit(deckId, flashcardId, fields, tags, callback) {
     fields: fields,
     tags: tags,
   });
-};
+}
 
 // Gets specific information about a flashcard
 export function apiFlashCardDetail(deckId, flashcardId, callback) {
   backendLookup('GET', `decks/${deckId}/flashcards/${flashcardId}/`, callback);
-};
+}
 
 // Marks a flashcard as suspended or as a leech
 export function apiFlashCardSuspendLeech(deckId, flashcardId, action, callback) {
   backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/suspend_or_leech/`, callback, {action: action});
-};
+}
 
 // Search for flashcards
 export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, learningStatus, minEase, maxEase, callback) {
@@ -57,7 +57,7 @@ export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, le
   endpoint = endpoint.replace('&', ''); // get rid of first, arbitrary, &
 
   backendLookup('GET', endpoint, callback);
-};
+}
 
 // Gets detail information on a deck with ID `deckId`
 export function apiDeckDetail(deckId, options, callback) {
@@ -65,9 +65,9 @@ export function apiDeckDetail(deckId, options, callback) {
   let endpoint = `decks/${deckId}/`;
   if (getFullDetail) {
     endpoint += '?fullDetail=true';
-  };
+  }
   backendLookup('GET', endpoint, callback);
-};
+}
 
 // Gets a deck's flashcards
 export function apiDeckFlashcards(deckId, options, callback, nextUrl) {
@@ -78,14 +78,14 @@ export function apiDeckFlashcards(deckId, options, callback, nextUrl) {
 
   if (nextUrl) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
-  };
+  }
   backendLookup('GET', endpoint, callback);
-};
+}
 
 // Deletes a deck
 export function apiDeckDelete(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/delete/`, callback);
-};
+}
 
 export function apiDeckEdit(deckId, newTitle, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, reviewAheadMinutes, callback) {
   backendLookup('POST', `decks/${deckId}/edit/`, callback, {
@@ -95,13 +95,13 @@ export function apiDeckEdit(deckId, newTitle, schedulingAlgo, shuffleUnseenCards
     daily_new_card_limit: dailyNewCardLimit,
     review_ahead_minutes: reviewAheadMinutes,
   });
-};
+}
 
 
 // Gets a list of decks owned by a user with username `username` that are shared with the given user
 export function apiDeckSharedList(username, callback) {
   backendLookup('GET', `decks/detail/${username.toLowerCase()}/`, callback);
-};
+}
 
 // Gets a list of the current user's decks
 export function apiDeckPrivateList(callback) {
@@ -113,28 +113,28 @@ export function apiDeckHome(callback, nextUrl) {
   let endpoint = 'decks/home/';
   if (nextUrl) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
-  };
+  }
   backendLookup('GET', endpoint, callback);
-};
+}
 
 // Copies a deck
 export function apiDeckCopy(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/copy/`, callback);
-};
+}
 
 // Creates a thank for a deck
 export function apiDeckThank(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/thank/`, callback);
-};
+}
 
 // Searches for decks based on a query
 export function apiDeckSearch(query, callback, nextUrl) {
   let endpoint = `decks/search/?q=${query}`;
   if (nextUrl) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
-  };
+  }
   backendLookup('GET', endpoint, callback);
-};
+}
 
 // Imports a deck from a text file
 export function apiDeckTextImport(title, fileContents, convertFormatting, callback) {
@@ -143,23 +143,23 @@ export function apiDeckTextImport(title, fileContents, convertFormatting, callba
     uploaded_file: fileContents,
     convert_formatting: convertFormatting,
   });
-};
+}
 
 // Gets detail information about a profile, such as bio, name, username, etc.
 export function apiProfileDetail(username, callback) {
   backendLookup('GET', `profiles/${username.toLowerCase()}/detail/`, callback);
-};
+}
 
 
 // Sends a friend/unfriend request to the backend
 export function apiProfileFriendToggle(username, action, callback) {
   backendLookup('POST', `profiles/${username.toLowerCase()}/friend/`, callback, {action: action.toLowerCase()});
-};
+}
 
 // Checks if a username is available
 export function apiCheckUsernameAvailable(username, email, callback) {
   backendLookup('GET', `profiles/available/?username=${username.toLowerCase()}&email=${email}`, callback);
-};
+}
 
 // Creates a profile & user
 export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, lastName, username, email, password, experimentParams, callback) {
@@ -176,39 +176,39 @@ export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, la
     password: password,
     experiment_params: experimentParams,
   });
-};
+}
 
 // Logs a user in
 export function apiProfileLogin(username, password, callback) {
   backendLookup('POST', 'profiles/login/', callback, {username: username.toLowerCase(), password: password});
-};
+}
 
 // Logs a user out
 export function apiProfileLogout(callback) {
   backendLookup('POST', 'profiles/logout/', callback);
-};
+}
 
 // Gets a list of a user's friends
 export function apiProfileFriends(username, callback) {
   backendLookup('GET', `profiles/${username.toLowerCase()}/friends/`, callback);
-};
+}
 
 // Get's a profile's history
 export function apiProfileHistory(username, callback) {
   backendLookup('GET', `profiles/${username.toLowerCase()}/history/`, callback);
-};
+}
 
 // Update's a profiles settings
 export function apiProfileSettingsUpdate(disableTooltips, callback) {
   backendLookup('POST', 'pages/settings/', callback, {
     disable_all_tooltips: disableTooltips,
   });
-};
+}
 
 // Send a friend request
 export function apiSendFriendReq(recipientUsername, callback) {
   backendLookup('POST', `profiles/${recipientUsername.toLowerCase()}/friendrequest/`, callback);
-};
+}
 
 // Creates a notification
 export function apiNotificationCreate(username, title, description, category, callback) {
@@ -217,32 +217,32 @@ export function apiNotificationCreate(username, title, description, category, ca
     description: description,
     category: category,
   });
-};
+}
 
 // Gets list of notifications for a user
 export function apiNotificationList(username, callback, nextUrl) {
   let endpoint = `profiles/${username.toLowerCase()}/notifications/`;
   if (nextUrl) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
-  };
+  }
   backendLookup('GET', endpoint, callback);
-};
+}
 
 // Gets list of unread notifications for a user
 export function apiUnreadNotificationList(username, callback) {
   backendLookup('GET', `profiles/${username.toLowerCase()}/notifications/read/`, callback);
-};
+}
 
 // Marks a user's notification as read
 export function apiNotificationRead(username, notificationId, callback) {
   // Note: notificationId can also be a list or notification ids
   backendLookup('POST', `profiles/${username.toLowerCase()}/notifications/read/`, callback, {notification_id: notificationId});
-};
+}
 
 // Gets decks for explore component
 export function apiExploreLists(callback) {
   backendLookup('GET', 'explore/lists/', callback);
-};
+}
 
 // Create an empty data point
 export function apiCreateBlankExperiment(controllerShortName, experimentParams, callback) {
@@ -250,7 +250,7 @@ export function apiCreateBlankExperiment(controllerShortName, experimentParams, 
     controller_short_name: controllerShortName,
     experiment_params: experimentParams,
   });
-};
+}
 
 // Submit a piece of feedback
 export function apiFeedbackSubmit(title, description, errorCode, urgency, email, contactAllowed, isLegalIssue, callback) {
@@ -263,17 +263,17 @@ export function apiFeedbackSubmit(title, description, errorCode, urgency, email,
     contact_allowed: contactAllowed,
     is_legal_issue: isLegalIssue,
   });
-};
+}
 
 // Gets metadata about an SSM
 export function apiSSMDetail(studySessionmanagerId, callback) {
   backendLookup('GET', `decks/ssm/${studySessionmanagerId}/`, callback);
-};
+}
 
 // Gets flashcards to review now from an SSM
 export function apiSSMFlashcards(studySessionmanagerId, callback) {
   backendLookup('GET', `decks/ssm/${studySessionmanagerId}/flashcards/`, callback);
-};
+}
 
 // Updates a flashcard in an SSM's database
 export function apiSSMFlashcardUpdate(studySessionmanagerId, currentCardId, nextReviewDate, interval, easeFactor, learningStatus, stepsIndex, leechIndex, isLeech, incrementNewCardsDoneToday, timezoneOffset, callback) {
@@ -288,7 +288,7 @@ export function apiSSMFlashcardUpdate(studySessionmanagerId, currentCardId, next
     increment_new_cards_done_today: incrementNewCardsDoneToday,
     utc_timezone_offset: timezoneOffset,
   });
-};
+}
 
 // Updates a study session manager
 export function apiSSMEdit(studySessionmanagerId, title, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, reviewAheadMinutes, deckIds, tags, contains, leech, learningStatus, minEase, maxEase, callback) {
@@ -306,12 +306,12 @@ export function apiSSMEdit(studySessionmanagerId, title, schedulingAlgo, shuffle
     min_ease: minEase,
     max_ease: maxEase,
   });
-};
+}
 
 // Deletes a study session manager
 export function apiSSMDelete(studySessionmanagerId, callback) {
   backendLookup('POST', `decks/ssm/${studySessionmanagerId}/delete/`, callback);
-};
+}
 
 // Creates a study session manager
 export function apiSSMCreate(deckIds, tags, contains, leech, learningStatus, minEase, maxEase, callback) {
@@ -324,32 +324,32 @@ export function apiSSMCreate(deckIds, tags, contains, leech, learningStatus, min
     min_ease: minEase,
     max_ease: maxEase,
   });
-};
+}
 
 // Creates a note
-export function apiNoteCreate(title, version, callback) {
-  backendLookup('POST', 'notes/create/', callback, {title: title, version: version});
-};
+export function apiNoteCreate(title, callback) {
+  backendLookup('POST', 'notes/create/', callback, {title: title});
+}
 
 // Gets info about a note
 export function apiNoteDetail(noteId, callback) {
   backendLookup('GET', `notes/detail/${noteId}/`, callback);
-};
+}
 
 // Updates a note
 export function apiNoteUpdate(noteId, newTitle, newContent, callback) {
   backendLookup('POST', `notes/update/${noteId}/`, callback, {new_title: newTitle, new_content: newContent});
-};
+}
 
 // Deletes a note
 export function apiNoteDelete(noteId, callback) {
   backendLookup('POST', `notes/delete/${noteId}/`, callback);
-};
+}
 
 // Gets all of the user's notes
 export function apiNoteHome(callback) {
   backendLookup('GET', 'notes/list/', callback);
-};
+}
 
 // Changes a user's password
 export function apiPasswordChange(oldPassword, newPassword, callback) {
@@ -357,7 +357,7 @@ export function apiPasswordChange(oldPassword, newPassword, callback) {
     old_password: oldPassword,
     new_password: newPassword,
   });
-};
+}
 
 // Resets a user's password
 export function apiPasswordReset(email, resetKey, newPassword, callback) {
@@ -366,12 +366,12 @@ export function apiPasswordReset(email, resetKey, newPassword, callback) {
     reset_key: resetKey,
     new_password: newPassword,
   });
-};
+}
 
 // Sends a password reset email
 export function apiSendPasswordReset(email, callback) {
   backendLookup('POST', `profiles/resetpassword/${email}/`, callback);
-};
+}
 
 // Confirm user's email
 export function apiEmailConfirm(username, confirmationKey, email, callback) {
@@ -379,7 +379,7 @@ export function apiEmailConfirm(username, confirmationKey, email, callback) {
     confirmation_key: confirmationKey,
     email: email,
   });
-};
+}
 
 // Sends a confirmation email to the specified email
 export function apiEmailChange(password, newEmail, callback) {
@@ -387,16 +387,16 @@ export function apiEmailChange(password, newEmail, callback) {
     password: password,
     new_email: newEmail,
   });
-};
+}
 
 // Gets the current user's Manual SR Tasks
 export function apiManualSRTaskList(callback, nextUrl) {
   let endpoint = 'manual-sr/list/';
   if (nextUrl) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
-  };
+  }
   backendLookup('GET', endpoint, callback);
-};
+}
 
 // Creates a new Manual SR Task
 export function apiManualSRTaskCreate(title, description, callback) {
@@ -404,14 +404,14 @@ export function apiManualSRTaskCreate(title, description, callback) {
     title: title,
     description: description,
   });
-};
+}
 
 // Deletes a Manual SR Task
 export function apiManualSRTaskDelete(id, callback) {
   backendLookup('POST', 'manual-sr/delete/', callback, {
     manual_sr_id: id,
   });
-};
+}
 
 // Updates a Manual SR Task's review information
 export function apiManualSRTaskUpdate(id, nextReviewDate, learningStatus, ease, interval, callback) {
@@ -421,7 +421,7 @@ export function apiManualSRTaskUpdate(id, nextReviewDate, learningStatus, ease, 
     ease: ease,
     interval: interval,
   });
-};
+}
 
 // Edits the title and description of a Manual SR Task
 export function apiManualSRTaskEdit(id, newTitle, newDescription, callback) {
@@ -429,12 +429,12 @@ export function apiManualSRTaskEdit(id, newTitle, newDescription, callback) {
     new_title: newTitle,
     new_description: newDescription,
   });
-};
+}
 
 // Gets detail information for a shared deck
 export function apiSharedDeckDetail(id, callback) {
   backendLookup('GET', `decks/shared/detail/${id}/`, callback);
-};
+}
 
 // Creates a shared deck
 export function apiCreateSharedDeck(originDeckId, title, description, sharingSetting, callback) {
@@ -444,14 +444,14 @@ export function apiCreateSharedDeck(originDeckId, title, description, sharingSet
     description: description,
     sharing_setting: sharingSetting,
   });
-};
+}
 
 // Clones a shared deck
 export function apiSharedDeckClone(sharedDeckId, destinationDeckTitle, callback) {
   backendLookup('POST', `decks/shared/clone/${sharedDeckId}/`, callback, {
     destination_deck_title: destinationDeckTitle,
   });
-};
+}
 
 // Edits a shared deck's metadata
 export function apiSharedDeckEdit(sharedDeckId, newTitle, newDescription, newSharingSetting, callback) {
@@ -460,7 +460,7 @@ export function apiSharedDeckEdit(sharedDeckId, newTitle, newDescription, newSha
     new_description: newDescription,
     new_sharing_setting: newSharingSetting,
   });
-};
+}
 
 // Pushes changes to a shared deck (or checks diff)
 export function apiSharedPushChanges(originDeckId, sharedDeckId, checkDiffOnly, callback) {
@@ -469,14 +469,14 @@ export function apiSharedPushChanges(originDeckId, sharedDeckId, checkDiffOnly, 
     shared_deck_id: sharedDeckId,
     check_diff_only: checkDiffOnly,
   });
-};
+}
 
 // Gets required updates for a deck
 export function apiDeckGetUpdates(deckId, callback) {
   backendLookup('GET', `decks/get-updates/${deckId}/`, callback);
-};
+}
 
 // Pulls specified updates for a deck
 export function apiDeckPullUpdates(deckId, toPullFrom, callback) {
   backendLookup('POST', `decks/pull-updates/${deckId}/`, callback, {to_pull_from: toPullFrom});
-};
+}

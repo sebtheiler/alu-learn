@@ -17,7 +17,6 @@ def note_create_api_view(request, *args, **kwargs):
 
     Required information:
         `title`: (Data) Title of the new note
-        `version`: (Data) Type of note to create. Either: 'STND' or 'CORN'
 
     Possible errors:
         Unspecified title/version: 400, You must specify a title and version

@@ -16,7 +16,7 @@ export function NoteDefaultButtonGroup(props) {
       </Button>
     </ButtonGroup>
   );
-};
+}
 
 export function NoteCreateButton(props) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -25,15 +25,15 @@ export function NoteCreateButton(props) {
     event.preventDefault();
     const form = event.target;
 
-    apiNoteCreate(form.elements.title.value, form.elements.type.value, (response, status) => {
+    apiNoteCreate(form.elements.title.value, (response, status) => {
       if (status === 201) {
         window.location.reload();
       } else {
         // Error creating note
         errorHandler(response, status, 6004);
-      };
+      }
     });
-  };
+  }
 
   return (<>
     <Button
@@ -48,7 +48,7 @@ export function NoteCreateButton(props) {
       submitHandler={submitHandler}  
     />
   </>);
-};
+}
 
 export function NoteCreateModal(props) {
   const {show, hide, submitHandler} = props;
@@ -66,24 +66,10 @@ export function NoteCreateModal(props) {
             <Form.Label htmlFor='title'>Title</Form.Label>
             <Form.Control
               type='text'
-              placeholder='My AP Biology Notes'
+              placeholder='My Notes'
               name='title'
               required
             />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label htmlFor='type'>
-              Type of notes <br />
-              <small className='text-secondary'>
-                (This cannot be changed after the note is created)
-              </small>
-            </Form.Label>
-            <br />
-            <Form.Control as='select' name='type' custom>
-              <option value='STND'>Standard</option>
-              <option value='CORN'>Cornell</option>
-              <option value='FREE' disabled>Freeform</option>
-            </Form.Control>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
@@ -93,7 +79,7 @@ export function NoteCreateModal(props) {
       </Form>
     </Modal>
   );
-};
+}
 
 export function DeleteModal(props) {
   const {show, hide, note, deleteApiFunction} = props;
@@ -121,7 +107,7 @@ export function DeleteModal(props) {
             } else {
               // Error deleting note
               errorHandler(response, status, 6005);
-            };
+            }
           });
         }}
       >
@@ -137,4 +123,4 @@ export function DeleteModal(props) {
       </Button>
     </Modal>
   );
-};
+}
