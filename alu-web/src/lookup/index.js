@@ -64,6 +64,8 @@ import {
   apiDeckPrivateList,
   apiCreateNewNotePage,
   apiDeleteNotePage,
+  apiNotePageUpdate,
+  apiNotePageDetail,
 } from './lookup';
 
 export {
@@ -132,4 +134,6 @@ export {
   apiDeckPrivateList,
   apiCreateNewNotePage,
   apiDeleteNotePage,
+  apiNotePageUpdate,
+  apiNotePageDetail,
 };

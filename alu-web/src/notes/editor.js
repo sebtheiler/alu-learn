@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { errorHandler, useInterval } from '../utils';
 import { Button, ButtonGroup, Form } from 'react-bootstrap';
-import { apiNoteDelete, apiNoteDetail, apiNoteUpdate, apiCreateNewNotePage, apiDeleteNotePage } from '../lookup';
+import { apiNoteDelete, apiNoteDetail, apiNotePageUpdate, apiCreateNewNotePage, apiDeleteNotePage } from '../lookup';
 import { DeleteModal } from './buttons';
 import { StandardNoteEditor } from './standard';
 import { CornellNoteEditor } from './cornell';
@@ -46,7 +46,7 @@ export function NoteEditor(props) {
   // Function for sending a request to the API for saving
   const sendSaveApiRequest = (callback) => {
     if (areChanges && noteDidSet) {
-      apiNoteUpdate(noteId, null, JSON.stringify(valueToSave), (response, status) => {
+      apiNotePageUpdate(noteId, pageNum, JSON.stringify(valueToSave), (response, status) => {
         if (status === 200) {
           window.onbeforeunload = undefined;
           setAreChanges(false);
@@ -116,7 +116,7 @@ export function NoteEditor(props) {
     }
 
     const editorProps = {
-      initialValue: note.pages[parseInt(pageNum)],
+      initialValue: note.pages[parseInt(pageNum) - 1],
       isViewing: isViewing,
       updateValueToSave: newValue => {
         setValueToSave({...valueToSave, ...newValue});
@@ -139,7 +139,7 @@ export function NoteEditor(props) {
       );
     }
 
-    switch (note.pages[parseInt(pageNum)].page.note_page_type) {
+    switch (note.pages[parseInt(pageNum) - 1].page.note_page_type) {
       case 'STND':
         return <StandardNoteEditor {...editorProps} />
       case 'CORN':
@@ -179,7 +179,7 @@ export function NoteEditor(props) {
         </p>
         <Button href={`/notes/study/${noteId}/`} className='mb-3'>
           View
-        </Button>
+        </Button><br />
       </>}
       {renderEditor()}
       <h3 className='text-center'>Page Browser</h3>

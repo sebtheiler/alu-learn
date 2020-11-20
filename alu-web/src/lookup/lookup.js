@@ -340,9 +340,19 @@ export function apiNoteDetail(noteId, getPages, callback) {
   backendLookup('GET', backend, callback);
 }
 
-// Updates a note
-export function apiNoteUpdate(noteId, newTitle, newContent, callback) {
-  backendLookup('POST', `notes/update/${noteId}/`, callback, {new_title: newTitle, new_content: newContent});
+// Gets a note page's content
+export function apiNotePageDetail(noteId, pageNumber, callback) {
+  backendLookup('GET', `notes/page-detail/${noteId}/${pageNumber}/`, callback);
+}
+
+// Updates a note's metadata
+export function apiNoteUpdate(noteId, newTitle, callback) {
+  backendLookup('POST', `notes/update/${noteId}/`, callback, { new_title: newTitle });
+}
+
+// Updates the content of a single note page
+export function apiNotePageUpdate(noteId, pageNum, newContent, callback) {
+  backendLookup('POST', `notes/page-update/${noteId}/${pageNum}/`, callback, { new_content: newContent });
 }
 
 // Deletes a note

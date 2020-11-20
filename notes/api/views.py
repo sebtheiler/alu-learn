@@ -179,7 +179,7 @@ def note_update_api_view(request, note_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def note_page_update_api_view(request, note_page_id, *args, **kwargs):
+def note_page_update_api_view(request, note_id, page_number, *args, **kwargs):
     """
     Updates a note page's content - POST
 
@@ -204,7 +204,11 @@ def note_page_update_api_view(request, note_page_id, *args, **kwargs):
             note.title = title
 
     try:
-        note = FreeformNotePage.objects.get(pk=note_page_id, user=request.user.profile)
+        note = FreeformNotePage.objects.get(
+            note__pk=note_id,
+            note__user=request.user.profile,
+            page_number=page_number,
+        )
 
         note.content = content.get('content', note.content)
         update_note_title(note, content.get('title'))
@@ -213,7 +217,12 @@ def note_page_update_api_view(request, note_page_id, *args, **kwargs):
         return Response(FreeformNotePageSerializer(note).data, status=200)
     except FreeformNotePage.DoesNotExist:
         try:
-            note = CornellNotePage.objects.get(pk=note_page_id, user=request.user.profile)
+            print('updating cornell')
+            note = CornellNotePage.objects.get(
+                note__pk=note_id,
+                note__user=request.user.profile,
+                page_number=page_number,
+            )
 
             # Update summary
             note.summary = content.get('summary', note.summary)
