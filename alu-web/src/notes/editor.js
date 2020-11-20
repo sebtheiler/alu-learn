@@ -1,41 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { errorHandler, useInterval } from '../utils';
-import { Button, Form } from 'react-bootstrap';
-import { apiNoteDelete, apiNoteDetail, apiNoteUpdate } from '../lookup';
+import { Button, ButtonGroup, Form } from 'react-bootstrap';
+import { apiNoteDelete, apiNoteDetail, apiNoteUpdate, apiCreateNewNotePage } from '../lookup';
 import { DeleteModal } from './buttons';
 import { StandardNoteEditor } from './standard';
 import { CornellNoteEditor } from './cornell';
 import './editor.css';
 
-const testPages = [
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-  { title: 'wasd', type: 'standard', content: 'test' },
-];
 
 export function NoteEditor(props) {
   const {noteId} = props;
@@ -108,7 +79,16 @@ export function NoteEditor(props) {
   // Create a new page
   const createNewPage = (event) => {
     event.preventDefault();
-    // TODO:
+    const pageTitle = window.prompt('Title of the page to create');
+    if (!pageTitle) return;
+    apiCreateNewNotePage(pageTitle, parseInt(noteId), 'STND', (response, status) => {
+      if (status === 201) {
+        window.location.href = `/notes/edit/${noteId}/page/${response.page_number}/`;
+      } else {
+        // Error creating new note page
+        errorHandler(response, status, 6006);
+      }
+    });
   }
 
   // Delete the current page
@@ -124,7 +104,7 @@ export function NoteEditor(props) {
       setDidTypeRecently(false);
     } else {
       sendSaveApiRequest();
-    };
+    }
   }, areChanges ? 5000 : null);
 
   if (notFound) {
@@ -203,14 +183,21 @@ export function NoteEditor(props) {
         </Button>
       </>}
       {renderEditor()}
-      {note && note.pages.length > 0 && <Button
-        variant='danger'
-        onClick={deletePage}
-        className='mt-3 mb-5'
-      >
-        Delete Page
-      </Button>}
       <h3 className='text-center'>Page Browser</h3>
+      <div className='text-center'>
+        <ButtonGroup>
+          <Button onClick={createNewPage}>
+            Create New Page
+          </Button>
+          {note && note.pages.length > 0 && <Button
+            variant='danger'
+            onClick={deletePage}
+            className='ml-1'
+          >
+            Delete Current Page
+          </Button>}
+        </ButtonGroup>
+      </div>
       {note && <div
         className='mx-auto text-center mb-5'
         style={{
@@ -246,7 +233,6 @@ export function NoteEditor(props) {
             </div>
           </a>
         ))}
-        <Button onClick={createNewPage}>Create New Page</Button>
       </div>}
       <Button
         variant='danger'

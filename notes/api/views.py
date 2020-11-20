@@ -60,11 +60,19 @@ def note_page_create_api_view(request, *args, **kwargs):
     if None in (note_id, version, title):
         return Response({'message': 'You must specify a note id, version, and title'}, status=400)
 
+    try:
+        note = Note.objects.get(pk=note_id, user=request.user.profile)
+    except Note.DoesNotExist:
+        return Response({'message': 'The specified note does not exist / you are unauthorized'}, status=400)
+
+    note_page_number = NotePage.objects.filter(note=note).order_by('-page_number').first().page_number + 1 or 1
+
     if version == 'STND':
         # Create standard note object
-        note = FreeformNotePage.objects.create(
-            user=request.user.profile,
+        note_page = FreeformNotePage.objects.create(
+            note=note,
             title=title,
+            page_number=note_page_number,
             content=
 [
   {
@@ -77,12 +85,13 @@ def note_page_create_api_view(request, *args, **kwargs):
   }
 ]
         )
-        return Response(FreeformNotePageSerializer(note).data, status=201)
+        return Response(FreeformNotePageSerializer(note_page).data, status=201)
     elif version == 'CORN':
         # Create Cornell note object/
-        note = CornellNotePage.objects.create(
-            user=request.user.profile,
+        note_page = CornellNotePage.objects.create(
+            note=note,
             title=title,
+            page_number=note_page_number,
             summary=
 [
   {
@@ -95,7 +104,7 @@ def note_page_create_api_view(request, *args, **kwargs):
   }
 ]
         )
-        return Response(CornellNotePageSerializer(note).data, status=201)
+        return Response(CornellNotePageSerializer(note_page).data, status=201)
     else:
         return Response({'message': 'Invalid note type'}, status=400)
 

@@ -355,6 +355,15 @@ export function apiNoteHome(callback) {
   backendLookup('GET', 'notes/list/', callback);
 }
 
+// Creates a new page in a note
+export function apiCreateNewNotePage(pageTitle, noteId, version, callback) {
+  backendLookup('POST', 'notes/create-page/', callback, {
+    note_id: noteId,
+    title: pageTitle,
+    version: version,
+  });
+}
+
 // Changes a user's password
 export function apiPasswordChange(oldPassword, newPassword, callback) {
   backendLookup('POST', 'profiles/changepassword/', callback, {

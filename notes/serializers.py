@@ -22,27 +22,38 @@ class NoteSerializer(serializers.ModelSerializer):
 
 
 class FreeformNotePageSerializer(serializers.ModelSerializer):
-    serializer_name = serializers.SerializerMethodField(read_only=True)
-    author = MinifiedProfileSerializer(source='user', read_only=True)
+    note_page_type = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FreeformNotePage
-        fields = NoteSerializer.Meta.fields + [
+        fields = [
             'content',
+            'title',
+            'page_number',
+            'note_page_type',
+            'id',
         ]
 
-    def get_serializer_name(self, obj):
-        return 'note-standard'
+    def get_note_page_type(self, obj):
+        return 'STND'
 
 
 class CornellNotePageSectionSerializer(serializers.ModelSerializer):
+    note_page_type = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = CornellNotePageSection
         fields = [
             'cue',
             'content',
+            'title',
+            'page_number',
+            'note_page_type',
             'id',
         ]
+
+    def get_note_page_type(self, obj):
+        return 'CORN'
 
 
 class CornellNotePageSerializer(serializers.ModelSerializer):
@@ -74,12 +85,12 @@ class NotePageSerializer(serializers.ModelSerializer):
 
     def get_page(self, obj):
         try:
-            FreeformNotePage.objects.get(pk=obj.id)
-            return FreeformNotePageSerializer(obj)
+            note = FreeformNotePage.objects.get(pk=obj.id)
+            return FreeformNotePageSerializer(note).data
         except FreeformNotePage.DoesNotExist:
             try:
-                CornellNotePage.objects.get(pk=obj.id)
-                return CornellNotePageSerializer(obj)
+                note = CornellNotePage.objects.get(pk=obj.id)
+                return CornellNotePageSerializer(note).data
             except CornellNotePageSerializer.DoesNotExist:
                 raise ValueError(f'Could not find note page with id "{obj.id}"')
 
