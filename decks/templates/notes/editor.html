@@ -3,5 +3,9 @@
 {% block title %}{{ note_title }} at{% endblock title %}
 
 {% block content %}
-<div id='note-editor' data-note-id='{{ note_id }}'></div>
+<div
+  id='note-editor'
+  data-note-id='{{ note_id }}'
+  data-page-num='{{ page_number }}'
+></div>
 {% endblock content %}

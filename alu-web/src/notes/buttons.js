@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Button, ButtonGroup, Form, Modal} from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Button, ButtonGroup, Form, Modal } from 'react-bootstrap';
 import { apiNoteCreate } from '../lookup';
 import { errorHandler } from '../utils';
 
