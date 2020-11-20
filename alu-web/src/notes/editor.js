@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { errorHandler, useInterval } from '../utils';
-import { Button, ButtonGroup, Form } from 'react-bootstrap';
+import { Button, ButtonGroup, Form, Modal } from 'react-bootstrap';
 import { apiNoteDelete, apiNoteDetail, apiNotePageUpdate, apiCreateNewNotePage, apiDeleteNotePage } from '../lookup';
 import { DeleteModal } from './buttons';
 import { StandardNoteEditor } from './standard';
@@ -19,6 +19,7 @@ export function NoteEditor(props) {
   const [didTypeRecently, setDidTypeRecently] = useState(false);
   const [areChanges, setAreChanges] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [createNewPageModalIsOpen, setCreateNewPageModalIsOpen] = useState(false);
 
   function confirmExit() {
     if (areChanges) {
@@ -69,16 +70,20 @@ export function NoteEditor(props) {
   // Create a new page
   const createNewPage = (event) => {
     event.preventDefault();
-    // TODO: Improve way of getting title, and add type and position
-    const pageTitle = window.prompt('Title of the page to create');
-    if (!pageTitle) return;
-    apiCreateNewNotePage(pageTitle, parseInt(noteId), 'STND', (response, status) => {
-      if (status === 201) {
-        window.location.href = `/notes/edit/${noteId}/page/${response.page_number}/`;
-      } else {
-        // Error creating new note page
-        errorHandler(response, status, 6006);
-      }
+    const form = event.target;
+
+    apiCreateNewNotePage(
+      form.elements.title.value,
+      parseInt(noteId),
+      form.elements.pageType.value,
+      form.elements.pagePosition.value,
+      (response, status) => {
+        if (status === 201) {
+          window.location.href = `/notes/edit/${noteId}/page/${response.page_number}/`;
+        } else {
+          // Error creating new note page
+          errorHandler(response, status, 6006);
+        }
     });
   }
 
@@ -187,9 +192,56 @@ export function NoteEditor(props) {
       <h3 className='text-center mt-3'>Page Browser</h3>
       <div className='text-center'>
         <ButtonGroup>
-          <Button onClick={createNewPage}>
+          <Button onClick={() => setCreateNewPageModalIsOpen(true)}>
             Create New Page
           </Button>
+          <Modal show={createNewPageModalIsOpen} onHide={() => setCreateNewPageModalIsOpen(false)}>
+            <Modal.Header>
+              <Modal.Title>
+                Creating New Page
+              </Modal.Title>
+            </Modal.Header>
+            <Form onSubmit={createNewPage}>
+              <Modal.Body>
+                <Form.Group>
+                  <Form.Label>Title</Form.Label>
+                  <Form.Control
+                    type='text'
+                    placeholder='New Page'
+                    name='title'
+                    required
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Type of Page</Form.Label>
+                  <Form.Control
+                    as='select'
+                    name='pageType'
+                    custom
+                  >
+                    <option value='STND'>Freeform/Standard Notes</option>
+                    <option value='CORN'>Cornell Notes</option>
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>Page Position</Form.Label>
+                  <Form.Control
+                    as='select'
+                    name='pagePosition'
+                    custom
+                  >
+                    <option value='END'>At the end of all pages</option>
+                    <option value='FRONT'>At the beginning of all pages</option>
+                    <option value='AFTER'>After the current page</option>
+                    <option value='BEFORE'>Before the current page</option>
+                  </Form.Control>
+                </Form.Group>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button type='submit'>Create Page</Button>
+              </Modal.Footer>
+            </Form>
+          </Modal>
           {note && note.pages.length > 0 && <Button
             variant='danger'
             onClick={deletePage}

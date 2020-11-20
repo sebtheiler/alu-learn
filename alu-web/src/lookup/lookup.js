@@ -366,11 +366,12 @@ export function apiNoteHome(callback) {
 }
 
 // Creates a new page in a note
-export function apiCreateNewNotePage(pageTitle, noteId, version, callback) {
+export function apiCreateNewNotePage(pageTitle, noteId, version, pagePosition, callback) {
   backendLookup('POST', 'notes/create-page/', callback, {
     note_id: noteId,
     title: pageTitle,
     version: version,
+    page_position: pagePosition,
   });
 }
 

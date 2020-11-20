@@ -7,11 +7,9 @@ import { QuestionBubble } from '../../utils';
 
 export function StandardNoteEditor(props) {
   const {initialValue, isViewing, updateValueToSave, saveHandler, didTypeCallback, noteId} = props;
-  console.log(props)
   const [showAutoNoteModal, setShowAutoNoteModal] = useState(false);
 
   const [value, setValue] = useState(initialValue.page.content);
-  console.log(value)
   const editor = useMemo(
     () => createFullEditor(),
     []
