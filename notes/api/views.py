@@ -1,4 +1,5 @@
 import json
+from django.db.models.expressions import F
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -65,7 +66,8 @@ def note_page_create_api_view(request, *args, **kwargs):
     except Note.DoesNotExist:
         return Response({'message': 'The specified note does not exist / you are unauthorized'}, status=400)
 
-    note_page_number = NotePage.objects.filter(note=note).order_by('-page_number').first().page_number + 1 or 1
+    max_page_num_obj = NotePage.objects.filter(note=note).order_by('-page_number').first()
+    note_page_number = max_page_num_obj.page_number + 1 if max_page_num_obj else 1
 
     if version == 'STND':
         # Create standard note object
@@ -282,11 +284,19 @@ def note_page_delete_api_view(request, note_id, page_number, *args, **kwargs):
         `page_number`: (URL) Page number of the note page to delete
     """
     try:
+        # Delete the note page object
         NotePage.objects.get(
             note__pk=note_id,
             page_number=page_number,
-            user=request.user.profile,
+            note__user=request.user.profile,
         ).delete()
+
+        # Decrease the page number of all pages that come after this page
+        NotePage.objects.filter(
+            note__pk=note_id,
+            note__user=request.user.profile,
+        ).update(page_number=F('page_number') - 1)
+
         return Response({'message': 'Deleted note successfully'}, status=200)
     except NotePage.DoesNotExist:
         return Response({'message': 'Note not found'}, status=404)

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { errorHandler, useInterval } from '../utils';
 import { Button, ButtonGroup, Form } from 'react-bootstrap';
-import { apiNoteDelete, apiNoteDetail, apiNoteUpdate, apiCreateNewNotePage } from '../lookup';
+import { apiNoteDelete, apiNoteDetail, apiNoteUpdate, apiCreateNewNotePage, apiDeleteNotePage } from '../lookup';
 import { DeleteModal } from './buttons';
 import { StandardNoteEditor } from './standard';
 import { CornellNoteEditor } from './cornell';
@@ -9,7 +9,7 @@ import './editor.css';
 
 
 export function NoteEditor(props) {
-  const {noteId} = props;
+  const {noteId, pageNum} = props;
   const isViewing = props.isViewing instanceof String ? props.isViewing === 'true' : props.isViewing;
 
   const [pages, setPages] = useState(null);
@@ -95,7 +95,15 @@ export function NoteEditor(props) {
   const deletePage = (event) => {
     event.preventDefault();
     if (!window.confirm('Are you sure you want to delete this page?')) return;
-    // TODO:
+    apiDeleteNotePage(parseInt(noteId), parseInt(pageNum), (response, status) => {
+      if (status === 200) {
+        const newPageNumber = Math.max(response.page_number - 1, 1);
+        window.location.href = `/notes/edit/${noteId}/page/${newPageNumber}/`;
+      } else {
+        // Error deleting note pagae
+        errorHandler(response, status, 6007);
+      }
+    });
   }
 
   // Auto-save every 5-10 seconds if the user hasn't typed recently

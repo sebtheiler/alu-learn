@@ -63,6 +63,7 @@ import {
   apiDeckPullUpdates,
   apiDeckPrivateList,
   apiCreateNewNotePage,
+  apiDeleteNotePage,
 } from './lookup';
 
 export {
@@ -130,4 +131,5 @@ export {
   apiDeckPullUpdates,
   apiDeckPrivateList,
   apiCreateNewNotePage,
+  apiDeleteNotePage,
 };

@@ -364,6 +364,11 @@ export function apiCreateNewNotePage(pageTitle, noteId, version, callback) {
   });
 }
 
+// Deletes a page in a note
+export function apiDeleteNotePage(noteId, pageNum, callback) {
+  backendLookup('POST', `notes/delete-page/${noteId}/${pageNum}/`, callback);
+}
+
 // Changes a user's password
 export function apiPasswordChange(oldPassword, newPassword, callback) {
   backendLookup('POST', 'profiles/changepassword/', callback, {

@@ -22,7 +22,7 @@ export function NotificationComponent(props) {
       if (username === '') {
         // If the user is not logged in make a fake notification
         const fakeNotifDesc = `
-Welcome to Alu! Alu uses spaced reptetion algorithms to help you learn and study most effectively.
+Welcome to Alu! Alu uses spaced repetition algorithms to help you learn and study most effectively.
 `.trim();
         setNotifList([{
           title: 'Hey there!',
