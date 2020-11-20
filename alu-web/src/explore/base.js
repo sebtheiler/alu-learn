@@ -42,8 +42,8 @@ export function ExploreComponent(props) {
         <DeckSlider decks={decks.HOT} loading={!decksDidSet} />
       </div> */}
       <div className={'mb-5' + (decks.TOP && decks.TOP.length === 0 ? ' d-none' : '')}>
-        <h3>Most Thanked Decks</h3>
-        <p className='text-secondary'>Decks with the total highest number of thanks</p>
+        <h3>Most Copied Decks</h3>
+        <p className='text-secondary'>Decks with the total highest number of copies</p>
         <DeckSlider decks={decks.TOP} loading={!decksDidSet} />
       </div>
     </>

@@ -41,7 +41,7 @@ export function NoteEditor(props) {
   const {noteId} = props;
   const isViewing = props.isViewing instanceof String ? props.isViewing === 'true' : props.isViewing;
 
-  const [initialValue, setInitialValue] = useState(null);
+  const [pages, setPages] = useState(null);
   const [valueToSave, setValueToSave] = useState(null);
   const [note, setNote] = useState(null);
   const [noteDidSet, setNoteDidSet] = useState(false);
@@ -63,10 +63,11 @@ export function NoteEditor(props) {
       apiNoteDetail(noteId, true, (response, status) => {
         if (status === 200) {
           setNote(response);
+          console.log(response);
           if (response.serializer_name === 'note-standard') {
-            setInitialValue(response.content instanceof String ? JSON.parse(response.content) : response.content);
+            setPages(response.pages instanceof String ? JSON.parse(response.pages) : response.pages);
           } else if (response.serializer_name === 'note-cornell') {
-            setInitialValue({
+            setPages({
               sections: response.sections,
               summary: response.summary,
             });
@@ -104,6 +105,19 @@ export function NoteEditor(props) {
     }
   }
 
+  // Create a new page
+  const createNewPage = (event) => {
+    event.preventDefault();
+    // TODO:
+  }
+
+  // Delete the current page
+  const deletePage = (event) => {
+    event.preventDefault();
+    if (!window.confirm('Are you sure you want to delete this page?')) return;
+    // TODO:
+  }
+
   // Auto-save every 5-10 seconds if the user hasn't typed recently
   useInterval(() => {
     if (didTypeRecently) {
@@ -119,7 +133,7 @@ export function NoteEditor(props) {
 
   const renderEditor = () => {
     const editorProps = {
-      initialValue: initialValue,
+      initialValue: pages, // todo: pages[pageNum]
       isViewing: isViewing,
       updateValueToSave: newValue => {
         setValueToSave({...valueToSave, ...newValue});
@@ -136,6 +150,16 @@ export function NoteEditor(props) {
       noteId: noteId,
     };
 
+    if (!note) {
+      return (
+        <p className='text-center'>Loading...</p>
+      );
+    }
+    if (note.pages.length === 0) {
+      return (
+        <p className='text-center'>You don't have any pages yet</p>
+      );
+    }
     switch (note.serializer_name) {
       case 'note-standard':
         return <StandardNoteEditor {...editorProps} />
@@ -178,22 +202,14 @@ export function NoteEditor(props) {
           View
         </Button>
       </>}
-      {initialValue !== null ? <div id='note-editor'>
-        {renderEditor()}
-      </div> : <p>Loading...</p>}
-      <Button
+      {renderEditor()}
+      {note && note.pages.length > 0 && <Button
         variant='danger'
-        onClick={event => {event.preventDefault(); setShowDeleteModal(true)}}
+        onClick={deletePage}
         className='mt-3 mb-5'
       >
-        Delete
-      </Button>
-      <DeleteModal
-        show={showDeleteModal}
-        hide={() => setShowDeleteModal(false)}
-        note={note}
-        deleteApiFunction={apiNoteDelete}
-      />
+        Delete Page
+      </Button>}
       <h3 className='text-center'>Page Browser</h3>
       {note && <div
         className='mx-auto text-center mb-5'
@@ -202,20 +218,20 @@ export function NoteEditor(props) {
           overflowX: 'auto',
           whiteSpace: 'nowrap',
         }}
-      >
-        {testPages.map((page, index) => (
+        >
+        {note.pages && note.pages.map((page, index) => (
           <a
-            key={index}
-            // TODO: check that the user is not already on the page they clicked to avoid, un-needed reloading
-            href={`/notes/edit/${note.id}/page/${index + 1}/`}
-            onClick={(event => {
-              // Stop the link from immediately working, to first save the document
-              // and then redirect the user regularly
-              event.preventDefault();
-              sendSaveApiRequest(() => {
-                window.location.href = `/notes/edit/${note.id}/page/${index + 1}/`;
-              });
-            })}
+          key={index}
+          // TODO: check that the user is not already on the page they clicked to avoid, un-needed reloading
+          href={`/notes/edit/${note.id}/page/${index + 1}/`}
+          onClick={(event => {
+            // Stop the link from immediately working, to first save the document
+            // and then redirect the user regularly
+            event.preventDefault();
+            sendSaveApiRequest(() => {
+              window.location.href = `/notes/edit/${note.id}/page/${index + 1}/`;
+            });
+          })}
           >
             <div className='page-selector mx-3 p-3 my-3'>
               <strong>{page.title}</strong>
@@ -230,7 +246,21 @@ export function NoteEditor(props) {
             </div>
           </a>
         ))}
+        <Button onClick={createNewPage}>Create New Page</Button>
       </div>}
+      <Button
+        variant='danger'
+        onClick={event => {event.preventDefault(); setShowDeleteModal(true)}}
+        className='mt-3 mb-5'
+      >
+        Delete Everything
+      </Button>
+      <DeleteModal
+        show={showDeleteModal}
+        hide={() => setShowDeleteModal(false)}
+        note={note}
+        deleteApiFunction={apiNoteDelete}
+      />
     </div>
   );
 }

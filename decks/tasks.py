@@ -22,7 +22,8 @@ def midnight_reset():
     StudySessionManager.objects.all().update(new_cards_done_today=0)
 
     # Calculate top deck Ids
-    sorted_decks = SharedDeck.objects.annotate(num_thanks=Count('thanks')).order_by('-num_thanks')
+    # sorted_decks = SharedDeck.objects.annotate(num_thanks=Count('thanks')).order_by('-num_thanks')
+    sorted_decks = SharedDeck.objects.annotate(num_clones=Count('clones')).order_by('-num_clones')
     top_deck_ids = [deck.id for deck in sorted_decks[:5]]
     with open('top_deck_ids.json', 'w+') as f:
         f.write(json.dumps(top_deck_ids))
