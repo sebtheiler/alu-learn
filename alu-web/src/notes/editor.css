@@ -4,8 +4,13 @@
   height: 200px;
   display: inline-block;
   cursor: pointer;
+  border-radius: 5px;
 }
 
 .page-selector:hover {
-  box-shadow: 5px 5px 5px gray;
+  box-shadow: 0px 5px 5px gray;
+}
+
+.selected {
+  border: 5px solid;
 }

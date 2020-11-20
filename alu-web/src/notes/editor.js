@@ -29,6 +29,7 @@ export function NoteEditor(props) {
   // Get note data
   useEffect(() => {
     if (noteDidSet === false) {
+      // TODO: only get the page information for the page requested
       setNoteDidSet(true);
       apiNoteDetail(noteId, true, (response, status) => {
         if (status === 200) {
@@ -68,6 +69,7 @@ export function NoteEditor(props) {
   // Create a new page
   const createNewPage = (event) => {
     event.preventDefault();
+    // TODO: Improve way of getting title, and add type and position
     const pageTitle = window.prompt('Title of the page to create');
     if (!pageTitle) return;
     apiCreateNewNotePage(pageTitle, parseInt(noteId), 'STND', (response, status) => {
@@ -182,7 +184,7 @@ export function NoteEditor(props) {
         </Button><br />
       </>}
       {renderEditor()}
-      <h3 className='text-center'>Page Browser</h3>
+      <h3 className='text-center mt-3'>Page Browser</h3>
       <div className='text-center'>
         <ButtonGroup>
           <Button onClick={createNewPage}>
@@ -208,18 +210,19 @@ export function NoteEditor(props) {
         {note.pages && note.pages.map((page, index) => (
           <a
           key={index}
-          // TODO: check that the user is not already on the page they clicked to avoid, un-needed reloading
           href={`/notes/edit/${note.id}/page/${index + 1}/`}
           onClick={(event => {
             // Stop the link from immediately working, to first save the document
             // and then redirect the user regularly
             event.preventDefault();
+            if (parseInt(pageNum) === index + 1) return;
+
             sendSaveApiRequest(() => {
               window.location.href = `/notes/edit/${note.id}/page/${index + 1}/`;
             });
           })}
           >
-            <div className='page-selector mx-3 p-3 my-3'>
+            <div className={'page-selector mx-3 p-3 my-3' + (parseInt(pageNum) === index + 1 ? ' selected' : '')}>
               <strong>{page.title}</strong>
               <p
                 className='align-text-bottom float-right'

@@ -13,6 +13,7 @@ def notes_home_view(request, *args, **kwargs):
 
 
 def notes_editor_redirect_view(request, note_id, *args, **kwargs):
+    # TODO: redirect to most recently requested page
     return redirect(f'/notes/edit/{note_id}/page/1/')
 
 
