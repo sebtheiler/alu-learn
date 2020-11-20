@@ -33,7 +33,7 @@ export function CornellNoteEditor(props) {
       sections: newSections ? newSections : sections,
       summary: summaryValue,
     });
-  };
+  }
 
   // Delete a single section
   const sectionDeleteHandler = (index) => {
@@ -46,8 +46,8 @@ export function CornellNoteEditor(props) {
       document.body.click(); // remove the popup
       updateAllSectionsCallback(newSections);
       didTypeCallback();
-    };
-  };
+    }
+  }
 
   return (<>
     {!isViewing && <Button className='mb-3' onClick={saveHandler}>
@@ -86,7 +86,6 @@ export function CornellNoteEditor(props) {
             <CornellSection
               value={value}
               isViewing={isViewing}
-              didTypeCallback={didTypeCallback}
               index={index}
               numSections={sections.length}
               deleteHandler={sectionDeleteHandler(index)}
@@ -96,6 +95,7 @@ export function CornellNoteEditor(props) {
                 ...sections.slice(index+1, sections.length)];
                 setSections(newSections);
                 updateAllSectionsCallback(newSections);
+                didTypeCallback();
               }}
               updateContent={newValue => {
                 const newSections = [...sections.slice(0, index),
@@ -103,6 +103,7 @@ export function CornellNoteEditor(props) {
                 ...sections.slice(index+1, sections.length)];
                 setSections(newSections);
                 updateAllSectionsCallback(newSections);
+                didTypeCallback();
               }}
               moveUp={index !== 0 ? () => {
                 [sections[index-1], sections[index]] = [sections[index], sections[index-1]];
@@ -143,6 +144,9 @@ export function CornellNoteEditor(props) {
               value={summaryValue}
               onChange={newValue => {
                 setSummaryValue(newValue);
+                if (newValue !== summaryValue) {
+                  didTypeCallback();
+                }
               }}
             >
               {!isViewing && <EditorButtons
@@ -153,7 +157,6 @@ export function CornellNoteEditor(props) {
               <FullEditor
                 editor={summaryEditor}
                 readOnly={isViewing}
-                didTypeCallback={didTypeCallback}
                 styleOptions={{ showBorder: false, minHeight: '250px' }}
               />
             </Slate>
@@ -162,11 +165,11 @@ export function CornellNoteEditor(props) {
       </tbody>
     </table>
   </>);
-};
+}
 
 // This is used for rendering an individual "section" (cue and note) of the Cornell editor
 function CornellSection(props) {
-  const {value, moveUp, moveDown, updateContent, updateCue, didTypeCallback, isViewing, deleteHandler} = props;
+  const {value, moveUp, moveDown, updateContent, updateCue, isViewing, deleteHandler} = props;
 
   const styleOptions = { showBorder: false, minHeight: '175px' };
   const cueEditor = useMemo(
@@ -249,7 +252,6 @@ function CornellSection(props) {
         <FullEditor
           editor={cueEditor}
           readOnly={isViewing}
-          didTypeCallback={didTypeCallback}
           styleOptions={styleOptions}
         />
       </Slate>
@@ -279,10 +281,9 @@ function CornellSection(props) {
         <FullEditor
           editor={contentEditor}
           readOnly={isViewing}
-          didTypeCallback={didTypeCallback}
           styleOptions={styleOptions}
         />
       </Slate>
     </td>
   </>);
-};
+}

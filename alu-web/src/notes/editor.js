@@ -46,11 +46,10 @@ export function NoteEditor(props) {
   // Function for sending a request to the API for saving
   const sendSaveApiRequest = (callback) => {
     if (areChanges && noteDidSet) {
-      setAreChanges(false);
       apiNoteUpdate(noteId, null, JSON.stringify(valueToSave), (response, status) => {
         if (status === 200) {
           window.onbeforeunload = undefined;
-          console.log(callback)
+          setAreChanges(false);
           if (callback) {
             callback();
           }

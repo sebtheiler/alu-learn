@@ -65,9 +65,11 @@ export function StandardNoteEditor(props) {
       editor={editor}
       value={value}
       onChange={newValue => {
+        if (newValue !== value) {
+          didTypeCallback();
+        }
         setValue(newValue);
         updateValueToSave({ content: newValue });
-        didTypeCallback();
       }}
     >
       {!isViewing &&
@@ -80,7 +82,6 @@ export function StandardNoteEditor(props) {
       <FullEditor
         editor={editor}
         readOnly={isViewing}
-        didTypeCallback={didTypeCallback}
       />
     </Slate>
   </>);
