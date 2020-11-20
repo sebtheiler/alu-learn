@@ -12,7 +12,6 @@ export function NoteEditor(props) {
   const {noteId, pageNum} = props;
   const isViewing = props.isViewing instanceof String ? props.isViewing === 'true' : props.isViewing;
 
-  const [pages, setPages] = useState(null);
   const [valueToSave, setValueToSave] = useState(null);
   const [note, setNote] = useState(null);
   const [noteDidSet, setNoteDidSet] = useState(false);
@@ -34,15 +33,6 @@ export function NoteEditor(props) {
       apiNoteDetail(noteId, true, (response, status) => {
         if (status === 200) {
           setNote(response);
-          console.log(response);
-          if (response.serializer_name === 'note-standard') {
-            setPages(response.pages instanceof String ? JSON.parse(response.pages) : response.pages);
-          } else if (response.serializer_name === 'note-cornell') {
-            setPages({
-              sections: response.sections,
-              summary: response.summary,
-            });
-          }
         } else if (status === 404) {
           setNotFound(true);
         } else {
@@ -120,8 +110,14 @@ export function NoteEditor(props) {
   }
 
   const renderEditor = () => {
+    if (!note) {
+      return (
+        <p className='text-center'>Loading...</p>
+      );
+    }
+
     const editorProps = {
-      initialValue: pages, // todo: pages[pageNum]
+      initialValue: note.pages[parseInt(pageNum)],
       isViewing: isViewing,
       updateValueToSave: newValue => {
         setValueToSave({...valueToSave, ...newValue});
@@ -138,20 +134,16 @@ export function NoteEditor(props) {
       noteId: noteId,
     };
 
-    if (!note) {
-      return (
-        <p className='text-center'>Loading...</p>
-      );
-    }
     if (note.pages.length === 0) {
       return (
         <p className='text-center'>You don't have any pages yet</p>
       );
     }
-    switch (note.serializer_name) {
-      case 'note-standard':
+
+    switch (note.pages[parseInt(pageNum)].page.note_page_type) {
+      case 'STND':
         return <StandardNoteEditor {...editorProps} />
-      case 'note-cornell':
+      case 'CORN':
         return <CornellNoteEditor {...editorProps} />
       default:
         return <p>This note type isn't recognized.</p>;
