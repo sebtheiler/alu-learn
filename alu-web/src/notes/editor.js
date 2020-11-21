@@ -48,7 +48,7 @@ export function NoteEditor(props) {
   // Function for sending a request to the API for saving
   const sendSaveApiRequest = (callback) => {
     if (areChanges && noteDidSet) {
-      apiNotePageUpdate(noteId, pageNum, JSON.stringify(valueToSave), (response, status) => {
+      apiNotePageUpdate(noteId, note.pages[parseInt(pageNum) - 1].id, JSON.stringify(valueToSave), (response, status) => {
         if (status === 200) {
           window.onbeforeunload = undefined;
           setAreChanges(false);
@@ -98,7 +98,7 @@ export function NoteEditor(props) {
   const deletePage = (event) => {
     event.preventDefault();
     if (!window.confirm('Are you sure you want to delete this page?')) return;
-    apiDeleteNotePage(parseInt(noteId), parseInt(pageNum), (response, status) => {
+    apiDeleteNotePage(parseInt(noteId), note.pages[parseInt(pageNum) - 1].id, (response, status) => {
       if (status === 200) {
         const newPageNumber = Math.max(parseInt(pageNum) - 1, 1);
         window.location.href = `/notes/edit/${noteId}/page/${newPageNumber}/`;

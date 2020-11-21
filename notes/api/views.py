@@ -79,10 +79,11 @@ def note_page_create_api_view(request, *args, **kwargs):
         note_page_number = 1
     elif isinstance(page_position, int):
         # Get a custom page position, shift all pages after up
-        NotePage.objects.filter(note=note, page_number__gte=page_position).update(
+        note_pages = NotePage.objects.filter(note=note)
+        note_pages.filter(page_number__gte=page_position).update(
             page_number=F('page_number') + 1
         )
-        note_page_number = page_position
+        note_page_number = min(page_position, note_pages.count() + 1)
     else:
         return Response({'message': 'Unrecognized page position'}, status=400)
 
@@ -196,7 +197,7 @@ def note_update_api_view(request, note_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def note_page_update_api_view(request, note_id, page_number, *args, **kwargs):
+def note_page_update_api_view(request, note_id, page_id, *args, **kwargs):
     """
     Updates a note page's content - POST
 
@@ -214,7 +215,10 @@ def note_page_update_api_view(request, note_id, page_number, *args, **kwargs):
         if title and title != note.title: # this also prevents a blank title from being saved
             # Check if title is taken
             try:
-                NotePage.objects.get(user=request.user.profile, title=title)
+                NotePage.objects.get(
+                    note__user=request.user.profile,
+                    title=title,
+                )
                 return Response({'message': 'Title is taken'}, status=400)
             except NotePage.DoesNotExist:
                 pass
@@ -224,7 +228,7 @@ def note_page_update_api_view(request, note_id, page_number, *args, **kwargs):
         note = FreeformNotePage.objects.get(
             note__pk=note_id,
             note__user=request.user.profile,
-            page_number=page_number,
+            pk=page_id,
         )
 
         note.content = content.get('content', note.content)
@@ -234,11 +238,10 @@ def note_page_update_api_view(request, note_id, page_number, *args, **kwargs):
         return Response(FreeformNotePageSerializer(note).data, status=200)
     except FreeformNotePage.DoesNotExist:
         try:
-            print('updating cornell')
             note = CornellNotePage.objects.get(
                 note__pk=note_id,
                 note__user=request.user.profile,
-                page_number=page_number,
+                pk=page_id,
             )
 
             # Update summary
@@ -280,7 +283,7 @@ def note_page_update_api_view(request, note_id, page_number, *args, **kwargs):
             note.save()
             return Response(CornellNotePageSerializer(note).data, status=200)
         except CornellNotePage.DoesNotExist:
-            return Response({'message': 'Note not found'}, status=404)
+            return Response({'message': f'Note {note_id}/{page_id} not found'}, status=404)
 
 
 @api_view(['POST'])
@@ -301,26 +304,28 @@ def note_delete_api_view(request, note_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def note_page_delete_api_view(request, note_id, page_number, *args, **kwargs):
+def note_page_delete_api_view(request, note_id, page_id, *args, **kwargs):
     """
     Gets detail information about a note object - GET
 
     Required information:
         `note_id`: (URL) ID of the note to return
-        `page_number`: (URL) Page number of the note page to delete
+        `page_id`: (URL) Id of the note page to delete
     """
     try:
         # Delete the note page object
-        NotePage.objects.get(
+        page_to_delete = NotePage.objects.get(
             note__pk=note_id,
-            page_number=page_number,
             note__user=request.user.profile,
-        ).delete()
+            pk=page_id,
+        )
+        page_to_delete.delete()
 
         # Decrease the page number of all pages that come after this page
         NotePage.objects.filter(
             note__pk=note_id,
             note__user=request.user.profile,
+            page_number__gte=page_to_delete.page_number,
         ).update(page_number=F('page_number') - 1)
 
         return Response({'message': 'Deleted note successfully'}, status=200)

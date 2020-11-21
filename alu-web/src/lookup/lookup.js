@@ -351,8 +351,8 @@ export function apiNoteUpdate(noteId, newTitle, callback) {
 }
 
 // Updates the content of a single note page
-export function apiNotePageUpdate(noteId, pageNum, newContent, callback) {
-  backendLookup('POST', `notes/page-update/${noteId}/${pageNum}/`, callback, { new_content: newContent });
+export function apiNotePageUpdate(noteId, pageId, newContent, callback) {
+  backendLookup('POST', `notes/page-update/${noteId}/${pageId}/`, callback, { new_content: newContent });
 }
 
 // Deletes a note
@@ -376,8 +376,8 @@ export function apiCreateNewNotePage(pageTitle, noteId, version, pagePosition, c
 }
 
 // Deletes a page in a note
-export function apiDeleteNotePage(noteId, pageNum, callback) {
-  backendLookup('POST', `notes/delete-page/${noteId}/${pageNum}/`, callback);
+export function apiDeleteNotePage(noteId, pageId, callback) {
+  backendLookup('POST', `notes/delete-page/${noteId}/${pageId}/`, callback);
 }
 
 // Changes a user's password
