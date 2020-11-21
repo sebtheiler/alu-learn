@@ -72,11 +72,18 @@ export function NoteEditor(props) {
     event.preventDefault();
     const form = event.target;
 
+    const pagePositionConversion = {
+      END: 'END',
+      FRONT: 'FRONT',
+      AFTER: parseInt(pageNum) + 1,
+      BEFORE: parseInt(pageNum),
+    };
+
     apiCreateNewNotePage(
       form.elements.title.value,
       parseInt(noteId),
       form.elements.pageType.value,
-      form.elements.pagePosition.value,
+      pagePositionConversion[form.elements.pagePosition.value],
       (response, status) => {
         if (status === 201) {
           window.location.href = `/notes/edit/${noteId}/page/${response.page_number}/`;
@@ -93,7 +100,7 @@ export function NoteEditor(props) {
     if (!window.confirm('Are you sure you want to delete this page?')) return;
     apiDeleteNotePage(parseInt(noteId), parseInt(pageNum), (response, status) => {
       if (status === 200) {
-        const newPageNumber = Math.max(response.page_number - 1, 1);
+        const newPageNumber = Math.max(parseInt(pageNum) - 1, 1);
         window.location.href = `/notes/edit/${noteId}/page/${newPageNumber}/`;
       } else {
         // Error deleting note pagae

@@ -58,6 +58,7 @@ def note_page_create_api_view(request, *args, **kwargs):
     note_id = request.data.get('note_id')
     version = request.data.get('version')
     title = request.data.get('title')
+    page_position = request.data.get('page_position')
     if None in (note_id, version, title):
         return Response({'message': 'You must specify a note id, version, and title'}, status=400)
 
@@ -66,8 +67,24 @@ def note_page_create_api_view(request, *args, **kwargs):
     except Note.DoesNotExist:
         return Response({'message': 'The specified note does not exist / you are unauthorized'}, status=400)
 
-    max_page_num_obj = NotePage.objects.filter(note=note).order_by('-page_number').first()
-    note_page_number = max_page_num_obj.page_number + 1 if max_page_num_obj else 1
+    if page_position == 'END' or page_position is None:
+        # Get the maximum note page number
+        max_page_num_obj = NotePage.objects.filter(note=note).order_by('-page_number').first()
+        note_page_number = max_page_num_obj.page_number + 1 if max_page_num_obj else 1
+    elif page_position == 'FRONT':
+        # Shift all other pages up by one, and insert this at the beginning
+        NotePage.objects.filter(note=note).update(
+            page_number=F('page_number') + 1
+        )
+        note_page_number = 1
+    elif isinstance(page_position, int):
+        # Get a custom page position, shift all pages after up
+        NotePage.objects.filter(note=note, page_number__gte=page_position).update(
+            page_number=F('page_number') + 1
+        )
+        note_page_number = page_position
+    else:
+        return Response({'message': 'Unrecognized page position'}, status=400)
 
     if version == 'STND':
         # Create standard note object
