@@ -171,18 +171,32 @@ export function NoteEditor(props) {
           Edit
         </Button>
       </> : <>
-        <Form.Label as='h4'>Title</Form.Label>
+        <Form.Label as='h4'>Note Title</Form.Label>
         <Form.Control
           type='text'
-          id='titleForm'
-          name='titleForm'
-          style={{ fontSize: '28px' }}
+          style={{ fontSize: '20px' }}
           placeholder='Untitled...'
           className='mb-3'
           defaultValue={note && note.title}
+          maxLength='128'
           onChange={event => {
             event.preventDefault();
-            setValueToSave({...valueToSave, title: event.target.value});
+            setValueToSave({...valueToSave, note_title: event.target.value});
+            setDidTypeRecently(true);
+            setAreChanges(true);
+          }}
+        />
+        <Form.Label as='h6'>Page Title</Form.Label>
+        <Form.Control
+          type='text'
+          style={{ fontSize: '14px' }}
+          placeholder='Untitled...'
+          className='mb-3'
+          defaultValue={note && note.pages.length > 0 && note.pages[parseInt(pageNum) - 1].title}
+          maxLength='128'
+          onChange={event => {
+            event.preventDefault();
+            setValueToSave({...valueToSave, page_title: event.target.value});
             setDidTypeRecently(true);
             setAreChanges(true);
           }}
@@ -267,32 +281,14 @@ export function NoteEditor(props) {
         }}
         >
         {note.pages && note.pages.map((page, index) => (
-          <a
-          key={index}
-          href={`/notes/edit/${note.id}/page/${index + 1}/`}
-          onClick={(event => {
-            // Stop the link from immediately working, to first save the document
-            // and then redirect the user regularly
-            event.preventDefault();
-            if (parseInt(pageNum) === index + 1) return;
-
-            sendSaveApiRequest(() => {
-              window.location.href = `/notes/edit/${note.id}/page/${index + 1}/`;
-            });
-          })}
-          >
-            <div className={'page-selector mx-3 p-3 my-3' + (parseInt(pageNum) === index + 1 ? ' selected' : '')}>
-              <strong>{page.title}</strong>
-              <p
-                className='align-text-bottom float-right'
-                style={{
-                  transform: 'translateY(150px)',
-                }}
-              >
-                {index + 1}
-              </p>
-            </div>
-          </a>
+          <PageBrowserCard
+            key={index}
+            index={index}
+            page={page}
+            note={note}
+            pageNum={pageNum}
+            sendSaveApiRequest={sendSaveApiRequest}
+          />
         ))}
       </div>}
       <Button
@@ -309,5 +305,58 @@ export function NoteEditor(props) {
         deleteApiFunction={apiNoteDelete}
       />
     </div>
+  );
+}
+
+function PageBrowserCard(props) {
+  const {page, index, note, sendSaveApiRequest, pageNum} = props;
+
+  return (
+    <a
+      href={`/notes/edit/${note.id}/page/${index + 1}/`}
+      style={{
+        height: '100%', weight: '100%',
+        display: 'inline-block',
+        color: 'black',
+      }}
+      onClick={(event => {
+        // Stop the link from immediately working, to first save the document
+        // and then redirect the user regularly
+        event.preventDefault();
+        if (parseInt(pageNum) === index + 1) return;
+
+        sendSaveApiRequest(() => {
+          window.location.href = `/notes/edit/${note.id}/page/${index + 1}/`;
+        });
+      })}
+    >
+      <div
+        style={{
+          display: 'inline-block',
+          marginBottom: '0',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+        className={'page-selector mx-3 p-3 my-3' + (parseInt(pageNum) === index + 1 ? ' selected' : '')}
+      >
+        <strong
+          className='text-center text-break'
+          style={{
+            wordWrap: 'break-word',
+            whiteSpace: 'initial',
+          }}
+        >
+          {page.title}
+        </strong>
+        <p
+          className='align-text-bottom float-right'
+          style={{
+            transform: 'translateY(150px)',
+          }}
+        >
+          {index + 1}
+        </p>
+      </div>
+    </a>
   );
 }

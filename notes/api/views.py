@@ -211,18 +211,13 @@ def note_page_update_api_view(request, note_id, page_id, *args, **kwargs):
     content = request.data.get('new_content')
     content = content if isinstance(content, dict) else json.loads(content)
 
-    def update_note_title(note, title):
-        if title and title != note.title: # this also prevents a blank title from being saved
-            # Check if title is taken
-            try:
-                NotePage.objects.get(
-                    note__user=request.user.profile,
-                    title=title,
-                )
-                return Response({'message': 'Title is taken'}, status=400)
-            except NotePage.DoesNotExist:
-                pass
-            note.title = title
+    def update_note_title(note_page, page_title, note_title):
+        if page_title:
+            note_page.title = page_title
+            
+        if note_title:
+            note_page.note.title = note_title
+            note_page.note.save()
 
     try:
         note = FreeformNotePage.objects.get(
@@ -232,7 +227,7 @@ def note_page_update_api_view(request, note_id, page_id, *args, **kwargs):
         )
 
         note.content = content.get('content', note.content)
-        update_note_title(note, content.get('title'))
+        update_note_title(note, content.get('page_title'), content.get('note_title'))
 
         note.save()
         return Response(FreeformNotePageSerializer(note).data, status=200)
@@ -248,7 +243,7 @@ def note_page_update_api_view(request, note_id, page_id, *args, **kwargs):
             note.summary = content.get('summary', note.summary)
 
             # Update title
-            update_note_title(note, content.get('title'))
+            update_note_title(note, content.get('page_title'), content.get('note_title'))
 
             # Update sections
             if content.get('sections'):

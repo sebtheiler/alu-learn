@@ -1,13 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {apiFlashCardSuspendLeech,
         apiFlashCardDelete,
         apiSSMDetail,
         apiSSMFlashcards,
         apiSSMFlashcardUpdate,
       } from '../../lookup';
-import {StudyElement} from './study';
-import {getAnkiInterval} from './algorithm'
-import {Button} from 'react-bootstrap';
+import { StudyElement } from './study';
+import { getAnkiInterval } from './algorithm'
+import { Button, ButtonGroup } from 'react-bootstrap';
 import { errorHandler } from '../../utils';
 
 export function StudyComponent(props) {
@@ -44,9 +44,9 @@ export function StudyComponent(props) {
         } else {
           // Error getting flashcards from SSM
           errorHandler(response, status, 5001);
-        };
+        }
       });
-    };
+    }
   }, [flashcards, flashcardsDidSet, studySessionManagerId]);
 
   // Get SSM metadata
@@ -61,9 +61,9 @@ export function StudyComponent(props) {
         } else {
           // Error getting SSM
           errorHandler(response, status, 5000);
-        };
+        }
       });
-    };
+    }
   }, [SSM, SSMDidSet, studySessionManagerId])
 
   // Get which card should appear
@@ -78,7 +78,7 @@ export function StudyComponent(props) {
         setCurrentCardDidSet(true);
         setShowAnswer(false);
         return;
-      };
+      }
       const unseenCards = flashcards.filter(
         flashcard => flashcard.learning_status.toUpperCase() === 'UNSEEN'
       );
@@ -104,26 +104,26 @@ export function StudyComponent(props) {
               (!previousCard || flashcard.id !== previousCard.id)
               ) {
                 earliestFlashcard = flashcard;
-              };
-            };
+              }
+            }
         setCurrentCard(earliestFlashcard);
-      };
+      }
       setShowAnswer(false);
       setCurrentCardDidSet(true);
-    };
+    }
   }, [currentCardDidSet, flashcards, previousCard, flashcardsDidSet]);
 
   // Shows answer when spacebar is pressed or "Show Answer" is clicked
   const showAnswerHandler = (event) => {
     event.preventDefault();
     setShowAnswer(true);
-  };
+  }
 
   // Inform backend of grade
   const backendGradeUpdate = (grade) => {
     if (grade > 4) {
       return;
-    };
+    }
     setPreviousCard(currentCard);
     setCurrentCardDidSet(false);
 
@@ -151,7 +151,7 @@ export function StudyComponent(props) {
           } else {
             // Error updating flashcard with information returned from studying
             errorHandler(response, status, 5002);
-          };
+          }
       });
       // Update date locally
       var flashcardsCopy = flashcards;
@@ -167,7 +167,7 @@ export function StudyComponent(props) {
         flashcardsCopy[index].ease = easeFactor;
         flashcardsCopy[index].learning_status = learningStatus;
         flashcardsCopy[index].steps_index = stepsIndex;
-      };
+      }
       setFlashcards(flashcardsCopy);
 
       // Display a message if the card is now a leech
@@ -177,9 +177,9 @@ export function StudyComponent(props) {
           content: 'Flashcard automatically marked as a leech',
         });
         setTimeout(() => setMessage({}), 5000);
-      };
-    };
-  };
+      }
+    }
+  }
 
   // Handle the user's keypresses
   const handleKeyDown = (event) => {
@@ -203,7 +203,7 @@ export function StudyComponent(props) {
           grade = 4;
         } else if (grade > 3) {
           return;
-        };
+        }
       } else if (learningStatus === 'relearning') {//(canceledBtns.toString() === 'Hard,Easy') {
         // If we are relearning the card and the Hard
         // and Easy buttons are obscured...
@@ -211,8 +211,8 @@ export function StudyComponent(props) {
           grade = 3;
         } else if (grade > 2) {
           return;
-        };
-      };
+        }
+      }
 
       backendGradeUpdate(grade);
       // Select the 'Show Answer' button
@@ -220,9 +220,9 @@ export function StudyComponent(props) {
         document.getElementById('showanswer').focus();
       } catch (e) { // happens when we are finished studiyng
         // pass
-      };
-    };
-  };
+      }
+    }
+  }
 
   // Callback for when the user presses delete flashcard
   const flashcardDeleteCallback = (event) => {
@@ -233,9 +233,9 @@ export function StudyComponent(props) {
       } else {
         // Error deleting flashcard while studying
         errorHandler(response, status, 2008);
-      };
+      }
     });
-  };
+  }
 
   // Creates a function for marking the flashcard as suspended/leeched
   const flashcardLeechSuspendGenerator = (action) => {
@@ -247,22 +247,25 @@ export function StudyComponent(props) {
         } else {
           // Error marking flashcard as leech or suspending while studying
           errorHandler(response, status, 2002);
-        };
+        }
       });
-    };
-  };
+    }
+  }
   
   if (notFound) {
     return <p className='text-center'>Couldn't find this deck</p>
   } else if (SSM === null) {
     return <p className='text-center'>Loading...</p>
-  };
+  }
 
   return (
     <>
       {finishedStudying ?
         <div className='text-center'>
           <p>Congratulations! You've finished studying these flashcards!</p>
+          <ButtonGroup>
+            <Button href='/home/decks/'>Decks Home</Button>
+          </ButtonGroup>
           {SSM.deck_id &&
             <Button href={`/decks/${SSM.deck_id}/flashcards/create/`}>Create a new flashcard</Button>
           }
@@ -285,4 +288,4 @@ export function StudyComponent(props) {
       }
     </>
   );
-};
+}

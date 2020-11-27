@@ -45,6 +45,7 @@ const randomTips = [
   'Always keep in mind the "20 Rules of Formulating Knowledge" when creating flashcards (found on the welcome page)',
   'Making flashcards personal to you will help you remember them better',
   'Make sure your flashcards are all connected - don\'t have random pieces of knowledge floating around',
+  'You can drag image files directly from desktop into the note and flashcard editor',
   // Random stuff
   'Hermann Ebbinghaus discovered the forgetting curve, which Alu is based on, in the 1800s',
   'Dr. Piotr Wozniak developed one of the first digital SR apps in the 1990s. His work has made Alu possible.',
