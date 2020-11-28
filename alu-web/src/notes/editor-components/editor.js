@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { Editor, Transforms } from 'slate';
 import { Editable } from 'slate-react';
 import isHotKey from 'is-hotkey';
+import './editor.css';
 
 import { Element, Leaf } from './renderer';
 
@@ -37,6 +38,11 @@ export function FullEditor(props) {
       readOnly={readOnly}
       renderElement={renderElement}
       renderLeaf={renderLeaf}
+      className='rich-text-editor'
+      style={{
+        borderStyle: showBorder ? 'solid' : 'none',
+        minHeight: minHeight ? minHeight : '600px',
+      }}
       onKeyDown={event => {
         for (const hotkey in HOTKEYS) {
           if (isHotKey(hotkey, event)) {
@@ -45,14 +51,6 @@ export function FullEditor(props) {
             toggleMark(editor, mark);
           }
         }
-      }}
-      style={{
-        borderStyle: showBorder ? 'solid' : 'none',
-        borderWidth: '1px',
-        padding: '20px',
-        minHeight: minHeight ? minHeight : '600px',
-        overflowY: 'auto',
-        lineHeight: 1.6,
       }}
     />
   );
