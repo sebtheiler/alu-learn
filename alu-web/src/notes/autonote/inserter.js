@@ -8,7 +8,7 @@ const checkHeadingMatch = (element, targetText, targetHeadingSize) => {
     (!targetHeadingSize || wordToNum[element.type.substring(8)] === targetHeadingSize) && // check the heading size is correct
     (!targetText || element.children[0].text === targetText) // check the text is correct
   );
-};
+}
 
 // Returns a new array with `contentToAdd` inserted in the correct position
 // `data` the note document to insert on
@@ -18,7 +18,7 @@ const checkHeadingMatch = (element, targetText, targetHeadingSize) => {
 // `startingIndex` INTERNAL: Index to start search at
 const findElementInsertion = (noteDocument, contentToAdd, parsedSection, headingSize=1, startingIndex=0, debug=false) => {
   let elementMatch; // this is the heading we are looking for
-  if (debug) {console.log('Beginning insertion')};
+  if (debug) {console.log(`Beginning insertion at ${startingIndex}`)};
 
   for (let [index, element] of noteDocument.slice(startingIndex).entries()) {
     index += startingIndex;
@@ -87,10 +87,11 @@ const findElementInsertion = (noteDocument, contentToAdd, parsedSection, heading
             contentToAdd,
             parsedSection,
             headingSize + 1,
-            index - 1
+            index,
+            debug,
           );
-        };
-      };
+        }
+      }
     } else {
       // Still looking for match
       if (debug) {console.log('Match not found yet')};
@@ -100,25 +101,26 @@ const findElementInsertion = (noteDocument, contentToAdd, parsedSection, heading
         elementMatch = element;
       } else if (
           (
-            checkHeadingMatch(element) &&
-            wordToNum[element.type.substring(8)] < headingSize
-          ) || index === noteDocument.length - 1
+            checkHeadingMatch(element) && // this element is a new heading
+            wordToNum[element.type.substring(8)] < headingSize // .. and the heading is bigger (smaller number = bigger heading)
+          ) || index === noteDocument.length - 1 // or is finished
         ) {
           // No matches at all; insert new heading
           const headings = parsedSection.slice(headingSize - 1).map((sectionTitle, index) => {
             return {"type": `heading-${numToWord[headingSize + index]}`, "children": [{"text": sectionTitle}]};
           });
-        if (debug) {console.log(`Never found a match, inserting ${headings.length} headings`)};
+        if (debug) {console.log(`Never found a match, inserting ${headings.length} heading(s)`)};
+        if (debug) {console.log(index, noteDocument, checkHeadingMatch(element), wordToNum[element.type.substring((8))], headingSize)}
         return [
           ...noteDocument.slice(0, index + 1),
           ...headings,
           ...contentToAdd,
           ...noteDocument.slice(index + 1),
         ];
-      };
-    };
-  };
-};
+      }
+    }
+  }
+}
 
 // Actual function for inserting `element` into `content` at `sectionString`
 export const insertElement = (element, noteDocument, sectionString) => {
@@ -130,9 +132,9 @@ export const insertElement = (element, noteDocument, sectionString) => {
       parsedSection,
       1,
       0,
-      false, // debug
+      true, // debug
     );
   } else {
     return noteDocument;
-  };
-};
+  }
+}
