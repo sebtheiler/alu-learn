@@ -34,31 +34,31 @@ export const Element = (props) => {
       return <ImageElement {...props} />
     default:
       return <p {...attributes}>{children}</p>
-  };
-};
+  }
+}
 
 // TODO: `readOnly` is unused for now, but will be used in equation editing
 // eslint-disable-next-line
 export const Leaf = ({ attributes, children, leaf, readOnly }) => {
   if (leaf.bold) {
     children = <strong>{children}</strong>
-  };
+  }
 
   if (leaf.code) {
     children = <code>{children}</code>
-  };
+  }
 
   if (leaf.italic) {
     children = <em>{children}</em>
-  };
+  }
 
   if (leaf.underline) {
     children = <u>{children}</u>
-  };
+  }
 
   if (leaf.strikethrough) {
     children = <del>{children}</del>
-  };
+  }
 
   return <span {...attributes}>{children}</span>
-};
+}
