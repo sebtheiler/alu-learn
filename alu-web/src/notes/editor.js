@@ -159,7 +159,7 @@ export function NoteEditor(props) {
       case 'CORN':
         return <CornellNoteEditor {...editorProps} />
       default:
-        return <p>This note type isn't recognized.</p>;
+        return <p>This note type, "{note.pages[parseInt(pageNum) - 1].page.note_page_type}", isn't recognized.</p>;
     }
   }
 

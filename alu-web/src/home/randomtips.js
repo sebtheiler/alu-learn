@@ -29,7 +29,7 @@ const randomTips = [
   'If you copy a shared deck, you will occasionally need to check for updates to automatically get all the new flashcards',
   '"Tasks" can help you remember to review subjects that are hard to make flashcards out of',
   'If you ever find a bug, please report it',
-  'If you ever have a feature suggestion or improvement, please let share it!',
+  'If you ever have a feature suggestion or improvement, please share it!',
   'Alu isn\'t just for school, you can use Alu to memorize anything related to your hobbies as well',
   'Don\'t forget to add tags to your cards!',
   'If you want to temporarily disable a flashcard, you can "Suspend" it',

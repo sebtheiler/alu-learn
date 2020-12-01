@@ -14,7 +14,7 @@ class CornellNoteSectionAdmin(admin.TabularInline):
 class CornellNoteAdmin(admin.ModelAdmin):
     fields = [
         'title',
-        'user',
+        'note',
         'summary',
     ]
     inlines = [CornellNoteSectionAdmin]

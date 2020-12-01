@@ -52,8 +52,8 @@ export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, le
   if (suspended !== null && suspended !== undefined) {endpoint += `&suspended=${suspended}`}
   if (leech !== null && leech !== undefined) {endpoint += `&leech=${leech}`}
   if (learningStatus !== null && learningStatus !== undefined) {endpoint += `&learningStatus=${learningStatus}`}
-  if (minEase !== null && minEase !== undefined) {endpoint += `&minEase=${minEase}`}
-  if (maxEase !== null && maxEase !== undefined) {endpoint += `&maxEase=${maxEase}`}
+  if (minEase !== null && minEase !== undefined && minEase > 130) {endpoint += `&minEase=${minEase}`}
+  if (maxEase !== null && maxEase !== undefined && maxEase < 350) {endpoint += `&maxEase=${maxEase}`}
   endpoint = endpoint.replace('&', ''); // get rid of first, arbitrary, &
 
   backendLookup('GET', endpoint, callback);

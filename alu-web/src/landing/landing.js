@@ -120,13 +120,13 @@ function LandingArticle(props) {
     <h1>Boosting Your Memory and Grades With Alu</h1>
     <p>I’m sure you’ve felt that horrible feeling: you’re taking a test, and some word pops up that you don’t quite remember. You remember learning it, it feels so familiar, it’s right on the tip of your tongue, but you can’t get a hold of what it means. </p>
     <p>It’s one of the worst feelings, knowing you would have done just a little bit better had you spent an extra ten seconds reviewing the word beforehand.  Alu seeks to help eliminate that feeling, boosting your memory, and therefore your grades, with just a couple of minutes every day. </p>
-    <p>Alu is a website that I’ve built over the past few months that uses spaced repetition to help you learn and remember more effectively.  You can sign up for free today at https://www.alulearn.com. </p>
+    <p>Alu is a website that I’ve built over the past few months that uses spaced repetition to help you learn and remember more effectively.  You can sign up for free today.</p>
 
     <p>There are currently pre-made flashcards for: </p>
     <ul>
-      <li>AP World History</li>
-      <li>AP Biology</li>
-      <li>AP Psychology</li>
+      <li><a href='https://www.alulearn.com/decks/2/'>AP World History</a></li>
+      <li><a href='https://www.alulearn.com/decks/7/'>AP Biology</a></li>
+      <li><a href='https://www.alulearn.com/decks/6/'>AP Psychology</a></li>
     </ul>
 
     <h2>The Forgetting Curve</h2>
@@ -221,12 +221,12 @@ function LandingArticle(props) {
     <p>Alu is a powerful tool to help you learn and study.  No matter what class you’re taking, Alu can help you remember what you learn.</p>
     <p>While it is always recommended to make your own flashcards, there are currently pre-made flashcards for:</p>
     <ul>
-      <li>AP World History</li>
-      <li>AP Biology</li>
-      <li>AP Psychology</li>
+      <li><a href='https://www.alulearn.com/decks/2/'>AP World History</a></li>
+      <li><a href='https://www.alulearn.com/decks/7/'>AP Biology</a></li>
+      <li><a href='https://www.alulearn.com/decks/6/'>AP Psychology</a></li>
     </ul>
 
-    <p>Multiple teachers that I’ve spoken with are interested in using Alu in the classroom. You can get a headstart by signing up at https://www.alulearn.com; your grades will thank you later.</p>
+    <p>Multiple teachers that I’ve spoken with are interested in using Alu in the classroom. You can get a headstart by signing up today; your grades will thank you later.</p>
     <p>All WESS emails are currently allowed; if you would like to use a different, non-WESS email, please fill out the form on the landing page so that I can add it to the allow-list.  If you ever have any questions, please reach out to me, and I will get back to you as soon as possible.</p>
     <p>Happy <em>Aluing!</em></p>
   </>);

@@ -18,8 +18,8 @@ const basicValue = [
 
 export function CornellNoteEditor(props) {
   const {initialValue, isViewing, updateValueToSave, saveHandler, didTypeCallback} = props;
-  const [sections, setSections] = useState(initialValue.sections);
-  const [summaryValue, setSummaryValue] = useState(initialValue.summary);
+  const [sections, setSections] = useState(initialValue.page.sections);
+  const [summaryValue, setSummaryValue] = useState(initialValue.page.summary);
   const summaryEditor = useMemo(
     () => createFullEditor(),
     []
@@ -28,11 +28,15 @@ export function CornellNoteEditor(props) {
   // Update what is going to be saved
   // This is needed, because of the way re-renders
   // and state changes work
-  const updateAllSectionsCallback = (newSections) => {
+  const updateAllSectionsCallback = (newSections, newSummary) => {
     updateValueToSave({
-      sections: newSections ? newSections : sections,
-      summary: summaryValue,
+      sections: newSections ?? sections,
+      summary: newSummary ?? summaryValue,
     });
+    console.log({
+      sections: newSections ? newSections : sections,
+      summary: newSummary ?? summaryValue,
+    })
   }
 
   // Delete a single section
@@ -146,6 +150,7 @@ export function CornellNoteEditor(props) {
                 setSummaryValue(newValue);
                 if (newValue !== summaryValue) {
                   didTypeCallback();
+                  updateAllSectionsCallback(null, newValue);
                 }
               }}
             >
