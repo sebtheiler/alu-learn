@@ -186,21 +186,23 @@ export function NoteEditor(props) {
             setAreChanges(true);
           }}
         />
-        <Form.Label as='h6'>Page Title</Form.Label>
-        <Form.Control
-          type='text'
-          style={{ fontSize: '14px' }}
-          placeholder='Untitled...'
-          className='mb-3'
-          defaultValue={note && note.pages.length > 0 && note.pages[parseInt(pageNum) - 1].title}
-          maxLength='128'
-          onChange={event => {
-            event.preventDefault();
-            setValueToSave({...valueToSave, page_title: event.target.value});
-            setDidTypeRecently(true);
-            setAreChanges(true);
-          }}
-        />
+        {note?.pages?.length > 0 && <>
+          <Form.Label as='h6'>Page Title</Form.Label>
+          <Form.Control
+            type='text'
+            style={{ fontSize: '14px' }}
+            placeholder='Untitled...'
+            className='mb-3'
+            defaultValue={note.pages[parseInt(pageNum) - 1].title}
+            maxLength='128'
+            onChange={event => {
+              event.preventDefault();
+              setValueToSave({...valueToSave, page_title: event.target.value});
+              setDidTypeRecently(true);
+              setAreChanges(true);
+            }}
+          />
+        </>}
         <hr />
         <p className='text-secondary'>
           {areChanges ? 'Saving...' : 'Saved'}
