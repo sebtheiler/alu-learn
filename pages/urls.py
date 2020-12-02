@@ -12,13 +12,13 @@ urlpatterns = [
     path('confirm-email/', views.confirm_email_view),
     path('reset-password/', views.send_password_reset),
     path('reset-password/confirm/', views.change_reset_password_view_wrapper(True)),
+    path('changelog/', views.md_view_wrapper('changelog/changelog', 'Changelog')),
     # Settings
     path('settings/', views.settings_view),
     path('settings/change-password/', views.change_reset_password_view_wrapper(False)),
     path('settings/change-email/', views.change_email_view),
-    # "Tutorial" pages
+    # Tutorial pages
     path('help/welcome/', views.welcome_view),
-    # Manual pages
     path('help/', views.md_view_wrapper('main', 'User Guide')),
     path('help/flashcard-tags/', views.md_view_wrapper('decks/flashcard-tags', 'Flashcard Tags')),
     path('help/suspended/', views.md_view_wrapper('decks/flashcard-suspended', 'Suspended Flashcards')),

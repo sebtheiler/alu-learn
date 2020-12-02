@@ -39,9 +39,9 @@ export function NavbarComponent(props) {
             <i className='fa fa-compass'></i>{' '}
             Explore
           </Nav.Link>
-          <Nav.Link href='/explore/decks/search/'>
-            <i className='fa fa-search'></i>{' '}
-            Search
+          <Nav.Link href='/changelog/'>
+            <i className='fa fa-book'></i>{' '}
+            Changelog
           </Nav.Link>
         </Nav>
         <Nav className='ml-auto'>
