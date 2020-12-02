@@ -100,6 +100,10 @@ export function NavbarComponent(props) {
                   <i className='fas fa-cog'></i>{' '}
                   Settings
                 </NavDropdown.Item>
+                <NavDropdown.Item href='/help/'>
+                  <i className='fas fa-info-circle'></i>{' '}
+                  Help and Tutorials
+                </NavDropdown.Item>
                 <NavDropdown.Item onClick={logoutHandler}>
                   <i className='fas fa-sign-out-alt'></i>{' '}
                   Log-out
