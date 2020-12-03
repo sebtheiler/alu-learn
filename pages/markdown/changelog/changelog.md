@@ -10,5 +10,5 @@ When first creating a deck, you are now given a new option: deck difficulty.  Yo
 Any decks that already exist will default to "Memorize Everything," but you can change this by clicking "Edit" on your deck.  If you have the time, I highly recommend keeping this setting (I will personally have all of my decks set to "Memorize Everything"), but if you are really pressed you can of course change it.  Alu's spaced repetition will always apply, no matter which option you choose.
 
 
-* **Added Changelog:** This is the first official changelog.  You will be able to find all information about future updates on this page.  The navigation item "Search" has now been changed to "Changelog" for a link to this page.
+* **Added Changelog:** This is the first official changelog.  You will be able to find all information about future updates on this page.  The navigation item "Search" has now been changed to "Changelog" for a link to this page (search is still available through explore).
 * **Added Help Page:** There is now a help page with links to tutorials available [here](/help/).  Alternatively, you can click the profile icon in the top right, and click the "Help and Tutorials" option. More tutorials will be added to this page soon.

@@ -1,24 +1,33 @@
-import {errorHandler} from '../../utils';
+import { errorHandler } from '../../utils';
 
 function minutesToDays(minutes) {
   return minutes / (60*24);
-};
+}
 
-function generateConfig(method='ANKI') {
+function generateConfig(method='ANKI', deckDifficulty='NONE') {
+  // Easier settings have longer spaces between reviews
+  const INTERVAL_MODIFIER = (() => {
+    switch (deckDifficulty) {
+      case 'EASY':
+        return 150;
+      case 'NORM':
+        return 120;
+      case 'HARD': default:
+        return 100;
+    }
+  })();
+
   switch (method) {
     case 'ANKI':
       // Default Anki settings
       return {
-        // General
-        NEW_CARDS_PER_DAY: 20,
         // "New Cards" tab
         NEW_STEPS: [1, 10], // in minutes
         GRADUATING_INTERVAL: 1, // in days
         EASY_INTERVAL: 4, // in days
-        STARTING_EASE: 250, // in percent
         // "Reviews" tab
         EASY_BONUS: 130, // in percent
-        INTERVAL_MODIFIER: 100, // in percent
+        INTERVAL_MODIFIER: INTERVAL_MODIFIER, // in percent
         MAXIMUM_INTERVAL: 36500, // in days
         // "Lapses" tab
         LAPSES_STEPS: [10], // in minutes
@@ -29,16 +38,13 @@ function generateConfig(method='ANKI') {
     case 'ANKING':
       // Optimized Anki settings from https://www.youtube.com/watch?v=wvF5Y2101Lk
       return {
-        // General
-        NEW_CARDS_PER_DAY: 20,
         // "New Cards" tab
         NEW_STEPS: [25, 1440], // in minutes
         GRADUATING_INTERVAL: 3, // in days
         EASY_INTERVAL: 4, // in days
-        STARTING_EASE: 250, // in percent
         // "Reviews" tab
         EASY_BONUS: 150, // in percent
-        INTERVAL_MODIFIER: 100, // in percent
+        INTERVAL_MODIFIER: INTERVAL_MODIFIER, // in percent
         MAXIMUM_INTERVAL: 180, // in days
         // "Lapses" tab
         LAPSES_STEPS: [30, 1440], // in minutes
@@ -49,13 +55,10 @@ function generateConfig(method='ANKI') {
     case 'MANUAL-SR':
       // Settings for Manual SR Tasks
       return {
-        // General
-        NEW_CARDS_PER_DAY: 20,
         // "New Cards" tab
         NEW_STEPS: [1440, 4320], // in minutes
         GRADUATING_INTERVAL: 3, // in days
         EASY_INTERVAL: 7, // in days
-        STARTING_EASE: 350, // in percent
         // "Reviews" tab
         EASY_BONUS: 150, // in percent
         INTERVAL_MODIFIER: 200, // in percent
@@ -70,12 +73,12 @@ function generateConfig(method='ANKI') {
       // Invalid deck config
       console.error('Invalid deck config');
       errorHandler({}, 0, 4001);
-  };
-};
+  }
+}
 
 
 // Adapted from https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
-export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
+export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI', deckDifficulty='NONE') {
   const errorResponse = {
     message: 'ERROR',
     nextReviewDate: new Date(),
@@ -89,11 +92,10 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
   };
   if (!card || settingsAlgorithm === null) {
     return {...errorResponse, message: 'NULL'};
-  };
+  }
 
-  // eslint-disable-next-line
-  const {NEW_CARDS_PER_DAY, NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, STARTING_EASE, EASY_BONUS, INTERVAL_MODIFIER, MAXIMUM_INTERVAL, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL, LEECH_THRESHOLD}
-    = generateConfig(settingsAlgorithm);
+  const {NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, EASY_BONUS, INTERVAL_MODIFIER, MAXIMUM_INTERVAL, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL, LEECH_THRESHOLD}
+    = generateConfig(settingsAlgorithm, deckDifficulty);
 
   // Get variables we will be editing and returning
   var isMinute = false; // specifies that the interval is in minutes, not days
@@ -102,7 +104,7 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
 
   if (!learningStatus) {
     console.error(card);
-  };
+  }
 
   // Algorithm
   if (learningStatus === 'learning' || learningStatus === 'unseen') {
@@ -122,17 +124,17 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
         // We have graduated!
         learningStatus = 'learned';
         interval = GRADUATING_INTERVAL;
-      };
+      }
     } else if (grade === 4) {
       // Easy
       learningStatus = 'learned';
       interval = EASY_INTERVAL;
     } else {
       return errorResponse;
-    };
+    }
     if (learningStatus === 'unseen') {
       learningStatus = 'learning';
-    };
+    }
   } else if (learningStatus === 'learned') {
     if (grade === 1) {
       // Again
@@ -146,7 +148,7 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
       leechIndex++;
       if (leechIndex >= LEECH_THRESHOLD) {
         isLeech = true;
-      };
+      }
       interval = LAPSES_STEPS[0];
       isMinute = true;
     } else if (grade === 2) {
@@ -165,7 +167,7 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
       interval = Math.min(MAXIMUM_INTERVAL, interval);
     } else {
       return errorResponse;
-    };
+    }
   } else if (learningStatus === 'relearning') {
     // "Hard" and "Easy" are not allowed (if this is changed `handleKeyDown` also needs to be changed in components.js)
     if (grade === 1) {
@@ -183,19 +185,19 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
         // We have re-graduated!
         learningStatus = 'learned';
         interval = Math.max(MINIMUM_INTERVAL, interval * NEW_INTERVAL/100);
-      };
+      }
     } else {
       return errorResponse;
-    };
+    }
   } else {
-    console.error('Invalid learning status', learningStatus)
-  };
+    console.error('Invalid learning status', learningStatus);
+  }
 
   // If the minutes setting is like days, use that
   if (isMinute && interval >= 1440) {
     interval = minutesToDays(interval);
     isMinute = false;
-  };
+  }
 
   // Put next review date into numbers
   var now = new Date();
@@ -215,7 +217,7 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
     nextReviewDate.setDate(nextReviewDate.getDate() + interval);
     nextReviewDate.setHours(0);
     nextReviewDate.setMinutes(0);
-  };
+  }
 
   return {
     nextReviewDate: nextReviewDate,
@@ -227,5 +229,5 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI') {
     leechIndex: leechIndex,
     isLeech: isLeech,
     message: 'SUCCESS',
-  };
-};
+  }
+}

@@ -44,6 +44,7 @@ def deck_create_view(request, *args, **kwargs):
         `shuffle_unseen_cards`: (Data) Whether or not to shuffle unseen cards in the new deck
         `daily_new_card_limit`: (Data) Number of new cards to be done daily in the deck,
         `scheduling_algorithm`: (Data) Scheduling algo for the new deck,
+        `difficulty`: (Data) Difficulty of the deck to create, HARD, NORM, or EASY
 
     Returns:
         Author of the deck (PublicProfileSerializer): 'author'
@@ -68,6 +69,7 @@ def deck_create_view(request, *args, **kwargs):
         scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKI'),
         shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', False),
         daily_new_card_limit=request.data.get('daily_new_card_limit', 20),
+        difficulty=request.data.get('difficulty', 'HARD'),
         last_flashcard_date=timezone.now(),
     )
 
@@ -530,6 +532,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         `new_title`: (Data) New title of the deck
         `scheduling_algorithm`: (Data) Which scheduling algorithm to use, ANKI or ANKING
         `shufle_unseen_cards`: (Data) Whether or not to shuffle unseen cards
+        `difficulty`: (Data) New difficulty of the deck, HARD, NORM, or EASY
 
     Possible errors:
         Deck does not exist or user is unauthorized: 404, Deck not found / you are unauthorized
@@ -553,6 +556,7 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     deck.study_session_manager.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards', deck.study_session_manager.shuffle_unseen_cards)
     deck.study_session_manager.daily_new_card_limit = request.data.get('daily_new_card_limit', deck.study_session_manager.daily_new_card_limit)
     deck.study_session_manager.review_ahead_minutes = request.data.get('review_ahead_minutes')
+    deck.study_session_manager.difficulty = request.data.get('difficulty', deck.study_session_manager.difficulty)
 
     deck.save()
     deck.study_session_manager.save()

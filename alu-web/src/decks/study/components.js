@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {apiFlashCardSuspendLeech,
-        apiFlashCardDelete,
-        apiSSMDetail,
-        apiSSMFlashcards,
-        apiSSMFlashcardUpdate,
-      } from '../../lookup';
+import {
+  apiFlashCardSuspendLeech,
+  apiFlashCardDelete,
+  apiSSMDetail,
+  apiSSMFlashcards,
+  apiSSMFlashcardUpdate,
+} from '../../lookup';
 import { StudyElement } from './study';
 import { getAnkiInterval } from './algorithm'
 import { Button, ButtonGroup } from 'react-bootstrap';
@@ -29,7 +30,6 @@ export function StudyComponent(props) {
   const [showAnswer, setShowAnswer] = useState(false);
   const [finishedStudying, setFinishedStudying] = useState(false);
   const [notFound, setNotFound] = useState(false);
-  // const [canceledBtns, setCanceledBtns] = useState([]);
   const [message, setMessage] = useState({});
   
   // Get the flashcards to study from the SSM
@@ -129,7 +129,8 @@ export function StudyComponent(props) {
 
     // Calculate when the card should be next seen
     const wasLeech = currentCard.is_leech;
-    const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex, leechIndex, isLeech} = getAnkiInterval(currentCard, grade, SSM.scheduling_algorithm);
+    const {nextReviewDate, interval, easeFactor, isMinute, learningStatus, stepsIndex, leechIndex, isLeech}
+      = getAnkiInterval(currentCard, grade, SSM.scheduling_algorithm, SSM.difficulty);
 
     if (interval !== -1) {
       // Update date in SSM
@@ -282,6 +283,7 @@ export function StudyComponent(props) {
             deleteFlashCardHandler={flashcardDeleteCallback}
             leechsuspendFlashCardGenerator={flashcardLeechSuspendGenerator}
             schedulingAlgorithm={SSM.scheduling_algorithm}
+            deckDifficulty={SSM.difficulty}
             numRemainingFlashcards={flashcards && flashcards.length}
           />
         </div>

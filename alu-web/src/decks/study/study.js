@@ -150,7 +150,7 @@ function RenderFlashCardStudy(props) {
 
 
 export function StudyElement(props) {
-  const {currentCard, showAnswer, showAnswerHandler, message, backendGradeUpdate, handleKeyDown, schedulingAlgorithm, deleteFlashCardHandler, leechsuspendFlashCardGenerator, numRemainingFlashcards} = props;
+  const {currentCard, showAnswer, showAnswerHandler, message, backendGradeUpdate, handleKeyDown, schedulingAlgorithm, deckDifficulty, deleteFlashCardHandler, leechsuspendFlashCardGenerator, numRemainingFlashcards} = props;
   const [optionButtonsExpanded, setOptionButtonsExpanded] = useState(false);
 
 
@@ -171,10 +171,10 @@ export function StudyElement(props) {
   };
   
   // This could be optimized, but it really isn't worth it at the moment
-  const interval1 = getAnkiInterval(currentCard, 1, schedulingAlgorithm);
-  const interval2 = getAnkiInterval(currentCard, 2, schedulingAlgorithm);
-  const interval3 = getAnkiInterval(currentCard, 3, schedulingAlgorithm);
-  const interval4 = getAnkiInterval(currentCard, 4, schedulingAlgorithm);
+  const interval1 = getAnkiInterval(currentCard, 1, schedulingAlgorithm, deckDifficulty);
+  const interval2 = getAnkiInterval(currentCard, 2, schedulingAlgorithm, deckDifficulty);
+  const interval3 = getAnkiInterval(currentCard, 3, schedulingAlgorithm, deckDifficulty);
+  const interval4 = getAnkiInterval(currentCard, 4, schedulingAlgorithm, deckDifficulty);
 
   if (currentCard === null) {
     return <>Loading...</>;

@@ -30,7 +30,8 @@ export function DeckDefaultButtonGroup(props) {
         form.elements.schedulingAlgo.value === deck.scheduling_algorithm &&
         form.elements.shuffleUnseenCards.checked === deck.shuffle_unseen_cards &&
         parseInt(form.elements.dailyNewCardLimit.value) === deck.daily_new_card_limit &&
-        parseInt(form.reviewAheadMinutes.value) === deck.review_ahead_minutes
+        parseInt(form.reviewAheadMinutes.value) === deck.review_ahead_minutes &&
+        form.elements.deckDifficulty.value === deck.difficulty
     ) {
       return;
     }
@@ -44,6 +45,7 @@ export function DeckDefaultButtonGroup(props) {
         form.elements.shuffleUnseenCards.checked,
         parseInt(form.elements.dailyNewCardLimit.value),
         parseInt(form.elements.reviewAheadMinutes.value),
+        form.elements.deckDifficulty.value,
         (response, status) => {
           if (status === 200) {
             window.location.reload();
@@ -165,6 +167,19 @@ export function DeckEditCreateModal(props) {
               defaultValue={deck.title}
               required
             />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label htmlFor='deckDifficulty'>Deck Difficulty</Form.Label>
+            <Form.Control
+              as='select'
+              name='deckDifficulty'
+              defaultValue={deck.difficulty}
+              custom
+            >
+              <option value='HARD'>Memorize Everything (Recommended)</option>
+              <option value='NORM'>Memorize Most Things</option>
+              <option value='EASY'>Get the Overview</option>
+            </Form.Control>
           </Form.Group>
           {Object.entries(deck).length === 0 || deck.serializer_name === 'deck' ? /* This is unavailable for CSSMs */ <>
             {mode === 'edit' && <ButtonGroup className='w-100 mb-2'>

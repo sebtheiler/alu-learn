@@ -112,6 +112,7 @@ class DeckSerializer(serializers.ModelSerializer):
     daily_new_card_limit = serializers.SerializerMethodField(read_only=True)
     serializer_name = serializers.SerializerMethodField(read_only=True)
     review_ahead_minutes = serializers.SerializerMethodField(read_only=True)
+    difficulty = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Deck
@@ -128,6 +129,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'review_ahead_minutes',
             'shared_deck',
             'deck_type',
+            'difficulty',
             'id',
         ]
 
@@ -169,6 +171,9 @@ class DeckSerializer(serializers.ModelSerializer):
     
     def get_review_ahead_minutes(self, obj):
         return obj.study_session_manager.review_ahead_minutes
+
+    def get_difficulty(self, obj):
+        return obj.study_session_manager.difficulty
 
 
 
@@ -232,6 +237,7 @@ class StudySessionManagerSerializer(serializers.ModelSerializer):
             'daily_new_card_limit',
             'new_cards_done_today',
             'review_ahead_minutes',
+            'difficulty',
             'id',
         ]
 

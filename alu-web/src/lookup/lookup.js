@@ -2,12 +2,13 @@ import { backendLookup, baseUrl } from './components';
 
 
 // Creates a new deck
-export function apiDeckCreate(title, shuffleUnseenCards, dailyNewCardLimit, schedulingAlgo, callback) {
+export function apiDeckCreate(title, shuffleUnseenCards, dailyNewCardLimit, schedulingAlgo, deckDifficulty, callback) {
   backendLookup('POST', 'decks/create/', callback, {
     title: title,
     shuffle_unseen_cards: shuffleUnseenCards,
     daily_new_card_limit: dailyNewCardLimit,
     scheduling_algorithm: schedulingAlgo,
+    difficulty: deckDifficulty,
   });
 }
 
@@ -87,13 +88,14 @@ export function apiDeckDelete(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/delete/`, callback);
 }
 
-export function apiDeckEdit(deckId, newTitle, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, reviewAheadMinutes, callback) {
+export function apiDeckEdit(deckId, newTitle, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, reviewAheadMinutes, deckDifficulty, callback) {
   backendLookup('POST', `decks/${deckId}/edit/`, callback, {
     new_title: newTitle,
     scheduling_algorithm: schedulingAlgo,
     shuffle_unseen_cards: shuffleUnseenCards,
     daily_new_card_limit: dailyNewCardLimit,
     review_ahead_minutes: reviewAheadMinutes,
+    difficulty: deckDifficulty,
   });
 }
 

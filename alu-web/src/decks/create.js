@@ -28,6 +28,7 @@ export function DeckCreate(props) {
       form.elements.shuffleUnseenCards.checked,
       parseInt(form.elements.dailyNewCardLimit.value),
       form.elements.schedulingAlgo.value,
+      form.elements.deckDifficulty.value,
       (response, status) => {
         if (status === 201) {
           window.location.reload();

@@ -159,6 +159,17 @@ class StudySessionManager(models.Model):
     daily_new_card_limit = models.PositiveSmallIntegerField(default=20)
     new_cards_done_today = models.PositiveSmallIntegerField(default=0)
     last_flashcard_date = models.DateField()
+    
+    DIFFICULTY_OPTIONS = [
+        ('HARD', 'Memorize Everything'),
+        ('NORM', 'Memorize Most Things'),
+        ('EASY', 'Get the Overview'),
+    ]
+    difficulty = models.CharField(
+        max_length=4,
+        choices=DIFFICULTY_OPTIONS,
+        default='HARD',
+    )
 
 
 class DeckStudySessionManagerModelManager(models.Manager):
