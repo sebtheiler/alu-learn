@@ -12,3 +12,4 @@ Any decks that already exist will default to "Memorize Everything," but you can 
 
 * **Added Changelog:** This is the first official changelog.  You will be able to find all information about future updates on this page.  The navigation item "Search" has now been changed to "Changelog" for a link to this page (search is still available through explore).
 * **Added Help Page:** There is now a help page with links to tutorials available [here](/help/).  Alternatively, you can click the profile icon in the top right, and click the "Help and Tutorials" option. More tutorials will be added to this page soon.
+* **Improved Note Loading Speed:** Notes will now load faster and save more bandwidth.

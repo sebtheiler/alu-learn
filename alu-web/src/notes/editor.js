@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { errorHandler, useInterval } from '../utils';
 import { Button, ButtonGroup, Form, Modal } from 'react-bootstrap';
-import { apiNoteDelete, apiNoteDetail, apiNotePageUpdate, apiCreateNewNotePage, apiDeleteNotePage } from '../lookup';
+import { apiNoteDelete, apiNoteDetail, apiNotePageUpdate, apiCreateNewNotePage, apiDeleteNotePage, apiNotePageDetail } from '../lookup';
 import { DeleteModal } from './buttons';
 import { StandardNoteEditor } from './standard';
 import { CornellNoteEditor } from './cornell';
@@ -14,6 +14,7 @@ export function NoteEditor(props) {
 
   const [valueToSave, setValueToSave] = useState(null);
   const [note, setNote] = useState(null);
+  const [page, setPage] = useState(null);
   const [noteDidSet, setNoteDidSet] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [didTypeRecently, setDidTypeRecently] = useState(false);
@@ -30,7 +31,6 @@ export function NoteEditor(props) {
   // Get note data
   useEffect(() => {
     if (noteDidSet === false) {
-      // TODO: only get the page information for the page requested
       setNoteDidSet(true);
       apiNoteDetail(noteId, true, (response, status) => {
         if (status === 200) {
@@ -42,13 +42,23 @@ export function NoteEditor(props) {
           errorHandler(response, status, 6000);
         }
       });
+
+      // Get the specific page's data
+      apiNotePageDetail(noteId, pageNum, (response, status) => {
+        if (status === 200) {
+          setPage(response);
+        } else if (status !== 404) { // just wait for the request above to 404
+          // Error getting note page detail
+          errorHandler(response, status, 6008);
+        }
+      });
     }
-  }, [note, noteDidSet, noteId]);
+  }, [note, noteDidSet, noteId, pageNum]);
 
   // Function for sending a request to the API for saving
   const sendSaveApiRequest = (callback) => {
     if (areChanges && noteDidSet) {
-      apiNotePageUpdate(noteId, note.pages[parseInt(pageNum) - 1].id, JSON.stringify(valueToSave), (response, status) => {
+      apiNotePageUpdate(noteId, page.id, JSON.stringify(valueToSave), (response, status) => {
         if (status === 200) {
           window.onbeforeunload = undefined;
           setAreChanges(false);
@@ -98,7 +108,7 @@ export function NoteEditor(props) {
   const deletePage = (event) => {
     event.preventDefault();
     if (!window.confirm('Are you sure you want to delete this page?')) return;
-    apiDeleteNotePage(parseInt(noteId), note.pages[parseInt(pageNum) - 1].id, (response, status) => {
+    apiDeleteNotePage(parseInt(noteId), page.id, (response, status) => {
       if (status === 200) {
         const newPageNumber = Math.max(parseInt(pageNum) - 1, 1);
         window.location.href = `/notes/edit/${noteId}/page/${newPageNumber}/`;
@@ -124,13 +134,11 @@ export function NoteEditor(props) {
 
   const renderEditor = () => {
     if (!note) {
-      return (
-        <p className='text-center'>Loading...</p>
-      );
+      return <p className='text-center'>Loading...</p>
     }
 
     const editorProps = {
-      initialValue: note.pages[parseInt(pageNum) - 1],
+      initialValue: page,
       isViewing: isViewing,
       updateValueToSave: newValue => {
         setValueToSave({...valueToSave, ...newValue});
@@ -148,19 +156,21 @@ export function NoteEditor(props) {
     };
 
     if (note.pages.length === 0) {
-      return (
-        <p className='text-center'>You don't have any pages yet</p>
-      );
+      return <p className='text-center'>You don't have any pages yet</p>
     }
 
-    switch (note.pages[parseInt(pageNum) - 1].page.note_page_type) {
+    switch (page.note_page_type) {
       case 'STND':
         return <StandardNoteEditor {...editorProps} />
       case 'CORN':
         return <CornellNoteEditor {...editorProps} />
       default:
-        return <p>This note type, "{note.pages[parseInt(pageNum) - 1].page.note_page_type}", isn't recognized.</p>;
+        return <p>This note type, "{page.note_page_type}", isn't recognized.</p>;
     }
+  }
+
+  if (!(note && page)) {
+    return <>Loading...</>;
   }
 
   return (
@@ -177,7 +187,7 @@ export function NoteEditor(props) {
           style={{ fontSize: '20px' }}
           placeholder='Untitled...'
           className='mb-3'
-          defaultValue={note && note.title}
+          defaultValue={note.title}
           maxLength='128'
           onChange={event => {
             event.preventDefault();
@@ -193,7 +203,7 @@ export function NoteEditor(props) {
             style={{ fontSize: '14px' }}
             placeholder='Untitled...'
             className='mb-3'
-            defaultValue={note.pages[parseInt(pageNum) - 1].title}
+            defaultValue={page ? page.title : 'Loading...'}
             maxLength='128'
             onChange={event => {
               event.preventDefault();
@@ -211,7 +221,7 @@ export function NoteEditor(props) {
           View
         </Button><br />
       </>}
-      {renderEditor()}
+      {note && page && renderEditor()}
       <h3 className='text-center mt-3'>Page Browser</h3>
       <div className='text-center'>
         <ButtonGroup>

@@ -161,7 +161,7 @@ def note_page_detail_api_view(request, note_id, page_number, *args, **kwargs):
         note = FreeformNotePage.objects.get(
             note__pk=note_id,
             page_number=page_number,
-            note__user=request.user
+            note__user=request.user.profile,
         )
         return Response(FreeformNotePageSerializer(note).data, status=200)
     except FreeformNotePage.DoesNotExist:
@@ -169,7 +169,7 @@ def note_page_detail_api_view(request, note_id, page_number, *args, **kwargs):
             note = CornellNotePage.objects.get(
                 note__pk=note_id,
                 page_number=page_number,
-                note__user=request.user
+                note__user=request.user.profile,
             )
             return Response(CornellNotePageSerializer(note).data, status=200)
         except CornellNotePage.DoesNotExist:

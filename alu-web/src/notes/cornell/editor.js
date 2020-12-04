@@ -18,8 +18,8 @@ const basicValue = [
 
 export function CornellNoteEditor(props) {
   const {initialValue, isViewing, updateValueToSave, saveHandler, didTypeCallback} = props;
-  const [sections, setSections] = useState(initialValue.page.sections);
-  const [summaryValue, setSummaryValue] = useState(initialValue.page.summary);
+  const [sections, setSections] = useState(initialValue.sections);
+  const [summaryValue, setSummaryValue] = useState(initialValue.summary);
   const summaryEditor = useMemo(
     () => createFullEditor(),
     []

@@ -90,6 +90,15 @@ class NotePageSerializer(serializers.ModelSerializer):
                 raise ValueError(f'Could not find note page with id "{obj.id}"')
 
 
+class MinifiedNotePageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NotePage
+        fields = [
+            'title',
+            'id',
+        ]
+
+
 class FullNoteSerializer(serializers.ModelSerializer):
     serializer_name = serializers.SerializerMethodField(read_only=True)
     author = MinifiedProfileSerializer(source='user', read_only=True)
@@ -109,4 +118,5 @@ class FullNoteSerializer(serializers.ModelSerializer):
         return 'note-base'
 
     def get_pages(self, obj):
-        return NotePageSerializer(obj.pages.all().order_by('page_number'), many=True).data
+        return MinifiedNotePageSerializer(obj.pages.all().order_by('page_number'), many=True).data
+        # return NotePageSerializer(obj.pages.all().order_by('page_number'), many=True).data

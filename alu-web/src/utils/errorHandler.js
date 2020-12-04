@@ -126,6 +126,7 @@ int(hexadecimal_string, 16)
 6005: Error deleting note through apiNoteDelete in alu-web/src/notes/buttons.js
 6006: Error creating new page through apiCreateNewNotePage in alu-web/src/notes/editor.js
 6007: Error deleting note page through apiDeleteNotePage in alu-web/src/notes/editor.js
+6008: Error getting note page detail through apiNotePageDetail in alu-web/src/notes/editor.js
 
 === Manual SR Task related errors ===
 7000: Error getting list of manual sr tasks through apiManualSRTaskList in alu-web/src/manual-sr/home.js

@@ -9,7 +9,7 @@ export function StandardNoteEditor(props) {
   const {initialValue, isViewing, updateValueToSave, saveHandler, didTypeCallback, noteId} = props;
   const [showAutoNoteModal, setShowAutoNoteModal] = useState(false);
 
-  const [value, setValue] = useState(initialValue.page.content);
+  const [value, setValue] = useState(initialValue.content);
   const editor = useMemo(
     () => createFullEditor(),
     []
