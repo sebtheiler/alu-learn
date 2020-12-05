@@ -1,8 +1,8 @@
-import React, {useMemo, useState} from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button, ButtonGroup, OverlayTrigger, Popover } from 'react-bootstrap';
-import {Slate} from 'slate-react';
+import { Slate } from 'slate-react';
 import { QuestionBubble } from '../../utils';
-import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
+import { createFullEditor, EditorButtons, FullEditor } from '../editor-components';
 import './editor.css';
 
 const basicValue = [

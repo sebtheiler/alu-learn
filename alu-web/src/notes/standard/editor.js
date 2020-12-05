@@ -6,7 +6,7 @@ import { AutoNoteModal } from '../autonote';
 import { QuestionBubble } from '../../utils';
 
 export function StandardNoteEditor(props) {
-  const {initialValue, isViewing, updateValueToSave, saveHandler, didTypeCallback, noteId} = props;
+  const {initialValue, isViewing, updateValueToSave, saveHandler, didTypeCallback, noteId, pageNum} = props;
   const [showAutoNoteModal, setShowAutoNoteModal] = useState(false);
 
   const [value, setValue] = useState(initialValue.content);
@@ -25,7 +25,7 @@ export function StandardNoteEditor(props) {
         Import Text Document
       </Button>}
       <Button
-        href={`/notes/create-flashcards/${noteId}/`}
+        href={`/notes/create-flashcards/${noteId}/page/${pageNum ?? 1}/`}
         variant='success'
         className='mt-0 mb-2'
       >

@@ -153,6 +153,7 @@ export function NoteEditor(props) {
         setAreChanges(true);
       },
       noteId: noteId,
+      pageNum: pageNum,
     };
 
     if (note.pages.length === 0) {
@@ -170,7 +171,7 @@ export function NoteEditor(props) {
   }
 
   if (!(note && page)) {
-    return <>Loading...</>;
+    return <>Loading...</>
   }
 
   return (

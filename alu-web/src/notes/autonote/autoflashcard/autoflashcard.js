@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import {AutoReader} from '../reader';
-import {parseText} from '../autonote';
-import {FlashCardCreate} from '../../../decks/flashcards';
-import { apiDeckHome, apiNoteDetail } from '../../../lookup';
+import { AutoReader } from '../reader';
+import { parseText } from '../autonote';
+import { FlashCardCreate } from '../../../decks/flashcards';
+import { apiDeckHome, apiNotePageDetail } from '../../../lookup';
 import { errorHandler } from '../../../utils';
 import '../reader.css';
 import { Form } from 'react-bootstrap';
 
 // TOOD: fix this function
 export function AutoFlashCard(props) {
-  const {noteId} = props;
+  const {noteId, pageNum} = props;
   const [text, setText] = useState(['Loading...']);
   const [selectedPar, setSelectedPar] = useState(0);
   const [note, setNote] = useState(null);
@@ -21,17 +21,17 @@ export function AutoFlashCard(props) {
   useEffect(() => {
     if (noteDidSet === false) {
       setNoteDidSet(true);
-      apiNoteDetail(noteId, (response, status) => {
+      apiNotePageDetail(noteId, pageNum, (response, status) => {
         if (status === 200) {
           setNote(response);
           setText(parseText(response.content, 'json'));
         } else {
           // Error getting note detail in auto-flashcard
           errorHandler(response, status, 6003);
-        };
+        }
       });
-    };
-  }, [noteId, note, noteDidSet]);
+    }
+  }, [noteId, note, noteDidSet, pageNum]);
 
   useEffect(() => {
     if (decksDidSet === false) {
@@ -44,9 +44,9 @@ export function AutoFlashCard(props) {
         } else {
           // Error getting list of decks for autoflashcard
           errorHandler(response, status, 1009);
-        };
+        }
       });
-    };
+    }
   }, [decksDidSet, decks]);
 
   const [percentComplete, setPercentComplete] = useState(0);
@@ -56,14 +56,15 @@ export function AutoFlashCard(props) {
       const newPercentComplete = Math.ceil(newSelectedPar / (text.length - 1) * 100);
       setPercentComplete(newPercentComplete);
       progressBar.style.width = Math.max(newPercentComplete, 4) + '%';
-    };
-  };
+    }
+  }
 
 
   return (<>
-    <h1 className='text-center mt-2'>Turning Your Notes into Flashcards</h1>
+    <h1 className='text-center mt-5'>Turning Your Notes into Flashcards</h1>
     <AutoReader
       text={text}
+      inputType='text'
       selectedPar={selectedPar}
       setSelectedPar={setSelectedPar}
       updateProgressBar={updateProgressBar}
@@ -92,4 +93,4 @@ export function AutoFlashCard(props) {
       </Form.Control>
     </AutoReader>
   </>);
-};
+}

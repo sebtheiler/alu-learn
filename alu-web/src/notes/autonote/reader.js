@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, ButtonGroup} from 'react-bootstrap';
+import { Button, ButtonGroup } from 'react-bootstrap';
 import './reader.css';
 
 export function AutoReader(props) {
@@ -38,7 +38,7 @@ export function AutoReader(props) {
           </div>
         );
       default:
-        return;
+        return <>Unrecognized input type</>
     }
   }
 
