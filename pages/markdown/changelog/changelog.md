@@ -1,6 +1,6 @@
 -----
 
-# Deck Difficulty Selection - Dec 05 2020 - 0.1.0
+# Deck Difficulty Selection - Dec 09 2020 - 0.1.0
 This update introduces "deck difficulty selection." If the default Alu intervals are too short for you and you are being overwhelmed with flashcards, you can now choose to lower your deck's difficulty.
 
 

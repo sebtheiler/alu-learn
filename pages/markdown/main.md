@@ -14,6 +14,7 @@ In the following pages, you can find detailed information on the features Alu ha
 * [Suspended Flashcards](/help/suspended/)
 * [Leech Flashcards](/help/leeches/)
 * [Freezing Fields in Flashcards](/help/freezing-fields/)
+* [Cloze Deletion](/help/cloze-deletion/)
 
 ## Tasks
 * [Introduction to Tasks (Video)](https://www.youtube.com/watch?v=15jt-oQSJ8c)
