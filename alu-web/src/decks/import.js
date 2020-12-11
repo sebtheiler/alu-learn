@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
-import {apiDeckTextImport} from '../lookup';
-import {errorHandler, FormCheckbox, QuestionBubble} from '../utils';
+import { apiDeckTextImport } from '../lookup';
+import { errorHandler } from '../utils';
 
 export function DeckImportComponent() {
   const fileRef = React.createRef();
@@ -15,7 +15,7 @@ export function DeckImportComponent() {
     if (document.documentElement.clientWidth > 850) {return 'w-50'} else
     if (document.documentElement.clientWidth < 850) {return 'w-75'} else
     if (document.documentElement.clientWidth < 500) {return 'w-100'}
-  };
+  }
 
   const [widthClass, setWidthClass] = useState(calculateMarginClass());
 
@@ -27,23 +27,32 @@ export function DeckImportComponent() {
     event.preventDefault();
     setIsLoading(true);
     const form = event.target;
-    const file = event.target.uploadFile.files[0];
+    const file = form.uploadFile.files[0];
+    const convertFormatting = false; // form.elements.convertFormatting.checked;
 
-    file.text().then((fileContents) => {
-      apiDeckTextImport(form.elements.deckTitle.value, fileContents, form.elements.convertFormatting.checked, (response, status) => {
-        if (status === 201) {
-          window.location.href = `/decks/${response.id}/flashcards/`;
-        } else {
-          // Error importing deck from .txt file
-          errorHandler(response, status, 1013);
-        };
-        setIsLoading(false);
-      });
+    const apiImport = textData => apiDeckTextImport(form.elements.deckTitle.value, textData, convertFormatting, (response, status) => {
+      if (status === 201) {
+        window.location.href = `/decks/${response.id}/flashcards/`;
+      } else {
+        // Error importing deck from .txt file
+        errorHandler(response, status, 1013);
+      }
+      setIsLoading(false);
     });
-  };
+
+    if (file) {
+      // If the user uploaded a file
+      file.text().then((fileContents) => {
+        apiImport(fileContents);
+      });
+    } else {
+      // If the user copy-pasted directly
+      apiImport(form.elements.txtCopyPaste.value);
+    }
+  }
 
   return (
-    <Form onSubmit={handleImport} className={`mx-auto mt-5 text-center ${widthClass}`}>
+    <Form onSubmit={handleImport} className={`mx-auto mt-5 text-center container`}>
       <Form.Group>
         {/* For some reason, switching this to a <label> freaks it out */}
         <p className='mb-0'>Type of Import</p>
@@ -79,6 +88,9 @@ export function DeckImportComponent() {
         <p className='mb-0'>
           Select the file to import
         </p>
+        <small className='text-secondary'>
+          Not required if you copy-pasted directly
+        </small><br />
         <Form.Group className={`custom-file mb-4 ${widthClass}`}>
           <Form.Label
             className='custom-file-label text-left'
@@ -93,20 +105,33 @@ export function DeckImportComponent() {
             name='uploadFile'
             accept='.txt'
             ref={fileRef}
-            required
 
             // Update the label to the name of the uploaded file
             onChange={() => document.getElementById('txt-file-label').innerHTML = fileRef.current.value.replace('C:\\fakepath\\', '')}
           />
         </Form.Group>
         <Form.Group>
+          <p className='mb-0'>
+            Or Copy-Paste the Text Directly
+          </p>
+          <small className='text-secondary'>
+            Useful for Quizlet imports. Not required if you uploaded a file
+          </small>
+          <Form.Control
+            as='textarea'
+            rows='10'
+            name='txtCopyPaste'
+            className={`mx-auto ${widthClass}`}
+          />
+        </Form.Group>
+        {/* <Form.Group>
           <FormCheckbox name='convertFormatting' id='convertFormatting'>
             Convert Anki formatting to Alu formatting?{' '}
             <QuestionBubble>
               For example: \[$$\] ➡ $$, \[$\] ➡ $, $ ➡ \$
             </QuestionBubble>
           </FormCheckbox>
-        </Form.Group>
+        </Form.Group> */}
         <Form.Group>
           <Button
             type='submit'
@@ -115,21 +140,22 @@ export function DeckImportComponent() {
           >{isLoading ? 'Loading...' : 'Import!'}</Button>
         </Form.Group>
       </>}
-      {uploadType === 'QUIZLET' && <>
-        <p>
-          We are working hard to get easy Quizlet imports working as soon as possible.<br />
+      {uploadType === 'QUIZLET' && <div className='container-fluid'>
+        <p className='text-left'>
+          We are working hard to make Quizlet imports as easy as possible.<br />
           In the meanwhile, please use these steps:
         </p>
-        <ol>
+        <ol className='text-left'>
           <li>Go to the Quizlet set you would like to import</li>
           <li>Click the three dots button, to see the more options dropdown</li>
           <li>Click "Export"</li>
           <li>Without changing any settings, click the "Copy text" button</li>
-          <li>Create a .txt file on your computer</li>
-          <li>Open the .txt file and paste all the terms</li>
-          <li>Change the Alu import type to .txt and import the deck</li>
+          <li>Change the Alu import type to .txt</li>
+          <li>Give your new deck a title</li>
+          <li>Paste the study set into the "Or Copy-Paste the Text Directly" section</li>
+          <li>Click "Import!"</li>
         </ol>
-      </>}
+      </div>}
       {uploadType === 'APKG' && <>
         <p>
           We currently don't support Anki imports, but are working hard to implement them as soon as possible.<br />
@@ -138,4 +164,4 @@ export function DeckImportComponent() {
       </>}
     </Form>
   );
-};
+}

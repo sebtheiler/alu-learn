@@ -1,5 +1,12 @@
 -----
 
+## Improved Quizlet Importing - Dec 11 2020 - 0.1.1
+This is a minor update that improves the Quizlet importing process.  It is now much easier to turn your Quizlet study sets into Alu decks.
+
+
+* **Improved Deck Importing:** I've simplified the instructions for importing a Quizlet set to an Alu deck, and added a new textbox that allows you to copy-paste your Quizlet export directly.  This is much easier than the old method of creating a file on your computer.
+* **Added FAQ and Cloze Tutorial:** There is now an FAQ available [here](/help/faq/) and a tutorial for cloze deletion available [here](/help/cloze-deletion/).
+
 # Deck Difficulty Selection - Dec 09 2020 - 0.1.0
 This update introduces "deck difficulty selection." If the default Alu intervals are too short for you and you are being overwhelmed with flashcards, you can now choose to lower your deck's difficulty.
 

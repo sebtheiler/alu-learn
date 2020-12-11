@@ -1,0 +1,2 @@
+## How do I import sets from Quizlet to Alu?
+Navigate to the [Import Deck](/decks/import/) section, through the deck homepage.  Next, change the "Type of Import" to "Upload from Quizlet."  After that, simply follow the instructions on the page and you're Quizlet set will be converted to an Alu deck in no time at all.

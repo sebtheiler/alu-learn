@@ -4,6 +4,7 @@ In the following pages, you can find detailed information on the features Alu ha
 
 ## General
 * [Landing Page Introduction (Video)](https://www.youtube.com/watch?v=maoqzbPv4jg)
+* [Frequently Asked Questions (FAQ)](/help/faq/)
 
 ## Decks
 * [Introduction to Decks (Video)](https://www.youtube.com/watch?v=T2jA--y0ggk)

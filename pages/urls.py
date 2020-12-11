@@ -12,7 +12,7 @@ urlpatterns = [
     path('confirm-email/', views.confirm_email_view),
     path('reset-password/', views.send_password_reset),
     path('reset-password/confirm/', views.change_reset_password_view_wrapper(True)),
-    path('changelog/', views.md_view_wrapper('changelog/changelog', 'Changelog')),
+    path('changelog/', views.md_view_wrapper('misc/changelog', 'Changelog')),
     # Settings
     path('settings/', views.settings_view),
     path('settings/change-password/', views.change_reset_password_view_wrapper(False)),
@@ -20,6 +20,7 @@ urlpatterns = [
     # Tutorial pages
     path('help/welcome/', views.welcome_view),
     path('help/', views.md_view_wrapper('main', 'User Guide')),
+    path('help/faq/', views.md_view_wrapper('misc/faq', 'FAQ')),
     path('help/flashcard-tags/', views.md_view_wrapper('decks/flashcard-tags', 'Flashcard Tags')),
     path('help/suspended/', views.md_view_wrapper('decks/flashcard-suspended', 'Suspended Flashcards')),
     path('help/leeches/', views.md_view_wrapper('decks/flashcard-leech', 'Leech Flashcards')),
