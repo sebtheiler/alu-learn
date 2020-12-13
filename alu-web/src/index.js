@@ -10,7 +10,7 @@ import { StudyComponent } from './decks/study';
 import { NotificationComponent } from './profiles/notifications';
 import { ExploreComponent, DeckSearchComponent } from './explore';
 import { LandingComponent } from './landing';
-import { HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset } from './home';
+import { HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization } from './home';
 import { NoteEditor, NotesHomeList } from './notes';
 import { AutoNote, AutoFlashCard } from './notes/autonote';
 import { ManualSRHome } from './manual-sr';
@@ -161,6 +161,12 @@ const updateDeckElement = document.getElementById('update-deck');
 if (updateDeckElement) {
   ReactDOM.render(e(UpdateDeck, updateDeckElement.dataset), updateDeckElement);
 }
+
+const userCustomization = document.getElementById('user-customization');
+if (userCustomization) {
+  ReactDOM.render(e(UserCustomization, userCustomization.dataset), userCustomization);
+}
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

@@ -17,6 +17,10 @@ import {
   SendPasswordReset,
 } from './settings';
 
+import {
+  UserCustomization,
+} from './customization';
+
 export {
   HomeComponent,
   NavbarComponent,
@@ -25,4 +29,5 @@ export {
   ChangePasswordEmail,
   ConfirmEmail,
   SendPasswordReset,
-};
+  UserCustomization,
+}
