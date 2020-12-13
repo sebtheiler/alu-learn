@@ -46,6 +46,10 @@ const randomTips = [
   'Making flashcards personal to you will help you remember them better',
   'Make sure your flashcards are all connected - don\'t have random pieces of knowledge floating around',
   'You can drag image files directly from desktop into the note and flashcard editor',
+  'Never memorize content you don\'t understand',
+  'You can import flashcards from Quizlet, Anki, and other programs through the "Import Deck" feature',
+  'Make sure you don\'t have flashcards that are too similar; that will make them hard too remember',
+  'Try to avoid "lists" in flashcards.  It is usually better to separate those lists into multiple flashcards, or use cloze-deletion.',
   // Random stuff
   'Hermann Ebbinghaus discovered the forgetting curve, which Alu is based on, in the 1800s',
   'Dr. Piotr Wozniak developed one of the first digital SR apps in the 1990s. His work has made Alu possible.',

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.button {
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;
+  text-decoration: none;
+
+  background-color: #007bff; /* Primary-blue */
+  border: none;
+  color: white!important; /* I know !important is bad practice, but whatever */
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  margin: 0 auto;
+  width: 200px;
+}
+</style>
+</head>
+<body>
+<p>Hello {{ name }},</p>
+
+<p>
+Improving requires practice every day.<br>
+Study at <a href="https://www.alulearn.com">Alu</a> today, or you'll lose your <strong>{{ streak }}-day streak!</strong>
+</p>
+<a href="https://www.alulearn.com" target="_blank" class="button">Study Today</a>
+<br>
+
+<p>
+Best,<br>
+Alu
+</p>
+
+<small>Sent by Alu Learn | NYC, New York</small><br>
+<small>
+    <a href='https://www.alulearn.com/settings/'>Unsubscribe</a> from reminder emails</a> | 
+    <a href='https://www.alulearn.com/contactus/'>Contact Us</a> | 
+    <a href='https://www.alulearn.com/legal/privacypolicy/'>Privacy Policy</a> | 
+    <a href='https://www.alulearn.com/legal/tos/'>Terms of Service</a>
+</small>
+</body>
+</html>
