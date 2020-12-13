@@ -201,9 +201,9 @@ export function apiProfileHistory(username, callback) {
 }
 
 // Update's a profiles settings
-export function apiProfileSettingsUpdate(disableTooltips, callback) {
+export function apiProfileSettingsUpdate(settings, callback) {
   backendLookup('POST', 'pages/settings/', callback, {
-    disable_all_tooltips: disableTooltips,
+    settings: settings,
   });
 }
 

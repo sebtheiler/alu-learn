@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Button, ButtonGroup, Form } from 'react-bootstrap';
+import { apiProfileSettingsUpdate } from '../lookup';
+import { errorHandler } from '../utils';
 
 
 export function UserCustomization(props) {
@@ -20,23 +22,29 @@ export function UserCustomization(props) {
       case 0:
         setAnswers({
           ...answers,
-          userType: event.target.userType.value,
+          user_type: event.target.userType.value,
         });
         break;
       case 1:
         setAnswers({
           ...answers,
-          timeSpent: event.target.timeSpent.value,
+          ideal_time_per_day: event.target.timeSpent.value,
         });
         break;
       case 2:
-        setAnswers({
+        const newAnswers = {
           ...answers,
-          reminders: event.target.reminders.value === 'YES',
+          send_reminders: event.target.reminders.value === 'YES',
+        }; // need this because state update doesn't happen until after the API call below is ran
+        setAnswers(newAnswers);
+        apiProfileSettingsUpdate(newAnswers, (response, status) => {
+          if (status === 200) {
+            // pass
+          } else {
+            // Error setting user preferences
+            errorHandler(response, status, 3021);
+          }
         });
-        break;
-      case 3:
-        // TODO: send data to be saved
         break;
       default:
         return;

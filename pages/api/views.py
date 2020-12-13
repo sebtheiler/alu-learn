@@ -40,10 +40,24 @@ def update_settings_api_view(request, *args, **kwargs):
     Update an accounts settings - POST
 
     Required information:
-        `disable_all_tooltips`: (Data) Whether or not to disable all tooltips
+        `settings`: (Data) Object containing all settings
+            `user_type`: TEACHER or STUDENT
+            `ideal_time_per_day`: Time the user wants to spend studying per day
+            `send_reminders`: Bool of whether to send email reminders
     """
-    request.user.profile.settings.disable_all_tooltips = \
-        request.data.get('disable_all_tooltips', request.user.profile.settings.disable_all_tooltips)
+    settings = request.data.get('settings')
+    print(settings)
+    if settings is None:
+        return Response({'message': 'You must specify the settings'}, status=400)
+
+    # request.user.profile.settings.disable_all_tooltips = \
+    #     settings.get('disable_all_tooltips', request.user.profile.settings.disable_all_tooltips)
+    request.user.profile.settings.user_type = \
+        settings.get('user_type', request.user.profile.settings.user_type)
+    request.user.profile.settings.ideal_time_per_day = \
+        settings.get('ideal_time_per_day', request.user.profile.settings.ideal_time_per_day)
+    request.user.profile.settings.send_reminders = \
+        settings.get('send_reminders', request.user.profile.settings.send_reminders)
 
     request.user.profile.settings.save()
-    return Response({'message': 'Updated account settings'})
+    return Response({'message': 'Updated account settings'}, status=200)

@@ -100,11 +100,20 @@ class ProfileHistorySegment(models.Model):
 class ProfileSettings(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='settings')
     disable_all_tooltips = models.BooleanField(default=False)
-    # reminder_emails = models.BooleanField(default=)
-    # USER_TYPE_OPTIONS = 
-    # user_type = models.CharField
-    # TIME_PER_DAY_OPTIONS = 
-    # ideal_time_per_day = models.CharField
+    send_reminders = models.BooleanField(default=False)
+    USER_TYPE_OPTIONS = [
+        ('STUDENT', 'Student/Learner'),
+        ('TEACHER', 'Teacher/Parent'),
+    ]
+    user_type = models.CharField(max_length=7, choices=USER_TYPE_OPTIONS, default='STUDENT')
+    TIME_PER_DAY_OPTIONS = [
+        ('MAX', 'As long as it takes (infinite)'),
+        ('20', '20 minutes'),
+        ('15', '15 minutes'),
+        ('10', '10 minutes'),
+        ('5', '5 minutes'),
+    ]
+    ideal_time_per_day = models.CharField(max_length=3, choices=TIME_PER_DAY_OPTIONS, default='MAX')
 
     def __str__(self):
         return f'Settings for {self.profile.user.username}'
