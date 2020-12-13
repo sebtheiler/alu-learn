@@ -9,6 +9,9 @@ class ProfileSettingsSerializer(serializers.ModelSerializer):
         model = ProfileSettings
         fields = [
             'disable_all_tooltips',
+            'send_reminders',
+            'user_type',
+            'ideal_time_per_day',
             'id',
         ]
 

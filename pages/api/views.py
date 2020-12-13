@@ -46,7 +46,6 @@ def update_settings_api_view(request, *args, **kwargs):
             `send_reminders`: Bool of whether to send email reminders
     """
     settings = request.data.get('settings')
-    print(settings)
     if settings is None:
         return Response({'message': 'You must specify the settings'}, status=400)
 

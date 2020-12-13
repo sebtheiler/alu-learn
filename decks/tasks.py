@@ -42,6 +42,7 @@ def email_reminder():
     users_to_notify = Profile.objects.filter(
         has_done_cards_today=False,
         current_streak__gt=0,
+        settings__send_reminders=True,
     )
 
     connection = mail.get_connection()
@@ -77,6 +78,6 @@ Alu
     connection.close()
 
 
-@periodic_task(run_every=crontab(minute=0, hour=23)) # hour=23 -> 1800 in NYC
+@periodic_task(run_every=crontab(minute=43, hour=2)) # hour=23 -> 1800 in NYC
 def run_email_reminder():
     email_reminder.delay()
