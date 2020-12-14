@@ -155,7 +155,6 @@ export function DeckEditCreateModal(props) {
       setDecksDidSet(true);
       apiDeckPrivateList((response, status) => {
         if (status === 200) {
-          console.log(response)
           setDecks(response);
         } else {
           // Error getting private decks for CSSM edit modal

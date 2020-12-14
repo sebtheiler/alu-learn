@@ -873,19 +873,8 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
             Q(is_suspended=False)
         )
         unseen_flashcards = ssm_flashcards.filter(learning_status__iexact='UNSEEN', is_suspended=False)
-
-        if ssm.daily_new_card_limit - ssm.new_cards_done_today > 0:
-            if ssm.shuffle_unseen_cards:
-                unseen_flashcards = random.sample(
-                    list(unseen_flashcards),
-                    min(ssm.daily_new_card_limit - ssm.new_cards_done_today, unseen_flashcards.count()),
-                )
-            else:
-                unseen_flashcards = unseen_flashcards[:ssm.daily_new_card_limit - ssm.new_cards_done_today]
-
-        flashcards = list(chain(seen_flashcards, unseen_flashcards))
     elif isinstance(ssm, CustomStudySessionManager):
-        flashcards = search_flashcards(
+        searched_flashcards = search_flashcards(
             request.user,
             ssm.deck_ids,
             ssm.tags,
@@ -897,8 +886,21 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
             ssm.max_ease,
             timezone.now() + dt.timedelta(minutes=ssm.review_ahead_minutes),
         )
+
+        seen_flashcards = searched_flashcards.filter(~Q(learning_status__iexact='UNSEEN'))
+        unseen_flashcards = searched_flashcards.filter(learning_status__iexact='UNSEEN')
     else:
         return Response({'message': 'Unrecognized SSM'}, status=400)
+
+    if ssm.daily_new_card_limit - ssm.new_cards_done_today > 0:
+        if ssm.shuffle_unseen_cards:
+            unseen_flashcards = random.sample(
+                list(unseen_flashcards),
+                min(ssm.daily_new_card_limit - ssm.new_cards_done_today, unseen_flashcards.count()),
+            )
+        else:
+            unseen_flashcards = unseen_flashcards[:ssm.daily_new_card_limit - ssm.new_cards_done_today]
+    flashcards = list(chain(seen_flashcards, unseen_flashcards))
 
     ssm.last_flashcard_date = timezone.now().date()
     ssm.save()
