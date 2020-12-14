@@ -316,8 +316,9 @@ export function apiSSMDelete(studySessionmanagerId, callback) {
 }
 
 // Creates a study session manager
-export function apiSSMCreate(deckIds, tags, contains, leech, learningStatus, minEase, maxEase, callback) {
+export function apiSSMCreate(title, deckIds, tags, contains, leech, learningStatus, minEase, maxEase, callback) {
   backendLookup('POST', `decks/ssm/create/`, callback, {
+    title: title,
     deck_ids: deckIds,
     tags: tags,
     contains: contains,

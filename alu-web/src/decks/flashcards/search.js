@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button } from 'react-bootstrap';
+import { Form, Button, Modal } from 'react-bootstrap';
 import { apiFlashCardSearch, apiSSMCreate, apiDeckPrivateList } from '../../lookup';
 import { FlashCardsList} from '.';
+import { errorHandler } from '../../utils';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
-import { errorHandler } from '../../utils';
 
 // Does some magic with SlateJS that prevents weird errors
 // DO NOT REMOVE
@@ -140,6 +140,7 @@ export function FlashCardSearchComponent(props) {
   const [minEaseValue, setMinEaseValue] = useState(130);
   const [maxEaseValue, setMaxEaseValue] = useState(350);
   const [creatingCSSM, setCreatingCSSM] = useState(false);
+  const [showCSSMModal, setShowCSSMModal] = useState(false);
 
   // Get the user's decks
   useEffect(() => {
@@ -199,6 +200,7 @@ export function FlashCardSearchComponent(props) {
       const selectedDecks = Array.from(deckSelectElement.querySelectorAll("option:checked"), e => parseInt(e.value));
 
       apiSSMCreate(
+        event.target.elements.cssmTitle.value,
         selectedDecks,
         form.elements.tags.value,
         form.elements.contains.value,
@@ -240,9 +242,30 @@ export function FlashCardSearchComponent(props) {
           <div>
             <hr />
             <h1>Results</h1>
-            <Button id='custom-study-link' onClick={createCSSM}>
+            <Button id='custom-study-link' onClick={() => setShowCSSMModal(true)}>
               {creatingCSSM ? 'Loading...' : 'Study these flashcards (Custom Study)'}
             </Button>
+            <Modal show={showCSSMModal} onHide={() => setShowCSSMModal(false)}>
+              <Modal.Header>
+                <Modal.Title>
+                  Creating Filtered Deck
+                </Modal.Title>
+              </Modal.Header>
+              <Form onSubmit={createCSSM}>
+                <Modal.Body>
+                  <Form.Label>Title</Form.Label>
+                  <Form.Control
+                    type='text'
+                    name='cssmTitle'
+                    required
+                  />
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant='secondary' onClick={() => setShowCSSMModal(false)}>Cancel</Button>
+                  <Button type='submit'>Create</Button>
+                </Modal.Footer>
+              </Form>
+            </Modal>
           </div>
         }
         {didSearch && (
