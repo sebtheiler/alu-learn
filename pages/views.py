@@ -4,7 +4,6 @@ import os
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.vary import vary_on_cookie
-from django_user_agents.utils import get_user_agent
 from django.http import Http404
 
 
