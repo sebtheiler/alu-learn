@@ -1,4 +1,4 @@
-# Alu Flashcards
+# Alu Learn
 
 ## Development-Build Setup instructions
 ```

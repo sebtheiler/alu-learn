@@ -3,6 +3,7 @@ import { Button, Form } from 'react-bootstrap';
 import { apiProfileDetail, apiProfileSettingsUpdate } from '../../lookup';
 import { UserLink } from '../../profiles';
 import { errorHandler, FormCheckbox } from '../../utils';
+import './settings.css';
 
 export function SettingsPage(props) {
   const {username} = props;
@@ -61,7 +62,7 @@ export function SettingsPage(props) {
         <UserLink user={profile} showAllBadges noLink />
         <br />
         <p>
-          Your email: {profile.email} <br />
+          Your email (hover to view): <span className='hidden-email'>{profile.email}</span><br />
         </p>
         <ul>
           <li><a href='/settings/change-email/'>

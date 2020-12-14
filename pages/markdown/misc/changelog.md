@@ -1,5 +1,25 @@
 -----
 
+# Personalizing Alu & Better Study Habits - Dec 20 2020 - 0.2.0
+Keeping to study habits is difficult.  This update seeks to make it easier.
+
+
+When users join Alu, they are now asked to answer a few questions to help personalize Alu to them.  These questions include topics such as "How much time would you like to spend studying per day?"  If you already have an Alu account, you can manually change these settings [here](/settings/).
+
+
+Clear and specific goals help us stay committed to studying.
+
+
+Ever forget to study one day?  You now have the option of enabling reminder emails.  These reminder emails are sent every day at 6PM if you have a streak and haven't studied yet.  Reminder emails can help you build study habits and continue using Alu.  If you don't like the reminder emails, you can always disable them in settings.
+
+
+* **Reminder Emails:** Reminder emails can be enabled in settings and will be sent to you at 6PM every night if you haven't studied that day.
+* **Study Goals:** When creating an Alu account, or in settings, you can now specify how long you would like to spend studying.  Goals like this help us stay committed to studying.  In the future, Alu will automatically attempt to level out the amount of cards you do every night to reach your study goal.
+* **Teacher/Student:** You can now specify whether you are a teacher/parent or a student/learner.  In the future, this will be used to further personalize Alu, with features such as the ability to create classes of students.
+* **Improved Page Loading:** There will no longer be a brief instant where the page style hasn't loaded.  This will remove the annoying black box that occurred when reloading the home page.
+* **Changed Page Title:** All instances of "Alu Flashcards" have now been updated to "Alu Learn"
+
+
 ## Improved Quizlet Importing - Dec 11 2020 - 0.1.1
 This is a minor update that improves the Quizlet importing process.  It is now much easier to turn your Quizlet study sets into Alu decks.
 
