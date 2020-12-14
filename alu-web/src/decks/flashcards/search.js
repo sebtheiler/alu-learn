@@ -127,7 +127,7 @@ export function SearchForm(props) {
     </Form.Group>
     </>}
   </>)
-};
+}
 
 // Renders the form for searching for flashcards
 export function FlashCardSearchComponent(props) {
@@ -151,9 +151,9 @@ export function FlashCardSearchComponent(props) {
         } else {
           // Error getting list of private decks for searching
           errorHandler(response, status, 1025);
-        };
+        }
       });
-    };
+    }
   }, [username, setDecks, decksDidSet, setDecksDidSet]);
 
   const handleSubmit = (event) => {
@@ -182,20 +182,24 @@ export function FlashCardSearchComponent(props) {
           } else {
             // Error searching for flashcards
             errorHandler(response, status, 2005);
-          };
+          }
           setSearchLoading(false);
       });
-    };
-  };
+    }
+  }
 
   const createCSSM = (event) => {
     event.preventDefault();
-
-    if (creatingCSSM === false) {
+    
+    if (!creatingCSSM) {
       setCreatingCSSM(true);
       const form = document.getElementById('searchForm');
+
+      const deckSelectElement = form.elements.deckSelect;
+      const selectedDecks = Array.from(deckSelectElement.querySelectorAll("option:checked"), e => parseInt(e.value));
+
       apiSSMCreate(
-        '', // currently not using deck IDS
+        selectedDecks,
         form.elements.tags.value,
         form.elements.contains.value,
         form.elements.isLeech.value !== 'ANY' ? form.elements.isLeech.value === 'LEECH' : null,
@@ -208,7 +212,7 @@ export function FlashCardSearchComponent(props) {
           } else {
             // Error creating new SSM
             errorHandler(response, status, 5005);
-          };
+          }
           setCreatingCSSM(false);
         },
       );

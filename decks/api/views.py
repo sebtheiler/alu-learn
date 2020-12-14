@@ -1052,7 +1052,7 @@ def ssm_create_view(request, *args, **kwargs):
     ssm = CustomStudySessionManager.objects.create(
         user=request.user.profile,
         title=f'New Custom Study - {random.randint(0, 1000)}',
-        deck_ids=request.data.get('deck_ids'),
+        deck_ids=str(request.data.get('deck_ids')).replace('[', '').replace(']', '').replace(' ', ''),
         tags=request.data.get('tags'),
         contains=request.data.get('contains'),
         leech=request.data.get('leech'),
