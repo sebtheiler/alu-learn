@@ -26,10 +26,14 @@ export function NavbarPopup(props) {
         <Modal.Title>{firstName ? `Welcome Back, ${firstName}!` : 'New Changes'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h1 id="personalizing-alu-better-study-habits-dec-20-2020-0-2-0">Personalizing Alu &amp; Better Study Habits - Dec 20 2020 - 0.2.0</h1>
+        <h1>New Update</h1>
+        <h3>Personalizing Alu &amp; Better Study Habits</h3>
         <p>Keeping to study habits is difficult.  This update seeks to make it easier.</p>
         <p>When users join Alu, they are now asked to answer a few questions to help personalize Alu to them.  These questions include topics such as &quot;How much time would you like to spend studying per day?&quot;  If you already have an Alu account, you can manually change these settings <a href="/settings/">here</a>.</p>
-        <p>Clear and specific goals help us stay committed to studying.</p>
+        <hr />
+        <UserCustomization />
+        <hr />
+        <br />
         <p>Ever forget to study one day?  You now have the option of enabling reminder emails.  These reminder emails are sent every day at 6PM if you have a streak and haven&#39;t studied yet.  Reminder emails can help you build study habits and continue using Alu.  If you don&#39;t like the reminder emails, you can always disable them in settings.</p>
         <ul>
         <li><strong>Reminder Emails:</strong> Reminder emails can be enabled in settings and will be sent to you at 6PM every night if you haven&#39;t studied that day.</li>
@@ -40,7 +44,6 @@ export function NavbarPopup(props) {
         <li><strong>Improved Filtered Decks:</strong> You can now specify a title when creating filtered decks.  Furthermore, the attribute of which decks to take flashcards from now correctly works and is editable through the deck edit modal.  There is now an expandable section for changing search sections, making it less overwhelming to view.  A bug that stopped &quot;Daily New Card Limit&quot; and &quot;Shuffle Unseen Cards&quot; from properly working in CSSMs has also been fixed.</li>
         <li><strong>Added Changelog Popup:</strong> Users will now be greeted with a popup alerting them of new changes when they log in for the first time following an update.</li>
         </ul>
-        <UserCustomization />
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={closeModal} block>Got it!</Button>
