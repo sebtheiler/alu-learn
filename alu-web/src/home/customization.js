@@ -104,7 +104,7 @@ export function UserCustomization(props) {
       <Form onSubmit={handleNext}>
         {slides[slideNum]}
         <ButtonGroup className='mt-3'>
-          <Button variant='secondary' onClick={handleBack}>Previous</Button>
+          {slideNum > 0 && <Button variant='secondary' onClick={handleBack}>Previous</Button>}
           <Button className='ml-1' type='submit'>Next</Button>
         </ButtonGroup>
       </Form>
