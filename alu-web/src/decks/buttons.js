@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete } from '../lookup';
+import React, { useState, useEffect } from 'react';
+import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList } from '../lookup';
 import { errorHandler, FormCheckbox } from '../utils';
 import { SearchForm } from './flashcards/search';
 import { Modal, Button, Form, ButtonGroup } from 'react-bootstrap';
@@ -142,9 +142,30 @@ export function DeckDefaultButtonGroup(props) {
 // Modal pop-up for when the 'Edit' button is pressed
 export function DeckEditCreateModal(props) {
   const {modalIsOpen, closeModal, submitHandler, deleteHandler} = props;
-  const deck = props.deck ? props.deck : {};
+  const [decks, setDecks] = useState(null);
+  const [decksDidSet, setDecksDidSet] = useState(false);
+  const [showSearchSettings, setShowSearchSettings] = useState(false);
+
+  // eslint-disable-next-line
+  const deck = props.deck ?? {};
   const mode = props.mode ? props.mode.toLowerCase() : 'edit';
 
+  useEffect(() => {
+    if (!decksDidSet && !(Object.entries(deck).length === 0 || deck.serializer_name === 'deck') && showSearchSettings) {
+      setDecksDidSet(true);
+      apiDeckPrivateList((response, status) => {
+        if (status === 200) {
+          console.log(response)
+          setDecks(response);
+        } else {
+          // Error getting private decks for CSSM edit modal
+          errorHandler(response, status, 1026);
+        }
+      });
+    }
+  }, [decksDidSet, decks, deck, showSearchSettings]);
+
+  if (!deck) return null;
   return (
     <Modal show={modalIsOpen} onHide={closeModal}>
       <Modal.Header>
@@ -199,15 +220,20 @@ export function DeckEditCreateModal(props) {
               <hr className='flex-grow-1' />
             </div>
           </> : <>
-            <SearchForm
+            <Button onClick={() => setShowSearchSettings(!showSearchSettings)} className='mb-3'>
+              {`${showSearchSettings ? 'Hide' : 'Show'} Search Settings`}
+            </Button>
+            {showSearchSettings && <SearchForm
+              decks={decks}
               defaultContains={deck.contains}
               defaultTags={deck.tags}
-              defaultLeech={deck.leech && 'LEECH'}
+              defaultLeech={deck.leech ? 'LEECH' : (deck.leech === false ? 'NOTLEECH' : null)}
               defaultLearningStatus={deck.learning_status}
               defaultMinEase={deck.min_ease}
               defaultMaxEase={deck.max_ease}
               hideSuspend={true}
-            />
+              defaultSelectedDecks={deck.deck_ids.split(',')}
+            />}
           </>}
           <Form.Group>
             <FormCheckbox name='shuffleUnseenCards' defaultChecked={deck.shuffle_unseen_cards}>

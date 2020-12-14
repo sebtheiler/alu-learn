@@ -18,6 +18,7 @@ Ever forget to study one day?  You now have the option of enabling reminder emai
 * **Teacher/Student:** You can now specify whether you are a teacher/parent or a student/learner.  In the future, this will be used to further personalize Alu, with features such as the ability to create classes of students.
 * **Improved Page Loading:** There will no longer be a brief instant where the page style hasn't loaded.  This will remove the annoying black box that occurred when reloading the home page.
 * **Changed Page Title:** All instances of "Alu Flashcards" have now been updated to "Alu Learn"
+* **Improved Filtered Decks:** You can now specify a title when creating filtered decks.  Furthermore, the attribute of which decks to take flashcards from now correctly works and is editable through the deck edit modal.  There is now an expandable section for changing search sections, making it less overwhelming to view.
 
 
 ## Improved Quizlet Importing - Dec 11 2020 - 0.1.1

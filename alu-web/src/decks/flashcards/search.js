@@ -12,14 +12,14 @@ import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 // @refresh reset
 
 export function SearchForm(props) {
-  const {decks, minEaseValue, setMinEaseValue, maxEaseValue, setMaxEaseValue, showRangeSlider, defaultContains, defaultTags, defaultLeech, defaultLearningStatus, defaultMinEase, defaultMaxEase, as, hideSuspend} = props;
+  const {decks, minEaseValue, setMinEaseValue, maxEaseValue, setMaxEaseValue, showRangeSlider, defaultContains, defaultTags, defaultLeech, defaultLearningStatus, defaultMinEase, defaultMaxEase, as, hideSuspend, defaultSelectedDecks} = props;
 
   return (<>
     {decks && <Form.Group>
       <Form.Label htmlFor='deckSelect' as={as}>
         Search in the following decks (use control/command to select multiple)
       </Form.Label>
-      <Form.Control as='select' multiple name='deckSelect'>
+      <Form.Control as='select' multiple name='deckSelect' defaultValue={defaultSelectedDecks}>
         {
           decks.map((deck, index) => {
             return <option className='deck-selection' value={deck.id} key={`deck-#${index}`}>{deck.title}</option>
@@ -48,15 +48,17 @@ export function SearchForm(props) {
       />
     </Form.Group>
     <hr />
-    {!hideSuspend && <Form.Group>
-      <Form.Label as={as} htmlFor='isSuspended'>Is the card suspended?</Form.Label>
-      <Form.Control as='select' name='isSuspended'>
-        <option value='ANY'>---------</option>
-        <option value='SUSPENDED'>Suspended</option>
-        <option value='NOTSUSPENDED'>Not suspended</option>
-      </Form.Control>
-    </Form.Group>}
-    <hr />
+    {!hideSuspend && <>
+      <Form.Group>
+        <Form.Label as={as} htmlFor='isSuspended'>Is the card suspended?</Form.Label>
+        <Form.Control as='select' name='isSuspended'>
+          <option value='ANY'>---------</option>
+          <option value='SUSPENDED'>Suspended</option>
+          <option value='NOTSUSPENDED'>Not suspended</option>
+        </Form.Control>
+      </Form.Group>
+      <hr />
+    </>}
     <Form.Group>
       <Form.Label htmlFor='isLeech' as={as}>Is the card a leech?</Form.Label>
       <Form.Control as='select' name='isLeech' defaultValue={defaultLeech}>
