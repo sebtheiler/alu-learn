@@ -1,15 +1,17 @@
 import React from 'react';
-import {Navbar, NavDropdown, Nav, Button} from 'react-bootstrap';
-import {apiProfileLogout} from '../lookup';
+import { Navbar, NavDropdown, Nav, Button } from 'react-bootstrap';
+import { apiProfileLogout } from '../lookup';
+import { errorHandler } from '../utils';
+import { NotificationComponent } from '../profiles/notifications';
+import { NavbarPopup } from './navbar-popup';
 import './navbar.css';
-import {errorHandler} from '../utils';
-import {NotificationComponent} from '../profiles/notifications'
 
 export function NavbarComponent(props) {
   const firstName = props.firstName ? props.firstName : '';
   const username = props.username ? props.username : '';
   const currentStreak = parseInt(props.currentStreak);
   const doneReviewsToday = props.doneReviewsToday === 'True';
+  const showUpdateModal = props.showUpdateModal === 'True';
 
   const logoutHandler = (event) => {
     event.preventDefault();
@@ -25,6 +27,7 @@ export function NavbarComponent(props) {
 
   return (
     <Navbar bg='primary' variant='dark' expand='md' collapseOnSelect>
+      <NavbarPopup showUpdateModal={showUpdateModal} firstName={firstName} />
       <Navbar.Brand href='/home/'>
         <img src='/static/logo.svg' alt="Alu's Logo" width='30' height='auto' style={{transform: 'translateY(-3px)'}} />{' '}
         Alu Learn

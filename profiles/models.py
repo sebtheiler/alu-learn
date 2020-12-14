@@ -114,6 +114,7 @@ class ProfileSettings(models.Model):
         ('5', '5 minutes'),
     ]
     ideal_time_per_day = models.CharField(max_length=3, choices=TIME_PER_DAY_OPTIONS, default='MAX')
+    show_update_modal = models.BooleanField(default=False)
 
     def __str__(self):
         return f'Settings for {self.profile.user.username}'

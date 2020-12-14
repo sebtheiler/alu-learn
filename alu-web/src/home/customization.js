@@ -7,7 +7,6 @@ import { errorHandler } from '../utils';
 export function UserCustomization(props) {
   const [slideNum, setSlideNum] = useState(0);
   const [answers, setAnswers] = useState({});
-  console.log(answers)
 
   const handleBack = event => {
     event.preventDefault();
