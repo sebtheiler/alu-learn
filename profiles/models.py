@@ -128,7 +128,7 @@ def user_did_save(sender, instance, created, *args, **kwargs):
         Notification.objects.create(
             profile=profile,
             title='Need help?',
-            description="If you ever get lost or need help, you can check our [tutorial](/help/tutorial/) or [user-guide](/help/) pages."
+            description="If you ever get lost or need help, you can check our [user-guide](/help/) pages."
         )
 
 post_save.connect(user_did_save, sender=User)

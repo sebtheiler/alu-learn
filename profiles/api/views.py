@@ -635,3 +635,15 @@ def confirm_email_api_view(request, username, *args, **kwargs):
         return Response({'message': 'Confirmation key invalid'}, status=400)
 
     return Response({'message': 'Email authenticated'})
+
+
+@api_view(['POST'])
+def read_changelog_popup_api_view(request, *args, **kwargs):
+    """
+    Marks the changelog popup as read - POST
+    """
+    settings = request.user.profile.settings
+    settings.show_update_modal = False
+    settings.save()
+
+    return Response({'message': 'Marked popup as read'}, status=200)

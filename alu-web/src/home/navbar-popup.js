@@ -1,68 +1,45 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { apiProfileReadPopup } from '../lookup';
+import { errorHandler } from '../utils';
 import { UserCustomization } from './customization';
 
 export function NavbarPopup(props) {
   const {showUpdateModal, firstName} = props;
   const [isOpen, setIsOpen] = useState(showUpdateModal);
   const closeModal = () => {
+    apiProfileReadPopup((response,  status) => {
+      if (status === 200) {
+        // pass
+      } else {
+        // Error marking the profile popup as read
+        errorHandler(response, status, 3022);
+      }
+    });
     setIsOpen(false);
-    // TODO: log the modal was closed and how long the user spent reading the modal
   }
 
   if (!showUpdateModal) return null;
   return (
-    <Modal show={isOpen} onHide={closeModal} size='lg'>
+    <Modal show={isOpen} onHide={closeModal} size='xl'>
       <Modal.Header>
         <Modal.Title>{firstName ? `Welcome Back, ${firstName}!` : 'New Changes'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h1>Duo Reges: constructio interrete.</h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quoniam, si dis placet, ab Epicuro loqui discimus. Eaedem res maneant alio modo. Nos cum te, M. Si longus, levis. Id Sextilius factum negabat. </p>
-
+        <h1 id="personalizing-alu-better-study-habits-dec-20-2020-0-2-0">Personalizing Alu &amp; Better Study Habits - Dec 20 2020 - 0.2.0</h1>
+        <p>Keeping to study habits is difficult.  This update seeks to make it easier.</p>
+        <p>When users join Alu, they are now asked to answer a few questions to help personalize Alu to them.  These questions include topics such as &quot;How much time would you like to spend studying per day?&quot;  If you already have an Alu account, you can manually change these settings <a href="/settings/">here</a>.</p>
+        <p>Clear and specific goals help us stay committed to studying.</p>
+        <p>Ever forget to study one day?  You now have the option of enabling reminder emails.  These reminder emails are sent every day at 6PM if you have a streak and haven&#39;t studied yet.  Reminder emails can help you build study habits and continue using Alu.  If you don&#39;t like the reminder emails, you can always disable them in settings.</p>
         <ul>
-          <li>Tum ille: Tu autem cum ipse tantum librorum habeas, quos hic tandem requiris?</li>
-          <li>Sin eam, quam Hieronymus, ne fecisset idem, ut voluptatem illam Aristippi in prima commendatione poneret.</li>
-          <li>Quasi vero, inquit, perpetua oratio rhetorum solum, non etiam philosophorum sit.</li>
-          <li>Nam, ut sint illa vendibiliora, haec uberiora certe sunt.</li>
+        <li><strong>Reminder Emails:</strong> Reminder emails can be enabled in settings and will be sent to you at 6PM every night if you haven&#39;t studied that day.</li>
+        <li><strong>Study Goals:</strong> When creating an Alu account, or in settings, you can now specify how long you would like to spend studying.  Goals like this help us stay committed to studying.  In the future, Alu will automatically attempt to level out the amount of cards you do every night to reach your study goal.</li>
+        <li><strong>Teacher/Student:</strong> You can now specify whether you are a teacher/parent or a student/learner.  In the future, this will be used to further personalize Alu, with features such as the ability to create classes of students.</li>
+        <li><strong>Improved Page Loading:</strong> There will no longer be a brief instant where the page style hasn&#39;t loaded.  This will remove the annoying black box that occurred when reloading the home page.</li>
+        <li><strong>Changed Page Title:</strong> All instances of &quot;Alu Flashcards&quot; have now been updated to &quot;Alu Learn&quot;</li>
+        <li><strong>Improved Filtered Decks:</strong> You can now specify a title when creating filtered decks.  Furthermore, the attribute of which decks to take flashcards from now correctly works and is editable through the deck edit modal.  There is now an expandable section for changing search sections, making it less overwhelming to view.  A bug that stopped &quot;Daily New Card Limit&quot; and &quot;Shuffle Unseen Cards&quot; from properly working in CSSMs has also been fixed.</li>
+        <li><strong>Added Changelog Popup:</strong> Users will now be greeted with a popup alerting them of new changes when they log in for the first time following an update.</li>
         </ul>
-
-
-        <ol>
-          <li>Mihi enim satis est, ipsis non satis.</li>
-          <li>Itaque e contrario moderati aequabilesque habitus, affectiones ususque corporis apti esse ad naturam videntur.</li>
-          <li>Putabam equidem satis, inquit, me dixisse.</li>
-          <li>Quid, si non sensus modo ei sit datus, verum etiam animus hominis?</li>
-          <li>Quis enim redargueret?</li>
-          <li>At ille pellit, qui permulcet sensum voluptate.</li>
-        </ol>
-
-
-        <pre>Quid, si etiam bestiae multa faciunt duce sua quaeque natura
-        partim indulgenter vel cum labore, ut in gignendo, in
-        educando, perfacile appareat aliud quiddam iis propositum,
-        non voluptatem?
-
-        Si enim non fuit eorum iudicii, nihilo magis hoc non addito
-        illud est iudicatum-.
-        </pre>
-
-
-        <blockquote cite="http://loripsum.net">
-          At ille non pertimuit saneque fidenter: Istis quidem ipsis verbis, inquit;
-        </blockquote>
-
-
-        <dl>
-          <dt><dfn>Paria sunt igitur.</dfn></dt>
-          <dd>Tum ego: Non mehercule, inquam, soleo temere contra Stoicos, non quo illis admodum assentiar, sed pudore impedior;</dd>
-          <dt><dfn>Facete M.</dfn></dt>
-          <dd>Terram, mihi crede, ea lanx et maria deprimet.</dd>
-          <dt><dfn>Si longus, levis;</dfn></dt>
-          <dd>Quid in isto egregio tuo officio et tanta fide-sic enim existimo-ad corpus refers?</dd>
-          <dt><dfn>Quid Zeno?</dfn></dt>
-          <dd>Varietates autem iniurasque fortunae facile veteres philosophorum praeceptis instituta vita superabat.</dd>
-        </dl>
         <UserCustomization />
       </Modal.Body>
       <Modal.Footer>

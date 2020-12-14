@@ -66,6 +66,7 @@ import {
   apiDeleteNotePage,
   apiNotePageUpdate,
   apiNotePageDetail,
+  apiProfileReadPopup,
 } from './lookup';
 
 export {
@@ -136,4 +137,5 @@ export {
   apiDeleteNotePage,
   apiNotePageUpdate,
   apiNotePageDetail,
+  apiProfileReadPopup,
 };

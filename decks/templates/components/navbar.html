@@ -4,4 +4,5 @@
   data-first-name='{{ request.user.first_name }}'
   data-current-streak='{{ request.user.profile.current_streak }}'
   data-done-reviews-today='{{ request.user.profile.has_done_cards_today }}'
+  data-show-update-modal='{{ request.user.profile.settings.show_update_modal }}'
 ></div>

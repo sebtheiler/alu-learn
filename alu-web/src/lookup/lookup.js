@@ -512,3 +512,8 @@ export function apiDeckGetUpdates(deckId, callback) {
 export function apiDeckPullUpdates(deckId, toPullFrom, callback) {
   backendLookup('POST', `decks/pull-updates/${deckId}/`, callback, {to_pull_from: toPullFrom});
 }
+
+// Marks the changelog popup as read
+export function apiProfileReadPopup(callback) {
+  backendLookup('POST', `profiles/read-popup/`, callback);
+}

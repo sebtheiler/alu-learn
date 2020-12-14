@@ -16,6 +16,7 @@ from .views import (
     # test_my_email_api_view,
     confirm_email_api_view,
     password_reset_email_api_view,
+    read_changelog_popup_api_view,
 )
 
 # Base endpoint = /api/profiles/
@@ -35,4 +36,5 @@ urlpatterns = [
     path('changepassword/', change_password),
     path('resetpassword/<str:email>/', password_reset_email_api_view),
     path('confirmemail/<str:username>/', confirm_email_api_view),
+    path('read-popup/', read_changelog_popup_api_view),
 ]

@@ -19,6 +19,7 @@ Ever forget to study one day?  You now have the option of enabling reminder emai
 * **Improved Page Loading:** There will no longer be a brief instant where the page style hasn't loaded.  This will remove the annoying black box that occurred when reloading the home page.
 * **Changed Page Title:** All instances of "Alu Flashcards" have now been updated to "Alu Learn"
 * **Improved Filtered Decks:** You can now specify a title when creating filtered decks.  Furthermore, the attribute of which decks to take flashcards from now correctly works and is editable through the deck edit modal.  There is now an expandable section for changing search sections, making it less overwhelming to view.  A bug that stopped "Daily New Card Limit" and "Shuffle Unseen Cards" from properly working in CSSMs has also been fixed.
+* **Added Changelog Popup:** Users will now be greeted with a popup alerting them of new changes when they log in for the first time following an update.
 
 
 ## Improved Quizlet Importing - Dec 11 2020 - 0.1.1

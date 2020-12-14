@@ -106,6 +106,7 @@ int(hexadecimal_string, 16)
 3019: Error sending password reset through apiSendPasswordReset in alu-web/src/home/settings/sendPasswordReset.js
 3020: Error changing email through apiEmailChange in alu-web/src/home/settings/change.js
 3021: Error setting user preferences through apiProfileSettingsUpdate in alu-web/src/home/customization.js
+3022: Error marking the profile popup as read through apiProfileReadPopup in alu-web/src/home/navbar-popup.js
 
 === Misc ===
 4000: Error submitting feedback through apiFeedbackSubmit in alu-web/src/home/contactus.js
