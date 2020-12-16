@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import {DecksComponent} from './decks';
+import { DecksComponent } from './decks';
 
 
 function App() {
@@ -26,6 +26,6 @@ function App() {
       </header>
     </div>
   );
-};
+}
 
 export default App;

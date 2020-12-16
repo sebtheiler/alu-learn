@@ -1,14 +1,14 @@
 import React from 'react';
-import {identifierDict} from './identifiers';
-import {generateTooltip} from '../../utils';
-import {Badge, OverlayTrigger} from 'react-bootstrap';
+import { identifierDict } from './identifiers';
+import { generateTooltip } from '../../utils';
+import { Badge, OverlayTrigger } from 'react-bootstrap';
 
 export function BadgeComponent(props) {
   const {profile, showAll} = props;
 
   if (!profile.badges) {
     return null;
-  };
+  }
 
   const individualBadge = (badge, username) => {
     return (
@@ -30,7 +30,7 @@ export function BadgeComponent(props) {
         </Badge>
       </OverlayTrigger>
     );
-  };
+  }
 
   const chosenBadge = profile.badges.filter(badge => badge.chosen)[0];
   if (chosenBadge) {
@@ -44,5 +44,5 @@ export function BadgeComponent(props) {
     );
   } else {
     return null;
-  };
-};
+  }
+}

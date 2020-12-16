@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {Modal, Form, Button} from 'react-bootstrap';
-import {isAlphaNumeric, errorHandler, FormCheckbox} from '../../utils';
-import {apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin} from '../../lookup';
+import React, { useState } from 'react';
+import { Modal, Form, Button } from 'react-bootstrap';
+import { isAlphaNumeric, errorHandler, FormCheckbox } from '../../utils';
+import { apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin } from '../../lookup';
 
 export function ModalRegisterForm(props) {
   const {defaultEmail, experimentParams} = props;
@@ -31,14 +31,14 @@ export function ModalRegisterForm(props) {
       setIsChild(true);
     } else {
       setIsChild(false);
-    };
-  };
+    }
+  }
 
   const registerHandler = (event) => {
     event.preventDefault();
     if (isLoading) {
       return;
-    };
+    }
     const form = event.target;
 
     // Everything has to be done in the callback because of async
@@ -55,13 +55,13 @@ export function ModalRegisterForm(props) {
           error = true;
         } else {
           document.getElementById('registerUsernameTakenError').innerText = '';
-        };
+        }
         if (!emailAvailable) {
           document.getElementById('registerEmailTakenError').innerHTML = 
           'That email is already taken! Click <a href="/reset-password/">here</a> to reset your password.'
         } else {
           document.getElementById('registerEmailTakenError').innerHTML = '';
-        };
+        }
 
         // Check that birthdate is specified
         if (
@@ -73,7 +73,7 @@ export function ModalRegisterForm(props) {
           error = true;
         } else {
           document.getElementById('dateError').innerText = '';
-        };    
+        }
     
         // Check that first and last names are valid
         if (!isChild && (
@@ -86,7 +86,7 @@ export function ModalRegisterForm(props) {
             error = true;
         } else if (!isChild) {
           document.getElementById('nameError').innerText = '';
-        };
+        }
     
         // Check is username is alphanumeric
         if (
@@ -98,7 +98,7 @@ export function ModalRegisterForm(props) {
             error = true;
         } else {
           document.getElementById('registerUsernameError').innerText = '';
-        };
+        }
     
         // Check if password meets security requirements
         if (
@@ -110,7 +110,7 @@ export function ModalRegisterForm(props) {
             error = true;
         } else {
           document.getElementById('registerPasswordLengthError').innerText = '';
-        };
+        }
 
         // Check that passwords are the same
         if (
@@ -120,13 +120,13 @@ export function ModalRegisterForm(props) {
             error = true;
         } else {
           document.getElementById('registerPasswordMatchError').innerText = '';
-        };
+        }
         
         // If all went well, create new profile
         if (error) {
           setIsLoading(false);
           return;
-        };
+        }
 
         apiProfileCreate(
           birthYear,
@@ -149,7 +149,7 @@ export function ModalRegisterForm(props) {
                   } else {
                     // Error logging-in the user
                     errorHandler(response, status, 3009);
-                  };
+                  }
                 },
               );
             } else if (response.message === 'Email not allowed') {
@@ -162,16 +162,16 @@ export function ModalRegisterForm(props) {
             } else {
               // Error creating the user profile
               errorHandler(response, status, 3008);
-            };
+            }
             setIsLoading(false);
           },
         );
       } else {
         // Error checking username availability
         errorHandler(response, status, 3007);
-      };
+      }
     });
-  };
+  }
 
   return (
     <Form onSubmit={registerHandler}>
@@ -316,4 +316,4 @@ export function ModalRegisterForm(props) {
       </Modal.Footer>
     </Form>
   );
-};
+}

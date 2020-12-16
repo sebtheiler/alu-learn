@@ -1,5 +1,5 @@
-import {BadgeComponent} from './badge';
+import { BadgeComponent } from './badge';
 
 export {
   BadgeComponent,
-};
+}

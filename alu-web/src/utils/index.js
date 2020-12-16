@@ -15,7 +15,7 @@ import {
   inMatch,
 } from './utils';
 
-import {errorHandler} from './errorHandler';
+import { errorHandler } from './errorHandler';
 
 export {
   generateTooltip,
@@ -33,4 +33,4 @@ export {
   MarkdownRender,
   useInterval,
   inMatch,
-};
+}

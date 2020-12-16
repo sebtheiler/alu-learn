@@ -1,5 +1,5 @@
-import {NotificationComponent} from './components';
+import { NotificationComponent } from './components';
 
 export {
   NotificationComponent,
-};
+}

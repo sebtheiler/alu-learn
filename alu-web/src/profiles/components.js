@@ -1,5 +1,5 @@
 import React from 'react';
-import {BadgeComponent} from './badges';
+import { BadgeComponent } from './badges';
 
 
 // Component for displaying a user's first and last name, and a clickable username
@@ -20,4 +20,4 @@ export function UserLink(props) {
       {small ? <small className='text-secondary'>{main}</small> : main}
     </div>
   );
-};
+}

@@ -4,4 +4,4 @@ import {
 
 export {
   LandingComponent,
-};
+}

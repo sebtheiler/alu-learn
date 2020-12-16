@@ -1,6 +1,6 @@
 import React from 'react';
-import {Form, Button, OverlayTrigger} from 'react-bootstrap';
-import {generateTooltip} from '../utils';
+import { Form, Button, OverlayTrigger } from 'react-bootstrap';
+import { generateTooltip } from '../utils';
 
 export function MiniRegisterForm(props) {
   const {callback, experimentParams, hideNoSpam, autoFocus} = props;
@@ -10,7 +10,7 @@ export function MiniRegisterForm(props) {
   const onSubmit = (event) => {
     event.preventDefault();
     callback(emailRef.current ? emailRef.current.value : '');
-  };
+  }
 
   return (
     <Form onSubmit={onSubmit} className='mb-0'>
@@ -53,7 +53,7 @@ export function MiniRegisterForm(props) {
       </Button>
     </Form>
   );
-};
+}
 
 export function MainHook(props) {
   const {alphaSpotsRemaining, callback, experimentParams} = props;
@@ -106,7 +106,7 @@ export function MainHook(props) {
       </div>
     </>
   );
-};
+}
 
 export function CoolFeaturesList(_props) {
   // const {} = props;
@@ -134,4 +134,4 @@ export function CoolFeaturesList(_props) {
     //   </ListGroup.Item>
     // </ListGroup>
   );
-};
+}

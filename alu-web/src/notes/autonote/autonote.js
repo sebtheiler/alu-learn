@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import {AutoReader} from './reader';
-import {Button, Form} from 'react-bootstrap';
-import {Slate, ReactEditor} from 'slate-react';
-import {Transforms} from 'slate';
-import {createFullEditor, EditorButtons, FullEditor} from '../editor-components';
-import {insertElement} from './inserter';
+import { AutoReader } from './reader';
+import { Button, Form } from 'react-bootstrap';
+import { Slate, ReactEditor } from 'slate-react';
+import { Transforms } from 'slate';
+import { createFullEditor, EditorButtons, FullEditor } from '../editor-components';
+import { insertElement } from './inserter';
 import './reader.css';
 
 export const emptyValue = [
@@ -28,7 +28,7 @@ export const parseText = (text, version='paragraph') => {
         return str.replace('Ph.D.', 'PhD').replace('Ph.D', 'PhD')
         .replace('Mr.', 'Mr').replace('Ms.', 'Ms').replace('Mrs.', 'Mrs')
         .replace('U.S.A.', 'USA').replace('U.S.', 'US');
-      };
+      }
       const splitByPar = periodCleanFunction(text).split('\n').filter(par => par && par.length > 3);
       const numSentences = 3;
 
@@ -46,13 +46,13 @@ export const parseText = (text, version='paragraph') => {
             for (let i = 0; i < splitPar.length; i+=numSentences) {
               toPush = splitPar.slice(i, i+numSentences).join(' ');
               finalText.push(toPush.trim() + ((toPush.endsWith('.') || toPush.endsWith('!') || toPush.endsWith('?')) ? '' : '.'));
-            };
+            }
           } else {
             toPush = par;
             finalText.push(toPush);
-          };
-        };
-      };
+          }
+        }
+      }
 
       return finalText;
     case 'json':
@@ -65,24 +65,24 @@ export const parseText = (text, version='paragraph') => {
               if (!childText) {
                 // If the child is empty, continue without adding
                 break;
-              };
+              }
               if (child.type === 'link') {
                 childText = `<a href=${child.url} target='_blank' rel='noopener noreferrer'>${childText}</a>`;
-              };
+              }
               if (child.bold) {
                 childText = `<strong>${childText}</strong>`;
-              };
+              }
               if (child.italic) {
                 childText = `<em>${childText}</em>`;
-              };
+              }
               if (child.underline) {
                 childText = `<u>${childText}</u>`;
-              };
+              }
               if (child.strikethrough) {
                 childText = `<del>${childText}</del>`;
-              };
+              }
               htmlString += childText;
-            };
+            }
             finalText.push(htmlString);
             break;
           case 'heading-one':
@@ -96,13 +96,13 @@ export const parseText = (text, version='paragraph') => {
             break;
           default:
             break;
-        };
-      };
+        }
+      }
       return finalText;
     default:
       return;
-  };
-};
+  }
+}
 
 export function AutoNote(props) {
   const {updateNoteCallback, initialValue, inputType, removeLinebreak} = props;
@@ -130,8 +130,8 @@ export function AutoNote(props) {
       const newPercentComplete = Math.ceil(newSelectedPar / (text.length - 1) * 100);
       setPercentComplete(newPercentComplete);
       progressBar.style.width = Math.max(newPercentComplete, 4) + '%';
-    };
-  };
+    }
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -146,7 +146,7 @@ export function AutoNote(props) {
           return;
         } else {
           document.getElementById('tooManySectionsError').innerHTML = '';
-        };
+        }
         const newDocument = insertElement(
           value,
           noteDocument,
@@ -162,7 +162,7 @@ export function AutoNote(props) {
     
         // Clear editor
         setValue(emptyValue);
-      };
+      }
       // Move selected paragraph
       if (inputType === 'text') {
         if (selectedPar < text.length - 1) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MainHook, CoolFeaturesList } from './components';
-// import {HowItWorks} from './cards';
+// import { HowItWorks } from './cards';
 import { RegisterLoginModal } from './forms';
 import { apiCreateBlankExperiment } from '../lookup';
 

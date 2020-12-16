@@ -9,4 +9,4 @@ import {
 export {
   ExploreComponent,
   DeckSearchComponent,
-};
+}

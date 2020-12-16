@@ -138,4 +138,4 @@ export {
   apiNotePageUpdate,
   apiNotePageDetail,
   apiProfileReadPopup,
-};
+}

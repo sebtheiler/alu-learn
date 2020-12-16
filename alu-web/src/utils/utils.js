@@ -1,9 +1,9 @@
-import React, {useRef, useEffect} from 'react';
+import React, { useRef, useEffect } from 'react';
 import numeral from 'numeral';
-import {Tooltip, OverlayTrigger} from 'react-bootstrap';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown/with-html';
 import RemarkMathPlugin from 'remark-math';
-import {BlockMath, InlineMath} from 'react-katex';
+import { BlockMath, InlineMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 
 // Creates a simple tooltip
@@ -13,7 +13,7 @@ export const generateTooltip = (text) => {
       <ReactMarkdown source={text} />
     </Tooltip>
   );
-};
+}
 
 // Displays the time since a date in a pretty format
 // Modified from https://stackoverflow.com/questions/3177836/how-to-format-time-since-xxx-e-g-4-minutes-ago-similar-to-stack-exchange-site
@@ -23,30 +23,30 @@ export function timeSince(date, reverse=false) {
 
   if (interval > 1) {
     return Math.floor(interval) + (Math.floor(interval) === 1 ? " year" : " years");
-  };
+  }
 
   interval = seconds / 2592000;
   if (interval > 1) {
     return Math.floor(interval) + (Math.floor(interval) === 1 ? " month" : " months");
-  };
+  }
 
   interval = seconds / 86400;
   if (interval > 1) {
     return Math.floor(interval) + (Math.floor(interval) === 1 ? " day" : " days");
-  };
+  }
 
   interval = seconds / 3600;
   if (interval > 1) {
     return Math.floor(interval) + (Math.floor(interval) === 1 ? " hour" : " hours");
-  };
+  }
 
   interval = seconds / 60;
   if (interval > 1) {
     return Math.floor(interval) + (Math.floor(interval) === 1 ? " minute" : " minutes");
-  };
+  }
 
   return Math.floor(seconds) + (Math.floor(seconds) === 1 ? " second" : " seconds");
-};
+}
 // export const oneDay = 24*60*60*1000;
 
 export function timeUntil(date) {
@@ -70,7 +70,7 @@ export function timeUntil(date) {
       return ['yesterday', -1];
     } else {
       return [timeSince(date) + ' ago', -1];
-    };
+    }
   } else {
     let tomorrow = today;
     tomorrow.setDate(today.getDate() + 1);
@@ -83,9 +83,9 @@ export function timeUntil(date) {
       return ['tomorrow', 1];
     } else {
       return ['in ' + timeSince(date, true), 1];
-    };
-  };
-};
+    }
+  }
+}
 
 
 // Makes the passed number appear in the format: 1231 -> 1k, 123 -> 123, 4124124 -> 4m
@@ -95,7 +95,7 @@ export function DisplayCountChar(props) {
       {parseInt(props.children) < 1000 ? parseInt(props.children) : numeral(props.children).format('0.0a')}
     </span>
   );
-};
+}
 
 // Makes the passed number appear in the format: 1231 -> 1,231, 123 -> 123, 4124124 -> 4,124,124
 export function DisplayCountCommas(props) {
@@ -104,7 +104,7 @@ export function DisplayCountCommas(props) {
       {numeral(props.children).format('0,0')}
     </span>
   );
-};
+}
 
 // Calculates whether a color is dark or light
 // Adapted from https://awik.io/determine-color-bright-dark-using-javascript/
@@ -128,7 +128,7 @@ export function lightOrDark(color) {
     r = color >> 16;
     g = (color >> 8) & 255;
     b = color & 255;
-  };
+  }
   
   // HSP equation from http://alienryderflex.com/hsp.html
   hsp = Math.sqrt(
@@ -142,8 +142,8 @@ export function lightOrDark(color) {
     return 'light';
   }  else {
     return 'dark';
-  };
-};
+  }
+}
 
 // Taken from https://stackoverflow.com/a/25352300
 export function isAlphaNumeric(str) {
@@ -155,10 +155,10 @@ export function isAlphaNumeric(str) {
         !(code > 64 && code < 91) && // upper alpha (A-Z)
         !(code > 96 && code < 123)) { // lower alpha (a-z)
       return false;
-    };
-  };
+    }
+  }
   return true;
-};
+}
 
 // Move move a date by a number of days
 // Taken from https://codesandbox.io/s/73mk9wlyx?file=/src/index.js:1031-1195
@@ -166,14 +166,14 @@ export function shiftDate(date, numDays) {
   const newDate = new Date(date);
   newDate.setDate(newDate.getDate() + numDays);
   return newDate;
-};
+}
 
 // Equivalent of Python's range
 // Taken from https://dev.to/ycmjason/how-to-create-range-in-javascript-539i#:~:text=range%20is%20a%20function%20that,integers%20from%20start%20to%20end.
 export function range(start, end) {
   const length = end - start;
   return Array.from({ length }, (_, i) => start + i);
-};
+}
 
 // Makes a Bootstrap checkmark, that isn't broken
 // The React-Bootstrap checkmark is very broken,
@@ -197,7 +197,7 @@ export function FormCheckbox(props) {
       {props.children}
     </label>
   );
-};
+}
 
 
 // Generates a little question-bubble with tooltip
@@ -219,7 +219,7 @@ export function QuestionBubble(props) {
       <i className={`fas fa-${type}-circle text-secondary`} />
     </OverlayTrigger>
   );
-};
+}
 
 // Fully-featured MD rendered with KaTeX, MarkDown, and (safe-ish) HTML rendering
 export function MarkdownRender(props) {
@@ -239,7 +239,7 @@ export function MarkdownRender(props) {
       } : null}
     />
   );
-};
+}
 
 // Calls a function every N milliseconds
 // Taken from https://overreacted.io/making-setinterval-declarative-with-react-hooks/
@@ -255,13 +255,13 @@ export function useInterval(callback, delay) {
   useEffect(() => {
     function tick() {
       savedCallback.current();
-    };
+    }
     if (delay !== null) {
       let id = setInterval(tick, delay);
       return () => clearInterval(id);
-    };
+    }
   }, [delay]);
-};
+}
 
 // Returns whether or not an index of a string is in a regex match
 // Taken from https://stackoverflow.com/a/64188089/13042142
@@ -274,8 +274,8 @@ export function inMatch(pos, str, regex) {
       // if pos is between the beginning and the end of the last match,
       // it is within a match, therefore, return true.
       return true;
-    };
-  };
+    }
+  }
   // pos is not within any match, so, return false.
   return false;
-};
+}

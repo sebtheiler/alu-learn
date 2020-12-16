@@ -87,7 +87,7 @@ export function NoteEditor(props) {
       FRONT: 'FRONT',
       AFTER: parseInt(pageNum) + 1,
       BEFORE: parseInt(pageNum),
-    };
+    }
 
     apiCreateNewNotePage(
       form.elements.title.value,

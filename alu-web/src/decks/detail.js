@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import {DeckDefaultButtonGroup, DeckForeignUserButtonGroup} from './buttons';
-import {NoteDefaultButtonGroup} from '../notes/buttons';
-import {FlashCardsList} from './flashcards';
-import {apiDeckThank} from '../lookup';
-import {DisplayCountChar, errorHandler, MarkdownRender} from '../utils';
-import {UserLink} from '../profiles';
-import {Card, ButtonGroup, Button} from 'react-bootstrap';
+import { DeckDefaultButtonGroup, DeckForeignUserButtonGroup } from './buttons';
+import { NoteDefaultButtonGroup } from '../notes/buttons';
+import { FlashCardsList } from './flashcards';
+import { apiDeckThank } from '../lookup';
+import { DisplayCountChar, errorHandler, MarkdownRender } from '../utils';
+import { UserLink } from '../profiles';
+import { Card, ButtonGroup, Button } from 'react-bootstrap';
 
 // Display an individual deck
 // This is used on pages displaying multiple decks
@@ -15,7 +15,7 @@ export function Deck(props) {
 
   if (deck.length === 0) {
     return <div>Loading...</div>
-  };
+  }
 
   return (
     <div className={className}>
@@ -39,7 +39,7 @@ export function Deck(props) {
       </Card>
     </div>
   );
-};
+}
 
 // This is used on pages displaying a single deck
 export function DeckDetail(props) {
@@ -51,7 +51,7 @@ export function DeckDetail(props) {
   // const handleBrowseSwitch = (event) => {
   //   event.preventDefault();
   //   setBrowsingState(browsingState === 'FLASHCARDS' ? 'COMMENTS' : 'FLASHCARDS');
-  // };
+  // }
 
   const handleThankDeck = (event) => {
     event.preventDefault();
@@ -66,10 +66,10 @@ export function DeckDetail(props) {
           // Error thanking deck
           setThankBtnLabel('Thank');
           errorHandler(response, status, 1005);
-        };
+        }
       });
-    };
-  };
+    }
+  }
 
   return (
     <div className={`text-${textAlign}`}>
@@ -127,4 +127,4 @@ export function DeckDetail(props) {
       </div>}
     </div>
   );
-};
+}

@@ -1,5 +1,5 @@
-import {ManualSRHome} from './home';
+import { ManualSRHome } from './home';
 
 export {
   ManualSRHome,
-};
+}

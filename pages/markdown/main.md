@@ -9,6 +9,7 @@ In the following pages, you can find detailed information on the features Alu ha
 ## Decks
 * [Introduction to Decks (Video)](https://www.youtube.com/watch?v=T2jA--y0ggk)
 * [Copying Shared Decks (Video)](https://www.youtube.com/watch?v=XO2myZbhJxQ)
+* [Creating Filtered Decks (Video)](https://www.youtube.com/watch?v=N-6khJQRCUU)
 
 ### Flashcards
 * [Flashcard Tags](/help/flashcard-tags/)

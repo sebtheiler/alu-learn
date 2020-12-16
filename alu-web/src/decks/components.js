@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {DeckCreate,} from './create';
-import {DeckDetail} from './detail';
-import {apiSharedDeckDetail, apiDeckFlashcards} from '../lookup';
-import {DecksHomeList} from './home';
-import {Button, ButtonGroup} from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { DeckCreate } from './create';
+import { DeckDetail } from './detail';
+import { apiSharedDeckDetail, apiDeckFlashcards } from '../lookup';
+import { DecksHomeList } from './home';
+import { Button, ButtonGroup } from 'react-bootstrap';
 import { errorHandler } from '../utils';
 
 
@@ -21,7 +21,7 @@ export function DecksHomeComponent(props) {
       <DecksHomeList {...props}/>
     </div>
   );
-};
+}
 
 // Component for displaying an individual deck
 export function DeckDetailComponent(props) {
@@ -50,7 +50,7 @@ export function DeckDetailComponent(props) {
         } else {
           // Error getting deck detail
           errorHandler(response, status, 1003);
-        };
+        }
       });
       apiDeckFlashcards(deckId, {limit: 10}, (response, status) => {
         if (status === 200) {
@@ -65,10 +65,10 @@ export function DeckDetailComponent(props) {
         } else {
           // Error getting deck flashcards
           errorHandler(response, status, 1014);
-        };
+        }
       });
       setDidLookup(true);
-    };
+    }
   }, [deckId, didLookup]);
 
   return deck === null ?
@@ -83,4 +83,4 @@ export function DeckDetailComponent(props) {
         textAlign='left'
       />
   );
-};
+}

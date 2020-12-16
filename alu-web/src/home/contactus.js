@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {Form, Button} from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Form, Button } from 'react-bootstrap';
 import { FormCheckbox, errorHandler } from '../utils';
-import {apiFeedbackSubmit} from '../lookup';
+import { apiFeedbackSubmit } from '../lookup';
 
 export function ContactUs(props) {
   const userIsAuthenticated = props.userIsAuthenticated ? props.userIsAuthenticated.toLowerCase() === 'true' : false;
@@ -27,11 +27,11 @@ export function ContactUs(props) {
         } else {
           // Error submitting feedback
           errorHandler(response, status, 4000);
-        };
+        }
         setIsLoading(false);
       },
     );
-  };
+  }
 
   return (
     <Form onSubmit={handleSubmit} className='w-75 mx-auto'>
@@ -125,4 +125,4 @@ export function ContactUs(props) {
       <Button type='submit' block>{isLoading ? 'Loading...' : 'Submit'}</Button>
     </Form>
   );
-};
+}

@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
-import {Modal, Form, Button} from 'react-bootstrap';
-import {apiProfileLogin} from '../../lookup';
+import React, { useState } from 'react';
+import { Modal, Form, Button } from 'react-bootstrap';
+import { apiProfileLogin } from '../../lookup';
 import { errorHandler, FormCheckbox } from '../../utils';
 
 export function LoginForm(props) {
@@ -12,7 +12,7 @@ export function LoginForm(props) {
     event.preventDefault();
     if (isLoading) {
       return;
-    };
+    }
     setIsLoading(true);
     const form = event.target;
 
@@ -28,11 +28,11 @@ export function LoginForm(props) {
         } else {
           // Error logging-in the user
           errorHandler(response, status, 3006);
-        };
+        }
         setIsLoading(false);
       },
     );
-  };
+  }
 
   return (
     <Form onSubmit={loginHandler}>
@@ -74,4 +74,4 @@ export function LoginForm(props) {
       </Modal.Footer>
     </Form>
   );
-};
+}

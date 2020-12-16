@@ -14,7 +14,7 @@ import { withImages } from './images';
 
 export function createFullEditor() {
   return withImages(withLinks(withHistory(withReact(createEditor()))));
-};
+}
 
 const HOTKEYS = {
   'mod+b': 'bold',

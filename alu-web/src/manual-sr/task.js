@@ -1,10 +1,10 @@
-import React, {useState, useMemo} from 'react';
+import React, { useState, useMemo } from 'react';
 import { Button, ButtonGroup, Popover, OverlayTrigger, Form } from 'react-bootstrap';
 import { getAnkiInterval } from '../decks/study/algorithm';
 import { apiManualSRTaskDelete, apiManualSRTaskUpdate, apiManualSRTaskEdit } from '../lookup';
-import {errorHandler, timeUntil} from '../utils';
-import {Slate} from 'slate-react';
-import {createFullEditor, EditorButtons, FullEditor} from '../notes/editor-components';
+import { errorHandler, timeUntil } from '../utils';
+import { Slate } from 'slate-react';
+import { createFullEditor, EditorButtons, FullEditor } from '../notes/editor-components';
 import { emptyValue } from '../notes/autonote/autonote';
 
 export function ManualSRTask(props) {
@@ -48,11 +48,11 @@ export function ManualSRTask(props) {
           } else {
             // Error updating manual SR task's review information
             errorHandler(response, status, 7003);
-          };
+          }
         },
       );
-    };
-  };
+    }
+  }
 
   const editHandler = (event) => {
     event.preventDefault();
@@ -68,10 +68,10 @@ export function ManualSRTask(props) {
         } else {
           // Error editing manual SR task
           errorHandler(response, status, 7005);
-        };
+        }
       },
     );
-  };
+  }
 
   const deleteHandler = (event) => {
     event.preventDefault();
@@ -81,9 +81,9 @@ export function ManualSRTask(props) {
       } else {
         // Error deleting manual SR task
         errorHandler(response, status, 7004);
-      };
+      }
     });
-  };
+  }
 
   const deletePopover = (
     <Popover>
@@ -198,4 +198,4 @@ export function ManualSRTask(props) {
     </div>
     <br />
   </>);
-};
+}

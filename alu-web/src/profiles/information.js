@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import {apiProfileDetail, apiProfileFriendToggle, apiSendFriendReq} from '../lookup';
-import {UserLink} from './components';
-import {errorHandler} from '../utils';
-import {Button} from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { apiProfileDetail, apiProfileFriendToggle, apiSendFriendReq } from '../lookup';
+import { UserLink } from './components';
+import { errorHandler } from '../utils';
+import { Button } from 'react-bootstrap';
 
 
 // Function for displaying user information such as bio, friendcount, location, etc.
@@ -20,7 +20,7 @@ function ProfileInformation(props) {
       currentVerb = 'Requested';
     } else {
       currentVerb = 'Add Friend';
-    };
+    }
     currentVerb = profileLoading ? 'Loading...' : currentVerb;
 
     var handleFriendToggle = (event) => {
@@ -28,9 +28,9 @@ function ProfileInformation(props) {
       if (currentVerb !== 'Requested' && currentVerb !== 'Loading...' && !profileLoading) {
         const action = currentVerb === 'Remove Friend' ? 'unfriend' : 'friend';
         didFriendToggle(action);
-      };
-    };
-  };
+      }
+    }
+  }
 
   return user ? (
     <>
@@ -51,7 +51,7 @@ function ProfileInformation(props) {
       }
     </>
   ) : null;
-};
+}
 
 
 // Component for profile information
@@ -70,10 +70,10 @@ export function ProfileInformationComponent(props) {
         } else {
           // Error getting profile details
           errorHandler(response, status, 3000);
-        };
+        }
       });
       setDidLookup(true);
-    };
+    }
   }, [username, didLookup, setDidLookup]);
 
   // When the 'Add/Remove Friend' button is pressed, send a message to the API
@@ -85,7 +85,7 @@ export function ProfileInformationComponent(props) {
       apiProfileFriendToggle(username, 'unfriend', (response, status) => {
         if (status === 200) {
           setProfile(response);
-        };
+        }
         setProfileLoading(false);
       });
     } else {
@@ -97,11 +97,11 @@ export function ProfileInformationComponent(props) {
         } else {
           // Error sending friend request
           errorHandler(response, status, 3001);
-        };
+        }
         setProfileLoading(false);
       });
-    };
-  };
+    }
+  }
 
   // If the user is viewing their own profile, don't show the 'Add Friend' button and show a button for editing
   const viewingOwnProfile = username === currentUserUsername;
@@ -115,4 +115,4 @@ export function ProfileInformationComponent(props) {
         profileLoading={profileLoading}
       />
     : null);
-};
+}

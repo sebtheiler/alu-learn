@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
-import { Slate} from 'slate-react';
+import { Slate } from 'slate-react';
 import { createFullEditor, EditorButtons, FullEditor } from '../editor-components';
 import { AutoNoteModal } from '../autonote';
 import { QuestionBubble } from '../../utils';

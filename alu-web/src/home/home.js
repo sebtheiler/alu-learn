@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {Card, CardDeck, Button} from 'react-bootstrap';
-import {apiProfileDetail, apiProfileFriends, apiProfileHistory} from '../lookup';
-import {errorHandler, DisplayCountCommas, shiftDate, range} from '../utils';
-import {UserLink} from '../profiles/components';
-import {randomTip} from './randomtips';
+import React, { useState, useEffect } from 'react';
+import { Card, CardDeck, Button } from 'react-bootstrap';
+import { apiProfileDetail, apiProfileFriends, apiProfileHistory } from '../lookup';
+import { errorHandler, DisplayCountCommas, shiftDate, range } from '../utils';
+import { UserLink } from '../profiles/components';
+import { randomTip } from './randomtips';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import ReactTooltip from 'react-tooltip';
 import 'react-calendar-heatmap/dist/styles.css';
@@ -25,7 +25,7 @@ export function HomeComponent(props) {
     if (clientWidth < 500) {return 'w-100'} else
     if (clientWidth < 900) {return 'w-75'} else
     {return 'w-50'}
-  };
+  }
   const [heatmapWidthClass, setHeatmapWidthClass] = useState(determineItemWidthClass(document.documentElement.clientWidth));
   window.addEventListener("resize", (_event) => {
     setHeatmapWidthClass(determineItemWidthClass(document.documentElement.clientWidth));
@@ -48,9 +48,9 @@ export function HomeComponent(props) {
         } else {
           // Error getting profile detail for home page
           errorHandler(response, status, 3010);
-        };
+        }
       });
-    };
+    }
   }, [username, setProfile, profileDidSet, setProfileDidSet]);
 
   useEffect(() => {
@@ -64,7 +64,7 @@ export function HomeComponent(props) {
           errorHandler(response, status, 3011);
         }
       });
-    };
+    }
   }, [username, setFriends, friendsDidSet, setFriendsDidSet]);
 
   useEffect(() => {
@@ -82,19 +82,19 @@ export function HomeComponent(props) {
               return {
                 ...hist,
                 cardsDone: date.cards_done,
-              };
+              }
             } else {
               // Return the standard/blank value
               return hist;
-            };
+            }
           });
           setUserHistory(historyValues);
         } else {
           // Error getting user history
           errorHandler(response, status, 3013);
-        };
+        }
       });
-    };
+    }
   }, [username, gotHistory, setGotHistory, userHistory, setUserHistory]);
 
   return (
@@ -155,7 +155,7 @@ export function HomeComponent(props) {
                 if (cardsDone > maxReviews - unit*5) {colorValue = 3} else
                 if (cardsDone > maxReviews - unit*6) {colorValue = 2} else
                 {colorValue = 1}
-              };
+              }
               return `color-scale-${Math.min(colorValue, 7)}`;
             }}
           />
@@ -186,7 +186,7 @@ export function HomeComponent(props) {
                   );
                 } else {
                   return null;
-                };
+                }
               })
             :
             <p>You don't have any friends yet</p>
@@ -198,4 +198,4 @@ export function HomeComponent(props) {
       </div>
     </div>
   );
-};
+}

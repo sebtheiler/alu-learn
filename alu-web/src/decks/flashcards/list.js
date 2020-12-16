@@ -24,7 +24,7 @@ export function FlashCardsList(props) {
     // Does not re-render when browsing list
     if (flashcardList) {
       setFlashCardsDidSet(false);
-    };
+    }
   }, [flashcardList, setFlashCardsDidSet]);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export function FlashCardsList(props) {
           } else {
             // Error looking up deck
             errorHandler(response, status, 1015);
-          };
+          }
         });
         apiDeckFlashcards(deckId, {}, (response, status) => {
           // Get flashcards
@@ -53,14 +53,14 @@ export function FlashCardsList(props) {
           } else {
             // Error looking up deck's flashcards
             errorHandler(response, status, 1016);
-          };
+          }
         });
       } else {
         // If flashcards were directly passed
         setFlashCardsDidSet(true);
         setFlashCards(flashcardList);
-      };
-    };
+      }
+    }
   }, [flashcardsDidSet, flashcardList, deckId]);
 
   // Handle next set of flashcards (pagination)
@@ -80,7 +80,7 @@ export function FlashCardsList(props) {
           } else {
             // Error handling next set of flashcards (pagination)
             errorHandler(response, status, 1018);
-          };
+          }
           setFlashCardsLoading(false);
         }, nextUrl);
       }
@@ -128,4 +128,4 @@ export function FlashCardsList(props) {
       }
     </div>
   );
-};
+}

@@ -1,7 +1,7 @@
 import React from 'react';
-import {Button} from 'react-bootstrap';
-import {Transforms} from 'slate';
-import {useFocused, useSelected} from 'slate-react';
+import { Button } from 'react-bootstrap';
+import { Transforms } from 'slate';
+import { useFocused, useSelected } from 'slate-react';
 import isUrl from 'is-url';
 import imageExtensions from 'image-extensions';
 
@@ -10,7 +10,7 @@ export const withImages = editor => {
 
   editor.isVoid = element => {
     return element.type === 'image' ? true: isVoid(element);
-  };
+  }
 
   editor.insertData = data => {
     const text = data.getData('text/plain');
@@ -28,17 +28,17 @@ export const withImages = editor => {
           });
 
           reader.readAsDataURL(file);
-        };
-      };
+        }
+      }
     } else if (isImageUrl(text)) {
       insertImage(editor, text);
     } else {
       insertData(data);
-    };
-  };
+    }
+  }
 
   return editor;
-};
+}
 
 export const ImageElement = ({ attributes, children, element }) => {
   const selected = useSelected();
@@ -61,20 +61,20 @@ export const ImageElement = ({ attributes, children, element }) => {
       {children}
     </div>
   );
-};
+}
 
 const isImageUrl = url => {
   if (!url) return false;
   if (!isUrl(url)) return false;
   const ext = new URL(url).pathname.split('.').pop();
   return imageExtensions.includes(ext);
-};
+}
 
 const insertImage = (editor, url) => {
   const text = { text: '' };
   const image = { type: 'image', url, children: [text] };
   Transforms.insertNodes(editor, image);
-};
+}
 
 export function ImageButton(props) {
   const {editor, untabbable} = props;
@@ -93,4 +93,4 @@ export function ImageButton(props) {
       <i className='fas fa-image' />
     </Button>
   );
-};
+}

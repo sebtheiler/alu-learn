@@ -1,6 +1,6 @@
 import React from 'react';
-import {Editor, Transforms, Range} from 'slate';
-import {Button, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import { Editor, Transforms, Range } from 'slate';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import isUrl from 'is-url'
 
 export const withLinks = editor => {
@@ -8,15 +8,15 @@ export const withLinks = editor => {
 
   editor.isInline = element => {
     return element.type === 'link' ? true : isInline(element);
-  };
+  }
 
   editor.insertText = text => {
     if (text && isUrl(text)) {
       wrapLink(editor, text);
     } else {
       insertText(text);
-    };
-  };
+    }
+  }
 
   editor.insertData = data => {
     const text = data.getData('text/plain');
@@ -25,11 +25,11 @@ export const withLinks = editor => {
       wrapLink(editor, text);
     } else {
       insertData(data);
-    };
-  };
+    }
+  }
 
   return editor;
-};
+}
 
 export const LinkElement = ({ attributes, children, element }) => {
   return (
@@ -49,27 +49,27 @@ export const LinkElement = ({ attributes, children, element }) => {
       </a>
     </OverlayTrigger>
   );
-};
+}
 
 const insertLink = (editor, url) => {
   if (editor.selection) {
     wrapLink(editor, url);
-  };
-};
+  }
+}
 
 const isLinkActive = editor => {
   const [link] = Editor.nodes(editor, { match: n => n.type === 'link' });
   return !!link;
-};
+}
 
 const unwrapLink = editor => {
   Transforms.unwrapNodes(editor, { match: n => n.type === 'link' });
-};
+}
 
 const wrapLink = (editor, url) => {
   if (isLinkActive(editor)) {
     unwrapLink(editor);
-  };
+  }
 
   const { selection } = editor;
   const isCollapsed = selection && Range.isCollapsed(selection);
@@ -84,8 +84,8 @@ const wrapLink = (editor, url) => {
   } else {
     Transforms.wrapNodes(editor, link, { split: true });
     Transforms.collapse(editor, { edge: 'end' });
-  };
-};
+  }
+}
 
 export function LinkButton(props) {
   const {editor, untabbable} = props;
@@ -104,4 +104,4 @@ export function LinkButton(props) {
       <i className='fas fa-link' />
     </Button>
   );
-};
+}

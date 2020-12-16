@@ -1,5 +1,12 @@
 -----
 
+
+# Games! - Dec ?? 2020 - 0.3.0
+
+
+* **Filtered Decks Tutorial:**  There is now a tutorial for filtered decks available in the [help](/help/) page.  This tutorial has been out for a while, but it can now been found in the help section.
+
+
 # Personalizing Alu & Better Study Habits - Dec 14 2020 - 0.2.0
 Keeping to study habits is difficult.  This update seeks to make it easier.
 

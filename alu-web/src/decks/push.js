@@ -18,7 +18,7 @@ export function PushSharedDeck(props) {
           try {
             // If this is the page of a shared deck, go to the sharing page of its creator
             window.location.href = `/decks/${response.creators[0]}/share/`;
-          } catch (e) {};
+          } catch (e) {}
           setDeck(response);
           apiSharedPushChanges(deckId, response.shared_deck, true, (response, status) => {
             if (status === 200) {
@@ -26,14 +26,14 @@ export function PushSharedDeck(props) {
             } else {
               // Error checking diff between shared and origin deck
               errorHandler(response, status, 1020);
-            };
+            }
           });
         } else {
           // Error getting deck detail for sharing deck
           errorHandler(response, status, 1021);
-        };
+        }
       });
-    };
+    }
   }, [deckDidSet, deckId]);
 
   const handleUpdate = (event) => {
@@ -46,11 +46,11 @@ export function PushSharedDeck(props) {
         } else {
           // Error pushing changes to new deck
           errorHandler(response, status, 1020);
-        };
+        }
         setPushingChanges(false);
       });
-    };
-  };
+    }
+  }
 
   return (<>
     <h1>Pushing Changes to Deck "{deck ? deck.title : 'Loading...'}"</h1>
@@ -67,4 +67,4 @@ export function PushSharedDeck(props) {
       </Button>
     )}
   </>);
-};
+}

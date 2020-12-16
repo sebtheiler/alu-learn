@@ -1,5 +1,5 @@
-import {StandardNoteEditor} from './editor';
+import { StandardNoteEditor } from './editor';
 
 export {
   StandardNoteEditor,
-};
+}

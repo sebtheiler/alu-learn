@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import {Popover, OverlayTrigger, Button} from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Popover, OverlayTrigger, Button } from 'react-bootstrap';
 
-import {Notification} from './detail';
-import {apiNotificationList, apiNotificationRead} from '../../lookup';
+import { Notification } from './detail';
+import { apiNotificationList, apiNotificationRead } from '../../lookup';
 import { errorHandler } from '../../utils';
 
 import './components.css';
@@ -53,10 +53,10 @@ Welcome to Alu! Alu uses spaced repetition algorithms to help you learn and stud
           } else {
             // Error getting notification list
             errorHandler(response, status, 3002);
-          };
+          }
         });
-      };
-    };
+      }
+    }
   }, [notifsDidSet, isPopup, username]);
 
   // Load next set of notifications (pagination)
@@ -79,11 +79,11 @@ Welcome to Alu! Alu uses spaced repetition algorithms to help you learn and stud
         } else {
           // Error handling next set of notifications (pagination)
           errorHandler(response, status, 3014);
-        };
+        }
         setNextNotifsDidset(true);
       }, nextUrl);
-    };
-  };
+    }
+  }
 
   const markAllAsRead = (_event) => {
     if (username.length > 0) {
@@ -93,10 +93,10 @@ Welcome to Alu! Alu uses spaced repetition algorithms to help you learn and stud
         } else {
           // Error marking notifications as read
           errorHandler(response, status, 3003);
-        };
+        }
       });
-    };
-  };
+    }
+  }
   
   if (isPopup) {
     if (notifsDidSet) {
@@ -146,7 +146,7 @@ Welcome to Alu! Alu uses spaced repetition algorithms to help you learn and stud
                   
                   for (const link of links) {
                     link.onclick = _ => window.location.href = link.href;
-                  };
+                  }
                 }, 250);
               }}
               style={{ transform: 'translate(2px, 1px)' }}
@@ -165,7 +165,7 @@ Welcome to Alu! Alu uses spaced repetition algorithms to help you learn and stud
       );
     } else {
       return null;
-    };
+    }
   } else {
     // This doesn't effect the current display - only
     // for when the page is reloaded
@@ -196,5 +196,5 @@ Welcome to Alu! Alu uses spaced repetition algorithms to help you learn and stud
       </div>
       </div>
     );
-  };
-};
+  }
+}

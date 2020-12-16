@@ -137,7 +137,7 @@ export function DeckDefaultButtonGroup(props) {
       </Button>
     </ButtonGroup>
   );
-};
+}
 
 // Modal pop-up for when the 'Edit' button is pressed
 export function DeckEditCreateModal(props) {
@@ -289,7 +289,7 @@ export function DeckEditCreateModal(props) {
       </Form>
     </Modal>
   );
-};
+}
 
 // Buttons displayed when a user that does not own the deck views a deck
 export function DeckForeignUserButtonGroup(props) {
@@ -309,11 +309,11 @@ export function DeckForeignUserButtonGroup(props) {
         } else {
           // Error copying deck
           errorHandler(response, status, 1002)
-        };
+        }
         setCopyLoading(false);
       });
-    };
-  };
+    }
+  }
 
   return (
     <div className='text-center'>

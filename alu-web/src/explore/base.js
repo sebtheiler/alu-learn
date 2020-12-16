@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react';
-import {apiExploreLists} from '../lookup';
-import {DeckSlider} from './components';
-import {ExploreButtonGroup} from './buttons';
+import React, { useState, useEffect } from 'react';
+import { apiExploreLists } from '../lookup';
+import { DeckSlider } from './components';
+import { ExploreButtonGroup } from './buttons';
 import { errorHandler } from '../utils';
 
 
@@ -18,9 +18,9 @@ export function ExploreComponent(props) {
         } else {
           // Error getting explore deck lists
           errorHandler(response, status, 1010);
-        };
+        }
       });
-    };
+    }
   }, [setDecks, decksDidSet, setDecksDidSet]);
 
   return (
@@ -48,4 +48,4 @@ export function ExploreComponent(props) {
       </div>
     </>
   );
-};
+}

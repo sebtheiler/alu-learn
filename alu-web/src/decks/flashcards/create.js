@@ -1,11 +1,11 @@
-import React, {useState, useMemo} from 'react';
-import {apiFlashCardCreate, apiFlashCardEdit, apiFlashCardDetail} from '../../lookup';
-import {Button, Form, OverlayTrigger} from 'react-bootstrap';
-import {generateTooltip, errorHandler, QuestionBubble} from '../../utils';
-import {createFullEditor, EditorButtons, FullEditor} from '../../notes/editor-components';
+import React, { useState, useMemo } from 'react';
+import { apiFlashCardCreate, apiFlashCardEdit, apiFlashCardDetail } from '../../lookup';
+import { Button, Form, OverlayTrigger } from 'react-bootstrap';
+import { generateTooltip, errorHandler, QuestionBubble } from '../../utils';
+import { createFullEditor, EditorButtons, FullEditor } from '../../notes/editor-components';
 import { emptyValue } from '../../notes/autonote/autonote';
-import {Slate, ReactEditor} from 'slate-react';
-import {Transforms} from 'slate';
+import { Slate, ReactEditor } from 'slate-react';
+import { Transforms } from 'slate';
 
 function FreezeOverlay(props) {
   return (
@@ -20,7 +20,7 @@ function FreezeOverlay(props) {
       {props.children}
     </OverlayTrigger>
   );
-};
+}
 
 // Function for card create form
 export function FlashCardCreate(props) {
@@ -66,16 +66,16 @@ export function FlashCardCreate(props) {
                 break;
               default:
                 return;
-            };
+            }
             document.getElementById('tags').value = response.tags;
             setFlashCardType(response.flashcard_type);
           } else {
             // Error getting flashcard detail
             errorHandler(response, status, 2000);
-          };
+          }
         });
-      };
-    };
+      }
+    }
   });
 
   // Called after the request is sent to the backend to create or edit a flashcard
@@ -91,18 +91,18 @@ export function FlashCardCreate(props) {
         Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999, reverse: true });
         Transforms.move(frontEditor, { edge: 'focus', distance: 9999999, reverse: true });
         ReactEditor.focus(frontEditor);
-        if (!freezeFront) {setFrontValue(emptyValue)};
-        if (!freezeBack) {setBackValue(emptyValue)};
-        if (!freezeTags) {document.getElementById('tags').value = ''};
+        if (!freezeFront) setFrontValue(emptyValue);
+        if (!freezeBack) setBackValue(emptyValue);
+        if (!freezeTags) document.getElementById('tags').value = '';
         Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999 });
         Transforms.move(frontEditor, { edge: 'focus', distance: 9999999 });
         document.getElementById('flashcardType').focus()
-      };
+      }
     } else {
       // Error creating/editing flashcard
       errorHandler(response, status, 2001);
-    };
-  };
+    }
+  }
 
   // Called when the form is submitted
   // Sends a request to the backend to create a flashcard
@@ -135,8 +135,8 @@ export function FlashCardCreate(props) {
         flashcardType,
         handleBackendUpdate,
       );
-    };
-  };
+    }
+  }
 
   return (
     <div className={props.className}>
@@ -244,4 +244,4 @@ export function FlashCardCreate(props) {
       </Form>
     </div>
   );
-};
+}

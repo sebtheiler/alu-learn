@@ -1,5 +1,5 @@
 import React from 'react';
-import {LoginForm} from '../landing/forms';
+import { LoginForm } from '../landing/forms';
 
 export function LoginComponent(_props) {
   return (
@@ -10,4 +10,4 @@ export function LoginComponent(_props) {
       </div>
     </>
   );
-};
+}

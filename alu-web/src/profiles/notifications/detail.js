@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {Button} from 'react-bootstrap';
-import {timeSince, errorHandler} from '../../utils';
-import {apiProfileFriendToggle, apiProfileDetail} from '../../lookup';
+import React, { useState } from 'react';
+import { Button } from 'react-bootstrap';
+import { timeSince, errorHandler } from '../../utils';
+import { apiProfileFriendToggle, apiProfileDetail } from '../../lookup';
 import ReactMarkdown from 'react-markdown';
 
 export function Notification(props) {
@@ -24,13 +24,13 @@ export function Notification(props) {
         if (response.is_friend) {
           setFriendBtnLabel('Friends');
           setAcceptedFriendReq(true);
-        };
+        }
       } else {
         // Error getting profile detail for checking if friends
         errorHandler(response, status, 3004);
-      };
+      }
     });
-  };
+  }
 
   const handleFriendAccepted = (event) => {
     event.preventDefault();
@@ -48,10 +48,10 @@ export function Notification(props) {
         } else {
           // Error accepting friend request
           errorHandler(response, status, 3005);
-        };
+        }
       });
-    };
-  };
+    }
+  }
 
   return (
     <div className='mb-3'>
@@ -71,4 +71,4 @@ export function Notification(props) {
         </Button> : ''}
     </div>
   );
-};
+}

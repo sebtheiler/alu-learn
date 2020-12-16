@@ -1,8 +1,8 @@
 import React from 'react';
-import {Button, ButtonGroup, DropdownButton, Dropdown} from 'react-bootstrap';
-import {isMarkActive, toggleMark, isBlockActive, toggleBlock} from './editor';
-import {ImageButton} from './images';
-import {LinkButton} from './links';
+import { Button, ButtonGroup, DropdownButton, Dropdown } from 'react-bootstrap';
+import { isMarkActive, toggleMark, isBlockActive, toggleBlock } from './editor';
+import { ImageButton } from './images';
+import { LinkButton } from './links';
 
 export function EditorButtons(props) {
   const {editor, saveHandler, className, untabbable} = props;
@@ -61,7 +61,7 @@ export function EditorButtons(props) {
       </Button>}
     </ButtonGroup>
   );
-};
+}
 
 function MarkButton(props) {
   const {format, icon, editor, untabbable} = props;
@@ -81,7 +81,7 @@ function MarkButton(props) {
       <i className={`fas fa-${icon}`} />
     </Button>
   );
-};
+}
 
 function BlockButton(props) {
   const {format, icon, editor, untabbable} = props;
@@ -101,4 +101,4 @@ function BlockButton(props) {
       <i className={`fas fa-${icon}`} />
     </Button>
   );
-};
+}

@@ -1,6 +1,6 @@
 import React from 'react';
-import {LinkElement} from './links';
-import {ImageElement} from './images';
+import { LinkElement } from './links';
+import { ImageElement } from './images';
 
 export const Element = (props) => {
   // TODO: `readOnly` is unused for now, but will be used in equation editing

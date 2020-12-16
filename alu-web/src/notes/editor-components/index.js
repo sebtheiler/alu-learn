@@ -1,6 +1,6 @@
-import {EditorButtons} from './buttons';
-import {createFullEditor, FullEditor} from './editor';
-import {Element, Leaf} from './renderer';
+import { EditorButtons } from './buttons';
+import { createFullEditor, FullEditor } from './editor';
+import { Element, Leaf } from './renderer';
 
 export {
   createFullEditor,
@@ -8,4 +8,4 @@ export {
   EditorButtons,
   Element,
   Leaf,
-};
+}

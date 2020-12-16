@@ -21,9 +21,9 @@ export function NavbarComponent(props) {
       } else {
         // Error logging-out user
         errorHandler(response, status, 3012);
-      };
+      }
     });
-  };
+  }
 
   return (
     <Navbar bg='primary' variant='dark' expand='md' collapseOnSelect>
@@ -147,4 +147,4 @@ export function NavbarComponent(props) {
       </Navbar.Collapse>
     </Navbar>
   );
-};
+}

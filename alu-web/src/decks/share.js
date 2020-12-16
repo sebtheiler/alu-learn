@@ -18,7 +18,7 @@ export function ShareDeck(props) {
           try {
             // If this is the page of a shared deck, go to the sharing page of its creator
             window.location.href = `/decks/${response.creators[0]}/share/`;
-          } catch (e) {};
+          } catch (e) {}
           setDeck(response);
         } else {
           // Error getting deck detail for sharing deck

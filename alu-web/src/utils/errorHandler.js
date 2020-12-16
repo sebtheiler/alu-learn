@@ -24,8 +24,8 @@ here: ${baseUrl}/contactus/
 With the error code: ${errorCode.toString(16)}-${status.toString(16)}
 `
     );
-  };
-};
+  }
+}
 
 
 /*

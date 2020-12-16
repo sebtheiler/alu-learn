@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import {Button, Form, Row, Col} from 'react-bootstrap';
+import { Button, Form, Row, Col } from 'react-bootstrap';
 import { apiPasswordChange, apiPasswordReset, apiEmailChange } from '../../lookup';
-import {errorHandler} from '../../utils';
+import { errorHandler } from '../../utils';
 
 
 export function ChangePasswordEmail(props) {
@@ -19,7 +19,7 @@ export function ChangePasswordEmail(props) {
 
     if (isLoading === true) {
       return;
-    };
+    }
     setIsLoading(true);
 
     if (isReset) {
@@ -29,7 +29,7 @@ export function ChangePasswordEmail(props) {
         return;
       } else {
         document.getElementById('passwordsDoNotMatch').innerHTML = '';
-      };
+      }
 
       apiPasswordReset(email, resetKey, form.elements.newPassword.value, (response, status) => {
         if (status === 200) {
@@ -41,14 +41,14 @@ export function ChangePasswordEmail(props) {
         } else {
           // Error resetting password
           errorHandler(response, status, 3018);
-        };
+        }
       });
     } else {
       const setInvalidCreds = () => {
         document.getElementById('invalidCreds').innerHTML = `
           Your password appears to be incorrect. You can reset it
           <a href='/reset-password/'>here</a>.`
-      };
+      }
       if (type === 'password') {
         if (form.elements.newPassword.value !== form.elements.confirmPassword.value) {
           document.getElementById('passwordsDoNotMatch').innerHTML =
@@ -56,7 +56,7 @@ export function ChangePasswordEmail(props) {
           return;
         } else {
           document.getElementById('passwordsDoNotMatch').innerHTML = '';
-        };
+        }
         apiPasswordChange(form.elements.oldPassword.value, form.elements.newPassword.value, (response, status) => {
           if (status === 200) {
             window.location.href = '/login/';
@@ -66,7 +66,7 @@ export function ChangePasswordEmail(props) {
           } else {
             // Error changing password
             errorHandler(response, status, 3017);
-          };
+          }
         });
       } else if (type === 'email') {
         apiEmailChange(form.elements.oldPassword.value, form.elements.newEmail.value, (response, status) => {
@@ -78,11 +78,11 @@ export function ChangePasswordEmail(props) {
           } else {
             // Error changing email
             errorHandler(response, status, 3020);
-          };
+          }
         });
-      };
-    };
-  };
+      }
+    }
+  }
 
   const newPasswordConfirm = (<>
     <Row>
@@ -158,5 +158,5 @@ export function ChangePasswordEmail(props) {
         </Button>
       </Form>
     </>);
-  };
-};
+  }
+}

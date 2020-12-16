@@ -18,17 +18,17 @@ const checkHeadingMatch = (element, targetText, targetHeadingSize) => {
 // `startingIndex` INTERNAL: Index to start search at
 const findElementInsertion = (noteDocument, contentToAdd, parsedSection, headingSize=1, startingIndex=0, debug=false) => {
   let elementMatch; // this is the heading we are looking for
-  if (debug) {console.log(`Beginning insertion at ${startingIndex}`)};
+  if (debug) console.log(`Beginning insertion at ${startingIndex}`);
 
   for (let [index, element] of noteDocument.slice(startingIndex).entries()) {
     index += startingIndex;
-    if (debug) {console.log('Index:', index, 'Element:', element)};
+    if (debug) console.log('Index:', index, 'Element:', element);
 
     if (elementMatch) {
       // Match has been found
-      if (debug) {console.log('Match has been found')};
+      if (debug) console.log('Match has been found');
       if (checkHeadingMatch(element) || index === noteDocument.length - 1) {
-        if (debug) {console.log('Element is header')};
+        if (debug) console.log('Element is header');
         // If the element is heading or end of data, we might insert the data
         const newHeadingSize = wordToNum[element.type.substring(8)];
 
@@ -41,7 +41,7 @@ const findElementInsertion = (noteDocument, contentToAdd, parsedSection, heading
             return {"type": `heading-${numToWord[headingSize + 1 + index]}`, "children": [{"text": sectionTitle}]};
           });
 
-          if (debug) {console.log(`Stopping point found, inserting ${headings.length} headings`)};
+          if (debug) console.log(`Stopping point found, inserting ${headings.length} headings`);
           return [
             ...noteDocument.slice(0, index),
             ...headings,
@@ -56,8 +56,8 @@ const findElementInsertion = (noteDocument, contentToAdd, parsedSection, heading
           const headings = parsedSection.slice(headingSize).map((sectionTitle, index) => {
             return {"type": `heading-${numToWord[headingSize + 1 + index]}`, "children": [{"text": sectionTitle}]};
           });
-          
-          if (debug) {console.log(`No more subsections, inserting ${headings.length} headings`)};
+
+          if (debug) console.log(`No more subsections, inserting ${headings.length} headings`);
           return [
             ...noteDocument.slice(0, index + 1),
             ...headings,
@@ -71,7 +71,7 @@ const findElementInsertion = (noteDocument, contentToAdd, parsedSection, heading
           const headings = parsedSection.slice(headingSize).map((sectionTitle, index) => {
             return {"type": `heading-${numToWord[headingSize + 1 + index]}`, "children": [{"text": sectionTitle}]};
           });
-          if (debug) {console.log(`Appending content to very end with ${headings.length} new headings`)};
+          if (debug) console.log(`Appending content to very end with ${headings.length} new headings`);
           return [
             ...noteDocument,
             ...headings,
@@ -81,7 +81,7 @@ const findElementInsertion = (noteDocument, contentToAdd, parsedSection, heading
           // If the new element is a subsection
           // that matches the next listed subsection
           // recursively check it
-          if (debug) {console.log('Found new section to recursively check')};
+          if (debug) console.log('Found new section to recursively check');
           return findElementInsertion(
             noteDocument,
             contentToAdd,
@@ -94,10 +94,10 @@ const findElementInsertion = (noteDocument, contentToAdd, parsedSection, heading
       }
     } else {
       // Still looking for match
-      if (debug) {console.log('Match not found yet')};
+      if (debug) console.log('Match not found yet');
       if (checkHeadingMatch(element, parsedSection[headingSize - 1], headingSize)) {
         // Found a match
-        if (debug) {console.log('Match found')};
+        if (debug) console.log('Match found');
         elementMatch = element;
       } else if (
           (
@@ -109,8 +109,8 @@ const findElementInsertion = (noteDocument, contentToAdd, parsedSection, heading
           const headings = parsedSection.slice(headingSize - 1).map((sectionTitle, index) => {
             return {"type": `heading-${numToWord[headingSize + index]}`, "children": [{"text": sectionTitle}]};
           });
-        if (debug) {console.log(`Never found a match, inserting ${headings.length} heading(s)`)};
-        if (debug) {console.log(index, noteDocument, checkHeadingMatch(element), wordToNum[element.type.substring((8))], headingSize)}
+        if (debug) console.log(`Never found a match, inserting ${headings.length} heading(s)`);
+        if (debug) console.log(index, noteDocument, checkHeadingMatch(element), wordToNum[element.type.substring((8))], headingSize);
         return [
           ...noteDocument.slice(0, index + 1),
           ...headings,

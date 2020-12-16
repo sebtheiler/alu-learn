@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
 import { apiFlashCardSearch, apiSSMCreate, apiDeckPrivateList } from '../../lookup';
-import { FlashCardsList} from '.';
+import { FlashCardsList } from '.';
 import { errorHandler } from '../../utils';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css';

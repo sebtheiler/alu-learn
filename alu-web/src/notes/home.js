@@ -1,9 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { ButtonGroup } from 'react-bootstrap';
-import {Deck} from '../decks/detail';
-import {apiNoteHome} from '../lookup';
+import { Deck } from '../decks/detail';
+import { apiNoteHome } from '../lookup';
 import { errorHandler } from '../utils';
-import {NoteCreateButton} from './buttons';
+import { NoteCreateButton } from './buttons';
 
 export function NotesHomeList(props) {
   const {username} = props;
@@ -20,9 +20,9 @@ export function NotesHomeList(props) {
         } else {
           // Error getting notes home
           errorHandler(response, status, 6002);
-        };
+        }
       });
-    };
+    }
   }, [notes, notesDidSet]);
 
   return (
@@ -50,4 +50,4 @@ export function NotesHomeList(props) {
         </p>}
     </>
   );
-};
+}

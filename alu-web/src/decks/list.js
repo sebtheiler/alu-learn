@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
-import {apiDeckSharedList} from '../lookup';
-import {Deck} from './detail';
+import React, { useState, useEffect } from 'react';
+import { apiDeckSharedList } from '../lookup';
+import { Deck } from './detail';
 import { errorHandler } from '../utils';
 
 
@@ -22,9 +22,9 @@ export function DeckPublicList(props) {
         } else {
           // Error getting shared decks
           errorHandler(response, status, 1008);
-        };
+        }
       });
-    };
+    }
   }, [decksDidSet, setDecksDidSet, username, setDecks]);
 
   return (
@@ -39,4 +39,4 @@ export function DeckPublicList(props) {
       }) : <p>This user has no public decks</p>}
     </>
   );
-};
+}

@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {Button, Form} from 'react-bootstrap';
-import {apiDeckSearch} from '../lookup';
-import {DeckDetail} from '../decks';
+import React, { useState } from 'react';
+import { Button, Form } from 'react-bootstrap';
+import { apiDeckSearch } from '../lookup';
+import { DeckDetail } from '../decks';
 import { errorHandler } from '../utils';
 
 export function DeckSearchComponent(_props) {
@@ -25,10 +25,10 @@ export function DeckSearchComponent(_props) {
       } else {
         // Error performing deck search
         errorHandler(response, status, 1011);
-      };
+      }
     });
     setSearchBtnLabel('Search!');
-  };
+  }
 
   const handleLoadNext = (event) => {
     event.preventDefault();
@@ -41,10 +41,10 @@ export function DeckSearchComponent(_props) {
         } else {
           // Error handling next set of decks (pagination)
           errorHandler(response, status, 1012);
-        };
+        }
       }, nextUrl);
-    };
-  };
+    }
+  }
 
   return (
     <>
@@ -94,4 +94,4 @@ export function DeckSearchComponent(_props) {
       </div>
     </>
   );
-};
+}

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Card, CardDeck} from 'react-bootstrap';
+import { Card, CardDeck } from 'react-bootstrap';
 
 export function CustomCard(props) {
   const {faName, headerText, imageUrl, imageAlt, bodyText, className, experimentParams} = props;
@@ -22,7 +22,7 @@ export function CustomCard(props) {
       </Card.Body>
     </Card>
   );
-};
+}
 
 export function HowItWorks(props) {
   const {isMobile, experimentParams} = props;
@@ -109,4 +109,4 @@ export function HowItWorks(props) {
       />
     </>
   );
-};
+}

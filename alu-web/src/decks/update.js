@@ -22,16 +22,16 @@ export function UpdateDeck(props) {
             } else if (!notFound) {
               // Error getting deck updates
               errorHandler(response, status, 1024);
-            };
+            }
           });
         } else if (status === 404) {
           setNotFound(true);
         } else {
           // Error getting deck detail for sharing deck
           errorHandler(response, status, 1023);
-        };
+        }
       });
-    };
+    }
   }, [deckDidSet, deckId, notFound]);
 
   const pullHandleWrapper = (sharedDeckId) => {
@@ -43,14 +43,14 @@ export function UpdateDeck(props) {
         } else {
           // Error pulling deck updates
           errorHandler(response, status, 1025);
-        };
+        }
       }); 
-    };
-  };
+    }
+  }
 
   if (notFound) {
     return <>We couldn't find the deck you're looking for</>
-  };
+  }
 
   return (<>
     <h1>Updating "{deck ? deck.title : 'Loading...'}"</h1>
@@ -71,4 +71,4 @@ export function UpdateDeck(props) {
       </> : <p>This deck is fully updated</p>
     ) : <p>Loading...</p>}
   </>);
-};
+}

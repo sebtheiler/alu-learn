@@ -1,7 +1,7 @@
 import React from 'react';
-import {Button, Form} from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import { apiEmailConfirm } from '../../lookup';
-import {errorHandler} from '../../utils';
+import { errorHandler } from '../../utils';
 
 
 export function ConfirmEmail(props) {
@@ -21,9 +21,9 @@ export function ConfirmEmail(props) {
       } else {
         // Error confirming email
         errorHandler(response, status, 3017);
-      };;
+      }
     });
-  };
+  }
 
   return (<>
     <h1 className='text-center mt-5'>
@@ -51,4 +51,4 @@ export function ConfirmEmail(props) {
       </Button>
     </Form>
   </>);
-};
+}

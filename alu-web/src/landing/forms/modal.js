@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {Modal} from 'react-bootstrap';
-import {ModalRegisterForm} from './register';
-import {LoginForm} from './login';
+import React, { useState } from 'react';
+import { Modal } from 'react-bootstrap';
+import { ModalRegisterForm } from './register';
+import { LoginForm } from './login';
 
 export function RegisterLoginModal(props) {
   const {defaultEmail, defaultForm, modalIsOpen, closeModal, returnUrl, experimentParams} = props;
@@ -71,4 +71,4 @@ export function RegisterLoginModal(props) {
       </Modal.Body>
     </Modal>
   );
-};
+}

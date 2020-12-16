@@ -25,15 +25,15 @@ export function AutoNoteModal(props) {
         if (!match) {
           document.getElementById('videoUrlError').innerHTML = 'We can\'t recognize this URL, please try reformatting it';
           return;
-        };
+        }
         const videoId = match[0].slice(-11);
         setInputText(videoId);
         break;
       default:
         break;
-    }; 
+    }
     setGaveInputText(true);
-  };
+  }
 
   return (
     <Modal show={show} onHide={hide} size='90w'>
@@ -116,4 +116,4 @@ export function AutoNoteModal(props) {
       </Modal.Footer>
     </Modal>
   );
-};
+}

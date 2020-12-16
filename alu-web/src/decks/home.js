@@ -24,9 +24,9 @@ export function DecksHomeList(props) {
         } else {
           // Error getting decks
           errorHandler(response, status, 1006);
-        };
+        }
       });
-    };
+    }
   }, [decksDidSet, setDecksDidSet]);
 
   // Loads next set of decks (pagination)
@@ -41,10 +41,10 @@ export function DecksHomeList(props) {
         } else {
           // Error handling next set of decks (pagination)
           errorHandler(response, status, 1007);
-        };
+        }
       }, nextUrl);
-    };
-  };
+    }
+  }
 
   if (decks === null) {
     return <p className='text-center'>Loading...</p>

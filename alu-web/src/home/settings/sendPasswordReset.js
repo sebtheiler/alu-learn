@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {Button, Form} from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Button, Form } from 'react-bootstrap';
 import { apiSendPasswordReset } from '../../lookup';
-import {errorHandler} from '../../utils';
+import { errorHandler } from '../../utils';
 
 
 export function SendPasswordReset(props) {
@@ -24,11 +24,11 @@ export function SendPasswordReset(props) {
         } else {
           // Error confirming email
           errorHandler(response, status, 3019);
-        };
+        }
         setLoading(false);
       });
-    };
-  };
+    }
+  }
 
   return (<>
     <h1 className='text-center mt-5'>
@@ -60,4 +60,4 @@ export function SendPasswordReset(props) {
       </Form>
     </>}</>
   );
-};
+}

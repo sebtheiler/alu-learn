@@ -1,10 +1,10 @@
-import React, {useEffect, useState, useMemo} from 'react';
-import {getAnkiInterval} from './algorithm';
-import {Button, Collapse, Alert} from 'react-bootstrap';
-import {createFullEditor, FullEditor} from '../../notes/editor-components';
-import {Slate} from 'slate-react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { getAnkiInterval } from './algorithm';
+import { Button, Collapse, Alert } from 'react-bootstrap';
+import { createFullEditor, FullEditor } from '../../notes/editor-components';
+import { Slate } from 'slate-react';
 import { emptyValue } from '../../notes/autonote/autonote';
-import {Transforms} from 'slate';
+import { Transforms } from 'slate';
 
 // Does some magic with SlateJS that prevents weird errors
 // DO NOT REMOVE
@@ -27,7 +27,7 @@ const processFront = (flashcard, showAnswer) => {
         // This is necessary to avoid infinite loops with zero-width matches
         if (m.index === regex.lastIndex) {
           regex.lastIndex++;
-        };
+        }
         
         // The result can be accessed through the `m`-variable.
         // eslint-disable-next-line
@@ -41,9 +41,9 @@ const processFront = (flashcard, showAnswer) => {
           } else {
             answerHiddenText = answerHiddenText.replace(clozeMatch, clozeMatchText);
             answerRevealedText = answerRevealedText.replace(clozeMatch, clozeMatchText);
-          };
+          }
         });
-      };
+      }
 
       answerHiddenText = JSON.parse(answerHiddenText);
       answerRevealedText = JSON.parse(answerRevealedText);
@@ -51,8 +51,8 @@ const processFront = (flashcard, showAnswer) => {
       return showAnswer ? answerRevealedText : answerHiddenText;
     default:
       return emptyValue;
-  };
-};
+  }
+}
 
 function RenderFlashCardStudy(props) {
   const {flashcard, showAnswer} = props;
@@ -75,7 +75,7 @@ function RenderFlashCardStudy(props) {
     if (processFront(flashcard, showAnswer) !== frontValue) {
       setFrontValue(processFront(flashcard, showAnswer));
       setBackValue(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
-    };
+    }
     // eslint-disable-next-line
   }, [flashcard, showAnswer]);
 
@@ -145,8 +145,8 @@ function RenderFlashCardStudy(props) {
           <strong>The flashcard type, "{flashcard.flashcard_type}", is unrecognized. Please report this issue.</strong>
         </div>
       );
-  };
-};
+  }
+}
 
 
 export function StudyElement(props) {
@@ -159,7 +159,7 @@ export function StudyElement(props) {
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-    };
+    }
   }, [showAnswer, handleKeyDown]);
   
   // Allows the buttons to use the same function
@@ -167,8 +167,8 @@ export function StudyElement(props) {
   const buttonIntervalWrapper = (grade) => {
     return () => {
       backendGradeUpdate(grade);
-    };
-  };
+    }
+  }
   
   // This could be optimized, but it really isn't worth it at the moment
   const interval1 = getAnkiInterval(currentCard, 1, schedulingAlgorithm, deckDifficulty);
@@ -178,7 +178,7 @@ export function StudyElement(props) {
 
   if (currentCard === null) {
     return <>Loading...</>;
-  };
+  }
 
   return (
     <>
@@ -275,4 +275,4 @@ export function StudyElement(props) {
       </footer>
     </>
   );
-};
+}

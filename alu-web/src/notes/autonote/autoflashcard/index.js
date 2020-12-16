@@ -1,5 +1,5 @@
-import {AutoFlashCard} from './autoflashcard';
+import { AutoFlashCard } from './autoflashcard';
 
 export {
   AutoFlashCard,
-};
+}

@@ -1,11 +1,11 @@
 import React from 'react';
+import Slider from 'react-slick';
+import { UserLink } from '../profiles';
+import { MarkdownRender } from '../utils';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './explore.css';
-import Slider from 'react-slick';
-import {UserLink} from '../profiles';
 
-import {MarkdownRender} from '../utils';
 
 export function DeckSlider(props) {
   const {decks, loading} = props;
@@ -39,7 +39,7 @@ export function DeckSlider(props) {
         },
       },
     ],
-  };
+  }
 
   if (loading) {
     return (
@@ -49,7 +49,7 @@ export function DeckSlider(props) {
         </p>
       </div>
     );
-  };
+  }
 
   return (
     <div className={props.className}>
@@ -81,4 +81,4 @@ export function DeckSlider(props) {
       </Slider>
     </div>
   );
-};
+}

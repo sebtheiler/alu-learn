@@ -1,10 +1,10 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { apiManualSRTaskCreate, apiManualSRTaskList } from '../lookup';
 import { errorHandler } from '../utils';
-import {Slate, ReactEditor} from 'slate-react';
-import {Transforms} from 'slate';
-import {createFullEditor, EditorButtons, FullEditor} from '../notes/editor-components';
+import { Slate, ReactEditor } from 'slate-react';
+import { Transforms } from 'slate';
+import { createFullEditor, EditorButtons, FullEditor } from '../notes/editor-components';
 import { emptyValue } from '../notes/autonote/autonote';
 import { ManualSRTask } from './task';
 
@@ -33,9 +33,9 @@ export function ManualSRHome(props) {
         } else {
           // Error getting list of manual sr tasks
           errorHandler(response, status, 7000);
-        };
+        }
       });
-    };
+    }
   }, [manualSRTasks, manualSRTasksDidSet]);
 
   // Load the next set of tasks (pagination)
@@ -51,11 +51,11 @@ export function ManualSRHome(props) {
         } else {
           // Error handling next set of manual sr tasks (pagination)
           errorHandler(response, status, 7001);
-        };
+        }
         setLoadingNext(false);
       }, nextUrl);
-    };
-  };
+    }
+  }
 
   // Creates a new task
   const handleCreate = (event) => {
@@ -81,24 +81,24 @@ export function ManualSRHome(props) {
         } else {
           // Error creating manual SR task
           errorHandler(response, status, 7002);
-        };
+        }
         setIsCreating(false);
       });
-    };
-  };
+    }
+  }
 
   // Sorts the tasks by their due date
   const sortListCallback = () => {
     const newTasks = [...manualSRTasks].sort((a, b) => (b.next_review < a.next_review) ? 1 : -1);
     setManualSRTasks(newTasks);
-  };
+  }
 
   // Deletes the task in the frontend
   const deleteCallback = (id) => {
     const newTasks = [...manualSRTasks].filter(task => task.id !== id);
     setManualSRTasks(newTasks);
     document.body.click();
-  };
+  }
 
   return (<div className='container'>
     <h1 className='text-center'>Tasks</h1>
@@ -164,4 +164,4 @@ export function ManualSRHome(props) {
       {loadingNext ? 'Loading...' : 'Load More'}
     </Button>}
   </div>);
-};
+}
