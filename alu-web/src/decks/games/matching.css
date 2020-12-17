@@ -1,0 +1,43 @@
+/* table, td {
+  border: 15px solid white;
+  text-align: center;
+}
+
+table {
+  border-spacing: 15px;
+  table-layout: fixed;
+}
+
+td {
+  vertical-align: top;
+  padding: 50px;
+  background: lightblue;
+}
+
+td:hover {
+  cursor: pointer;
+  background: darkblue;
+} */
+
+.matching-row {
+  text-align: center;
+}
+
+.matching-col {
+  text-align: center;
+  background: lightblue;
+  margin: 5px;
+  border-radius: 10px;
+  height: 200px;
+  padding-top: 75px;
+  border: 1px solid blue;
+}
+
+.matching-col:hover {
+  cursor: pointer;
+  background: rgb(98, 130, 141);
+}
+
+.selected {
+  background: rgb(69, 92, 100) !important;
+}

@@ -14,6 +14,7 @@ import { HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePassword
 import { NoteEditor, NotesHomeList } from './notes';
 import { AutoNote, AutoFlashCard } from './notes/autonote';
 import { ManualSRHome } from './manual-sr';
+import { MatchingGame } from './decks/games';
 
 const e = React.createElement;
 
@@ -162,9 +163,14 @@ if (updateDeckElement) {
   ReactDOM.render(e(UpdateDeck, updateDeckElement.dataset), updateDeckElement);
 }
 
-const userCustomization = document.getElementById('user-customization');
-if (userCustomization) {
-  ReactDOM.render(e(UserCustomization, userCustomization.dataset), userCustomization);
+const userCustomizationElement = document.getElementById('user-customization');
+if (userCustomizationElement) {
+  ReactDOM.render(e(UserCustomization, userCustomizationElement.dataset), userCustomizationElement);
+}
+
+const matchingGameElement = document.getElementById('matching-game');
+if (matchingGameElement) {
+  ReactDOM.render(e(MatchingGame, matchingGameElement.dataset), matchingGameElement);
 }
 
 // If you want your app to work offline and load faster, you can change
