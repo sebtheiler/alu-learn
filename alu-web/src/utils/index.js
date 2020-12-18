@@ -13,6 +13,7 @@ import {
   MarkdownRender,
   useInterval,
   inMatch,
+  shuffle,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -33,4 +34,5 @@ export {
   MarkdownRender,
   useInterval,
   inMatch,
+  shuffle,
 }

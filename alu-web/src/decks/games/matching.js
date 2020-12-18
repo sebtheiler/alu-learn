@@ -1,42 +1,93 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { range } from '../../utils';
+import { apiDeckFlashcards } from '../../lookup/lookup';
+import { range, shuffle, errorHandler } from '../../utils';
 import './matching.css';
 
 export function MatchingGame(props) {
-  // const {} = props;
+  const {deckId} = props;
   const size = 4;
+  const [numMissed, setNumMissed] = useState(0);
+  const [correctlyGuessed, setCorrectlyGuessed] = useState([]);
   const [selectedBox, setSelectedBox] = useState([-1, -1]);
-  console.log(selectedBox);
+  const [flashcards, setFlashcards] = useState(null)
+  const [flashcardsDidSet, setFlashcardsDidSet] = useState(false);
+
+  useEffect(() => {
+    if (!flashcardsDidSet) {
+      setFlashcardsDidSet(true);
+      apiDeckFlashcards(parseInt(deckId), { limit: size*size/2 }, (response, status) => {
+        if (status === 200) {
+          console.log(response)
+          let randomOrder = [];
+          for (const [i, flashcard] of response.results.entries()) {
+            randomOrder.push([flashcard.deck_fields[0], i]);
+            randomOrder.push([flashcard.deck_fields[1], i]);
+          }
+          randomOrder = shuffle(randomOrder);
+          setFlashcards(randomOrder);
+        } else {
+          // Error getting flashcards for matching game
+          errorHandler(response, status, 1027);
+        }
+      });
+    }
+  }, [flashcardsDidSet, flashcards, deckId]);
 
   const handleBoxClick = (rowNum, colNum) => {
     return event => {
       event.preventDefault();
-      setSelectedBox([rowNum, colNum]);
+      if (selectedBox[0] === rowNum && selectedBox[1] === colNum) {
+        setSelectedBox([-1, -1]);
+        return;
+      } else {
+        if (selectedBox[0] !== -1 && selectedBox[1] !== -1) {
+          const currentBox = flashcards[selectedBox[0]*size + selectedBox[1]];
+          const guessedBox = flashcards[rowNum*size + colNum];
+          const correct = currentBox[1] === guessedBox[1];
+          if (correct) {
+            console.log('correct!')
+            setCorrectlyGuessed([...correctlyGuessed, guessedBox[1]]);
+          } else {
+            setNumMissed(numMissed + 1);
+          }
+          setSelectedBox([-1, -1]);
+          return;
+        }
+        if (!correctlyGuessed.includes(flashcards[rowNum*size + colNum][1])) {
+          setSelectedBox([rowNum, colNum]);
+        }
+      }
     }
   }
 
+  const getBoxClassName = (i, j) => {
+    if (i === selectedBox[0] && j === selectedBox[1]) {
+      return ' selected';
+    } else if (correctlyGuessed.includes(flashcards[i*size + j][1])) {
+      return ' correct';
+    } else {
+      return '';
+    }
+  }
+
+  if (!flashcards) return null;
   return (<>
-    {/* <table id='matching-table'> */}
-      {/* <tbody> */}
+    <p>Missed: {numMissed}</p>
     {range(0, size).map(i => 
       <Row key={i} className='matching-row'>
         {range(0, size).map(j =>
           <Col
             key={j}
-            className={'matching-col' + ((i === selectedBox[0] && j === selectedBox[1]) ? ' selected' : '')}
+            className={'matching-col' + getBoxClassName(i, j)}
             onClick={handleBoxClick(i, j)}
           >
-            {console.log([i, j], selectedBox)}
-            {console.log([i, j] === selectedBox)}
             <p>
-              {`${i} - ${j}`}
+              {flashcards[i*size + j][0].text[0].children[0].text}
             </p>
           </Col>
         )}
       </Row>
     )}
-      {/* </tbody> */}
-    {/* </table> */}
   </>);
 }

@@ -41,3 +41,8 @@ td:hover {
 .selected {
   background: rgb(69, 92, 100) !important;
 }
+
+.correct {
+  background:rgb(138, 147, 150) !important;
+  cursor: default !important;
+}
