@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList } from '../lookup';
 import { errorHandler, FormCheckbox } from '../utils';
 import { SearchForm } from './flashcards/search';
-import { Modal, Button, Form, ButtonGroup } from 'react-bootstrap';
+import { Modal, Button, Form, ButtonGroup, Dropdown, DropdownButton } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -107,31 +107,38 @@ export function DeckDefaultButtonGroup(props) {
 
   return (
     <ButtonGroup vertical={vertical} style={vertical ? {display: 'block', margin: '0 auto', 'text-align': 'center', width: '50%'} : {}}>
-      {/* Edit Button and Modal */}
-      <Button
-        onClick={openModal}
-        variant='primary'
-        className='mr-1'
-      >
-        Edit
-      </Button>
-      <DeckEditCreateModal
-        deck={deck}
-        modalIsOpen={modalIsOpen}
-        closeModal={closeModal}
-        submitHandler={saveHandler}
-        deleteHandler={deleteHandler}
-      />
-
-      {/* Other buttons */}
+      <DropdownButton className='mr-1' as={ButtonGroup} title='Other' id='bg-nested-dropdown'>
+        <Dropdown.Item
+          as='button'
+          onClick={openModal}
+          className='w-100'
+        >
+          Edit
+        </Dropdown.Item>
+        <DeckEditCreateModal
+          deck={deck}
+          modalIsOpen={modalIsOpen}
+          closeModal={closeModal}
+          submitHandler={saveHandler}
+          deleteHandler={deleteHandler}
+        />
+        {(!hideBrowse && deck.serializer_name === 'deck') &&
+          <Dropdown.Item
+            href={`/decks/${deck.id}/flashcards/`}
+            className='w-100'
+          >
+            Browse
+          </Dropdown.Item>
+        }
+        <Dropdown.Item
+          className='w-100'
+        >
+          Games
+        </Dropdown.Item>
+      </DropdownButton>
       {deck.serializer_name === 'deck' && <Button href={`/decks/${deck.id}/flashcards/create/`} className='mr-1'>
         Add Cards
       </Button>}
-      {(!hideBrowse && deck.serializer_name === 'deck') &&
-        <Button href={`/decks/${deck.id}/flashcards/`} className='mr-1'>
-          Browse
-        </Button>
-      }
       <Button href={deck.serializer_name === 'deck' ? `/decks/${deck.id}/study/` : `/customstudy/${deck.id}/study/`} className='mr-1'>
         Study
       </Button>

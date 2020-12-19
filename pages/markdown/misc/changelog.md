@@ -6,6 +6,7 @@
 
 * **Filtered Decks Tutorial:**  There is now a tutorial for filtered decks available in the [help](/help/) page.  This tutorial has been out for a while, but it can now been found in the help section.
 
+* **Improved Deck Homepage Design:** The "Edit" and "Browse" buttons have now been moved to an "Other" dropdown on the deck homepage.  The "Other" dropdown also includes a way to play games with your deck.  This is intended to remove visual clutter and improve your general experience.
 
 # Personalizing Alu & Better Study Habits - Dec 14 2020 - 0.2.0
 Keeping to study habits is difficult.  This update seeks to make it easier.
