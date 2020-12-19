@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList } from '../lookup';
 import { errorHandler, FormCheckbox } from '../utils';
 import { SearchForm } from './flashcards/search';
@@ -19,6 +19,16 @@ export function DeckDefaultButtonGroup(props) {
 
   const gameSubmitHandler = event => {
     event.preventDefault();
+    const form = event.target;
+    let gameOptions = '';
+    gameOptions += `game=${form.elements.gameType.value}`;
+    gameOptions += `&flashcards=${form.elements.flashcardType.value}`;
+    if (form.elements.flashcardType.value === 'TAG') {
+      gameOptions += `&tag=${form.elements.tagToSearch.value}`;
+    }
+    gameOptions += `&random=${form.elements.randomOrder.checked}`;
+
+    window.location.href = `/decks/${deck.id}/game/?${gameOptions}`;
   }
 
   const saveHandler = event => {
@@ -132,6 +142,7 @@ export function DeckDefaultButtonGroup(props) {
             Browse
           </Dropdown.Item>
         }
+        <Dropdown.Divider />
         <Dropdown.Item
           className='w-100'
           onClick={openGameModal}
@@ -404,10 +415,12 @@ export function GameModal(props) {
           </Form.Group>
           {flashcardType === 'TAG' && <Form.Group>
             <Form.Label>Tag to Search</Form.Label>
-            <Form.Control type='text' />
+            <Form.Control type='text' name='tagToSearch' />
           </Form.Group>}
           <Form.Group>
-            <FormCheckbox>Randomize flashcard order?</FormCheckbox>
+            <FormCheckbox name='randomOrder' defaultChecked>
+              Randomize flashcard order
+            </FormCheckbox>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
