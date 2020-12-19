@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList } from '../lookup';
 import { errorHandler, FormCheckbox } from '../utils';
 import { SearchForm } from './flashcards/search';
@@ -9,17 +9,19 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // Buttons for when an owner views their deck
 export function DeckDefaultButtonGroup(props) {
   const {deck, vertical, hideBrowse} = props;
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [editModalIsOpen, setEditModalIsOpen] = useState(false);
+  const [gameModalIsOpen, setGameModalIsOpen] = useState(false);
 
-  const openModal = () => {
-    setModalIsOpen(true);
+  const openEditModal = () => setEditModalIsOpen(true);
+  const closeEditModal = () => setEditModalIsOpen(false);
+  const openGameModal = () => setGameModalIsOpen(true);
+  const closeGameModal = () => setGameModalIsOpen(false);
+
+  const gameSubmitHandler = event => {
+    event.preventDefault();
   }
 
-  const closeModal = () => {
-    setModalIsOpen(false);
-  }
-
-  const saveHandler = (event) => {
+  const saveHandler = event => {
     event.preventDefault();
     const form = event.target;
 
@@ -110,15 +112,15 @@ export function DeckDefaultButtonGroup(props) {
       <DropdownButton className='mr-1' as={ButtonGroup} title='Other' id='bg-nested-dropdown'>
         <Dropdown.Item
           as='button'
-          onClick={openModal}
+          onClick={openEditModal}
           className='w-100'
         >
           Edit
         </Dropdown.Item>
         <DeckEditCreateModal
           deck={deck}
-          modalIsOpen={modalIsOpen}
-          closeModal={closeModal}
+          modalIsOpen={editModalIsOpen}
+          closeModal={closeEditModal}
           submitHandler={saveHandler}
           deleteHandler={deleteHandler}
         />
@@ -132,9 +134,16 @@ export function DeckDefaultButtonGroup(props) {
         }
         <Dropdown.Item
           className='w-100'
+          onClick={openGameModal}
         >
           Games
         </Dropdown.Item>
+        <GameModal
+          deck={deck}
+          modalIsOpen={gameModalIsOpen}
+          closeModal={closeGameModal}
+          submitHandler={gameSubmitHandler}
+        />
       </DropdownButton>
       {deck.serializer_name === 'deck' && <Button href={`/decks/${deck.id}/flashcards/create/`} className='mr-1'>
         Add Cards
@@ -351,4 +360,60 @@ export function DeckForeignUserButtonGroup(props) {
       </ButtonGroup>
     </div>
   );
+}
+
+// Modal for selecting a game to play
+export function GameModal(props) {
+  const {modalIsOpen, closeModal, submitHandler, deck} = props;
+  const [flashcardType, setFlashcardType] = useState('SEEN');
+  
+  return (<>
+    <Modal show={modalIsOpen} onHide={closeModal}>
+      <Modal.Header>
+        <Modal.Title>Play a Game with "{deck.title}"</Modal.Title>
+      </Modal.Header>
+      <Form onSubmit={submitHandler}>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>Type of Game</Form.Label>
+            <Form.Control
+              as='select'
+              name='gameType'
+              custom
+            >
+              <option value='MATCHING'>Matching</option>
+              <option value='GRAVITY'>Gravity</option>
+              <option value='QUIZ'>Quiz</option>
+              <option value='FOREHEAD'>Forehead/Charades</option>
+            </Form.Control>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Type of Flashcards</Form.Label>
+            <Form.Control
+              as='select'
+              name='flashcardType'
+              id='flashcardType'
+              onChange={event => setFlashcardType(event.target.value)}
+              custom
+            >
+              <option value='SEEN'>Seen Flashcards (review old material)</option>
+              <option value='UNSEEN'>Unseen Flashcards (preview new material)</option>
+              <option value='TAG'>Filter by Tag (review specific unit)</option>
+              <option value='PERSONAL'>Personalized (flashcards you struggle with most)</option>
+            </Form.Control>
+          </Form.Group>
+          {flashcardType === 'TAG' && <Form.Group>
+            <Form.Label>Tag to Search</Form.Label>
+            <Form.Control type='text' />
+          </Form.Group>}
+          <Form.Group>
+            <FormCheckbox>Randomize flashcard order?</FormCheckbox>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type='submit' block>Play!</Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+  </>);
 }
