@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col } from 'react-bootstrap';
-// import { apiGameFlashcards } from '../../lookup/lookup';
+import { Row, Col, Button } from 'react-bootstrap';
 import { range } from '../../utils';
 import './matching.css';
 
@@ -48,23 +47,33 @@ export function MatchingGame(props) {
 
   if (!flashcards) return null;
   return (<>
-    <p>Missed: {numMissed}</p>
-    {range(0, size).map(i => 
-      <Row key={i} className='matching-row'>
-        {range(0, size).map(j =>
-          <Col
-            key={j}
-            className={'matching-col' + getBoxClassName(i, j)}
-            onClick={getBoxClassName(i, j) === ' correct' ? null : handleBoxClick(i, j)}
-          >
-            <p>
-              {flashcards[i*size + j][0].text[0].children[0].text}
-              {/* {console.log(flashcards[i*size + j][0].text)} */}
-              {/* {Node.string(flashcards[i*size + j][0].text)} */}
-            </p>
-          </Col>
-        )}
-      </Row>
-    )}
+    {correctlyGuessed.length < flashcards.length/2 ? <>
+      <p className='text-center'>Missed: {numMissed}</p>
+      {range(0, size).map(i => 
+        <Row key={i} className='matching-row'>
+          {range(0, size).map(j =>
+            <Col
+              key={j}
+              className={'matching-col' + getBoxClassName(i, j)}
+              onClick={getBoxClassName(i, j) === ' correct' ? null : handleBoxClick(i, j)}
+            >
+              <p>
+                {flashcards[i*size + j][0].text[0].children[0].text}
+                {/* {console.log(flashcards[i*size + j][0].text)} */}
+                {/* {Node.string(flashcards[i*size + j][0].text)} */}
+              </p>
+            </Col>
+          )}
+        </Row>
+      )}
+    </> : <div className='text-center'>
+      <p>{numMissed ? `Congratulations, you've finished with only ${numMissed} miss${numMissed === 1 ? '' : 'es'}!` : 'Perfect Score! Congratulations!'}</p>
+      <Button
+        onClick={() => window.location.reload()}
+        className='text-center mx-auto'
+      >
+        Play Again
+      </Button>
+    </div>}
   </>);
 }

@@ -149,3 +149,12 @@ def deck_update_view(request, deck_id, *args, **kwargs):
         return redirect('/confirm-email/')
     
     return render(request, 'decks/shared/update.html', context={'deck_id': deck_id})
+
+# View for playing games with decks
+def deck_game_view(request, deck_id, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
+
+    return render(request, 'decks/games.html', context={'deck_id': deck_id})

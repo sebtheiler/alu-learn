@@ -60,9 +60,9 @@ This may be due to the flashcard type requirements you listed: ${flashcardType}
     }
   })();
 
-  return (<>
-    <h1 className='text-center'>Playing</h1>
+  return (<div className='container-fluid'>
+    <h1 className='text-center mt-5'>Playing</h1>
     {errorMessage ? <p className='text-center'>{errorMessage}</p> :
     (flashcards ? game : <p className='text-center'>Loading...</p>)}
-  </>);
+  </div>);
 }
