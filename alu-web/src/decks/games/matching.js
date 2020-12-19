@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { apiDeckFlashcards } from '../../lookup/lookup';
+import { apiGameFlashcards } from '../../lookup/lookup';
 import { range, shuffle, errorHandler } from '../../utils';
+// import { Node } from 'slate';
 import './matching.css';
 
 export function MatchingGame(props) {
+  // TODO: get better flashcard choice, get interface to play, make pretty
   const {deckId} = props;
   const size = 4;
   const [numMissed, setNumMissed] = useState(0);
@@ -16,11 +18,11 @@ export function MatchingGame(props) {
   useEffect(() => {
     if (!flashcardsDidSet) {
       setFlashcardsDidSet(true);
-      apiDeckFlashcards(parseInt(deckId), { limit: size*size/2 }, (response, status) => {
+      apiGameFlashcards(parseInt(deckId), 'SEEN', size*size/2, false, (response, status) => {
         if (status === 200) {
           console.log(response)
           let randomOrder = [];
-          for (const [i, flashcard] of response.results.entries()) {
+          for (const [i, flashcard] of response.entries()) {
             randomOrder.push([flashcard.deck_fields[0], i]);
             randomOrder.push([flashcard.deck_fields[1], i]);
           }
@@ -46,7 +48,6 @@ export function MatchingGame(props) {
           const guessedBox = flashcards[rowNum*size + colNum];
           const correct = currentBox[1] === guessedBox[1];
           if (correct) {
-            console.log('correct!')
             setCorrectlyGuessed([...correctlyGuessed, guessedBox[1]]);
           } else {
             setNumMissed(numMissed + 1);
@@ -80,10 +81,12 @@ export function MatchingGame(props) {
           <Col
             key={j}
             className={'matching-col' + getBoxClassName(i, j)}
-            onClick={handleBoxClick(i, j)}
+            onClick={getBoxClassName(i, j) === ' correct' ? null : handleBoxClick(i, j)}
           >
             <p>
               {flashcards[i*size + j][0].text[0].children[0].text}
+              {/* {console.log(flashcards[i*size + j][0].text)} */}
+              {/* {Node.string(flashcards[i*size + j][0].text)} */}
             </p>
           </Col>
         )}

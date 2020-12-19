@@ -1508,3 +1508,41 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
         return Response(DeckSerializer(deck).data, status=200)
     else:
         return Response({}, status=501)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def game_flashcards_view(request, *args, **kwargs):
+    """
+    Gets the flashcards for a game, based on some parameters - POST
+
+    Required information:
+        `deck_id`: (Data) Id of the deck to pull flashcards from
+        `type`: (Data) Method used to get flashcards ("SEEN", "UNSEEN")
+        `amount`: (Data) Number of flashcards to return
+    """
+    method_type = request.data.get('type')
+    deck_id = request.data.get('deck_id')
+    amount = request.data.get('amount')
+    if None in (method_type, deck_id, amount):
+        return Response({'message': 'You must specify `type` and `deck_id`'}, status=400)
+
+    # Get the list of all possible flashcards, based on the method type
+    if method_type == 'SEEN':
+        flashcards = FlashCard.objects.filter(
+            Q(creator__deck__id=deck_id) & ~Q(learning_status='UNSEEN'),
+        )
+    elif method_type == 'UNSEEN':
+        flashcards = FlashCard.objects.filter(learning_status='UNSEEN')
+    else:
+        return Response({'message': f'Invalid method type "{method_type}"'}, status=400)
+
+    # Get `amount` random flashcards from the list
+    if request.data.get('random_order'):
+        flashcard_ids = flashcards.values_list('id', flat=True)
+        random_flashcard_ids = random.sample(flashcard_ids, min(flashcards.count(), amount))
+        flashcards = FlashCard.objects.filter(random_flashcard_ids)
+    else:
+        flashcards = flashcards[:amount]
+
+    return Response(FlashCardSerializer(flashcards, many=True).data, status=200)

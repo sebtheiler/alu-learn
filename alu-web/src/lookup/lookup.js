@@ -515,5 +515,15 @@ export function apiDeckPullUpdates(deckId, toPullFrom, callback) {
 
 // Marks the changelog popup as read
 export function apiProfileReadPopup(callback) {
-  backendLookup('POST', `profiles/read-popup/`, callback);
+  backendLookup('POST', 'profiles/read-popup/', callback);
+}
+
+// Gets flashcards for playing a game
+export function apiGameFlashcards(deckId, type, amount, randomOrder, callback) {
+  backendLookup('POST', 'decks/games/flashcards/', callback, {
+    deck_id: deckId,
+    type: type,
+    amount: amount,
+    random_order: randomOrder,
+  });
 }
