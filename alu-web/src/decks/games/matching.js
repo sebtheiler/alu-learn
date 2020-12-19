@@ -1,40 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { apiGameFlashcards } from '../../lookup/lookup';
-import { range, shuffle, errorHandler } from '../../utils';
-// import { Node } from 'slate';
+// import { apiGameFlashcards } from '../../lookup/lookup';
+import { range } from '../../utils';
 import './matching.css';
 
 export function MatchingGame(props) {
-  // TODO: get better flashcard choice, get interface to play, make pretty
-  const {deckId} = props;
-  const size = 4;
+  const {flashcards, size} = props;
   const [numMissed, setNumMissed] = useState(0);
   const [correctlyGuessed, setCorrectlyGuessed] = useState([]);
   const [selectedBox, setSelectedBox] = useState([-1, -1]);
-  const [flashcards, setFlashcards] = useState(null)
-  const [flashcardsDidSet, setFlashcardsDidSet] = useState(false);
-
-  useEffect(() => {
-    if (!flashcardsDidSet) {
-      setFlashcardsDidSet(true);
-      apiGameFlashcards(parseInt(deckId), 'SEEN', size*size/2, false, (response, status) => {
-        if (status === 200) {
-          console.log(response)
-          let randomOrder = [];
-          for (const [i, flashcard] of response.entries()) {
-            randomOrder.push([flashcard.deck_fields[0], i]);
-            randomOrder.push([flashcard.deck_fields[1], i]);
-          }
-          randomOrder = shuffle(randomOrder);
-          setFlashcards(randomOrder);
-        } else {
-          // Error getting flashcards for matching game
-          errorHandler(response, status, 1027);
-        }
-      });
-    }
-  }, [flashcardsDidSet, flashcards, deckId]);
 
   const handleBoxClick = (rowNum, colNum) => {
     return event => {

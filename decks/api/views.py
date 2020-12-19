@@ -1525,7 +1525,9 @@ def game_flashcards_view(request, *args, **kwargs):
     deck_id = request.data.get('deck_id')
     amount = request.data.get('amount')
     if None in (method_type, deck_id, amount):
-        return Response({'message': 'You must specify `type` and `deck_id`'}, status=400)
+        return Response({'message': f'You must specify `type`, `deck_id`, and `amount`: {method_type}, {deck_id}, {amount}'}, status=400)
+
+    # TODO: ensure that we aren't getting cloze flashcards
 
     # Get the list of all possible flashcards, based on the method type
     if method_type == 'SEEN':
@@ -1540,8 +1542,8 @@ def game_flashcards_view(request, *args, **kwargs):
     # Get `amount` random flashcards from the list
     if request.data.get('random_order'):
         flashcard_ids = flashcards.values_list('id', flat=True)
-        random_flashcard_ids = random.sample(flashcard_ids, min(flashcards.count(), amount))
-        flashcards = FlashCard.objects.filter(random_flashcard_ids)
+        random_flashcard_ids = random.sample(list(flashcard_ids), min(flashcards.count(), amount))
+        flashcards = FlashCard.objects.filter(pk__in=random_flashcard_ids)
     else:
         flashcards = flashcards[:amount]
 

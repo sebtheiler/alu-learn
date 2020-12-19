@@ -26,6 +26,9 @@ export function DeckDefaultButtonGroup(props) {
     if (form.elements.flashcardType.value === 'TAG') {
       gameOptions += `&tag=${form.elements.tagToSearch.value}`;
     }
+    if (form.elements.gameType.value === 'MATCHING') {
+      gameOptions += `&size=${form.elements.size.value}`;
+    }
     gameOptions += `&random=${form.elements.randomOrder.checked}`;
 
     window.location.href = `/decks/${deck.id}/game/?${gameOptions}`;
@@ -376,6 +379,7 @@ export function DeckForeignUserButtonGroup(props) {
 // Modal for selecting a game to play
 export function GameModal(props) {
   const {modalIsOpen, closeModal, submitHandler, deck} = props;
+  const [gameType, setGameType] = useState('MATCHING');
   const [flashcardType, setFlashcardType] = useState('SEEN');
   
   return (<>
@@ -390,6 +394,7 @@ export function GameModal(props) {
             <Form.Control
               as='select'
               name='gameType'
+              onChange={event => setGameType(event.target.value)}
               custom
             >
               <option value='MATCHING'>Matching</option>
@@ -416,6 +421,17 @@ export function GameModal(props) {
           {flashcardType === 'TAG' && <Form.Group>
             <Form.Label>Tag to Search</Form.Label>
             <Form.Control type='text' name='tagToSearch' />
+          </Form.Group>}
+          {gameType === 'MATCHING' && <Form.Group>
+            <Form.Label>Size</Form.Label>
+            <Form.Control
+              type='number'
+              name='size'
+              min={2}
+              max={8}
+              step={2}
+              defaultValue={4}
+            />
           </Form.Group>}
           <Form.Group>
             <FormCheckbox name='randomOrder' defaultChecked>
