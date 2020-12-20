@@ -34,7 +34,7 @@ const randomTips = [
   'Don\'t forget to add tags to your cards!',
   'If you want to temporarily disable a flashcard, you can "Suspend" it',
   'Alu shows you flashcards right before you forget them',
-  'The forgetting curve is the decline of memory retention over time, Alu attempts to model this to optimize when you should see flashcards',
+  'The forgetting curve is the decline of memory retention over time. Alu attempts to model this to optimize when you should see flashcards.',
   'Every time you review a flashcard, it gets a little easier to remember',
   'Cloze flashcards allow you to {{c1::hide}} a phrase in a flashcard',
   'Only turn information you truly understand into flashcards',

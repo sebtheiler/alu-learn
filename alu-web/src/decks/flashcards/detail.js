@@ -43,30 +43,30 @@ export function RenderFlashCardText(props) {
   const frontEditor = useMemo(
     () => createFullEditor(),
     []
-    );
-    const [backValue, setBackValue] = useState(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
-    const backEditor = useMemo(
-      () => createFullEditor(),
-      []
-    );
-      
-    useEffect(() => {
-      try {
-        if (fixSlateLazy) {
-          // Slate is lazy and won't automatically update the editor when the flashcard
-          // prop is changed, so we manually have to check if it has changed
-          // The frontValue dependency is excluded on purpose - including it causes infinite loop
-          if (flashcard.deck_fields[0].text !== frontValue || (flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text !== backValue)) {
-            setFrontValue(flashcard.deck_fields[0].text);
-            setBackValue(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
-          }
+  );
+  const [backValue, setBackValue] = useState(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
+  const backEditor = useMemo(
+    () => createFullEditor(),
+    []
+  );
+ 
+  useEffect(() => {
+    try {
+      if (fixSlateLazy) {
+        // Slate is lazy and won't automatically update the editor when the flashcard
+        // prop is changed, so we manually have to check if it has changed
+        // The frontValue dependency is excluded on purpose - including it causes infinite loop
+        if (flashcard.deck_fields[0].text !== frontValue || (flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text !== backValue)) {
+          setFrontValue(flashcard.deck_fields[0].text);
+          setBackValue(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
         }
-      } catch (e) {
-        console.log(e);
       }
-      // eslint-disable-next-line
-    }, [flashcard]);
-      
+    } catch (e) {
+      console.log(e);
+    }
+    // eslint-disable-next-line
+  }, [flashcard]);
+
   try {
       switch (flashcard.flashcard_type) {
       case 'basic': case 'reversed': // two-sided

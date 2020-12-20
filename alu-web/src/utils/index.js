@@ -14,6 +14,7 @@ import {
   useInterval,
   inMatch,
   shuffle,
+  RenderRichText,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -35,4 +36,5 @@ export {
   useInterval,
   inMatch,
   shuffle,
+  RenderRichText,
 }

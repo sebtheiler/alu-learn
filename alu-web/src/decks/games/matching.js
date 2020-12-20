@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
 import { range } from '../../utils';
+import { RenderRichText } from '../../utils';
 import './matching.css';
 
 export function MatchingGame(props) {
@@ -57,11 +58,9 @@ export function MatchingGame(props) {
               className={'matching-col' + getBoxClassName(i, j)}
               onClick={getBoxClassName(i, j) === ' correct' ? null : handleBoxClick(i, j)}
             >
-              <p>
-                {flashcards[i*size + j][0].text[0].children[0].text}
-                {/* {console.log(flashcards[i*size + j][0].text)} */}
-                {/* {Node.string(flashcards[i*size + j][0].text)} */}
-              </p>
+              <RenderRichText
+                text={flashcards[i*size + j][0].text}
+              />
             </Col>
           )}
         </Row>

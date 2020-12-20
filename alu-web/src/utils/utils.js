@@ -1,9 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import numeral from 'numeral';
-import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown/with-html';
 import RemarkMathPlugin from 'remark-math';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { BlockMath, InlineMath } from 'react-katex';
+import { FullEditor, createFullEditor  } from '../notes/editor-components';
+import { Slate } from 'slate-react';
 import 'katex/dist/katex.min.css';
 
 // Creates a simple tooltip
@@ -298,4 +300,27 @@ export function shuffle(array) {
   }
 
   return array;
+}
+
+export function RenderRichText(props) {
+  const {text} = props;
+  const [value, setValue] = useState(text);
+  const editor = useMemo(
+    () => createFullEditor(),
+    []
+  );
+
+  return (
+    <Slate
+      editor={editor}
+      value={value}
+      onChange={newValue => setValue(newValue)}
+    >
+      <FullEditor
+        editor={editor}
+        readOnly={true}
+        styleOptions={{ minHeight: '0' }}
+      />
+    </Slate>
+  );
 }
