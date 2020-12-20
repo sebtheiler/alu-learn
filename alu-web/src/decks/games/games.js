@@ -28,8 +28,17 @@ export function GameComponent(props) {
             return 0;
         }
       })();
+      const options = (() => {
+        switch (flashcardType) {
+          case 'TAG':
+            return {tag: urlParams.current.get('tag')};
+          default:
+            return {};
+        }
+      })();
+
       setFlashcardsDidSet(true);
-      apiGameFlashcards(parseInt(deckId), flashcardType, numFlashcards, randomOrder, (response, status) => {
+      apiGameFlashcards(parseInt(deckId), flashcardType, numFlashcards, randomOrder, options, (response, status) => {
         if (status === 200) {
           if (response.length < numFlashcards) {
             setErrorMessage(`

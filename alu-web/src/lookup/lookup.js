@@ -519,11 +519,12 @@ export function apiProfileReadPopup(callback) {
 }
 
 // Gets flashcards for playing a game
-export function apiGameFlashcards(deckId, type, amount, randomOrder, callback) {
+export function apiGameFlashcards(deckId, type, amount, randomOrder, options, callback) {
   backendLookup('POST', 'decks/games/flashcards/', callback, {
     deck_id: deckId,
     type: type,
     amount: amount,
     random_order: randomOrder,
+    options: options,
   });
 }
