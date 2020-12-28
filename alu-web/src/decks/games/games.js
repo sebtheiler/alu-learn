@@ -20,6 +20,12 @@ export function GameComponent(props) {
 
   useEffect(() => {
     if (!flashcardsDidSet) {
+      if (!gameType) {
+        setErrorMessage(`
+Game type unspecified: you must specify "?game=..." in the URL. If this happened naturally, please let us know.
+        `);
+        return;
+      }
       const numFlashcards = (() => {
         switch (gameType) {
           case 'MATCHING':
@@ -44,7 +50,7 @@ export function GameComponent(props) {
             setErrorMessage(`
 You don't have enough flashcards to play this game.  You have ${response.length} flashcards, but ${numFlashcards} are required.
 This may be due to the flashcard type requirements you listed: ${flashcardType}
-`);
+            `);
           }
           let randomOrder = [];
           for (const [i, flashcard] of response.entries()) {
@@ -69,7 +75,7 @@ This may be due to the flashcard type requirements you listed: ${flashcardType}
     }
   })();
 
-  return (<div className='container-fluid'>
+  return (<div className='container-fluid w-90 mb-5'>
     <h1 className='text-center mt-5'>Playing</h1>
     {errorMessage ? <p className='text-center'>{errorMessage}</p> :
     (flashcards ? game : <p className='text-center'>Loading...</p>)}
