@@ -638,7 +638,7 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
     return Response(FlashCardSerializer(flashcard).data, status=200)
 
 
-def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=None, leech=None, learning_status=None, min_ease=None, max_ease=None, due_before=None, custom_query=None):
+def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=None, leech=None, learning_status=None, min_ease=None, max_ease=None, due_before=None, custom_query=None, return_query_only=False):
     # Search flashcards
     # We will be ANDing (&=) a bunch more queries to this
     # and using it as a filter in the end.
@@ -695,7 +695,10 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
         flashcard_query &= custom_query
 
     # Execute query
-    return FlashCard.objects.filter(flashcard_query).prefetch_related('creator')
+    if return_query_only:
+        return flashcard_query
+    else:
+        return FlashCard.objects.filter(flashcard_query).prefetch_related('creator')
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -1531,25 +1534,42 @@ def game_flashcards_view(request, *args, **kwargs):
     if None in (method_type, deck_id, amount):
         return Response({'message': f'You must specify `type`, `deck_id`, and `amount`: {method_type}, {deck_id}, {amount}'}, status=400)
 
+    # See if the "deck" is actually a CSSM
+    try:
+        cssm = CustomStudySessionManager.objects.get(pk=deck_id, user=request.user.profile)
+    except CustomStudySessionManager.DoesNotExist:
+        cssm = None
+
     # Get the list of all possible flashcards, based on the method type
+    query = Q(creator__deck__user=request.user) & ~Q(creator__flashcard_type='cloze')
     if method_type == 'SEEN':
-        flashcards = FlashCard.objects.filter(
-            Q(creator__deck__id=deck_id) & ~Q(learning_status='UNSEEN') & ~Q(creator__flashcard_type='cloze'),
-        )
+        query &= ~Q(learning_status='UNSEEN')
     elif method_type == 'UNSEEN':
-        flashcards = FlashCard.objects.filter(
-            Q(creator__deck__id=deck_id) & Q(learning_status='UNSEEN') & ~Q(creator__flashcard_type='cloze'),
-        )
+        query &= Q(learning_status='UNSEEN')
     elif method_type == 'TAG':
-        flashcards = search_flashcards(
+        query = search_flashcards(
             user=request.user,
             tags=request.data.get('options').get('tag'),
-            custom_query=Q(creator__deck__id=deck_id) & ~Q(creator__flashcard_type='cloze'),
+            return_query_only=True,
         )
-    elif method_type == 'PERSONAL':
-        ...
+
+    if cssm:
+        query &= search_flashcards(
+            request.user,
+            cssm.deck_ids,
+            cssm.tags,
+            cssm.contains,
+            False, # suspended (can't study suspended cards)
+            cssm.leech,
+            None, # learning status is specified above
+            cssm.min_ease,
+            cssm.max_ease,
+            return_query_only=True,
+        )
     else:
-        return Response({'message': f'Invalid method type "{method_type}"'}, status=400)
+        query &= Q(creator__deck__id=deck_id)
+
+    flashcards = FlashCard.objects.filter(query)
 
     # Get `amount` random flashcards from the list
     if request.data.get('random_order'):

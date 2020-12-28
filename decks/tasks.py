@@ -70,7 +70,7 @@ Alu
             plain_message,
             settings.EMAIL_HOST_USER,
             [user.user.email],
-            html_message=render_to_string('emails/reminder.html', {'name': name, 'streak': streak}), # FIND SOLUTION FOR THIS
+            html_message=render_to_string('emails/reminder.html', {'name': name, 'streak': streak}),
             fail_silently=False,
             connection=connection,
         )
@@ -78,6 +78,6 @@ Alu
     connection.close()
 
 
-@periodic_task(run_every=crontab(hour=23)) # hour=23 -> 1800 in NYC
+@periodic_task(run_every=crontab(hour=23, minute=0)) # hour=23 -> 1800 in NYC
 def run_email_reminder():
     email_reminder.delay()

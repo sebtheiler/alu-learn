@@ -412,10 +412,11 @@ export function GameModal(props) {
               onChange={event => setFlashcardType(event.target.value)}
               custom
             >
+              <option value='ALL'>All Flashcards</option>
               <option value='SEEN'>Seen Flashcards (review old material)</option>
               <option value='UNSEEN'>Unseen Flashcards (preview new material)</option>
               <option value='TAG'>Filter by Tag (review specific unit)</option>
-              <option value='PERSONAL'>Personalized (flashcards you struggle with most)</option>
+              {/* <option value='PERSONAL'>Personalized (flashcards you struggle with most)</option> */}
             </Form.Control>
           </Form.Group>
           {flashcardType === 'TAG' && <Form.Group>

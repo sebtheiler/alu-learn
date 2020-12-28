@@ -44,7 +44,7 @@ export function FlashCardCreate(props) {
 
   const [freezeFront, setFreezeFront] = useState(false);
   const [freezeBack, setFreezeBack] = useState(false);
-  const [freezeTags, setFreezeTags] = useState(false);
+  const [freezeTags, setFreezeTags] = useState(true);
 
   // Warn user before leaving page (adapted from https://stackoverflow.com/a/7317311)
   window.addEventListener("beforeunload", () => {});
