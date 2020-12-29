@@ -32,13 +32,15 @@ export function QuizGame(props) {
   const handleAnswerClick = i => {
     return event => {
       event.preventDefault();
-      if (answers[i].id === flashcards[currentQuestion].id) {
-        setShowAnswer(true);
-        if (guessedAnswers.length === 0) {
-          setNumCorrect(numCorrect + 1);
+      if (!showAnswer) {
+        if (answers[i].id === flashcards[currentQuestion].id) {
+          setShowAnswer(true);
+          if (guessedAnswers.length === 0) {
+            setNumCorrect(numCorrect + 1);
+          }
+        } else {
+          setGuessedAnswers([...guessedAnswers, answers[i].id]);
         }
-      } else {
-        setGuessedAnswers([...guessedAnswers, answers[i].id]);
       }
     }
   }
@@ -90,7 +92,7 @@ export function QuizGame(props) {
         ))}
         {showAnswer && (
           <Button onClick={handleNextQuestion} block>
-            Next Question
+            {currentQuestion === flashcards.length - 1 ? 'Finish' : 'Next Question'}
           </Button>
         )}
       </ol>
