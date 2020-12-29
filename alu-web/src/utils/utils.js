@@ -302,13 +302,30 @@ export function shuffle(array) {
   return array;
 }
 
+// Renders Slate rich text
 export function RenderRichText(props) {
-  const {text} = props;
+  const {text, fixSlateLazy} = props;
   const [value, setValue] = useState(text);
   const editor = useMemo(
     () => createFullEditor(),
     []
   );
+
+  useEffect(() => {
+    try {
+      if (fixSlateLazy) {
+        // Slate is lazy and won't automatically update the editor when the flashcard
+        // prop is changed, so we manually have to check if it has changed
+        // The value dependency is excluded on purpose - including it causes infinite loop
+        if (text !== value) {
+          setValue(text);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    // eslint-disable-next-line
+  }, [text, fixSlateLazy]);
 
   return (
     <Slate
@@ -323,4 +340,32 @@ export function RenderRichText(props) {
       />
     </Slate>
   );
+}
+
+// Chooses k unique random elements from pool
+// Adapted from https://stackoverflow.com/a/61078260/13042142
+export function sample(pool, k, destructive) {
+  var n = pool.length;
+
+  if (k < 0 || k > n) {
+    throw new RangeError('Sample larger than population or is negative');
+  }
+
+  if (destructive || n <= (k <= 5 ? 21 : 21 + Math.pow(4, Math.ceil(Math.log(k*3) / Math.log(4))))) {
+    if (!destructive) {
+      pool = Array.prototype.slice.call(pool);
+    }
+    for (var i = 0; i < k; i++) { // invariant: non-selected at [i,n)
+      var j = i + Math.random() * (n - i) | 0;
+      var x = pool[i];
+      pool[i] = pool[j];
+      pool[j] = x;
+    }
+    pool.length = k; // truncate
+    return pool;
+} else {
+    var selected = new Set();
+    while (selected.add(Math.random() * n | 0).size < k) {}
+    return Array.prototype.map.call(selected, i => pool[i]);
+  }
 }

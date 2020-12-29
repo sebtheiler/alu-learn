@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { MatchingGame } from './matching';
+import { QuizGame } from './quiz';
 import { apiGameFlashcards } from '../../lookup/lookup';
-import { shuffle, errorHandler } from '../../utils';
+import { errorHandler } from '../../utils';
 
 export function GameComponent(props) {
   const {deckId} = props;
@@ -30,10 +31,19 @@ Game type unspecified: you must specify "?game=..." in the URL. If this happened
         switch (gameType) {
           case 'MATCHING':
             return parseInt(urlParams.current.get('size'))**2 / 2;
+          case 'QUIZ':
+            return parseInt(urlParams.current.get('num'));
           default:
             return 0;
         }
       })();
+      if (!numFlashcards) {
+        setErrorMessage(`
+Failed to calclate required number of flashcards.  You may need "?size=N" or "?num=N" in the URL.  If this happened naturally, please let us know.
+        `);
+        return;
+      }
+
       const options = (() => {
         switch (flashcardType) {
           case 'TAG':
@@ -52,13 +62,7 @@ You don't have enough flashcards to play this game.  You have ${response.length}
 This may be due to the flashcard type requirements you listed: ${flashcardType}
             `);
           }
-          let randomOrder = [];
-          for (const [i, flashcard] of response.entries()) {
-            randomOrder.push([flashcard.deck_fields[0], i]);
-            randomOrder.push([flashcard.deck_fields[1], i]);
-          }
-          randomOrder = shuffle(randomOrder);
-          setFlashcards(randomOrder);
+          setFlashcards(response);
         } else {
           // Error getting flashcards for games
           errorHandler(response, status, 1027);
@@ -70,14 +74,18 @@ This may be due to the flashcard type requirements you listed: ${flashcardType}
     switch (gameType) {
       case 'MATCHING':
         return <MatchingGame flashcards={flashcards} size={urlParams.current.get('size')} />
+      case 'QUIZ':
+        return <QuizGame flashcards={flashcards} numQuestions={parseInt(urlParams.current.get('num'))} />
       default:
         return <p className='text-center'>Unrecognized Game</p>
     }
   })();
 
-  return (<div className='container-fluid w-90 mb-5'>
-    <h1 className='text-center mt-5'>Playing</h1>
-    {errorMessage ? <p className='text-center'>{errorMessage}</p> :
-    (flashcards ? game : <p className='text-center'>Loading...</p>)}
-  </div>);
+  return (
+    <div className='container-fluid w-90 mb-5'>
+      <h1 className='text-center mt-5'>Playing</h1>
+      {errorMessage ? <p className='text-center'>{errorMessage}</p> :
+      (flashcards ? game : <p className='text-center'>Loading...</p>)}
+    </div>
+  );
 }

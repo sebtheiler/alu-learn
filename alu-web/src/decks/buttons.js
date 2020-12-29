@@ -26,8 +26,15 @@ export function DeckDefaultButtonGroup(props) {
     if (form.elements.flashcardType.value === 'TAG') {
       gameOptions += `&tag=${form.elements.tagToSearch.value}`;
     }
-    if (form.elements.gameType.value === 'MATCHING') {
-      gameOptions += `&size=${form.elements.size.value}`;
+    switch (form.elements.gameType.value) {
+      case 'MATCHING':
+        gameOptions += `&size=${form.elements.size.value}`;
+        break;
+      case 'QUIZ':
+        gameOptions += `&num=${form.elements.num.value}`;
+        break;
+      default:
+        break;
     }
     gameOptions += `&random=${form.elements.randomOrder.checked}`;
 
@@ -432,6 +439,16 @@ export function GameModal(props) {
               max={8}
               step={2}
               defaultValue={4}
+            />
+          </Form.Group>}
+          {gameType === 'QUIZ' && <Form.Group>
+            <Form.Label>Number of Questions</Form.Label>
+            <Form.Control
+              type='number'
+              name='num'
+              min={1}
+              max={50}
+              defaultValue={10}
             />
           </Form.Group>}
           <Form.Group>

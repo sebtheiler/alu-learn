@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Row, Col, Button } from 'react-bootstrap';
 import { range } from '../../utils';
-import { RenderRichText } from '../../utils';
+import { RenderRichText, shuffle } from '../../utils';
 import './matching.css';
 
 export function MatchingGame(props) {
-  const {flashcards, size} = props;
+  const {size} = props;
+  const flashcards = useMemo(() => {
+    let randomOrder = [];
+    for (const [i, flashcard] of props.flashcards.entries()) {
+      randomOrder.push([flashcard.deck_fields[0], i]);
+      randomOrder.push([flashcard.deck_fields[1], i]);
+    }
+    randomOrder = shuffle(randomOrder);
+    return randomOrder;
+  }, [props.flashcards]);
   const [numMissed, setNumMissed] = useState(0);
   const [correctlyGuessed, setCorrectlyGuessed] = useState([]);
   const [selectedBox, setSelectedBox] = useState([-1, -1]);

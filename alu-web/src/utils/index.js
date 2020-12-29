@@ -15,6 +15,7 @@ import {
   inMatch,
   shuffle,
   RenderRichText,
+  sample,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -37,4 +38,5 @@ export {
   inMatch,
   shuffle,
   RenderRichText,
+  sample,
 }
