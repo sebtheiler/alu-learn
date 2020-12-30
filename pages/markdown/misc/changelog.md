@@ -4,10 +4,11 @@
 # Games! - Dec ?? 2020 - 0.3.0
 
 
-* **Filtered Decks Tutorial:**  There is now a tutorial for filtered decks available in the [help](/help/) page.  This tutorial has been out for a while, but it can now been found in the help section.
+* **Filtered Decks Tutorial:**  There is now a tutorial for filtered decks available on the [help](/help/) page.  This tutorial has been out for a while, but it can now be found in the help section.
 * **Improved Deck Homepage Design:** The "Edit" and "Browse" buttons have now been moved to an "Other" dropdown on the deck homepage.  The "Other" dropdown also includes a way to play games with your deck.  This is intended to remove visual clutter and improve your general experience.
-* **Freezing Tags Field:** The "Tags" field is now frozen by default when creating flashcards.
+* **Freezing Tags Field:** Since it is almost useful to freeze the "Tags" field, it is now frozen by default when creating flashcards.
 * **Creating/Editing Flashcard Loading Display:** Before it was hard to tell whether a flashcard had been saved after editing it.  It now briefly displays "Saving..." as it saves.  In the same vein, "Creating..." is also displayed right after you press "Create" to create a new flashcard.
+* **Creating Flashcard History:** It can sometimes be a pain to edit the flashcards you just created.  You can now access your recently created flashcards through a "History" dropdown when creating flashcards.
 
 # Personalizing Alu & Better Study Habits - Dec 14 2020 - 0.2.0
 Keeping to study habits is difficult.  This update seeks to make it easier.

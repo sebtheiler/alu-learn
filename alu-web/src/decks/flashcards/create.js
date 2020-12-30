@@ -41,6 +41,7 @@ export function FlashCardCreate(props) {
   const [btnLabel, setBtnLabel] = useState(isNaN(flashcardId) ? 'Create' : 'Save');
   const [flashcardType, setFlashCardType] = useState('basic');
   const [gotFlashcardDetail, setGotFlashcardDetail] = useState(false);
+  const [createdFlashcards, setCreatedFlashcards] = useState([]);
 
   const [freezeFront, setFreezeFront] = useState(false);
   const [freezeBack, setFreezeBack] = useState(false);
@@ -98,6 +99,9 @@ export function FlashCardCreate(props) {
         Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999 });
         Transforms.move(frontEditor, { edge: 'focus', distance: 9999999 });
         document.getElementById('flashcardType').focus()
+
+        // Add flashcard to list of created flashcards
+        setCreatedFlashcards([...createdFlashcards, response[0]]);
       }
     } else {
       // Error creating/editing flashcard
@@ -150,7 +154,7 @@ export function FlashCardCreate(props) {
             as='select'
             onChange={event => setFlashCardType(event.target.value)}
             id='flashcardType'
-            autofocus
+            autoFocus
             custom
           >
             <option value='basic'>Basic</option>
@@ -244,6 +248,27 @@ export function FlashCardCreate(props) {
         <Form.Group className='text-center mt-1'>
           <Button type='submit' variant='primary' block>{btnLabel}</Button>
         </Form.Group>
+        {isNaN(flashcardId) && <Form.Group>
+          <Form.Label htmlFor='history'>History</Form.Label><br />
+          <Form.Control
+            as='select'
+            name='history'
+            style={{ maxWidth: '300px' }}
+            onChange={event => {
+              // Get selected value and open new page editing that flashcard
+              const flashcardId = parseInt(event.target.options[event.target.selectedIndex].value);
+              if (flashcardId >= 0) {
+                window.open(`/decks/${deckId}/flashcards/${flashcardId}/edit/`);
+              }
+            }}
+            custom
+          >
+            <option value='-1'>-----</option>
+            {createdFlashcards.map((flashcard, i) =>
+              <option key={i} value={flashcard.creator_id}>{flashcard.deck_fields[0].text[0].children[0].text.slice(0, 20)}...</option>
+            )}
+          </Form.Control>
+        </Form.Group>}
       </Form>
     </div>
   );
