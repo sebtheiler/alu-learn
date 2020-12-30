@@ -18,6 +18,7 @@ export function MatchingGame(props) {
   const [numMissed, setNumMissed] = useState(0);
   const [correctlyGuessed, setCorrectlyGuessed] = useState([]);
   const [selectedBox, setSelectedBox] = useState([-1, -1]);
+  const [failedQuestions, setFailedQuestions] = useState([]);
 
   const handleBoxClick = (rowNum, colNum) => {
     return event => {
@@ -34,6 +35,14 @@ export function MatchingGame(props) {
             setCorrectlyGuessed([...correctlyGuessed, guessedBox[1]]);
           } else {
             setNumMissed(numMissed + 1);
+            let newFailedQuestions = failedQuestions;
+            if (!failedQuestions.includes(props.flashcards[currentBox[1]])) {
+              newFailedQuestions = [...newFailedQuestions, props.flashcards[currentBox[1]]];
+            }
+            if (!failedQuestions.includes(props.flashcards[guessedBox[1]])) {
+              newFailedQuestions = [...newFailedQuestions, props.flashcards[guessedBox[1]]];
+            }
+            setFailedQuestions(newFailedQuestions);
           }
           setSelectedBox([-1, -1]);
           return;
@@ -82,6 +91,12 @@ export function MatchingGame(props) {
       >
         Play Again
       </Button>
+      {failedQuestions.length > 0 && <h3 className='mt-5'>Questions You Missed:</h3>}
+      {failedQuestions.map((question, i) => (<React.Fragment key={i}>
+        <hr />
+        <RenderRichText text={question.deck_fields[0].text} />
+        <RenderRichText text={question.deck_fields[1].text} />
+      </React.Fragment>))}
     </div>}
   </>);
 }

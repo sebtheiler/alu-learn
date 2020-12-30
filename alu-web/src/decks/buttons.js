@@ -407,7 +407,7 @@ export function GameModal(props) {
               <option value='MATCHING'>Matching</option>
               <option value='GRAVITY'>Gravity</option>
               <option value='QUIZ'>Quiz</option>
-              <option value='FOREHEAD'>Forehead/Charades</option>
+              {/* <option value='FOREHEAD'>Forehead/Charades</option> */}
             </Form.Control>
           </Form.Group>
           <Form.Group>
@@ -419,9 +419,9 @@ export function GameModal(props) {
               onChange={event => setFlashcardType(event.target.value)}
               custom
             >
-              <option value='ALL'>All Flashcards</option>
               <option value='SEEN'>Seen Flashcards (review old material)</option>
               <option value='UNSEEN'>Unseen Flashcards (preview new material)</option>
+              <option value='ALL'>All Flashcards</option>
               <option value='TAG'>Filter by Tag (review specific unit)</option>
               {/* <option value='PERSONAL'>Personalized (flashcards you struggle with most)</option> */}
             </Form.Control>
@@ -446,7 +446,7 @@ export function GameModal(props) {
             <Form.Control
               type='number'
               name='num'
-              min={1}
+              min={5}
               max={50}
               defaultValue={10}
             />

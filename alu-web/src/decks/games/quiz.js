@@ -12,6 +12,7 @@ export function QuizGame(props) {
   const [guessedAnswers, setGuessedAnswers] = useState([]);
   const [finished, setFinished] = useState(false);
   const [numCorrect, setNumCorrect] = useState(0);
+  const [failedQuestions, setFailedQuestions] = useState([]);
 
   useEffect(() => {
     if (!answersDidSet) {
@@ -39,6 +40,9 @@ export function QuizGame(props) {
             setNumCorrect(numCorrect + 1);
           }
         } else {
+          if (guessedAnswers.length === 0) {
+            setFailedQuestions([...failedQuestions, flashcards[currentQuestion]]);
+          }
           setGuessedAnswers([...guessedAnswers, answers[i].id]);
         }
       }
@@ -68,6 +72,12 @@ export function QuizGame(props) {
         >
           Play Again
         </Button>
+        {failedQuestions.length > 0 && <h3 className='mt-5'>Questions You Missed:</h3>}
+        {failedQuestions.map((question, i) => (<React.Fragment key={i}>
+          <hr />
+          <RenderRichText text={question.deck_fields[0].text} />
+          <RenderRichText text={question.deck_fields[1].text} />
+        </React.Fragment>))}
       </div>
     </>);
   }
@@ -84,7 +94,8 @@ export function QuizGame(props) {
               guessedAnswers.includes(answer.id) ? ' incorrect' : (
               (showAnswer && answer.id === flashcards[currentQuestion].id) ? ' correct' : ''
               ))}
-          key={i}>
+            key={i}
+          >
             <button className='not-a-button' onClick={handleAnswerClick(i)}>
               <RenderRichText text={answer.deck_fields[1].text} fixSlateLazy />
             </button>
