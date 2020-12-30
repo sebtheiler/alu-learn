@@ -10,7 +10,7 @@ import { Card, ButtonGroup, Button } from 'react-bootstrap';
 // Display an individual deck
 // This is used on pages displaying multiple decks
 export function Deck(props) {
-  const {deck, currentUsername, type} = props;
+  const {deck, currentUsername, type, noButtons} = props;
   const className = props.className ? props.className : 'col-10 mx-auto col-md-6';
 
   if (deck.length === 0) {
@@ -30,7 +30,7 @@ export function Deck(props) {
             {type === 'note' ? 
               <NoteDefaultButtonGroup note={deck} />
             :
-              (currentUsername === deck.author.username ?
+              (!noButtons && currentUsername === deck.author.username ?
                 <DeckDefaultButtonGroup deck={deck} />
               : <Button href={`/decks/${deck.id}/`}>View</Button>)
             }
