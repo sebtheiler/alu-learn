@@ -38,7 +38,7 @@ export function FlashCardCreate(props) {
   // `returnToPreviousPage`: If true, redirect the user to the previous page (used for editing)
   // `flashcardId`: If not null/undefined, the ID of the flashcard to EDIT
   const {deckId, returnToPreviousPage, flashcardId} = props;
-  const btnLabel = isNaN(flashcardId) ? 'Create' : 'Save';
+  const [btnLabel, setBtnLabel] = useState(isNaN(flashcardId) ? 'Create' : 'Save');
   const [flashcardType, setFlashCardType] = useState('basic');
   const [gotFlashcardDetail, setGotFlashcardDetail] = useState(false);
 
@@ -80,6 +80,7 @@ export function FlashCardCreate(props) {
 
   // Called after the request is sent to the backend to create or edit a flashcard
   const handleBackendUpdate = (response, status) => {
+    setBtnLabel(isNaN(flashcardId) ? 'Create' : 'Save');
     if (status === 201 || status === 200) {
       // If the user should be redirected, redirect them
       if (returnToPreviousPage) {
@@ -119,6 +120,7 @@ export function FlashCardCreate(props) {
 
     if (isNaN(flashcardId) === false) {
       // This implies we are editing a card
+      setBtnLabel('Saving...');
       apiFlashCardEdit(
         deckId,
         flashcardId,
@@ -128,6 +130,7 @@ export function FlashCardCreate(props) {
       );
     } else {
       // This implies we are creating a card
+      setBtnLabel('Creating...');
       apiFlashCardCreate(
         deckId,
         content,

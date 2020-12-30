@@ -5,8 +5,9 @@
 
 
 * **Filtered Decks Tutorial:**  There is now a tutorial for filtered decks available in the [help](/help/) page.  This tutorial has been out for a while, but it can now been found in the help section.
-
 * **Improved Deck Homepage Design:** The "Edit" and "Browse" buttons have now been moved to an "Other" dropdown on the deck homepage.  The "Other" dropdown also includes a way to play games with your deck.  This is intended to remove visual clutter and improve your general experience.
+* **Freezing Tags Field:** The "Tags" field is now frozen by default when creating flashcards.
+* **Creating/Editing Flashcard Loading Display:** Before it was hard to tell whether a flashcard had been saved after editing it.  It now briefly displays "Saving..." as it saves.  In the same vein, "Creating..." is also displayed right after you press "Create" to create a new flashcard.
 
 # Personalizing Alu & Better Study Habits - Dec 14 2020 - 0.2.0
 Keeping to study habits is difficult.  This update seeks to make it easier.
@@ -25,7 +26,6 @@ Ever forget to study one day?  You now have the option of enabling reminder emai
 * **Changed Page Title:** All instances of "Alu Flashcards" have now been updated to "Alu Learn."
 * **Improved Filtered Decks:** You can now specify a title when creating filtered decks.  Furthermore, the attribute of which decks to take flashcards from now correctly works and is editable through the deck edit modal.  There is now an expandable section for changing search sections, making it less overwhelming to view.  A bug that stopped "Daily New Card Limit" and "Shuffle Unseen Cards" from properly working in CSSMs has also been fixed.
 * **Added Changelog Popup:** Users will now be greeted with a popup alerting them of new changes when they log in for the first time following an update.
-* **Freezing Tags Field:** The "Tags" field is now frozen by default when creating flashcards.
 
 
 ## Improved Quizlet Importing - Dec 11 2020 - 0.1.1
