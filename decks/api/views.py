@@ -688,7 +688,7 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
     
     # Filter by due date
     if due_before:
-        flashcard_query &= Q(next_review__lte=due_before)
+        flashcard_query &= Q(next_review__lt=due_before)
 
     # Allow a custom query for efficiency
     if custom_query:
@@ -864,18 +864,24 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
         except CustomStudySessionManager.DoesNotExist:
             return Response({'message': f'SSM #{ssm_id} does not exist for {request.user.username}'}, status=404)
 
+    # TODO: investigate if this is needed, or if it is handled by tasks.py
     # If it is a new day since flashcards were previously done,
     # reset the counter for new/unseen flashcards
     if ssm.last_flashcard_date < timezone.now().date():
         ssm.new_cards_done_today = 0
 
-    if isinstance(ssm, DeckStudySessionManager):
-        now = timezone.now()
-        now += dt.timedelta(minutes=ssm.review_ahead_minutes)
+    # Only flashcards today that are within the review_ahead_minutes cutoff
+    # .combine is needed to convert the date object to a datetime object
+    now = timezone.now()
+    now = min(
+        now + dt.timedelta(minutes=ssm.review_ahead_minutes),
+        dt.datetime.combine(dt.date.today() + dt.timedelta(days=1), dt.datetime.min.time(), tzinfo=dt.timezone.utc)
+    )
 
+    if isinstance(ssm, DeckStudySessionManager):
         ssm_flashcards = FlashCard.objects.filter(creator__deck__pk=ssm.deck.pk)
         seen_flashcards = ssm_flashcards.filter(
-            Q(next_review__lte=now) &
+            Q(next_review__lt=now) &
             ~Q(learning_status__iexact='UNSEEN') &
             Q(is_suspended=False)
         )
@@ -891,7 +897,7 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
             ssm.learning_status,
             ssm.min_ease,
             ssm.max_ease,
-            timezone.now() + dt.timedelta(minutes=ssm.review_ahead_minutes),
+            now,
         )
 
         seen_flashcards = searched_flashcards.filter(~Q(learning_status__iexact='UNSEEN'))
