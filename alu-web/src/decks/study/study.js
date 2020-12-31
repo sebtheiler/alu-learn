@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { getAnkiInterval } from './algorithm';
-import { Button, Collapse, Alert } from 'react-bootstrap';
+import { Button, Collapse, Alert, ButtonGroup } from 'react-bootstrap';
 import { createFullEditor, FullEditor } from '../../notes/editor-components';
 import { Slate } from 'slate-react';
 import { emptyValue } from '../../notes/autonote/autonote';
@@ -185,10 +185,11 @@ export function StudyElement(props) {
       <RenderFlashCardStudy flashcard={currentCard} showAnswer={showAnswer} />
       <footer className='fixed-bottom mb-5'>
         <div className='mb-5'>
-          <div className={'col-md-12 text-center btn-group mb-1' + (showAnswer || currentCard === null ? ' d-none' : '')}>
+          {currentCard.tags && <p className='ml-3'>Tags: {currentCard.tags}</p>}
+          <ButtonGroup className={'col-md-12 text-center mb-1' + (showAnswer || currentCard === null ? ' d-none' : '')}>
             <Button onClick={showAnswerHandler} id='showanswer'>Show Answer</Button>
-          </div>
-          <div className={'col-md-12 text-center btn-group mb-1' + (!showAnswer ? ' d-none' : '')}>
+          </ButtonGroup>
+          <ButtonGroup className={'col-md-12 text-center mb-1' + (!showAnswer ? ' d-none' : '')}>
             <Button
               onClick={buttonIntervalWrapper(1)}
               className={'mx-1' + (interval1.interval === -1 ? ' d-none' : '')}
@@ -217,9 +218,9 @@ export function StudyElement(props) {
             >
               Easy {interval4.interval.toString() + (interval4.isMinute ? 'm' : 'd')}
             </Button>
-          </div>
+          </ButtonGroup>
           <div className='btn-group float-right'>
-            <p className='mr-2' style={{transform: 'translate(-2px, 6px)'}}>
+            <p className='mr-2' style={{ transform: 'translate(-2px, 6px)' }}>
               {numRemainingFlashcards} flashcards remaining
             </p>
             <Collapse in={optionButtonsExpanded} id='collapse-buttons-manager'>
