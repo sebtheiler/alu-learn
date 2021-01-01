@@ -30,7 +30,7 @@ from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
                            DeckThankSerializer, FlashCardCreatorSerializer,
                            FlashCardSerializer, SharedDeckSerializer,
                            StudySessionManagerSerializer)
-from .utils import get_paginated_queryset_response
+from .utils import get_paginated_queryset_response, weighted_sample
 
 
 @api_view(['POST'])
@@ -1540,24 +1540,13 @@ def game_flashcards_view(request, *args, **kwargs):
     if None in (method_type, deck_id, amount):
         return Response({'message': f'You must specify `type`, `deck_id`, and `amount`: {method_type}, {deck_id}, {amount}'}, status=400)
 
+    query = Q(creator__deck__user=request.user) & ~Q(creator__flashcard_type='cloze')
+
     # See if the "deck" is actually a CSSM
     try:
         cssm = CustomStudySessionManager.objects.get(pk=deck_id, user=request.user.profile)
     except CustomStudySessionManager.DoesNotExist:
         cssm = None
-
-    # Get the list of all possible flashcards, based on the method type
-    query = Q(creator__deck__user=request.user) & ~Q(creator__flashcard_type='cloze')
-    if method_type == 'SEEN':
-        query &= ~Q(learning_status='UNSEEN')
-    elif method_type == 'UNSEEN':
-        query &= Q(learning_status='UNSEEN')
-    elif method_type == 'TAG':
-        query = search_flashcards(
-            user=request.user,
-            tags=request.data.get('options').get('tag'),
-            return_query_only=True,
-        )
 
     if cssm:
         query &= search_flashcards(
@@ -1575,10 +1564,29 @@ def game_flashcards_view(request, *args, **kwargs):
     else:
         query &= Q(creator__deck__id=deck_id)
 
+    # Get the list of all possible flashcards, based on the method type
+    if method_type == 'SEEN':
+        query &= ~Q(learning_status='UNSEEN')
+    elif method_type == 'UNSEEN':
+        query &= Q(learning_status='UNSEEN')
+    elif method_type == 'TAG':
+        query &= search_flashcards(
+            user=request.user,
+            tags=request.data.get('options').get('tag'),
+            return_query_only=True,
+        )
+    elif method_type == 'PERSONAL':
+        pass # this logic is handled later
+    else:
+        return Response({'message': 'Unrecognized method for getting flashcards'}, status=400)
+
     flashcards = FlashCard.objects.filter(query)
 
     # Get `amount` random flashcards from the list
-    if request.data.get('random_order'):
+    if method_type == 'PERSONAL':
+        flashcard_weights = [350 - flashcard.ease for flashcard in flashcards] # 350 = max ease
+        flashcards = weighted_sample(list(flashcards), flashcard_weights, amount)
+    elif request.data.get('random_order'):
         flashcard_ids = flashcards.values_list('id', flat=True)
         random_flashcard_ids = random.sample(list(flashcard_ids), min(flashcards.count(), amount))
         flashcards = FlashCard.objects.filter(pk__in=random_flashcard_ids)

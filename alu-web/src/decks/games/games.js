@@ -37,9 +37,9 @@ Game type unspecified: you must specify "?game=..." in the URL. If this happened
             return 0;
         }
       })();
-      if (!numFlashcards) {
+      if (!numFlashcards && numFlashcards !== 0) {
         setErrorMessage(`
-Failed to calclate required number of flashcards.  You may need "?size=N" or "?num=N" in the URL.  If this happened naturally, please let us know.
+Failed to calculate required number of flashcards.  You may need "?size=N" or "?num=N" in the URL.  If this happened naturally, please let us know.
         `);
         return;
       }

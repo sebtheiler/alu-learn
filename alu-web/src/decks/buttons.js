@@ -36,7 +36,7 @@ export function DeckDefaultButtonGroup(props) {
       default:
         break;
     }
-    gameOptions += `&random=${form.elements.randomOrder.checked}`;
+    gameOptions += `&random=${form.elements.randomOrder?.checked}`;
 
     window.location.href = `/decks/${deck.id}/game/?${gameOptions}`;
   }
@@ -423,7 +423,7 @@ export function GameModal(props) {
               <option value='UNSEEN'>Unseen Flashcards (preview new material)</option>
               <option value='ALL'>All Flashcards</option>
               <option value='TAG'>Filter by Tag (review specific unit)</option>
-              {/* <option value='PERSONAL'>Personalized (flashcards you struggle with most)</option> */}
+              <option value='PERSONAL'>Personalized (flashcards you struggle with most)</option>
             </Form.Control>
           </Form.Group>
           {flashcardType === 'TAG' && <Form.Group>
@@ -451,11 +451,11 @@ export function GameModal(props) {
               defaultValue={10}
             />
           </Form.Group>}
-          <Form.Group>
+          {flashcardType !== 'PERSONAL' && <Form.Group>
             <FormCheckbox name='randomOrder' defaultChecked>
               Randomize flashcard order
             </FormCheckbox>
-          </Form.Group>
+          </Form.Group>}
         </Modal.Body>
         <Modal.Footer>
           <Button type='submit' block>Play!</Button>
