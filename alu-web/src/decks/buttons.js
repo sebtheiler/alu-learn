@@ -405,7 +405,7 @@ export function GameModal(props) {
               custom
             >
               <option value='MATCHING'>Matching</option>
-              <option value='GRAVITY'>Gravity</option>
+              {/* <option value='GRAVITY'>Gravity</option> */}
               <option value='QUIZ'>Quiz</option>
               {/* <option value='FOREHEAD'>Forehead/Charades</option> */}
             </Form.Control>

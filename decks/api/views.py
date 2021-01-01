@@ -1584,7 +1584,7 @@ def game_flashcards_view(request, *args, **kwargs):
 
     # Get `amount` random flashcards from the list
     if method_type == 'PERSONAL':
-        flashcard_weights = [350 - flashcard.ease for flashcard in flashcards] # 350 = max ease
+        flashcard_weights = [(350 - flashcard.ease)**2 for flashcard in flashcards] # 350 = max ease
         flashcards = weighted_sample(list(flashcards), flashcard_weights, amount)
     elif request.data.get('random_order'):
         flashcard_ids = flashcards.values_list('id', flat=True)

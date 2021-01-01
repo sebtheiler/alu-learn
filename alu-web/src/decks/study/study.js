@@ -185,7 +185,7 @@ export function StudyElement(props) {
       <RenderFlashCardStudy flashcard={currentCard} showAnswer={showAnswer} />
       <footer className='fixed-bottom mb-5'>
         <div className='mb-5'>
-          {currentCard.tags && <p className='ml-3'>Tags: {currentCard.tags}</p>}
+          {currentCard.tags && showAnswer && <p className='ml-3'>Tags: {currentCard.tags}</p>}
           <ButtonGroup className={'col-md-12 text-center mb-1' + (showAnswer || currentCard === null ? ' d-none' : '')}>
             <Button onClick={showAnswerHandler} id='showanswer'>Show Answer</Button>
           </ButtonGroup>
