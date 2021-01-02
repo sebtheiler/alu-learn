@@ -1565,7 +1565,7 @@ def game_flashcards_view(request, *args, **kwargs):
         query &= Q(creator__deck__id=deck_id)
 
     # Get the list of all possible flashcards, based on the method type
-    if method_type == 'SEEN':
+    if method_type == 'SEEN' or method_type == 'PERSONAL':
         query &= ~Q(learning_status='UNSEEN')
     elif method_type == 'UNSEEN':
         query &= Q(learning_status='UNSEEN')
@@ -1575,8 +1575,6 @@ def game_flashcards_view(request, *args, **kwargs):
             tags=request.data.get('options').get('tag'),
             return_query_only=True,
         )
-    elif method_type == 'PERSONAL':
-        pass # this logic is handled later
     else:
         return Response({'message': 'Unrecognized method for getting flashcards'}, status=400)
 

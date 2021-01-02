@@ -1,24 +1,24 @@
 -----
 
 
-# Games! - Jan 03 2020 - 0.3.0
+# Games! - Jan 02 2020 - 0.3.0
 Flashcards don't just have to be work; they can be fun too!
 
 
-This update introduces two new fun ways to study with your flashcards: the Matching and Quiz games (more detail below).  You can customize what type of flashcards to review in these games, allowing you to preview new flashcards, review old flashcards, review a specific unit, or improve on the flashcards that are most difficult for you.
+This update introduces two new fun ways to study with your flashcards: the Matching and Quiz games (more details below).  You can customize the type of flashcards to review in these games, allowing you to preview new flashcards, review old flashcards, review a specific unit, or improve on the flashcards that are most difficult for you.
 
 
 * **Games:** Games can be found after pressing the new "Other" button on your decks and then clicking "Games."  Games are currently not available for cloze flashcards.
-* **Matching Game:** The Matching Game gives you a 4x4, 6x6, or 8x8 grid of flashcards.  You are then asked to match which flashcard fronts correspond to which flashcard backs.
-* **Quiz Game:** This game takes the form of a classical four-answer quiz.  It prompts you with a flashcard's front and tasks you with figuring out its correct answer (I do see the irony in calling a quiz a game, but it's surprisingly fun).
-* **Improved Deck Homepage Design:** The "Edit" and "Browse" buttons have now been moved to an "Other" dropdown on the deck homepage.  The "Other" dropdown also includes a way to access games in your deck.  This is intended to remove visual clutter and make way for new options with decks.
-* **Freezing Tags Field:** Since it is almost always useful to freeze the "Tags" field, it is now frozen by default when creating flashcards.
+    * **Matching Game:** The Matching Game gives you a 4x4, 6x6, or 8x8 grid of flashcards.  You are then asked to match which flashcard "front" corresponds to which flashcard "back".
+    * **Quiz Game:** This game takes the form of a classical four-answer quiz.  It prompts you with a flashcard "front" and tasks you with figuring out the correct answer (I do see the irony in calling a quiz a game, but it's surprisingly fun).
+* **Improved Deck Homepage Design:** The "Edit" and "Browse" buttons have now been moved to an "Other" dropdown on the deck homepage.  The "Other" dropdown also includes a way to access games in your deck.  This is intended to remove visual clutter and make way for future options.
+* **Frozen Tags:** Since it is almost always useful to [freeze](/help/freezing-fields/) the "Tags" field, it is now frozen by default when creating flashcards.
 * **Creating/Editing Flashcard Loading Display:** Before, it was hard to tell whether a flashcard had been saved after editing it.  It now briefly displays "Saving..." as it saves.  In the same vein, "Creating..." is also displayed right after you press "Create" to create a new flashcard.
-* **Creating Flashcard History:** It can sometimes be a pain to edit the flashcards you just created.  You can now access your recently created flashcards through a "History" dropdown when creating flashcards.
-* **Improved Profile Page:** Fixed a small issue that would display broken "Study" and "Edit" buttons on users' shared decks in their profile.
-* **Fixed Studying Bug:** Fixed a bug that caused tomorrow's flashcards to appear today if the user was studying past 10 PM.
-* **Displays Tags When Studying:** A big issue in flashcards is context: making sure each flashcard fits into a bigger picture, rather than memorizing individual facts. The current flashcard's tags are now displayed to you when studying to help give the flashcard more context.
-* **Filtered Decks Tutorial:**  There is now a tutorial for filtered decks available on the [help](/help/) page.  This tutorial has been out for a while, but it can now be found in the help section.
+* **Creating Flashcard History:** It can be a pain to edit the flashcards you've just created.  Now, you can access your recently created flashcards through a "History" dropdown.
+* **Improved Profile Page:** Fixed a small issue that would display broken "Study" and "Edit" buttons on your profile page.
+* **Fixed Studying Bug:** Fixed a bug that caused tomorrow's flashcards to appear today if you were studying past 10 PM.
+* **Display Tags When Studying:** A big issue in flashcards is context: making sure each flashcard fits into a bigger picture, rather than memorizing individual facts. Now, the current flashcard's tags are displayed when studying to help provide more context.
+* **Filtered Decks Tutorial:**  There is a tutorial for filtered decks available on the [help](/help/) page.  This tutorial has been out for a while, but it can now be found in the help section.
 
 
 # Personalizing Alu & Better Study Habits - Dec 14 2020 - 0.2.0
