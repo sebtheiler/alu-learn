@@ -4,6 +4,7 @@ import random
 import re
 from copy import deepcopy
 from itertools import chain
+from typing import List, Tuple
 
 from django.core.cache import cache
 from django.db.models import Q
@@ -1159,7 +1160,7 @@ def shared_deck_create_view(request, *args, **kwargs):
     return Response(SharedDeckSerializer(shared_deck).data, status=201)
 
 
-def clone_flashcard_creator(creator_to_clone_from, new_deck=None, set_was_updated=False, origin_or_copied='COPIED', skip_creating_review_instances=False):
+def clone_flashcard_creator(creator_to_clone_from: FlashCardCreator, new_deck=None, set_was_updated=False, origin_or_copied='COPIED', skip_creating_review_instances=False) -> Tuple[FlashCardCreator, List[FlashCard]]:
     """
     Clones and saves a full copy of a flashcard creator
     (returns the creator's review instances)
@@ -1338,41 +1339,7 @@ def shared_deck_update_view(request, *args, **kwargs):
         except FlashCardCreator.DoesNotExist as e:
             shared_mirror = None
 
-        if shared_mirror is not None: 
-            # If the flashcard creator already has a corresponding shared mirror, update it
-
-            edited = False
-            shared_fields = shared_mirror.fields.all()
-            origin_fields = origin_flashcard_creator.fields.all()
-            for origin_field in origin_fields:
-                try:
-                    shared_field = shared_fields.get(field_number=origin_field.field_number)
-                except FlashCardField.DoesNotExist:
-                    FlashCardField.objects.create(
-                        creator=shared_mirror,
-                        text=origin_field.text,
-                        field_number=origin_field.field_number,
-                    )
-                    continue
-
-                if not shared_mirror.was_updated:
-                    if shared_mirror.tags != origin_flashcard_creator.tags:
-                        shared_mirror.tags = origin_flashcard_creator.tags
-                        if not edited:
-                            diff['modified'] += 1
-                            edited = True
-
-                    shared_mirror.was_updated = True
-                    shared_mirror.save()
-
-                if shared_field.text != origin_field.text:
-                    if not check_diff_only:
-                        shared_field.text = origin_field.text
-                        shared_field.save()
-                    if not edited:
-                        diff['modified'] += 1
-                        edited = True
-        else:
+        if shared_mirror is None: 
             if not check_diff_only:
                 # (we don't create review instances in shared decks)
                 clone_flashcard_creator(
@@ -1384,6 +1351,15 @@ def shared_deck_update_view(request, *args, **kwargs):
                 )
             
             diff['created'] += 1
+        else:
+            # If the flashcard creator already has a corresponding shared mirror, update it
+            _, actual_difference = update_flashcard_creator(
+                creator_to_update=shared_mirror,
+                creator_to_get_updates_from=origin_flashcard_creator,
+                check_diff_only=check_diff_only,
+            )
+            if actual_difference:
+                diff['modified'] += 1
 
     # Delete all flashcards that weren't updated
     not_updated = shared_mirrors.filter(was_updated=False)
@@ -1430,6 +1406,44 @@ def deck_get_updates_view(request, deck_id, *args, **kwargs):
     return Response({'needs_updating': needs_updating}, status=200)
 
 
+def update_flashcard_creator(creator_to_update: FlashCardCreator, creator_to_get_updates_from: FlashCardCreator, check_diff_only=False) -> Tuple[FlashCardCreator, bool]:
+    # Keep track if there were any actual changes
+    actual_difference = False
+
+    # Update flashcard fields
+    fields_to_update = creator_to_update.fields.all()
+    fields_to_get_updates_from = creator_to_get_updates_from.fields.all()
+    for field_with_updates in fields_to_get_updates_from:
+        try:
+            # Try to get the field to update that corresponds with the field to get updates from
+            field_to_update = fields_to_update.get(field_number=field_with_updates.field_number)
+        except FlashCardField.DoesNotExist:
+            # If it doesn't exist, create it
+            if not check_diff_only:
+                FlashCardField.objects.create(
+                    creator=creator_to_update,
+                    text=field_with_updates.text,
+                    field_number=field_with_updates.field_number,
+                )
+            actual_difference = True
+            continue
+ 
+        if field_to_update.text != field_with_updates.text:
+            if not check_diff_only:
+                field_to_update.text = field_with_updates.text
+                field_to_update.save()
+            actual_difference = True
+    
+    # Update tags and mark as being updated
+    if creator_to_update.tags != creator_to_get_updates_from.tags:
+        if not check_diff_only:
+            creator_to_update.tags = creator_to_get_updates_from.tags
+        actual_difference = True
+    creator_to_update.was_updated = True
+    creator_to_update.save()
+
+    return creator_to_update, actual_difference
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def deck_pull_updates_view(request, deck_id, *args, **kwargs):
@@ -1473,28 +1487,11 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
                 _, new_flashcards = clone_flashcard_creator(shared_flashcard_creator, deck, set_was_updated=True)
                 flashcards += new_flashcards
             else:
-                # Attempt to update existing flashcard creator
-                local_fields = local_flashcard_creator.fields.all()
-                shared_fields = shared_flashcard_creator.fields.all()
-                for shared_field in shared_fields:
-                    try:
-                        local_field = local_fields.get(field_number=shared_field.field_number)
-                    except FlashCardField.DoesNotExist:
-                        FlashCardField.objects.create(
-                            creator=local_flashcard_creator,
-                            text=shared_field.text,
-                            field_number=shared_field.field_number,
-                        )
-                        continue
- 
-                    if not local_flashcard_creator.was_updated:
-                        local_flashcard_creator.tags = shared_flashcard_creator.tags
-                        local_flashcard_creator.was_updated = True
-                        local_flashcard_creator.save()
- 
-                    if local_field.text != shared_field.text:
-                        local_field.text = shared_field.text
-                        local_field.save()
+                # Update existing flashcard creator
+                update_flashcard_creator(
+                    creator_to_update=local_flashcard_creator,
+                    creator_to_get_updates_from=shared_flashcard_creator,
+                )
 
         # Create all flashcard review instances
         FlashCard.objects.bulk_create(flashcards)
