@@ -91,6 +91,55 @@ CONTENT_INDICIES_DICT = {
         [0],
     ],
 }
+
+def create_flashcard_review_instance(flashcard_type, creator, field):
+    """
+    Function for creating flashcard review instances, given a flashcard type, creator, and text for cloze
+
+    `flashcard_type`: Type of the flashcard to create (e.g., 'cloze', 'basic', 'reversed')
+    `creator`: FlashCardCreator object that will house this flashcard review instance
+    `field`: Only needed for cloze flashcards, provides the text to parse with regex to get cloze instances
+    """
+    # Get background information
+    now = timezone.now()
+    this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    try:
+        all_content_indicies = CONTENT_INDICIES_DICT[flashcard_type.upper()]
+    except KeyError:
+        raise ValueError(f'Flashcard type "{flashcard_type}" unrecognized')
+
+    # Create flashcard review instance
+    if flashcard_type == 'cloze':
+        # Create a flashcard for each cloze segment
+        cloze_ids = []
+        def cloze_flashcard(match):
+            cloze_id = int(match.group().split(":")[0][3:])
+            cloze_ids.append(cloze_id)
+            return FlashCard(
+                creator=creator,
+                next_review=this_morning,
+                content_indicies=[0],
+                name=f'cloze-{cloze_id}'
+            )
+
+        return [
+            cloze_flashcard(match)
+            for match in re.finditer(r"{{c\d*::.*?}}", json.dumps(field), re.MULTILINE) \
+                if int(match.group().split("::")[0][3:]) not in cloze_ids
+        ]
+    else:
+        # Create a flashcard for each field
+        return [
+            FlashCard(
+                creator=creator,
+                next_review=this_morning,
+                content_indicies=all_content_indicies[i],
+            )
+            for i in range(len(all_content_indicies))
+        ]
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_create_view(request, deck_id, *args, **kwargs):
@@ -116,9 +165,6 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     flashcard_type = request.data.get('flashcard_type', 'basic')
     tags = request.data.get('tags')
     if fields is not None:
-        now = timezone.now()
-        this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
-
         creator = FlashCardCreator.objects.create(
             deck=deck,
             tags=tags,
@@ -134,38 +180,8 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             for i, text in enumerate(fields)
         ])
 
-        all_content_indicies = CONTENT_INDICIES_DICT.get(flashcard_type.upper())
-        if all_content_indicies is None:
-            return Response({'message': f'Unrecognized flashcard type "{flashcard_type.upper()}"'}, status=400)
-
-        if flashcard_type == 'cloze':
-            # Create a flashcard for each cloze segment
-            cloze_ids = []
-            def cloze_flashcard(match):
-                cloze_id = int(match.group().split(":")[0][3:])
-                cloze_ids.append(cloze_id)
-                return FlashCard(
-                    creator=creator,
-                    next_review=this_morning,
-                    content_indicies=[0],
-                    name=f'cloze-{cloze_id}'
-                )
-
-            flashcards = FlashCard.objects.bulk_create([
-                cloze_flashcard(match)
-                for match in re.finditer(r"{{c\d*::.*?}}", json.dumps(fields[0]), re.MULTILINE) \
-                    if int(match.group().split("::")[0][3:]) not in cloze_ids
-            ])
-        else:
-            # Create a flashcard for each field
-            flashcards = FlashCard.objects.bulk_create([
-                FlashCard(
-                    creator=creator,
-                    next_review=this_morning,
-                    content_indicies=all_content_indicies[i],
-                )
-                for i in range(len(all_content_indicies))
-            ])
+        flashcards = create_flashcard_review_instance(flashcard_type, creator, fields[0])
+        FlashCard.objects.bulk_create(flashcards)
 
         return Response(FlashCardSerializer(instance=flashcards, many=True).data, 201)
     else:
@@ -1192,8 +1208,6 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
 
     # Create flashcards for each creator in the cloned deck
     # This process is very inefficient and needs future optimizations
-    now = timezone.now()
-    this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
     flashcards = []
     for shared_flashcard_creator in shared_deck.flashcards.all().prefetch_related('fields'):
         local_flashcard_creator = deepcopy(shared_flashcard_creator)
@@ -1214,40 +1228,12 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
             field.creator = local_flashcard_creator
             field.save()
 
-        # Clone the flashcards review instances from the creator
-        if local_flashcard_creator.flashcard_type == 'cloze':
-            # Create a flashcard for each cloze segment
-            cloze_ids = []
-            def cloze_flashcard(match):
-                cloze_id = int(match.group().split(":")[0][3:])
-                cloze_ids.append(cloze_id)
-                return FlashCard(
-                    creator=local_flashcard_creator,
-                    next_review=this_morning,
-                    content_indicies=[0],
-                    name=f'cloze-{cloze_id}'
-                )
-
-            flashcards += [
-                cloze_flashcard(match)
-                for match in re.finditer(r"{{c\d*::.*?}}", json.dumps(local_flashcard_creator.fields.first().text), re.MULTILINE) \
-                    if int(match.group().split("::")[0][3:]) not in cloze_ids
-            ]
-        else:
-            # Create a flashcard for each field
-            try:
-                all_content_indicies = CONTENT_INDICIES_DICT[local_flashcard_creator.flashcard_type.upper()]
-            except KeyError:
-                return Response({'message': f'Flashcard type "{local_flashcard_creator.flashcard_type}" unrecognized'}, status=400)
-
-            flashcards += [
-                FlashCard(
-                    creator=local_flashcard_creator,
-                    next_review=this_morning,
-                    content_indicies=all_content_indicies[i],
-                )
-                for i in range(len(all_content_indicies))
-            ]
+        # Derive the flashcards review instances from the creator
+        flashcards += create_flashcard_review_instance(
+            local_flashcard_creator.flashcard_type,
+            local_flashcard_creator,
+            local_flashcard_creator.fields.first().text,           
+        )
     FlashCard.objects.bulk_create(flashcards)
 
     return Response(DeckSerializer(deck).data, status=200)
@@ -1462,8 +1448,6 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
             except FlashCardCreator.DoesNotExist:
                 local_flashcard_creator = None
             
-            now = timezone.now()
-            this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
             if local_flashcard_creator is None:
                 # Create new flashcard creator
                 local_flashcard_creator = deepcopy(shared_flashcard_creator)
@@ -1483,39 +1467,11 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
                     field.save()
 
                 # Derive the flashcards review instances from the creator
-                if local_flashcard_creator.flashcard_type == 'cloze':
-                    # Create a flashcard for each cloze instance
-                    cloze_ids = []
-                    def cloze_flashcard(match):
-                        cloze_id = int(match.group().split(":")[0][3:])
-                        cloze_ids.append(cloze_id)
-                        return FlashCard(
-                            creator=local_flashcard_creator,
-                            next_review=this_morning,
-                            content_indicies=[0],
-                            name=f'cloze-{cloze_id}'
-                        )
-
-                    flashcards += [
-                        cloze_flashcard(match)
-                        for match in re.finditer(r"{{c\d*::.*?}}", json.dumps(local_flashcard_creator.fields.first().text), re.MULTILINE) \
-                            if int(match.group().split("::")[0][3:]) not in cloze_ids
-                    ]
-                else:
-                    # Create a flashcard for each content index 
-                    try:
-                        all_content_indicies = CONTENT_INDICIES_DICT[local_flashcard_creator.flashcard_type.upper()]
-                    except KeyError:
-                        return Response({'message': f'Flashcard type "{local_flashcard_creator.flashcard_type}" unrecognized'}, status=400)
-
-                    flashcards += [
-                        FlashCard(
-                            creator=local_flashcard_creator,
-                            next_review=this_morning,
-                            content_indicies=all_content_indicies[i],
-                        )
-                        for i in range(len(all_content_indicies))
-                    ]
+                flashcards += create_flashcard_review_instance(
+                    local_flashcard_creator.flashcard_type,
+                    local_flashcard_creator,
+                    local_flashcard_creator.fields.first().text,           
+                )
             else:
                 # Attempt to update existing flashcard creator
                 local_fields = local_flashcard_creator.fields.all()
