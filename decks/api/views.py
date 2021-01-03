@@ -1159,6 +1159,45 @@ def shared_deck_create_view(request, *args, **kwargs):
     return Response(SharedDeckSerializer(shared_deck).data, status=201)
 
 
+def clone_flashcard_creator(creator_to_clone_from, new_deck=None, set_was_updated=False):
+    """
+    Clones and saves a full copy of a flashcard creator
+    (returns the creator's review instances)
+
+    `creator_to_clone_from`: The FlashCardCreator object to clone from
+    `new_deck`: The Deck object the new creator will be housed in
+    """
+    new_flashcard_creator = deepcopy(creator_to_clone_from)
+
+    # Reset (some) attributes
+    new_flashcard_creator.pk = None
+    new_flashcard_creator.id = None
+    new_flashcard_creator.shared_mirror = None # reset the one2one relation
+    new_flashcard_creator.origin_creator = None
+    new_flashcard_creator.copied_from_creator = creator_to_clone_from # keep track of where this flashcard creator came from
+    if new_deck:
+        # Change to now belonging to the new deck
+        new_flashcard_creator.deck = new_deck
+    if set_was_updated:
+        new_flashcard_creator.was_updated = True
+    new_flashcard_creator.save()
+
+    # Clone the flashcard creator's fields
+    new_creator_fields = deepcopy(creator_to_clone_from.fields.all())
+    for field in new_creator_fields:
+        field.pk = None
+        field.creator = new_flashcard_creator
+        field.save()
+
+    # Derive the flashcards review instances from the creator
+    new_flashcards = create_flashcard_review_instance(
+        new_flashcard_creator.flashcard_type,
+        new_flashcard_creator,
+        new_flashcard_creator.fields.first().text,           
+    )
+
+    return new_flashcard_creator, new_flashcards
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
@@ -1208,32 +1247,11 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
 
     # Create flashcards for each creator in the cloned deck
     # This process is very inefficient and needs future optimizations
+    shared_flashcard_creators = shared_deck.flashcards.all().prefetch_related('fields')
     flashcards = []
-    for shared_flashcard_creator in shared_deck.flashcards.all().prefetch_related('fields'):
-        local_flashcard_creator = deepcopy(shared_flashcard_creator)
-
-        # Clone the flashcard creator
-        local_flashcard_creator.pk = None
-        local_flashcard_creator.id = None
-        local_flashcard_creator.shared_mirror = None # reset the one2one relation
-        local_flashcard_creator.origin_creator = None
-        local_flashcard_creator.copied_from_creator = shared_flashcard_creator # keep track of where this flashcard creator came from
-        local_flashcard_creator.deck = deck # change to now belonging to the new deck
-        local_flashcard_creator.save()
-
-        # Clone the flashcard creator's fields
-        local_creator_fields = deepcopy(shared_flashcard_creator.fields.all())
-        for field in local_creator_fields:
-            field.pk = None
-            field.creator = local_flashcard_creator
-            field.save()
-
-        # Derive the flashcards review instances from the creator
-        flashcards += create_flashcard_review_instance(
-            local_flashcard_creator.flashcard_type,
-            local_flashcard_creator,
-            local_flashcard_creator.fields.first().text,           
-        )
+    for shared_flashcard_creator in shared_flashcard_creators:
+        _, new_flashcards = clone_flashcard_creator(shared_flashcard_creator, deck)
+        flashcards += new_flashcards
     FlashCard.objects.bulk_create(flashcards)
 
     return Response(DeckSerializer(deck).data, status=200)
@@ -1449,29 +1467,9 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
                 local_flashcard_creator = None
             
             if local_flashcard_creator is None:
-                # Create new flashcard creator
-                local_flashcard_creator = deepcopy(shared_flashcard_creator)
-                local_flashcard_creator.pk = None
-                local_flashcard_creator.id = None
-                local_flashcard_creator.deck = deck
-                local_flashcard_creator.was_updated = True
-                local_flashcard_creator.origin_creator = None
-                local_flashcard_creator.copied_from_creator = shared_flashcard_creator # keep track of where this flashcard creator came from
-                local_flashcard_creator.save()
-
-                # Clone flashcard creator fields
-                creator_fields = shared_flashcard_creator.fields.all()
-                for field in creator_fields:
-                    field.pk = None
-                    field.creator = local_flashcard_creator
-                    field.save()
-
-                # Derive the flashcards review instances from the creator
-                flashcards += create_flashcard_review_instance(
-                    local_flashcard_creator.flashcard_type,
-                    local_flashcard_creator,
-                    local_flashcard_creator.fields.first().text,           
-                )
+                # Clone the new flashcard creator
+                _, new_flashcards = clone_flashcard_creator(shared_flashcard_creator, deck, set_was_updated=True)
+                flashcards += new_flashcards
             else:
                 # Attempt to update existing flashcard creator
                 local_fields = local_flashcard_creator.fields.all()
