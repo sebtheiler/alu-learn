@@ -1318,13 +1318,11 @@ def shared_deck_update_view(request, *args, **kwargs):
     for origin_flashcard_creator in origin_flashcard_creators:
         try:
             shared_mirror = origin_flashcard_creator.shared_mirror
-            has_mirror = True
         except FlashCardCreator.DoesNotExist as e:
-            has_mirror = False
+            shared_mirror = None
 
-        if has_mirror: 
+        if shared_mirror is not None: 
             # If the flashcard creator already has a corresponding shared mirror, update it
-            # The "possibly unbound" warning are wrong
 
             edited = False
             shared_fields = shared_mirror.fields.all()
@@ -1457,14 +1455,16 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
         # the copied_from_creator is set to null, and it is then seen in the following line
         local_flashcard_creators = FlashCardCreator.objects.filter(deck=deck, copied_from_creator__deck=shared_deck)
         shared_flashcard_creators = shared_deck.flashcards.all().prefetch_related('fields')
+        flashcards = []
         for shared_flashcard_creator in shared_flashcard_creators:
             try:
                 local_flashcard_creator = local_flashcard_creators.get(copied_from_creator=shared_flashcard_creator)
-                to_create = False
             except FlashCardCreator.DoesNotExist:
-                to_create = True
+                local_flashcard_creator = None
             
-            if to_create:
+            now = timezone.now()
+            this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
+            if local_flashcard_creator is None:
                 # Create new flashcard creator
                 local_flashcard_creator = deepcopy(shared_flashcard_creator)
                 local_flashcard_creator.pk = None
@@ -1475,16 +1475,47 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
                 local_flashcard_creator.copied_from_creator = shared_flashcard_creator # keep track of where this flashcard creator came from
                 local_flashcard_creator.save()
 
-                # Create link between the shared and the origin flashcard creators
-                local_flashcard_creator.copied_from_creator = shared_flashcard_creator
-                local_flashcard_creator.save()
-
                 # Clone flashcard creator fields
                 creator_fields = shared_flashcard_creator.fields.all()
                 for field in creator_fields:
                     field.pk = None
                     field.creator = local_flashcard_creator
                     field.save()
+
+                # Derive the flashcards review instances from the creator
+                if local_flashcard_creator.flashcard_type == 'cloze':
+                    # Create a flashcard for each cloze instance
+                    cloze_ids = []
+                    def cloze_flashcard(match):
+                        cloze_id = int(match.group().split(":")[0][3:])
+                        cloze_ids.append(cloze_id)
+                        return FlashCard(
+                            creator=local_flashcard_creator,
+                            next_review=this_morning,
+                            content_indicies=[0],
+                            name=f'cloze-{cloze_id}'
+                        )
+
+                    flashcards += [
+                        cloze_flashcard(match)
+                        for match in re.finditer(r"{{c\d*::.*?}}", json.dumps(local_flashcard_creator.fields.first().text), re.MULTILINE) \
+                            if int(match.group().split("::")[0][3:]) not in cloze_ids
+                    ]
+                else:
+                    # Create a flashcard for each content index 
+                    try:
+                        all_content_indicies = CONTENT_INDICIES_DICT[local_flashcard_creator.flashcard_type.upper()]
+                    except KeyError:
+                        return Response({'message': f'Flashcard type "{local_flashcard_creator.flashcard_type}" unrecognized'}, status=400)
+
+                    flashcards += [
+                        FlashCard(
+                            creator=local_flashcard_creator,
+                            next_review=this_morning,
+                            content_indicies=all_content_indicies[i],
+                        )
+                        for i in range(len(all_content_indicies))
+                    ]
             else:
                 # Attempt to update existing flashcard creator
                 local_fields = local_flashcard_creator.fields.all()
@@ -1509,6 +1540,9 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
                         local_field.text = shared_field.text
                         local_field.save()
 
+        # Create all flashcard review instances
+        FlashCard.objects.bulk_create(flashcards)
+
         # Delete all flashcards that weren't updated
         not_updated = local_flashcard_creators.filter(was_updated=False)
         not_updated.delete()
@@ -1520,6 +1554,7 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
         shared_deck_relation.save()
         return Response(DeckSerializer(deck).data, status=200)
     else:
+        # Pulling multiple decks at once is currently not implemented
         return Response({}, status=501)
 
 
