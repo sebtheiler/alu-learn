@@ -1159,13 +1159,16 @@ def shared_deck_create_view(request, *args, **kwargs):
     return Response(SharedDeckSerializer(shared_deck).data, status=201)
 
 
-def clone_flashcard_creator(creator_to_clone_from, new_deck=None, set_was_updated=False):
+def clone_flashcard_creator(creator_to_clone_from, new_deck=None, set_was_updated=False, origin_or_copied='COPIED', skip_creating_review_instances=False):
     """
     Clones and saves a full copy of a flashcard creator
     (returns the creator's review instances)
 
     `creator_to_clone_from`: The FlashCardCreator object to clone from
     `new_deck`: The Deck object the new creator will be housed in
+    `set_was_updated`: Mark the new FlashCardCreator as being updated (may be used to stop it from being deleted)
+    `origin_or_creator`: Whether to update the origin_creator or copied_from_creator attribute. ORIGIN for shared decks; COPIED for pulling.
+    `skip_creating_review_instances`: If True, skips creating review instances, for efficiency reasons (may be used when updating shared decks)
     """
     new_flashcard_creator = deepcopy(creator_to_clone_from)
 
@@ -1173,8 +1176,15 @@ def clone_flashcard_creator(creator_to_clone_from, new_deck=None, set_was_update
     new_flashcard_creator.pk = None
     new_flashcard_creator.id = None
     new_flashcard_creator.shared_mirror = None # reset the one2one relation
-    new_flashcard_creator.origin_creator = None
-    new_flashcard_creator.copied_from_creator = creator_to_clone_from # keep track of where this flashcard creator came from
+    if origin_or_copied == 'COPIED':
+        new_flashcard_creator.origin_creator = None
+        new_flashcard_creator.copied_from_creator = creator_to_clone_from
+    elif origin_or_copied == 'ORIGIN':
+        new_flashcard_creator.origin_creator = creator_to_clone_from
+        new_flashcard_creator.copied_from_creator = None
+    else:
+        raise ValueError('Invlaid value for `origin_or_copied`')
+
     if new_deck:
         # Change to now belonging to the new deck
         new_flashcard_creator.deck = new_deck
@@ -1190,11 +1200,14 @@ def clone_flashcard_creator(creator_to_clone_from, new_deck=None, set_was_update
         field.save()
 
     # Derive the flashcards review instances from the creator
-    new_flashcards = create_flashcard_review_instance(
-        new_flashcard_creator.flashcard_type,
-        new_flashcard_creator,
-        new_flashcard_creator.fields.first().text,           
-    )
+    if not skip_creating_review_instances:
+        new_flashcards = create_flashcard_review_instance(
+            new_flashcard_creator.flashcard_type,
+            new_flashcard_creator,
+            new_flashcard_creator.fields.first().text,           
+        )
+    else:
+        new_flashcards = None
 
     return new_flashcard_creator, new_flashcards
 
@@ -1361,25 +1374,14 @@ def shared_deck_update_view(request, *args, **kwargs):
                         edited = True
         else:
             if not check_diff_only:
-                # Clone flashcard creator
-                shared_flashcard_creator = deepcopy(origin_flashcard_creator)
-                shared_flashcard_creator.pk = None
-                shared_flashcard_creator.id = None
-                shared_flashcard_creator.deck = shared_deck
-                shared_flashcard_creator.was_updated = True
-                shared_flashcard_creator.save()
-
-                # Create link between the shared and the origin flashcard creators
-                shared_flashcard_creator.origin_creator = origin_flashcard_creator
-                shared_flashcard_creator.save()
-                origin_flashcard_creator.save()
-
-                # Clone flashcard creator fields
-                creator_fields = origin_flashcard_creator.fields.all()
-                for field in creator_fields:
-                    field.pk = None
-                    field.creator = shared_flashcard_creator
-                    field.save()
+                # (we don't create review instances in shared decks)
+                clone_flashcard_creator(
+                    origin_flashcard_creator,
+                    shared_deck,
+                    set_was_updated=True,
+                    origin_or_copied='ORIGIN',
+                    skip_creating_review_instances=True,
+                )
             
             diff['created'] += 1
 
