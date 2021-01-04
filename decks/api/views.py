@@ -1332,7 +1332,6 @@ def shared_deck_update_view(request, *args, **kwargs):
 
     # Update the shared deck's flashcard creators
     origin_flashcard_creators = origin_deck.flashcards.prefetch_related('fields', 'shared_mirror')
-    shared_mirrors = FlashCardCreator.objects.filter(deck=shared_deck)
     for origin_flashcard_creator in origin_flashcard_creators:
         try:
             shared_mirror = origin_flashcard_creator.shared_mirror
@@ -1340,6 +1339,7 @@ def shared_deck_update_view(request, *args, **kwargs):
             shared_mirror = None
 
         if shared_mirror is None: 
+            # Create new shared mirror
             if not check_diff_only:
                 # (we don't create review instances in shared decks)
                 clone_flashcard_creator(
@@ -1362,6 +1362,7 @@ def shared_deck_update_view(request, *args, **kwargs):
                 diff['modified'] += 1
 
     # Delete all flashcards that weren't updated
+    shared_mirrors = FlashCardCreator.objects.filter(deck=shared_deck)
     not_updated = shared_mirrors.filter(was_updated=False)
     diff['deleted'] += not_updated.count()
     if not check_diff_only:

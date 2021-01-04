@@ -61,3 +61,10 @@ def notifications_list_view(request, *args, **kwargs):
     elif not request.user.is_confirmed:
         return redirect('/confirm-email/')
     return render(request, 'profiles/notifications.html', {'username': request.user.username})
+
+# Allows a staff to login to a user's account for emergency support
+def staff_force_login_view(request, *args, **kwargs):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        raise Http404()
+    
+    return render(request, 'profiles/staff-login.html')

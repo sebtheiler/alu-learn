@@ -1,7 +1,7 @@
 -----
 
 ## Deck Updating - Jan 03 2020 - 0.3.1
-This small update fixes some undetected issues in pulling deck changes.  You can now update the decks that you copied from shared decks properly.
+This small update fixes some undetected issues in pulling deck changes.  You can now update the decks that you copied from shared decks properly.  There are unfortunately still a few minor issues with pulling deletes, but these will hopefully be resolved within the coming week.
 
 
 * **Fixed Flashcard Pulling:**  Fixed a major issue that would cause pulled flashcards to appear in your deck, but not be able to be studied.

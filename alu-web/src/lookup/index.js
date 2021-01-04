@@ -68,6 +68,7 @@ import {
   apiNotePageDetail,
   apiProfileReadPopup,
   apiGameFlashcards,
+  apiStaffForceLogin,
 } from './lookup';
 
 export {
@@ -140,4 +141,5 @@ export {
   apiNotePageDetail,
   apiProfileReadPopup,
   apiGameFlashcards,
+  apiStaffForceLogin,
 }

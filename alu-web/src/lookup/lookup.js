@@ -528,3 +528,9 @@ export function apiGameFlashcards(deckId, type, amount, randomOrder, options, ca
     options: options,
   });
 }
+
+// Allows a staff to login to a user's account for emergency support
+// You can't use this if you're not a staff, so don't both trying
+export function apiStaffForceLogin(username, callback) {
+  backendLookup('POST', 'profiles/staff-force-login/', callback, { username: username });
+}

@@ -108,6 +108,7 @@ int(hexadecimal_string, 16)
 3020: Error changing email through apiEmailChange in alu-web/src/home/settings/change.js
 3021: Error setting user preferences through apiProfileSettingsUpdate in alu-web/src/home/customization.js
 3022: Error marking the profile popup as read through apiProfileReadPopup in alu-web/src/home/navbar-popup.js
+3023: Error logging staff into user account through apiStaffForceLogin in alu-web/src/profiles/staff-force-login.js
 
 === Misc ===
 4000: Error submitting feedback through apiFeedbackSubmit in alu-web/src/home/contactus.js

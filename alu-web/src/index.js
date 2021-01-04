@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import './index.css';
 
-import { ProfileInformationComponent, LoginComponent } from './profiles';
+import { ProfileInformationComponent, LoginComponent, StaffForceLogin } from './profiles';
 import { DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, ShareDeck, PushSharedDeck, UpdateDeck } from './decks';
 import { FlashCardCreate, FlashCardsList, FlashCardSearchComponent } from './decks/flashcards';
 import { StudyComponent } from './decks/study';
@@ -177,6 +177,12 @@ const gameElement = document.getElementById('game-component');
 if (gameElement) {
   ReactDOM.render(e(GameComponent, gameElement.dataset), gameElement);
 }
+
+const staffForceLoginElement = document.getElementById('staff-force-login');
+if (staffForceLoginElement) {
+  ReactDOM.render(e(StaffForceLogin, staffForceLoginElement.dataset), staffForceLoginElement);
+}
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

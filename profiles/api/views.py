@@ -647,3 +647,24 @@ def read_changelog_popup_api_view(request, *args, **kwargs):
     settings.save()
 
     return Response({'message': 'Marked popup as read'}, status=200)
+
+@api_view(['POST'])
+def staff_force_login(request, *args, **kwargs):
+    """
+    Allows a staff to login to another user's account for emergency support reasons - POST
+    You can't use this if you aren't a staff, so don't bother trying
+
+    Required information:
+        `username`: (Data) Username of the account to login to
+    """
+    if not request.user.is_staff:
+        return Response({'message': 'No'}, status=420)
+    
+    username = request.data.get('username').lower()
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return Response({'message': 'User not found'}, status=404)
+    login(request, user)
+
+    return Response({'message': 'You\'re in'}, status=200)
