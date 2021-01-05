@@ -29,8 +29,8 @@ export function FullEditor(props) {
   const {editor, readOnly, styleOptions, id} = props;
   const {minHeight, showBorder} = styleOptions ? styleOptions : { showBorder: true };
 
-  const renderElement = useCallback(props => <Element {...props} />, []);
-  const renderLeaf = useCallback(props => <Leaf {...props} />, []);
+  const renderElement = useCallback(props => <Element {...props} readOnly={readOnly} />, [readOnly]);
+  const renderLeaf = useCallback(props => <Leaf {...props} readOnly={readOnly} />, [readOnly]);
 
   return (
     <Editable

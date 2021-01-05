@@ -14,6 +14,7 @@ export function EditorButtons(props) {
       <MarkButton format='underline' icon='underline' editor={editor} untabbable={untabbable} />
       <MarkButton format='strikethrough' icon='strikethrough' editor={editor} untabbable={untabbable} />
       <MarkButton format='code' icon='code' editor={editor} untabbable={untabbable} />
+      <MarkButton format='math_inline' icon='divide' editor={editor} untabbable={untabbable} />
 
       <span className='mx-2' />
 
@@ -33,6 +34,7 @@ export function EditorButtons(props) {
       {/* <BlockButton format='block-quote' label='Quote' /> */}
       <BlockButton format='numbered-list' icon='list-ol' editor={editor} untabbable={untabbable} />
       <BlockButton format='bulleted-list' icon='list-ul' editor={editor} untabbable={untabbable} />
+      <BlockButton format='math-block' icon='square-root-alt' editor={editor} untabbable={untabbable} />
 
       <span className='mx-2' />
 

@@ -7,7 +7,7 @@ import { errorHandler } from '../../../utils';
 import '../reader.css';
 import { Form } from 'react-bootstrap';
 
-// TOOD: fix this function
+// TODO: fix this function
 export function AutoFlashCard(props) {
   const {noteId, pageNum} = props;
   const [text, setText] = useState(['Loading...']);

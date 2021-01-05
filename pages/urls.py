@@ -26,6 +26,7 @@ urlpatterns = [
     path('help/leeches/', views.md_view_wrapper('decks/flashcard-leech', 'Leech Flashcards')),
     path('help/freezing-fields/', views.md_view_wrapper('decks/flashcard-field-freezing', 'Freezing Fields in Flashcard Creation')),
     path('help/cloze-deletion/', views.md_view_wrapper('decks/cloze-deletion', 'Cloze Deletion')),
+    path('help/writing-latex/', views.md_view_wrapper('decks/writing-latex', 'LaTeX')),
     # Legal pages
     path('legal/', views.md_view_wrapper('legal/main', 'Legal Documents')),
     path('legal/tos/', views.md_view_wrapper('legal/ToS', 'Terms of Service')),

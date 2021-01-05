@@ -1,5 +1,11 @@
 -----
 
+## Math Equations & TK TK TK - Jan ?? - 0.3.2
+
+
+* **Added LaTeX Editing:** LaTeX is a math-language that allows you to write beautiful equations.  It is easy to learn and you can pick up the basics in a [couple minutes](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes#Adding_math_to_LaTeX).  You can now use LaTeX where ever Alu has a rich text editor, including both flashcards and notes.  There is also a mini-tutorial page available [here](/help/writing-latex/).
+
+
 ## Deck Updating - Jan 03 2020 - 0.3.1
 This small update fixes some undetected issues in pulling deck changes.  You can now update the decks that you copied from shared decks properly.  There are unfortunately still a few minor issues with pulling deletes, but these will hopefully be resolved within the coming week.
 
@@ -23,7 +29,7 @@ This update introduces two new fun ways to study with your flashcards: the Match
 * **Creating Flashcard History:** It can be a pain to edit the flashcards you've just created.  Now, you can access your recently created flashcards through a "History" dropdown.
 * **Improved Profile Page:** Fixed a small issue that would display broken "Study" and "Edit" buttons on your profile page.
 * **Fixed Studying Bug:** Fixed a bug that caused tomorrow's flashcards to appear today if you were studying past 10 PM.
-* **Display Tags When Studying:** A big issue in flashcards is context: making sure each flashcard fits into a bigger picture, rather than memorizing individual facts. Now, the current flashcard's tags are displayed when studying to help provide more context.
+* **Display Tags When Studying:** A big issue in flashcards is providing context: making sure each flashcard fits into a bigger picture, rather than memorizing individual facts. Now, the current flashcard's tags are displayed when studying to help provide more context.
 * **Filtered Decks Tutorial:**  There is a tutorial for filtered decks available on the [help](/help/) page.  This tutorial has been out for a while, but it can now be found in the help section.
 
 

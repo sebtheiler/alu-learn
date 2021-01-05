@@ -1,6 +1,9 @@
 import React from 'react';
 import { LinkElement } from './links';
 import { ImageElement } from './images';
+import { BlockMath, InlineMath } from 'react-katex';
+import { Node } from 'slate';
+import './renderer.css';
 
 export const Element = (props) => {
   // TODO: `readOnly` is unused for now, but will be used in equation editing
@@ -32,6 +35,11 @@ export const Element = (props) => {
       return <LinkElement {...props} />
     case 'image':
       return <ImageElement {...props} />
+    case 'math-block':
+      if (readOnly) {
+        return <BlockMath {...attributes}>{Node.string(props.element)}</BlockMath>
+      }
+      return <p className='math-block' {...attributes}>{children}</p>
     default:
       return <p {...attributes}>{children}</p>
   }
@@ -58,6 +66,21 @@ export const Leaf = ({ attributes, children, leaf, readOnly }) => {
 
   if (leaf.strikethrough) {
     children = <del>{children}</del>
+  }
+
+  if (leaf.math_inline) {
+    if (readOnly) {
+      // I'm sure there's some way like Node.string(...) to avoid this parse error
+      // and allow for rich text ignoring, but I can't find it at the moment
+      const text = children?.props?.text?.text;
+      if (!text) {
+        children = <strong>KaTeX Parse Error: Please make sure the equation has no rich text formatting in it</strong>
+      } else {
+        children = <InlineMath>{text}</InlineMath>
+      }
+    } else {
+      children = <span className='math-inline'>{children}</span>
+    }
   }
 
   return <span {...attributes}>{children}</span>
