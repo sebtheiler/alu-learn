@@ -11,7 +11,7 @@ export function NoteDefaultButtonGroup(props) {
       <Button href={`/notes/edit/${note.id}/`} className='mr-1'>
         Edit
       </Button>
-      <Button href={`/notes/study/${note.id}/`} className='mr-1'>
+      <Button href={`/notes/view/${note.id}/`} className='mr-1'>
         View
       </Button>
     </ButtonGroup>

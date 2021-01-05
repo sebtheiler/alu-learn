@@ -99,7 +99,7 @@ def note_page_create_api_view(request, *args, **kwargs):
     "type": "paragraph",
     "children": [
       {
-        "text": "Take notes here..."
+        "text": "",
       }
     ]
   }

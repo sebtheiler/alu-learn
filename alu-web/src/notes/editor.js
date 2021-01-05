@@ -10,7 +10,7 @@ import './editor.css';
 
 export function NoteEditor(props) {
   const {noteId, pageNum} = props;
-  const isViewing = props.isViewing instanceof String ? props.isViewing === 'true' : props.isViewing;
+  const isViewing = props.isViewing === 'True';
 
   const [valueToSave, setValueToSave] = useState(null);
   const [note, setNote] = useState(null);
@@ -170,7 +170,7 @@ export function NoteEditor(props) {
     }
   }
 
-  if (!(note && page)) {
+  if (!note) {
     return <>Loading...</>
   }
 
@@ -218,7 +218,7 @@ export function NoteEditor(props) {
         <p className='text-secondary'>
           {areChanges ? 'Saving...' : 'Saved'}
         </p>
-        <Button href={`/notes/study/${noteId}/`} className='mb-3'>
+        <Button href={`/notes/view/${noteId}/`} className='mb-3'>
           View
         </Button><br />
       </>}

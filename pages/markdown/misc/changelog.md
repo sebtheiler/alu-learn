@@ -4,6 +4,7 @@
 
 
 * **Added LaTeX Editing:** LaTeX is a math-language that allows you to write beautiful equations.  It is easy to learn and you can pick up the basics in a [couple minutes](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes#Adding_math_to_LaTeX).  You can now use LaTeX where ever Alu has a rich text editor, including both flashcards and notes.  There is also a mini-tutorial page available [here](/help/writing-latex/).
+* **Fixed Issue in Viewing Notes:** Viewing notes was linking to a broken page.  This is now fixed.
 
 
 ## Deck Updating - Jan 03 2020 - 0.3.1
