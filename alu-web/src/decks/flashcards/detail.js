@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, ButtonGroup } from 'react-bootstrap';
 import { QuestionBubble, errorHandler } from '../../utils';
 import { apiFlashCardSuspendLeech, apiFlashCardDelete } from '../../lookup';
 import { createFullEditor, FullEditor } from '../../notes/editor-components';
@@ -88,7 +88,14 @@ export function RenderFlashCardText(props) {
               </Slate>
             </div>
             <div className='col-md-6 text-center'>
-              <Slate
+              {/*
+              This check that `backValue` is available is essential.
+              Without it, when `fixSlateLazy` is active and the flashcard changes
+              from cloze to basic/reversed, `backValue` isn't created yet (it has to wait a render-cycle)
+              so Slate throws an error.
+              This took a long time to understand.
+              */}
+              {backValue && <Slate
                 editor={backEditor}
                 value={backValue}
                 onChange={newValue => {
@@ -100,7 +107,7 @@ export function RenderFlashCardText(props) {
                   readOnly={true}
                   styleOptions={{ showBorder: false, minHeight: '0px' }}
                 />
-              </Slate>
+              </Slate>}
             </div>
           </FlashCardRenderErrorBoundary>
         )
@@ -139,7 +146,7 @@ export function RenderFlashCardText(props) {
 
 // Display an individual flashcard
 export function FlashCard(props) {
-  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser, hideSuspend, fixSlateLazy} = props;
+  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser, hideSuspend, fixSlateLazy, moveUp, moveDown} = props;
 
   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
   const [suspendIsLoading, setSuspendIsLoading] = useState(false);
@@ -196,6 +203,30 @@ export function FlashCard(props) {
     <div className={'container-fluid border my-3' + (foreignUser ? '' : (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : ''))}>
       <div className='row mt-3 text-center'>
         <div className='col-md-12'>
+          <ButtonGroup style={{ right: '10px', display: 'inline-block', position: 'absolute' }}>
+            {moveUp && <Button
+              style={{
+                background: 'none',
+                border: 'none',
+                float: 'right'
+              }}
+              tabIndex='-1'
+              onClick={moveUp}
+            >
+              <i className='fas fa-caret-up' style={{ padding: '0', color: '#001100' }} />
+            </Button>}
+            {moveDown && <Button
+              style={{
+                background: 'none',
+                border: 'none',
+                float: 'right',
+              }}
+              tabIndex='-1'
+              onClick={moveDown}
+            >
+              <i className='fas fa-caret-down' style={{ padding: '0', color: '#001100' }} />
+            </Button>}
+          </ButtonGroup>
           <p className='mb-0'>
             <strong>Flashcard - #{number + 1}</strong>
             {flashcard.learning_status !== 'UNSEEN' && !foreignUser ? <> | Type: "{flashcard.flashcard_type}"</> : null}

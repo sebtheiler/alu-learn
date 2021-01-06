@@ -7,6 +7,8 @@
 * **Fixed Issue in Viewing Notes:** Viewing notes was linking to a broken page.  This is now fixed.
 * **Replaced Broken Buttons on Shared Decks:** There were two broken buttons when viewing the flashcards of a shared deck that you owned.  These have now been replaced by a useful button that redirects you to the shared deck's page.
 * **Fixed Flashcard Ordering:** Flashcard ordering was getting messed up when sharing/copying a deck.  This means that all units will be in proper order, however, you will need to pull the changes by clicking "Other" > "Check for Updates" on each affected deck.
+* **Added Ability to Rearrange Flashcards:** Flashcards can now be rearranged when browsing using the two caret buttons.  This feature is still a work in progress and will be expanded upon soon.  For now, it gives you a simple way to move flashcards up/down.
+* **Fixed Issue in Searching:** Fixed an issue in searching that caused some flashcards to glitch after a search was performed for the second time.
 
 
 ## Deck Updating - Jan 03 2020 - 0.3.1

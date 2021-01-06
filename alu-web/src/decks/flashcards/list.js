@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiDeckDetail, apiDeckFlashcards } from '../../lookup';
+import { apiDeckDetail, apiDeckFlashcards, apiRearrangeFlashcard } from '../../lookup';
 import { FlashCard } from './detail';
 import { errorHandler } from '../../utils';
 import { DeckDefaultButtonGroup } from '../buttons';
@@ -18,6 +18,7 @@ export function FlashCardsList(props) {
   const [nextUrl, setNextUrl] = useState(null);
   const [flashcardsLoading, setFlashCardsLoading] = useState(false);
   const [artificialPaginationNumFlashcardsShown, setArtificialPaginationNumFlashcardsShown] = useState(artificialPaginationNumFlashcards);
+  const [movingFlashcard, setMovingFlashcard] = useState(false);
 
   useEffect(() => {
     // Re-renders flashcardList whenever updated, if specified
@@ -94,7 +95,7 @@ export function FlashCardsList(props) {
         {!(flashcardList || isForeignUser || !deck || deck.serializer_name === 'shared_deck') &&
           <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />
         }
-        {deck && deck.serializer_name === 'shared_deck' &&
+        {deck && deck.deck_type === 'shared' &&
           <Button href={`/decks/${deckId}/`}>Shared Deck Page</Button>
         }
       </div>
@@ -112,7 +113,53 @@ export function FlashCardsList(props) {
             }}
             foreignUser={isForeignUser}
             hideSuspend={!!deckId}
-            fixSlateLazy={fixSlateLazy}
+            fixSlateLazy={fixSlateLazy ?? !!deckId}
+            moveUp={index !== 0 && deck?.deck_type === 'standard' && (event => {
+              event.preventDefault();
+              if (!movingFlashcard) {
+                setMovingFlashcard(true);
+                apiRearrangeFlashcard(deckId, flashcard.id, 'UP', (response, status) => {
+                  if (status === 200) {
+                    setTimeout(() => { // it looks a bit jarring without the timeout
+                      const newFlashcards = [
+                        ...flashcards.slice(0, index - 1),
+                        flashcards[index],
+                        flashcards[index - 1],
+                        ...flashcards.slice(index + 1),
+                      ];
+                      setFlashCards(newFlashcards);
+                      setMovingFlashcard(false);
+                    }, 10);
+                  } else {
+                    // Error moving flashcard up
+                    errorHandler(response, status, 2009);
+                  }
+                });
+              }
+            })}
+            moveDown={index !== flashcards.length - 1 && deck?.deck_type === 'standard' && (event => {
+              event.preventDefault();
+              if (!movingFlashcard) {
+                setMovingFlashcard(true);
+                apiRearrangeFlashcard(deckId, flashcard.id, 'DOWN', (response, status) => {
+                  if (status === 200) {
+                    setTimeout(() => {
+                      const newFlashcards = [
+                        ...flashcards.slice(0, index),
+                        flashcards[index + 1],
+                        flashcards[index],
+                        ...flashcards.slice(index + 2),
+                      ];
+                      setFlashCards(newFlashcards);
+                      setMovingFlashcard(false);
+                    }, 10);
+                  } else {
+                    // Error moving flashcard down
+                    errorHandler(response, status, 2010);
+                  }
+                });
+              }
+            })}
           />
         );
       }) :

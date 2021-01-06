@@ -534,3 +534,10 @@ export function apiGameFlashcards(deckId, type, amount, randomOrder, options, ca
 export function apiStaffForceLogin(username, callback) {
   backendLookup('POST', 'profiles/staff-force-login/', callback, { username: username });
 }
+
+// Rearranges a flashcard
+export function apiRearrangeFlashcard(deckId, flashcardId, rearrangeType, callback) {
+  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/rearrange/`, callback, {
+    rearrange_type: rearrangeType,
+  });
+}

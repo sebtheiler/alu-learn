@@ -69,6 +69,7 @@ import {
   apiProfileReadPopup,
   apiGameFlashcards,
   apiStaffForceLogin,
+  apiRearrangeFlashcard,
 } from './lookup';
 
 export {
@@ -142,4 +143,5 @@ export {
   apiProfileReadPopup,
   apiGameFlashcards,
   apiStaffForceLogin,
+  apiRearrangeFlashcard,
 }
