@@ -141,6 +141,12 @@ def create_flashcard_review_instance(flashcard_type, creator, field):
         ]
 
 
+def get_max_flashcard_creator_num(deck):
+    creators = FlashCardCreator.objects.filter(deck=deck)
+    max_fc_num_obj = creators.order_by('-flashcard_num').first()
+    return max_fc_num_obj.flashcard_num if max_fc_num_obj else 0
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_create_view(request, deck_id, *args, **kwargs):
@@ -170,6 +176,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
             deck=deck,
             tags=tags,
             flashcard_type=flashcard_type,
+            flashcard_num=get_max_flashcard_creator_num(deck) + 1,
         )
 
         FlashCardField.objects.bulk_create([
@@ -504,7 +511,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
     else:
         # Return paginated list of all flashcards
         return get_paginated_queryset_response(
-            deck.flashcards.order_by('pk'),
+            deck.flashcards,
             request,
             FlashCardCreatorSerializer,
             page_size=250
@@ -831,12 +838,14 @@ def txt_file_upload(request, *args, **kwargs):
         DeckStudySessionManager.objects.create(deck=deck, user=request.user.profile, last_flashcard_date=timezone.now())
 
     # Create flashcards
+    max_flashcard_num = get_max_flashcard_creator_num(deck)
     creators = FlashCardCreator.objects.bulk_create([
         FlashCardCreator(
             deck=deck,
             flashcard_type='basic',
+            flashcard_num=max_flashcard_num + i + 1,
         )
-        for _ in front_and_back
+        for i in range(len(front_and_back))
     ])
     FlashCardField.objects.bulk_create([
         FlashCardField(

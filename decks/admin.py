@@ -19,10 +19,12 @@ class FlashCardFieldAdmin(admin.ModelAdmin):
 
 class FlashCardCreatorAdmin(admin.ModelAdmin):
     search_fields = ['tags']
+    ordering = ['-id']
     fields = [
         'deck',
         'tags',
         'flashcard_type',
+        'flashcard_num',
     ]
     inlines = [FlashCardFieldTabAdmin]
     model = FlashCardCreator

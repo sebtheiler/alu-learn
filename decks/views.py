@@ -18,13 +18,12 @@ def decks_detail_view(request, deck_id, *args, **kwargs):
         deck = SharedDeck.objects.get(pk=deck_id)
         if deck.sharing_setting == 'FRIENDS' and request.user not in deck.user.profile.friends:
             raise Http404("You are not authorized to view this deck")
-        shared_deck = True
     except SharedDeck.DoesNotExist:
-        shared_deck = False
+        deck = None
 
     context = {
         'deck_id': deck_id,
-        'deck_title': deck.title if shared_deck else 'Deck',
+        'deck_title': deck.title if deck else 'Deck',
         'current_username': request.user.username,
     }
 

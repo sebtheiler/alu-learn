@@ -46,6 +46,7 @@ class FlashCardCreator(models.Model):
     deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='flashcards')
     tags = models.CharField(default='', max_length=1024, blank=True)
     flashcard_type = models.CharField(default='basic', max_length=16)
+    flashcard_num = models.PositiveSmallIntegerField() # zero-indexed
     origin_creator = models.OneToOneField('self', on_delete=models.SET_NULL, null=True, related_name='shared_mirror')
     # on_delete of the next line needs to be changed for pulling deletes to work properly
     copied_from_creator = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, related_name='flashcards_copied_from')
@@ -53,6 +54,8 @@ class FlashCardCreator(models.Model):
     # Also contains information about fields and generated flashcards
 
     objects = FlashCardCreatorManager()
+    class Meta:
+        ordering = ['flashcard_num']
 
     def __str__(self):
         return f'Flashcard Creator in {self.deck.title} by @{self.deck.user.username}'
@@ -105,6 +108,8 @@ class FlashCard(models.Model):
 
 
     objects = FlashCardManager()
+    class Meta:
+        ordering = ['creator__flashcard_num']
 
     def get_content(self):
         fields = self.creator.fields.all()

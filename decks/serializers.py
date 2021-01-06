@@ -41,6 +41,7 @@ class FlashCardCreatorSerializer(serializers.ModelSerializer):
         fields = [
             'deck_fields',
             'flashcard_type',
+            'flashcard_num',
             'tags',
             'parent_deck_id',
             'id',
