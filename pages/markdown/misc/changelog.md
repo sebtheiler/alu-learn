@@ -1,15 +1,23 @@
 -----
 
-## Math Equations & TK TK TK - Jan ?? - 0.3.2
+## Math Equations & Rearranging Flashcards - Jan 06 - 0.3.2
+While math isn't the best subject for flashcards, there are still definitely opportunities for flashcards to be used.  For example, you can memorize the steps required to solve a problem.  Some formulas just need rote-memorization (like the quadratic formula).
 
 
-* **Added LaTeX Editing:** LaTeX is a math-language that allows you to write beautiful equations.  It is easy to learn and you can pick up the basics in a [couple minutes](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes#Adding_math_to_LaTeX).  You can now use LaTeX where ever Alu has a rich text editor, including both flashcards and notes.  There is also a mini-tutorial page available [here](/help/writing-latex/).
+Writing equations in plain-text is frustrating and hard to read, which is why this update introduces LaTeX.  LaTeX is a math-language that allows you to write beautiful equations in the fancy, serif, and italic font we are all familiar with.
+
+
+Furthermore, this update fixes an issue that caused the order of shared flashcards to get messed up while also giving you the ability to rearrange flashcards in your decks.
+
+
+* **Added LaTeX Editing:** LaTeX is a math-language that allows you to write beautiful equations.  It is easy to learn and, you can pick up the basics in a [couple of minutes](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes#Adding_math_to_LaTeX).  You can now use LaTeX wherever Alu has a rich text editor, including both flashcards and notes.  There is also a mini-tutorial page available [here](/help/writing-latex/).
+* **Fixed Flashcard Ordering:** Flashcard ordering was getting messed up when sharing/copying a deck.  This means that all units will be in proper order; however, you will need to pull the changes by clicking "Other" > "Check for Updates" on each affected deck.
+* **Added Ability to Rearrange Flashcards:** Flashcards can now be rearranged when browsing using the two caret buttons.  This feature is still a work in progress and will be expanded upon soon.  For now, it gives you a simple way to move flashcards up/down.
 * **Fixed Issue in Viewing Notes:** Viewing notes was linking to a broken page.  This is now fixed.
 * **Replaced Broken Buttons on Shared Decks:** There were two broken buttons when viewing the flashcards of a shared deck that you owned.  These have now been replaced by a useful button that redirects you to the shared deck's page.
-* **Fixed Flashcard Ordering:** Flashcard ordering was getting messed up when sharing/copying a deck.  This means that all units will be in proper order, however, you will need to pull the changes by clicking "Other" > "Check for Updates" on each affected deck.
-* **Added Ability to Rearrange Flashcards:** Flashcards can now be rearranged when browsing using the two caret buttons.  This feature is still a work in progress and will be expanded upon soon.  For now, it gives you a simple way to move flashcards up/down.
 * **Fixed Issue in Searching:** Fixed an issue in searching that caused some flashcards to glitch after a search was performed for the second time.
 * **Fixed Bug in Games:** Fixed a bug that caused the "All Flashcards" selection not to work.
+* **Minor Changes to Explore Slider:** Some adblockers (e.g., uBlock) are blocking the explore slider's contents for decks.  This is affecting multiple websites that use these sliders and will most likely be patched by the adblockers soon.  For now, there is a little message alerting you what to do if the slider isn't working.
 
 
 ## Deck Updating - Jan 03 2020 - 0.3.1

@@ -53,6 +53,7 @@ export function DeckSlider(props) {
 
   return (
     <div className={props.className}>
+      <small className='text-muted'>If these decks aren't loading, please try disabling your Adblocker</small>
       <Slider {...settings}>
         {decks.map((deck, index) => {
           return (
@@ -64,7 +65,7 @@ export function DeckSlider(props) {
               </a>
               <UserLink user={deck.author} small />
               <a href={`/decks/${deck.id}/`}>
-                <p className='deck-description mt-2 w-75' style={{outline: 'none', color: 'black'}}>
+                <div className='deck-description mt-2 w-75' style={{outline: 'none', color: 'black'}}>
                   <MarkdownRender
                     // The truncation will theoretically cause glitches
                     // if there is special syntax at the very end.
@@ -73,7 +74,7 @@ export function DeckSlider(props) {
                     }
                     disallowedTypes={['image']}
                   />
-                </p>
+                </div>
               </a>
             </div>
           );
