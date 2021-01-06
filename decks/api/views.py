@@ -1578,6 +1578,8 @@ def game_flashcards_view(request, *args, **kwargs):
             tags=request.data.get('options').get('tag'),
             return_query_only=True,
         )
+    elif method_type == 'ALL':
+        pass
     else:
         return Response({'message': 'Unrecognized method for getting flashcards'}, status=400)
 
