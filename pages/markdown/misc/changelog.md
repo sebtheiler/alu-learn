@@ -5,6 +5,8 @@
 
 * **Added LaTeX Editing:** LaTeX is a math-language that allows you to write beautiful equations.  It is easy to learn and you can pick up the basics in a [couple minutes](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes#Adding_math_to_LaTeX).  You can now use LaTeX where ever Alu has a rich text editor, including both flashcards and notes.  There is also a mini-tutorial page available [here](/help/writing-latex/).
 * **Fixed Issue in Viewing Notes:** Viewing notes was linking to a broken page.  This is now fixed.
+* **Replaced Broken Buttons on Shared Decks:** There were two broken buttons when viewing the flashcards of a shared deck that you owned.  These have now been replaced by a useful button that redirects you to the shared deck's page.
+* **Fixed Flashcard Ordering:** Flashcard ordering was getting messed up when sharing/copying a deck.  This means that all units will be in proper order, however, you will need to pull the changes by clicking "Other" > "Check for Updates" on each affected deck.
 
 
 ## Deck Updating - Jan 03 2020 - 0.3.1

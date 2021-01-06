@@ -91,8 +91,11 @@ export function FlashCardsList(props) {
     <div className={props.className}>
       {flashcardList ? null : <h2 className='text-center mt-3'>Browsing Flashcards{deck ? ` in "${deck.title}"` : null}</h2>}
       <div className='text-center'>
-        {!(flashcardList || isForeignUser || !deck) &&
+        {!(flashcardList || isForeignUser || !deck || deck.serializer_name === 'shared_deck') &&
           <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />
+        }
+        {deck && deck.serializer_name === 'shared_deck' &&
+          <Button href={`/decks/${deckId}/`}>Shared Deck Page</Button>
         }
       </div>
       {flashcards.length > 0 ? flashcards.slice(0, artificialPaginationNumFlashcardsShown).map((flashcard, index) => {

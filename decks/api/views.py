@@ -511,7 +511,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
     else:
         # Return paginated list of all flashcards
         return get_paginated_queryset_response(
-            deck.flashcards,
+            deck.flashcards.order_by('flashcard_num'),
             request,
             FlashCardCreatorSerializer,
             page_size=250
@@ -1444,11 +1444,16 @@ def update_flashcard_creator(creator_to_update: FlashCardCreator, creator_to_get
                 field_to_update.save()
             actual_difference = True
     
-    # Update tags and mark as being updated
+    # Update tags, order, and mark as being updated
     if creator_to_update.tags != creator_to_get_updates_from.tags:
         if not check_diff_only:
             creator_to_update.tags = creator_to_get_updates_from.tags
         actual_difference = True
+    if creator_to_update.flashcard_num != creator_to_get_updates_from.flashcard_num:
+        if not check_diff_only:
+            creator_to_update.flashcard_num = creator_to_get_updates_from.flashcard_num
+        actual_difference = True
+    
     creator_to_update.was_updated = True
     creator_to_update.save()
 
