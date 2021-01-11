@@ -464,3 +464,65 @@ export function GameModal(props) {
     </Modal>
   </>);
 }
+
+export function SelectFlashcardsButtonGroup(props) {
+  const {selectionMode, setSelectionMode, selectedFlashcards, setSelectedFlashcards, tagEditorModalIsOpen, setTagEditorModalIsOpen} = props;
+  const [tagEditAction, setTagEditAction] = useState('ADD');
+  const [updatingTags, setUpdatingTags] = useState(false);
+
+  const editTags = event => {
+    event.preventDefault();
+    const form = event.target;
+    // bulk api tag edit request
+    if (!updatingTags) {
+      setUpdatingTags(true);
+      console.log(
+        tagEditAction,
+        form.elements.tagValue.value,
+      )
+      setUpdatingTags(false);
+    }
+  }
+
+  return (
+    <ButtonGroup className='mt-1'>
+      <Button onClick={() => {setSelectionMode(!selectionMode); setSelectedFlashcards([])}}>
+        {selectionMode ? 'Exit' : ''} Selection Mode
+      </Button>
+      {selectedFlashcards.length > 0 && <>
+        <Button className='ml-1' onClick={() => setTagEditorModalIsOpen(true)}>
+          Tag Editor
+        </Button>
+        <Modal show={tagEditorModalIsOpen} onHide={() => setTagEditorModalIsOpen(false)}>
+          <Modal.Header>
+            <Modal.Title>Editing Tags of {selectedFlashcards.length} Flashcards</Modal.Title>
+          </Modal.Header>
+          <Form onSubmit={editTags}>
+            <Modal.Body>
+              <Form.Group>
+                <Form.Label>Action</Form.Label>
+                <Form.Control
+                  as='select'
+                  onChange={event => setTagEditAction(event.target.value)}
+                  custom
+                >
+                  <option value='ADD'>Add Tag to All Selected</option>
+                  <option value='REMOVE'>Remove Tag from all Selected</option>
+                  {/* <option value='RENAME'>Rename Tag in all Selected</option> */}
+                </Form.Control>
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Tag to {tagEditAction === 'ADD' ? 'Add' : 'Remove'}</Form.Label>
+                <Form.Control type='text' name='tagValue' required />
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant='secondary' onClick={() => setTagEditorModalIsOpen(false)}>Cancel</Button>
+              <Button type='submit'>{updatingTags ? 'Updating...' : 'Update Tags'}</Button>
+            </Modal.Footer>
+          </Form>
+        </Modal>
+      </>}
+    </ButtonGroup>
+  );
+}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiDeckDetail, apiDeckFlashcards, apiRearrangeFlashcard } from '../../lookup';
 import { FlashCard } from './detail';
 import { errorHandler } from '../../utils';
-import { DeckDefaultButtonGroup } from '../buttons';
+import { DeckDefaultButtonGroup, SelectFlashcardsButtonGroup } from '../buttons';
 import { Button } from 'react-bootstrap';
 
 export function FlashCardsList(props) {
@@ -19,6 +19,9 @@ export function FlashCardsList(props) {
   const [flashcardsLoading, setFlashCardsLoading] = useState(false);
   const [artificialPaginationNumFlashcardsShown, setArtificialPaginationNumFlashcardsShown] = useState(artificialPaginationNumFlashcards);
   const [movingFlashcard, setMovingFlashcard] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedFlashcards, setSelectedFlashcards] = useState([]);
+  const [tagEditorModalIsOpen, setTagEditorModalIsOpen] = useState(false);
 
   useEffect(() => {
     // Re-renders flashcardList whenever updated, if specified
@@ -88,13 +91,23 @@ export function FlashCardsList(props) {
     }
   }
 
+  console.log(selectedFlashcards)
   return (
     <div className={props.className}>
       {flashcardList ? null : <h2 className='text-center mt-3'>Browsing Flashcards{deck ? ` in "${deck.title}"` : null}</h2>}
       <div className='text-center'>
-        {!(flashcardList || isForeignUser || !deck || deck.serializer_name === 'shared_deck') &&
+        {!(flashcardList || isForeignUser || !deck || deck.serializer_name === 'shared_deck') && <>
           <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />
-        }
+          <br />
+          <SelectFlashcardsButtonGroup
+            selectionMode={selectionMode}
+            setSelectionMode={setSelectionMode}
+            selectedFlashcards={selectedFlashcards}
+            setSelectedFlashcards={setSelectedFlashcards}
+            tagEditorModalIsOpen={tagEditorModalIsOpen}
+            setTagEditorModalIsOpen={setTagEditorModalIsOpen}
+          />
+        </>}
         {deck && deck.deck_type === 'shared' &&
           <Button href={`/decks/${deckId}/`}>Shared Deck Page</Button>
         }
@@ -158,6 +171,15 @@ export function FlashCardsList(props) {
                     errorHandler(response, status, 2010);
                   }
                 });
+              }
+            })}
+            onChecked={selectionMode && (event => {
+              if (event.target.checked) {
+                // Add the flashcard's id to the list
+                setSelectedFlashcards([...selectedFlashcards, flashcard.id]);
+              } else {
+                // Remove the flashcard's id from the list
+                setSelectedFlashcards(selectedFlashcards.filter(flashcardId => flashcardId !== flashcard.id));
               }
             })}
           />

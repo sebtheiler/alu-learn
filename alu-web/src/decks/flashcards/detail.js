@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
-import { QuestionBubble, errorHandler } from '../../utils';
+import { QuestionBubble, errorHandler, FormCheckbox } from '../../utils';
 import { apiFlashCardSuspendLeech, apiFlashCardDelete } from '../../lookup';
 import { createFullEditor, FullEditor } from '../../notes/editor-components';
 import { Slate } from 'slate-react';
@@ -146,7 +146,7 @@ export function RenderFlashCardText(props) {
 
 // Display an individual flashcard
 export function FlashCard(props) {
-  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser, hideSuspend, fixSlateLazy, moveUp, moveDown} = props;
+  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser, hideSuspend, fixSlateLazy, moveUp, moveDown, onChecked} = props;
 
   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
   const [suspendIsLoading, setSuspendIsLoading] = useState(false);
@@ -201,6 +201,9 @@ export function FlashCard(props) {
 
   return (
     <div className={'container-fluid border my-3' + (foreignUser ? '' : (flashcard.is_suspended ? ' suspended' : '') + (flashcard.is_leech ? ' leech' : ''))}>
+      {onChecked && <div className='float-left mt-3' style={{ position: 'absolute', zIndex: '1000' }}>
+        <FormCheckbox onChange={onChecked} />
+      </div>}
       <div className='row mt-3 text-center'>
         <div className='col-md-12'>
           <ButtonGroup style={{ right: '10px', display: 'inline-block', position: 'absolute' }}>
