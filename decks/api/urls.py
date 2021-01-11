@@ -31,6 +31,7 @@ urlpatterns = [
     path('home/', views.deck_home_view),
     path('get-updates/<int:deck_id>/', views.deck_get_updates_view),
     path('pull-updates/<int:deck_id>/', views.deck_pull_updates_view),
+    path('edit-tags/', views.edit_tags_bulk_view),
     path('shared/detail/<int:shared_deck_id>/', views.shared_deck_detail_view),
     path('shared/create/', views.shared_deck_create_view),
     path('shared/clone/<int:shared_deck_id>/', views.shared_deck_clone_view),

@@ -541,3 +541,12 @@ export function apiRearrangeFlashcard(deckId, flashcardId, rearrangeType, callba
     rearrange_type: rearrangeType,
   });
 }
+
+// Edits the tags of many flashcards at once
+export function apiFlashcardEditTags(flashcardIds, action, tag, callback) {
+  backendLookup('POST', `decks/edit-tags/`, callback, {
+    flashcard_ids: flashcardIds,
+    action: action,
+    tag: tag,
+  })
+}

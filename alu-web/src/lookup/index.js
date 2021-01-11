@@ -70,6 +70,7 @@ import {
   apiGameFlashcards,
   apiStaffForceLogin,
   apiRearrangeFlashcard,
+  apiFlashcardEditTags,
 } from './lookup';
 
 export {
@@ -144,4 +145,5 @@ export {
   apiGameFlashcards,
   apiStaffForceLogin,
   apiRearrangeFlashcard,
+  apiFlashcardEditTags,
 }

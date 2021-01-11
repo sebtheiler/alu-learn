@@ -1639,3 +1639,44 @@ def rearrange_flashcard_view(request, flashcard_id, *args, **kwargs):
         return Response({'message': 'Invalid `rearrange_type`'})
 
     return Response(FlashCardCreatorSerializer(flashcard).data, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def edit_tags_bulk_view(request, *args, **kwargs):
+    """
+    Edits multiple flashcard's tags at once - POST
+
+    Required information:
+        `flashcard_ids`: Ids for all the flashcards to edit
+        `action`: ADD/REMOVE/RENAME
+        `tag`: Tag to add/remove
+    """
+    flashcard_ids = request.data.get('flashcard_ids', [])
+    action = request.data.get('action')
+    tag = request.data.get('tag')
+    if len(flashcard_ids) == 0:
+        return Response({'message': 'Must specify at least one flashcard Id'}, status=400)
+    elif action not in ('ADD', 'REMOVE', 'RENAME'):
+        return Response({'message': 'Invalid action'}, status=400)
+    elif not isinstance(tag, str):
+        return Response({'message': 'You must specify a tag to add/remove'}, status=400)
+
+    flashcards = FlashCardCreator.objects.filter(
+        deck__user=request.user,
+        pk__in=flashcard_ids,
+    )
+    if flashcards.count() != len(flashcard_ids):
+        return Response({'message': 'Could not find all flashcards specified'}, status=400)
+
+    if action == 'ADD':
+        for flashcard in flashcards:
+            flashcard.add_tag(tag, False)
+    elif action == 'REMOVE':
+        for flashcard in flashcards:
+            flashcard.remove_tag(tag, False)
+    elif action == 'RENAME':
+        return Response({'message': 'Will be implemented soon'}, status=501)
+
+    FlashCardCreator.objects.bulk_update(flashcards, ['tags'])
+    return Response({'message': 'Updated tags'}, status=200)

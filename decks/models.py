@@ -60,6 +60,35 @@ class FlashCardCreator(models.Model):
     def __str__(self):
         return f'Flashcard Creator in {self.deck.title} by @{self.deck.user.username}'
 
+    def has_tag(self, tag):
+        return 'tag' in [tag.strip() for tag in self.tags.split(',')]
+
+    def add_tag(self, tag, save=True):
+        if self.has_tag(tag):
+            return
+        elif self.tags.strip() == '':
+            self.tags = tag
+        else:
+            self.tags += f', {tag}'
+
+        if save:
+            self.save()
+
+        return self.tags
+    
+    def remove_tag(self, tag, save=True):
+        if not self.has_tag(tag):
+            return
+        elif self.tags.strip() == tag:
+            self.tags = ''
+        else:
+            self.tags = self.tags.replace(', leech', '')
+
+        if save:
+            self.save()
+
+        return self.tags
+
 
 class FlashCardField(models.Model):
     creator = models.ForeignKey(FlashCardCreator, on_delete=models.CASCADE, related_name='fields')
@@ -119,28 +148,16 @@ class FlashCard(models.Model):
         return str(self.get_content())
     
     def is_leech(self):
-        # Get whether the card is a leech or not, based on whether
-        # it has the tag 'leech'
-        return 'leech' in [tag.strip() for tag in self.creator.tags.split(',')]
+        return self.creator.has_tag('leech')
     
     def set_is_leech(self, is_leech, save=True):
+        creator = self.creator
         if is_leech:
-            if self.is_leech():
-                return
-            elif self.creator.tags.strip() == '':
-                self.creator.tags = 'leech'
-            else:
-                self.creator.tags += ', leech'
+            creator.add_tag('leech', save)
         else:
-            if not self.is_leech():
-                return
-            elif self.creator.tags.strip() == 'leech':
-                self.creator.tags = ''
-            else:
-                self.creator.tags = self.creator.tags.replace(', leech', '')
+            creator.remove_tag('leech', save)
 
-        if save:
-            self.creator.save()
+        return creator.tags
 
 
 class StudySessionManager(models.Model):
