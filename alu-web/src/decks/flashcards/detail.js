@@ -231,7 +231,7 @@ export function FlashCard(props) {
             </Button>}
           </ButtonGroup>
           <p className='mb-0'>
-            <strong>Flashcard - #{number + 1}</strong>
+            <strong>Flashcard - #{number}</strong>
             {flashcard.learning_status !== 'UNSEEN' && !foreignUser ? <> | Type: "{flashcard.flashcard_type}"</> : null}
           </p>
           {showParentDeckTitle ? 

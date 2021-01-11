@@ -72,10 +72,11 @@ export function apiDeckDetail(deckId, options, callback) {
 
 // Gets a deck's flashcards
 export function apiDeckFlashcards(deckId, options, callback, nextUrl) {
-  const {limit} = options;
+  const {limit, reverse} = options;
   let endpoint = `decks/${deckId}/flashcards/?`;
 
-  if (limit) {endpoint += `&limit=${limit}`}
+  if (limit) endpoint += `&limit=${limit}`;
+  if (reverse) endpoint += '&reverse=true';
 
   if (nextUrl) {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');

@@ -16,6 +16,7 @@ import {
   shuffle,
   RenderRichText,
   sample,
+  updateURLParameter,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -39,4 +40,5 @@ export {
   shuffle,
   RenderRichText,
   sample,
+  updateURLParameter,
 }

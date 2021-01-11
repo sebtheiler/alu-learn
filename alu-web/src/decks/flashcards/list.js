@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { apiDeckDetail, apiDeckFlashcards, apiRearrangeFlashcard } from '../../lookup';
 import { FlashCard } from './detail';
-import { errorHandler } from '../../utils';
+import { errorHandler, updateURLParameter } from '../../utils';
 import { DeckDefaultButtonGroup, SelectFlashcardsButtonGroup } from '../buttons';
 import { Button } from 'react-bootstrap';
 
@@ -22,6 +22,8 @@ export function FlashCardsList(props) {
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
   const [tagEditorModalIsOpen, setTagEditorModalIsOpen] = useState(false);
+  const [totalFlashcardsNum, setTotalFlashcardsNum] = useState(0);
+  const reverseOrder = new URLSearchParams(window.location.search).get('reverse') === 'true';
 
   useEffect(() => {
     // Re-renders flashcardList whenever updated, if specified
@@ -46,12 +48,13 @@ export function FlashCardsList(props) {
             errorHandler(response, status, 1015);
           }
         });
-        apiDeckFlashcards(deckId, {}, (response, status) => {
+        apiDeckFlashcards(deckId, {reverse: reverseOrder}, (response, status) => {
           // Get flashcards
           if (status === 200) {
             setNextUrl(response.next);
             setFlashCardsDidSet(true);
             setFlashCards(response.results);
+            setTotalFlashcardsNum(response.count);
           } else if (status === 403) {
             window.location.href = `/decks/${deckId}/`;
           } else {
@@ -65,7 +68,7 @@ export function FlashCardsList(props) {
         setFlashCards(flashcardList);
       }
     }
-  }, [flashcardsDidSet, flashcardList, deckId]);
+  }, [flashcardsDidSet, flashcardList, deckId, reverseOrder]);
 
   // Handle next set of flashcards (pagination)
   const handleLoadNext = (event) => {
@@ -76,7 +79,7 @@ export function FlashCardsList(props) {
       setFlashCardsLoading(false);
     } else {
       if (nextUrl !== null && flashcardsLoading === false) {
-        apiDeckFlashcards(deckId, {}, (response, status) => {
+        apiDeckFlashcards(deckId, {reverse: reverseOrder}, (response, status) => {
           if (status === 200) {
             setNextUrl(response.next);
             const newFlashcards = [...flashcards].concat(response.results);
@@ -110,13 +113,17 @@ export function FlashCardsList(props) {
         {deck && deck.deck_type === 'shared' &&
           <Button href={`/decks/${deckId}/`}>Shared Deck Page</Button>
         }
+        <br /><br />
+        {deck && <Button href={updateURLParameter(window.location.href, 'reverse', !reverseOrder)}>
+          Sort {reverseOrder ? 'Ascending' : 'Descending'}
+        </Button>}
       </div>
       {flashcards.length > 0 ? flashcards.slice(0, artificialPaginationNumFlashcardsShown).map((flashcard, index) => {
         return (
           <FlashCard
             flashcard={flashcard}
             key={index}
-            number={index}
+            number={reverseOrder ? totalFlashcardsNum - index : index + 1}
             showParentDeckTitle={showParentDeckTitle}
             suspendCallback={() => setFlashCardsDidSet(false)}
             deleteCallback={() => {

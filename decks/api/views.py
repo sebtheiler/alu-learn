@@ -469,6 +469,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
             if True, instead of directly returning flashcards it will return:
                 'results': Regular list of flashcards
                 'count': Total number of flashcards
+        `reverse`: (GET) Reverse the results (ignored if `limit` is specified)
 
     Returns:
         Author of the deck (PublicProfileSerializer): 'author'
@@ -510,8 +511,9 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
         })
     else:
         # Return paginated list of all flashcards
+        reverse = request.GET.get('reverse')
         return get_paginated_queryset_response(
-            deck.flashcards.order_by('flashcard_num'),
+            deck.flashcards.order_by('flashcard_num' if not reverse else '-flashcard_num'),
             request,
             FlashCardCreatorSerializer,
             page_size=250
