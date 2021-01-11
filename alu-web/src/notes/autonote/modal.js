@@ -8,14 +8,16 @@ export function AutoNoteModal(props) {
   const {show, hide, updateNoteCallback, initialValue} = props;
   const [gaveInputText, setGaveInputText] = useState(false);
   const [inputText, setInputText] = useState('');
-  const [removeLinebreak, setRemoveLinebreak] = useState(false);
-  const [inputType, setInputType] = useState('text');
+  const [settings, setSettings] = useState({
+    inputType: 'text', removeLinebreak: false, textSplittingVer: 'SENTENCE',
+    numSentences: 3,
+  });
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.target;
 
-    switch (inputType) {
+    switch (settings.inputType) {
       case 'text':
         setInputText(form.elements.textInput.value);
         break;
@@ -47,8 +49,7 @@ export function AutoNoteModal(props) {
           updateNoteCallback={updateNoteCallback}
           initialValue={initialValue}
           text={inputText}
-          inputType={inputType}
-          removeLinebreak={removeLinebreak}
+          settings={settings}
         />
       :
         <Form onSubmit={handleSubmit} className='w-75 mx-auto'>
@@ -56,10 +57,10 @@ export function AutoNoteModal(props) {
             <div className='col-6 text-center'>
               <h3><Form.Label
                 as='a'
-                onClick={() => setInputType('text')}
+                onClick={() => setSettings({...settings, inputType: 'text'})}
                 style={{
-                  textDecoration: inputType === 'text' ? 'underline' : '',
-                  color: inputType === 'text' ? 'black' : 'grey',
+                  textDecoration: settings.inputType === 'text' ? 'underline' : '',
+                  color: settings.inputType === 'text' ? 'black' : 'grey',
                   cursor: 'pointer',
                 }}
               >
@@ -69,10 +70,10 @@ export function AutoNoteModal(props) {
             <div className='col-6 text-center'>
               <h3><Form.Label
                 as='a'
-                onClick={() => setInputType('video')}
+                onClick={() => setSettings({...settings, inputType: 'video'})}
                 style={{
-                  textDecoration: inputType === 'video' ? 'underline' : '',
-                  color: inputType === 'video' ? 'black' : 'grey',
+                  textDecoration: settings.inputType === 'video' ? 'underline' : '',
+                  color: settings.inputType === 'video' ? 'black' : 'grey',
                   cursor: 'pointer',
                 }}
               >
@@ -80,18 +81,40 @@ export function AutoNoteModal(props) {
               </Form.Label></h3>
             </div>
           </Form.Group>
-          {inputType === 'text' && <>
+          {settings.inputType === 'text' && <>
             <Form.Group>
               <Form.Label>Text to Take Notes On</Form.Label>
-              <Form.Control as='textarea' name='textInput' rows='10' />
+              <Form.Control as='textarea' name='textInput' rows='10' required />
             </Form.Group>
             <Form.Group>
-              <FormCheckbox onChange={() => setRemoveLinebreak(!removeLinebreak)}>
+              <FormCheckbox onChange={event => setSettings({...settings, removeLinebreak: event.target.checked})}>
                 Remove linebreaks? (Recommended for PDFs)
               </FormCheckbox><br />
             </Form.Group>
+            <Form.Group>
+              <Form.Label>Splitting Method (paragraph/sentence)</Form.Label>
+              <Form.Control
+                as='select'
+                onChange={event => setSettings({...settings, textSplittingVer: event.target.value})}
+                custom
+              >
+                <option value='SENTENCE'>Split by the Sentence</option>
+                <option value='PARAGRAPH'>Split by the Paragraph</option>
+              </Form.Control>
+            </Form.Group>
+            {settings.textSplittingVer === 'SENTENCE' && <Form.Group>
+              <Form.Label>Number of Sentences to Split</Form.Label>
+              <Form.Control
+                type='number'
+                onChange={event => setSettings({...settings, numSentences: event.target.value})}
+                defaultValue={settings.numSentences}
+                min={1}
+                max={15}
+                required
+              />
+            </Form.Group>}
           </>}
-          {inputType === 'video' && <>
+          {settings.inputType === 'video' && <>
             <Form.Group>
               <Form.Label>Video to Take Notes On</Form.Label>
               <p id='videoUrlError' className='text-danger' />

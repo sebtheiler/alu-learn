@@ -18,28 +18,28 @@ export const emptyValue = [
   },
 ];
 
-export const parseText = (text, version='paragraph') => {
+export const parseText = (text, version='PARAGRAPH', numSentences=3) => {
   let finalText = [];
   switch (version) {
-    case 'paragraph':
+    case 'PARAGRAPH':
       return text.split('\n');
-    case 'sentence':
-      const periodCleanFunction = (str) => {
+    case 'SENTENCE':
+      const periodCleanFunction = str => {
         return str.replace('Ph.D.', 'PhD').replace('Ph.D', 'PhD')
         .replace('Mr.', 'Mr').replace('Ms.', 'Ms').replace('Mrs.', 'Mrs')
         .replace('U.S.A.', 'USA').replace('U.S.', 'US');
       }
       const splitByPar = periodCleanFunction(text).split('\n').filter(par => par && par.length > 3);
-      const numSentences = 3;
 
       for (const par of splitByPar) {
         // If there is no period, we assume it is a header
         let toPush;
         if (par.includes('.') === false) {
+          // If it doesn't contain a period, we make the assumption it's a header
           toPush = `<h4>${par}</h4>`;
           finalText.push(toPush);
         } else {
-          const splitPar = par.match(/.*?((\.[^a-zA-Z`_]*)|(\?)|(!))/gm); // break it apart by punction (., !, ?)
+          const splitPar = par.match(/.*?((\.[^a-zA-Z`_]*)|(\?)|(!))/gm); // break it apart by punction (., !, ?, .[1])
           if (splitPar.length > numSentences) {
             // If it is a long paragraph, we will split it
             // into sentences determined by `numSentences`
@@ -105,8 +105,12 @@ export const parseText = (text, version='paragraph') => {
 }
 
 export function AutoNote(props) {
-  const {updateNoteCallback, initialValue, inputType, removeLinebreak} = props;
-  const text = parseText((removeLinebreak ? props.text.replaceAll('\n', ' ') : props.text).trim(), 'sentence');
+  const {updateNoteCallback, initialValue, settings} = props;
+  const text = parseText(
+    (settings.removeLinebreak ? props.text.replaceAll('\n', ' ') : props.text).trim(),
+    settings.textSplittingVer,
+    settings.numSentences,
+  );
 
   const [selectedPar, setSelectedPar] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -164,7 +168,7 @@ export function AutoNote(props) {
         setValue(emptyValue);
       }
       // Move selected paragraph
-      if (inputType === 'text') {
+      if (settings.inputType === 'text') {
         if (selectedPar < text.length - 1) {
           setSelectedPar(selectedPar + 1);
         } else {
@@ -189,7 +193,7 @@ export function AutoNote(props) {
       updateProgressBar={updateProgressBar}
       showCompiledNotes={showCompiledNotes}
       setShowCompiledNotes={setShowCompiledNotes}
-      inputType={inputType}
+      inputType={settings.inputType}
     >
       <Form onSubmit={handleSubmit} className='mt-4'>
         <Form.Group className='w-75 mx-auto'>
@@ -197,7 +201,6 @@ export function AutoNote(props) {
           <Form.Control
             type='text'
             name='sectionTitle'
-            placeholder='B.F. Skinner > Skinner Box'
             required
           />
           <p id='tooManySectionsError' className='text-danger' />
@@ -223,7 +226,7 @@ export function AutoNote(props) {
           </div>
         </Form.Group>
         <Button type='submit' block>Add Notes</Button>
-        {inputType === 'text' && <div id='contentProgress' className='mt-1'>
+        {settings.inputType === 'text' && <div id='contentProgress' className='mt-1'>
           <div id='contentProgressBar'>{percentComplete}%</div>
         </div>}
       </Form>

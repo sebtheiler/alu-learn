@@ -60,13 +60,13 @@ export function UpdateDeck(props) {
           <h2>{update.title}</h2>
         </a>
         <Button onClick={pullHandleWrapper(update.id)}>
-          Pull Changes
+          Update
         </Button>
         <hr />
       </div>)
       )}
       {/* <Button onClick={pullHandleWrapper(updates.map(update => update.id))}>
-        Pull All Changes
+        Update All
       </Button> */}
       </> : <p>This deck is fully updated</p>
     ) : <p>Loading...</p>}

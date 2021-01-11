@@ -1,5 +1,14 @@
 -----
 
+## ??? - Jan ?? - 0.3.3
+
+
+
+* **Changed Min New Card Limit:** You can now choose to not learn any new flashcards per day in a deck, instead of being forced to learn at least one.
+* **Changed Update Deck Wording:** "Pull Changes" has been changed up "Update" for clarity.
+* **Added More Autonote Options:** Added more options to autonote, about how to divide the input text.
+
+
 ## Math Equations & Rearranging Flashcards - Jan 06 - 0.3.2
 While math isn't the best subject for flashcards, there are still definitely opportunities for flashcards to be used.  For example, you can memorize the steps required to solve a problem.  Some formulas just need rote-memorization (like the quadratic formula).
 

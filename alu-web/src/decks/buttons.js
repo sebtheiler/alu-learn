@@ -282,7 +282,7 @@ export function DeckEditCreateModal(props) {
               type='number'
               name='dailyNewCardLimit'
               defaultValue={deck.daily_new_card_limit ? deck.daily_new_card_limit : 20}
-              min='1'
+              min='0'
               max='9999'
               required
             />
