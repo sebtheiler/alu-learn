@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList } from '../lookup';
+import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags } from '../lookup';
 import { errorHandler, FormCheckbox } from '../utils';
 import { SearchForm } from './flashcards/search';
 import { Modal, Button, Form, ButtonGroup, Dropdown, DropdownButton } from 'react-bootstrap';
@@ -477,10 +477,19 @@ export function SelectFlashcardsButtonGroup(props) {
     if (!updatingTags) {
       setUpdatingTags(true);
       console.log(
+        selectedFlashcards,
         tagEditAction,
         form.elements.tagValue.value,
       )
-      setUpdatingTags(false);
+      apiFlashcardEditTags(selectedFlashcards, tagEditAction, form.elements.tagValue.value, (response, status) => {
+        if (status === 200) {
+          window.location.reload();
+        } else {
+          // Error updating flashcard tags in bulk
+          errorHandler(response, status, 2006);
+        }
+        setUpdatingTags(false);
+      })
     }
   }
 

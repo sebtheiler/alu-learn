@@ -61,7 +61,7 @@ class FlashCardCreator(models.Model):
         return f'Flashcard Creator in {self.deck.title} by @{self.deck.user.username}'
 
     def has_tag(self, tag):
-        return 'tag' in [tag.strip() for tag in self.tags.split(',')]
+        return tag in [tag.strip() for tag in self.tags.split(',')]
 
     def add_tag(self, tag, save=True):
         if self.has_tag(tag):
@@ -81,8 +81,10 @@ class FlashCardCreator(models.Model):
             return
         elif self.tags.strip() == tag:
             self.tags = ''
+        elif self.tags.startswith(tag):
+            self.tags = self.tags.replace(f'{tag}, ', '')
         else:
-            self.tags = self.tags.replace(', leech', '')
+            self.tags = self.tags.replace(f', {tag}', '')
 
         if save:
             self.save()
