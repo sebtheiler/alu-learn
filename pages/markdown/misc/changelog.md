@@ -4,6 +4,7 @@
 
 
 
+* **Added Selection Mode:** Selection mode is a feature that allows you to "select" multiple flashcards when browsing a deck.  You can then perform bulk operations on the selected flashcards, like adding or removing a new tag to all of those flashcards.  You can learn more about selection mode [here](/help/selection-mode/).
 * **Changed Min New Card Limit:** You can now choose to not learn any new flashcards per day in a deck, instead of being forced to learn at least one.
 * **Changed Update Deck Wording:** "Pull Changes" has been changed up "Update" for clarity.
 * **Added More Autonote Options:** Added more options to autonote, about how to divide the input text.
