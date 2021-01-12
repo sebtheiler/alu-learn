@@ -4,40 +4,61 @@ import { shuffle } from '../utils';
 import './reaction.css';
 
 
-const slides = [
-  (<TextSlide title='Introduction'>
-    This experiment will measure your reaction time in perception vs. sensation
-  </TextSlide>),
-  (<TextSlide title='Part I'>
-    In Part I, you will be shown two black words.{' '}
-    Click the black word that has the meaning of the color in the middle of the screen.<br />
-    Alternatively, you can use the keys 'F' and 'J' on your keyboard.
-  </TextSlide>),
-  (<ReactionSlide type='black-words' />),
-  (<TextSlide title='Part II'>
-    In Part II, you will be shown two colored words.{' '}
-    Click the colored word that has the same meaning as the color in the middle of the screen (not the same color).
-  </TextSlide>),
-  (<ReactionSlide type='colored-words-meaning' />),
-  (<TextSlide title='Part III'>
-    In Part III, you will be shown two colored words.{' '}
-    Click the colored word that has the same color as the color in the middle of the screen (not the same meaning).
-  </TextSlide>),
-  (<ReactionSlide type='colored-words-color' />),
-  (<TextSlide title='Debrief'>
-    Thank you for furthering our psychological research!  Your responses have been anonymously recorded.{' '}
-  </TextSlide>),
-];
-
-
 export function ReactionExperiment(props) {
   const [slideNumber, setSlideNumber] = useState(0);
+  const [answers, setAnswers] = useState({});
+
+  const collectData = title => {
+    return data => {
+      let newAnswers = answers;
+      newAnswers[title] = { correct: data.correct, incorrect: data.incorrect };
+      setAnswers(newAnswers);
+    }
+  }
+
+  const slides = [
+    (<TextSlide title='Introduction'>
+      This experiment will measure your reaction time in perception vs. sensation.
+    </TextSlide>),
+    (<TextSlide title='Part I'>
+      In Part I, you will be shown two black words.{' '}
+      Click the black word that has the meaning of the color in the middle of the screen.<br />
+      Alternatively, you can use the keys 'F' and 'J' on your keyboard.
+    </TextSlide>),
+    (<ReactionSlide type='control' collectData={collectData('blackWords')} />),
+    (<TextSlide title='Part II'>
+      In Part II, you will be shown two colored words.{' '}
+      Click the colored word that has the same meaning as the color in the middle of the screen (not the same color).
+    </TextSlide>),
+    (<ReactionSlide type='colored-words-meaning' collectData={collectData('coloredWordsMeaning')} />),
+    (<TextSlide title='Part III'>
+      In Part III, you will be shown two colored words.{' '}
+      Click the colored word that has the same color as the color in the middle of the screen (not the same meaning).
+    </TextSlide>),
+    (<ReactionSlide type='colored-words-color' collectData={collectData('coloredWordsColor')} />),
+    (<TextSlide title='Debrief'>
+      Thank you for furthering our psychological research!
+      <br /><br />
+      Your Responses:
+      <ul>
+        <li>Control Game: {answers?.blackWords?.correct}/{answers?.blackWords?.correct + answers?.blackWords?.incorrect}</li>
+        <li>Colored Words Meaning: {answers?.coloredWordsMeaning?.correct}/{answers?.coloredWordsMeaning?.correct + answers?.coloredWordsMeaning?.incorrect}</li>
+        <li>Colored Words Color: {answers?.coloredWordsColor?.correct}/{answers?.coloredWordsColor?.correct + answers?.coloredWordsColor?.incorrect}</li>
+      </ul>
+    </TextSlide>),
+  ];
 
   return (<>
     {slides[slideNumber]}
-    {slideNumber < slides.length - 1 && 
-      <Button onClick={() => setSlideNumber(slideNumber + 1)} block>Next</Button>
-    }
+    {slideNumber < slides.length - 1 && <div className='text-center mx-auto'>
+      <Button
+        onClick={() => setSlideNumber(slideNumber + 1)}
+        className='mx-auto text-center'
+        style={{ width: '200px' }}
+      >
+        Next
+      </Button>
+    </div>}
   </>);
 }
 
@@ -53,16 +74,17 @@ function TextSlide(props) {
 }
 
 
-const colors = ['red', 'green', 'blue', 'purple', 'orange'];
+const colors = ['red', 'green', 'blue', 'purple', 'orange', 'yellow', 'brown', 'pink'];
 const timeLimit = 15000;
 function ReactionSlide(props) {
-  const {type} = props;
+  const {type, collectData} = props;
   const [colorChoices, setColorChoices] = useState({});
   const [colorChoicesDidSet, setColorChoicesDidSet] = useState(false);
   const [answers, setAnswers] = useState({correct: 0, incorrect: 0});
   const [gameRunning, setGameRunning] = useState(false);
   const [timerDidStart, setTimerDidStart] = useState(false)
 
+  // Start the game for `timeLimit` milliseconds
   useEffect(() => {
     if (!timerDidStart) {
       setTimerDidStart(true);
@@ -74,19 +96,28 @@ function ReactionSlide(props) {
     }
   }, [timerDidStart, gameRunning]);
   
+  // Setup listener for using the keyboard to answer
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     }
   });
+
+  // Get new colors after the answer (and collect data when game is done)
   useEffect(() => {
+    // Collect data when the game is over
+    if (!gameRunning && answers.correct > 0) {
+      collectData(answers);
+      return;
+    }
+
     if (!colorChoicesDidSet) {
       setColorChoicesDidSet(true);
       // This is O(n) when it should be O(1), but it doesn't really matter
       const shuffledColors = shuffle(colors);
       switch (type) {
-        case 'black-words':
+        case 'control':
           setColorChoices({
             leftMeaning: shuffledColors[0],
             centerColor: shuffledColors[Math.floor(Math.random()*2)], // random 0 or 1
@@ -115,17 +146,20 @@ function ReactionSlide(props) {
           break;
       }
     }
-  }, [type, colorChoices, colorChoicesDidSet]);
+  }, [type, colorChoices, colorChoicesDidSet, answers, collectData, gameRunning, timerDidStart]);
 
+  // Called either via keyboard or click when the user answers
   const handleChoice = choice => {
     return event => {
       if (event) event.preventDefault();
       let leftRight;
       switch (type) {
-        case 'black-words': case 'colored-words-meaning':
+        case 'control': case 'colored-words-meaning':
+          // Answer on meaning of word
           leftRight = [colorChoices.leftMeaning, colorChoices.rightMeaning];
           break;
         case 'colored-words-color':
+          // Answer on color of word
           leftRight = [colorChoices.leftColor, colorChoices.rightColor];
           break;
         default:
@@ -141,6 +175,7 @@ function ReactionSlide(props) {
   }
 
   const handleKeyDown = event => {
+    if (!gameRunning) return;
     if (event.key === 'f' || event.key === 'F') {
       handleChoice(0)();
     } else if (event.key === 'j' || event.key === 'J') {
@@ -185,7 +220,7 @@ function ReactionSlide(props) {
         </p>
       </Col>
     </Row>}
-    {!gameRunning && <p className='text-center'>
+    {!gameRunning && <p className='text-center mt-5'>
       The game has finished.  You scored {answers.correct}/{answers.incorrect + answers.correct} in {Math.floor(timeLimit / 1000)} seconds. Please click "Next" to continue.
     </p>}
   </>);
