@@ -15,6 +15,7 @@ import { NoteEditor, NotesHomeList } from './notes';
 import { AutoNote, AutoFlashCard } from './notes/autonote';
 import { ManualSRHome } from './manual-sr';
 import { GameComponent, MatchingGame } from './decks/games';
+import { ReactionExperiment } from './experiments';
 
 const e = React.createElement;
 
@@ -183,6 +184,10 @@ if (staffForceLoginElement) {
   ReactDOM.render(e(StaffForceLogin, staffForceLoginElement.dataset), staffForceLoginElement);
 }
 
+const experimentElement = document.getElementById('experiment-component');
+if (experimentElement) {
+  ReactDOM.render(e(ReactionExperiment, experimentElement.dataset), experimentElement);
+}
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
