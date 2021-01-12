@@ -1680,3 +1680,39 @@ def edit_tags_bulk_view(request, *args, **kwargs):
 
     FlashCardCreator.objects.bulk_update(flashcards, ['tags'])
     return Response({'message': 'Updated tags'}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def flashcard_review_instance_bulk_update_view(request, *args, **kwargs):
+    """
+    Bulk updated flashcards - POST
+
+    Required information:
+        `flashcard_ids`: Ids of the flashcard review instances to update
+        `action`: Action to take on the flashcards SUSPEND/UNSUSPEND/DELETE
+    """
+    flashcard_ids = request.data.get('flashcard_ids', [])
+    action = request.data.get('action')
+    if len(flashcard_ids) == 0:
+        return Response({'message': 'Must specify at least one flashcard Id'}, status=400)
+
+    flashcards = FlashCard.objects.filter(
+        creator__deck__user=request.user,
+        pk__in=flashcard_ids,
+    )
+    if flashcards.count() != len(flashcard_ids):
+        return Response({'message': 'Could not find all flashcards specified'}, status=400)
+
+    if action == 'SUSPEND':
+        flashcards.update(is_suspended=True)
+    elif action == 'UNSUSPEND':
+        flashcards.update(is_suspended=False)
+    elif action == 'DELETE':
+        # Delete creators (and review instances, by cascade) (never just delete review instances)
+        creators = FlashCardCreator.objects.filter(review_instances__in=flashcards)
+        creators.delete()
+    else:
+        return Response({'message': 'Invalid action'}, status=400)
+
+    return Response({'message': 'Edited flashcard review instances'}, status=200)

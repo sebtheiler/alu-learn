@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Modal } from 'react-bootstrap';
-import { apiFlashCardSearch, apiSSMCreate, apiDeckPrivateList } from '../../lookup';
+import { Form, Button, Modal, Dropdown, DropdownButton } from 'react-bootstrap';
+import { apiFlashCardSearch, apiSSMCreate, apiDeckPrivateList, apiFlashcardReviewInstanceEdit } from '../../lookup';
 import { FlashCardsList } from '.';
 import { errorHandler } from '../../utils';
 import RangeSlider from 'react-bootstrap-range-slider';
@@ -223,6 +223,27 @@ export function FlashCardSearchComponent(props) {
     }
   }
 
+  const actionAllFlashcards = action => {
+    return event => {
+      event.preventDefault();
+      if (action === 'DELETE') {
+        if (window.prompt(`
+Are you sure you want to delete ${searchedFlashcards.length} flashcards?  This action is instant and irreversible.
+If you wish to continue, please type "DELETE", without the quotes.
+        `) !== 'DELETE') return;
+      }
+
+      apiFlashcardReviewInstanceEdit(searchedFlashcards.map(flashcard => flashcard.id), action, (response, status) => {
+        if (status === 200) {
+          window.location.reload();
+        } else {
+          // Error bulk editing flashcard review instances
+          errorHandler(response, status, 2011);
+        }
+      });
+    }
+  }
+
   return (
     <>
       <Form className='text-center mx-auto w-75' onSubmit={handleSubmit} id='searchForm'>
@@ -268,6 +289,11 @@ export function FlashCardSearchComponent(props) {
                 </Modal.Footer>
               </Form>
             </Modal>
+            <DropdownButton id='dropdown-basic-button' title='Actions' className='mt-1'>
+              <Dropdown.Item as={Button} onClick={actionAllFlashcards('SUSPEND')}>Suspend All</Dropdown.Item>
+              <Dropdown.Item as={Button} onClick={actionAllFlashcards('UNSUSPEND')}>Unsuspend All</Dropdown.Item>
+              <Dropdown.Item as={Button} onClick={actionAllFlashcards('DELETE')}>Delete All</Dropdown.Item>
+            </DropdownButton>
           </div>
         }
         {didSearch && (

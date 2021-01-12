@@ -71,6 +71,7 @@ import {
   apiStaffForceLogin,
   apiRearrangeFlashcard,
   apiFlashcardEditTags,
+  apiFlashcardReviewInstanceEdit,
 } from './lookup';
 
 export {
@@ -146,4 +147,5 @@ export {
   apiStaffForceLogin,
   apiRearrangeFlashcard,
   apiFlashcardEditTags,
+  apiFlashcardReviewInstanceEdit,
 }

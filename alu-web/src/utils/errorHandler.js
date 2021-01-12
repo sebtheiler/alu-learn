@@ -85,6 +85,7 @@ int(hexadecimal_string, 16)
 2008: Error deleting flashcard while studying through apiFlashCardDelete in alu-web/src/decks/study/components.js
 2009: Error moving flashcard up through apiRearrangeFlashcard
 2010: Error moving flashcard down through apiRearrangeFlashcard
+2011: Error bulk editing flashcard review instances through apiFlashcardReviewInstanceEdit
 
 === Profile related errors ===
 3000: Error getting profile details through apiProfileDetail in alu-web/src/profiles/information.js

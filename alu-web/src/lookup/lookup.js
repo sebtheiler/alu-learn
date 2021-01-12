@@ -548,5 +548,13 @@ export function apiFlashcardEditTags(flashcardIds, action, tag, callback) {
     flashcard_ids: flashcardIds,
     action: action,
     tag: tag,
-  })
+  });
+}
+
+// Edits multiple review instances at once (e.g., suspend/unsuspend/delete)
+export function apiFlashcardReviewInstanceEdit(flashcardIds, action, callback) {
+  backendLookup('POST', `decks/edit-review-instances/`, callback, {
+    flashcard_ids: flashcardIds,
+    action: action,
+  });
 }

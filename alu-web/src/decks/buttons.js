@@ -105,7 +105,10 @@ export function DeckDefaultButtonGroup(props) {
 
   const deleteHandler = () => {
     if (deck.serializer_name === 'deck') {
-      if (window.confirm('Are you sure you want to delete this deck and all of its flashcards? This action is irreversible')) {
+      if (window.prompt(`
+Are you sure you want to delete this deck?  This action is instant and irreversible.
+If you wish to continue, please type "DELETE", without the quotes.
+      `) === 'DELETE') {
         apiDeckDelete(deck.id, (response, status) => {
           if (status === 200) {
             window.location.href = '/home/decks/';

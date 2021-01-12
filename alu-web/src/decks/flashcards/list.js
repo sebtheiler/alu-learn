@@ -91,7 +91,6 @@ export function FlashCardsList(props) {
     }
   }
 
-  console.log(selectedFlashcards)
   return (
     <div className={props.className}>
       {flashcardList ? null : <h2 className='text-center mt-3'>Browsing Flashcards{deck ? ` in "${deck.title}"` : null}</h2>}
