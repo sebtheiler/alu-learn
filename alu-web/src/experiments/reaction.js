@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Row, Col } from 'react-bootstrap';
 import { shuffle } from '../utils';
 import './reaction.css';
@@ -16,43 +16,54 @@ export function ReactionExperiment(props) {
     }
   }
 
-  const slides = [
-    (<TextSlide title='Introduction'>
-      This experiment will measure your reaction time in perception vs. sensation.<br />
-      By pressing "Next" you agree to participate in the experiment (your data will not be collected, unless you willingly give it to us).
-    </TextSlide>),
-    (<TextSlide title='Part I'>
+  const slideText = useMemo(() => shuffle([
+    { title: 'Part I', type: 'control', dataName: 'control', text: <>
       In Part I, you will be shown two black words.{' '}
       Click the black word that has the meaning of the color in the middle of the screen.<br />
       Alternatively, you can use the keys 'F' and 'J' on your keyboard (if you choose to use the keyboard, please use the keyboard for the entire experiment, and vice-versa).
-    </TextSlide>),
-    (<ReactionSlide type='control' collectData={collectData('blackWords')} />),
-    (<TextSlide title='Part II'>
+    </>},
+    { title: 'Part II', type: 'colored-words-meaning', dataName: 'coloredWordsMeaning', text: <>
       In Part II, you will be shown two colored words.{' '}
-      Click the colored word that has the same meaning as the color in the middle of the screen (not the same color).
-    </TextSlide>),
-    (<ReactionSlide type='colored-words-meaning' collectData={collectData('coloredWordsMeaning')} />),
-    (<TextSlide title='Part III'>
+      Click the colored word that has the same meaning as the color in the middle of the screen (not the same color).<br />
+      Alternatively, you can use the keys 'F' and 'J' on your keyboard (if you choose to use the keyboard, please use the keyboard for the entire experiment, and vice-versa).
+    </>},
+    { title: 'Part III', type: 'colored-words-color', dataName: 'coloredWordsColor', text: <>
       In Part III, you will be shown two colored words.{' '}
-      Click the colored word that has the same color as the color in the middle of the screen (not the same meaning).
-    </TextSlide>),
-    (<ReactionSlide type='colored-words-color' collectData={collectData('coloredWordsColor')} />),
-    (<TextSlide title='Part IV'>
+      Click the colored word that has the same color as the color in the middle of the screen (not the same meaning).<br />
+      Alternatively, you can use the keys 'F' and 'J' on your keyboard (if you choose to use the keyboard, please use the keyboard for the entire experiment, and vice-versa).
+    </>},
+    { title: 'Part IV', type: 'colored-box', dataName: 'coloredBox', text: <>
       In Part IV, you will be shown two colored boxes.{' '}
-      Click the colored box that has the same color as the color in the middle of the screen.
-    </TextSlide>),
-    (<ReactionSlide type='colored-box' collectData={collectData('coloredBox')} />),
-    (<TextSlide title='Debrief'>
+      Click the colored box that has the same color as the color in the middle of the screen.<br />
+      Alternatively, you can use the keys 'F' and 'J' on your keyboard (if you choose to use the keyboard, please use the keyboard for the entire experiment, and vice-versa).
+    </>},
+  ]), []);
+
+  const slides = [
+    <TextSlide title='Introduction'>
+      This experiment will measure your reaction time in perception vs. sensation.<br />
+      The order of the four tests are randomized, to prevent bias.<br /><br />
+      By pressing "Next" you agree to participate in the experiment (your data will not be collected, unless you willingly give it to us).
+    </TextSlide>,
+    <TextSlide title={slideText[0].title}>{slideText[0].text}</TextSlide>,
+    <ReactionSlide type={slideText[0].type} collectData={collectData(slideText[0].dataName)} />,
+    <TextSlide title={slideText[1].title}>{slideText[1].text}</TextSlide>,
+    <ReactionSlide type={slideText[1].type} collectData={collectData(slideText[1].dataName)} />,
+    <TextSlide title={slideText[2].title}>{slideText[2].text}</TextSlide>,
+    <ReactionSlide type={slideText[2].type} collectData={collectData(slideText[2].dataName)} />,
+    <TextSlide title={slideText[3].title}>{slideText[3].text}</TextSlide>,
+    <ReactionSlide type={slideText[3].type} collectData={collectData(slideText[3].dataName)} />,
+    <TextSlide title='Debrief'>
       Thank you for furthering our psychological research!
       <br /><br />
       Your Responses:
       <ul>
-        <li>Control Game: {answers?.blackWords?.correct}/{answers?.blackWords?.correct + answers?.blackWords?.incorrect}</li>
+        <li>Control Game: {answers?.control?.correct}/{answers?.control?.correct + answers?.control?.incorrect}</li>
         <li>Colored Words Meaning: {answers?.coloredWordsMeaning?.correct}/{answers?.coloredWordsMeaning?.correct + answers?.coloredWordsMeaning?.incorrect}</li>
         <li>Colored Words Color: {answers?.coloredWordsColor?.correct}/{answers?.coloredWordsColor?.correct + answers?.coloredWordsColor?.incorrect}</li>
         <li>Colored Boxes: {answers?.coloredBox?.correct}/{answers?.coloredBox?.correct + answers?.coloredBox?.incorrect}</li>
       </ul>
-    </TextSlide>),
+    </TextSlide>,
   ];
 
   return (<>
@@ -239,7 +250,7 @@ function ReactionSlide(props) {
       </Col>
     </Row>}
     {!gameRunning && <p className='text-center mt-5'>
-      The game has finished.  You scored {answers.correct}/{answers.incorrect + answers.correct} in {Math.floor(timeLimit / 1000)} seconds. Please click "Next" to continue.
+      The game has finished.  Please click "Next" to continue.
     </p>}
   </>);
 }
