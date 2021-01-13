@@ -18,12 +18,13 @@ export function ReactionExperiment(props) {
 
   const slides = [
     (<TextSlide title='Introduction'>
-      This experiment will measure your reaction time in perception vs. sensation.
+      This experiment will measure your reaction time in perception vs. sensation.<br />
+      By pressing "Next" you agree to participate in the experiment (your data will not be collected, unless you willingly give it to us).
     </TextSlide>),
     (<TextSlide title='Part I'>
       In Part I, you will be shown two black words.{' '}
       Click the black word that has the meaning of the color in the middle of the screen.<br />
-      Alternatively, you can use the keys 'F' and 'J' on your keyboard.
+      Alternatively, you can use the keys 'F' and 'J' on your keyboard (if you choose to use the keyboard, please use the keyboard for the entire experiment, and vice-versa).
     </TextSlide>),
     (<ReactionSlide type='control' collectData={collectData('blackWords')} />),
     (<TextSlide title='Part II'>
@@ -36,6 +37,11 @@ export function ReactionExperiment(props) {
       Click the colored word that has the same color as the color in the middle of the screen (not the same meaning).
     </TextSlide>),
     (<ReactionSlide type='colored-words-color' collectData={collectData('coloredWordsColor')} />),
+    (<TextSlide title='Part IV'>
+      In Part IV, you will be shown two colored boxes.{' '}
+      Click the colored box that has the same color as the color in the middle of the screen.
+    </TextSlide>),
+    (<ReactionSlide type='colored-box' collectData={collectData('coloredBox')} />),
     (<TextSlide title='Debrief'>
       Thank you for furthering our psychological research!
       <br /><br />
@@ -44,6 +50,7 @@ export function ReactionExperiment(props) {
         <li>Control Game: {answers?.blackWords?.correct}/{answers?.blackWords?.correct + answers?.blackWords?.incorrect}</li>
         <li>Colored Words Meaning: {answers?.coloredWordsMeaning?.correct}/{answers?.coloredWordsMeaning?.correct + answers?.coloredWordsMeaning?.incorrect}</li>
         <li>Colored Words Color: {answers?.coloredWordsColor?.correct}/{answers?.coloredWordsColor?.correct + answers?.coloredWordsColor?.incorrect}</li>
+        <li>Colored Boxes: {answers?.coloredBox?.correct}/{answers?.coloredBox?.correct + answers?.coloredBox?.incorrect}</li>
       </ul>
     </TextSlide>),
   ];
@@ -142,6 +149,15 @@ function ReactionSlide(props) {
             rightColor: shuffledColors[3],
           });
           break;
+        case 'colored-box':
+          setColorChoices({
+            leftMeaning: shuffledColors[0],
+            rightMeaning: shuffledColors[1],
+            centerColor: shuffledColors[Math.floor(Math.random()*2)], // random 1 or 2
+            leftColor: shuffledColors[0],
+            rightColor: shuffledColors[1],
+          });
+          break;
         default:
           break;
       }
@@ -158,7 +174,7 @@ function ReactionSlide(props) {
           // Answer on meaning of word
           leftRight = [colorChoices.leftMeaning, colorChoices.rightMeaning];
           break;
-        case 'colored-words-color':
+        case 'colored-words-color': case 'colored-box':
           // Answer on color of word
           leftRight = [colorChoices.leftColor, colorChoices.rightColor];
           break;
@@ -189,7 +205,8 @@ function ReactionSlide(props) {
         <p
           className='text-center mx-auto mt-3'
           style={{
-            color: type.startsWith('colored-words') ? colorChoices.leftColor : 'black',
+            color: type.startsWith('colored') ? colorChoices.leftColor : 'black',
+            backgroundColor: type === 'colored-box' ? colorChoices.leftColor : null,
             fontSize: 'xx-large',
             fontWeight: 'bold',
           }}
@@ -211,7 +228,8 @@ function ReactionSlide(props) {
         <p
           className='text-center mx-auto mt-3'
           style={{
-            color: type.startsWith('colored-words') ? colorChoices.rightColor : 'black',
+            color: type.startsWith('colored') ? colorChoices.rightColor : 'black',
+            background: type === 'colored-box' ? colorChoices.rightColor : null,
             fontSize: 'xx-large',
             fontWeight: 'bold',
           }}
