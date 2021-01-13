@@ -19,43 +19,25 @@ export function NotificationComponent(props) {
   // Lookup notifications in API
   useEffect(() => {
     if (notifsDidSet === false) {
-      if (username === '') {
-        // If the user is not logged in make a fake notification
-        const fakeNotifDesc = `
-Welcome to Alu! Alu uses spaced repetition algorithms to help you learn and study most effectively.
-`.trim();
-        setNotifList([{
-          title: 'Hey there!',
-          description: fakeNotifDesc,
-          read: false,
-          category: 'basic',
-          timestamp: (new Date()).toISOString(),
-          id: -1,
-        }]);
-        setNotifsDidSet(true);
-        setNumUnreadNotifs(1);
-        setTotalUnreadNotifs(1);
-      } else {
-        // If the user is logged in, get notifications
-        apiNotificationList(username, (response, status) => {
-          if (status === 200) {
-            setNextUrl(response.next);
-            setNotifList(response.results);
-            // setNotifList(response.results.splice(0, isPopup ? 5 : 10000));
-            setNotifsDidSet(true);
-            
-            // Check if there are any unread notifications
-            const unread = response.results.filter((notif) => {
-              return notif.read === false;
-            });
-            setNumUnreadNotifs(unread.length);
-            setTotalUnreadNotifs(response.total_unread);
-          } else {
-            // Error getting notification list
-            errorHandler(response, status, 3002);
-          }
-        });
-      }
+      // If the user is logged in, get notifications
+      apiNotificationList(username, (response, status) => {
+        if (status === 200) {
+          setNextUrl(response.next);
+          setNotifList(response.results);
+          // setNotifList(response.results.splice(0, isPopup ? 5 : 10000));
+          setNotifsDidSet(true);
+          
+          // Check if there are any unread notifications
+          const unread = response.results.filter((notif) => {
+            return notif.read === false;
+          });
+          setNumUnreadNotifs(unread.length);
+          setTotalUnreadNotifs(response.total_unread);
+        } else {
+          // Error getting notification list
+          errorHandler(response, status, 3002);
+        }
+      });
     }
   }, [notifsDidSet, isPopup, username]);
 

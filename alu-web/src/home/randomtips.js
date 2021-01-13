@@ -15,7 +15,6 @@ const randomTips = [
   'Give flashcards tags to organize them',
   'Want to study a specific set of cards? Use the "Custom Study" feature.',
   'When studying flashcards, use the spacebar to reveal the answer and the number keys (1-4) to select a choice',
-  'You can share decks with others by changing the "Sharing Setting" value',
   'When creating cards, click the snowflake icon to "freeze" a field',
   'Flashcards have a full rich text editor - you should never have to pay money to make things bold',
   'When taking notes, we recommend you disable spell checking, and focus more on the content than spelling and grammar',
