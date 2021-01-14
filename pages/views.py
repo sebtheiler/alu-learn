@@ -168,3 +168,10 @@ def landing_page(request, *args, **kwargs):
         },
     }
     return render(request, 'misc/landing.html', context=context)
+
+def experiments_view(request, *args, **kwargs):
+    if request.user.is_authenticated:
+        if not request.user.is_confirmed:
+            return redirect('/confirm-email/')
+
+    return render(request, 'misc/experiment.html')
