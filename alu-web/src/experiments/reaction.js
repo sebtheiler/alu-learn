@@ -41,7 +41,8 @@ export function ReactionExperiment(props) {
 
   const slides = [
     <TextSlide title='Introduction'>
-      This experiment will measure your reaction time in perception vs. sensation.<br />
+      This experiment will measure your reaction time in perception vs. sensation.<br /><br />
+      Your task is to complete as many "questions" as you can in 30 seconds.<br /><br />
       The order of the four tests are randomized, to prevent bias.<br /><br />
       By pressing "Next" you agree to participate in the experiment (your data will not be collected, unless you willingly give it to us).
     </TextSlide>,
@@ -93,7 +94,7 @@ function TextSlide(props) {
 
 
 const colors = ['red', 'green', 'blue', 'purple', 'orange', 'yellow', 'brown', 'pink'];
-const timeLimit = 15000;
+const timeLimit = 30000;
 function ReactionSlide(props) {
   const {type, collectData} = props;
   const [colorChoices, setColorChoices] = useState({});

@@ -10,6 +10,7 @@
 * **Changed Min New Card Limit:** You can now choose to not learn any new flashcards per day in a deck, instead of being forced to learn at least one.
 * **Changed Update Deck Wording:** "Pull Changes" has been changed up "Update" for clarity.
 * **Added More Autonote Options:** Added more options to autonote, about how to divide the input text.
+* **Added Temporary Experiment Game:** There is a temporary experiment game available [here](/experiments/).  It is for a psychology project, and will be removed within a couple weeks.  You can play it if you'd like, but your data will not be recorded.
 
 
 ## Math Equations & Rearranging Flashcards - Jan 06 - 0.3.2
