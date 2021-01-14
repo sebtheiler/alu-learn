@@ -1,7 +1,7 @@
 -----
 
-## ??? - Jan ?? - 0.3.3
-
+## Bulk Utilities - Jan 14 - 0.3.3
+This update introduces a couple of minor utilities that make performing "bulk operations" on flashcards easier.  For example, you can now select multiple flashcards when browsing, and add/remove a tag to all those flashcards.  Furthermore, you can now suspend/delete all flashcards that return as the result of a search.  These features will be expanded upon and be made computationally quicker in the future.
 
 
 * **Added Selection Mode:** Selection mode is a feature that allows you to "select" multiple flashcards when browsing a deck.  You can then perform bulk operations on the selected flashcards, like adding or removing a new tag to all of those flashcards.  You can learn more about selection mode [here](/help/selection-mode/).
