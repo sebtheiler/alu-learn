@@ -165,7 +165,7 @@ export function apiCheckUsernameAvailable(username, email, callback) {
 }
 
 // Creates a profile & user
-export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, lastName, username, email, password, experimentParams, callback) {
+export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, lastName, username, email, password, callback) {
   backendLookup('POST', 'profiles/create/', callback, {
     birthdate: {
       year: parseInt(birthYear),
@@ -177,7 +177,6 @@ export function apiProfileCreate(birthYear, birthMonth, birthDate, firstName, la
     username: username,
     email: email,
     password: password,
-    experiment_params: experimentParams,
   });
 }
 
@@ -245,14 +244,6 @@ export function apiNotificationRead(username, notificationId, callback) {
 // Gets decks for explore component
 export function apiExploreLists(callback) {
   backendLookup('GET', 'explore/lists/', callback);
-}
-
-// Create an empty data point
-export function apiCreateBlankExperiment(controllerShortName, experimentParams, callback) {
-  backendLookup('POST', 'analytics/createblank/', callback, {
-    controller_short_name: controllerShortName,
-    experiment_params: experimentParams,
-  });
 }
 
 // Submit a piece of feedback

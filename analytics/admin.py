@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ExperimentController, Experiment, ShortUrl, UrlHit
+from .models import ShortUrl, UrlHit
 
 
 class UrlHitAdmin(admin.ModelAdmin):
@@ -9,7 +9,5 @@ class UrlHitAdmin(admin.ModelAdmin):
     ordering = ['-timestamp']
 
 
-admin.site.register(ExperimentController)
-admin.site.register(Experiment)
 admin.site.register(ShortUrl)
 admin.site.register(UrlHit, UrlHitAdmin)

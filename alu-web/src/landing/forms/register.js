@@ -4,7 +4,7 @@ import { isAlphaNumeric, errorHandler, FormCheckbox } from '../../utils';
 import { apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin } from '../../lookup';
 
 export function ModalRegisterForm(props) {
-  const {defaultEmail, experimentParams} = props;
+  const {defaultEmail} = props;
   const returnUrl = props.returnUrl ? new URL(props.returnUrl).pathname : null;
   var monthRef, dateRef, yearRef;
   
@@ -137,7 +137,6 @@ export function ModalRegisterForm(props) {
           form.elements.registerUsername.value,
           form.elements.registerEmail.value,
           form.elements.registerPassword.value,
-          experimentParams,
           (response, status) => {
             if (status === 201) {
               apiProfileLogin(
@@ -178,7 +177,7 @@ export function ModalRegisterForm(props) {
       <Form.Group>
         <Form.Label className='mb-0'>
           Date of Birth<br />
-          <small>If you are under 13, you can still use Alu, but some features will be limited</small>
+          <small>If you are under 13, you can still use Alu, but some features will be limited. This information is never made public.</small>
         </Form.Label>
         <p id='dateError' className='text-danger mb-0'></p>
         <div className='row'>

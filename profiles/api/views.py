@@ -1,6 +1,5 @@
 import datetime
 
-from analytics.models import ExperimentController
 from decks.api.utils import get_paginated_queryset_response
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.mail import send_mail
@@ -297,7 +296,6 @@ def create_profile_api_view(request, *args, **kwargs):
         `username`: Username of profile
         `email`: Email of profile. Email of parent if user is child.
         `password`: Password of user
-        `experiment_params`: Experiment paramaters for analytics apps
     """
     # Get data
     birthdate = request.data.get('birthdate')
@@ -306,9 +304,8 @@ def create_profile_api_view(request, *args, **kwargs):
     username = request.data.get('username').lower().replace('@', '').replace('$', '').replace('#', '')
     email = request.data.get('email')
     password = request.data.get('password')
-    experiment_params = request.data.get('experiment_params')
 
-    if None in (birthdate, last_name, first_name, username, email, password, experiment_params):
+    if None in (birthdate, last_name, first_name, username, email, password):
         return Response({'message': 'Not all parameters were specified'}, status=400)
 
     months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
@@ -343,10 +340,6 @@ def create_profile_api_view(request, *args, **kwargs):
 
     user.profile.birthdate = birthdate
     user.profile.save()
-
-    # Add data to the analytics tracker
-    controller = ExperimentController.objects.get(short_name='landing1')
-    controller.add_data_piece(parameters=experiment_params, successful=True)
 
     # Send confirmation email
     subject = 'Welcome to Alu!'

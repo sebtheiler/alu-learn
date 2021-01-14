@@ -4,7 +4,7 @@ import { ModalRegisterForm } from './register';
 import { LoginForm } from './login';
 
 export function RegisterLoginModal(props) {
-  const {defaultEmail, defaultForm, modalIsOpen, closeModal, returnUrl, experimentParams} = props;
+  const {defaultEmail, defaultForm, modalIsOpen, closeModal, returnUrl} = props;
 
   const [formToDisplay, setFormToDisplay] = useState(defaultForm ? defaultForm : 'REGISTER');
 
@@ -52,12 +52,11 @@ export function RegisterLoginModal(props) {
             Create your account to start using Alu <br /><br />
             Alu is currently only accepting a limited number of individuals.
             Please fill out <a href='https://forms.gle/7MNRvNfa4yfQinTL7' target='_blank' rel='noopener noreferrer'>
-            this Google Form</a> to apply.
+            this Google Form</a> to apply (no need if you are going to use a WESS email).
           </p>
           <ModalRegisterForm
             defaultEmail={defaultEmail}
             returnUrl={returnUrl}
-            experimentParams={experimentParams}
           />
         </div>
         <div className={formToDisplay !== 'LOGIN' ? 'd-none' : ''}>
