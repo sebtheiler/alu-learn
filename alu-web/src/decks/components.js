@@ -13,7 +13,7 @@ export function DecksHomeComponent(props) {
     <div className={props.className}>
       <div className='text-center my-3'>
         <ButtonGroup>
-          <Button href='/flashcards/search/'>Search for Flashcards / Custom Study</Button>
+          <Button href='/flashcards/search/'>Search for Flashcards</Button>
           <DeckCreate className='ml-1' />
           <Button className='ml-1' href='/decks/import/'>Import Deck</Button>
         </ButtonGroup>

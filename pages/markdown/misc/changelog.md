@@ -1,10 +1,12 @@
 -----
 
-## ??? - Jan ?? - 0.3.4
+## Tag Searching - Jan 16 - 0.3.4
+This update improves your ability to search for flashcards with specific tags.  It introduces three logical operators, AND, OR, and NOT that you can use when searching for tags.  If you'd like to search for flashcards with tags "unit 1" or "unit 2", you can use the query: unit 1 OR unit 2.  If you tried to use AND instead of OR, no results would be returned since no flashcard can be in both unit 1 and unit 2 at the same time.
 
 
 * **Improved Flashcard Tag Searching:** Added the ability to use operators (AND/OR/NOT) in tag searches.
-
+* **Changed Wording:** Changed wording on various buttons to make them more concise.
+* **Improved Landing Page:** The landing page has been updated to match Alu's significant progress.
 
 
 ## Bulk Utilities - Jan 14 - 0.3.3
@@ -17,7 +19,7 @@ This update introduces a couple of minor utilities that make performing "bulk op
 * **Changed Min New Card Limit:** You can now choose to not learn any new flashcards per day in a deck, instead of being forced to learn at least one.
 * **Changed Update Deck Wording:** "Pull Changes" has been changed up "Update" for clarity.
 * **Added More Autonote Options:** Added more options to autonote, about how to divide the input text.
-* **Added Temporary Experiment Game:** There is a temporary experiment game available [here](/experiments/).  It is for a psychology project, and will be removed within a couple weeks.  You can play it if you'd like, but your data will not be recorded.
+* **Added Temporary Experiment Game:** There is a temporary experiment game available [here](/experiments/).  It is for a psychology project, and will be removed within a couple of weeks.  You can play it if you'd like, but your data will not be recorded.
 
 
 ## Math Equations & Rearranging Flashcards - Jan 06 - 0.3.2

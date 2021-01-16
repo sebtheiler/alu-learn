@@ -311,7 +311,7 @@ export function DeckEditCreateModal(props) {
               custom
             >
               <option value='ANKI'>Default Anki Settings</option>
-              <option value='ANKING'>Optimized Anki Settings by "Anking"</option>schedulingAlgo
+              <option value='ANKING'>Optimized Anki Settings</option>
             </Form.Control>
           </Form.Group>
         </Modal.Body>
