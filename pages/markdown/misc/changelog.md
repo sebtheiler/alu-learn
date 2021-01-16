@@ -1,5 +1,12 @@
 -----
 
+## ??? - Jan ?? - 0.3.4
+
+
+* **Improved Flashcard Tag Searching:** Added the ability to use operators (AND/OR/NOT) in tag searches.
+
+
+
 ## Bulk Utilities - Jan 14 - 0.3.3
 This update introduces a couple of minor utilities that make performing "bulk operations" on flashcards easier.  For example, you can now select multiple flashcards when browsing, and add/remove a tag to all those flashcards.  Furthermore, you can now suspend/delete all flashcards that return as the result of a search.  These features will be expanded upon and be made computationally quicker in the future.
 

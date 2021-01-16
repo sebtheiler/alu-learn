@@ -675,16 +675,35 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
         flashcard_query &= Q(creator__deck__pk__in=deck_ids.split(','))
 
     # Filter by tags (and leech)
+    # Note: using __icontains is not perfect, since it would have "car" appear in "carpet"
     if tags or leech is not None:
         tag_query = Q()
         if tags:
-            if isinstance(tags, str):
-                tag_list = [tag.strip() for tag in tags.split(',')]
-            else:
-                tag_list = tags
+            # Split by the operators AND and OR
+            separated_tags = [el.strip() for el in re.split('(AND)|(OR)', tags) if el is not None]
 
-            for tag in tag_list:
-                tag_query |= Q(creator__tags__icontains=tag)
+            i = 0
+            while i < len(separated_tags):
+                if separated_tags[i] in ('AND', 'OR'):
+                    i += 1
+                    continue
+
+                previous_operator = separated_tags[i - 1] if i > 0 else None
+                contains_query = Q(creator__tags__icontains=separated_tags[i])
+
+                # Invert the query if it starts with NOT
+                if separated_tags[i].startswith('NOT '):
+                    contains_query = ~Q(creator__tags__icontains=separated_tags[i].replace('NOT ', ''))
+
+                # Decide how to merge the query, based on the previous value being AND or OR
+                if previous_operator == 'AND' or previous_operator is None:
+                    tag_query &= contains_query
+                elif previous_operator == 'OR':
+                    tag_query |= contains_query
+                else:
+                    return Response({'message': 'Invalid tags query'}, status=400)
+                
+                i += 1
 
         # Also filter by leech, since it's a tag
         if str(leech).lower() == 'true':
@@ -721,6 +740,7 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
         flashcard_query &= custom_query
 
     # Execute query
+    print(flashcard_query)
     if return_query_only:
         return flashcard_query
     else:

@@ -39,7 +39,7 @@ export function SearchForm(props) {
     </Form.Group>
     <hr />
     <Form.Group>
-      <Form.Label htmlFor='tags' as={as}>List of tags to search in (separate with commas)</Form.Label>
+      <Form.Label htmlFor='tags' as={as}>List of tags to search in (use AND/OR/NOT for advanced searches)</Form.Label>
       <Form.Control
         type='text'
         placeholder='Calculus, Integrals, Exponentials, ...'
