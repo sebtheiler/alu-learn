@@ -1,5 +1,7 @@
+from typing import List
 from django.conf import settings
 from django.db import models
+from django.db.models.query import QuerySet
 from profiles.models import Profile
 from django.contrib.postgres.fields import ArrayField, JSONField
 
@@ -38,7 +40,7 @@ class SharedDeckRelation(models.Model):
 
 
 class FlashCardCreatorManager(models.Manager):
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         return super().get_queryset().prefetch_related('deck')
 
 
@@ -60,10 +62,10 @@ class FlashCardCreator(models.Model):
     def __str__(self) -> str:
         return f'Flashcard Creator in {self.deck.title} by @{self.deck.user.username}'
 
-    def has_tag(self, tag):
+    def has_tag(self, tag: str) -> bool:
         return tag in [tag.strip() for tag in self.tags.split(',')]
 
-    def add_tag(self, tag, save=True):
+    def add_tag(self, tag: str, save: bool=True) -> str:
         if self.has_tag(tag):
             return
         elif self.tags.strip() == '':
@@ -76,7 +78,7 @@ class FlashCardCreator(models.Model):
 
         return self.tags
     
-    def remove_tag(self, tag, save=True):
+    def remove_tag(self, tag: str, save: bool=True):
         if not self.has_tag(tag):
             return
         elif self.tags.strip() == tag:
@@ -108,7 +110,7 @@ class FlashCardField(models.Model):
 
 
 class FlashCardManager(models.Manager):
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         return super().get_queryset().prefetch_related('creator__fields')
 
 
@@ -142,17 +144,17 @@ class FlashCard(models.Model):
     class Meta:
         ordering = ['creator__flashcard_num']
 
-    def get_content(self):
+    def get_content(self) -> List[str]:
         fields = self.creator.fields.all()
         return [fields[i] for i in self.content_indicies]
 
     def __str__(self) -> str:
         return str(self.get_content())
     
-    def is_leech(self):
+    def is_leech(self) -> bool:
         return self.creator.has_tag('leech')
     
-    def set_is_leech(self, is_leech, save=True):
+    def set_is_leech(self, is_leech: bool, save: bool=True) -> str:
         creator = self.creator
         if is_leech:
             creator.add_tag('leech', save)
@@ -197,7 +199,7 @@ class StudySessionManager(models.Model):
 
 
 class DeckStudySessionManagerModelManager(models.Manager):
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         return super().get_queryset().prefetch_related('deck')
 
 

@@ -1,10 +1,11 @@
 import random
+from typing import List
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 
 # Helper function for pagination
-def get_paginated_queryset_response(qs, request, Serializer, page_size=50, other_information={}):
+def get_paginated_queryset_response(qs, request, Serializer, page_size=50, other_information={}) -> Response:
     paginator = PageNumberPagination()
     paginator.page_size = page_size
     paginated_qs = paginator.paginate_queryset(qs, request)
@@ -18,7 +19,7 @@ def get_paginated_queryset_response(qs, request, Serializer, page_size=50, other
 
 # Like random.choices, but without replacement
 # Taken from https://stackoverflow.com/a/61605842/13042142
-def weighted_sample(population, weights, k=1):
+def weighted_sample(population, weights, k=1) -> List[int]:
     weights = list(weights)
     positions = range(len(population))
     indices = []

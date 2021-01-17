@@ -28,14 +28,14 @@ class Profile(models.Model):
         else:
             return f'@{self.user.username}'
     
-    def increment_total_thanks_recieved(self):
+    def increment_total_thanks_recieved(self) -> int:
         # Do not use this method if you need to make other changes to the profile obj
         # Only use this method if the `total_thanks_recieved` is the only attr that needs to be changed
         self.total_thanks_recieved += 1
         self.save()
         return self.total_thanks_recieved
     
-    def increment_cards_done_today(self, utc_timezone_offset=None):
+    def increment_cards_done_today(self, utc_timezone_offset=None) -> int:
         # Get or create history for today
         date = datetime.datetime.now()
         if utc_timezone_offset is not None:
@@ -89,7 +89,7 @@ class ProfileHistorySegment(models.Model):
     def __str__(self) -> str:
         return f"History for {self.profile.user.username} on {self.date}"
     
-    def increment_cards_done(self):
+    def increment_cards_done(self) -> int:
         # Do not use this method if you need to make other changes to the profile obj
         # Only use this method if the `cards_done` is the only attr that needs to be changed
         self.cards_done += 1

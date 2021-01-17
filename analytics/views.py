@@ -4,7 +4,7 @@ from .models import ShortUrl, UrlHit
 
 # https://stackoverflow.com/a/4581997/13042142
 # Not a foolproof function, and should NOT be used for sensitive information
-def get_client_ip(request):
+def get_client_ip(request) -> str:
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
@@ -13,7 +13,7 @@ def get_client_ip(request):
     return ip
 
 
-def short_url_redirect(request, code, *args, **kwargs):
+def short_url_redirect(request, code, *args, **kwargs) -> redirect:
     try:
         short_url = ShortUrl.objects.get(code=code)
     except ShortUrl.DoesNotExist:
