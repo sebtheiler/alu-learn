@@ -90,9 +90,9 @@ export function DecksHomeList(props) {
           <Col md={6} xs={12}>
             <iframe
               width='90%' height='200%'
-              title='Introduction to Copying Decks'
+              title="Ultimate Beginner's Guide to Premade Decks"
               allowFullScreen='allowFullScreen'
-              src="https://www.youtube.com/embed/XO2myZbhJxQ"
+              src="https://www.youtube.com/embed/kymkOwUsui4"
               className='mx-auto mb-5'
             />
           </Col>

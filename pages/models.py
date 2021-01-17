@@ -13,5 +13,5 @@ class ContactFeedback(models.Model):
     class Meta:
         ordering = ('-urgency',)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return ('(LEGAL): ' if self.is_legal_issue else 'Feedback: ') + self.title

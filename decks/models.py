@@ -24,7 +24,7 @@ class Deck(models.Model):
     class Meta:
         ordering = ['-id']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.title)
 
 
@@ -33,7 +33,7 @@ class SharedDeckRelation(models.Model):
     shared_deck = models.ForeignKey('SharedDeck', on_delete=models.CASCADE, related_name='children_decks')
     cloned_at_version = models.IntegerField(default=0) # used to know when the deck is outdated
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.shared_deck.title} ==> {self.deck.title}'
 
 
@@ -57,7 +57,7 @@ class FlashCardCreator(models.Model):
     class Meta:
         ordering = ['flashcard_num']
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Flashcard Creator in {self.deck.title} by @{self.deck.user.username}'
 
     def has_tag(self, tag):
@@ -100,7 +100,7 @@ class FlashCardField(models.Model):
     class Meta:
         ordering = ['field_number']
 
-    def __str__(self):
+    def __str__(self) -> str:
         try:
             return str(self.text[0]['children'][0]['text'])
         except KeyError:
@@ -146,7 +146,7 @@ class FlashCard(models.Model):
         fields = self.creator.fields.all()
         return [fields[i] for i in self.content_indicies]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.get_content())
     
     def is_leech(self):
@@ -206,7 +206,7 @@ class DeckStudySessionManager(StudySessionManager):
 
     objects = DeckStudySessionManagerModelManager()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'SSM for "{self.deck.title}" by @{self.deck.user.username}'
 
 
@@ -221,6 +221,9 @@ class CustomStudySessionManager(StudySessionManager):
     learning_status = models.CharField(null=True, blank=True, max_length=10)
     min_ease = models.PositiveSmallIntegerField(null=True, blank=True)
     max_ease = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f'CSSM: "{self.title}" by @{self.user}'
 
 
 class SharedDeck(Deck):
@@ -245,7 +248,7 @@ class DeckThank(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='thanks')
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Thank from @{self.profile.user.username} for Deck #{self.deck.id}'
 
 
@@ -254,5 +257,5 @@ class DeckClone(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='clones')
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Clone from @{self.profile.user.username} for Deck #{self.deck.id}'

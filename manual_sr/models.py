@@ -22,5 +22,5 @@ class ManualSRTask(models.Model):
     next_review = models.DateField(default=dt.date.today)
     interval = models.PositiveSmallIntegerField(default=0) # in days
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Task "{self.title}" for @{self.user.user.username}'

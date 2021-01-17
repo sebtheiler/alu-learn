@@ -22,7 +22,7 @@ class Profile(models.Model):
     current_streak = models.PositiveSmallIntegerField(default=0)
     has_done_cards_today = models.BooleanField(default=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.user.first_name and self.user.last_name:
             return f'{self.user.first_name} {self.user.last_name} - @{self.user.username}'
         else:
@@ -68,7 +68,7 @@ class Notification(models.Model):
     read = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.title}: {self.description} | {self.category}'
 
 
@@ -77,7 +77,7 @@ class ProfileBadge(models.Model):
     chosen = models.BooleanField(default=False)
     identifier = models.CharField(max_length=32)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'"{self.identifier}" badge for @{self.profile.user.username}'
 
 
@@ -86,7 +86,7 @@ class ProfileHistorySegment(models.Model):
     date = models.DateField(default=datetime.date.today)
     cards_done = models.PositiveSmallIntegerField(default=0)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"History for {self.profile.user.username} on {self.date}"
     
     def increment_cards_done(self):
@@ -116,7 +116,7 @@ class ProfileSettings(models.Model):
     ideal_time_per_day = models.CharField(max_length=3, choices=TIME_PER_DAY_OPTIONS, default='MAX')
     show_update_modal = models.BooleanField(default=False)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'Settings for {self.profile.user.username}'
 
 
