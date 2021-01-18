@@ -172,6 +172,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     flashcard_type = request.data.get('flashcard_type', 'basic')
     tags = request.data.get('tags')
     if fields is not None:
+        # TODO: there should definitely be some sanitization in here to make sure the flashcard is valid
         creator = FlashCardCreator.objects.create(
             deck=deck,
             tags=tags,

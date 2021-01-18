@@ -42,6 +42,7 @@ export function FlashCardCreate(props) {
   const [flashcardType, setFlashCardType] = useState('basic');
   const [gotFlashcardDetail, setGotFlashcardDetail] = useState(false);
   const [createdFlashcards, setCreatedFlashcards] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const [freezeFront, setFreezeFront] = useState(false);
   const [freezeBack, setFreezeBack] = useState(false);
@@ -121,6 +122,27 @@ export function FlashCardCreate(props) {
       default:
         return [];
     }})();
+
+    // Check if the flashcard is valid
+    switch (flashcardType) {
+      case 'basic': case 'reversed':
+        if (frontValue === emptyValue || backValue === emptyValue) {
+          setErrorMessage('The front and back of flashcards must not be empty');
+          return;
+        }
+        break;
+      case 'cloze':
+        const clozeRegex = /{{c\d*::.*?}}/gm;
+        const match = JSON.stringify(frontValue).match(clozeRegex);
+        if (!match) {
+          setErrorMessage('Cloze flashcards must have at least one instance of a cloze deletion');
+          return;
+        }
+        break;
+      default:
+        break;
+    }
+    setErrorMessage(null);
 
     if (isNaN(flashcardId) === false) {
       // This implies we are editing a card
@@ -246,6 +268,7 @@ export function FlashCardCreate(props) {
           />
         </Form.Group>
         <Form.Group className='text-center mt-1'>
+          <p className='text-center text-danger'>{errorMessage}</p>
           <Button type='submit' variant='primary' block>{btnLabel}</Button>
         </Form.Group>
         {isNaN(flashcardId) && <Form.Group>
