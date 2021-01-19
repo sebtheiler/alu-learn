@@ -50,6 +50,7 @@ const randomTips = [
   'Make sure you don\'t have flashcards that are too similar; that will make them hard too remember',
   'Try to avoid "lists" in flashcards.  It is usually better to separate those lists into multiple flashcards, or use cloze-deletion.',
   'You can bookmark deck game settings for an easy way to play your favorite games',
+  'It\'s much more efficient to have a big deck, and organize units with tags, than it is to have a bunch of small decks for each unit',
   // Random stuff
   'Hermann Ebbinghaus discovered the forgetting curve, which Alu is based on, in the 1800s',
   'Dr. Piotr Wozniak developed one of the first digital SR apps in the 1990s. His work has made Alu possible.',

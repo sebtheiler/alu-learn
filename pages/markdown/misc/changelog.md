@@ -1,5 +1,13 @@
 -----
 
+## Flashcard Hotfix - Jan 18 - 0.3.5
+This update is a tiny hotfix that fixes two issues with flashcards.
+
+
+* **Stopped Invalid Flashcards from Being Created:** There is now an error message if you attempt to create a flashcard with a blank front/back, or a cloze flashcard without an instance of a cloze deletion.
+* **Fixed Issue with Daily Card Limit:** Fixed an issue that would dump all unseen flashcards on a user if they had reached the maximum number of new flashcards for that day.
+
+
 ## Tag Searching - Jan 16 - 0.3.4
 This update improves your ability to search for flashcards with specific tags.  It introduces three logical operators, AND, OR, and NOT that you can use when searching for tags.  If you'd like to search for flashcards with tags "unit 1" or "unit 2", you can use the query: unit 1 OR unit 2.  If you tried to use AND instead of OR, no results would be returned since no flashcard can be in both unit 1 and unit 2 at the same time.
 

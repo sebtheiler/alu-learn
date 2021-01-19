@@ -962,6 +962,8 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
             )
         else:
             unseen_flashcards = unseen_flashcards[:ssm.daily_new_card_limit - ssm.new_cards_done_today]
+    else:
+        unseen_flashcards = []
     flashcards = list(chain(seen_flashcards, unseen_flashcards))
 
     ssm.last_flashcard_date = timezone.now().date()
