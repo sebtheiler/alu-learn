@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.postgres.fields import JSONField
 from profiles.models import Profile
 
 
@@ -21,17 +20,17 @@ class NotePage(models.Model):
 
 
 class FreeformNotePage(NotePage):
-    content = JSONField()
+    content = models.JSONField()
 
 
 class CornellNotePage(NotePage):
-    summary = JSONField()
+    summary = models.JSONField()
 
 
 class CornellNotePageSection(models.Model):
     parent_note = models.ForeignKey(CornellNotePage, on_delete=models.CASCADE, related_name='sections')
-    cue = JSONField()
-    content = JSONField()
+    cue = models.JSONField()
+    content = models.JSONField()
     section_number = models.PositiveSmallIntegerField() # counts from 0
 
     class Meta:

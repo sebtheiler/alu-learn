@@ -3,7 +3,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 from profiles.models import Profile
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import ArrayField
 
 # Create your models here.
 User = settings.AUTH_USER_MODEL
@@ -96,7 +96,7 @@ class FlashCardCreator(models.Model):
 
 class FlashCardField(models.Model):
     creator = models.ForeignKey(FlashCardCreator, on_delete=models.CASCADE, related_name='fields')
-    text = JSONField(null=True)
+    text = models.JSONField(null=True)
     field_number = models.PositiveSmallIntegerField()
 
     class Meta:
@@ -219,7 +219,7 @@ class CustomStudySessionManager(StudySessionManager):
     deck_ids = models.CharField(default='', blank=True, max_length=1024)
     tags = models.CharField(default='', blank=True, max_length=1024)
     contains = models.CharField(default='', blank=True, max_length=1024)
-    leech = models.NullBooleanField(null=True, blank=True)
+    leech = models.BooleanField(null=True, blank=True)
     learning_status = models.CharField(null=True, blank=True, max_length=10)
     min_ease = models.PositiveSmallIntegerField(null=True, blank=True)
     max_ease = models.PositiveSmallIntegerField(null=True, blank=True)

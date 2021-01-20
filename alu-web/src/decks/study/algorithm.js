@@ -100,11 +100,11 @@ export function getAnkiInterval(card, grade, settingsAlgorithm='ANKI', deckDiffi
   // Get variables we will be editing and returning
   var isMinute = false; // specifies that the interval is in minutes, not days
   var {learning_status: learningStatus, steps_index: stepsIndex, ease: easeFactor, interval, is_leech: isLeech, leech_index: leechIndex} = card;
-  learningStatus = learningStatus.toLowerCase();
-
   if (!learningStatus) {
+    // This has only happened once in production (to my knowledge) and I can't figure out why
     console.error(card);
   }
+  learningStatus = learningStatus.toLowerCase();
 
   // Algorithm
   if (learningStatus === 'learning' || learningStatus === 'unseen') {

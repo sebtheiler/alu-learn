@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 from profiles.models import Profile
 import datetime as dt
@@ -6,7 +5,7 @@ import datetime as dt
 class ManualSRTask(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='manual_sr_objects')
     title = models.CharField(max_length=128)
-    description = JSONField()
+    description = models.JSONField()
 
 
     LEARNING_STATUS_CHOICES = [
