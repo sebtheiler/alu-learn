@@ -1,5 +1,13 @@
 -----
 
+
+## ??? - Jan ?? - 0.?.?
+???
+
+
+* **Changed Leech Searching Behavior:** Searching by leeches had irregular behavior (using logical "or" instead of "and"), which has now been corrected.
+
+
 ## Flashcard Hotfix - Jan 18 - 0.3.5
 This update is a tiny hotfix that fixes two issues with flashcards.
 

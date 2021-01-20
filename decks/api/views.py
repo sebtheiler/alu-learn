@@ -708,9 +708,9 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
 
         # Also filter by leech, since it's a tag
         if str(leech).lower() == 'true':
-            tag_query |= Q(creator__tags__icontains='leech')
+            tag_query &= Q(creator__tags__icontains='leech')
         elif str(leech).lower() == 'false':
-            tag_query |= ~Q(creator__tags__icontains='leech')
+            tag_query &= ~Q(creator__tags__icontains='leech')
 
         flashcard_query &= tag_query
 
