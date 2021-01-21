@@ -84,20 +84,21 @@ export function StudyComponent(props) {
       );
 
       // Decide if we should show an unseen card, or review an old card
-      const showUnseenCard = Math.random() < unseenCards.length / flashcards.length;
+      const showUnseenCard = Math.random() < (unseenCards.length / flashcards.length);
 
       if (showUnseenCard) {
         // Get random, unseen, card that is not the previous card
-        var card = {id: -1};
+        console.log('Looking for unseen card')
+        let card = {id: -1};
         do {
           card = unseenCards[Math.floor(Math.random() * unseenCards.length)];
-        } while (previousCard ? card.id === previousCard.id : false);
+        } while (previousCard ? (card.id === previousCard.id) : false);
         setCurrentCard(card);
       } else {
+        console.log('Looking for seen card')
         // Get earliest card that has already been seen, and is not the previous card
-        // Note: this will break in around 3118 years
         let earliestFlashcard = {next_review: new Date(100000000000000).toISOString()};
-        var flashcard;
+        let flashcard;
         for (flashcard of flashcards) {
           if (flashcard.next_review < earliestFlashcard.next_review &&
               flashcard.learning_status.toUpperCase() !== 'UNSEEN' &&

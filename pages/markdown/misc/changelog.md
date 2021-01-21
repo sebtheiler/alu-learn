@@ -6,6 +6,7 @@
 
 
 * **Changed Leech Searching Behavior:** Searching by leeches had irregular behavior (using logical "or" instead of "and"), which has now been corrected.
+* **Added Statistics Page:** You can now see statistics about your deck, including the number of different types of flashcards (e.g., learning, learned, unseen, etc.).  This can help you track your progress over time and see how much you've learned.  You can find the statistics page under the "Other" button when viewing your decks.
 
 
 ## Flashcard Hotfix - Jan 18 - 0.3.5

@@ -155,18 +155,18 @@ If you wish to continue, please type "DELETE", without the quotes.
             Browse
           </Dropdown.Item>
         }
-          <Dropdown.Item
-            href={`/decks/${deck.id}/stats/`}
-            className='w-100'
-          >
-            Statistics
-          </Dropdown.Item>
         <Dropdown.Divider />
         <Dropdown.Item
           className='w-100'
           onClick={openGameModal}
         >
           Games
+        </Dropdown.Item>
+        <Dropdown.Item
+          href={`/decks/${deck.id}/stats/`}
+          className='w-100'
+        >
+          Statistics
         </Dropdown.Item>
         <GameModal
           deck={deck}
