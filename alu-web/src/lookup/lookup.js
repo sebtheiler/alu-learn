@@ -550,3 +550,8 @@ export function apiFlashcardReviewInstanceEdit(flashcardIds, action, callback) {
     action: action,
   });
 }
+
+// Gets the statistics for a deck
+export function apiDeckStatistics(deckId, callback) {
+  backendLookup('GET', `decks/${deckId}/statistics/`, callback);
+}

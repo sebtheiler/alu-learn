@@ -21,6 +21,7 @@ urlpatterns = [
     path('<int:deck_id>/flashcards/<int:flashcard_id>/delete/', views.flashcard_delete_view),
     path('<int:deck_id>/flashcards/<int:flashcard_id>/suspend_or_leech/', views.flashcard_suspend_leech_view),
     path('<int:deck_id>/flashcards/<int:flashcard_id>/rearrange/', views.rearrange_flashcard_view),
+    path('<int:deck_id>/statistics/', views.deck_statistics_view),
     path('ssm/create/', views.ssm_create_view),
     path('ssm/<int:ssm_id>/', views.ssm_detail_view),
     path('ssm/<int:ssm_id>/edit/', views.ssm_edit_view),

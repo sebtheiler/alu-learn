@@ -8,6 +8,7 @@ from typing import List, Tuple
 
 from django.core.cache import cache
 from django.db.models import Q
+from django.db.models.aggregates import Avg
 from django.utils import timezone
 from django.views.decorators.cache import cache_control
 from django.views.decorators.vary import vary_on_cookie
@@ -1741,3 +1742,43 @@ def flashcard_review_instance_bulk_update_view(request, *args, **kwargs):
         return Response({'message': 'Invalid action'}, status=400)
 
     return Response({'message': 'Edited flashcard review instances'}, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def deck_statistics_view(request, deck_id, *args, **kwargs):
+    """
+    Gets statistics information about a deck to display on the deck's statistics page - GET
+    
+    Required information:
+        `deck_id`: (Url) Id of the deck to get statistics about
+    """
+    # Get deck
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    # Get various flashcard types (only counts are used)
+    unseen_flashcards = FlashCard.objects.filter(learning_status='UNSEEN', is_suspended=False, creator__deck=deck)
+    learning_flashcards = FlashCard.objects.filter(learning_status='LEARNING', is_suspended=False, creator__deck=deck)
+    learned_flashcards = FlashCard.objects.filter(learning_status='LEARNED', is_suspended=False, creator__deck=deck)
+    relearning_flashcards = FlashCard.objects.filter(learning_status='RELEARNING', is_suspended=False, creator__deck=deck)
+    suspended_flashcards = FlashCard.objects.filter(is_suspended=True, creator__deck=deck)
+
+    # Get other data
+    avg_ease = FlashCard.objects.filter(
+        ~Q(learning_status='UNSEEN') & Q(creator__deck=deck)
+    ).aggregate(Avg('ease'))['ease__avg']
+
+    # Compile data
+    data = {
+        'num_unseen': unseen_flashcards.count(),
+        'num_learning': learning_flashcards.count(),
+        'num_learned': learned_flashcards.count(),
+        'num_relearning': relearning_flashcards.count(),
+        'num_suspended': suspended_flashcards.count(),
+        'avg_ease': avg_ease,
+    }
+
+    return Response(data, status=200)

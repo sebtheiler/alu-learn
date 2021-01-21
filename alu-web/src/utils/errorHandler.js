@@ -72,6 +72,7 @@ int(hexadecimal_string, 16)
 1025: Error getting list of private decks for searching through apiDeckPrivateList in alu-web/src/flashcards/search.js
 1026: Error getting private decks for CSSM edit modal through apiDeckPrivateList in alu-web/src/decks/buttons.js
 1027: Error getting flashcards for matching game through TODO in alu-web/src/decks/games/matching.js
+1028: Error getting deck's statistics through apiDeckStatistics
 
 === Flashcard related errors ===
 2000: Error getting flashcard detail through apiFlashCardDetail in alu-web/src/decks/flashcards/create.js
