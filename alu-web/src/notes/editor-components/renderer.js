@@ -14,7 +14,7 @@ export const Element = (props) => {
     case 'block-quote':
       return <blockquote {...attributes}>{children}</blockquote>
     case 'bulleted-list':
-      return <ul {...attributes}>{children}</ul>
+      return <ul {...attributes} style={{ listStylePosition: 'inside' }}>{children}</ul>
     case 'heading-one':
       return <h1 {...attributes}>{children}</h1>
     case 'heading-two':
