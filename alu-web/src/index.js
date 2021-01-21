@@ -4,7 +4,7 @@ import * as serviceWorker from './serviceWorker';
 import './index.css';
 
 import { ProfileInformationComponent, LoginComponent, StaffForceLogin } from './profiles';
-import { DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, ShareDeck, PushSharedDeck, UpdateDeck } from './decks';
+import { DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, ShareDeck, PushSharedDeck, UpdateDeck, StatisticsPage } from './decks';
 import { FlashCardCreate, FlashCardsList, FlashCardSearchComponent } from './decks/flashcards';
 import { StudyComponent } from './decks/study';
 import { NotificationComponent } from './profiles/notifications';
@@ -188,6 +188,12 @@ const experimentElement = document.getElementById('experiment-component');
 if (experimentElement) {
   ReactDOM.render(e(ReactionExperiment, experimentElement.dataset), experimentElement);
 }
+
+const statisticsPageElement = document.getElementById('statistics-page');
+if (statisticsPageElement) {
+  ReactDOM.render(e(StatisticsPage, statisticsPageElement.dataset), statisticsPageElement);
+}
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
