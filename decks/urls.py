@@ -16,4 +16,5 @@ urlpatterns = [
     path('decks/<int:deck_id>/share/push/', deck_push_view),
     path('decks/<int:deck_id>/get-updates/', deck_update_view),
     path('decks/<int:deck_id>/game/', deck_game_view),
+    path('decks/<int:deck_id>/stats/', deck_stats_view),
 ]
