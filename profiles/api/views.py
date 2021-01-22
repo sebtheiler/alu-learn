@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from simple_email_confirmation.models import EmailAddress
 from ..models import Notification, Profile
 from ..serializers import (HistorySerializer, MinifiedProfileSerializer,
                            NotificationSerializer, PublicProfileSerializer)
@@ -621,10 +622,10 @@ def confirm_email_api_view(request, username, *args, **kwargs):
         email = profile.user.confirm_email(request.data.get('confirmation_key').replace(' ', ''))
 
         if email:
-            profile.user.email = email##profile.user.unconfirmed_emails[0]
-            profile.user.set_primary_email(email)#profile.user.unconfirmed_emails[0])
+            profile.user.email = email
+            profile.user.set_primary_email(email)
             profile.user.save()
-    except Profile.DoesNotExist:
+    except (Profile.DoesNotExist, EmailAddress.DoesNotExist):
         return Response({'message': 'Confirmation key invalid'}, status=400)
 
     return Response({'message': 'Email authenticated'})
