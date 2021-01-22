@@ -20,7 +20,10 @@ class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
     deck_type = models.CharField(default='standard', max_length=12)
-    shared_deck = models.ForeignKey('SharedDeck', on_delete=models.SET_NULL, null=True, related_name='creators') # note that although this allows for multiple creators, it is currently only using one
+
+    # Note that although this allows for multiple creators, it is currently only using one
+    # Also note that this specifies the shared deck this deck creates, not the one it is cloned from
+    shared_deck = models.ForeignKey('SharedDeck', on_delete=models.SET_NULL, null=True, related_name='creators')
 
     objects = DeckManager()
     class Meta:

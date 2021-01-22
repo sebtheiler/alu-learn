@@ -9,6 +9,7 @@
 * **Added Statistics Page:** You can now see statistics about your deck, including the number of different types of flashcards (e.g., learning, learned, unseen, etc.).  This can help you track your progress over time and see how much you've learned.  You can find the statistics page under the "Other" button when viewing your decks.
 * **Centered Bullet Points:** Bullet points are now correctly centered when studying flashcards.
 * **Cleaned-up Homepage:** Removed the unused "total thanks received" count.
+* **Notifications for Deck Updates:** You are now notified when a deck you've copied is updated.
 
 
 ## Email Hotfix - Jan 22 - 0.3.6

@@ -17,7 +17,7 @@ from django.views.decorators.vary import vary_on_cookie
 # pip install fuzzywuzzy[speedup]
 from fuzzywuzzy import fuzz
 
-from profiles.models import Profile
+from profiles.models import Notification, Profile
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
@@ -1407,8 +1407,23 @@ def shared_deck_update_view(request, *args, **kwargs):
     if check_diff_only:
         return Response(diff, status=200)
     else:
+        # Increment version number
         shared_deck.version_number += 1
         shared_deck.save()
+
+        # Create notification for everyone who's cloned this deck
+        profs_to_notify = Profile.objects.filter(user__decks__shared_deck_relations__shared_deck=shared_deck)
+
+        Notification.objects.bulk_create([
+            Notification(
+                title=f'Update for "{shared_deck.title}"',
+                description=
+                    f'The creator of "{shared_deck.title}" has released a new update.  You can update your deck with "Other > Edit > Check For Updates > Update."',
+                profile=profile,
+            )
+            for profile in profs_to_notify
+        ])
+
         return Response(SharedDeckSerializer(shared_deck).data, status=200)
 
 
