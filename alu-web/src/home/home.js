@@ -125,9 +125,9 @@ export function HomeComponent(props) {
         <h3>Stats</h3>
         <h4>{profile.first_name} {profile.last_name}</h4>
         <h5 className='text-secondary'>@{profile.username}</h5>
-        <p>Total thanks recieved:{' '}
+        {/* <p>Total thanks recieved:{' '}
           <DisplayCountCommas>{profile.total_thanks_recieved}</DisplayCountCommas>
-        </p>
+        </p> */}
         <div className={`${heatmapWidthClass} mx-auto mb-3`}>
           <CalendarHeatmap
             startDate={shiftDate(today, -366)}
