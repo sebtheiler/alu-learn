@@ -1,5 +1,12 @@
 -----
 
+## Email Hotfix - Jan 22 - 0.3.6
+Tiny hotfix that now properly renders an error when it is provided with an invalid confirmation key.
+
+
+* **Added Error on Invalid Email Confirmation:** Before, a server error occured when the user supplied an invalid confirmation key.  It now properly renders an error message.
+
+
 ## Flashcard Hotfix - Jan 18 - 0.3.5
 This update is a tiny hotfix that fixes two issues with flashcards.
 
