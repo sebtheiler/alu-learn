@@ -73,6 +73,9 @@ import {
   apiFlashcardReviewInstanceEdit,
   apiDeckStatistics,
   apiClassroomsHomepage,
+  apiClassroomCreate,
+  apiClassroomEdit,
+  apiClassroomDelete,
 } from './lookup';
 
 export {
@@ -150,4 +153,7 @@ export {
   apiFlashcardReviewInstanceEdit,
   apiDeckStatistics,
   apiClassroomsHomepage,
+  apiClassroomCreate,
+  apiClassroomEdit,
+  apiClassroomDelete,
 }

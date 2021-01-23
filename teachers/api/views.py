@@ -61,7 +61,7 @@ def edit_classroom_view(request, *args, **kwargs):
         `new_title`: (Data) New title for the classroom
     """
     try:
-        classroom = Classroom.objects.get(user=request.user.profile, pk=request.data.get('classroom_id'))
+        classroom = Classroom.objects.get(teachers=request.user.profile, pk=request.data.get('classroom_id'))
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
 
@@ -81,7 +81,7 @@ def delete_classroom_view(request, *args, **kwargs):
         `classroom_id`: (Data) Id of the classroom to delete
     """
     try:
-        classroom = Classroom.objects.get(user=request.user.profile, pk=request.data.get('classroom_id'))
+        classroom = Classroom.objects.get(teachers=request.user.profile, pk=request.data.get('classroom_id'))
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
 

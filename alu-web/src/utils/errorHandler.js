@@ -10,7 +10,7 @@ Please try again in a few minutes.
 `
     );
   } else {
-    console.log(response, status);
+    console.log(response, status, errorCode);
 
     const host = window.location.host === 'localhost:3000' ? '127.0.0.1:8000' : window.location.host;
     const baseUrl = `${window.location.protocol}//${host}` // http://127.0.0.1:8000
@@ -147,4 +147,7 @@ int(hexadecimal_string, 16)
 
 === Teacher related errors ===
 8000: Error getting classroom homepage through apiClassroomsHomepage
+8001: Error editing classroom through apiClassroomEdit
+8002: Error creating classroom through apiClassroomCreate
+8003: Error deleting classroom through apiClassroomDelete
 */

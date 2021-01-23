@@ -561,3 +561,21 @@ export function apiDeckStatistics(deckId, callback) {
 export function apiClassroomsHomepage(callback) {
   backendLookup('GET', 'teachers/classroom/homepage/', callback);
 }
+
+// Creates a classroom
+export function apiClassroomCreate(title, callback) {
+  backendLookup('POST', 'teachers/classroom/create/', callback, { title: title });
+}
+
+// Edits a classroom
+export function apiClassroomEdit(classroomId, newTitle, callback) {
+  backendLookup('POST', 'teachers/classroom/edit/', callback, {
+    classroom_id: classroomId,
+    new_title: newTitle,
+  });
+}
+
+// Deletes a classroom
+export function apiClassroomDelete(classroomId, callback) {
+  backendLookup('POST', 'teachers/classroom/delete/', callback, { classroom_id: classroomId });
+}

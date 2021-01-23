@@ -3,16 +3,17 @@ import { apiClassroomsHomepage } from '../lookup';
 import { useApiObjectHook } from '../utils';
 import { ButtonGroup } from 'react-bootstrap';
 import { Deck } from '../decks/detail';
+import { ClassroomEditCreateButton } from './buttons';
 
 
 export function ClassroomsHomepage(props) {
   const {username} = props;
-  const [classrooms, setClassrooms] = useApiObjectHook(apiClassroomsHomepage, 200, 8000);
+  const [classrooms] = useApiObjectHook(apiClassroomsHomepage, 200, 8000);
 
   return (<>
     <div className='text-center my-3'>
       <ButtonGroup>
-        {/* <ClassroomCreateButton /> */}
+        <ClassroomEditCreateButton />
       </ButtonGroup>
     </div>
     {classrooms && classrooms.length > 0 ? <>
