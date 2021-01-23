@@ -1,9 +1,13 @@
-from rest_framework.decorators import (api_view, authentication_classes,
-                                       permission_classes)
+from decks.models import SharedDeck
+from decks.serializers import SharedDeckSerializer
+from django.db.models.query_utils import Q
+from django.views.decorators.cache import cache_page
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 
 from ..models import ContactFeedback
 from rest_framework.response import Response
+import json
 
 
 @api_view(['POST'])
@@ -60,3 +64,32 @@ def update_settings_api_view(request, *args, **kwargs):
 
     request.user.profile.settings.save()
     return Response({'message': 'Updated account settings'}, status=200)
+
+# Explore views
+with open('editor_deck_ids.json', 'r') as f:
+    EDITOR_PICKS_DECK_IDS = json.loads(f.read())
+
+with open('top_deck_ids.json', 'r') as f:
+    TOP_DECK_IDS = json.loads(f.read())
+
+def get_decks_from_ids(id_list, public_only=False):
+    query = Q(pk__in=id_list)
+    if public_only:
+        query &= Q(deck_type='shared') & Q(sharing_setting='PUBLIC')
+
+    decks_qs = SharedDeck.objects.filter(query)
+    return SharedDeckSerializer(decks_qs, many=True).data
+
+@cache_page(60*15)
+@api_view(['GET'])
+def api_explore_lists_view(request, *args, **kwargs):
+    """
+    Get decks to display in explore list - GET
+    """
+    data = {
+        'EDITOR': get_decks_from_ids(EDITOR_PICKS_DECK_IDS, public_only=True),
+        'TOP': get_decks_from_ids(TOP_DECK_IDS, public_only=True),
+        'HOT': [], #get_decks_from_ids(HOT_DECK_IDS, public_only=True),
+    }
+
+    return Response(data, status=200)

@@ -243,7 +243,7 @@ export function apiNotificationRead(username, notificationId, callback) {
 
 // Gets decks for explore component
 export function apiExploreLists(callback) {
-  backendLookup('GET', 'explore/lists/', callback);
+  backendLookup('GET', 'pages/explore/lists/', callback);
 }
 
 // Submit a piece of feedback

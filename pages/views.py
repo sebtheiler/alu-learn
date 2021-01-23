@@ -128,7 +128,6 @@ def landing_page(request, *args, **kwargs):
 
     return_url = request.GET.get('returnUrl')
     show_login_required = request.GET.get('showLoginRequired')
-    ua = request.user_agent
     context = {
         'show_login_required': show_login_required,
         'return_url': return_url if return_url else '',
@@ -141,3 +140,12 @@ def experiments_view(request, *args, **kwargs):
             return redirect('/confirm-email/')
 
     return render(request, 'misc/experiment.html')
+
+# Explore page
+@cache_page(60*15)
+def explore_home_view(request, *args, **kwargs):
+    return render(request, 'explore/explore.html')
+
+# Search for decks on the explore page
+def explore_deck_search_view(request, *args, **kwargs):
+    return render(request, 'explore/search-decks.html')
