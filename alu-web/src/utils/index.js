@@ -17,6 +17,7 @@ import {
   RenderRichText,
   sample,
   updateURLParameter,
+  timezoneToISOString,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -41,4 +42,5 @@ export {
   RenderRichText,
   sample,
   updateURLParameter,
+  timezoneToISOString,
 }

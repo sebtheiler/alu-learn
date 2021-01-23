@@ -146,5 +146,6 @@ class HistorySerializer(serializers.ModelSerializer):
         fields = [
             'date',
             'cards_done',
+            'time_spent',
             'id',
         ]

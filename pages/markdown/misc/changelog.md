@@ -8,8 +8,9 @@
 * **Changed Leech Searching Behavior:** Searching by leeches had irregular behavior (using logical "or" instead of "and"), which has now been corrected.
 * **Added Statistics Page:** You can now see statistics about your deck, including the number of different types of flashcards (e.g., learning, learned, unseen, etc.).  This can help you track your progress over time and see how much you've learned.  You can find the statistics page under the "Other" button when viewing your decks.
 * **Centered Bullet Points:** Bullet points are now correctly centered when studying flashcards.
-* **Cleaned-up Homepage:** Removed the unused "total thanks received" count.
+* **Cleaned-up Homepage:** Removed the unused "total thanks received" count.  Also fixed a bug where the review heatmap would preemptively show the next day due to timezone conflicts.
 * **Notifications for Deck Updates:** You are now notified when a deck you've copied is updated.
+* **Time Tracking:** Alu now tracks the amount of time you spend studying each day.  You can see this information on your review heatmap, located on the homepage.
 
 
 ## Email Hotfix - Jan 22 - 0.3.6

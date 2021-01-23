@@ -378,3 +378,8 @@ export function updateURLParameter(url, param, paramVal){
   const rows_txt = temp + "" + param + "=" + paramVal;
   return baseURL + "?" + newAdditionalURL + rows_txt;
 }
+
+// Converts a date to an ISOString, but doesn't convert it to UTC
+export function timezoneToISOString(date) {
+  return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+}

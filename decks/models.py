@@ -203,7 +203,8 @@ class StudySessionManager(models.Model):
 
 class DeckStudySessionManagerModelManager(models.Manager):
     def get_queryset(self) -> QuerySet:
-        return super().get_queryset().prefetch_related('deck')
+        # TODO: use prefetches for more default things
+        return super().get_queryset().prefetch_related('deck').prefetch_related('deck__user')
 
 
 class DeckStudySessionManager(StudySessionManager):

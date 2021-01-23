@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 
 import datetime
@@ -35,7 +36,7 @@ class Profile(models.Model):
         self.save()
         return self.total_thanks_recieved
     
-    def increment_cards_done_today(self, utc_timezone_offset=None) -> int:
+    def increment_cards_done_today(self, utc_timezone_offset=None, time_taken=None) -> int:
         # Get or create history for today
         date = datetime.datetime.now()
         if utc_timezone_offset is not None:
@@ -57,7 +58,7 @@ class Profile(models.Model):
             self.save()
 
         # Increment the cards done today
-        return history_obj.increment_cards_done()
+        return history_obj.increment_cards_done(time_taken)
 
 
 class Notification(models.Model):
@@ -81,18 +82,27 @@ class ProfileBadge(models.Model):
         return f'"{self.identifier}" badge for @{self.profile.user.username}'
 
 
+class ProfileHistorySegmentModelManager(models.Manager):
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().prefetch_related('profile')
+
 class ProfileHistorySegment(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='history')
     date = models.DateField(default=datetime.date.today)
     cards_done = models.PositiveSmallIntegerField(default=0)
+    time_spent = models.PositiveIntegerField(default=0)
+
+    objects = ProfileHistorySegmentModelManager()
 
     def __str__(self) -> str:
         return f"History for {self.profile.user.username} on {self.date}"
     
-    def increment_cards_done(self) -> int:
+    def increment_cards_done(self, time_taken=None) -> int:
         # Do not use this method if you need to make other changes to the profile obj
         # Only use this method if the `cards_done` is the only attr that needs to be changed
         self.cards_done += 1
+        if time_taken:
+            self.time_spent += time_taken
         self.save()
         return self.cards_done
 

@@ -10,9 +10,15 @@ import { StudyElement } from './study';
 import { getAnkiInterval } from './algorithm'
 import { Button, ButtonGroup } from 'react-bootstrap';
 import { errorHandler } from '../../utils';
+import BrowserInteractionTime from 'browser-interaction-time';
+
+const browserInteractionTime = new BrowserInteractionTime({
+  idleTimeoutMs: 30000,
+});
 
 export function StudyComponent(props) {
   const {studySessionManagerId} = props;
+  browserInteractionTime.startTimer();
 
   // Get flashcards to study from API
   const [flashcards, setFlashcards] = useState(null);
@@ -147,6 +153,7 @@ export function StudyComponent(props) {
         isLeech,
         currentCard.learning_status === 'UNSEEN', // incrementNewCardsDoneToday
         new Date().getTimezoneOffset(), // timezoneOffset
+        browserInteractionTime.getTimeInMilliseconds(), // timeTaken
         (response, status) => {
           if (status === 200) {
             // setCurrentCardDidSet(true);
@@ -154,6 +161,8 @@ export function StudyComponent(props) {
             // Error updating flashcard with information returned from studying
             errorHandler(response, status, 5002);
           }
+          browserInteractionTime.reset();
+          browserInteractionTime.startTimer();
       });
       // Update date locally
       var flashcardsCopy = flashcards;

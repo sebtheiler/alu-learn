@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardDeck, Button } from 'react-bootstrap';
 import { apiProfileDetail, apiProfileFriends, apiProfileHistory } from '../lookup';
-import { errorHandler, DisplayCountCommas, shiftDate, range } from '../utils';
+import { errorHandler, shiftDate, range, timezoneToISOString } from '../utils';
 import { UserLink } from '../profiles/components';
 import { randomTip } from './randomtips';
 import CalendarHeatmap from 'react-calendar-heatmap';
@@ -17,6 +17,7 @@ export function HomeComponent(props) {
     return {
       date: shiftDate(today, -i),
       cardsDone: 0,
+      timeSpent: 0,
     };
   });
 
@@ -76,12 +77,13 @@ export function HomeComponent(props) {
           const gottenDates = response.map(hist => hist.date);
           const historyValues = userHistory.map(hist => {
             // Check if we have that date in history
-            if (gottenDates.includes(hist.date.toISOString().slice(0, 10))) {
+            if (gottenDates.includes(timezoneToISOString(hist.date).slice(0, 10))) {
               // Get the date that matches
-              const date = response.filter(subHist => subHist.date === hist.date.toISOString().slice(0, 10))[0];
+              const date = response.filter(subHist => subHist.date === timezoneToISOString(hist.date).slice(0, 10))[0];
               return {
                 ...hist,
                 cardsDone: date.cards_done,
+                timeSpent: date.time_spent,
               }
             } else {
               // Return the standard/blank value
@@ -125,9 +127,6 @@ export function HomeComponent(props) {
         <h3>Stats</h3>
         <h4>{profile.first_name} {profile.last_name}</h4>
         <h5 className='text-secondary'>@{profile.username}</h5>
-        {/* <p>Total thanks recieved:{' '}
-          <DisplayCountCommas>{profile.total_thanks_recieved}</DisplayCountCommas>
-        </p> */}
         <div className={`${heatmapWidthClass} mx-auto mb-3`}>
           <CalendarHeatmap
             startDate={shiftDate(today, -366)}
@@ -136,8 +135,8 @@ export function HomeComponent(props) {
             tooltipDataAttrs={value => {
               return {
                 'data-tip': value && value.date ? `You reviewed ${value.cardsDone} flashcards on ${
-                  value.date.toISOString().slice(0, 10)
-                }` : 'Error, please report this',
+                  timezoneToISOString(value.date).slice(0, 10)}${!!value.timeSpent ? ` in ${Math.round(value.timeSpent/1000/60)} minutes` : ''}
+                ` : 'Error, please report this',
               };
             }}
             classForValue={(value) => {
@@ -160,7 +159,10 @@ export function HomeComponent(props) {
             }}
           />
           <ReactTooltip />
-          Reviews today: {userHistory.sort(hist => hist.date)[0].cardsDone} | Longest streak: {profile.longest_streak} | Current streak: {profile.current_streak}
+          Reviews today: {userHistory.sort(hist => hist.date)[0].cardsDone} |{' '}
+          Time studying today: {Math.round(userHistory.sort(hist => hist.date)[0].timeSpent/1000/60)}m |{' '}
+          Longest streak: {profile.longest_streak} |{' '}
+          Current streak: {profile.current_streak}
         </div>
         <div
           className={`text-center mx-auto alert alert-info ${heatmapWidthClass}`}
