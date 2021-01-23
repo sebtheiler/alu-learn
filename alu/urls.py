@@ -15,6 +15,7 @@ urlpatterns = [
     path('', include('notes.urls')), path('api/notes/', include('notes.api.urls')),
     path('', include('pages.urls')), path('api/pages/', include('pages.api.urls')),
     path('', include('manual_sr.urls')), path('api/manual-sr/', include('manual_sr.api.urls')),
+    path('', include('teachers.urls')), path('api/teachers/', include('teachers.api.urls')),
     path('profiles/', include('profiles.urls')), path('api/profiles/', include('profiles.api.urls')),
     path('', include('analytics.urls')),
 ]
