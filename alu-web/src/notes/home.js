@@ -35,13 +35,15 @@ export function NotesHomeList(props) {
     {notes && notes.length > 0 ? <>
         <div className='card-deck text-center mx-auto justify-content-center'>
           {notes.map((note, index) => {
-            return <Deck 
-                      deck={note}
-                      currentUsername={username}
-                      key={`${index}-${note.id}`}
-                      type={'note'}
-                      className='mb-3 mx-1 border bg-white text-dark'
-                    />;
+            return ( // TODO: this definitely needs to be changed
+              <Deck 
+                deck={note}
+                currentUsername={username}
+                key={`${index}-${note.id}`}
+                type={'note'}
+                className='mb-3 mx-1 border bg-white text-dark'
+              />
+            )
           })}
         </div>
       </> :

@@ -6,6 +6,7 @@ import { apiDeckThank } from '../lookup';
 import { DisplayCountChar, errorHandler, MarkdownRender } from '../utils';
 import { UserLink } from '../profiles';
 import { Card, ButtonGroup, Button } from 'react-bootstrap';
+import { ClassroomDefaultButtonGroup } from '../teachers/buttons';
 
 // Display an individual deck
 // This is used on pages displaying multiple decks
@@ -17,6 +18,20 @@ export function Deck(props) {
     return <div>Loading...</div>
   }
 
+  const buttons = (() => {
+    if (noButtons) return;
+    switch (type) {
+      case 'note':
+        return <NoteDefaultButtonGroup note={deck} />
+      case 'classroom':
+        return <ClassroomDefaultButtonGroup classroom={deck} />
+      default:
+        return currentUsername === deck.author.username ?
+                  <DeckDefaultButtonGroup deck={deck} />
+                : <Button href={`/decks/${deck.id}/`}>View</Button>
+    }
+  })();
+
   return (
     <div className={className}>
       <Card className='border-0'>
@@ -27,13 +42,7 @@ export function Deck(props) {
           </Card.Title>
           <Card.Text>{deck.description}</Card.Text>
           <ButtonGroup>
-            {type === 'note' ? 
-              <NoteDefaultButtonGroup note={deck} />
-            :
-              (!noButtons && currentUsername === deck.author.username ?
-                <DeckDefaultButtonGroup deck={deck} />
-              : <Button href={`/decks/${deck.id}/`}>View</Button>)
-            }
+            {buttons}
           </ButtonGroup>
         </Card.Body>
       </Card>

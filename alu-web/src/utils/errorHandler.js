@@ -144,4 +144,7 @@ int(hexadecimal_string, 16)
 7003: Error updating manual SR task's review information through apiManualSRTaskUpdate in alu-web/src/manual-sr/task.js
 7004: Error deleting manual SR task through apiManualSRTaskDelete in alu-web/src/manual-sr/task.js
 7005: Error editing manual SR task through apiManualSRTaskEdit in alu-web/src/manual-sr/task.js
+
+=== Teacher related errors ===
+8000: Error getting classroom homepage through apiClassroomsHomepage
 */

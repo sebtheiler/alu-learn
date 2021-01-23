@@ -7,6 +7,7 @@ import { BlockMath, InlineMath } from 'react-katex';
 import { FullEditor, createFullEditor  } from '../notes/editor-components';
 import { Slate } from 'slate-react';
 import 'katex/dist/katex.min.css';
+import { errorHandler } from './errorHandler';
 
 // Creates a simple tooltip
 export const generateTooltip = (text) => {
@@ -382,4 +383,26 @@ export function updateURLParameter(url, param, paramVal){
 // Converts a date to an ISOString, but doesn't convert it to UTC
 export function timezoneToISOString(date) {
   return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+}
+
+// Get object from API hook
+export function useApiObjectHook(apiFunction, successCodes, errorNumber, args=[], callback=null) {
+  const [apiObject, setApiObject] = useState(null);
+  const [apiObjectDidSet, setApiObjectDidSet] = useState(false);
+
+  useEffect(() => {
+    if (!apiObjectDidSet) {
+      setApiObjectDidSet(true);
+      apiFunction(...args, (response, status) => {
+        if (successCodes instanceof Array ? successCodes.includes(status) : status === successCodes) {
+          setApiObject(response);
+          if (callback) callback(response);
+        } else {
+          errorHandler(response, status, errorNumber);
+        }
+      })
+    }
+  }, [apiObject, apiObjectDidSet, apiFunction, args, callback, successCodes, errorNumber]);
+
+  return [apiObject, setApiObject];
 }

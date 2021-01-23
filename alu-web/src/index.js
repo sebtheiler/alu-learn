@@ -16,6 +16,8 @@ import { AutoNote, AutoFlashCard } from './notes/autonote';
 import { ManualSRHome } from './manual-sr';
 import { GameComponent, MatchingGame } from './decks/games';
 import { ReactionExperiment } from './experiments';
+import { ClassroomsHomepage } from './teachers';
+// TODO: simplify this process
 
 const e = React.createElement;
 
@@ -194,6 +196,10 @@ if (statisticsPageElement) {
   ReactDOM.render(e(StatisticsPage, statisticsPageElement.dataset), statisticsPageElement);
 }
 
+const classroomsHomepageElement = document.getElementById('classrooms-homepage');
+if (classroomsHomepageElement) {
+  ReactDOM.render(e(ClassroomsHomepage, classroomsHomepageElement.dataset), classroomsHomepageElement);
+}
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA

@@ -556,3 +556,8 @@ export function apiFlashcardReviewInstanceEdit(flashcardIds, action, callback) {
 export function apiDeckStatistics(deckId, callback) {
   backendLookup('GET', `decks/${deckId}/statistics/`, callback);
 }
+
+// Gets a teacher's classes for the homepage
+export function apiClassroomsHomepage(callback) {
+  backendLookup('GET', 'teachers/classroom/homepage/', callback);
+}
