@@ -31,7 +31,7 @@ export function ClassroomsHomepage({ username }) {
       </div>
     </> :
       <p className='text-center mt-3'>
-        You don't have any notes yet.<br />
+        You don't have any classes yet.<br />
         TODO: LINK TUTORIAL VIDEO
       </p>}
   </>);

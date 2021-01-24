@@ -579,3 +579,13 @@ export function apiClassroomEdit(classroomId, newTitle, callback) {
 export function apiClassroomDelete(classroomId, callback) {
   backendLookup('POST', 'teachers/classroom/delete/', callback, { classroom_id: classroomId });
 }
+
+// Allows a student to join a classroom
+export function apiClassroomStudentJoin(classroomCode, callback) {
+  backendLookup('POST', 'teachers/classroom/student-join/', callback, { classroom_code: classroomCode });
+}
+
+// Gets a list of the classes a student has joined
+export function apiClassroomsStudentJoined(callback) {
+  backendLookup('GET', 'teachers/classroom/joined/', callback);
+}

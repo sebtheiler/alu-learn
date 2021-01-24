@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardDeck, Button, Row, Col } from 'react-bootstrap';
-import { apiProfileDetail, apiProfileFriends, apiProfileHistory } from '../lookup';
-import { errorHandler, shiftDate, range, timezoneToISOString } from '../utils';
+import { Card, CardDeck, Button, Row, Col, Form, Modal } from 'react-bootstrap';
+import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined } from '../lookup';
+import { errorHandler, shiftDate, range, timezoneToISOString, useApiObjectHook } from '../utils';
 import { UserLink } from '../profiles/components';
 import { randomTip } from './randomtips';
 import CalendarHeatmap from 'react-calendar-heatmap';
@@ -19,7 +19,6 @@ export function HomeComponent({ username }) {
       setProfileDidSet(true);
       apiProfileDetail(username, (response, status) => {
         if (status === 200) {
-          console.log(response)
           setProfile(response);
         } else {
           // Error getting profile detail for home page
@@ -65,13 +64,66 @@ export function HomeComponent({ username }) {
         <Col style={{ minHeight: '500px' }}>
           <FriendsComponent username={username} />
         </Col>
-        <Col>
-          <h3>Classes</h3>
-          <Button className='mx-auto'>Join Class</Button>
-        </Col>
+        {profile?.settings?.user_type === 'STUDENT' && <Col>
+          <ClassroomsComponent username={username} />
+        </Col>}
       </Row>
     </div>
   );
+}
+
+
+function ClassroomsComponent({ username }) {
+  const [classrooms] = useApiObjectHook(apiClassroomsStudentJoined, 200, 8005);
+  const [joinClassModalIsOpen, setJoinClassModalIsOpen] = useState(false);
+
+  const handleJoinClass = event => {
+    event.preventDefault();
+    const form = event.target;
+
+    apiClassroomStudentJoin(form.elements.classCode.value, (response, status) => {
+      if (status === 200) {
+        window.location.reload();
+      } else {
+        // Error joining class
+        errorHandler(response, status, 8004);
+      }
+    });
+  }
+
+  return (<>
+    <h3>Classes</h3>
+    <Button className='mx-auto mb-5' onClick={() => setJoinClassModalIsOpen(true)}>Join Class</Button>
+    <Modal show={joinClassModalIsOpen} onHide={() => setJoinClassModalIsOpen(false)}>
+      <Modal.Header>
+        <Modal.Title>Join Class</Modal.Title>
+      </Modal.Header>
+      <Form onSubmit={handleJoinClass}>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label htmlFor='classCode'>
+              <p className='mb-0'>Class Code</p>
+              <small className='text-muted'>Your teacher will provide you with a class code.  Please enter it here.</small>
+            </Form.Label>
+            <Form.Control
+              type='text'
+              name='classCode'
+              maxLength='8' minLength='8'
+              required
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setJoinClassModalIsOpen(false)} variant='secondary'>Cancel</Button>
+          <Button type='submit' variant='primary'>Join!</Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+    {classrooms && classrooms.map((classroom, i) => (<div key={i}>
+      <hr />
+      {classroom.title}
+    </div>))}
+  </>);
 }
 
 

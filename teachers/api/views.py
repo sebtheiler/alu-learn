@@ -87,3 +87,34 @@ def delete_classroom_view(request, *args, **kwargs):
 
     classroom.delete()
     return Response(ClassroomSerializer(classroom).data, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def student_join_class_view(request, *args, **kwargs):
+    """
+    Allows a student (current user) to join a class with a given code - POST
+
+    Required information:
+        `classroom_code`: (Data) Code of the class to join
+    """
+    # TODO: a skilled user could technically spam this with requests to join random classes
+    try:
+        classroom = Classroom.objects.get(code=request.data.get('classroom_code'))
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    classroom.students.add(request.user.profile)
+
+    return Response(ClassroomSerializer(classroom).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_joined_classes_view(request, *args, **kwargs):
+    """
+    Gets the list of classes a student has joined - GET
+    """
+    classrooms = request.user.profile.classrooms_in.order_by('title')
+
+    return Response(ClassroomSerializer(classrooms, many=True).data, status=200)

@@ -76,6 +76,8 @@ import {
   apiClassroomCreate,
   apiClassroomEdit,
   apiClassroomDelete,
+  apiClassroomStudentJoin,
+  apiClassroomsStudentJoined,
 } from './lookup';
 
 export {
@@ -156,4 +158,6 @@ export {
   apiClassroomCreate,
   apiClassroomEdit,
   apiClassroomDelete,
+  apiClassroomStudentJoin,
+  apiClassroomsStudentJoined,
 }

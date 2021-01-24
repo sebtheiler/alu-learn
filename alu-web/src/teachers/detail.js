@@ -64,8 +64,10 @@ export function ClassroomDetail({ classroomId }) {
     },
   ];
 
-  return (<div className='container-fluid'>
-    <h1 className='text-center mt-5'>{classroom.title}</h1>
+  return (<div className='container-fluid text-center'>
+    <h1 className='mt-5'>{classroom.title}</h1>
+    <p className='mb-0'>Class Code: <strong>{classroom.code}</strong></p>
+    <small className='text-muted'>Give the class code to your students so that they can join your class.</small>
     <DataTable
       title='Students'
       columns={columns}
