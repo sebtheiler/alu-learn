@@ -39,9 +39,9 @@ function ExpandableStudentDetailComponent({ data }) {
 
 export function ClassroomDetail({ classroomId }) {
   const classroom = {
-    "title": "my first class",
-    "code": "VxwMR8Wt",
-    "id": parseInt(classroomId),
+    title: "my first class",
+    code: "VxwMR8Wt",
+    id: parseInt(classroomId),
   };
   const students = [
     {

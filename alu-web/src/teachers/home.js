@@ -6,8 +6,7 @@ import { Deck } from '../decks/detail';
 import { ClassroomEditCreateButton } from './buttons';
 
 
-export function ClassroomsHomepage(props) {
-  const {username} = props;
+export function ClassroomsHomepage({ username }) {
   const [classrooms] = useApiObjectHook(apiClassroomsHomepage, 200, 8000);
 
   return (<>
