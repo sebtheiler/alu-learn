@@ -1,3 +1,21 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-# Create your views here.
+
+# Rendered when the teacher is viewing their homepage
+def classroom_homepage(request, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
+
+    return render(request, 'teachers/home.html')
+
+
+# Rendered when the teacher is viewing a specific class
+def classroom_detail(request, classroom_id, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
+
+    return render(request, 'teachers/detail.html', context={'classroom_id': classroom_id})
