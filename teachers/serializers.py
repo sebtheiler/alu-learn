@@ -14,9 +14,3 @@ class ClassroomSerializer(serializers.ModelSerializer):
             'teacher',
             'id',
         ]
-    
-    def get_deck_id(self, obj):
-        return obj.deck.id
-    
-    def get_username(self, obj):
-        return obj.profile.user.username
