@@ -1163,39 +1163,11 @@ def shared_deck_create_view(request, *args, **kwargs):
     if title is None:
         return Response({'message': 'Title must not be None'}, status=400)
 
-    shared_deck = SharedDeck.objects.create(
-        user=request.user,
-        title=title,
-        description=request.data.get('description'),
-        sharing_setting=request.data.get('sharing_setting', 'PUBLIC'),
-        deck_type='shared',
+    shared_deck = origin_deck.create_shared_deck(
+        title,
+        request.data.get('description', ''),
+        request.data.get('saring_setting', 'PUBLIC'),
     )
-
-    shared_deck.creators.set([origin_deck])
-
-    # Clone flashcard creators and fields
-    # This is very inefficient, but as it will seldomly be called,
-    # I'm alright with that for now
-    flashcard_creators = deepcopy(origin_deck.flashcards.prefetch_related('fields'))
-    for flashcard_creator in flashcard_creators:
-        if flashcard_creator.copied_from_creator:
-            continue
- 
-        # Clone flashcard creator
-        shared_flashcard_creator = deepcopy(flashcard_creator)
-        shared_flashcard_creator.pk = None
-        shared_flashcard_creator.deck = shared_deck
-        # Create a link between the origin flashcard creator and the shared flashcard creator
-        shared_flashcard_creator.origin_creator = flashcard_creator
-
-        shared_flashcard_creator.save()
-
-        # Clone flashcard creator fields
-        creator_fields = flashcard_creator.fields.all()
-        for field in creator_fields:
-            field.pk = None
-            field.creator = shared_flashcard_creator
-            field.save()
 
     return Response(SharedDeckSerializer(shared_deck).data, status=201)
 

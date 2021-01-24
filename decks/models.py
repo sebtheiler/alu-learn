@@ -1,11 +1,13 @@
+from __future__ import annotations # TODO: remove this when we upgrade to python 3.10
+
 from typing import List
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 from profiles.models import Profile
 from django.contrib.postgres.fields import ArrayField
+from copy import deepcopy
 
-# Create your models here.
 User = settings.AUTH_USER_MODEL
 
 
@@ -31,6 +33,44 @@ class Deck(models.Model):
 
     def __str__(self) -> str:
         return str(self.title)
+
+    def create_shared_deck(self, title, description, /, sharing_setting='PUBLIC', include_copied_flashcards=False) -> Deck:
+        shared_deck = SharedDeck.objects.create(
+            user=self.user,
+            title=title,
+            description=description,
+            sharing_setting=sharing_setting,
+            deck_type='shared',
+        )
+
+        shared_deck.creators.add(self)
+
+        # Clone flashcard creators and fields
+        # This is very inefficient, but as it will seldomly be called,
+        # I'm alright with that for now
+        flashcard_creators = deepcopy(self.flashcards.prefetch_related('fields'))
+        for flashcard_creator in flashcard_creators:
+            if flashcard_creator.copied_from_creator and not include_copied_flashcards:
+                # By default, this stops flashcards copied from another deck from being re-published
+                continue
+    
+            # Clone flashcard creator
+            shared_flashcard_creator = deepcopy(flashcard_creator)
+            shared_flashcard_creator.pk = None
+            shared_flashcard_creator.deck = shared_deck
+            # Create a link between the origin flashcard creator and the shared flashcard creator
+            shared_flashcard_creator.origin_creator = flashcard_creator
+
+            shared_flashcard_creator.save()
+
+            # Clone flashcard creator fields
+            creator_fields = flashcard_creator.fields.all()
+            for field in creator_fields:
+                field.pk = None
+                field.creator = shared_flashcard_creator
+                field.save()
+    
+        return shared_deck
 
 
 class SharedDeckRelation(models.Model):
@@ -240,6 +280,7 @@ class SharedDeck(Deck):
         ('PRIVATE', 'Private'),
         ('FRIENDS', 'Friends only'),
         ('PUBLIC', 'Public'),
+        ('STUDENT', 'Students only (for teachers)'),
     ]
     sharing_setting = models.CharField(
         max_length=7,

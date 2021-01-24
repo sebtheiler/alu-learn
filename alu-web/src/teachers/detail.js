@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Button } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
-import { DeckDefaultButtonGroup } from '../decks/buttons';
+import { DefaultSharedDeckButtons } from '../decks/buttons';
 import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiDeckHome } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
 
@@ -36,12 +36,14 @@ const columns = [
   },
 ];
 
+
 function ExpandableStudentDetailComponent({ data }) {
   return (<>
     <p>{data.first_name} {data.last_name}</p>
     <p>More info...</p>
   </>);
 }
+
 
 export function ClassroomDetail({ classroomId }) {
   const [classroom] = useApiObjectHook(apiClassroomDetail, 200, 8006, [classroomId]);
@@ -79,7 +81,10 @@ function ClassroomDeckComponent({ classroomId, deck }) {
     event.preventDefault();
     const form = event.target;
 
-    apiClassroomAttachDeck(classroomId, parseInt(form.elements.attachedDeck.value), (response, status) => {
+    const deckId = parseInt(form.elements.attachedDeck.value);
+    if (deckId < 1) return;
+
+    apiClassroomAttachDeck(classroomId, deckId, (response, status) => {
       if (status === 200) {
         window.location.reload();
       } else {
@@ -93,7 +98,11 @@ function ClassroomDeckComponent({ classroomId, deck }) {
     <h3 className='mt-3'>Classroom Deck</h3>
     {deck ? <>
       <h5>{deck.title}</h5>
-      <DeckDefaultButtonGroup deck={deck} />
+      <small className='text-muted'>
+        To add flashcards to this deck, add flashcards to the deck it was created from,{' '}
+        then click "Push Changes."
+      </small><br />
+      <DefaultSharedDeckButtons deck={deck} />
     </> : <>
       {decks && decks.length > 0 ? <Form onSubmit={attachDeck}>
         <Form.Group className='container'>
@@ -103,6 +112,7 @@ function ClassroomDeckComponent({ classroomId, deck }) {
             name='attachedDeck'
             custom
           >
+            <option value='-1'>-----</option>
             {decks ? decks.map(deck => 
               <option value={deck.id} key={deck.id}>{deck.title}</option>
             ) :

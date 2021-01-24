@@ -3,13 +3,13 @@ from django.utils import timezone
 from profiles.models import Profile
 from rest_framework import serializers
 from profiles.serializers import MinifiedProfileSerializer
-from decks.serializers import DeckSerializer
+from decks.serializers import SharedDeckSerializer
 from .models import Classroom
 
 
 class ClassroomSerializer(serializers.ModelSerializer):
     teacher = MinifiedProfileSerializer(read_only=True)
-    deck = DeckSerializer(read_only=True)
+    deck = SharedDeckSerializer(read_only=True)
 
     class Meta:
         model = Classroom

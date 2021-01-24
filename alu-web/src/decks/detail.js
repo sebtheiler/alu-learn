@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DeckDefaultButtonGroup, DeckForeignUserButtonGroup } from './buttons';
+import { DeckDefaultButtonGroup, DeckForeignUserButtonGroup, DefaultSharedDeckButtons } from './buttons';
 import { NoteDefaultButtonGroup } from '../notes/buttons';
 import { FlashCardsList } from './flashcards';
 import { apiDeckThank } from '../lookup';
@@ -116,14 +116,7 @@ export function DeckDetail(props) {
             {flashcards && <>
               <h5>{`(${numFlashcards} in total, ${Math.min(numFlashcards, 10)} displayed)`}</h5>
               {currentUsername === deck.author.username ?
-                <ButtonGroup>
-                  <Button href={`/decks/${deck.creators[0]}/share/`}>
-                    Update Settings
-                  </Button>
-                  <Button href={`/decks/${deck.id}/flashcards/`} className='ml-1'>
-                    View Flashcards
-                  </Button>
-                </ButtonGroup> 
+                <DefaultSharedDeckButtons deck={deck} />
               :
                 <DeckForeignUserButtonGroup deck={deck} handleThankDeck={handleThankDeck} thankBtnLabel={thankBtnLabel} />
               }

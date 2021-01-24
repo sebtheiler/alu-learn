@@ -544,3 +544,20 @@ export function SelectFlashcardsButtonGroup(props) {
     </ButtonGroup>
   );
 }
+
+
+export function DefaultSharedDeckButtons({ deck }) {
+  return (
+    <ButtonGroup>
+      <Button href={`/decks/${deck.creators[0]}/share/`}>
+        Update Settings
+      </Button>
+      <Button href={`/decks/${deck.creators[0]}/share/push/`} className='ml-1'>
+        Push Changes
+      </Button>
+      <Button href={`/decks/${deck.id}/flashcards/`} className='ml-1'>
+        View Flashcards
+      </Button>
+    </ButtonGroup> 
+  );
+}
