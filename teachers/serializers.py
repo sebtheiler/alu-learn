@@ -32,9 +32,9 @@ class StudentSerializer(serializers.ModelSerializer):
         fields = [
             'first_name',
             'last_name',
-            # 'streak',
             'current_streak',
             'today_stats',
+            'id',
         ]
     
     def get_first_name(self, obj):

@@ -1,3 +1,4 @@
+from profiles.models import Profile
 from django.db.models.query_utils import Q
 from decks.serializers import DeckSerializer
 from ..serializers import ClassroomSerializer, StudentSerializer
@@ -196,3 +197,34 @@ def attach_deck_view(request, classroom_id, *args, **kwargs):
     classroom.save()
 
     return Response(DeckSerializer(deck).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_statistics_view(request, classroom_id, student_id, *args, **kwargs):
+    """
+    Gets statistics about a student for teachers - GET
+
+    Required information:
+        `classroom_id`: (URL) Id of the classroom the student is currently in
+        `student_id`: (URL) Id of the student Profile to get data for
+    """
+    try:
+        student = Profile.objects.get(pk=student_id, classrooms_in__teachers=request.user.profile)
+    except Profile.DoesNotExist:
+        return Response({'message': 'Student not found'}, status=404)
+
+    try:
+        classroom = Classroom.objects.get(teachers=request.user.profile, pk=classroom_id)
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    # Get the deck that the student copied
+    student_copied_deck = student.user.decks.filter(shared_deck_relations__shared_deck=classroom.deck).first()
+    if student_copied_deck is None:
+        return Response({'message': 'Student deck not found'}, status=404)
+    
+    # Get statistics about the deck and student
+    deck_stats = student_copied_deck.get_statistics()
+
+    return Response(deck_stats, status=200)

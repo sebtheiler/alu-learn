@@ -397,7 +397,7 @@ export function useApiObjectHook(apiFunction, successCodes, errorNumber, args=[]
         if (successCodes instanceof Array ? successCodes.includes(status) : status === successCodes) {
           const processedResponse = processResponse ? processResponse(response) : response;
           setApiObject(processedResponse);
-          if (callback) callback(response);
+          if (callback) callback(response, status);
         } else {
           errorHandler(response, status, errorNumber);
         }

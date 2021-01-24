@@ -604,3 +604,8 @@ export function apiClassroomStudentsList(classroomId, tzOffset, callback) {
 export function apiClassroomAttachDeck(classroomId, deckId, callback) {
   backendLookup('POST', `teachers/classroom/attach-deck/${classroomId}/`, callback, { deck_id: deckId });
 }
+
+// Gets a list of students that have joined a classroom
+export function apiClassroomStudentStats(classroomId, studentId, callback) {
+  backendLookup('GET', `teachers/classroom/${classroomId}/student/${studentId}/stats/`, callback);
+}

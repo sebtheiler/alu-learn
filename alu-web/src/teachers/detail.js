@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { DefaultSharedDeckButtons } from '../decks/buttons';
-import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiDeckHome } from '../lookup';
+import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiDeckHome } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
 
 
@@ -37,10 +37,24 @@ const columns = [
 ];
 
 
-function ExpandableStudentDetailComponent({ data }) {
+function ExpandableStudentDetailComponent({ data, classroomId }) {
+  const [studentDeckNotFound, setStudentDeckNotFound] = useState(false);
+  const [statistics] = useApiObjectHook(
+    apiClassroomStudentStats,
+    [200, 404],
+    8011,
+    [classroomId, data.id],
+    (response, status) => setStudentDeckNotFound(status === 404 && response.message === 'Student deck not found'),
+  );
+  console.log(statistics);
+
   return (<>
     <p>{data.first_name} {data.last_name}</p>
-    <p>More info...</p>
+    {studentDeckNotFound ? <>
+      <p>It doesn't look like {data.first_name} has copied the class deck yet.</p>
+    </> : <>
+      <p>more info</p>
+    </>}
   </>);
 }
 
@@ -61,7 +75,7 @@ export function ClassroomDetail({ classroomId }) {
       data={students}
       expandableRows
       expandOnRowClicked
-      expandableRowsComponent={<ExpandableStudentDetailComponent />}
+      expandableRowsComponent={<ExpandableStudentDetailComponent classroomId={classroomId} />}
       striped
     />}
   </div>);

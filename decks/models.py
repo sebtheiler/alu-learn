@@ -1,9 +1,11 @@
 from __future__ import annotations # TODO: remove this when we upgrade to python 3.10
 
-from typing import List
+from typing import Dict, List
 from django.conf import settings
 from django.db import models
+from django.db.models.aggregates import Avg
 from django.db.models.query import QuerySet
+from django.db.models.query_utils import Q
 from profiles.models import Profile
 from django.contrib.postgres.fields import ArrayField
 from copy import deepcopy
@@ -82,6 +84,29 @@ class Deck(models.Model):
                 (self.sharing_setting == 'STUDENT' and self.attached_to.students.filter(pk=profile.pk).exists()) # user is student
             )
         )
+    
+
+    def get_statistics(self) -> Dict:
+        # Get various flashcard types (only counts are used)
+        unseen_flashcards = FlashCard.objects.filter(learning_status='UNSEEN', is_suspended=False, creator__deck=self)
+        learning_flashcards = FlashCard.objects.filter(learning_status='LEARNING', is_suspended=False, creator__deck=self)
+        learned_flashcards = FlashCard.objects.filter(learning_status='LEARNED', is_suspended=False, creator__deck=self)
+        relearning_flashcards = FlashCard.objects.filter(learning_status='RELEARNING', is_suspended=False, creator__deck=self)
+        suspended_flashcards = FlashCard.objects.filter(is_suspended=True, creator__deck=self)
+
+        # Get other data
+        avg_ease = FlashCard.objects.filter(
+            ~Q(learning_status='UNSEEN') & Q(creator__deck=self)
+        ).aggregate(Avg('ease'))['ease__avg']
+
+        return {
+            'num_unseen': unseen_flashcards.count(),
+            'num_learning': learning_flashcards.count(),
+            'num_learned': learned_flashcards.count(),
+            'num_relearning': relearning_flashcards.count(),
+            'num_suspended': suspended_flashcards.count(),
+            'avg_ease': avg_ease,
+        }
 
 
 class SharedDeckRelation(models.Model):
