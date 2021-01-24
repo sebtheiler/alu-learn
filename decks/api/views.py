@@ -415,15 +415,7 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
             return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
-    if not (
-        request.user == deck.user or ( # Viewing own profile
-            isinstance(deck, SharedDeck) and ( # Is a shared deck and...
-                deck.sharing_setting == 'PUBLIC' or ( # The deck is public or...
-                    deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all() # the user is a friend
-                )
-            )
-        )
-    ):
+    if not deck.user_has_access(request.user.profile):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
     Serializer = SharedDeckSerializer if isinstance(deck, SharedDeck) else DeckSerializer
@@ -454,7 +446,7 @@ def shared_deck_detail_view(request, shared_deck_id, *args, **kwargs):
         return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
-    if not (request.user == shared_deck.user or shared_deck.sharing_setting == 'PUBLIC' or (shared_deck.sharing_setting == 'FRIENDS' and request.user in shared_deck.user.profile.friends.all())):
+    if not shared_deck.user_has_access(request.user.profile):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
     return Response(SharedDeckSerializer(shared_deck, context={'request': request}).data, status=200)
@@ -492,15 +484,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
             return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
-    if not (
-        request.user == deck.user or ( # Viewing own profile
-            isinstance(deck, SharedDeck) and ( # Is a shared deck and...
-                deck.sharing_setting == 'PUBLIC' or ( # The deck is public or...
-                    deck.sharing_setting == 'FRIENDS' and request.user in deck.user.profile.friends.all() # the user is a friend
-                )
-            )
-        )
-    ):
+    if not deck.user_has_access(request.user.profile):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
     limit = request.GET.get('limit')

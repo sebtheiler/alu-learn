@@ -8,7 +8,7 @@ class Classroom(models.Model):
     code = models.CharField(max_length=8)
     teachers = models.ManyToManyField(Profile, related_name='classrooms_taught')
     students = models.ManyToManyField(Profile, related_name='classrooms_in', blank=True)
-    deck = models.ForeignKey(SharedDeck, on_delete=models.SET_NULL, null=True, blank=True)
+    deck = models.OneToOneField(SharedDeck, on_delete=models.SET_NULL, null=True, blank=True, related_name='attached_to')
 
     def __str__(self) -> str:
         return self.title

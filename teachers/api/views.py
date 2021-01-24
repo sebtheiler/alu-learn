@@ -186,7 +186,7 @@ def attach_deck_view(request, classroom_id, *args, **kwargs):
     # Create shared deck
     shared_deck = deck.create_shared_deck(
         deck.title,
-        f'Deck for {classroom.title}.  Students can copy and study this deck.',
+        f'Deck for "{classroom.title}."  Students can copy and study this deck.',
         sharing_setting='STUDENT', # shared with students
         include_copied_flashcards=True,
     )

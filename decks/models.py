@@ -73,6 +73,17 @@ class Deck(models.Model):
         return shared_deck
 
 
+    def user_has_access(self, profile: Profile) -> bool:
+        return (
+            profile.user == self.user or # viewing own deck
+            isinstance(self, SharedDeck) and (
+                self.sharing_setting == 'PUBLIC' or # deck is public
+                (self.sharing_setting == 'FRIENDS' and profile.user in self.user.profile.friends.all()) or # user is friend
+                (self.sharing_setting == 'STUDENT' and self.attached_to.students.filter(pk=profile.pk).exists()) # user is student
+            )
+        )
+
+
 class SharedDeckRelation(models.Model):
     deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='shared_deck_relations')
     shared_deck = models.ForeignKey('SharedDeck', on_delete=models.CASCADE, related_name='children_decks')
