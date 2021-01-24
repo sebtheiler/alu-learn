@@ -1,7 +1,9 @@
 import React from 'react';
+import { Form, Button } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
-import { apiClassroomDetail, apiClassroomStudentsList } from '../lookup';
-import { useApiObjectHook } from '../utils';
+import { DeckDefaultButtonGroup } from '../decks/buttons';
+import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiDeckHome } from '../lookup';
+import { errorHandler, useApiObjectHook } from '../utils';
 
 
 const columns = [
@@ -29,7 +31,7 @@ const columns = [
   {
     name: 'Time spent today',
     selector: 'today_stats.time_spent_today',
-    format: row => `${Math.round(row.today_stats.time_spent_today/1000/60)} minutes`,
+    format: row => `${Math.round(row.today_stats.time_spent_today/1000/60)} minute${Math.round(row.today_stats.time_spent_today/1000/60) === 1 ? '' : 's'}`,
     sortable: true,
   },
 ];
@@ -49,6 +51,8 @@ export function ClassroomDetail({ classroomId }) {
     <h1 className='mt-5'>{classroom?.title}</h1>
     <p className='mb-0'>Class Code: <strong>{classroom?.code}</strong></p>
     <small className='text-muted'>Give the class code to your students so that they can join your class.</small>
+    <ClassroomDeckComponent deck={classroom?.deck} classroomId={classroomId} />
+    <hr />
     {students && <DataTable
       title='Students'
       columns={columns}
@@ -59,4 +63,56 @@ export function ClassroomDetail({ classroomId }) {
       striped
     />}
   </div>);
+}
+
+
+function ClassroomDeckComponent({ classroomId, deck }) {
+  const [decks] = useApiObjectHook(
+    apiDeckHome,
+    200,
+    8008,
+    [], null,
+    response => response.results.filter(deck => deck.serializer_name === 'deck').sort(deck => deck.title),
+  );
+
+  const attachDeck = event => {
+    event.preventDefault();
+    const form = event.target;
+
+    apiClassroomAttachDeck(classroomId, parseInt(form.elements.attachedDeck.value), (response, status) => {
+      if (status === 200) {
+        window.location.reload();
+      } else {
+        // Error attaching deck to classroom
+        errorHandler(response, status, 8009);
+      }
+    });
+  }
+
+  return (<>
+    <h3 className='mt-3'>Classroom Deck</h3>
+    {deck ? <>
+      <h5>{deck.title}</h5>
+      <DeckDefaultButtonGroup deck={deck} />
+    </> : <>
+      {decks && decks.length > 0 ? <Form onSubmit={attachDeck}>
+        <Form.Group className='container'>
+          <Form.Label>Choose a Deck to Attach</Form.Label>
+          <Form.Control
+            as='select'
+            name='attachedDeck'
+            custom
+          >
+            {decks ? decks.map(deck => 
+              <option value={deck.id} key={deck.id}>{deck.title}</option>
+            ) :
+              <option value='-1'>Loading...</option>
+            }
+          </Form.Control>
+          <Button type='submit' className='mt-1'>Attach Deck</Button>
+        </Form.Group>
+      </Form> :
+      <p>You don't have any decks yet.  Please create or copy one first.</p>}
+    </>}
+  </>);
 }

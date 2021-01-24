@@ -80,6 +80,7 @@ import {
   apiClassroomsStudentJoined,
   apiClassroomDetail,
   apiClassroomStudentsList,
+  apiClassroomAttachDeck,
 } from './lookup';
 
 export {
@@ -164,4 +165,5 @@ export {
   apiClassroomsStudentJoined,
   apiClassroomDetail,
   apiClassroomStudentsList,
+  apiClassroomAttachDeck,
 }

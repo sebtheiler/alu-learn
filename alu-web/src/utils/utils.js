@@ -386,7 +386,7 @@ export function timezoneToISOString(date) {
 }
 
 // Get object from API hook
-export function useApiObjectHook(apiFunction, successCodes, errorNumber, args=[], callback=null) {
+export function useApiObjectHook(apiFunction, successCodes, errorNumber, args=[], callback=null, processResponse=null) {
   const [apiObject, setApiObject] = useState(null);
   const [apiObjectDidSet, setApiObjectDidSet] = useState(false);
 
@@ -395,14 +395,15 @@ export function useApiObjectHook(apiFunction, successCodes, errorNumber, args=[]
       setApiObjectDidSet(true);
       apiFunction(...args, (response, status) => {
         if (successCodes instanceof Array ? successCodes.includes(status) : status === successCodes) {
-          setApiObject(response);
+          const processedResponse = processResponse ? processResponse(response) : response;
+          setApiObject(processedResponse);
           if (callback) callback(response);
         } else {
           errorHandler(response, status, errorNumber);
         }
       })
     }
-  }, [apiObject, apiObjectDidSet, apiFunction, args, callback, successCodes, errorNumber]);
+  }, [apiObject, apiObjectDidSet, apiFunction, args, callback, successCodes, errorNumber, processResponse]);
 
   return [apiObject, setApiObject];
 }

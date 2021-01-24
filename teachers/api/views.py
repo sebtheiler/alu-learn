@@ -1,6 +1,8 @@
+from decks.serializers import DeckSerializer
 from ..serializers import ClassroomSerializer, StudentSerializer
 from ..models import Classroom
 
+from decks.models import Deck
 from django.utils.crypto import get_random_string
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -155,3 +157,29 @@ def classroom_students_view(request, classroom_id, *args, **kwargs):
     return Response(
             StudentSerializer(classroom.students, many=True, context={'tz': request.GET.get('tz')}).data,
         status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def attach_deck_view(request, classroom_id, *args, **kwargs):
+    """
+    Attaches a deck to a classroom - POST
+
+    Required information:
+        `classroom_id`: (URL) Id of the classroom to get information about
+        `deck_id`: (Data) Id of the deck to attach
+    """
+    try:
+        classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    try:
+        deck = Deck.objects.get(pk=request.data.get('deck_id'), user=request.user)
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+    
+    classroom.deck = deck
+    classroom.save()
+
+    return Response(DeckSerializer(deck).data, status=200)

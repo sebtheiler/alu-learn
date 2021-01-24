@@ -11,4 +11,5 @@ urlpatterns = [
     path('classroom/joined/', views.student_joined_classes_view),
     path('classroom/detail/<int:classroom_id>/', views.classroom_detail_view),
     path('classroom/students/<int:classroom_id>/', views.classroom_students_view),
+    path('classroom/attach-deck/<int:classroom_id>/', views.attach_deck_view),
 ]

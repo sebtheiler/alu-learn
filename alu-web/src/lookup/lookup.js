@@ -599,3 +599,8 @@ export function apiClassroomDetail(classroomId, callback) {
 export function apiClassroomStudentsList(classroomId, tzOffset, callback) {
   backendLookup('GET', `teachers/classroom/students/${classroomId}/?tz=${tzOffset}`, callback);
 }
+
+// Attaches a deck to a classroom
+export function apiClassroomAttachDeck(classroomId, deckId, callback) {
+  backendLookup('POST', `teachers/classroom/attach-deck/${classroomId}/`, callback, { deck_id: deckId });
+}
