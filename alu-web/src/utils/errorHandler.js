@@ -152,4 +152,6 @@ int(hexadecimal_string, 16)
 8003: Error deleting classroom through apiClassroomDelete
 8004: Error joining class through apiClassroomStudentJoin
 8005: Error getting list of classes a student has joined through apiClassroomsStudentJoined
+8006: Error getting class detail through apiClassroomDetail
+8007: Error getting list of students in a class through apiClassroomStudentsList
 */

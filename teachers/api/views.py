@@ -1,4 +1,4 @@
-from teachers.serializers import ClassroomSerializer
+from ..serializers import ClassroomSerializer, StudentSerializer
 from ..models import Classroom
 
 from django.utils.crypto import get_random_string
@@ -118,3 +118,37 @@ def student_joined_classes_view(request, *args, **kwargs):
     classrooms = request.user.profile.classrooms_in.order_by('title')
 
     return Response(ClassroomSerializer(classrooms, many=True).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def classroom_detail_view(request, classroom_id, *args, **kwargs):
+    """
+    Gets basic information about a classroom - GET
+
+    Required information:
+        `classroom_id`: (GET) Id of the classroom to get information about
+    """
+    try:
+        classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    return Response(ClassroomSerializer(classroom).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def classroom_students_view(request, classroom_id, *args, **kwargs):
+    """
+    Gets a list of students in a classroom - GET
+
+    Required information:
+        `classroom_id`: (GET) Id of the classroom to get information about
+    """
+    try:
+        classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    return Response(StudentSerializer(classroom.students, many=True).data, status=200)

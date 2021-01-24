@@ -589,3 +589,13 @@ export function apiClassroomStudentJoin(classroomCode, callback) {
 export function apiClassroomsStudentJoined(callback) {
   backendLookup('GET', 'teachers/classroom/joined/', callback);
 }
+
+// Gets basic details for a specific classroom
+export function apiClassroomDetail(classroomId, callback) {
+  backendLookup('GET', `teachers/classroom/detail/${classroomId}/`, callback);
+}
+
+// Gets a list of students that have joined a classroom
+export function apiClassroomStudentsList(classroomId, callback) {
+  backendLookup('GET', `teachers/classroom/students/${classroomId}/`, callback);
+}
