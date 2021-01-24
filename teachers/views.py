@@ -28,3 +28,19 @@ def classroom_detail(request, classroom_id, *args, **kwargs):
     return render(request, 'teachers/detail.html', context={
         'classroom_name': classroom.title, 'classroom_id': classroom_id
     })
+
+# Rendered when a student is viewing a class they are in
+def classroom_student_detail(request, classroom_id, *args, **kwargs):
+    if not request.user.is_authenticated:
+        return redirect('/')
+    elif not request.user.is_confirmed:
+        return redirect('/confirm-email/')
+
+    try:
+        classroom = Classroom.objects.get(pk=classroom_id, students=request.user.profile)
+    except Classroom.DoesNotExist:
+        raise Http404('Class not found')
+
+    return render(request, 'teachers/student-detail.html', context={
+        'classroom_name': classroom.title, 'classroom_id': classroom_id
+    })

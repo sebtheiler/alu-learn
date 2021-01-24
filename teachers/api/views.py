@@ -1,3 +1,4 @@
+from django.db.models.query_utils import Q
 from decks.serializers import DeckSerializer
 from ..serializers import ClassroomSerializer, StudentSerializer
 from ..models import Classroom
@@ -132,7 +133,9 @@ def classroom_detail_view(request, classroom_id, *args, **kwargs):
         `classroom_id`: (GET) Id of the classroom to get information about
     """
     try:
-        classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
+        classroom = Classroom.objects.get(
+            Q(pk=classroom_id) & (Q(teachers=request.user.profile) | Q(students=request.user.profile))
+        )
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
 
@@ -169,6 +172,7 @@ def attach_deck_view(request, classroom_id, *args, **kwargs):
         `classroom_id`: (URL) Id of the classroom to get information about
         `deck_id`: (Data) Id of the deck to attach
     """
+    # Get classroom and origin deck specified
     try:
         classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
     except Classroom.DoesNotExist:
@@ -178,7 +182,8 @@ def attach_deck_view(request, classroom_id, *args, **kwargs):
         deck = Deck.objects.get(pk=request.data.get('deck_id'), user=request.user)
     except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
-    
+
+    # Create shared deck
     shared_deck = deck.create_shared_deck(
         deck.title,
         f'Deck for {classroom.title}.  Students can copy and study this deck.',
@@ -186,6 +191,7 @@ def attach_deck_view(request, classroom_id, *args, **kwargs):
         include_copied_flashcards=True,
     )
 
+    # Attach the deck
     classroom.deck = shared_deck
     classroom.save()
 

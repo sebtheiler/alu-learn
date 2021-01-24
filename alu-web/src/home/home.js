@@ -121,7 +121,8 @@ function ClassroomsComponent({ username }) {
     </Modal>
     {classrooms && classrooms.map((classroom, i) => (<div key={i}>
       <hr />
-      {classroom.title}
+      <p>{classroom.title}</p>
+      <Button href={`/classrooms/${classroom.id}/student/`}>View Class</Button>
     </div>))}
   </>);
 }

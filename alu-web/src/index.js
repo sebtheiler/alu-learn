@@ -16,7 +16,7 @@ import { AutoNote, AutoFlashCard } from './notes/autonote';
 import { ManualSRHome } from './manual-sr';
 import { GameComponent, MatchingGame } from './decks/games';
 import { ReactionExperiment } from './experiments';
-import { ClassroomDetail, ClassroomsHomepage } from './teachers';
+import { ClassroomDetail, ClassroomsHomepage, ClassroomStudentDetail } from './teachers';
 // TODO: simplify this process
 
 const e = React.createElement;
@@ -204,6 +204,11 @@ if (classroomsHomepageElement) {
 const classroomDetailElement = document.getElementById('classroom-detail');
 if (classroomDetailElement) {
   ReactDOM.render(e(ClassroomDetail, classroomDetailElement.dataset), classroomDetailElement);
+}
+
+const classroomStudentDetailElement = document.getElementById('classroom-student-detail');
+if (classroomStudentDetailElement) {
+  ReactDOM.render(e(ClassroomStudentDetail, classroomStudentDetailElement.dataset), classroomStudentDetailElement);
 }
 
 // If you want your app to work offline and load faster, you can change
