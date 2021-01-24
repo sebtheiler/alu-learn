@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { DefaultSharedDeckButtons } from '../decks/buttons';
+import { FlashcardTypesPiechart, parseStats } from '../decks/statistics/statistics';
 import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiDeckHome } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
 
@@ -37,6 +38,7 @@ const columns = [
 ];
 
 
+// TODO: this triggers an API call everytime a row is expanded
 function ExpandableStudentDetailComponent({ data, classroomId }) {
   const [studentDeckNotFound, setStudentDeckNotFound] = useState(false);
   const [statistics] = useApiObjectHook(
@@ -45,15 +47,16 @@ function ExpandableStudentDetailComponent({ data, classroomId }) {
     8011,
     [classroomId, data.id],
     (response, status) => setStudentDeckNotFound(status === 404 && response.message === 'Student deck not found'),
+    response => parseStats(response),
   );
-  console.log(statistics);
 
   return (<>
-    <p>{data.first_name} {data.last_name}</p>
+    <p className='mt-1'>Statistics For: {data.first_name} {data.last_name}</p>
     {studentDeckNotFound ? <>
       <p>It doesn't look like {data.first_name} has copied the class deck yet.</p>
     </> : <>
-      <p>more info</p>
+      <FlashcardTypesPiechart flashcardTypes={statistics?.flashcardTypes} />
+      <p>Average Ease (seen flashcards): {Math.round(statistics?.avgEase*100)/100}</p>
     </>}
   </>);
 }

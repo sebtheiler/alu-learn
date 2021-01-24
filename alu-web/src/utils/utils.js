@@ -401,7 +401,7 @@ export function useApiObjectHook(apiFunction, successCodes, errorNumber, args=[]
         } else {
           errorHandler(response, status, errorNumber);
         }
-      })
+      });
     }
   }, [apiObject, apiObjectDidSet, apiFunction, args, callback, successCodes, errorNumber, processResponse]);
 
