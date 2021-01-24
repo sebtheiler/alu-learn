@@ -596,6 +596,6 @@ export function apiClassroomDetail(classroomId, callback) {
 }
 
 // Gets a list of students that have joined a classroom
-export function apiClassroomStudentsList(classroomId, callback) {
-  backendLookup('GET', `teachers/classroom/students/${classroomId}/`, callback);
+export function apiClassroomStudentsList(classroomId, tzOffset, callback) {
+  backendLookup('GET', `teachers/classroom/students/${classroomId}/?tz=${tzOffset}`, callback);
 }

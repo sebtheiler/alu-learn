@@ -6,18 +6,19 @@ import { useApiObjectHook } from '../utils';
 
 const columns = [
   {
-    name: 'First',
+    name: 'First Name',
     selector: 'first_name',
     sortable: true,
   },
   {
-    name: 'Last',
+    name: 'Last Name',
     selector: 'last_name',
     sortable: true,
   },
   {
     name: 'Streak',
     selector: 'current_streak',
+    format: row => `${row.current_streak} day${row.current_streak === 1 ? '' : 's'}`,
     sortable: true,
   },
   {
@@ -28,6 +29,7 @@ const columns = [
   {
     name: 'Time spent today',
     selector: 'today_stats.time_spent_today',
+    format: row => `${Math.round(row.today_stats.time_spent_today/1000/60)} minutes`,
     sortable: true,
   },
 ];
@@ -41,7 +43,7 @@ function ExpandableStudentDetailComponent({ data }) {
 
 export function ClassroomDetail({ classroomId }) {
   const [classroom] = useApiObjectHook(apiClassroomDetail, 200, 8006, [classroomId]);
-  const [students] = useApiObjectHook(apiClassroomStudentsList, 200, 8007, [classroomId]);
+  const [students] = useApiObjectHook(apiClassroomStudentsList, 200, 8007, [classroomId, new Date().getTimezoneOffset()]);
 
   return (<div className='container-fluid text-center'>
     <h1 className='mt-5'>{classroom?.title}</h1>

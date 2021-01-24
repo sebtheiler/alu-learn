@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.utils import timezone
 from profiles.models import Profile
 from rest_framework import serializers
@@ -41,7 +42,10 @@ class StudentSerializer(serializers.ModelSerializer):
 
     def get_today_stats(self, obj):
         last_history = obj.history.order_by('date').last()
-        actually_today = last_history.date == timezone.now().date()
+        today = timezone.now()
+        if tz := self.context.get('tz'):
+            today -= timedelta(minutes=int(tz))
+        actually_today = last_history.date == today.date()
 
         return {
             'cards_done_today': last_history.cards_done if actually_today else 0,

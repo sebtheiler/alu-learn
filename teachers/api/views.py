@@ -144,11 +144,14 @@ def classroom_students_view(request, classroom_id, *args, **kwargs):
     Gets a list of students in a classroom - GET
 
     Required information:
-        `classroom_id`: (GET) Id of the classroom to get information about
+        `classroom_id`: (URL) Id of the classroom to get information about
+        `tz`: (GET) Timezone offset.  Used to determine when "today" is
     """
     try:
         classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
 
-    return Response(StudentSerializer(classroom.students, many=True).data, status=200)
+    return Response(
+            StudentSerializer(classroom.students, many=True, context={'tz': request.GET.get('tz')}).data,
+        status=200)
