@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { DefaultSharedDeckButtons } from '../decks/buttons';
-import { FlashcardTypesPiechart, parseStats } from '../decks/statistics/statistics';
+import { FlashcardTypesPiechart, HistoryLineChart, parseStats } from '../decks/statistics/statistics';
 import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiDeckHome } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
 
@@ -47,8 +47,9 @@ function ExpandableStudentDetailComponent({ data, classroomId }) {
     8011,
     [classroomId, data.id],
     (response, status) => setStudentDeckNotFound(status === 404 && response.message === 'Student deck not found'),
-    response => parseStats(response),
+    response => parseStats(response, 'TEACHER'),
   );
+  console.log(statistics)
 
   return (<>
     <p className='mt-1'>Statistics For: {data.first_name} {data.last_name}</p>
@@ -56,7 +57,8 @@ function ExpandableStudentDetailComponent({ data, classroomId }) {
       <p>It doesn't look like {data.first_name} has copied the class deck yet.</p>
     </> : <>
       <FlashcardTypesPiechart flashcardTypes={statistics?.flashcardTypes} />
-      <p>Average Ease (seen flashcards): {Math.round(statistics?.avgEase*100)/100}</p>
+      <p className='text-left'>Average Ease (seen flashcards): {Math.round(statistics?.avgEase*100)/100}</p>
+      <HistoryLineChart studentHistory={statistics?.studentHistory} />
     </>}
   </>);
 }
@@ -66,7 +68,7 @@ export function ClassroomDetail({ classroomId }) {
   const [classroom] = useApiObjectHook(apiClassroomDetail, 200, 8006, [classroomId]);
   const [students] = useApiObjectHook(apiClassroomStudentsList, 200, 8007, [classroomId, new Date().getTimezoneOffset()]);
 
-  return (<div className='container-fluid text-center'>
+  return (<div className='container-fluid text-center mb-5'>
     <h1 className='mt-5'>{classroom?.title}</h1>
     <p className='mb-0'>Class Code: <strong>{classroom?.code}</strong></p>
     <small className='text-muted'>Give the class code to your students so that they can join your class.</small>

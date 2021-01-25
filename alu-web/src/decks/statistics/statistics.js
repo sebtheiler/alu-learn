@@ -1,7 +1,7 @@
 import React from 'react';
 import Chart from 'react-google-charts';
 import { apiDeckStatistics } from '../../lookup';
-import { useApiObjectHook } from '../../utils';
+import { stripTime, useApiObjectHook } from '../../utils';
 
 
 export function StatisticsPage(props) {
@@ -50,16 +50,61 @@ export function FlashcardTypesPiechart({ flashcardTypes }) {
 }
 
 
-export function parseStats(response) {
+export function HistoryLineChart({ studentHistory }) {
+  return (
+    <Chart
+      width={'100%'}
+      height={'500'}
+      chartType='Line'
+      loader={<div>Loading...</div>}
+      data={studentHistory && [
+        [
+          { type: 'date', label: 'Date' },
+          'Flashcards done',
+          'Time spent',
+        ],
+        ...studentHistory.map(hist => 
+          [stripTime(new Date(hist.date)), hist.cards_done, hist.time_spent/1000/60]
+        ),
+      ]}
+      options={{
+        chart: {
+          title:
+            'Flashcards Done and Time Spent Studying',
+        },
+        width: 900,
+        height: 500,
+        series: {
+          // Gives each series an axis name that matches the Y-axis below.
+          0: { axis: 'Reviews' },
+          1: { axis: 'Time Spent (minutes)' },
+        },
+        axes: {
+          // Adds labels to each axis; they don't have to match the axis names.
+          y: {
+            'Reviews': { label: 'Reviews' },
+            'Time Spent (minutes)': { label: 'Time Spent' },
+          },
+        },
+      }}
+    />
+  );
+}
+
+
+export function parseStats(response, isTeacher=false) {
+  const deckStats = isTeacher ? response.deck_stats : response;
+
   return {
     flashcardTypes: [
       ['Flashcard Type', 'Percent'],
-      ['Unseen', response.num_unseen],
-      ['Learning', response.num_learning],
-      ['Learned', response.num_learned],
-      ['Suspended', response.num_suspended],
-      ['Relearning', response.num_relearning],
+      ['Unseen', deckStats.num_unseen],
+      ['Learning', deckStats.num_learning],
+      ['Learned', deckStats.num_learned],
+      ['Suspended', deckStats.num_suspended],
+      ['Relearning', deckStats.num_relearning],
     ],
-    avgEase: response.avg_ease,
+    avgEase: deckStats.avg_ease,
+    studentHistory: isTeacher ? response.student_history : null,
   };
 }

@@ -407,3 +407,8 @@ export function useApiObjectHook(apiFunction, successCodes, errorNumber, args=[]
 
   return [apiObject, setApiObject];
 }
+
+// Converts a date with time information to a raw date
+export function stripTime(date) {
+  return new Date(date.getFullYear(), date.getMonth() , date.getDate());
+}

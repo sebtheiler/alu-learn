@@ -19,6 +19,7 @@ import {
   updateURLParameter,
   timezoneToISOString,
   useApiObjectHook,
+  stripTime,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -45,4 +46,5 @@ export {
   updateURLParameter,
   timezoneToISOString,
   useApiObjectHook,
+  stripTime,
 }

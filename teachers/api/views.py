@@ -1,3 +1,6 @@
+from datetime import timedelta
+from django.utils import timezone
+from profiles.serializers import HistorySerializer
 from profiles.models import Profile
 from django.db.models.query_utils import Q
 from decks.serializers import DeckSerializer
@@ -226,5 +229,12 @@ def student_statistics_view(request, classroom_id, student_id, *args, **kwargs):
     
     # Get statistics about the deck and student
     deck_stats = student_copied_deck.get_statistics()
+    cutoff_time = timezone.now() - timedelta(days=182) # half a year, and about school year length
+    student_history = student.history.filter(date__gte=cutoff_time)
 
-    return Response(deck_stats, status=200)
+    stats ={
+        'deck_stats': deck_stats,
+        'student_history': HistorySerializer(student_history, many=True).data,
+    }
+
+    return Response(stats, status=200)
