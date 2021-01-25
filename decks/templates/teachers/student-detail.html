@@ -3,5 +3,9 @@
 {% block title %}{{ classroom_name }} at{% endblock title %}
 
 {% block content %}
-<div id='classroom-student-detail' data-classroom-id='{{ classroom_id }}'></div>
+<div
+  id='classroom-student-detail'
+  data-classroom-id='{{ classroom_id }}'
+  data-student-id='{{ request.user.profile.id }}'
+></div>
 {% endblock content %}

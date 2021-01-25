@@ -157,4 +157,7 @@ int(hexadecimal_string, 16)
 8008: Error getting list of decks for attaching to classroom through apiDeckHome
 8009: Error attaching deck to classroom through apiClassroomAttachDeck
 8010: Error getting class detail for students through apiClassroomDetail
+8011: Error getting student attached deck through apiClassroomGetStudentDeck
+8012: Error getting list of classes a student has joined for editing deck through apiClassroomsStudentJoined
+8013: Error attaching student deck to classroom through apiClassroomStudentAttachDeck
 */

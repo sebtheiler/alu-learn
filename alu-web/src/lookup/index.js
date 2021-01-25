@@ -82,6 +82,8 @@ import {
   apiClassroomStudentsList,
   apiClassroomAttachDeck,
   apiClassroomStudentStats,
+  apiClassroomStudentAttachDeck,
+  apiClassroomGetStudentDeck,
 } from './lookup';
 
 export {
@@ -168,4 +170,6 @@ export {
   apiClassroomStudentsList,
   apiClassroomAttachDeck,
   apiClassroomStudentStats,
+  apiClassroomStudentAttachDeck,
+  apiClassroomGetStudentDeck,
 }

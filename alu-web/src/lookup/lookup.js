@@ -609,3 +609,13 @@ export function apiClassroomAttachDeck(classroomId, deckId, callback) {
 export function apiClassroomStudentStats(classroomId, studentId, callback) {
   backendLookup('GET', `teachers/classroom/${classroomId}/student/${studentId}/stats/`, callback);
 }
+
+// Attaches a deck to a classroom for a student
+export function apiClassroomStudentAttachDeck(classroomId, deckId, callback) {
+  backendLookup('POST', `teachers/classroom/students/attach-deck/${classroomId}/`, callback, { deck_id: deckId });
+}
+
+// Gets a student's attached deck for a classroom
+export function apiClassroomGetStudentDeck(classroomId, studentId, callback) {
+  backendLookup('GET', `teachers/classroom/${classroomId}/student/${studentId}/attached-deck/`, callback);
+}

@@ -1,6 +1,6 @@
 from __future__ import annotations # TODO: remove this when we upgrade to python 3.10
 
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from django.conf import settings
 from django.db import models
 from django.db.models.aggregates import Avg
@@ -14,7 +14,7 @@ User = settings.AUTH_USER_MODEL
 
 
 class DeckManager(models.Manager):
-    def get_or_new(self, **kwargs):
+    def get_or_new(self, **kwargs) -> Tuple[Deck, bool]:
         try:
             return self.get(**kwargs), False
         except self.model.DoesNotExist:
@@ -29,6 +29,9 @@ class Deck(models.Model):
     # Also note that this specifies the shared deck this deck creates, not the one it is cloned from
     shared_deck = models.ForeignKey('SharedDeck', on_delete=models.SET_NULL, null=True, related_name='creators')
 
+    # Specifies which classroom a student has attatched this deck to (if any)
+    student_attached_to = models.ForeignKey('teachers.Classroom', models.SET_NULL, related_name='attached_student_decks', null=True, blank=True)
+
     objects = DeckManager()
     class Meta:
         ordering = ['-id']
@@ -36,7 +39,14 @@ class Deck(models.Model):
     def __str__(self) -> str:
         return str(self.title)
 
-    def create_shared_deck(self, title, description, /, sharing_setting='PUBLIC', include_copied_flashcards=False) -> Deck:
+    def create_shared_deck(
+        self,
+        title: str,
+        description: str,
+        /,
+        sharing_setting: str='PUBLIC',
+        include_copied_flashcards: bool=False,
+    ) -> Deck:
         shared_deck = SharedDeck.objects.create(
             user=self.user,
             title=title,
@@ -81,7 +91,7 @@ class Deck(models.Model):
             isinstance(self, SharedDeck) and (
                 self.sharing_setting == 'PUBLIC' or # deck is public
                 (self.sharing_setting == 'FRIENDS' and profile.user in self.user.profile.friends.all()) or # user is friend
-                (self.sharing_setting == 'STUDENT' and self.attached_to.students.filter(pk=profile.pk).exists()) # user is student
+                (self.sharing_setting == 'STUDENT' and self.attached_to_classroom.students.filter(pk=profile.pk).exists()) # user is student
             )
         )
     
@@ -255,7 +265,7 @@ class StudySessionManager(models.Model):
     scheduling_algorithm = models.CharField(
         max_length=10,
         choices=ALGORITHM_OPTIONS,
-        default='ANKI',
+        default='ANKING',
     )
 
     shuffle_unseen_cards = models.BooleanField(default=True)

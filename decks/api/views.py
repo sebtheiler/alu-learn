@@ -1230,6 +1230,8 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
     deck, created = Deck.objects.get_or_create(
         user=request.user,
         title=request.data.get('destination_deck_title'),
+        # If the student is copying this deck from a teacher, the following is the classroom the deck is attached to (otherwise it's None)
+        student_attached_to=shared_deck.attached_to_classroom,
     )
 
     if created:

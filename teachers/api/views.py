@@ -168,12 +168,12 @@ def classroom_students_view(request, classroom_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def attach_deck_view(request, classroom_id, *args, **kwargs):
+def teacher_attach_deck_view(request, classroom_id, *args, **kwargs):
     """
-    Attaches a deck to a classroom - POST
+    Allows a teacher to attache a deck to a classroom - POST
 
     Required information:
-        `classroom_id`: (URL) Id of the classroom to get information about
+        `classroom_id`: (URL) Id of the classroom to attach to
         `deck_id`: (Data) Id of the deck to attach
     """
     # Get classroom and origin deck specified
@@ -191,7 +191,7 @@ def attach_deck_view(request, classroom_id, *args, **kwargs):
     shared_deck = deck.create_shared_deck(
         deck.title,
         f'Deck for "{classroom.title}."  Students can copy and study this deck.',
-        sharing_setting='STUDENT', # shared with students
+        sharing_setting='STUDENT',
         include_copied_flashcards=True,
     )
 
@@ -223,7 +223,7 @@ def student_statistics_view(request, classroom_id, student_id, *args, **kwargs):
         return Response({'message': 'Classroom not found'}, status=404)
 
     # Get the deck that the student copied
-    student_copied_deck = student.user.decks.filter(shared_deck_relations__shared_deck=classroom.deck).first()
+    student_copied_deck = student.user.decks.filter(student_attached_to=classroom).first()
     if student_copied_deck is None:
         return Response({'message': 'Student deck not found'}, status=404)
     
@@ -238,3 +238,61 @@ def student_statistics_view(request, classroom_id, student_id, *args, **kwargs):
     }
 
     return Response(stats, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def student_attach_deck_view(request, classroom_id, *args, **kwargs):
+    """
+    Allows a student to attach a deck to a classroom - POST
+
+    Required information:
+        `classroom_id`: (URL) Id of the classroom to attach to
+        `deck_id`: (Data) Id of the deck to attach
+    """
+    # Get classroom and origin deck specified
+    try:
+        classroom = Classroom.objects.get(pk=classroom_id, students=request.user.profile)
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    try:
+        deck = Deck.objects.get(pk=request.data.get('deck_id'), user=request.user)
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    # Attach the deck
+    # TODO: make it so this can only happen if they haven't already attached a deck (and same for cloning?)
+    deck.student_attached_to = classroom
+    deck.save()
+
+    return Response(DeckSerializer(deck).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_get_attached_deck_view(request, classroom_id, student_id, *args, **kwargs):
+    """
+    Allows a student to attach a deck to a classroom - POST
+
+    Required information:
+        `classroom_id`: (URL) Id of the classroom to attach to
+        `student_id`: (URL) Id of the student to get the deck from
+    """
+    # Get classroom and origin deck specified
+    try:
+        classroom = Classroom.objects.get(pk=classroom_id, students=request.user.profile)
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    try:
+        student = Profile.objects.get(pk=student_id, user=request.user)
+    except Profile.DoesNotExist:
+        return Response({'message': 'Student not found'}, status=404)
+
+    student_attached_deck = student.user.decks.filter(student_attached_to=classroom).first()
+    if student_attached_deck:
+        # Returns None otherwise
+        student_attached_deck = DeckSerializer(student_attached_deck).data
+
+    return Response(student_attached_deck, status=200)

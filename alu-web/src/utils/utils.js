@@ -387,7 +387,7 @@ export function timezoneToISOString(date) {
 
 // Get object from API hook
 export function useApiObjectHook(apiFunction, successCodes, errorNumber, args=[], callback=null, processResponse=null) {
-  const [apiObject, setApiObject] = useState(null);
+  const [apiObject, setApiObject] = useState(undefined);
   const [apiObjectDidSet, setApiObjectDidSet] = useState(false);
 
   useEffect(() => {

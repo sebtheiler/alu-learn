@@ -316,8 +316,8 @@ export function DeckEditCreateModal(props) {
               defaultValue={deck.scheduling_algorithm}
               custom
             >
-              <option value='ANKI'>Default Anki Settings</option>
               <option value='ANKING'>Optimized Anki Settings</option>
+              <option value='ANKI'>Default Anki Settings</option>
             </Form.Control>
           </Form.Group>
         </Modal.Body>
@@ -338,8 +338,7 @@ export function DeckEditCreateModal(props) {
 }
 
 // Buttons displayed when a user that does not own the deck views a deck
-export function DeckForeignUserButtonGroup(props) {
-  const {deck} = props;
+export function DeckForeignUserButtonGroup({ deck, showCopy }) {
   const [copyLoading, setCopyLoading] = useState(false);
   const [showCopyModal, setShowCopyModal] = useState(false);
 
@@ -364,23 +363,25 @@ export function DeckForeignUserButtonGroup(props) {
   return (
     <div className='text-center'>
       <ButtonGroup>
-        <Button onClick={() => setShowCopyModal(true)}>
-          Copy Deck 
-        </Button>
-        <Modal show={showCopyModal} onHide={() => setShowCopyModal(false)}>
-          <Modal.Header>
-            <Modal.Title>Copying "{deck.title}</Modal.Title>
-          </Modal.Header>
-          <Form onSubmit={handleCopyDeck}>
-            <Modal.Body>
-              <Form.Label>Destination</Form.Label>
-              <Form.Control type='text' defaultValue={`Copy of "${deck.title}"`} name='destinationTitle' required />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button type='submit'>Copy Deck</Button>
-            </Modal.Footer>
-          </Form>
-        </Modal>
+        {showCopy && <>
+          <Button onClick={() => setShowCopyModal(true)}>
+            Copy Deck 
+          </Button>
+          <Modal show={showCopyModal} onHide={() => setShowCopyModal(false)}>
+            <Modal.Header>
+              <Modal.Title>Copying "{deck.title}</Modal.Title>
+            </Modal.Header>
+            <Form onSubmit={handleCopyDeck}>
+              <Modal.Body>
+                <Form.Label>Destination</Form.Label>
+                <Form.Control type='text' defaultValue={`Copy of "${deck.title}"`} name='destinationTitle' required />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button type='submit'>Copy Deck</Button>
+              </Modal.Footer>
+            </Form>
+          </Modal>
+        </>}
         <Button href={`/decks/${deck.id}/flashcards/`} className='ml-1'>
           View Flashcards
         </Button>
