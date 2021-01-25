@@ -137,9 +137,9 @@ def classroom_detail_view(request, classroom_id, *args, **kwargs):
         `classroom_id`: (GET) Id of the classroom to get information about
     """
     try:
-        classroom = Classroom.objects.get(
+        classroom = Classroom.objects.filter(
             Q(pk=classroom_id) & (Q(teachers=request.user.profile) | Q(students=request.user.profile))
-        )
+        ).first() # we use .filter instead of .get, because this sometimes returns multiple classrooms
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
 
@@ -213,7 +213,8 @@ def student_statistics_view(request, classroom_id, student_id, *args, **kwargs):
         `student_id`: (URL) Id of the student Profile to get data for
     """
     try:
-        student = Profile.objects.get(pk=student_id, classrooms_in__teachers=request.user.profile)
+        # We need .filter instead of .get because of edge-cases when the teacher teaches multiple classes the student is in
+        student = Profile.objects.filter(pk=student_id, classrooms_in__teachers=request.user.profile).first()
     except Profile.DoesNotExist:
         return Response({'message': 'Student not found'}, status=404)
 

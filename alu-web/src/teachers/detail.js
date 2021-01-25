@@ -81,6 +81,7 @@ export function ClassroomDetail({ classroomId }) {
       expandableRows
       expandOnRowClicked
       expandableRowsComponent={<ExpandableStudentDetailComponent classroomId={classroomId} />}
+      noDataComponent={<p>You don't have any students yet</p>}
       striped
     />}
   </div>);

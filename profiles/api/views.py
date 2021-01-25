@@ -429,7 +429,7 @@ def change_email(request, *args, **kwargs):
         message = f"""
 Look's like you want to change your email.
 Here's a confirmation code, to make sure this email is really you: {confirmation_key}
-If this wasn't you, you can safely ignore this email.
+If this wasn't you, please change your password immediately: someone knows both your email and password, and has used it to attempt to change your email.
         """
         email_from = settings.EMAIL_HOST_USER
         recipient_list = [new_email]
@@ -533,7 +533,7 @@ def password_reset_email_api_view(request, email, *args, **kwargs):
 Looks like you forgot your password—don't worry, it happens to all of us.
 
 Click this link to reset your password: https://www.alulearn.com/reset-password/confirm/?k={unique_id}&email={profile.user.email}
-If this wasn't you, you can safely ignore this email.
+If this wasn't you, you can safely ignore this email, however, be aware someone may know your email address.
     """
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [profile.user.email]

@@ -66,7 +66,7 @@ If you wish to continue, please type "DELETE", without the quotes.
     <Button onClick={() => setEditModalIsOpen(true)}>{classroom ? 'Edit' : 'Create Classroom'}</Button>
     <Modal show={editModalIsOpen} onHide={() => setEditModalIsOpen(false)}>
       <Modal.Header>
-        <Modal.Title>{classroom ? `Editing "${classroom.title}"` : 'Creating'}</Modal.Title>
+        <Modal.Title>{classroom ? `Editing "${classroom.title}"` : 'Creating a Class'}</Modal.Title>
       </Modal.Header>
       <Form onSubmit={handleSubmit}>
         <Modal.Body>
@@ -74,7 +74,7 @@ If you wish to continue, please type "DELETE", without the quotes.
             <Form.Label htmlFor='title'>Title</Form.Label>
             <Form.Control
               type='text'
-              placeholder='My classroom'
+              placeholder='My class'
               name='title'
               defaultValue={classroom?.title}
               required
