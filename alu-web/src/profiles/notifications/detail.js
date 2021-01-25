@@ -25,6 +25,9 @@ export function Notification(props) {
           setFriendBtnLabel('Friends');
           setAcceptedFriendReq(true);
         }
+      } else if (status === 404) {
+        setFriendBtnLabel('User not found');
+        setAcceptedFriendReq(true);
       } else {
         // Error getting profile detail for checking if friends
         errorHandler(response, status, 3004);

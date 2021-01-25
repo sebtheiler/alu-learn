@@ -1,6 +1,7 @@
 import datetime
 
 from decks.api.utils import get_paginated_queryset_response
+from django.utils import timezone
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.mail import send_mail
 from django.shortcuts import redirect
@@ -389,6 +390,14 @@ def login_api_view(request, *args, **kwargs):
     if user is None:
         return Response({'message': 'Invalid credentials'}, status=401)
     login(request, user)
+
+    # Create a notification about a new login
+    Notification.objects.create(
+        profile=user.profile,
+        title='New Login',
+        description=
+            f'There was a new login to your account on {str(timezone.now())[:19]} UTC.  If this was not you, please change your password immediately.'
+    )
 
     return Response({'message': 'Successfully authenticated user'}, status=200)
 

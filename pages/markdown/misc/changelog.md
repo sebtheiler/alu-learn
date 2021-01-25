@@ -1,6 +1,16 @@
 -----
 
+
+# Teachers and Classes - Jan 25 - 0.4.0
+This update introduces the ability for teachers to create classes for students.  Teachers can assign a deck to the class, which students can then study.  As students study the class deck, teachers can track their progress with statistics as they learn with Alu.  Each classroom gets a unique class code, which students can enter on the homepage to join a class.
+
+
+* **Added Classrooms:** If your account type is set to "Teacher/Parent," you can now create classes.  Classes appear as a new, fourth option on the Alu homepage.
+    * **Class Codes:** Each class gets a unique class code that students can enter to join the class.  A list of classes that students have joined now appears in a second column on their homepage.
+    * **Copy/Attach Deck:** Teachers can attach a deck to the classroom, which students can then copy and study.  Alternatively, if the student has already started studying, they add their own deck, rather than copying the class one.
+    * **Statistics Tracking:** Teachers can track their students' progress with a simple yet powerful table that gives information about how long each student has spent studying that day and how many flashcards they've reviewed.  Clicking a row in this table reveals more information about the student, such as a piechart of the types of flashcards in the student's deck, and a graph of how much the student has studied over time.
 * **Changed Default Scheduling Algorithm:** The default scheduling algorithm has been changed from Default Anki Settings to Optimized Anki Settings.
+* **Added Notification for New Logins:** As part of a security enhancement, you are now notified when there is a new login to your account.  If you ever notice a new login that wasn't you, please change your password immediately.
 
 
 ## Deck Statistics - Jan 23 - 0.3.7
