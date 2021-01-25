@@ -1,5 +1,6 @@
 -----
 
+* **Added Notification for New Logins:** As part of a security enhancement, you are now notified when there is a new login to your account.  If you ever notice a new login that wasn't you, please change your password immediately.
 
 ## Deck Statistics - Jan 23 - 0.3.7
 In this update, I've added a page for viewing statistics about your deck.  You can access this page through the "Other" button on your deck, and on it, you can see a piechart describing the types of flashcards in your deck.  Alu now also collects how long you've studied each day and displays this on your review heatmap.  Finally, I've added a feature where you get a notification when a shared deck you've copied is updated.
