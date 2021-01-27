@@ -154,7 +154,7 @@ export function ModalRegisterForm(props) {
             } else if (response.message === 'Email not allowed') {
               // If the user's email is not allowed
               document.getElementById('emailNotAllowed').innerHTML =
-                `You email is not currently in the list of allowed emails.
+                `Your email is not currently in the list of allowed emails.
                 To apply, please fill out the
                 <a href='https://forms.gle/7MNRvNfa4yfQinTL7' target='_blank' rel='noopener noreferrer'>
                 Google Form</a>.`

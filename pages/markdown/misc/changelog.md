@@ -11,6 +11,7 @@ This update introduces the ability for teachers to create classes for students. 
     * **Statistics Tracking:** Teachers can track their students' progress with a simple yet powerful table that gives information about how long each student has spent studying that day and how many flashcards they've reviewed.  Clicking a row in this table reveals more information about the student, such as a piechart of the types of flashcards in the student's deck, and a graph of how much the student has studied over time.
 * **Changed Default Scheduling Algorithm:** The default scheduling algorithm has been changed from Default Anki Settings to Optimized Anki Settings.
 * **Added Notification for New Logins:** As part of a security enhancement, you are now notified when there is a new login to your account.  If you ever notice a new login that wasn't you, please change your password immediately.
+* **Fixed Typos:** Various typos have been fixed.
 
 
 ## Deck Statistics - Jan 23 - 0.3.7

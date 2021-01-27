@@ -49,7 +49,6 @@ function ExpandableStudentDetailComponent({ data, classroomId }) {
     (response, status) => setStudentDeckNotFound(status === 404 && response.message === 'Student deck not found'),
     response => parseStats(response, 'TEACHER'),
   );
-  console.log(statistics)
 
   return (<>
     <p className='mt-1'>Statistics For: {data.first_name} {data.last_name}</p>
@@ -58,7 +57,13 @@ function ExpandableStudentDetailComponent({ data, classroomId }) {
     </> : <>
       <FlashcardTypesPiechart flashcardTypes={statistics?.flashcardTypes} />
       <p className='text-left'>Average Ease (seen flashcards): {Math.round(statistics?.avgEase*100)/100}</p>
-      <HistoryLineChart studentHistory={statistics?.studentHistory} />
+      {!!statistics?.studentHistory && statistics.studentHistory.length > 1 ?
+        <HistoryLineChart studentHistory={statistics.studentHistory} />
+        :
+        <p className='text-left'>
+          A linechart will appear here once this student studies for two or more days.
+        </p>
+      }
     </>}
   </>);
 }

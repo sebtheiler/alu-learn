@@ -32,7 +32,12 @@ export function ClassroomsHomepage({ username }) {
     </> :
       <p className='text-center mt-3'>
         You don't have any classes yet.<br />
-        TODO: LINK TUTORIAL VIDEO
+        <iframe width="70%" height="600px"
+          title='Creating Classes in Alu (for teachers)'
+          allowFullScreen='allowFullScreen'
+          src="https://www.youtube.com/embed/QNpOwlFpCbU"
+          className='mx-auto'
+        />
       </p>}
   </>);
 }

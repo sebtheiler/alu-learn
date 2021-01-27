@@ -392,12 +392,14 @@ def login_api_view(request, *args, **kwargs):
     login(request, user)
 
     # Create a notification about a new login
-    Notification.objects.create(
-        profile=user.profile,
-        title='New Login',
-        description=
-            f'There was a new login to your account on {str(timezone.now())[:19]} UTC.  If this was not you, please change your password immediately.'
-    )
+    # Time check is to ensure the notification isn't created when the user first joins
+    if user.date_joined < timezone.now() - datetime.timedelta(days=1):
+        Notification.objects.create(
+            profile=user.profile,
+            title='New Login',
+            description=
+                f'There was a new login to your account on {str(timezone.now())[:19]} UTC.  If this was not you, please change your password immediately.'
+        )
 
     return Response({'message': 'Successfully authenticated user'}, status=200)
 

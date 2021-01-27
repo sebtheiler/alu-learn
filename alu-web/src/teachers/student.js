@@ -37,7 +37,7 @@ export function ClassroomStudentDetail({ classroomId, studentId }) {
     <h3 className='mt-3'>Classroom Deck</h3>
     {classroom?.deck ? <>
       <h5>{classroom?.deck?.title}</h5>
-      <DeckForeignUserButtonGroup deck={classroom?.deck} showCopy={!studentDeck && !(studentDeck === undefined)} />
+      <DeckForeignUserButtonGroup deck={classroom?.deck} hideCopy={!(!studentDeck && !(studentDeck === undefined))} />
       <br />
       {studentDeck ?
         <p>You've attached a deck to this class: "{studentDeck.title}"</p>

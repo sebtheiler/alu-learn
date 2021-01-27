@@ -338,7 +338,7 @@ export function DeckEditCreateModal(props) {
 }
 
 // Buttons displayed when a user that does not own the deck views a deck
-export function DeckForeignUserButtonGroup({ deck, showCopy }) {
+export function DeckForeignUserButtonGroup({ deck, hideCopy }) {
   const [copyLoading, setCopyLoading] = useState(false);
   const [showCopyModal, setShowCopyModal] = useState(false);
 
@@ -363,7 +363,7 @@ export function DeckForeignUserButtonGroup({ deck, showCopy }) {
   return (
     <div className='text-center'>
       <ButtonGroup>
-        {showCopy && <>
+        {!hideCopy && <>
           <Button onClick={() => setShowCopyModal(true)}>
             Copy Deck 
           </Button>
