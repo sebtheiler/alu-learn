@@ -108,6 +108,9 @@ export function UserCustomization(props) {
           <Button className='ml-1' type='submit'>Next</Button>
         </ButtonGroup>
       </Form>
-    </div> : <p>Alu has been personalized to fit your needs!</p>}
+    </div> : <>
+      <p>Alu has been personalized to fit your needs!</p>
+      <Button href='/home/'>Home</Button>
+    </>}
   </div>);
 }
