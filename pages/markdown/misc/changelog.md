@@ -1,5 +1,11 @@
 -----
 
+## ??? - Jan ?? - 0.4.1
+
+
+* **Removed Experiment Game:** The temporary psychology experiment has finished and will not be returned.
+
+
 
 # Teachers and Classes - Jan 25 - 0.4.0
 This update introduces the ability for teachers to create classes for students.  Teachers can assign a deck to the class, which students can then study.  As students study the class deck, teachers can track their progress with statistics as they learn with Alu.  Each classroom gets a unique class code, which students can enter on the homepage to join a class.

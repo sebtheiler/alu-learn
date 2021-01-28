@@ -15,7 +15,6 @@ import { NoteEditor, NotesHomeList } from './notes';
 import { AutoNote, AutoFlashCard } from './notes/autonote';
 import { ManualSRHome } from './manual-sr';
 import { GameComponent, MatchingGame } from './decks/games';
-import { ReactionExperiment } from './experiments';
 import { ClassroomDetail, ClassroomsHomepage, ClassroomStudentDetail } from './teachers';
 
 const e = React.createElement;
@@ -68,7 +67,6 @@ const renderElement = (Element, htmlName, isClass=false) => {
   [MatchingGame, 'matching-game'],
   [GameComponent, 'game-component'],
   [StaffForceLogin, 'staff-force-login'],
-  [ReactionExperiment, 'experiment-component'],
   [StatisticsPage, 'statistics-page'],
   [ClassroomsHomepage, 'classrooms-homepage'],
   [ClassroomDetail, 'classroom-detail'],
