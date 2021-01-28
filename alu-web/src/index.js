@@ -17,199 +17,63 @@ import { ManualSRHome } from './manual-sr';
 import { GameComponent, MatchingGame } from './decks/games';
 import { ReactionExperiment } from './experiments';
 import { ClassroomDetail, ClassroomsHomepage, ClassroomStudentDetail } from './teachers';
-// TODO: simplify this process
 
 const e = React.createElement;
 
-const decksEl = document.getElementById('user-decks');
-if (decksEl) {
-  ReactDOM.render(e(DeckPublicList, decksEl.dataset), decksEl);
+const renderElement = (Element, htmlName, isClass=false) => {
+  if (isClass) {
+    const els = document.querySelectorAll(`.${htmlName}`);
+    els.forEach(container => {
+      ReactDOM.render(e(Element, container.dataset), container);
+    });
+  } else {
+    const el = document.getElementById(htmlName);
+    if (el) {
+      ReactDOM.render(e(Element, el.dataset), el);
+    }
+  }
 }
 
-const deckDetailElements = document.querySelectorAll('.deck-detail');
-deckDetailElements.forEach(container => {
-  ReactDOM.render(e(DeckDetailComponent, container.dataset), container);
-});
-
-const userProfileInfoElements = document.querySelectorAll('.profile-info');
-userProfileInfoElements.forEach(container => {
-  ReactDOM.render(e(ProfileInformationComponent, container.dataset), container);
-});
-
-const deckHomeElement = document.getElementById('decks-home');
-if (deckHomeElement) {
-  ReactDOM.render(e(DecksHomeComponent, deckHomeElement.dataset), deckHomeElement);
-}
-
-const flashcardCreateElement = document.getElementById('create-flashcard');
-if (flashcardCreateElement) {
-  ReactDOM.render(e(FlashCardCreate, flashcardCreateElement.dataset), flashcardCreateElement);
-}
-
-const flashcardListElement = document.querySelectorAll('.flashcard-list');
-flashcardListElement.forEach(container => {
-  ReactDOM.render(e(FlashCardsList, container.dataset), container);
-});
-
-const flashcardStudyElement = document.getElementById('study-component');
-if (flashcardStudyElement) {
-  ReactDOM.render(e(StudyComponent, flashcardStudyElement.dataset), flashcardStudyElement);
-}
-
-const notificationElements = document.querySelectorAll('.notification-component');
-notificationElements.forEach(container => {
-  ReactDOM.render(e(NotificationComponent, container.dataset), container);
-});
-
-const exploreElement = document.getElementById('explore-component');
-if (exploreElement) {
-  ReactDOM.render(e(ExploreComponent, exploreElement.dataset), exploreElement);
-}
-
-const flashcardSearchElement = document.getElementById('flashcard-search-component');
-if (flashcardSearchElement) {
-  ReactDOM.render(e(FlashCardSearchComponent, flashcardSearchElement.dataset), flashcardSearchElement);
-}
-
-const deckSearchElement = document.getElementById('deck-search-component');
-if (deckSearchElement) {
-  ReactDOM.render(e(DeckSearchComponent, deckSearchElement.dataset), deckSearchElement);
-}
-
-const landingComponents = document.querySelectorAll('.landing-component');
-landingComponents.forEach(container => {
-  ReactDOM.render(e(LandingComponent, container.dataset), container);
-});
-
-const homeElement = document.getElementById('home-component');
-if (homeElement) {
-  ReactDOM.render(e(HomeComponent, homeElement.dataset), homeElement);
-}
-
-const navbarElement = document.getElementById('navbar-component');
-if (navbarElement) {
-  ReactDOM.render(e(NavbarComponent, navbarElement.dataset), navbarElement);
-}
-
-const loginElement = document.getElementById('login-component');
-if (loginElement) {
-  ReactDOM.render(e(LoginComponent, loginElement.dataset), loginElement);
-}
-
-const importElement = document.getElementById('deck-importer');
-if (importElement) {
-  ReactDOM.render(e(DeckImportComponent, importElement.dataset), importElement);
-}
-
-const contactElement = document.getElementById('contact-us');
-if (contactElement) {
-  ReactDOM.render(e(ContactUs, contactElement.dataset), contactElement);
-}
-
-const noteEditorElement = document.getElementById('note-editor');
-if (noteEditorElement) {
-  ReactDOM.render(e(NoteEditor, noteEditorElement.dataset), noteEditorElement);
-}
-
-const notesHomeElement = document.getElementById('notes-home');
-if (notesHomeElement) {
-  ReactDOM.render(e(NotesHomeList, notesHomeElement.dataset), notesHomeElement);
-}
-
-const settingsElement = document.getElementById('settings-page');
-if (settingsElement) {
-  ReactDOM.render(e(SettingsPage, settingsElement.dataset), settingsElement);
-}
-
-const updatePasswordEmailElement = document.getElementById('update-password-email');
-if (updatePasswordEmailElement) {
-  ReactDOM.render(e(ChangePasswordEmail, updatePasswordEmailElement.dataset), updatePasswordEmailElement);
-}
-
-const confirmEmailElement = document.getElementById('confirm-email');
-if (confirmEmailElement) {
-  ReactDOM.render(e(ConfirmEmail, confirmEmailElement.dataset), confirmEmailElement);
-}
-
-const sendPasswordResetElement = document.getElementById('send-password-reset');
-if (sendPasswordResetElement) {
-  ReactDOM.render(e(SendPasswordReset, sendPasswordResetElement.dataset), sendPasswordResetElement);
-}
-
-const autoNoteElement = document.getElementById('auto-note');
-if (autoNoteElement) {
-  ReactDOM.render(e(AutoNote, autoNoteElement.dataset), autoNoteElement);
-}
-
-const autoFlashCardElement = document.getElementById('auto-flashcard');
-if (autoFlashCardElement) {
-  ReactDOM.render(e(AutoFlashCard, autoFlashCardElement.dataset), autoFlashCardElement);
-}
-
-const manualSRHomeElement = document.getElementById('manual-sr-home');
-if (manualSRHomeElement) {
-  ReactDOM.render(e(ManualSRHome, manualSRHomeElement.dataset), manualSRHomeElement);
-}
-
-const shareDeckElement = document.getElementById('share-deck');
-if (shareDeckElement) {
-  ReactDOM.render(e(ShareDeck, shareDeckElement.dataset), shareDeckElement);
-}
-
-const pushDeckElement = document.getElementById('push-deck');
-if (pushDeckElement) {
-  ReactDOM.render(e(PushSharedDeck, pushDeckElement.dataset), pushDeckElement);
-}
-
-const updateDeckElement = document.getElementById('update-deck');
-if (updateDeckElement) {
-  ReactDOM.render(e(UpdateDeck, updateDeckElement.dataset), updateDeckElement);
-}
-
-const userCustomizationElement = document.getElementById('user-customization');
-if (userCustomizationElement) {
-  ReactDOM.render(e(UserCustomization, userCustomizationElement.dataset), userCustomizationElement);
-}
-
-const matchingGameElement = document.getElementById('matching-game');
-if (matchingGameElement) {
-  ReactDOM.render(e(MatchingGame, matchingGameElement.dataset), matchingGameElement);
-}
-
-const gameElement = document.getElementById('game-component');
-if (gameElement) {
-  ReactDOM.render(e(GameComponent, gameElement.dataset), gameElement);
-}
-
-const staffForceLoginElement = document.getElementById('staff-force-login');
-if (staffForceLoginElement) {
-  ReactDOM.render(e(StaffForceLogin, staffForceLoginElement.dataset), staffForceLoginElement);
-}
-
-const experimentElement = document.getElementById('experiment-component');
-if (experimentElement) {
-  ReactDOM.render(e(ReactionExperiment, experimentElement.dataset), experimentElement);
-}
-
-const statisticsPageElement = document.getElementById('statistics-page');
-if (statisticsPageElement) {
-  ReactDOM.render(e(StatisticsPage, statisticsPageElement.dataset), statisticsPageElement);
-}
-
-const classroomsHomepageElement = document.getElementById('classrooms-homepage');
-if (classroomsHomepageElement) {
-  ReactDOM.render(e(ClassroomsHomepage, classroomsHomepageElement.dataset), classroomsHomepageElement);
-}
-
-const classroomDetailElement = document.getElementById('classroom-detail');
-if (classroomDetailElement) {
-  ReactDOM.render(e(ClassroomDetail, classroomDetailElement.dataset), classroomDetailElement);
-}
-
-const classroomStudentDetailElement = document.getElementById('classroom-student-detail');
-if (classroomStudentDetailElement) {
-  ReactDOM.render(e(ClassroomStudentDetail, classroomStudentDetailElement.dataset), classroomStudentDetailElement);
-}
+[
+  [DeckPublicList, 'user-decks'],
+  [DeckDetailComponent, 'deck-detail', true],
+  [ProfileInformationComponent, 'profile-info', true],
+  [DecksHomeComponent, 'decks-home'],
+  [FlashCardCreate, 'create-flashcard'],
+  [FlashCardsList, 'flashcard-list', true],
+  [StudyComponent, 'study-component'],
+  [NotificationComponent, 'notification-component', true],
+  [ExploreComponent, 'explore-component'],
+  [FlashCardSearchComponent, 'flashcard-serach-component'],
+  [DeckSearchComponent, 'deck-search-component'],
+  [LandingComponent, 'landing-component', true],
+  [HomeComponent, 'home-component'],
+  [NavbarComponent, 'navbar-component'],
+  [LoginComponent, 'login-component'],
+  [DeckImportComponent, 'deck-importer'],
+  [ContactUs, 'contact-us'],
+  [NoteEditor, 'note-editor'],
+  [NotesHomeList, 'notes-home'],
+  [SettingsPage, 'settings-page'],
+  [ChangePasswordEmail, 'update-password-email'],
+  [ConfirmEmail, 'confirm-email'],
+  [SendPasswordReset, 'send-password-reset'],
+  [AutoNote, 'auto-note'],
+  [AutoFlashCard, 'auto-flashcard'],
+  [ManualSRHome, 'manual-sr-home'],
+  [ShareDeck, 'share-deck'],
+  [PushSharedDeck, 'push-deck'],
+  [UpdateDeck, 'update-deck'],
+  [UserCustomization, 'user-customization'],
+  [MatchingGame, 'matching-game'],
+  [GameComponent, 'game-component'],
+  [StaffForceLogin, 'staff-force-login'],
+  [ReactionExperiment, 'experiment-component'],
+  [StatisticsPage, 'statistics-page'],
+  [ClassroomsHomepage, 'classrooms-homepage'],
+  [ClassroomDetail, 'classroom-detail'],
+  [ClassroomStudentDetail, 'classroom-student-detail'],
+].map(el => renderElement(...el));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
