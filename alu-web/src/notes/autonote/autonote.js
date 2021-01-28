@@ -34,8 +34,8 @@ export const parseText = (text, version='PARAGRAPH', numSentences=3) => {
       for (const par of splitByPar) {
         // If there is no period, we assume it is a header
         let toPush;
-        if (!(par.includes('.') || par.includes('!'))) {
-          // If it doesn't contain a period/exclamation-mark, we make the assumption it's a header
+        if (!(par.includes('.') || par.includes('!') || par.includes('…') || par.length > 150)) {
+          // If it doesn't contain punctuation and is reasonalby short, we make the assumption it's a header
           toPush = `<h4>${par}</h4>`;
           finalText.push(toPush);
         } else {
@@ -45,7 +45,7 @@ export const parseText = (text, version='PARAGRAPH', numSentences=3) => {
             // into sentences determined by `numSentences`
             for (let i = 0; i < splitPar.length; i+=numSentences) {
               toPush = splitPar.slice(i, i+numSentences).join(' ');
-              finalText.push(toPush.trim() + ((toPush.endsWith('.') || toPush.endsWith('!') || toPush.endsWith('?')) ? '' : '.'));
+              finalText.push(toPush.trim());
             }
           } else {
             toPush = par;
