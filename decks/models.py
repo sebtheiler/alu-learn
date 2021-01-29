@@ -85,13 +85,15 @@ class Deck(models.Model):
         return shared_deck
 
 
-    def user_has_access(self, profile: Profile) -> bool:
+    def user_has_access(self, user: User) -> bool:
         return (
-            profile.user == self.user or # viewing own deck
+            user == self.user or # viewing own deck
             isinstance(self, SharedDeck) and (
                 self.sharing_setting == 'PUBLIC' or # deck is public
-                (self.sharing_setting == 'FRIENDS' and profile.user in self.user.profile.friends.all()) or # user is friend
-                (self.sharing_setting == 'STUDENT' and self.attached_to_classroom.students.filter(pk=profile.pk).exists()) # user is student
+                (not user.is_anonymous and (
+                    (self.sharing_setting == 'FRIENDS' and user in self.user.profile.friends.all()) or # user is friend
+                    (self.sharing_setting == 'STUDENT' and self.attached_to_classroom.students.filter(pk=user.profile.pk).exists()) # user is student
+                ))
             )
         )
     

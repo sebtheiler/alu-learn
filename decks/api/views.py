@@ -415,7 +415,7 @@ def deck_detail_view(request, deck_id, *args, **kwargs):
             return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
-    if not deck.user_has_access(request.user.profile):
+    if not deck.user_has_access(request.user):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
     Serializer = SharedDeckSerializer if isinstance(deck, SharedDeck) else DeckSerializer
@@ -446,7 +446,7 @@ def shared_deck_detail_view(request, shared_deck_id, *args, **kwargs):
         return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
-    if not shared_deck.user_has_access(request.user.profile):
+    if not shared_deck.user_has_access(request.user):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
     return Response(SharedDeckSerializer(shared_deck, context={'request': request}).data, status=200)
@@ -484,7 +484,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
             return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
-    if not deck.user_has_access(request.user.profile):
+    if not deck.user_has_access(request.user):
         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
     limit = request.GET.get('limit')
