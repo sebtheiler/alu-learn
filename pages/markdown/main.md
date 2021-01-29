@@ -21,5 +21,8 @@ In the following pages, you can find detailed information on the features Alu ha
 * [Writing LaTeX](/help/writing-latex/)
 * [Selection Mode](/help/selection-mode/)
 
+## Classes
+* [Creating Classes (Video)](https://youtu.be/QNpOwlFpCbU)
+
 ## Tasks
 * [Introduction to Tasks (Video)](https://www.youtube.com/watch?v=15jt-oQSJ8c)
