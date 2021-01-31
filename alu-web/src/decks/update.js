@@ -52,23 +52,27 @@ export function UpdateDeck(props) {
     return <>We couldn't find the deck you're looking for</>
   }
 
-  return (<>
-    <h1>Updating "{deck ? deck.title : 'Loading...'}"</h1>
-    {updates !== null ? 
-      (updates.length > 0 ? <>{updates.map((update, index) => (<div key={index} className='ml-5 w-75'>
-        <a href={`/decks/${update.id}/`} className='text-dark'>
-          <h2>{update.title}</h2>
-        </a>
-        <Button onClick={pullHandleWrapper(update.id)}>
-          Update
-        </Button>
-        <hr />
-      </div>)
-      )}
-      {/* <Button onClick={pullHandleWrapper(updates.map(update => update.id))}>
-        Update All
-      </Button> */}
-      </> : <p>This deck is fully updated</p>
-    ) : <p>Loading...</p>}
-  </>);
+  return (
+    <p>Updating is disabled due to an emergency</p>
+  );
+
+  // return (<>
+  //   <h1>Updating "{deck ? deck.title : 'Loading...'}"</h1>
+  //   {updates !== null ? 
+  //     (updates.length > 0 ? <>{updates.map((update, index) => (<div key={index} className='ml-5 w-75'>
+  //       <a href={`/decks/${update.id}/`} className='text-dark'>
+  //         <h2>{update.title}</h2>
+  //       </a>
+  //       <Button onClick={pullHandleWrapper(update.id)}>
+  //         Update
+  //       </Button>
+  //       <hr />
+  //     </div>)
+  //     )}
+  //     {/* <Button onClick={pullHandleWrapper(updates.map(update => update.id))}>
+  //       Update All
+  //     </Button> */}
+  //     </> : <p>This deck is fully updated</p>
+  //   ) : <p>Loading...</p>}
+  // </>);
 }
