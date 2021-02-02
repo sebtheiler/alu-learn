@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { DeckForeignUserButtonGroup } from '../decks/buttons';
 import { apiClassroomDetail, apiClassroomGetStudentDeck, apiClassroomStudentAttachDeck, apiDeckHome } from '../lookup';
@@ -15,21 +15,25 @@ export function ClassroomStudentDetail({ classroomId, studentId }) {
     [], null,
     response => response.results.filter(deck => deck.serializer_name === 'deck').sort(deck => deck.title),
   );
+  const [attachLoading, setAttachLoading] = useState(false);
 
   const attachDeck = event => {
     event.preventDefault();
-    const form = event.target;
-    const deckIdToAttach = parseInt(form.elements.deckToAttach.value);
+    if (!attachLoading) {
+      setAttachLoading(true);
+      const form = event.target;
+      const deckIdToAttach = parseInt(form.elements.deckToAttach.value);
 
-    if (!deckIdToAttach) return;
-    apiClassroomStudentAttachDeck(classroomId, deckIdToAttach, (response, status) => {
-      if (status === 200) {
-        window.location.reload();
-      } else {
-        // Error attaching student deck to classroom
-        errorHandler(response, status, 8012);
-      }
-    });
+      if (!deckIdToAttach) return;
+      apiClassroomStudentAttachDeck(classroomId, deckIdToAttach, (response, status) => {
+        if (status === 200) {
+          window.location.reload();
+        } else {
+          // Error attaching student deck to classroom
+          errorHandler(response, status, 8012);
+        }
+      });
+    }
   }
 
   return (<div className='text-center container-fluid mt-5'>
@@ -58,7 +62,9 @@ export function ClassroomStudentDetail({ classroomId, studentId }) {
               ))}
             </Form.Control>
           </Form.Group>
-          <Button type='submit'>Attach Deck</Button>
+          <Button type='submit'>
+            {attachLoading ? 'Attaching...' : 'Attach Deck'}
+          </Button>
         </Form>}
       </>}
     </> : <>

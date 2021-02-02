@@ -1,8 +1,11 @@
 -----
 
-## ??? - Jan ?? - 0.4.1
+## Teacher Improvements - Feb 02 - 0.4.2
 
 
+* **Added More Loading Buttons:** There are now more loading buttons, which prevent you from being able to double click by accident.
+* **Fixed Bug with Student History Chart:** Student history charts are now properly sorted.
+* **Removed Brief Black Screen on Teachers Home:** Removed the annoying black box appeared on the teacher's homescreen for a brief second.
 * **Removed Experiment Game:** The temporary psychology experiment has finished and will not be returned.
 
 
