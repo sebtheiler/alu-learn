@@ -1,4 +1,5 @@
 from datetime import timedelta
+from decks.api.views import search_tags
 from django.utils import timezone
 from profiles.serializers import HistorySerializer
 from profiles.models import Profile
@@ -7,7 +8,7 @@ from decks.serializers import DeckSerializer
 from ..serializers import ClassroomSerializer, StudentSerializer
 from ..models import Classroom
 
-from decks.models import Deck
+from decks.models import Deck, FlashCard
 from django.utils.crypto import get_random_string
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -297,3 +298,36 @@ def student_get_attached_deck_view(request, classroom_id, student_id, *args, **k
         student_attached_deck = DeckSerializer(student_attached_deck).data
 
     return Response(student_attached_deck, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def suspend_students_flashcards_view(request, classroom_id: int):
+    """
+    Allows a teacher to suspend certain flashcards in a student's deck - POST
+
+    Required information:
+        `classroom_id`: (URL) Id of the classroom to attach to
+        `tag_query`: (Data) Query with which to search tags
+        `action`: (Data) Whether to SUSPEND or UNSUSPEND the flashcards
+    """
+    # Get classroom and tags query
+    try:
+        classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+    
+    tags_query = request.data.get('tag_query')
+    action = request.data.get('action', 'SUSPEND')
+    if tags_query is None:
+        return Response({'message': 'You must specify a tags query'}, status=400)
+
+    # Get flashcards to suspend
+    query = Q(creator__deck__student_attached_to=classroom)
+    query &= search_tags(tags_query)
+    flashcards = FlashCard.objects.filter(query)
+
+    # Suspend flashcards
+    flashcards.update(is_suspended=action == 'SUSPEND')
+
+    return Response({'message': 'Suspended flashcards', 'count': flashcards.count()}, status=200)

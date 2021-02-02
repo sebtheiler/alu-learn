@@ -5,6 +5,7 @@ import { DefaultSharedDeckButtons } from '../decks/buttons';
 import { FlashcardTypesPiechart, HistoryLineChart, parseStats } from '../decks/statistics/statistics';
 import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiDeckHome } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
+import { SuspendStudentFlashcardsButton } from './buttons';
 
 
 const columns = [
@@ -132,7 +133,8 @@ function ClassroomDeckComponent({ classroomId, deck }) {
         To add flashcards to this deck, add flashcards to the deck it was created from,{' '}
         then click "Push Changes."
       </small><br />
-      <DefaultSharedDeckButtons deck={deck} hideUpdateSettings />
+      <DefaultSharedDeckButtons deck={deck} hideUpdateSettings /><br />
+      <SuspendStudentFlashcardsButton classroomId={classroomId} className='mt-1' />
     </> : <>
       {decks && decks.length > 0 ? <Form onSubmit={attachDeck}>
         <Form.Group className='container'>

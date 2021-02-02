@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, ButtonGroup, Form, Modal } from 'react-bootstrap';
-import { apiClassroomCreate, apiClassroomDelete, apiClassroomEdit } from '../lookup';
-import { errorHandler } from '../utils';
+import { apiClassroomCreate, apiClassroomDelete, apiClassroomEdit, apiClassroomSuspendFlashCards } from '../lookup';
+import { errorHandler, LoadingButton } from '../utils';
 
 
 export function ClassroomDefaultButtonGroup({ classroom }) {
@@ -93,6 +93,97 @@ If you wish to continue, please type "DELETE", without the quotes.
           </Button>
         </Modal.Footer>
       </Form>
+    </Modal>
+  </>);
+}
+
+export function SuspendStudentFlashcardsButton({ classroomId, className }) {
+  const [showModal, setShowModal] = useState(false)
+  const [action, setAction] = useState('SUSPEND');
+  const [numSuspended, setNumSuspended] = useState();
+
+  const suspendStudentFlashcardsButton = event => {
+    event.preventDefault();
+    const form = event.target;
+
+    apiClassroomSuspendFlashCards(classroomId, form.elements.tagQuery.value, action, (response, status) => {
+      if (status === 200) {
+        setNumSuspended(response.count);
+      } else {
+        errorHandler(response, status, 8014);
+      }
+    });
+  }
+
+  return (<>
+    <Button onClick={() => setShowModal(true)} className={className}>
+      Suspend Student Flashcards
+    </Button>
+    <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal.Header>
+        <Modal.Title>Suspend Student Flashcards</Modal.Title>
+      </Modal.Header>
+      {numSuspended !== undefined ? <>
+        <Modal.Body>
+          <p>
+            Successfully {action === 'SUSPEND' ? 'suspended' : 'unsuspended'}{' '}
+            {numSuspended} of your students' flashcards.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setShowModal(false)} variant='secondary' block>
+            Close
+          </Button>
+        </Modal.Footer>
+      </> : <>
+        <Form onSubmit={suspendStudentFlashcardsButton}>
+          <Modal.Body>
+            <p>
+              Suspend specific flashcards in students' decks.{' '}
+              You can use this to assign certain units to students.
+            </p>
+            <Form.Group>
+              <Form.Label>
+                Tag Query<br />
+                <small className='text-muted'>
+                  You can use logical operators like AND, OR, and NOT<br />
+                  (e.g.: NOT unit 1 OR NOT essential)
+                </small>
+              </Form.Label>
+              <Form.Control
+                type='text'
+                name='tagQuery'
+                required
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>
+                Action<br/>
+                <small className='text-muted'>
+                  Whether to suspend the searched flashcards, or unsuspend them.
+                </small>
+              </Form.Label>
+              <Form.Control
+                as='select'
+                name='action'
+                onChange={event => setAction(event.target.value)}
+                custom
+              >
+                <option value='SUSPEND'>Suspend Flashcards</option>
+                <option value='UNSUSPEND'>Unsuspend Flashcards</option>
+              </Form.Control>
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={() => setShowModal(false)} variant='secondary' className='mr-auto'>
+              Cancel
+            </Button>
+            <LoadingButton loadingMessage='Loading...' type='submit'>
+              {action === 'SUSPEND' ? 'Suspend Flashcards' : 'Unsuspend Flashcards'}
+            </LoadingButton>
+          </Modal.Footer>
+        </Form>
+      </>}
     </Modal>
   </>);
 }

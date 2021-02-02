@@ -414,18 +414,18 @@ export function stripTime(date) {
 }
 
 // Creates a button that can't accidently be clicked twice
-export function LoadingButton({ message, children, loadingMessage, callback, variant }) {
+export function LoadingButton({ message, children, loadingMessage, callback, variant, type }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = event => {
     if (!isLoading) {
       setIsLoading(true);
-      callback(event);
+      if (callback) callback(event);
     }
   }
 
   return (
-    <Button onClick={onClick} variant={variant}>
+    <Button onClick={onClick} variant={variant} type={type}>
       {isLoading ? loadingMessage : (message || children)}
     </Button>
   );
