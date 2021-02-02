@@ -53,7 +53,7 @@ export function FlashcardTypesPiechart({ flashcardTypes }) {
 export function HistoryLineChart({ studentHistory }) {
   const processedStudentHistory = useMemo(() => studentHistory.map(hist => 
           [stripTime(new Date(hist.date)), hist.cards_done, hist.time_spent/1000/60]
-  ).sort((a, b) => a.date - b.date), [studentHistory]);
+  ).sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime()), [studentHistory]);
 
   return (
     <Chart
