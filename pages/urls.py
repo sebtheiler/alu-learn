@@ -13,7 +13,6 @@ urlpatterns = [
     path('reset-password/', views.send_password_reset),
     path('reset-password/confirm/', views.change_reset_password_view_wrapper(True)),
     path('changelog/', views.md_view_wrapper('misc/changelog', 'Changelog')),
-    path('experiments/', views.experiments_view),
     # Explore pages
     path('explore/', views.explore_home_view),
     path('explore/decks/search/', views.explore_deck_search_view),

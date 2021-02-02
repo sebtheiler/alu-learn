@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import numeral from 'numeral';
 import ReactMarkdown from 'react-markdown/with-html';
 import RemarkMathPlugin from 'remark-math';
-import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Tooltip, OverlayTrigger, Button } from 'react-bootstrap';
 import { BlockMath, InlineMath } from 'react-katex';
 import { FullEditor, createFullEditor  } from '../notes/editor-components';
 import { Slate } from 'slate-react';
@@ -411,4 +411,22 @@ export function useApiObjectHook(apiFunction, successCodes, errorNumber, args=[]
 // Converts a date with time information to a raw date
 export function stripTime(date) {
   return new Date(date.getFullYear(), date.getMonth() , date.getDate());
+}
+
+// Creates a button that can't accidently be clicked twice
+export function LoadingButton({ message, children, loadingMessage, callback, variant, type }) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onClick = event => {
+    if (!isLoading) {
+      setIsLoading(true);
+      if (callback) callback(event);
+    }
+  }
+
+  return (
+    <Button onClick={onClick} variant={variant} type={type}>
+      {isLoading ? loadingMessage : (message || children)}
+    </Button>
+  );
 }

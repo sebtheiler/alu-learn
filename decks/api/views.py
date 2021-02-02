@@ -650,6 +650,35 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
     return Response(FlashCardSerializer(flashcard).data, status=200)
 
 
+def search_tags(tags: str) -> Q:
+    query = Q()
+
+    separated_tags = [el.strip() for el in re.split('(AND)|(OR)', tags) if el is not None]
+    i = 0
+    while i < len(separated_tags):
+        if separated_tags[i] in ('AND', 'OR'):
+            i += 1
+            continue
+
+        previous_operator = separated_tags[i - 1] if i > 0 else None
+        contains_query = Q(creator__tags__icontains=separated_tags[i])
+
+        # Invert the query if it starts with NOT
+        if separated_tags[i].startswith('NOT '):
+            contains_query = ~Q(creator__tags__icontains=separated_tags[i].replace('NOT ', ''))
+
+        # Decide how to merge the query, based on the previous value being AND or OR
+        if previous_operator == 'AND' or previous_operator is None:
+            query &= contains_query
+        elif previous_operator == 'OR':
+            query |= contains_query
+        else:
+            raise ValueError('Invalid tags query')
+        
+        i += 1
+    
+    return query
+
 def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=None, leech=None, learning_status=None, min_ease=None, max_ease=None, due_before=None, custom_query=None, return_query_only=False):
     # Search flashcards
     # We will be ANDing (&=) a bunch more queries to this
@@ -665,31 +694,7 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
     if tags or leech is not None:
         tag_query = Q()
         if tags:
-            # Split by the operators AND and OR
-            separated_tags = [el.strip() for el in re.split('(AND)|(OR)', tags) if el is not None]
-
-            i = 0
-            while i < len(separated_tags):
-                if separated_tags[i] in ('AND', 'OR'):
-                    i += 1
-                    continue
-
-                previous_operator = separated_tags[i - 1] if i > 0 else None
-                contains_query = Q(creator__tags__icontains=separated_tags[i])
-
-                # Invert the query if it starts with NOT
-                if separated_tags[i].startswith('NOT '):
-                    contains_query = ~Q(creator__tags__icontains=separated_tags[i].replace('NOT ', ''))
-
-                # Decide how to merge the query, based on the previous value being AND or OR
-                if previous_operator == 'AND' or previous_operator is None:
-                    tag_query &= contains_query
-                elif previous_operator == 'OR':
-                    tag_query |= contains_query
-                else:
-                    return Response({'message': 'Invalid tags query'}, status=400)
-                
-                i += 1
+            tag_query &= search_tags(tags)
 
         # Also filter by leech, since it's a tag
         if str(leech).lower() == 'true':
@@ -697,7 +702,10 @@ def search_flashcards(user, deck_ids=None, tags=None, contains=None, suspended=N
         elif str(leech).lower() == 'false':
             tag_query &= ~Q(creator__tags__icontains='leech')
 
-        flashcard_query &= tag_query
+        try:
+            flashcard_query &= tag_query
+        except ValueError:
+            return Response({'message': 'Invalid tags query'}, status=400)
 
     # Filter by contains
     if contains:

@@ -6,8 +6,6 @@ import { Node } from 'slate';
 import './renderer.css';
 
 export const Element = (props) => {
-  // TODO: `readOnly` is unused for now, but will be used in equation editing
-  // eslint-disable-next-line
   const { attributes, children, element, readOnly } = props;
 
   switch (element.type) {
@@ -45,8 +43,6 @@ export const Element = (props) => {
   }
 }
 
-// TODO: `readOnly` is unused for now, but will be used in equation editing
-// eslint-disable-next-line
 export const Leaf = ({ attributes, children, leaf, readOnly }) => {
   if (leaf.bold) {
     children = <strong>{children}</strong>

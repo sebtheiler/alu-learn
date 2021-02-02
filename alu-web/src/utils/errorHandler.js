@@ -160,4 +160,5 @@ int(hexadecimal_string, 16)
 8011: Error getting student attached deck through apiClassroomGetStudentDeck
 8012: Error getting list of classes a student has joined for editing deck through apiClassroomsStudentJoined
 8013: Error attaching student deck to classroom through apiClassroomStudentAttachDeck
+8014: Error bulk suspending/unsuspending student flashcards through apiClassroomSuspendFlashCards
 */

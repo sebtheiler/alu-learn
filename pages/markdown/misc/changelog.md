@@ -1,8 +1,19 @@
 -----
 
+## Teacher Improvements - Feb 02 - 0.4.2
+In this update, I've added a couple of new features that improve teachers' experience on Alu.
+
+
+* **Added Bulk Suspending to Teacher View:** Teachers can now suspend their students' flashcards in bulk.  This allows teachers to "assign" specific units.
+* **Added More Loading Buttons:** There are now more loading buttons, which prevent you from being able to double click by accident.
+* **Fixed Bug with Student History Chart:** Student history charts are now properly sorted.
+* **Removed Brief Black Screen on Teachers Home:** Removed the annoying black box that appeared on the teacher's homepage for a brief second.
+* **Removed Experiment Game:** The temporary psychology experiment has finished and will not be returned.
+
+
 
 ## Shared Deck Hotfix - Jan 29 0.4.1
-This updated fixes a huge bug that stopped shared decks from loading.
+This update fixes a huge bug that stopped shared decks from loading.
 
 
 * **Fixed Shared Deck Bug:** Shared decks would not appear for all anonymous users.  This is fixed now.

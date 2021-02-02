@@ -5,6 +5,7 @@ import { DefaultSharedDeckButtons } from '../decks/buttons';
 import { FlashcardTypesPiechart, HistoryLineChart, parseStats } from '../decks/statistics/statistics';
 import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiDeckHome } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
+import { SuspendStudentFlashcardsButton } from './buttons';
 
 
 const columns = [
@@ -101,22 +102,27 @@ function ClassroomDeckComponent({ classroomId, deck }) {
     [], null,
     response => response.results.filter(deck => deck.serializer_name === 'deck').sort(deck => deck.title),
   );
+  const [attachLoading, setAttachingLoading] = useState(false);
 
   const attachDeck = event => {
     event.preventDefault();
-    const form = event.target;
 
-    const deckId = parseInt(form.elements.attachedDeck.value);
-    if (deckId < 1) return;
-
-    apiClassroomAttachDeck(classroomId, deckId, (response, status) => {
-      if (status === 200) {
-        window.location.reload();
-      } else {
-        // Error attaching deck to classroom
-        errorHandler(response, status, 8009);
-      }
-    });
+    if (!attachLoading) {
+      setAttachingLoading(true);
+      const form = event.target;
+  
+      const deckId = parseInt(form.elements.attachedDeck.value);
+      if (deckId < 1) return;
+  
+      apiClassroomAttachDeck(classroomId, deckId, (response, status) => {
+        if (status === 200) {
+          window.location.reload();
+        } else {
+          // Error attaching deck to classroom
+          errorHandler(response, status, 8009);
+        }
+      });
+    }
   }
 
   return (<>
@@ -127,7 +133,8 @@ function ClassroomDeckComponent({ classroomId, deck }) {
         To add flashcards to this deck, add flashcards to the deck it was created from,{' '}
         then click "Push Changes."
       </small><br />
-      <DefaultSharedDeckButtons deck={deck} />
+      <DefaultSharedDeckButtons deck={deck} hideUpdateSettings /><br />
+      <SuspendStudentFlashcardsButton classroomId={classroomId} className='mt-1' />
     </> : <>
       {decks && decks.length > 0 ? <Form onSubmit={attachDeck}>
         <Form.Group className='container'>
@@ -144,7 +151,9 @@ function ClassroomDeckComponent({ classroomId, deck }) {
               <option value='-1'>Loading...</option>
             }
           </Form.Control>
-          <Button type='submit' className='mt-1'>Attach Deck</Button>
+          <Button type='submit' className='mt-1'>
+            {attachLoading ? 'Attaching...' : 'Attach Deck'}
+          </Button>
         </Form.Group>
       </Form> :
       <p>You don't have any decks yet.  Please create or copy one first.</p>}

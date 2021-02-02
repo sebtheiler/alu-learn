@@ -377,7 +377,9 @@ export function DeckForeignUserButtonGroup({ deck, hideCopy }) {
                 <Form.Control type='text' defaultValue={`Copy of "${deck.title}"`} name='destinationTitle' required />
               </Modal.Body>
               <Modal.Footer>
-                <Button type='submit'>Copy Deck</Button>
+                <Button type='submit'>
+                  {copyLoading ? 'Copying...' : 'Copy Deck'}
+                </Button>
               </Modal.Footer>
             </Form>
           </Modal>
@@ -547,12 +549,12 @@ export function SelectFlashcardsButtonGroup(props) {
 }
 
 
-export function DefaultSharedDeckButtons({ deck }) {
+export function DefaultSharedDeckButtons({ deck, hideUpdateSettings }) {
   return (
     <ButtonGroup>
-      <Button href={`/decks/${deck.creators[0]}/share/`}>
+      {!hideUpdateSettings && <Button href={`/decks/${deck.creators[0]}/share/`}>
         Update Settings
-      </Button>
+      </Button>}
       <Button href={`/decks/${deck.creators[0]}/share/push/`} className='ml-1'>
         Push Changes
       </Button>

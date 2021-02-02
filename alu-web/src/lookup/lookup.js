@@ -619,3 +619,11 @@ export function apiClassroomStudentAttachDeck(classroomId, deckId, callback) {
 export function apiClassroomGetStudentDeck(classroomId, studentId, callback) {
   backendLookup('GET', `teachers/classroom/${classroomId}/student/${studentId}/attached-deck/`, callback);
 }
+
+// Suspends students flashcards in a deck attached to a classroom
+export function apiClassroomSuspendFlashCards(classroomId, tagQuery, action, callback) {
+  backendLookup('POST', `teachers/classroom/${classroomId}/students/suspend-flashcards/`, callback, {
+    tag_query: tagQuery,
+    action: action,
+  });
+}

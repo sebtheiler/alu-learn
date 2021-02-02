@@ -15,4 +15,5 @@ urlpatterns = [
     path('classroom/<int:classroom_id>/student/<int:student_id>/stats/', views.student_statistics_view),
     path('classroom/students/attach-deck/<int:classroom_id>/', views.student_attach_deck_view),
     path('classroom/<int:classroom_id>/student/<int:student_id>/attached-deck/', views.student_get_attached_deck_view),
+    path('classroom/<int:classroom_id>/students/suspend-flashcards/', views.suspend_students_flashcards_view),
 ]
