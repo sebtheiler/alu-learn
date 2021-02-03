@@ -47,7 +47,7 @@ function ExpandableStudentDetailComponent({ data, classroomId }) {
     [200, 404],
     8011,
     [classroomId, data.id],
-    (response, status) => setStudentDeckNotFound(status === 404 && response.message === 'Student deck not found'),
+    (_response, status) => setStudentDeckNotFound(status === 404),
     response => parseStats(response, 'TEACHER'),
   );
 
@@ -88,6 +88,7 @@ export function ClassroomDetail({ classroomId }) {
       expandOnRowClicked
       expandableRowsComponent={<ExpandableStudentDetailComponent classroomId={classroomId} />}
       noDataComponent={<p>You don't have any students yet</p>}
+      defaultSortFieldId='First Name'
       striped
     />}
   </div>);

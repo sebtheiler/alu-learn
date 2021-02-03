@@ -68,7 +68,7 @@ def deck_create_view(request, *args, **kwargs):
     DeckStudySessionManager.objects.create(
         deck=new_deck,
         user=request.user.profile,
-        scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKI'),
+        scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKING'),
         shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', False),
         daily_new_card_limit=request.data.get('daily_new_card_limit', 20),
         difficulty=request.data.get('difficulty', 'HARD'),
@@ -1252,7 +1252,7 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
         DeckStudySessionManager.objects.create(
             deck=deck,
             user=request.user.profile,
-            scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKI'),
+            scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKING'),
             shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', False),
             daily_new_card_limit=request.data.get('daily_new_card_limit', 20),
             last_flashcard_date=timezone.now(),

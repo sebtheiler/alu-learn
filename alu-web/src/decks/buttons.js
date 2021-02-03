@@ -374,7 +374,7 @@ export function DeckForeignUserButtonGroup({ deck, hideCopy }) {
             <Form onSubmit={handleCopyDeck}>
               <Modal.Body>
                 <Form.Label>Destination</Form.Label>
-                <Form.Control type='text' defaultValue={`Copy of "${deck.title}"`} name='destinationTitle' required />
+                <Form.Control type='text' defaultValue={deck.title} name='destinationTitle' required />
               </Modal.Body>
               <Modal.Footer>
                 <Button type='submit'>
