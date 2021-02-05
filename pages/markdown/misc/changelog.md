@@ -1,7 +1,8 @@
 -----
 
 
-* **Changed Button Colors:** Changed the colors and order of deck study buttons.  Many users were mistaking the "Browse" option for "Study," so this change attempts to fix that.
+* **Changed Button Colors:** Changed the colors and order of deck study buttons.  Many users mistook the "Browse" option for "Study," so this change attempts to fix that.
+* **Added Browse Button in Flashcard Creation:** There is now a "Browse" button when creating flashcards, right under the recently added "History" list.  It was common to open the flashcards list for reference when creating new flashcards, so this change attempts to make that easier.
 
 
 ## Teacher Improvements - Feb 02 - 0.4.2
@@ -10,14 +11,14 @@ In this update, I've added a couple of new features that improve teachers' exper
 
 * **Added Bulk Suspending to Teacher View:** Teachers can now suspend their students' flashcards in bulk.  This allows teachers to "assign" specific units.
 * **Added More Loading Buttons:** There are now more loading buttons, which prevent you from being able to double click by accident.
-* **Fixed Bug with Student History Chart:** Student history charts are now properly sorted.
+* **Fixed Bug with Student History Chart:** Student history charts are now correctly sorted.
 * **Removed Brief Black Screen on Teachers Home:** Removed the annoying black box that appeared on the teacher's homepage for a brief second.
 * **Removed Experiment Game:** The temporary psychology experiment has finished and will not be returned.
 
 
 
 ## Shared Deck Hotfix - Jan 29 0.4.1
-This update fixes a huge bug that stopped shared decks from loading.
+This update fixes a massive bug that stopped shared decks from loading.
 
 
 * **Fixed Shared Deck Bug:** Shared decks would not appear for all anonymous users.  This is fixed now.

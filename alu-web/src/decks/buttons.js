@@ -136,7 +136,7 @@ If you wish to continue, please type "DELETE", without the quotes.
         href={deck.serializer_name === 'deck' ?
         `/decks/${deck.id}/study/` :
         `/customstudy/${deck.id}/study/`}
-        className='mr-1' variant='info'
+        className='mr-1'
       >
         Study
       </Button>

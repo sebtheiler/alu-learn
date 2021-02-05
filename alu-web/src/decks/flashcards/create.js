@@ -271,27 +271,32 @@ export function FlashCardCreate(props) {
           <p className='text-center text-danger'>{errorMessage}</p>
           <Button type='submit' variant='primary' block>{btnLabel}</Button>
         </Form.Group>
-        {isNaN(flashcardId) && <Form.Group>
-          <Form.Label htmlFor='history'>History</Form.Label><br />
-          <Form.Control
-            as='select'
-            name='history'
-            style={{ maxWidth: '300px' }}
-            onChange={event => {
-              // Get selected value and open new page editing that flashcard
-              const flashcardId = parseInt(event.target.options[event.target.selectedIndex].value);
-              if (flashcardId >= 0) {
-                window.open(`/decks/${deckId}/flashcards/${flashcardId}/edit/`);
-              }
-            }}
-            custom
-          >
-            <option value='-1'>-----</option>
-            {createdFlashcards.map((flashcard, i) =>
-              <option key={i} value={flashcard.creator_id}>{flashcard.deck_fields[0].text[0].children[0].text.slice(0, 20)}...</option>
-            )}
-          </Form.Control>
-        </Form.Group>}
+        {isNaN(flashcardId) && <>
+          <Form.Group>
+            <Form.Label htmlFor='history'>History</Form.Label><br />
+            <Form.Control
+              as='select'
+              name='history'
+              style={{ maxWidth: '300px' }}
+              onChange={event => {
+                // Get selected value and open new page editing that flashcard
+                const flashcardId = parseInt(event.target.options[event.target.selectedIndex].value);
+                if (flashcardId >= 0) {
+                  window.open(`/decks/${deckId}/flashcards/${flashcardId}/edit/`);
+                }
+              }}
+              custom
+            >
+              <option value='-1'>-----</option>
+              {createdFlashcards.map((flashcard, i) =>
+                <option key={i} value={flashcard.creator_id}>{flashcard.deck_fields[0].text[0].children[0].text.slice(0, 20)}...</option>
+              )}
+            </Form.Control>
+          </Form.Group>
+          <Button href={`/decks/${deckId}/flashcards/`} target='_blank' classname='mb-3'>
+            Browse
+          </Button>
+        </>}
       </Form>
     </div>
   );
