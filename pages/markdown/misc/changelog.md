@@ -1,5 +1,9 @@
 -----
 
+
+* **Changed Button Colors:** Changed the colors and order of deck study buttons.  Many users were mistaking the "Browse" option for "Study," so this change attempts to fix that.
+
+
 ## Teacher Improvements - Feb 02 - 0.4.2
 In this update, I've added a couple of new features that improve teachers' experience on Alu.
 

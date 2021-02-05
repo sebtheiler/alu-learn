@@ -53,7 +53,6 @@ export function DeckSlider(props) {
 
   return (
     <div className={props.className}>
-      <small className='text-muted'>If these decks aren't loading, please try disabling your Adblocker</small>
       <Slider {...settings}>
         {decks.map((deck, index) => {
           return (

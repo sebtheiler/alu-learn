@@ -132,7 +132,20 @@ If you wish to continue, please type "DELETE", without the quotes.
 
   return (
     <ButtonGroup vertical={vertical} style={vertical ? {display: 'block', margin: '0 auto', 'text-align': 'center', width: '50%'} : {}}>
-      <DropdownButton className='mr-1' as={ButtonGroup} title='Other' id='bg-nested-dropdown'>
+      <Button
+        href={deck.serializer_name === 'deck' ?
+        `/decks/${deck.id}/study/` :
+        `/customstudy/${deck.id}/study/`}
+        className='mr-1' variant='info'
+      >
+        Study
+      </Button>
+      {deck.serializer_name === 'deck' &&
+        <Button href={`/decks/${deck.id}/flashcards/create/`} className='mr-1'>
+          Add Cards
+        </Button>
+      }
+      <DropdownButton className='mr-1' as={ButtonGroup} title='Other' id='bg-nested-dropdown' variant='secondary'>
         <Dropdown.Item
           as='button'
           onClick={openEditModal}
@@ -175,12 +188,6 @@ If you wish to continue, please type "DELETE", without the quotes.
           submitHandler={gameSubmitHandler}
         />
       </DropdownButton>
-      {deck.serializer_name === 'deck' && <Button href={`/decks/${deck.id}/flashcards/create/`} className='mr-1'>
-        Add Cards
-      </Button>}
-      <Button href={deck.serializer_name === 'deck' ? `/decks/${deck.id}/study/` : `/customstudy/${deck.id}/study/`} className='mr-1'>
-        Study
-      </Button>
     </ButtonGroup>
   );
 }
