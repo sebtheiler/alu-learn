@@ -36,7 +36,7 @@ export const LinkElement = ({ attributes, children, element }) => {
     <OverlayTrigger
       overlay={
         <Tooltip className={'button-tooltip text-center'}>
-          <a href={element.url} style={{ color: 'white' }}>
+          <a href={element.url} style={{ color: 'white' }} target='_blank' rel='noreferrer'>
             {element.url.length > 50 ? element.url.substring(0, 15) + '   ...   ' + element.url.substring(element.url.length - 10, element.url.length) : element.url}
           </a>
         </Tooltip>
