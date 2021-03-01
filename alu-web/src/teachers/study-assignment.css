@@ -1,0 +1,6 @@
+.horizontal-rule {
+  margin-right: auto;
+  margin-left: auto;
+  width: 20%;
+  border-top: 2px dashed lightslategrey;
+}

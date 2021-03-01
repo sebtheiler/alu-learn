@@ -1,18 +1,18 @@
 from datetime import timedelta
-from decks.api.views import search_tags
-from django.utils import timezone
-from profiles.serializers import HistorySerializer
-from profiles.models import Profile
-from django.db.models.query_utils import Q
-from decks.serializers import DeckSerializer
-from ..serializers import ClassroomSerializer, StudentSerializer
-from ..models import Classroom
+import re
 
 from decks.models import Deck, FlashCard
-from django.utils.crypto import get_random_string
+from decks.serializers import DeckSerializer, FlashCardSerializer, SharedDeckSerializer
+from django.db.models.query_utils import Q
+from django.utils import timezone
+from profiles.models import Profile
+from profiles.serializers import HistorySerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from ..models import Assignment, AssignmentStudySessionManager, Classroom
+from ..serializers import AssignmentSerializer, ClassroomAssignmentsSerializer, ClassroomSerializer, StudentSerializer
 
 
 @api_view(['POST'])
@@ -29,13 +29,7 @@ def create_classroom_view(request, *args, **kwargs):
         return Response({'message': 'You must specify a title for your class'}, status=400)
 
     # Generate unique classroom code
-    allowed_chars = 'bcdfghjkmpqrtvwxyBCDFGHJKMPQRTVWXY346789-_'
-    while True:
-        classroom_code = get_random_string(8, allowed_chars)
-        try:
-            Classroom.objects.get(code=classroom_code)
-        except Classroom.DoesNotExist:
-            break
+    classroom_code = Classroom.generate_class_code()
 
     # Create
     classroom = Classroom.objects.create(
@@ -106,12 +100,18 @@ def student_join_class_view(request, *args, **kwargs):
     Required information:
         `classroom_code`: (Data) Code of the class to join
     """
-    # TODO: a skilled user could technically spam this with requests to join random classes
     try:
         classroom = Classroom.objects.get(code=request.data.get('classroom_code'))
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
 
+    # Check that the student and teacher have same email domain
+    teacher_email_domain = re.search(r"@[\w.]+", classroom.teachers.first().user.email).group()
+    student_email_domain = re.search(r"@[\w.]+", request.user.email).group()
+    if teacher_email_domain != student_email_domain:
+        return Response({'message': 'You may only join classes in the same domain'}, status=404)
+
+    # Add student
     classroom.students.add(request.user.profile)
 
     return Response(ClassroomSerializer(classroom).data, status=200)
@@ -137,11 +137,11 @@ def classroom_detail_view(request, classroom_id, *args, **kwargs):
     Required information:
         `classroom_id`: (GET) Id of the classroom to get information about
     """
-    try:
-        classroom = Classroom.objects.filter(
-            Q(pk=classroom_id) & (Q(teachers=request.user.profile) | Q(students=request.user.profile))
-        ).first() # we use .filter instead of .get, because this sometimes returns multiple classrooms
-    except Classroom.DoesNotExist:
+    classroom = Classroom.objects.filter(
+        Q(pk=classroom_id) & (Q(teachers=request.user.profile) | Q(students=request.user.profile))
+    ).first() # we use .filter instead of .get, because this sometimes returns multiple classrooms
+
+    if classroom is None:
         return Response({'message': 'Classroom not found'}, status=404)
 
     return Response(ClassroomSerializer(classroom).data, status=200)
@@ -163,8 +163,9 @@ def classroom_students_view(request, classroom_id, *args, **kwargs):
         return Response({'message': 'Classroom not found'}, status=404)
 
     return Response(
-            StudentSerializer(classroom.students, many=True, context={'tz': request.GET.get('tz')}).data,
-        status=200)
+        StudentSerializer(classroom.students, many=True, context={'tz': request.GET.get('tz')}).data,
+        status=200,
+    )
 
 
 @api_view(['POST'])
@@ -188,19 +189,9 @@ def teacher_attach_deck_view(request, classroom_id, *args, **kwargs):
     except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
 
-    # Create shared deck
-    shared_deck = deck.create_shared_deck(
-        deck.title,
-        f'Deck for "{classroom.title}."  Students can copy and study this deck.',
-        sharing_setting='STUDENT',
-        include_copied_flashcards=True,
-    )
+    shared_deck = classroom.attach_deck(deck)
 
-    # Attach the deck
-    classroom.deck = shared_deck
-    classroom.save()
-
-    return Response(DeckSerializer(deck).data, status=200)
+    return Response(SharedDeckSerializer(shared_deck).data, status=200)
 
 
 @api_view(['GET'])
@@ -264,11 +255,13 @@ def student_attach_deck_view(request, classroom_id, *args, **kwargs):
         return Response({'message': 'Deck not found'}, status=404)
 
     # Attach the deck
-    # TODO: make it so this can only happen if they haven't already attached a deck (and same for cloning?)
-    deck.student_attached_to = classroom
-    deck.save()
+    if deck.student_attached_to is None:
+        deck.student_attached_to = classroom
+        deck.save()
+    else:
+        return Response({'You\'ve already attached a deck'}, status=400)
 
-    return Response(DeckSerializer(deck).data, status=200)
+    return Response({'message': 'Deck attached'}, status=200)
 
 
 @api_view(['GET'])
@@ -324,10 +317,221 @@ def suspend_students_flashcards_view(request, classroom_id: int):
 
     # Get flashcards to suspend
     query = Q(creator__deck__student_attached_to=classroom)
-    query &= search_tags(tags_query)
+    query &= FlashCard.search_tags(tags_query)
     flashcards = FlashCard.objects.filter(query)
 
     # Suspend flashcards
     flashcards.update(is_suspended=action == 'SUSPEND')
 
     return Response({'message': 'Suspended flashcards', 'count': flashcards.count()}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_assignment_view(request, classroom_id: int):
+    """
+    Allows a teacher to suspend certain flashcards in a student's deck - POST
+
+    Required information:
+        `classroom_id`: (URL) Id of the classroom to create an assignment in
+        `title`: (Data) Title of the assignment
+        `tag_query`: (Data) Query for the assignment
+        `due_date`: (Data) ISO string of the due date for the assignment
+    """
+    try:
+        classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    title = request.data.get('title')
+    tag_query = request.data.get('tag_query')
+    due_date = request.data.get('due_date')
+    if None in (title, tag_query, due_date):
+        return Response({'message': 'You must specify `title`, `tag_query`, and `due_date`'}, status=400)
+    
+    Assignment.objects.create(
+        title=title,
+        classroom=classroom,
+        tag_query=tag_query,
+        due_date=due_date,
+    )
+
+    return Response({'message': 'Created assignment'}, status=201)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def assignments_teacher_list_view(request, classroom_id: int):
+    """
+    Lists the assignments a teacher has created for their class - GET
+
+    Required information:
+        `classroom_id`: (URL) Id of the classroom to get assignments for
+    """
+    try:
+        classroom = Classroom.objects.get(teachers=request.user.profile, pk=classroom_id)
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+    
+    assignments = classroom.assignments.all()
+
+    return Response(AssignmentSerializer(assignments, many=True).data, 200)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def assignments_student_list_view(request):
+    """
+    Lists all of the classes, and their assignments, for a student - GET
+    """
+    classrooms = Classroom.objects.filter(
+        students=request.user.profile
+    ).prefetch_related('assignments').order_by('title')
+
+    return Response(
+        ClassroomAssignmentsSerializer(
+            classrooms,
+            many=True,
+            context={'calc_percent_complete': True, 'request': request}
+        ).data,
+        status=200,
+    )
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def edit_assignment_view(request, classroom_id: int, assignment_id: int):
+    """
+    Allows a teacher to edit an assignment - POST
+
+    Required information:
+        `classroom_id`: (URL) Id of the classroom that has the assignment
+        `assignment_id`: (URL) Id of the assignment to delete
+        `new_title`: (Data) New title of the assignment
+        `new_tag_query`: (Data) New tag query for the assignment
+        `new_due_date`: (Data) New due date for the assignment
+    """
+    try:
+        assignment = Assignment.objects.get(
+            pk=assignment_id,
+            classroom__teachers=request.user.profile,
+        )
+    except Assignment.DoesNotExist:
+        return Response({'message': 'Assignment not found'}, status=404)
+    
+    assignment.title = request.data.get('new_title', assignment.title)
+    assignment.tag_query = request.data.get('new_tag_query', assignment.tag_query)
+    assignment.due_date = request.data.get('new_due_date', assignment.due_date)
+    assignment.save()
+
+    return Response({'message': 'Edited assignment'}, status=200)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def delete_assignment_view(request, classroom_id: int, assignment_id: int):
+    """
+    Allows a teacher to delete an assignment - POST
+
+    Required information:
+        `classroom_id`: (URL) Id of the classroom that has the assignment
+        `assignment_id`: (URL) Id of the assignment to delete
+    """
+    try:
+        Assignment.objects.get(
+            pk=assignment_id,
+            classroom__teachers=request.user.profile,
+        ).delete()
+        return Response({'message': 'Deleted assignment'})
+    except Assignment.DoesNotExist:
+        return Response({'message': 'Assignment not found'}, status=404)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_percent_complete_list(request, classroom_id: int, assignment_id: int):
+    """
+    Allows a teacher to get the percent complete for each student - GET
+
+    Parameters:
+        `classroom_id`: (URL) Id of the classroom that has the assignment
+        `assignment_id`: (URL) Id of the assignment to get percent completes for
+    """
+    try:
+        assignment = Assignment.objects.get(
+            pk=assignment_id,
+            classroom__teachers=request.user.profile,
+        )
+    except Assignment.DoesNotExist:
+        return Response({'message': 'Assignment not found'}, status=404)
+    
+    student_data = [
+        {
+            'name': f'{student.user.first_name} {student.user.last_name}',
+            'percent_complete': assignment.calc_percent_complete(student.user),
+            'id': student.pk,
+        }
+        for student in assignment.classroom.students.all().prefetch_related('user')
+    ]
+
+    return Response(student_data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def study_assignment_view(request, classroom_id: int, assignment_id: int):
+    """
+    Gets the flashcards to study for a given assignment - GET
+
+    Parameters:
+        `classroom_id`: (URL) Id of the classroom that has the assignment
+        `assignment_id`: (URL) Id of the assignment to get flashcards of
+    """
+    try:
+        assignment = Assignment.objects.get(
+            pk=assignment_id,
+            classroom__students=request.user.profile,
+        )
+    except Assignment.DoesNotExist:
+        return Response({'message': 'Assignment not found'}, status=404)
+
+    assm, created = AssignmentStudySessionManager.objects.get_or_create(
+        assignment=assignment,
+        user=request.user.profile,
+    )
+
+    seen_flashcards, unseen_flashcards = assm.get_flashcards()
+    flashcards = assm.get_reviews(seen_flashcards, unseen_flashcards)
+
+    return Response(
+        FlashCardSerializer(flashcards, many=True).data,
+        status=200,
+    )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def assignment_detail_view(request, classroom_id: int, assignment_id: int):
+    """
+    Gets the flashcards to study for a given assignment - GET
+
+    Parameters:
+        `classroom_id`: (URL) Id of the classroom that has the assignment
+        `assignment_id`: (URL) Id of the assignment to get
+    """
+    try:
+        assignment = Assignment.objects.get(
+            Q(pk=assignment_id) & (
+                Q(classroom__students=request.user.profile) |
+                Q(classroom__teachers=request.user.profile)
+            )
+        )
+    except Assignment.DoesNotExist:
+        return Response({'message': 'Assignment not found'}, status=404)
+    
+    return Response(
+        AssignmentSerializer(
+            assignment,
+            context={
+                'request': request,
+                'get_study_session_manager': True
+            },
+        ).data,
+        status=200,
+    )

@@ -1,10 +1,13 @@
+from django.core.handlers.wsgi import WSGIRequest
 from django.http.response import Http404
 from django.shortcuts import redirect
+
 from .models import ShortUrl, UrlHit
+
 
 # https://stackoverflow.com/a/4581997/13042142
 # Not a foolproof function, and should NOT be used for sensitive information
-def get_client_ip(request) -> str:
+def get_client_ip(request: WSGIRequest) -> str:
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]

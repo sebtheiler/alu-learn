@@ -11,5 +11,5 @@
         Leave everything blank to get a list of all your flashcards.
     </p>
 </div>
-<div id='flashcard-search-component' data-username='{{ username }}'></div>
+<div id='flashcard-search-component' data-username='{{ request.user.username }}'></div>
 {% endblock content %}

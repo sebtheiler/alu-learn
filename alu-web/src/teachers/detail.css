@@ -1,0 +1,12 @@
+.assignment {
+  padding: 30px;
+  padding-top: 20px;
+  margin-bottom: 30px;
+  border-radius: 15px;
+  border: 1px solid gray;
+}
+
+.assignment:hover {
+  box-shadow: 2px 3px 3px gray;
+  cursor: pointer;
+}

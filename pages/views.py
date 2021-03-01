@@ -1,25 +1,21 @@
 import os
 
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.vary import vary_on_cookie
-from django.http import Http404
+from utils import permissions
 
 
 @vary_on_cookie
 @cache_control(max_age=60*60)
+@permissions()
 def home_page(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect('/')
-    elif not request.user.is_confirmed:
-        return redirect('/confirm-email/')
-
     return render(request, 'misc/home.html', context={'username': request.user.username})
 
 @cache_page(timeout=60*60*48) # 2 days - this page will almost never be updated
 def welcome_view(request, *args, **kwargs):
     return render(request, 'help/welcome.html')
-
 
 def md_view_wrapper(path, title, redirect_if_unauth=False):
     @cache_page(timeout=60*60*48)
@@ -43,22 +39,6 @@ def md_view_wrapper(path, title, redirect_if_unauth=False):
             raise Http404()
 
     return help_view
-
-
-def settings_view(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect('/')
-    elif not request.user.is_confirmed:
-        return redirect('/confirm-email/')
-
-    return render(request, 'misc/settings/settings.html')
-
-def change_email_view(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect('/')
-    # Even if the user is not confirmed, they can still change email
-    
-    return render(request, 'misc/settings/change-email.html')
 
 def change_reset_password_view_wrapper(is_reset):
     def change_reset_password_view(request, *args, **kwargs):
@@ -84,12 +64,8 @@ def send_password_reset(request, *args, **kwargs):
 
     return render(request, 'misc/settings/send-password-reset.html')
 
+@permissions()
 def profile_redirect_view(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect('/')
-    elif not request.user.is_confirmed:
-        return redirect('/confirm-email/')
-
     return redirect(f'/profiles/u/{request.user.username}')
 
 
@@ -117,10 +93,6 @@ def contact_finished_view_wrapper(is_legal_issue):
         return render(request, 'help/contactus.html', context={'is_finished': True, 'is_legal_issue': is_legal_issue})
     return contact_us_finished_view
 
-def eli_view(request, *args, **kwargs):
-    return render(request, 'misc/eli.html')
-
-
 @cache_page(timeout=60*30)
 def landing_page(request, *args, **kwargs):
     if request.user.is_authenticated:
@@ -138,7 +110,3 @@ def landing_page(request, *args, **kwargs):
 @cache_page(60*15)
 def explore_home_view(request, *args, **kwargs):
     return render(request, 'explore/explore.html')
-
-# Search for decks on the explore page
-def explore_deck_search_view(request, *args, **kwargs):
-    return render(request, 'explore/search-decks.html')

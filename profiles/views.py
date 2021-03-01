@@ -1,15 +1,13 @@
 from .models import Profile
 from .forms import ProfileForm
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render
+from utils import permissions
 
 
 # Rendered when updating one's own profile
+@permissions()
 def profile_update_view(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect('/')
-    elif not request.user.is_confirmed:
-        return redirect('/confirm-email/')
     user = request.user
     my_profile = user.profile
     user_data = {
@@ -32,7 +30,7 @@ def profile_update_view(request, *args, **kwargs):
         'title': 'Update Profile',
     }
     return render(request, 'profiles/form.html', context)
-    
+
 
 # Renders when viewing a persons profile
 def profile_detail_view(request, username, *args, **kwargs):
@@ -52,19 +50,3 @@ def profile_detail_view(request, username, *args, **kwargs):
         'is_friend': is_friend,
     }
     return render(request, 'profiles/detail.html', context)
-
-
-# Display a list of the user's notifications
-def notifications_list_view(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect('/')
-    elif not request.user.is_confirmed:
-        return redirect('/confirm-email/')
-    return render(request, 'profiles/notifications.html', {'username': request.user.username})
-
-# Allows a staff to login to a user's account for emergency support
-def staff_force_login_view(request, *args, **kwargs):
-    if not request.user.is_authenticated or not request.user.is_staff:
-        raise Http404()
-    
-    return render(request, 'profiles/staff-login.html')

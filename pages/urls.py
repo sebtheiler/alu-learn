@@ -1,4 +1,4 @@
-from pages.views import change_email_view, md_view_wrapper
+from utils import render_basic_view
 from django.urls import path
 
 from . import views
@@ -8,18 +8,18 @@ urlpatterns = [
     path('home/', views.home_page),
     path('profile/', views.profile_redirect_view),
     path('login/', views.login_view),
-    path('eli/', views.eli_view),
+    path('eli/', render_basic_view('misc/eli.html', False, False)),
     path('confirm-email/', views.confirm_email_view),
     path('reset-password/', views.send_password_reset),
     path('reset-password/confirm/', views.change_reset_password_view_wrapper(True)),
     path('changelog/', views.md_view_wrapper('misc/changelog', 'Changelog')),
     # Explore pages
     path('explore/', views.explore_home_view),
-    path('explore/decks/search/', views.explore_deck_search_view),
+    path('explore/decks/search/', render_basic_view('explore/search-decks.html', False, False)),
     # Settings
-    path('settings/', views.settings_view),
+    path('settings/', render_basic_view('misc/settings/settings.html')),
     path('settings/change-password/', views.change_reset_password_view_wrapper(False)),
-    path('settings/change-email/', views.change_email_view),
+    path('settings/change-email/', render_basic_view('misc/settings/change-email.html', True, False)),
     # Tutorial pages
     path('help/welcome/', views.welcome_view),
     path('help/', views.md_view_wrapper('main', 'User Guide')),

@@ -4,11 +4,10 @@ from profiles.models import Profile
 from rest_framework import serializers
 from profiles.serializers import MinifiedProfileSerializer
 from decks.serializers import SharedDeckSerializer
-from .models import Classroom
+from .models import Assignment, Classroom
 
 
 class ClassroomSerializer(serializers.ModelSerializer):
-    teacher = MinifiedProfileSerializer(read_only=True)
     deck = SharedDeckSerializer(read_only=True)
 
     class Meta:
@@ -16,7 +15,6 @@ class ClassroomSerializer(serializers.ModelSerializer):
         fields = [
             'title',
             'code',
-            'teacher',
             'deck',
             'id',
         ]
@@ -58,3 +56,43 @@ class StudentSerializer(serializers.ModelSerializer):
             'cards_done_today': last_history.cards_done if actually_today else 0,
             'time_spent_today': last_history.time_spent if actually_today else 0,
         }
+
+
+class AssignmentSerializer(serializers.ModelSerializer):
+    percent_complete = serializers.SerializerMethodField(read_only=True)
+    study_session_manager = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Assignment
+        fields = [
+            'title',
+            'classroom',
+            'tag_query',
+            'due_date',
+            'percent_complete',
+            'study_session_manager',
+            'id',
+        ]
+    
+    def get_percent_complete(self, obj):
+        if not self.context.get('calc_percent_complete'):
+            return None
+        
+        return obj.calc_percent_complete(self.context['request'].user)
+    
+    def get_study_session_manager(self, obj):
+        if not self.context.get('get_study_session_manager'):
+            return None
+        
+        return obj.get_study_session_manager(self.context['request'].user)
+
+
+class ClassroomAssignmentsSerializer(ClassroomSerializer):
+    deck = SharedDeckSerializer(read_only=True)
+    assignments = AssignmentSerializer(read_only=True, many=True)
+
+    class Meta:
+        model = Classroom
+        fields = ClassroomSerializer.Meta.fields + [
+            'assignments',
+        ]

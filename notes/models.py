@@ -3,17 +3,28 @@ from profiles.models import Profile
 
 
 class Note(models.Model):
-    title = models.CharField(max_length=128)
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='notes')
+    title = models.CharField(max_length=128)  # type: str
+    user = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='notes',
+    )  # type: Profile
 
     def __str__(self) -> str:
         return self.title
 
 
 class NotePage(models.Model):
-    title = models.CharField(max_length=128)
-    note = models.ForeignKey(Note, on_delete=models.CASCADE, related_name='pages', null=True)
-    page_number = models.PositiveSmallIntegerField()
+    title = models.CharField(max_length=128)  # type: str
+    note = models.ForeignKey(
+        Note,
+        on_delete=models.CASCADE,
+        related_name='pages',
+        null=True,
+    )  # type: Note
+
+    # Page num is 1-indexed
+    page_number = models.PositiveSmallIntegerField()  # type: int
 
     def __str__(self) -> str:
         return self.title
@@ -28,10 +39,14 @@ class CornellNotePage(NotePage):
 
 
 class CornellNotePageSection(models.Model):
-    parent_note = models.ForeignKey(CornellNotePage, on_delete=models.CASCADE, related_name='sections')
+    parent_note = models.ForeignKey(
+        CornellNotePage,
+        on_delete=models.CASCADE,
+        related_name='sections',
+    )  # type: CornellNotePage
     cue = models.JSONField()
     content = models.JSONField()
-    section_number = models.PositiveSmallIntegerField() # counts from 0
+    section_number = models.PositiveSmallIntegerField()  #  type: int # 0-indexed
 
     class Meta:
         ordering = ['section_number']

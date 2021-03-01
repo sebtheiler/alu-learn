@@ -1,13 +1,16 @@
 import json
-from django.db.models.expressions import F
+from utils.utils import BLANK_SLATE_ELEMENT, create_slate_element
 
+from django.db.models.expressions import F
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import CornellNotePage, CornellNotePageSection, FreeformNotePage, NotePage, Note
-from ..serializers import (CornellNotePageSerializer, FreeformNotePageSerializer,
-                           NoteSerializer, FullNoteSerializer)
+from ..models import (CornellNotePage, CornellNotePageSection,
+                      FreeformNotePage, Note, NotePage)
+from ..serializers import (CornellNotePageSerializer,
+                           FreeformNotePageSerializer, FullNoteSerializer,
+                           NoteSerializer)
 
 
 @api_view(['POST'])
@@ -27,14 +30,14 @@ def note_create_api_view(request, *args, **kwargs):
     title = request.data.get('title')
     if title is None:
         return Response({'message': 'You must specify a title and version'}, status=400)
-    
+
     # Check if the user already has other notes with the same name
     try:
         Note.objects.get(user=request.user.profile, title=title)
         return Response({'message': 'Title is taken'}, status=400)
     except Note.DoesNotExist:
         pass
-    
+
     # Create note object
     note = Note.objects.create(
         title=title,
@@ -93,17 +96,7 @@ def note_page_create_api_view(request, *args, **kwargs):
             note=note,
             title=title,
             page_number=note_page_number,
-            content=
-[
-  {
-    "type": "paragraph",
-    "children": [
-      {
-        "text": "",
-      }
-    ]
-  }
-]
+            content=BLANK_SLATE_ELEMENT,
         )
         return Response(FreeformNotePageSerializer(note_page).data, status=201)
     elif version == 'CORN':
@@ -112,17 +105,7 @@ def note_page_create_api_view(request, *args, **kwargs):
             note=note,
             title=title,
             page_number=note_page_number,
-            summary=
-[
-  {
-    "type": "paragraph",
-    "children": [
-      {
-        "text": "Summary..."
-      }
-    ]
-  }
-]
+            summary=create_slate_element('summary'),
         )
         return Response(CornellNotePageSerializer(note_page).data, status=201)
     else:
@@ -137,11 +120,12 @@ def note_detail_api_view(request, note_id, *args, **kwargs):
 
     Required information:
         `note_id`: (URL) ID of the note to return
-        `get_pages`: (Data) If True, returns information on the note pages, disabled to save bandwith
+        `getPages`: (GET) If True, returns information on the note pages, disabled to save bandwith
     """
     try:
         note = Note.objects.get(pk=note_id, user=request.user.profile)
-        if request.GET.get('getPages').lower() == 'true':
+        get_pages = request.GET.get('getPages')
+        if get_pages and get_pages.lower() == 'true':
             return Response(FullNoteSerializer(note).data, status=200)
         return Response(NoteSerializer(note).data, status=200)
     except Note.DoesNotExist:
@@ -190,9 +174,11 @@ def note_update_api_view(request, note_id, *args, **kwargs):
         note = Note.objects.get(pk=note_id, user=request.user.profile)
     except Note.DoesNotExist:
         return Response({'message': 'Note not found / you are unauthorized'}, status=400)
-    
+
     note.title = request.data.get('title', note.title)
     note.save()
+
+    return Response(NoteSerializer(note).data, status=200)
 
 
 @api_view(['POST'])
@@ -214,7 +200,7 @@ def note_page_update_api_view(request, note_id, page_id, *args, **kwargs):
     def update_note_title(note_page, page_title, note_title):
         if page_title:
             note_page.title = page_title
-            
+
         if note_title:
             note_page.note.title = note_title
             note_page.note.save()

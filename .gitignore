@@ -36,7 +36,6 @@ mysite.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.vscode/
 alu-web/package-lock.json
 
 # --- Celery & Redis ---
@@ -59,3 +58,6 @@ Pipfile
 # --- JSON Files ---
 env-vars.json
 allowed-emails.json
+
+# --- Selenium ---
+chromedriver

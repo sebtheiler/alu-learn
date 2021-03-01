@@ -1,20 +1,20 @@
 from django.urls import path
-
+from utils import render_basic_view
 from .views import *
 
 urlpatterns = [
-    path('home/decks/', decks_home_view),
-    path('decks/import/', deck_import_view),
-    path('customstudy/<int:ssm_id>/study/', custom_study_view),
-    path('flashcards/search/', flashcard_search_view),
+    path('home/decks/', render_basic_view('decks/home.html')),
+    path('decks/import/', render_basic_view('decks/import.html')),
+    path('customstudy/<int:ssm_id>/study/', render_basic_view('decks/study.html')),
+    path('flashcards/search/', render_basic_view('flashcards/search.html')),
     path('decks/<int:deck_id>/', decks_detail_view),
     path('decks/<int:deck_id>/study/', deck_study_view),
     path('decks/<int:deck_id>/flashcards/', flashcard_list_view),
     path('decks/<int:deck_id>/flashcards/create/', flashcard_create_view),
-    path('decks/<int:deck_id>/flashcards/<int:flashcard_id>/edit/', flashcard_edit_view),
-    path('decks/<int:deck_id>/share/', deck_share_view),
-    path('decks/<int:deck_id>/share/push/', deck_push_view),
-    path('decks/<int:deck_id>/get-updates/', deck_update_view),
-    path('decks/<int:deck_id>/game/', deck_game_view),
-    path('decks/<int:deck_id>/stats/', deck_stats_view),
+    path('decks/<int:deck_id>/flashcards/<int:flashcard_num>/edit/', flashcard_edit_view),
+    path('decks/<int:deck_id>/share/', render_basic_view('decks/shared/share.html')),
+    path('decks/<int:deck_id>/share/push/', render_basic_view('decks/shared/push.html')),
+    path('decks/<int:deck_id>/get-updates/', render_basic_view('decks/shared/update.html')),
+    path('decks/<int:deck_id>/game/', render_basic_view('decks/games.html')),
+    path('decks/<int:deck_id>/stats/', render_basic_view('decks/stats.html')),
 ]

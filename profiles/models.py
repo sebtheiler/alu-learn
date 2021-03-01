@@ -1,3 +1,4 @@
+from typing import Literal
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
@@ -28,14 +29,14 @@ class Profile(models.Model):
             return f'{self.user.first_name} {self.user.last_name} - @{self.user.username}'
         else:
             return f'@{self.user.username}'
-    
+
     def increment_total_thanks_recieved(self) -> int:
         # Do not use this method if you need to make other changes to the profile obj
         # Only use this method if the `total_thanks_recieved` is the only attr that needs to be changed
         self.total_thanks_recieved += 1
         self.save()
         return self.total_thanks_recieved
-    
+
     def increment_cards_done_today(self, utc_timezone_offset=None, time_taken=None) -> int:
         # Get or create history for today
         date = datetime.datetime.now()
@@ -59,6 +60,81 @@ class Profile(models.Model):
 
         # Increment the cards done today
         return history_obj.increment_cards_done(time_taken)
+    
+    def toggle_friend(
+        self,
+        requesting_user: User,
+        action: Literal['friend', 'unfriend'],
+    ):
+        if action == 'friend':
+            if self.user == requesting_user:
+                return 'You cannot friend yourself'
+
+            if requesting_user not in self.friends.all():
+                recipient_is_pending = self.user in requesting_user.profile.pending_friends.all()
+                if recipient_is_pending:
+                    # Add eachother as friends
+                    self.friends.add(requesting_user)
+                    requesting_user.profile.friends.add(self.user)
+
+                    # Remove the user as a pending friend
+                    requesting_user.profile.pending_friends.remove(self.user)
+                else:
+                    return 'You cannot friend a user who has not requested to be your friend'
+            else:
+                return 'You are already friends with this user'
+        elif action == 'unfriend':
+            if requesting_user in self.friends.all():
+                # Remove eachother as friends
+                self.friends.remove(requesting_user)
+                requesting_user.profile.friends.remove(self.user)
+            else:
+                return 'You cannot unfriend a user who is not your friend'
+        else:
+            return 'Unknown action'
+    
+    def request_friend(
+        self,
+        sending_user: User,
+    ):
+        if sending_user == self.user:
+            return 'You cannot friend yourself'
+
+        # Check if the users are already pending eachother
+        if sending_user in self.pending_friends.all():
+            return 'You have already sent a friend request to this user'
+        elif self.user in sending_user.profile.pending_friends.all():
+            # If the recipient user has already requested the sending user,
+            # directly add them as friends
+            self.friends.add(sending_user)
+            sending_user.profile.friends.add(self.user)
+            sending_user.profile.pending_friends.remove(self.user)
+
+            return
+
+        # Put user in the profile's pending friends
+        self.pending_friends.add(sending_user)
+        self.save()
+
+        # Create notification
+        first_name = sending_user.first_name or 'Someone'
+        title = f'{first_name} wants to be your friend!'
+        if sending_user.first_name:
+            if sending_user.last_name:
+                description = f'{sending_user.first_name} {sending_user.last_name}'
+            else:
+                description = f'{sending_user.first_name}'
+            description += ' '
+        else:
+            description = ''
+        description += f'[@{sending_user.username}](/profiles/u/{sending_user.username}) wants to be your friend'
+
+        Notification.objects.create(
+            profile=self,
+            category='friend_request',
+            title=title,
+            description=description,
+        )
 
 
 class Notification(models.Model):
@@ -86,8 +162,13 @@ class ProfileHistorySegmentModelManager(models.Manager):
     def get_queryset(self) -> QuerySet:
         return super().get_queryset().prefetch_related('profile')
 
+
 class ProfileHistorySegment(models.Model):
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='history')
+    profile = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='history',
+    )
     date = models.DateField(default=datetime.date.today)
     cards_done = models.PositiveSmallIntegerField(default=0)
     time_spent = models.PositiveIntegerField(default=0)
@@ -95,8 +176,8 @@ class ProfileHistorySegment(models.Model):
     objects = ProfileHistorySegmentModelManager()
 
     def __str__(self) -> str:
-        return f"History for {self.profile.user.username} on {self.date}"
-    
+        return f"History for {self.profile.user.username} on {self.date}: Cards Done: {self.cards_done} | Time Spent: {(self.time_spent/1000/60):.2f}"
+
     def increment_cards_done(self, time_taken=None) -> int:
         # Do not use this method if you need to make other changes to the profile obj
         # Only use this method if the `cards_done` is the only attr that needs to be changed

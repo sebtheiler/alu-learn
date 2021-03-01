@@ -14,10 +14,10 @@ class DeckThankSerializer(serializers.ModelSerializer):
             'username',
             'timestamp',
         ]
-    
+
     def get_deck_id(self, obj):
         return obj.deck.id
-    
+
     def get_username(self, obj):
         return obj.profile.user.username
 
@@ -59,6 +59,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
     is_leech = serializers.SerializerMethodField(read_only=True)
     flashcard_type = serializers.SerializerMethodField(read_only=True)
     creator_id = serializers.SerializerMethodField(read_only=True)
+    flashcard_num = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FlashCard
@@ -78,29 +79,33 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'creator_id',
             'flashcard_type',
             'name',
+            'flashcard_num',
             'id',
         ]
-    
+
     def get_parent_deck_id(self, obj):
         return obj.creator.deck.id
-    
+
     def get_parent_deck_title(self, obj):
         return obj.creator.deck.title
-    
+
     def get_is_leech(self, obj):
         return obj.is_leech()
-    
+
     def get_tags(self, obj):
         return obj.creator.tags
-    
+
     def get_deck_fields(self, obj):
         return FlashCardFieldSerializer(obj.get_content(), many=True).data
-    
+
     def get_flashcard_type(self, obj):
         return obj.creator.flashcard_type
-    
+
     def get_creator_id(self, obj):
         return obj.creator.id
+
+    def get_flashcard_num(self, obj):
+        return obj.creator.flashcard_num
 
 
 class DeckSerializer(serializers.ModelSerializer):
@@ -154,28 +159,27 @@ class DeckSerializer(serializers.ModelSerializer):
 
     def get_num_thanks(self, obj):
         return obj.thanks.count()
-    
+
     def get_scheduling_algorithm(self, obj):
         return obj.study_session_manager.scheduling_algorithm
-    
+
     def get_shuffle_unseen_cards(self, obj):
         return obj.study_session_manager.shuffle_unseen_cards
-    
+
     def get_new_cards_done_today(self, obj):
         return obj.study_session_manager.new_cards_done_today
-    
+
     def get_daily_new_card_limit(self, obj):
         return obj.study_session_manager.daily_new_card_limit
-    
+
     def get_serializer_name(self, obj):
         return 'deck'
-    
+
     def get_review_ahead_minutes(self, obj):
         return obj.study_session_manager.review_ahead_minutes
 
     def get_difficulty(self, obj):
         return obj.study_session_manager.difficulty
-
 
 
 class SharedDeckSerializer(serializers.ModelSerializer):
@@ -221,13 +225,13 @@ class SharedDeckSerializer(serializers.ModelSerializer):
 
     def get_num_thanks(self, obj):
         return obj.thanks.count()
-    
+
     def get_num_clones(self, obj):
         return obj.clones.count()
 
     def get_serializer_name(self, obj):
         return 'shared_deck'
-    
+
 
 class StudySessionManagerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -261,6 +265,7 @@ class CustomStudySessionManagerSerializer(StudySessionManagerSerializer):
             'min_ease',
             'max_ease',
         ]
+        read_only_fields = fields  # TODO: add `read_only_fields = fields` everywhere
 
     def get_serializer_name(self, obj):
         return 'cssm'
