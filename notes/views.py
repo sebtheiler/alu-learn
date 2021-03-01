@@ -2,19 +2,11 @@ from django.http.response import Http404
 from django.shortcuts import render, redirect
 from .models import Note
 from django.http import Http404
-
-# Render the home-page view
-def notes_home_view(request, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect('/')
-    elif not request.user.is_confirmed:
-        return redirect('/confirm-email/')
-    return render(request, 'notes/home.html', status=200)
+from utils import permissions
 
 
 def notes_redirect_view(viewing):
     def notes_editor_redirect_view(request, note_id, *args, **kwargs):
-        # TODO: redirect to most recently requested page
         view_or_edit = 'view' if viewing else 'edit'
         return redirect(f'/notes/{view_or_edit}/{note_id}/page/1/')
 
@@ -23,12 +15,8 @@ def notes_redirect_view(viewing):
 
 # Render the editor view
 def notes_view(viewing):
+    @permissions()
     def notes_editor_view(request, note_id, page_number, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('/')
-        elif not request.user.is_confirmed:
-            return redirect('/confirm-email/')
-        
         try:
             note = Note.objects.get(pk=note_id, user=request.user.profile)
         except Note.DoesNotExist:
@@ -42,11 +30,3 @@ def notes_view(viewing):
         })
 
     return notes_editor_view
-
-# Shows a auto-reading platform for creating flashcards easily
-def notes_create_flashcard_view(request, note_id, page_number, *args, **kwargs):
-    if not request.user.is_authenticated:
-        return redirect('/')
-    elif not request.user.is_confirmed:
-        return redirect('/confirm-email/')
-    return render(request, 'notes/flashcard-creator.html', status=200, context={'note_id': note_id, 'page_num': page_number})

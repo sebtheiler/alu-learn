@@ -58,3 +58,6 @@ Pipfile
 # --- JSON Files ---
 env-vars.json
 allowed-emails.json
+
+# --- Selenium ---
+chromedriver

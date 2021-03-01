@@ -1,8 +1,21 @@
+
 -----
 
 
+# Classrooms Rework & Homepage Redesign - Mar 01 - 0.5.0
+Welcome to Alu's biggest update since launch!  In this update, you will find a completely redesigned homepage and the new assignments feature.
+
+
+Having teachers suspend flashcards to assign you work didn't cut it: it was too unwieldy and annoying to both students and teachers.  This feature has been removed and replaced with the ability to add assignments.  You can find assignments on your redesigned homepage, where you can also track your progress as you complete them.  Teachers can easily create assignments from a simple tag query.
+
+
+* **Redesigned Homepage:** I've completely redesigned the homepage to incorporate the new assignments feature.  In the center of your screen, you will see a list of the classes you are enrolled in and the assignments you have for those classes.  You can click an assignment to start studying it.  You can access the old decks/notes/tasks homepages by clicking their respective links on the left column.
+* **Added Assignments to Classrooms:** Before, teachers would have to suspend individual flashcards to assign units to you.  This was annoying and inconvenient for both teachers and students.  Now, teachers can create an assignment based on a tag query that you will see on your redesigned homepage.  Furthermore, as you complete the assignment, you will see your percent complete continually update.
 * **Changed Button Colors:** Changed the colors and order of deck study buttons.  Many users mistook the "Browse" option for "Study," so this change attempts to fix that.
 * **Added Browse Button in Flashcard Creation:** There is now a "Browse" button when creating flashcards, right under the recently added "History" list.  It was common to open the flashcards list for reference when creating new flashcards, so this change attempts to make that easier.
+* **Major Code Improvements:** A lot of Alu's backend code has been rewritten to be more efficient and more maintainable.  This will mean faster loading times and an even quicker rate of updates.
+  * **Improved Shared Deck Code:** The code for shared decks and their functions (creating, copying, updating) is in the middle of being completely rewritten.  Creating and copying is much more efficient now, and operations that took up to 10 seconds before should now be completed in less than a single second.  Despite this, pulling updates is still disabled until it can be further tested.
+  * **Code Tests:** I've added over 90 code tests using over 1000 assertments in almost 4500 lines of code.  Code tests are bits of code designed to make sure that Alu is working as intended and there aren't any bugs.  As I maintain and expand upon these code tests, any slight bugs remaining in Alu will be squashed as quickly as possible.
 
 
 ## Teacher Improvements - Feb 02 - 0.4.2
@@ -14,7 +27,6 @@ In this update, I've added a couple of new features that improve teachers' exper
 * **Fixed Bug with Student History Chart:** Student history charts are now correctly sorted.
 * **Removed Brief Black Screen on Teachers Home:** Removed the annoying black box that appeared on the teacher's homepage for a brief second.
 * **Removed Experiment Game:** The temporary psychology experiment has finished and will not be returned.
-
 
 
 ## Shared Deck Hotfix - Jan 29 0.4.1
@@ -31,7 +43,7 @@ This update introduces the ability for teachers to create classes for students. 
 * **Added Classrooms:** If your account type is set to "Teacher/Parent," you can now create classes.  Classes appear as a new, fourth option on the Alu homepage.
     * **Class Codes:** Each class gets a unique class code that students can enter to join the class.  A list of classes that students have joined now appears in a second column on their homepage.
     * **Copy/Attach Deck:** Teachers can attach a deck to the classroom, which students can then copy and study.  Alternatively, if the student has already started studying, they add their own deck, rather than copying the class one.
-    * **Statistics Tracking:** Teachers can track their students' progress with a simple yet powerful table that gives information about how long each student has spent studying that day and how many flashcards they've reviewed.  Clicking a row in this table reveals more information about the student, such as a piechart of the types of flashcards in the student's deck, and a graph of how much the student has studied over time.
+    * **Statistics Tracking:** Teachers can track their students' progress with a simple yet powerful table that gives information about how long each student has spent studying that day and how many flashcards they've reviewed.  Clicking a row in this table reveals more information about the student, such as a piechart of the types of flashcards in the student's deck and a graph of how much the student has studied over time.
 * **Changed Default Scheduling Algorithm:** The default scheduling algorithm has been changed from Default Anki Settings to Optimized Anki Settings.
 * **Added Notification for New Logins:** As part of a security enhancement, you are now notified when there is a new login to your account.  If you ever notice a new login that wasn't you, please change your password immediately.
 * **Fixed Typos:** Various typos have been fixed.

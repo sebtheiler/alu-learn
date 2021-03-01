@@ -1,6 +1,8 @@
-from rest_framework import serializers
 from profiles.serializers import MinifiedProfileSerializer
-from .models import FreeformNotePage, CornellNotePage, CornellNotePageSection, NotePage
+from rest_framework import serializers
+
+from .models import (CornellNotePage, CornellNotePageSection, FreeformNotePage,
+                     NotePage)
 
 
 class NoteSerializer(serializers.ModelSerializer):
@@ -18,7 +20,6 @@ class NoteSerializer(serializers.ModelSerializer):
 
     def get_serializer_name(self, obj):
         return 'note-base'
-
 
 
 class FreeformNotePageSerializer(serializers.ModelSerializer):
@@ -62,7 +63,7 @@ class CornellNotePageSerializer(serializers.ModelSerializer):
             'note_page_type',
             'id',
         ]
-    
+
     def get_note_page_type(self, obj):
         return 'CORN'
 
@@ -118,5 +119,7 @@ class FullNoteSerializer(serializers.ModelSerializer):
         return 'note-base'
 
     def get_pages(self, obj):
-        return MinifiedNotePageSerializer(obj.pages.all().order_by('page_number'), many=True).data
-        # return NotePageSerializer(obj.pages.all().order_by('page_number'), many=True).data
+        return MinifiedNotePageSerializer(
+            obj.pages.all().order_by('page_number'),
+            many=True,
+        ).data

@@ -1,6 +1,6 @@
 import datetime
 
-from decks.api.utils import get_paginated_queryset_response
+from utils import get_paginated_queryset_response
 from django.utils import timezone
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.mail import send_mail
@@ -23,22 +23,13 @@ def profile_detail_api_view(request, username, *args, **kwargs):
     """
     Get detail about a profile with username `username` - GET
 
-    Returns:
-        First name of the given user: 'first_name'
-        Last name of the given user: 'last_name'
-        Username of the given user: 'username'
-        ID of the given user: 'id'
-        Bio of the given user: 'bio'
-        Location of the given user: 'location' (unused)
-        Number of friends of the given user: 'friend_count'
-        Whether the current user is a friend of the given user, None/null if the current user is the user: 'is_friend'
-
-    Possible errors:
-        Unknown username: 404, User not found
+    Required information:
+        `username`: (URL) Username of the profile to get detail about
     """
     # Find the user in question
+    # TODO: "hacker" could get people's emails with this
     try:
-        profile = Profile.objects.get(user__username=username.lower())
+        profile = Profile.objects.get(user__username=username)
 
         return Response(PublicProfileSerializer(profile, context={'request': request}).data, status=200)
     except Profile.DoesNotExist:
@@ -53,6 +44,7 @@ def friend_toggle_api_view(request, recipient_username, *args, **kwargs):
 
     Required information:
         `recipient_username`: The username of the user who launched the friend request
+        `action`: (Data) 'friend' | 'unfriend'
 
     Possible errors:
         Recipient profile not found: 404, User not found
@@ -64,7 +56,9 @@ def friend_toggle_api_view(request, recipient_username, *args, **kwargs):
     """
     # Find the user in question
     try:
-        recipient_user = User.objects.get(username=recipient_username.lower())
+        recipient = Profile.objects.get(
+            user__username=recipient_username.lower()
+        )  # type: Profile
     except User.DoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 
@@ -74,34 +68,17 @@ def friend_toggle_api_view(request, recipient_username, *args, **kwargs):
         return Response({'message': 'You must specify an action'})
 
     # Friending logic
-    if action == 'friend':
-        if recipient_user == request.user:
-            return Response({'message': 'You cannot friend yourself'}, status=400)
+    message = recipient.toggle_friend(request.user, action)
+    if message:
+        return Response({'message': message}, status=400)
 
-        if not request.user in recipient_user.profile.friends.all():
-            recipient_is_pending = recipient_user in request.user.profile.pending_friends.all()
-            if recipient_is_pending:
-                # Add eachother as friends
-                recipient_user.profile.friends.add(request.user)
-                request.user.profile.friends.add(recipient_user)
-
-                # Remove the user as a pending friend
-                request.user.profile.pending_friends.remove(recipient_user)
-            else:
-                return Response({'message': 'You cannot friend a user who has not requested to be your friend'}, status=400)
-        else:
-            return Response({'message': 'You are already friends with this user'}, status=400)
-    elif action == 'unfriend':
-        if request.user in recipient_user.profile.friends.all():
-            # Remove eachother as friends
-            recipient_user.profile.friends.remove(request.user)
-            request.user.profile.friends.remove(recipient_user)
-        else:
-            return Response({'message': 'You cannot unfriend a user who is not your friend'}, status=400)
-    else:
-        return Response({'message': 'Unknown action'}, status=400)
-    
-    return Response(PublicProfileSerializer(recipient_user.profile, context={'request': request}).data, status=200)
+    return Response(
+        PublicProfileSerializer(
+            recipient,
+            context={'request': request},
+        ).data,
+        status=200,
+    )
 
 
 @api_view(['POST'])
@@ -112,68 +89,29 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
 
     Required information:
         `recipient_username`: (URL) Username of the user to send a friend request to
-    
-    Possible errors:
-        Unknown username: 404, User "`username`" not found
-        Cannot self-friend: 400, You cannot friend yourself
     """
-    # Get recipient user
-    user_qs = User.objects.filter(username=recipient_username.lower())
-    if not user_qs.exists():
+    try:
+        recipient_profile = Profile.objects.get(
+            user__username=recipient_username.lower()
+        )
+    except Profile.DoesNotExist:
         return Response({'message': f'User "{recipient_username}" not found'}, status=404)
-    recipient_user = user_qs.first()
 
-    # Get sending user 
-    sending_user = request.user
-    if sending_user == recipient_user:
-        return Response({'message': 'You cannot friend yourself'}, status=400)
-
-    # Check if the users are already pending eachother
-    if sending_user in recipient_user.profile.pending_friends.all():
-        return Response({'message': 'You have already sent a friend request to this user'})
-    elif recipient_user in sending_user.profile.pending_friends.all():
-        # If the recipient user has already requested the sending user,
-        # directly add them as friends
-        recipient_user.profile.friends.add(sending_user)
-        sending_user.profile.friends.add(recipient_user)
-        sending_user.profile.pending_friends.remove(recipient_user)
-
-        return Response(PublicProfileSerializer(recipient_user.profile).data, status=201) # for consistency with friend toggle view
-
-    # Put user in the profile's pending friends
-    recipient_user.profile.pending_friends.add(sending_user)
-    recipient_user.save()
-
-    # Create notification
-    title = f'{sending_user.first_name} wants to be your friend!' if sending_user.first_name else 'Someone wants to be your friend!'
-    if sending_user.first_name:
-        if sending_user.last_name:
-            description = f'{sending_user.first_name} {sending_user.last_name}'
-        else:
-            description = f'{sending_user.first_name}'
-        description += ' '
-    else:
-        description = ''
-    description += f'[@{sending_user.username}](/profiles/u/{sending_user.username}) wants to be your friend'
-
-    Notification.objects.create(
-        profile=recipient_user.profile,
-        category='friend_request',
-        title=title,
-        description=description,
-    )
+    message = recipient_profile.request_friend(request.user)
+    if message:
+        return Response({'message': message}, status=400)
 
     return Response({'message': 'Request sent succesfully'}, status=201)
 
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
-def notification_api_view(request, username, *args, **kwargs):
+def notification_api_view(request, *args, **kwargs):
     """
     Get notifications for a user, or create notifications - GET/POST
 
     To get list of notifications, use request method GET
-    
+
     To add a notification,
         Use request method POST
         Request data must have attributes:
@@ -212,24 +150,16 @@ def notification_api_view(request, username, *args, **kwargs):
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
-def notification_read_api_view(request, username, *args, **kwargs):
+def notification_read_api_view(request, *args, **kwargs):
     """
     Get unread notifications for a user, or mark notifications as read - GET/POST
 
     To get list of notifications, use request method GET
-    
+
     To mark a notification as read,
         Use request method POST
         Request data must have attributes:
             `notification_id` (this can also be a list of multiple notifications)
-
-    Returns:
-        `profile`: The serialized profile the notification belongs to
-        `title`: Title of the newly created notification
-        `description`: Description of the newly created notification
-
-    Possible errors:
-        Unknown username: 404, User not found
     """
     if request.method == 'POST':
         notification_id = request.data.get('notification_id')
@@ -275,16 +205,16 @@ def check_username_available_api_view(request, *args, **kwargs):
     Possible errors:
         Username not specified: 400, Please specify username
     """
-    username = request.GET.get('username').lower()
+    username = request.GET.get('username')
     email = request.GET.get('email')
     if None in (username, email):
         return Response({'message': 'Please specify username and email'}, status=400)
-    
-    all_usernames_and_emails = [(user.username, user.email) for user in User.objects.all()]
-    username_is_available = not username in [x[0] for x in all_usernames_and_emails]
-    email_is_available = not email in [x[1] for x in all_usernames_and_emails]
+
+    username_is_available = not User.objects.filter(username=username.lower()).exists()
+    email_is_available = not User.objects.filter(email=email.lower()).exists()
 
     return Response({'username_is_available': username_is_available, 'email_is_available': email_is_available}, status=200)
+
 
 @api_view(['POST'])
 def create_profile_api_view(request, *args, **kwargs):
@@ -303,12 +233,14 @@ def create_profile_api_view(request, *args, **kwargs):
     birthdate = request.data.get('birthdate')
     last_name = request.data.get('last_name')
     first_name = request.data.get('first_name')
-    username = request.data.get('username').lower().replace('@', '').replace('$', '').replace('#', '')
+    username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
 
     if None in (birthdate, last_name, first_name, username, email, password):
         return Response({'message': 'Not all parameters were specified'}, status=400)
+    
+    username = username.lower().replace('@', '').replace('$', '').replace('#', '')
 
     months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
     birthdate = datetime.date(
@@ -372,15 +304,7 @@ def login_api_view(request, *args, **kwargs):
     Required information:
         `username`: Username of user
         `password`: Raw password of user
-    
-    Possible errors:
-        User is already authenticated: 400, User is already authenticated
-        `username` or `password` not supplied: 400, Please specify a username and password
-        Invalid credentials: 401, Invalid credentials
     """
-    if request.user and request.user.is_authenticated:
-        return Response({'message': 'User is already authenticated'}, status=400)
-
     username = request.data.get('username').lower()
     password = request.data.get('password')
     if None in (username, password):
@@ -423,7 +347,7 @@ def change_email(request, *args, **kwargs):
     Required information:
         `password`: (Data) Password of the user for security reasons
         `new_email`: (Data) Email to set the user's new email to
-    
+
     Possible errors:
         Password invalid: 401, Invalid credentials
     """
@@ -432,6 +356,8 @@ def change_email(request, *args, **kwargs):
     user = authenticate(username=request.user.username, password=password)
     if user is None:
         return Response({'message': 'Invalid credentials'}, status=401)
+    if new_email is None:
+        return Response({'message': 'You must provide a new email'})
     else:
         confirmation_key = user.add_unconfirmed_email(new_email)
 
@@ -440,7 +366,7 @@ def change_email(request, *args, **kwargs):
         message = f"""
 Look's like you want to change your email.
 Here's a confirmation code, to make sure this email is really you: {confirmation_key}
-If this wasn't you, please change your password immediately: someone knows both your email and password, and has used it to attempt to change your email.
+If this wasn't you, you can ignore this message.  However, please be aware someone may know your email address.
         """
         email_from = settings.EMAIL_HOST_USER
         recipient_list = [new_email]
@@ -490,7 +416,7 @@ def change_password(request, *args, **kwargs):
         # Check key valid
         if reset_key and reset_key != profile.user.password_reset_key:
             return Response({'message': 'Invalid reset key'}, status=401)
-        
+
         # Update password
         profile.user.set_password(new_password)
         profile.user.save()
@@ -560,19 +486,21 @@ If this wasn't you, you can safely ignore this email, however, be aware someone 
 
 
 @api_view(['GET'])
-def get_user_friends_api_view(request, username, *args, **kwargs):
+@permission_classes([IsAuthenticated])
+def get_user_friends_api_view(request, *args, **kwargs):
     """
     Gets a user's friends - GET
 
     Possible errors:
         Invalid username: 404, User not found
     """
-    try:
-        profile = Profile.objects.get(user__username=username.lower())
-    except Profile.DoesNotExist:
-        return Response({'message': 'User not found'}, status=404)
-
-    return Response(MinifiedProfileSerializer(profile.friends, many=True).data, status=200)
+    return Response(
+        MinifiedProfileSerializer(
+            request.user.profile.friends,
+            many=True,
+        ).data,
+        status=200,
+    )
 
 
 @api_view(['GET'])
@@ -593,21 +521,6 @@ def profile_history_view(request, username, *args, **kwargs):
 from django.conf import settings
 from django.core.mail import send_mail
 
-# @api_view(['GET'])
-# def test_my_email_api_view(request, *args, **kwargs):
-#     subject = 'Thank you for registering to our site'
-#     message = 'Body text Body text Body text Body text Body text'
-#     email_from = settings.EMAIL_HOST_USER
-#     recipient_list = ['',]
-
-#     x = send_mail(
-#             subject,
-#             message,
-#             email_from,
-#             recipient_list,
-#             fail_silently=False,
-#         )
-#     return Response({'message': x})
 
 @api_view(['POST'])
 def confirm_email_api_view(request, username, *args, **kwargs):
@@ -617,7 +530,7 @@ def confirm_email_api_view(request, username, *args, **kwargs):
     Required information:
         `username`: (ULR) Username of the profile to confirm
         `confirmation_key`: (Data) Key to confirm email
-    
+
     Possible errors:
         Profile does not exist: 404, User not found
         Invalid key: 400, Confirmation key invalid
@@ -643,6 +556,7 @@ def confirm_email_api_view(request, username, *args, **kwargs):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def read_changelog_popup_api_view(request, *args, **kwargs):
     """
     Marks the changelog popup as read - POST
@@ -654,6 +568,7 @@ def read_changelog_popup_api_view(request, *args, **kwargs):
     return Response({'message': 'Marked popup as read'}, status=200)
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def staff_force_login(request, *args, **kwargs):
     """
     Allows a staff to login to another user's account for emergency support reasons - POST
@@ -664,7 +579,7 @@ def staff_force_login(request, *args, **kwargs):
     """
     if not request.user.is_staff:
         return Response({'message': 'No'}, status=420)
-    
+
     username = request.data.get('username').lower()
     try:
         user = User.objects.get(username=username)

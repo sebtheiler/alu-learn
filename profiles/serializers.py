@@ -100,6 +100,7 @@ class MinifiedProfileSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'username',
+            'id',
         ]
     
     def get_first_name(self, obj):

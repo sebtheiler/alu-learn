@@ -1,6 +1,6 @@
 from datetime import datetime as dt
 
-from decks.api.utils import get_paginated_queryset_response
+from utils import get_paginated_queryset_response, BLANK_SLATE_ELEMENT
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -30,16 +30,7 @@ def manual_sr_create_view(request, *args, **kwargs):
     created_obj = ManualSRTask.objects.create(
         user=request.user.profile,
         title=title,
-        description=desc if desc else [
-  {
-    "type": "paragraph",
-    "children": [
-      {
-        "text": ""
-      },
-    ],
-  },
-],
+        description=desc if desc else BLANK_SLATE_ELEMENT,
     )
 
     return Response(ManualSRTaskSerializer(created_obj).data, status=201)
