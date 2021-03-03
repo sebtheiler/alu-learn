@@ -178,7 +178,7 @@ function RenderAssignment(props: { assignment: Assignment }) {
     null,
     (response: StudentPercentData[]) => response.map(
       data => [data.name, data.percent_complete ?? 0]
-    ),
+    ).sort((a, b) => (a[1] as number) - (b[1] as number)),
     expanded,
   );
 
@@ -213,7 +213,7 @@ function RenderAssignment(props: { assignment: Assignment }) {
       </p>}
       {expanded && studentData && studentData.length > 0 && <Chart
         width='100%'
-        height='300px'
+        height={`${Math.max(studentData.length * 50, 300)}px`}
         chartType='BarChart'
         loader={<div>Loading...</div>}
         data={[
@@ -243,7 +243,8 @@ function ClassroomDeckComponent({ classroomId, deck }) {
     apiQuickDeckList,
     200,
     8008,
-    [], null, null,
+    [false, false],
+    null, null,
     !deck,
   );
   const [attachLoading, setAttachLoading] = useState(false);
@@ -302,7 +303,9 @@ function ClassroomDeckComponent({ classroomId, deck }) {
           >
             <option value='-1'>-----</option>
             {decks ? decks.map(deck => 
-              <option value={deck.id} key={deck.id}>{deck.title}</option>
+              <option value={deck.id} key={deck.id}>
+                {deck.title}
+              </option>
             ) :
               <option value='-1'>Loading...</option>
             }

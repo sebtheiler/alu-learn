@@ -27,7 +27,7 @@ class Classroom(models.Model):
 
     def __str__(self) -> str:
         return self.title
-    
+
     def attach_deck(self, deck: Deck) -> SharedDeck:
         # Create shared deck
         shared_deck = deck.create_shared_deck(
@@ -52,8 +52,9 @@ class Classroom(models.Model):
                 Classroom.objects.get(code=classroom_code)
             except Classroom.DoesNotExist:
                 break
-        
+
         return classroom_code
+
 
 class Assignment(models.Model):
     title = models.CharField(max_length=128)
@@ -83,7 +84,7 @@ class Assignment(models.Model):
             return (total_flashcard_num - unseen_flashcard_num) / total_flashcard_num
         except ZeroDivisionError:
             return None
-    
+
     def get_study_session_manager(self, user: User) -> AssignmentStudySessionManager:
         try:
             assm = AssignmentStudySessionManager.objects.get(
@@ -131,7 +132,7 @@ class AssignmentStudySessionManager(StudySessionManager):
         # Get flashcards from deck
         ssm_flashcards = FlashCard.objects.filter(
             Q(creator__deck__pk=deck.pk) &
-            FlashCard.search_tags(self.assignment.tag_query)
+            FlashCard.search_tags(self.assignment.tag_query)  # TODO: maybe change this
         )
         seen_flashcards = ssm_flashcards.filter(
             Q(next_review__lt=review_cutoff) &

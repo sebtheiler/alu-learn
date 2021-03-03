@@ -8,6 +8,7 @@ import { createFullEditor, FullEditor } from '../../notes/editor-components';
 import { Slate } from 'slate-react';
 import { emptyValue } from '../../notes/autonote/autonote';
 import { Transforms } from 'slate';
+import { DeckDifficulty, FlashCard, SchedulingAlgorithm } from '../types';
 
 // Does some magic with SlateJS that prevents weird errors
 // DO NOT REMOVE
@@ -151,7 +152,20 @@ function RenderFlashCardStudy({ flashcard, showAnswer }) {
 }
 
 
-export function StudyElement(props) {
+interface StudyElementProps {
+  currentCard: FlashCard;
+  showAnswer: boolean;
+  showAnswerHandler(event: any): void;
+  message: { variant?: string, content?: string };
+  backendGradeUpdate(grade: number): void;
+  handleKeyDown(event: any): void;
+  schedulingAlgorithm: SchedulingAlgorithm;
+  deckDifficulty: DeckDifficulty;
+  deleteFlashCardHandler(event: any): void;
+  leechsuspendFlashCardGenerator(action: 'leech' | 'unleech' | 'suspend'): (event: any) => void;
+  numRemainingFlashcards?: number;
+}
+export function StudyElement(props: StudyElementProps) {
   const {currentCard, showAnswer, showAnswerHandler, message, backendGradeUpdate, handleKeyDown, schedulingAlgorithm, deckDifficulty, deleteFlashCardHandler, leechsuspendFlashCardGenerator, numRemainingFlashcards} = props;
   const [optionButtonsExpanded, setOptionButtonsExpanded] = useState(false);
 
@@ -251,7 +265,7 @@ export function StudyElement(props) {
                   Suspend
                 </Button>
                 <Button
-                  href={`/decks/${currentCard.parent_deck_id}/flashcards/${currentCard.creator_id}/edit/`}
+                  href={`/decks/${currentCard.parent_deck_id}/flashcards/${currentCard.flashcard_num}/edit/`}
                   className='mr-1'
                   variant='success'
                 >

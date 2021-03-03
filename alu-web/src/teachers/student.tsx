@@ -15,6 +15,7 @@ export function ClassroomStudentDetail({ classroomId, studentId }) {
     apiQuickDeckList,
     200,
     8005,
+    [false, true],
   );
   const [attachLoading, setAttachLoading] = useState(false);
 
@@ -60,7 +61,9 @@ export function ClassroomStudentDetail({ classroomId, studentId }) {
               >
                 <option value='0'>-----</option>
                 {decks.map((deck, i) => (
-                  <option value={deck.id} key={i}>{deck.title}</option>
+                  <option value={deck.id} key={i}>
+                    {deck.title}
+                  </option>
                 ))}
               </Form.Control>
             </Form.Group>

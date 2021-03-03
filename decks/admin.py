@@ -3,6 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import Deck, FlashCard, DeckThank, DeckStudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator, SharedDeck, SharedDeckRelation, DeckClone
 
+
 class FlashCardFieldTabAdmin(admin.TabularInline):
     fields = [
         'text',
@@ -33,7 +34,7 @@ class FlashCardCreatorAdmin(admin.ModelAdmin):
 class FlashCardAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'creator']
     search_fields = ['creator__deck__title']
-    
+
     class Meta:
         model = FlashCard
 
@@ -44,6 +45,7 @@ class DeckAdmin(admin.ModelAdmin):
     fields = [
         'user',
         'title',
+        'student_attached_to',
     ]
 
     class Meta:

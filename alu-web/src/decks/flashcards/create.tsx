@@ -297,17 +297,17 @@ export function FlashCardCreate(props: FlashCardCreateProps) {
             onChange={event => {
               const target = event.target as HTMLSelectElement;
               // Get selected value and open new page editing that flashcard
-              const flashcardId = parseInt(target.options[target.selectedIndex].value);
-              if (flashcardId >= 0) {
-                window.open(`/decks/${deckId}/flashcards/${flashcardId}/edit/`);
+              const flashcardNum = parseInt(target.options[target.selectedIndex].value);
+              if (flashcardNum >= 0) {
+                window.open(`/decks/${deckId}/flashcards/${flashcardNum}/edit/`);
               }
             }}
             custom
           >
             <option value='-1'>-----</option>
-            {createdFlashcards.map((flashcard: any, i: number) =>
-              <option key={i} value={flashcard.creator_id}>
-                {flashcard.deck_fields[0].text[0].children[0].text.slice(0, 20)}...
+            {createdFlashcards.map((flashcard, i) =>
+              <option key={i} value={flashcard.flashcard_num}>
+                {(flashcard.deck_fields[0].text[0] as any).children[0].text.slice(0, 20)}...
               </option>
             )}
           </Form.Control>

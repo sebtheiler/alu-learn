@@ -808,9 +808,14 @@ export function apiStudentPercentCompleteList(
 }
 
 export function apiQuickDeckList(
+  calcPercentComplete: boolean,
+  includeHasSharedDeck: boolean,
   callback: (response: Deck[], status: number) => void,
 ) {
-  backendLookup('GET', 'decks/quick/', callback);
+  let endpoint = 'decks/quick/?';
+  if (calcPercentComplete) endpoint += 'calc_percent_complete=true&';
+  if (includeHasSharedDeck) endpoint += 'include_has_shared_deck=true';
+  backendLookup('GET', endpoint, callback);
 }
 
 export function apiStudyAssignment(

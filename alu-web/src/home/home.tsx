@@ -323,6 +323,7 @@ function AssignmentsComponent({ setJoinClassModalIsOpen }) {
     apiQuickDeckList,
     200,
     1029,
+    [true, true],
   );
 
   return (<Container className='ml-0'>

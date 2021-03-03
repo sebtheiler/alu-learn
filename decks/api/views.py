@@ -1,13 +1,10 @@
-import datetime as dt
 import json
 import random
 import re
-from itertools import chain
-from typing import Literal, Union
+from typing import List
 
 from django.core.cache import cache
 from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.utils import timezone
 from django.views.decorators.cache import cache_control
 from django.views.decorators.vary import vary_on_cookie
@@ -15,23 +12,21 @@ from django.views.decorators.vary import vary_on_cookie
 # pip install fuzzywuzzy
 # pip install fuzzywuzzy[speedup]
 from fuzzywuzzy import fuzz
-
 from profiles.models import Profile
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from utils import get_paginated_queryset_response, weighted_sample
 
-from ..models import (CustomStudySessionManager, Deck,
-                      DeckStudySessionManager, DeckThank, FlashCard,
-                      FlashCardCreator, FlashCardField, LearningStatusType, SharedDeck,
-                      SharedDeckRelation, StudySessionManager, User)
+from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
+                      DeckThank, FlashCard, FlashCardCreator, FlashCardField,
+                      SharedDeck, StudySessionManager)
 from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
                            DeckThankSerializer, FlashCardCreatorSerializer,
                            FlashCardSerializer, SharedDeckSerializer,
                            StudySessionManagerSerializer)
-from utils import get_paginated_queryset_response, weighted_sample
 
 
 @api_view(['POST'])
@@ -290,7 +285,10 @@ def deck_private_list(request, *args, **kwargs):
     """
     include_cssms = request.GET.get('include_cssms')
 
-    decks = Deck.objects.filter(user=request.user, deck_type='standard')
+    decks = Deck.objects.filter(
+        user=request.user,
+        deck_type='standard',
+    ).order_by('title')
     deck_data = DeckSerializer(decks, many=True).data
 
     if include_cssms and include_cssms.lower() == 'true':
@@ -958,8 +956,6 @@ def shared_deck_create_view(request, *args, **kwargs):
     return Response(SharedDeckSerializer(shared_deck).data, status=201)
 
 
-
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
@@ -1311,7 +1307,7 @@ def flashcard_review_instance_bulk_update_view(request, *args, **kwargs):
 def deck_statistics_view(request, deck_id, *args, **kwargs):
     """
     Gets statistics information about a deck to display on the deck's statistics page - GET
-    
+
     Parameters:
         `deck_id`: (Url) Id of the deck to get statistics about
     """
@@ -1329,20 +1325,34 @@ def deck_statistics_view(request, deck_id, *args, **kwargs):
 def deck_quick_list_view(request, *args, **kwargs):
     """
     Gets a minified list of decks and their progress for use on the main homepage - GET
+
+    Parameters:
+        calc_percent_complete=False: (GET) Whether or not to calc the percent complete for each deck
+        include_has_shared_deck=False: (GET) Whether or not to include decks that have been shared
     """
-    decks = Deck.objects.filter(
+    decks_query = Q(
         user=request.user,
         deck_type='standard',
         student_attached_to=None,
-        shared_deck=None,
-    ).order_by('title')
+    )
+    if request.GET.get('include_has_shared_deck', False):
+        decks_query &= Q(shared_deck=None)
 
-    calc = request.user.profile.settings.user_type != 'TEACHER'
+    decks = Deck.objects.filter(
+        decks_query
+    ).order_by('title')  # type: List[Deck]
+
+    flashcards = FlashCard.objects.filter(
+        creator__deck__in=decks,
+    )
+
+    # calc = request.user.profile.settings.user_type != 'TEACHER'
+    calc = request.GET.get('calc_percent_complete', False)
     data = [
         {
             'title': deck.title,
             'id': deck.pk,
-            'percent_complete': deck.calc_percent_complete() if calc else None,  # TODO: this results in a DB hit `len(decks)` times
+            'percent_complete': deck.calc_percent_complete(flashcards) if calc else None,  # TODO: this results in a DB hit `len(decks)` times
         }
         for deck in decks
     ]

@@ -208,9 +208,12 @@ class Deck(models.Model):
         shared_deck_relation.save()
 
         return self
-    
-    def calc_percent_complete(self):
-        flashcards = FlashCard.objects.filter(creator__deck=self)
+
+    def calc_percent_complete(self, flashcards: QuerySet[FlashCard] = None):
+        if flashcards is None:
+            flashcards = FlashCard.objects.filter(creator__deck=self)
+        else:
+            flashcards = flashcards.filter(creator__deck=self)
         total_flashcard_num = flashcards.count()
         unseen_flashcard_num = flashcards.filter(learning_status='UNSEEN').count()
 
@@ -743,7 +746,7 @@ class StudySessionManager(models.Model):
         )
 
         return review_cutoff
-    
+
     def get_reviews(
         self,
         seen_flashcards: QuerySet[FlashCard],
@@ -777,7 +780,7 @@ class DeckStudySessionManager(StudySessionManager):
 
     def __str__(self) -> str:
         return f'SSM for "{self.deck.title}" by @{self.deck.user.username}'
-    
+
     def get_flashcards(self) -> Tuple[QuerySet[FlashCard], QuerySet[FlashCard]]:
         review_cutoff = self.calc_review_cutoff()
 
@@ -811,7 +814,7 @@ class CustomStudySessionManager(StudySessionManager):
 
     def __str__(self) -> str:
         return f'CSSM: "{self.title}" by @{self.user}'
-    
+
     def get_flashcards(self) -> Tuple[QuerySet[FlashCard], QuerySet[FlashCard]]:
         review_cutoff = self.calc_review_cutoff()
 
@@ -999,7 +1002,7 @@ class SharedDeck(Deck):
             ])
 
             return self
-    
+
     def user_has_access(self, user: User) -> bool:
         return (
             user == self.user or

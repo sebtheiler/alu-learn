@@ -1830,7 +1830,7 @@ class DeckTestCase(ImprovedTestCase):
 
         # TODO: find why deck got soft-reset that one time
         # TODO: fix local change overriding
-    
+
     def test_game_flashcards_api(self):
         api_view = api_views.game_flashcards_view
         api_path = '/api/decks/games/flashcards/'
@@ -1869,7 +1869,7 @@ class DeckTestCase(ImprovedTestCase):
             deck_ids=f'{deck.pk}',
         )
         test_game('SEEN', 1, deck_id=cssm.pk)
-    
+
     def test_rearrange_flashcard_api(self):
         api_view = api_views.rearrange_flashcard_view
         deck = self.create_deck('Deck with flashcards to rearrange', num_flashcards=5)
@@ -1905,7 +1905,7 @@ class DeckTestCase(ImprovedTestCase):
         move_flashcard('UP', flashcard_num - 1, creator.pk)
         move_flashcard('UP', flashcard_num - 2, creator.pk)
         move_flashcard('UP', flashcard_num - 2, creator.pk, should_fail=True)
-    
+
     def test_edit_tags_bulk_api(self):
         api_view = api_views.edit_tags_bulk_view
         api_path = '/api/decks/edit-tags/'
@@ -2021,7 +2021,7 @@ class DeckTestCase(ImprovedTestCase):
             'num_suspended': 25,
             'avg_ease': 260,
         })
-    
+
     def test_deck_quick_list_api(self):
         api_path = '/api/decks/quick/'
         api_view = api_views.deck_quick_list_view
@@ -2034,17 +2034,27 @@ class DeckTestCase(ImprovedTestCase):
         # Add decks
         deck1 = self.create_deck('Quick Deck #1', num_flashcards=10)
         deck2 = self.create_deck('Quick Deck #2', num_flashcards=10)
+
         def test_percent(target_percent):
             response = self.get_response(api_path, api_view)
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(len(response.data), 2)
-            self.assertEqual(response.data[0]['title'], deck1.title)
-            self.assertEqual(response.data[1]['title'], deck2.title)
-            self.assertEqual(response.data[0]['id'], deck1.pk)
-            self.assertEqual(response.data[1]['id'], deck2.pk)
+
+            def func():
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(len(response.data), 2)
+                self.assertEqual(response.data[0]['title'], deck1.title)
+                self.assertEqual(response.data[1]['title'], deck2.title)
+                self.assertEqual(response.data[0]['id'], deck1.pk)
+                self.assertEqual(response.data[1]['id'], deck2.pk)
+
+            func()
+            self.assertEqual(response.data[0]['percent_complete'], None)
+            self.assertEqual(response.data[1]['percent_complete'], None)
+
+            response = self.get_response(f'{api_path}?calc_percent_complete=true', api_view)
+            func()
             self.assertEqual(response.data[0]['percent_complete'], target_percent)
             self.assertEqual(response.data[1]['percent_complete'], target_percent)
-        
+
         test_percent(0.0)
 
         # Study decks and check percent complete
@@ -2066,6 +2076,20 @@ class DeckTestCase(ImprovedTestCase):
 
         # Final check for percent complete
         test_percent(1.0)
+
+        # Test include_has_shared_deck
+        response = self.get_response(api_path, api_view)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        deck1.create_shared_deck('Shared Deck #1', '')
+        response = self.get_response(api_path, api_view)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+
+        response = self.get_response(f'{api_path}?include_has_shared_deck=true', api_view)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
 
 
 class DeckBrowserTestCase(SeleniumTestCase):
@@ -2134,7 +2158,7 @@ class DeckBrowserTestCase(SeleniumTestCase):
             self.assertEqual(FlashCardCreator.objects.count(), original_creator_num + 3)
             self.assertEqual(FlashCardField.objects.count(), original_field_num + 5)
             self.assertEqual(FlashCard.objects.count(), original_card_num + 6)
-        
+
         create_flashcards()
 
         # Browse the deck

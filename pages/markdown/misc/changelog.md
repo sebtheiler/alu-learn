@@ -2,7 +2,17 @@
 -----
 
 
-# Classrooms Rework & Homepage Redesign - Mar 01 - 0.5.0
+## Tiny Rework Fixes - Mar 02 - 0.5.1
+This update fixes a couple of tiny issues introduced in the previous update.
+
+
+* **Fixed Flashcard Creating History:** I've fixed the history selection that allows you to edit the flashcards you just created.
+* **Fixed Flashcard Editing from Study:** Fixed the button that allows you to edit a flashcard while studying.
+* **Fixed Teacher Assignment Progress Chart:** Fixed the bar chart that displayed student progress: it was way too small before.
+* **Fixed Extracurricular Decks:** The extracurricular decks list on the homepage was not including decks that had a shared deck attached to them.  I've fixed this now.
+
+
+# Classrooms Rework & Homepage Redesign - Mar 02 - 0.5.0
 Welcome to Alu's biggest update since launch!  In this update, you will find a completely redesigned homepage and the new assignments feature.
 
 
