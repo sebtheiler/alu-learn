@@ -2085,11 +2085,11 @@ class DeckTestCase(ImprovedTestCase):
         deck1.create_shared_deck('Shared Deck #1', '')
         response = self.get_response(api_path, api_view)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(len(response.data), 1)
 
         response = self.get_response(f'{api_path}?include_has_shared_deck=true', api_view)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
+        self.assertEqual(len(response.data), 2)
 
 
 class DeckBrowserTestCase(SeleniumTestCase):

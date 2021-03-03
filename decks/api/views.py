@@ -1335,7 +1335,7 @@ def deck_quick_list_view(request, *args, **kwargs):
         deck_type='standard',
         student_attached_to=None,
     )
-    if request.GET.get('include_has_shared_deck', False):
+    if not request.GET.get('include_has_shared_deck', False):
         decks_query &= Q(shared_deck=None)
 
     decks = Deck.objects.filter(
