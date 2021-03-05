@@ -145,8 +145,6 @@ class Deck(models.Model):
         }
 
     def pull_updates(self, shared_deck: SharedDeck) -> Deck:
-        # Pulled deletions are not happening because when the shared flashcard creator is deleted,
-        # the copied_from_creator is set to null, and it is then not seen in the following line
         local_flashcard_creators = FlashCardCreator.objects.filter(
             deck=self,
             copied_from_deck=shared_deck,
@@ -721,7 +719,12 @@ class FlashCard(models.Model):
 
 
 class StudySessionManager(models.Model):
-    user = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE, related_name='study_session_managers')
+    user = models.ForeignKey(
+        Profile,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='study_session_managers',
+    )
 
     ALGORITHM_OPTIONS = [
         ('ANKI', 'Default Anki Settings'),
