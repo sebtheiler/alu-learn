@@ -1811,25 +1811,37 @@ class DeckTestCase(ImprovedTestCase):
         creator.delete()
 
         shared_deck.update(deck)
-        self.assertEqual(FlashCardCreator.objects.filter(deck=shared_deck).count(), num_shared_creators - 1)
-        self.assertEqual(FlashCardField.objects.filter(creator__deck=shared_deck).count(), num_shared_fields - 1)
+        self.assertEqual(
+            FlashCardCreator.objects.filter(deck=shared_deck).count(),
+            num_shared_creators - 1,
+        )
+        self.assertEqual(
+            FlashCardField.objects.filter(creator__deck=shared_deck).count(),
+            num_shared_fields - 1,
+        )
 
-        # FIXME: fix delete pulling
-        # num_cloned_creators = FlashCardCreator.objects.filter(deck=cloned_deck).count()
-        # num_cloned_reviews = FlashCard.objects.filter(creator__deck=cloned_deck).count()
-        # num_cloned_fields = FlashCardField.objects.filter(creator__deck=cloned_deck).count()
-        # response = self.post_response(api_path, api_view, {
-        #     'to_pull_from': shared_deck.pk,
-        # }, kwargs=kwargs)
-        # self.assertEqual(response.status_code, 200)
-        # self.assertEqual(FlashCardCreator.objects.filter(deck=cloned_deck).count(), num_cloned_creators - 1)
-        # self.assertEqual(FlashCard.objects.filter(creator__deck=cloned_deck).count(), num_cloned_reviews - 2)
-        # self.assertEqual(FlashCardField.objects.filter(creator__deck=cloned_deck).count(), num_cloned_fields - 1)
-
-        # check_equal(cloned_deck, shared_deck, response)
+        num_cloned_creators = FlashCardCreator.objects.filter(deck=cloned_deck).count()
+        num_cloned_reviews = FlashCard.objects.filter(creator__deck=cloned_deck).count()
+        num_cloned_fields = FlashCardField.objects.filter(creator__deck=cloned_deck).count()
+        response = self.post_response(api_path, api_view, {
+            'to_pull_from': shared_deck.pk,
+        }, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            FlashCardCreator.objects.filter(deck=cloned_deck).count(),
+            FlashCardCreator.objects.filter(deck=deck).count(),
+        )
+        self.assertEqual(
+            FlashCard.objects.filter(creator__deck=cloned_deck).count(),
+            FlashCard.objects.filter(creator__deck=deck).count(),
+        )
+        self.assertEqual(
+            FlashCardField.objects.filter(creator__deck=cloned_deck).count(),
+            FlashCardField.objects.filter(creator__deck=deck).count(),
+        )
+        check_equal(cloned_deck, shared_deck, response)
 
         # TODO: find why deck got soft-reset that one time
-        # TODO: fix local change overriding
 
     def test_game_flashcards_api(self):
         api_view = api_views.game_flashcards_view

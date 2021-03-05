@@ -1,6 +1,10 @@
+from profiles.serializers import (MinifiedProfileSerializer,
+                                  PublicProfileSerializer)
 from rest_framework import serializers
-from profiles.serializers import MinifiedProfileSerializer, PublicProfileSerializer
-from .models import Deck, FlashCard, DeckThank, StudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator, SharedDeck
+
+from .models import (CustomStudySessionManager, Deck, DeckThank, FlashCard,
+                     FlashCardCreator, FlashCardField, SharedDeck,
+                     StudySessionManager)
 
 
 class DeckThankSerializer(serializers.ModelSerializer):
