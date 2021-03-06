@@ -62,8 +62,7 @@ export function UpdateDeck(props: UpdateDeckProps) {
 
   if (notFound) return 'We couldn\'t find the deck you\'re looking for'
   return (<>
-    <p>Updating is currently disabled until further notice</p>
-    {/* <h1>Updating "{deck ? deck.title : 'Loading...'}"</h1>
+    <h1>Updating "{deck ? deck.title : 'Loading...'}"</h1>
     {updates !== undefined ? 
       (updates!.length > 0 ? <>{updates.map((update, index) => 
         <div key={index} className='ml-5 w-75'>
@@ -77,6 +76,6 @@ export function UpdateDeck(props: UpdateDeckProps) {
         </div>
       )}
       </> : <p>This deck is fully updated</p>
-    ) : <p>Loading...</p>} */}
+    ) : <p>Loading...</p>}
   </>);
 }

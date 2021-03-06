@@ -795,7 +795,11 @@ class DeckStudySessionManagerModelManager(models.Manager):
 
 
 class DeckStudySessionManager(StudySessionManager):
-    deck = models.OneToOneField(Deck, on_delete=models.CASCADE, related_name='study_session_manager')
+    deck = models.OneToOneField(
+        Deck,
+        on_delete=models.CASCADE,
+        related_name='study_session_manager',
+    )
 
     objects = DeckStudySessionManagerModelManager()
 
@@ -1008,19 +1012,19 @@ class SharedDeck(Deck):
             self.version_number += 1
             self.save()
 
-            # Create notification for everyone who's cloned this deck
-            profs_to_notify = Profile.objects.filter(
-                user__decks__shared_deck_relations__shared_deck=self,
-            )
+            # # Create notification for everyone who's cloned this deck
+            # profs_to_notify = Profile.objects.filter(
+            #     user__decks__shared_deck_relations__shared_deck=self,
+            # )
 
-            Notification.objects.bulk_create([
-                Notification(
-                    title=f'Update for "{self.title}"',
-                    description=f'The creator of "{self.title}" has released a new update.  You can update your deck with "Other > Edit > Check For Updates > Update."',
-                    profile=profile,
-                )
-                for profile in profs_to_notify
-            ])
+            # Notification.objects.bulk_create([
+            #     Notification(
+            #         title=f'Update for "{self.title}"',
+            #         description=f'The creator of "{self.title}" has released a new update.  You can update your deck with "Other > Edit > Check For Updates > Update."',
+            #         profile=profile,
+            #     )
+            #     for profile in profs_to_notify
+            # ])
 
             return self
 
