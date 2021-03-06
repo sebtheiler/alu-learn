@@ -2,6 +2,14 @@
 -----
 
 
+## Shared Deck Attempted Fix - Mar 05 0.5.2
+Shared deck updating has been disabled for quite some time due to various issues.  This update fixes the vast majority of those issues and re-enables the ability to update shared decks.
+
+
+* **Fixed Shared Decks:** This update should fix almost everything broken with shared decks, including the ability to pull updates.
+* **Some Remaining Issues:** There are a couple of incredibly minor issues remaining with shared decks.  These include: not pulling new flashcards review instances when the number of cloze-deletions on a cloze flashcard change and not pulling flashcard re-arrangements.  These issues will be fixed soon but are so uncommon that they have never impacted current usage.
+
+
 ## Tiny Rework Fixes - Mar 02 - 0.5.1
 This update fixes a couple of tiny issues introduced in the previous update.
 

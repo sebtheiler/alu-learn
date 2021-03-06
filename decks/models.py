@@ -145,11 +145,9 @@ class Deck(models.Model):
         }
 
     def pull_updates(self, shared_deck: SharedDeck) -> Deck:
-        # Pulled deletions are not happening because when the shared flashcard creator is deleted,
-        # the copied_from_creator is set to null, and it is then not seen in the following line
         local_flashcard_creators = FlashCardCreator.objects.filter(
             deck=self,
-            copied_from_creator__deck=shared_deck,
+            copied_from_deck=shared_deck,
         )  # type: List[FlashCardCreator]
         shared_flashcard_creators = shared_deck.flashcards.all() \
             .prefetch_related('fields')  # type: List[FlashCardCreator]
@@ -224,9 +222,17 @@ class Deck(models.Model):
 
 
 class SharedDeckRelation(models.Model):
-    deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='shared_deck_relations')
-    shared_deck = models.ForeignKey('SharedDeck', on_delete=models.CASCADE, related_name='children_decks')
-    cloned_at_version = models.IntegerField(default=0) # used to know when the deck is outdated
+    deck = models.ForeignKey(
+        Deck,
+        on_delete=models.CASCADE,
+        related_name='shared_deck_relations',
+    )
+    shared_deck = models.ForeignKey(
+        'SharedDeck',
+        on_delete=models.CASCADE,
+        related_name='children_decks',
+    )
+    cloned_at_version = models.IntegerField(default=0)
 
     def __str__(self) -> str:
         return f'{self.shared_deck.title} ==> {self.deck.title}'
@@ -238,10 +244,14 @@ class FlashCardCreatorManager(models.Manager):
 
 
 class FlashCardCreator(models.Model):
-    deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='flashcards')
+    deck = models.ForeignKey(
+        Deck,
+        on_delete=models.CASCADE,
+        related_name='flashcards',
+    )  # type: Deck
     tags = models.CharField(default='', max_length=1024, blank=True)
     flashcard_type = models.CharField(default='basic', max_length=16)
-    flashcard_num = models.PositiveSmallIntegerField() # zero-indexed
+    flashcard_num = models.PositiveSmallIntegerField()  # zero-indexed
 
     # Used when creating a shared deck
     origin_creator = models.OneToOneField(
@@ -250,8 +260,13 @@ class FlashCardCreator(models.Model):
         null=True,
         related_name='shared_mirror',
     )
-    # TODO: on_delete of the next line needs to be changed for pulling deletes to work properly
     # This is used when cloning decks, to remember where the cloned creator came from
+    copied_from_deck = models.ForeignKey(
+        Deck,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='flashcards_copied_from',
+    )  # type: Deck
     copied_from_creator = models.ForeignKey(
         'self',
         on_delete=models.SET_NULL,
@@ -361,6 +376,7 @@ class FlashCardCreator(models.Model):
         if origin_or_copied == 'COPIED':
             new_flashcard_creator.origin_creator = None
             new_flashcard_creator.copied_from_creator = self
+            new_flashcard_creator.copied_from_deck = self.deck
         elif origin_or_copied == 'ORIGIN':
             new_flashcard_creator.origin_creator = self
             new_flashcard_creator.copied_from_creator = None
@@ -703,7 +719,12 @@ class FlashCard(models.Model):
 
 
 class StudySessionManager(models.Model):
-    user = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE, related_name='study_session_managers')
+    user = models.ForeignKey(
+        Profile,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name='study_session_managers',
+    )
 
     ALGORITHM_OPTIONS = [
         ('ANKI', 'Default Anki Settings'),
@@ -774,7 +795,11 @@ class DeckStudySessionManagerModelManager(models.Manager):
 
 
 class DeckStudySessionManager(StudySessionManager):
-    deck = models.OneToOneField(Deck, on_delete=models.CASCADE, related_name='study_session_manager')
+    deck = models.OneToOneField(
+        Deck,
+        on_delete=models.CASCADE,
+        related_name='study_session_manager',
+    )
 
     objects = DeckStudySessionManagerModelManager()
 
@@ -987,19 +1012,19 @@ class SharedDeck(Deck):
             self.version_number += 1
             self.save()
 
-            # Create notification for everyone who's cloned this deck
-            profs_to_notify = Profile.objects.filter(
-                user__decks__shared_deck_relations__shared_deck=self,
-            )
+            # # Create notification for everyone who's cloned this deck
+            # profs_to_notify = Profile.objects.filter(
+            #     user__decks__shared_deck_relations__shared_deck=self,
+            # )
 
-            Notification.objects.bulk_create([
-                Notification(
-                    title=f'Update for "{self.title}"',
-                    description=f'The creator of "{self.title}" has released a new update.  You can update your deck with "Other > Edit > Check For Updates > Update."',
-                    profile=profile,
-                )
-                for profile in profs_to_notify
-            ])
+            # Notification.objects.bulk_create([
+            #     Notification(
+            #         title=f'Update for "{self.title}"',
+            #         description=f'The creator of "{self.title}" has released a new update.  You can update your deck with "Other > Edit > Check For Updates > Update."',
+            #         profile=profile,
+            #     )
+            #     for profile in profs_to_notify
+            # ])
 
             return self
 
