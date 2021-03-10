@@ -2,7 +2,14 @@
 -----
 
 
-## Shared Deck Attempted Fix - Mar 05 0.5.2
+## Automatic Copied Deck Updates - Mar 10 - 0.5.3
+Previously, to update a deck you copied from a shared/premade deck, you needed to press "Other > Edit > Check for Updates > Update."  This update simplifies that process so that whenever you study a deck, it automatically checks for updates and updates itself if it finds any.
+
+
+* **Fixed Ordered List Centering:** Fixed a longstanding issue that would cause the numbers of an ordered list to be left aligned instead of centered.
+
+
+## Shared Deck Fix - Mar 05 - 0.5.2
 Shared deck updating has been disabled for quite some time due to various issues.  This update fixes the vast majority of those issues and re-enables the ability to update shared decks.
 
 

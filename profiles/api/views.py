@@ -321,8 +321,7 @@ def login_api_view(request, *args, **kwargs):
         Notification.objects.create(
             profile=user.profile,
             title='New Login',
-            description=
-                f'There was a new login to your account on {str(timezone.now())[:19]} UTC.  If this was not you, please change your password immediately.'
+            description=f'There was a new login to your account on {str(timezone.now())[:19]} UTC.  If this was not you, please change your password immediately.',
         )
 
     return Response({'message': 'Successfully authenticated user'}, status=200)
@@ -380,7 +379,6 @@ If this wasn't you, you can ignore this message.  However, please be aware someo
         )
 
         return redirect('/confirm-email/')
-
 
 
 @api_view(['POST'])

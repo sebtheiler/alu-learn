@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { apiProfileLogin } from '../../lookup';
-import { errorHandler, FormCheckbox } from '../../utils';
+import { errorHandler } from '../../utils';
 
 export function LoginForm(props) {
   const returnUrl = props.returnUrl ? new URL(props.returnUrl).pathname : null;
@@ -57,14 +57,6 @@ export function LoginForm(props) {
           maxLength={512}
           required
         />
-      </Form.Group>
-      <Form.Group>
-        <FormCheckbox id='accept-tos' required>
-          I continue to accept the <a href='/legal/tos/' target='_blank'>
-          Terms of Service</a> and{' '}
-          <a href='/legal/privacypolicy/' target='_blank'>
-          Privacy Policy</a>.
-        </FormCheckbox>
       </Form.Group>
       <div>
         <p>Forgot your password? Click <a href='/reset-password/'>here</a> to reset it</p>

@@ -52,7 +52,8 @@ const randomTips = [
   'It\'s much more efficient to have a big deck, and organize units with tags, than it is to have a bunch of small decks for each unit',
   'You can view advanced statistics about your deck through "Other > Statistics"',
   'Teachers can create classes of students, so that they can track their students\' progress',
-  'Most people find doing Alu reviews in the morning, before school, more efficient and enjoyable',
+  'Most people find doing Alu reviews in the morning (before school) more efficient and enjoyable',
+  'Be honest with your Alu reviews, it\'s only designed to help you',
   // Random stuff
   'Hermann Ebbinghaus discovered the forgetting curve, which Alu is based on, in the 1800s',
   'Dr. Piotr Wozniak developed one of the first digital SR apps in the 1990s. His work has made Alu possible.',

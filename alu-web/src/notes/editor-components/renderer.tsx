@@ -28,7 +28,7 @@ export const Element = (props) => {
     case 'list-item':
       return <li {...attributes}>{children}</li>
     case 'numbered-list':
-      return <ol {...attributes}>{children}</ol>
+      return <ol {...attributes} style={{ listStylePosition: 'inside' }}>{children}</ol>
     case 'link':
       return <LinkElement {...props} />
     case 'image':
