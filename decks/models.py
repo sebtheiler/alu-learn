@@ -220,6 +220,17 @@ class Deck(models.Model):
         except ZeroDivisionError:
             return 0
 
+    def list_available_updates(self):
+        needs_updating = []
+        for shared_deck_relation in self.shared_deck_relations.all().prefetch_related('shared_deck'):
+            if shared_deck_relation.cloned_at_version < shared_deck_relation.shared_deck.version_number:
+                needs_updating.append({
+                    'title': shared_deck_relation.shared_deck.title,
+                    'id': shared_deck_relation.shared_deck.id,
+                })
+
+        return needs_updating
+
 
 class SharedDeckRelation(models.Model):
     deck = models.ForeignKey(
@@ -936,7 +947,7 @@ class SharedDeck(Deck):
 
         return deck
 
-    def update(
+    def push_updates(
         self,
         origin_deck: Deck,
         check_diff_only: bool = False,

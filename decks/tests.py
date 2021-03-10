@@ -1613,14 +1613,14 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(len(response.data['needs_updating']), 0)
 
         # Test with only getting diff
-        shared_deck.update(deck, True)
+        shared_deck.push_updates(deck, True)
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data['needs_updating'], list)
         self.assertEqual(len(response.data['needs_updating']), 0)
 
         # Update and test
-        shared_deck.update(deck)
+        shared_deck.push_updates(deck)
 
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
@@ -1689,7 +1689,7 @@ class DeckTestCase(ImprovedTestCase):
             'basic',
             [create_slate_element('front'), create_slate_element('back')],
         )[0].creator
-        shared_deck.update(deck)
+        shared_deck.push_updates(deck)
         self.assertEqual(FlashCardCreator.objects.filter(deck=shared_deck).count(), num_shared_creators + 1)
         self.assertEqual(FlashCardField.objects.filter(creator__deck=shared_deck).count(), num_shared_fields + 2)
 
@@ -1720,7 +1720,7 @@ class DeckTestCase(ImprovedTestCase):
             'cloze',
             [create_slate_element('{{c1::123}} {{c2::456}} {{c3::789}} {{c4::abc}}')],
         )[0].creator
-        shared_deck.update(deck)
+        shared_deck.push_updates(deck)
         self.assertEqual(FlashCardCreator.objects.filter(deck=shared_deck).count(), num_shared_creators + 1)
         self.assertEqual(FlashCardField.objects.filter(creator__deck=shared_deck).count(), num_shared_fields + 1)
 
@@ -1754,7 +1754,7 @@ class DeckTestCase(ImprovedTestCase):
         fields[0].save()
         fields[1].save()
 
-        shared_deck.update(deck)
+        shared_deck.push_updates(deck)
         self.assertEqual(FlashCardCreator.objects.filter(deck=shared_deck).count(), num_shared_creators)
         self.assertEqual(FlashCardField.objects.filter(creator__deck=shared_deck).count(), num_shared_fields)
 
@@ -1785,7 +1785,7 @@ class DeckTestCase(ImprovedTestCase):
         fields[0].text = create_slate_element('{{c1::123}} {{c2::456}} {{c3::789}} {{c4::abc}} {{c5::abc}}')
         fields[0].save()
 
-        shared_deck.update(deck)
+        shared_deck.push_updates(deck)
         self.assertEqual(FlashCardCreator.objects.filter(deck=shared_deck).count(), num_shared_creators)
         self.assertEqual(FlashCardField.objects.filter(creator__deck=shared_deck).count(), num_shared_fields)
 
@@ -1810,7 +1810,7 @@ class DeckTestCase(ImprovedTestCase):
         creator = FlashCardCreator.objects.filter(deck=deck).last()
         creator.delete()
 
-        shared_deck.update(deck)
+        shared_deck.push_updates(deck)
         self.assertEqual(
             FlashCardCreator.objects.filter(deck=shared_deck).count(),
             num_shared_creators - 1,

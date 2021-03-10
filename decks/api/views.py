@@ -1040,7 +1040,7 @@ def shared_deck_update_view(request, *args, **kwargs):
     except Deck.DoesNotExist:
         return Response({'message': 'This deck does not exist / you are unauthorized'}, status=400)
 
-    data = shared_deck.update(origin_deck, check_diff_only)
+    data = shared_deck.push_updates(origin_deck, check_diff_only)
     if isinstance(data, SharedDeck):
         data = SharedDeckSerializer(data).data
 
@@ -1066,13 +1066,7 @@ def deck_get_updates_view(request, deck_id, *args, **kwargs):
         return Response({'message': 'Deck does not exist / you are unauthorized'}, status=400)
 
     # Find decks that need updating
-    needs_updating = []
-    for shared_deck_relation in deck.shared_deck_relations.all().prefetch_related('shared_deck'):
-        if shared_deck_relation.cloned_at_version < shared_deck_relation.shared_deck.version_number:
-            needs_updating.append({
-                'title': shared_deck_relation.shared_deck.title,
-                'id': shared_deck_relation.shared_deck.id,
-            })
+    needs_updating = deck.list_available_updates()
 
     return Response({'needs_updating': needs_updating}, status=200)
 

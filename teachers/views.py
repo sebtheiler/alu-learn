@@ -1,6 +1,6 @@
 from django.http.response import Http404
-from .models import Assignment, Classroom
-from django.shortcuts import render, redirect
+from .models import Classroom
+from django.shortcuts import render
 from utils import permissions
 
 
@@ -16,6 +16,7 @@ def classroom_detail(request, classroom_id, *args, **kwargs):
         'classroom_name': classroom.title, 'classroom_id': classroom_id
     })
 
+
 # Rendered when a student is viewing a class they are in
 @permissions()
 def classroom_student_detail(request, classroom_id, *args, **kwargs):
@@ -27,6 +28,7 @@ def classroom_student_detail(request, classroom_id, *args, **kwargs):
     return render(request, 'teachers/student-detail.html', context={
         'classroom_name': classroom.title, 'classroom_id': classroom_id
     })
+
 
 @permissions()
 def classroom_assignment_study(request, classroom_id, assignment_id, *args, **kwargs):

@@ -1,8 +1,9 @@
-from datetime import timedelta
 import re
+from datetime import timedelta
 
-from decks.models import Deck, FlashCard
-from decks.serializers import DeckSerializer, FlashCardSerializer, SharedDeckSerializer
+from decks.models import Deck, FlashCard, SharedDeck
+from decks.serializers import (DeckSerializer, FlashCardSerializer,
+                               SharedDeckSerializer)
 from django.db.models.query_utils import Q
 from django.utils import timezone
 from profiles.models import Profile
@@ -12,7 +13,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Assignment, AssignmentStudySessionManager, Classroom
-from ..serializers import AssignmentSerializer, ClassroomAssignmentsSerializer, ClassroomSerializer, StudentSerializer
+from ..serializers import (AssignmentSerializer,
+                           ClassroomAssignmentsSerializer, ClassroomSerializer,
+                           StudentSerializer)
 
 
 @api_view(['POST'])
@@ -63,7 +66,10 @@ def edit_classroom_view(request, *args, **kwargs):
         `new_title`: (Data) New title for the classroom
     """
     try:
-        classroom = Classroom.objects.get(teachers=request.user.profile, pk=request.data.get('classroom_id'))
+        classroom = Classroom.objects.get(
+            teachers=request.user.profile,
+            pk=request.data.get('classroom_id'),
+        )
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
 
@@ -83,7 +89,10 @@ def delete_classroom_view(request, *args, **kwargs):
         `classroom_id`: (Data) Id of the classroom to delete
     """
     try:
-        classroom = Classroom.objects.get(teachers=request.user.profile, pk=request.data.get('classroom_id'))
+        classroom = Classroom.objects.get(
+            teachers=request.user.profile,
+            pk=request.data.get('classroom_id'),
+        )
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
 
@@ -139,7 +148,7 @@ def classroom_detail_view(request, classroom_id, *args, **kwargs):
     """
     classroom = Classroom.objects.filter(
         Q(pk=classroom_id) & (Q(teachers=request.user.profile) | Q(students=request.user.profile))
-    ).first() # we use .filter instead of .get, because this sometimes returns multiple classrooms
+    ).first()  # we use .filter instead of .get, because this sometimes returns multiple classrooms
 
     if classroom is None:
         return Response({'message': 'Classroom not found'}, status=404)
@@ -163,7 +172,11 @@ def classroom_students_view(request, classroom_id, *args, **kwargs):
         return Response({'message': 'Classroom not found'}, status=404)
 
     return Response(
-        StudentSerializer(classroom.students, many=True, context={'tz': request.GET.get('tz')}).data,
+        StudentSerializer(
+            classroom.students,
+            many=True,
+            context={'tz': request.GET.get('tz')}
+        ).data,
         status=200,
     )
 
@@ -205,8 +218,12 @@ def student_statistics_view(request, classroom_id, student_id, *args, **kwargs):
         `student_id`: (URL) Id of the student Profile to get data for
     """
     try:
-        # We need .filter instead of .get because of edge-cases when the teacher teaches multiple classes the student is in
-        student = Profile.objects.filter(pk=student_id, classrooms_in__teachers=request.user.profile).first()
+        # We need .filter instead of .get because of edge-cases when the teacher
+        # teaches multiple classes the student is in
+        student = Profile.objects.filter(
+            pk=student_id,
+            classrooms_in__teachers=request.user.profile,
+        ).first()
     except Profile.DoesNotExist:
         return Response({'message': 'Student not found'}, status=404)
 
@@ -219,13 +236,13 @@ def student_statistics_view(request, classroom_id, student_id, *args, **kwargs):
     student_copied_deck = student.user.decks.filter(student_attached_to=classroom).first()
     if student_copied_deck is None:
         return Response({'message': 'Student deck not found'}, status=404)
-    
+
     # Get statistics about the deck and student
     deck_stats = student_copied_deck.get_statistics()
-    cutoff_time = timezone.now() - timedelta(days=182) # half a year, and about school year length
+    cutoff_time = timezone.now() - timedelta(days=182)  # half a year, and about school year length
     student_history = student.history.filter(date__gte=cutoff_time)
 
-    stats ={
+    stats = {
         'deck_stats': deck_stats,
         'student_history': HistorySerializer(student_history, many=True).data,
     }
@@ -309,7 +326,7 @@ def suspend_students_flashcards_view(request, classroom_id: int):
         classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
-    
+
     tags_query = request.data.get('tag_query')
     action = request.data.get('action', 'SUSPEND')
     if tags_query is None:
@@ -347,8 +364,11 @@ def create_assignment_view(request, classroom_id: int):
     tag_query = request.data.get('tag_query')
     due_date = request.data.get('due_date')
     if None in (title, tag_query, due_date):
-        return Response({'message': 'You must specify `title`, `tag_query`, and `due_date`'}, status=400)
-    
+        return Response(
+            {'message': 'You must specify `title`, `tag_query`, and `due_date`'},
+            status=400,
+        )
+
     Assignment.objects.create(
         title=title,
         classroom=classroom,
@@ -357,6 +377,7 @@ def create_assignment_view(request, classroom_id: int):
     )
 
     return Response({'message': 'Created assignment'}, status=201)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -371,10 +392,11 @@ def assignments_teacher_list_view(request, classroom_id: int):
         classroom = Classroom.objects.get(teachers=request.user.profile, pk=classroom_id)
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
-    
+
     assignments = classroom.assignments.all()
 
     return Response(AssignmentSerializer(assignments, many=True).data, 200)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -394,6 +416,7 @@ def assignments_student_list_view(request):
         ).data,
         status=200,
     )
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -415,13 +438,14 @@ def edit_assignment_view(request, classroom_id: int, assignment_id: int):
         )
     except Assignment.DoesNotExist:
         return Response({'message': 'Assignment not found'}, status=404)
-    
+
     assignment.title = request.data.get('new_title', assignment.title)
     assignment.tag_query = request.data.get('new_tag_query', assignment.tag_query)
     assignment.due_date = request.data.get('new_due_date', assignment.due_date)
     assignment.save()
 
     return Response({'message': 'Edited assignment'}, status=200)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -460,7 +484,7 @@ def student_percent_complete_list(request, classroom_id: int, assignment_id: int
         )
     except Assignment.DoesNotExist:
         return Response({'message': 'Assignment not found'}, status=404)
-    
+
     student_data = [
         {
             'name': f'{student.user.first_name} {student.user.last_name}',
@@ -496,6 +520,16 @@ def study_assignment_view(request, classroom_id: int, assignment_id: int):
         user=request.user.profile,
     )
 
+    # If there are any updates available, pull them
+    attached_deck = assm.get_attached_deck()  # type: Deck
+    if attached_deck:
+        needs_updating = attached_deck.list_available_updates()
+        if len(needs_updating) > 0:
+            for update in needs_updating:
+                classroom_deck = SharedDeck.objects.get(pk=update['id'])
+                attached_deck.pull_updates(classroom_deck)
+
+    # Get the flashcards
     seen_flashcards, unseen_flashcards = assm.get_flashcards()
     flashcards = assm.get_reviews(seen_flashcards, unseen_flashcards)
 
@@ -524,7 +558,7 @@ def assignment_detail_view(request, classroom_id: int, assignment_id: int):
         )
     except Assignment.DoesNotExist:
         return Response({'message': 'Assignment not found'}, status=404)
-    
+
     return Response(
         AssignmentSerializer(
             assignment,

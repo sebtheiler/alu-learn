@@ -140,6 +140,7 @@ export function NavbarComponent(props) {
                 <Button
                   variant='outline-light'
                   className='text-white'
+                  id='login-navbar-btn'
                 >
                   Log-in
                 </Button>

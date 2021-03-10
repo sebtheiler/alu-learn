@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Tuple
+from typing import Tuple, Union
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.query import QuerySet
@@ -114,17 +114,20 @@ class AssignmentStudySessionManager(StudySessionManager):
     def __str__(self) -> str:
         return f'ASSM for {self.assignment.title} by {self.user}'
 
-    def get_flashcards(self) -> Tuple[QuerySet[FlashCard], QuerySet[FlashCard]]:
-        review_cutoff = self.calc_review_cutoff()
-
-        # Get/clone attached deck
+    def get_attached_deck(self) -> Union[Deck, None]:
         try:
-            deck = Deck.objects.get(
+            return Deck.objects.get(
                 user=self.user.user,
                 student_attached_to=self.assignment.classroom,
             )
         except Deck.DoesNotExist:
-            # Clone the deck
+            return None
+
+    def get_flashcards(self) -> Tuple[QuerySet[FlashCard], QuerySet[FlashCard]]:
+        review_cutoff = self.calc_review_cutoff()
+
+        deck = self.get_attached_deck()
+        if deck is None:
             deck = self.assignment.classroom.deck.clone(
                 self.user.user,
             )

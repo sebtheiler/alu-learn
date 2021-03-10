@@ -1,10 +1,12 @@
-from django.db.models.query_utils import Q
-from utils.utils import create_slate_element
-from decks.models import Deck, DeckStudySessionManager, FlashCard, FlashCardCreator, FlashCardField, SharedDeck
+import datetime as dt
+
+from decks.models import (Deck, DeckStudySessionManager, FlashCard,
+                          FlashCardCreator, FlashCardField, SharedDeck)
 from django.contrib.auth import get_user_model
+from django.db.models.query_utils import Q
 from rest_framework.test import APIRequestFactory
 from utils.test_utils import ImprovedTestCase, SeleniumTestCase
-import datetime as dt
+from utils.utils import create_slate_element
 
 from .api import views as api_views
 from .models import Assignment, AssignmentStudySessionManager, Classroom
@@ -83,9 +85,8 @@ class ClassroomTestCase(ImprovedTestCase):
                 'basic',
                 [create_slate_element(str(i)), create_slate_element(str(i + 1))],
             )
-        
+
         return deck
-        
 
     def test_create_class_api(self):
         api_path = '/api/teachers/classroom/create/'
@@ -360,7 +361,7 @@ class ClassroomTestCase(ImprovedTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data['deck_stats'], dict)
         self.assertIsInstance(response.data['student_history'], list)
-    
+
     def test_create_assignment_api(self):
         # Create classroom
         classroom = self.create_classroom('Assignment Class', 1)
@@ -405,7 +406,7 @@ class ClassroomTestCase(ImprovedTestCase):
         self.assertEqual(assignment.classroom, classroom)
         self.assertEqual(assignment.tag_query, 'unit 1')
         self.assertEqual(assignment.due_date, dt.date(2011, 10, 5))
-    
+
     def test_assignments_teacher_list_api(self):
         # Create class
         classroom = self.create_classroom('Class with teacher assignments', num_assignments=5)
@@ -461,7 +462,7 @@ class ClassroomTestCase(ImprovedTestCase):
                 self.assertEqual(assignment['due_date'], '2011-10-05')
                 self.assertIsNone(assignment['percent_complete'])
                 self.assertIsInstance(assignment['id'], int)
-    
+
     def test_assignments_calc_percent_complete(self):
         # Create class
         classroom1 = self.create_classroom('Class 1 for student', num_students=1, num_assignments=1)
@@ -505,7 +506,7 @@ class ClassroomTestCase(ImprovedTestCase):
 
             self.assertEqual(percent_complete1, None)
             self.assertEqual(percent_complete2, None)
-        
+
         # Update to have proper tags and study again
         FlashCardCreator.objects.filter(
             Q(deck__pk=shared_classroom1_deck.pk) |
@@ -563,7 +564,7 @@ class ClassroomTestCase(ImprovedTestCase):
             self.assertEqual(assignment.title, 'Finish Unit 1')
             self.assertEqual(assignment.tag_query, 'unit 1')
             self.assertEqual(str(assignment.due_date), '2011-10-05')
-        
+
         hasnt_changed()
 
         # Attempt to edit as unauthorized user
@@ -606,10 +607,10 @@ class ClassroomTestCase(ImprovedTestCase):
         response = self.post_response(api_path, api_view, {}, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(classroom.assignments.count(), 2)
-    
+
     def test_assignment_study_api(self):
         # Create class
-        classroom = self.create_classroom('Class with assignment to study', num_assignments=1, num_students=1)
+        classroom = self.create_classroom('Class with assignment to study', 1, 1)
         assignment = classroom.assignments.first()
         student = classroom.students.first().user
         api_view = api_views.study_assignment_view
@@ -617,8 +618,8 @@ class ClassroomTestCase(ImprovedTestCase):
         kwargs = {'classroom_id': classroom.pk, 'assignment_id': assignment.pk}
 
         # Create deck for class
-        classroom_deck = self.create_deck('Clasroom Deck', 30)
-        classroom.attach_deck(classroom_deck)
+        classroom_origin_deck = self.create_deck('Clasroom Deck', 30)
+        classroom_shared_deck = classroom.attach_deck(classroom_origin_deck)
 
         self.assertEqual(
             Deck.objects.filter(user=student).count(),
@@ -692,7 +693,7 @@ class ClassroomTestCase(ImprovedTestCase):
 
         # Update to have proper tags
         FlashCardCreator.objects.filter(
-            Q(deck__pk=classroom_deck.pk) |
+            Q(deck__pk=classroom_origin_deck.pk) |
             Q(deck__user=student)
         ).update(tags=assignment.tag_query)
 
@@ -703,17 +704,85 @@ class ClassroomTestCase(ImprovedTestCase):
         self.assertEqual(len(response.data), 20)
         check_deck_assignment_created()
 
-
         # Study again (to make sure assm/deck aren't created again)
         response = self.get_response(api_path, api_view, user=student, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, list)
         self.assertEqual(len(response.data), 20)
         check_deck_assignment_created()
-    
+
+        # === TESTING AUTOUPDATE ===
+        # Update the original deck
+        creator_num = FlashCardCreator.objects.filter(deck=classroom_origin_deck).count()
+        flashcard_num = FlashCard.objects.filter(creator__deck=classroom_origin_deck).count()
+        field_num = FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count()
+        FlashCardCreator.objects.filter(deck=classroom_origin_deck).first().delete()
+        self.assertEqual(
+            FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
+            creator_num - 1,
+        )
+        self.assertEqual(
+            FlashCard.objects.filter(creator__deck=classroom_origin_deck).count(),
+            flashcard_num - 1,
+        )
+        self.assertEqual(
+            FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count(),
+            field_num - 2,
+        )
+
+        # Update the classroom deck
+        self.assertNotEqual(
+            FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
+            FlashCardCreator.objects.filter(deck=classroom_shared_deck).count(),
+        )
+        self.assertNotEqual(
+            FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count(),
+            FlashCardField.objects.filter(creator__deck=classroom_shared_deck).count(),
+        )
+        classroom_shared_deck.push_updates(classroom_origin_deck)
+        self.assertEqual(
+            FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
+            FlashCardCreator.objects.filter(deck=classroom_shared_deck).count(),
+        )
+        self.assertEqual(
+            FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count(),
+            FlashCardField.objects.filter(creator__deck=classroom_shared_deck).count(),
+        )
+
+        # Study the assignment and make sure the student-copied deck gets updated
+        student_deck = Deck.objects.get(user=student)
+        self.assertNotEqual(
+            FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
+            FlashCardCreator.objects.filter(deck=student_deck).count(),
+        )
+        self.assertNotEqual(
+            FlashCard.objects.filter(creator__deck=classroom_origin_deck).count(),
+            FlashCard.objects.filter(creator__deck=student_deck).count(),
+        )
+        self.assertNotEqual(
+            FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count(),
+            FlashCardField.objects.filter(creator__deck=student_deck).count(),
+        )
+        response = self.get_response(api_path, api_view, user=student, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), 20)
+        self.assertEqual(
+            FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
+            FlashCardCreator.objects.filter(deck=student_deck).count(),
+        )
+        self.assertEqual(
+            FlashCard.objects.filter(creator__deck=classroom_origin_deck).count(),
+            FlashCard.objects.filter(creator__deck=student_deck).count(),
+        )
+        self.assertEqual(
+            FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count(),
+            FlashCardField.objects.filter(creator__deck=student_deck).count(),
+        )
+
     def test_assignment_detail_api(self):
         # Create class
-        classroom = self.create_classroom('Class with assignment to get detail', num_assignments=1, num_students=1)
+        classroom = self.create_classroom('Class with assignment to get detail', 1, 1)
         assignment = classroom.assignments.first()
         student = classroom.students.first().user
         api_view = api_views.assignment_detail_view
@@ -867,7 +936,6 @@ class TeacherBrowserTestCase(SeleniumTestCase):
         self.driver.find_element_by_class_name('classroom-view-btn').click()
 
         # Create assignment
-        today = dt.datetime.today()
         self.driver.find_element_by_id('create-assignment-btn').click()
         self.sleep(1)
         self.fill_text_element('title', 'Finish Unit 1')
@@ -941,7 +1009,6 @@ class TeacherBrowserTestCase(SeleniumTestCase):
             self.find_element_by_text('Easy').click()
             self.sleep(0.1)
 
-
         self.assertTextExists('Congratulations!')
         self.driver.find_element_by_id('assignments-home-btn').click()
         self.sleep(1)
@@ -949,4 +1016,3 @@ class TeacherBrowserTestCase(SeleniumTestCase):
             self.driver.find_element_by_class_name('assignment-table__percent-complete').text,
             '100%',
         )
- 
