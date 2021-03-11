@@ -2,11 +2,19 @@
 -----
 
 
+## ??? - Mar ?? - 0.5.4
+???
+
+
+* **Reversed Order of Student Progress Bargraph:** Reversed the order of the student progress bar graph that teachers see for every assignment.  Now students that have made the most progress appear on top rather than the bottom.
+
+
 ## Automatic Copied Deck Updates - Mar 10 - 0.5.3
 Previously, to update a deck you copied from a shared/premade deck, you needed to press "Other > Edit > Check for Updates > Update."  This update simplifies that process so that whenever you study a deck, it automatically checks for updates and updates itself if it finds any.
 
 
-* **Fixed Ordered List Centering:** Fixed a longstanding issue that would cause the numbers of an ordered list to be left aligned instead of centered.
+* **Fixed Ordered List Centering:** Fixed a longstanding issue that would cause the numbers of an ordered list to be left-aligned instead of centered.
+* **Autoupdating:** Your deck is now automatically updated whenever you study an assignment that has an updated shared deck.
 
 
 ## Shared Deck Fix - Mar 05 - 0.5.2

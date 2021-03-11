@@ -178,7 +178,7 @@ function RenderAssignment(props: { assignment: Assignment }) {
     null,
     (response: StudentPercentData[]) => response.map(
       data => [data.name, data.percent_complete ?? 0]
-    ).sort((a, b) => (a[1] as number) - (b[1] as number)),
+    ).sort((a, b) => (b[1] as number) - (a[1] as number)),
     expanded,
   );
 

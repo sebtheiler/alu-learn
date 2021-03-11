@@ -1,7 +1,10 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Deck, FlashCard, DeckThank, DeckStudySessionManager, CustomStudySessionManager, FlashCardField, FlashCardCreator, SharedDeck, SharedDeckRelation, DeckClone
+from .models import (CustomStudySessionManager, Deck, DeckClone,
+                     DeckStudySessionManager, DeckThank, FlashCard,
+                     FlashCardCreator, FlashCardField, SharedDeck,
+                     SharedDeckRelation)
 
 
 class FlashCardFieldTabAdmin(admin.TabularInline):
@@ -46,6 +49,7 @@ class DeckAdmin(admin.ModelAdmin):
         'user',
         'title',
         'student_attached_to',
+        'shared_deck',
     ]
 
     class Meta:
