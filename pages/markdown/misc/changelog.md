@@ -9,6 +9,7 @@
 * **Reversed Order of Student Progress Bargraph:** Reversed the order of the student progress bar graph that teachers see for every assignment.  Now students that have made the most progress appear on top rather than the bottom.
 * **Fixed Older Notifications:** Fixed the link to older notifications and fixed the page that displayed older notifications.  I'm aware the notification system still isn't perfect, but it currently isn't used enough to justify committing serious time to improve it.
 * **Reversed Flashcard Browse Order:** Reversed the default flashcard browse order so that most recent flashcards are displayed first.  You can still reverse this order by clicking "Sort Ascending" at the top of the page.
+* **Fixed Flashcard Rearranging:** Flashcard rearranging was broken when the browsing flashcard list was reversed.  I've fixed this now.
 
 
 ## Automatic Copied Deck Updates - Mar 10 - 0.5.3

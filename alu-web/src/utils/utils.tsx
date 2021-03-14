@@ -383,7 +383,7 @@ export function sample(arr, n) {
 }
 
 // Adapted from http://stackoverflow.com/a/10997390/11236
-export function updateURLParameter(url, param, paramVal){
+export function updateURLParameter(url: string, param: string, paramVal: any){
   let newAdditionalURL = "";
   let tempArray = url.split("?");
   const baseURL = tempArray[0];

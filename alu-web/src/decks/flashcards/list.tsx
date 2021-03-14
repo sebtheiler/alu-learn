@@ -120,10 +120,13 @@ export function FlashCardsList(props: FlashCardsListProps) {
         setMovingFlashcard(true);
         apiRearrangeFlashcard(deckId, flashcard.flashcard_num, trueDirection, (response, status) => {
           if (status === 200) {
+            let otherFlashcard = direction === 'UP' ? flashcards[index - 1] : flashcards[index + 1];
             if (trueDirection === 'UP') {
               flashcard.flashcard_num -= 1;
+              otherFlashcard.flashcard_num += 1;
             } else {
               flashcard.flashcard_num += 1;
+              otherFlashcard.flashcard_num -= 1;
             }
 
             // This uses `direction` instead of `trueDirection` since
@@ -132,11 +135,11 @@ export function FlashCardsList(props: FlashCardsListProps) {
             const newFlashcards = direction === 'UP' ? [
               ...flashcards.slice(0, index - 1),
               flashcard,
-              flashcards[index - 1],
+              otherFlashcard,
               ...flashcards.slice(index + 1),
             ] : [
               ...flashcards.slice(0, index),
-              flashcards[index + 1],
+              otherFlashcard,
               flashcard,
               ...flashcards.slice(index + 2),
             ];
