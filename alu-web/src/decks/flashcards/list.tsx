@@ -34,7 +34,7 @@ export function FlashCardsList(props: FlashCardsListProps) {
   const [selectedFlashcards, setSelectedFlashcards] = useState<string[]>([]);
   const [tagEditorModalIsOpen, setTagEditorModalIsOpen] = useState(false);
   const [totalFlashcardsNum, setTotalFlashcardsNum] = useState(0);
-  const reverseOrder = new URLSearchParams(window.location.search).get('reverse') === 'true';
+  const reverseOrder = new URLSearchParams(window.location.search).get('reverse') !== 'false';
 
   useEffect(() => {
     // Re-renders flashcardList whenever updated, if specified
@@ -107,6 +107,50 @@ export function FlashCardsList(props: FlashCardsListProps) {
     }
   }
 
+  const moveFlashcard = (direction: 'UP' | 'DOWN', index: number, flashcard: FlashCardCreator) => {
+    // Reverse the direction to be moved if the flashcard list is reversed
+    const trueDirection = !reverseOrder ? direction : (
+      direction === 'UP' ? 'DOWN' : 'UP'
+    );
+
+    return (event => {
+      event.preventDefault();
+      console.log(trueDirection)
+      if (!movingFlashcard && deckId) {
+        setMovingFlashcard(true);
+        apiRearrangeFlashcard(deckId, flashcard.flashcard_num, trueDirection, (response, status) => {
+          if (status === 200) {
+            if (trueDirection === 'UP') {
+              flashcard.flashcard_num -= 1;
+            } else {
+              flashcard.flashcard_num += 1;
+            }
+
+            // This uses `direction` instead of `trueDirection` since
+            // no matter the real direction the flashcard is going
+            // it always appears to be moving the same way
+            const newFlashcards = direction === 'UP' ? [
+              ...flashcards.slice(0, index - 1),
+              flashcard,
+              flashcards[index - 1],
+              ...flashcards.slice(index + 1),
+            ] : [
+              ...flashcards.slice(0, index),
+              flashcards[index + 1],
+              flashcard,
+              ...flashcards.slice(index + 2),
+            ];
+            setFlashCards(newFlashcards);
+            setMovingFlashcard(false);
+          } else {
+            // Error moving flashcard
+            errorHandler(response, status, 2009);
+          }
+        });
+      }
+    });
+  }
+
   return (
     <div className={props.className}>
       {flashcardList ? null : <h2 className='text-center mt-3'>Browsing Flashcards{deck ? ` in "${deck?.title}"` : null}</h2>}
@@ -146,52 +190,12 @@ export function FlashCardsList(props: FlashCardsListProps) {
             foreignUser={isForeignUser}
             hideSuspend={!!deckId}
             fixSlateLazy={fixSlateLazy ?? !!deckId}
-            moveUp={(index !== 0 && deck?.deck_type === 'standard') ? (event => {
-              event.preventDefault();
-              if (!movingFlashcard && deckId) {
-                setMovingFlashcard(true);
-                apiRearrangeFlashcard(deckId, flashcard.flashcard_num, 'UP', (response, status) => {
-                  if (status === 200) {
-                    setTimeout(() => { // it looks a bit jarring without the timeout
-                      const newFlashcards = [
-                        ...flashcards.slice(0, index - 1),
-                        flashcards[index],
-                        flashcards[index - 1],
-                        ...flashcards.slice(index + 1),
-                      ];
-                      setFlashCards(newFlashcards);
-                      setMovingFlashcard(false);
-                    }, 10);
-                  } else {
-                    // Error moving flashcard up
-                    errorHandler(response, status, 2009);
-                  }
-                });
-              }
-            }) : undefined}
-            moveDown={(index !== flashcards.length - 1 && deck?.deck_type === 'standard') ? (event => {
-              event.preventDefault();
-              if (!movingFlashcard && deckId) {
-                setMovingFlashcard(true);
-                apiRearrangeFlashcard(deckId, flashcard.flashcard_num, 'DOWN', (response, status) => {
-                  if (status === 200) {
-                    setTimeout(() => {
-                      const newFlashcards = [
-                        ...flashcards.slice(0, index),
-                        flashcards[index + 1],
-                        flashcards[index],
-                        ...flashcards.slice(index + 2),
-                      ];
-                      setFlashCards(newFlashcards);
-                      setMovingFlashcard(false);
-                    }, 10);
-                  } else {
-                    // Error moving flashcard down
-                    errorHandler(response, status, 2010);
-                  }
-                });
-              }
-            }) : undefined}
+            moveUp={(index !== 0 && deck?.deck_type === 'standard')
+              ? moveFlashcard('UP', index, flashcard)
+            : undefined}
+            moveDown={(index !== flashcards.length - 1 && deck?.deck_type === 'standard')
+              ? moveFlashcard('DOWN', index, flashcard)
+            : undefined}
             onChecked={selectionMode ? (event => {
               if (event.target.checked) {
                 // Add the flashcard's id to the list
