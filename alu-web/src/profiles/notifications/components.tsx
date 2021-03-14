@@ -60,7 +60,8 @@ export function NotificationComponent(props: NotificationComponentProps) {
   }
 
   const markAllAsRead = (_event?) => {
-    const unreadNotifs = (notifList as Notification[]).filter(
+    if (!notifList) return;
+    const unreadNotifs = notifList.filter(
       notif => notif.read === false
     ).map(notif => notif.id);
 
@@ -85,16 +86,16 @@ export function NotificationComponent(props: NotificationComponentProps) {
           <Popover.Title as='h3'>Notifications</Popover.Title>
           <Popover.Content>
             <div id='notification-popover-list'>
-              {notifList.length > 0 ? (notifList as Notification[]).map((notif, index) =>
+              {notifList.length > 0 ? notifList.map((notif, index) =>
                 <RenderNotification notif={notif} read={notif.read} key={index} />
               )
               :
               <p>You don't have any notifications yet</p>}
             </div>
-            {(username.length < 1 || notifList.length < 1) && <>
+            {!(username.length < 1 || notifList.length < 1) && <>
               <hr />
               <div>
-                {totalUnreadNotifs && numUnreadNotifs && <Button
+                {totalUnreadNotifs !== undefined && <Button
                   href='/profiles/notifications/'
                   onClick={() => window.location.href = '/profiles/notifications/'}
                   variant='primary'
@@ -138,7 +139,9 @@ export function NotificationComponent(props: NotificationComponentProps) {
             >
               {totalUnreadNotifs && totalUnreadNotifs > 0 ? <>
                 <i className='fas fa-bell fa-2x' />
-                <span className='notification-badge'>{totalUnreadNotifs < 10 ? totalUnreadNotifs : '9+'}</span>
+                <span className='notification-badge'>
+                  {totalUnreadNotifs < 10 ? totalUnreadNotifs : '9+'}
+                </span>
               </>:
                 <i className='far fa-bell fa-2x' />
               }
@@ -153,6 +156,7 @@ export function NotificationComponent(props: NotificationComponentProps) {
     // This doesn't effect the current display - only
     // for when the page is reloaded
     markAllAsRead();
+    console.log(nextUrl, totalUnreadNotifs, numUnreadNotifs)
 
     return (
       <div className='text-left mt-5 mx-auto container'>
@@ -166,17 +170,17 @@ export function NotificationComponent(props: NotificationComponentProps) {
           </p>
         }
         <div className='mb-2'>
-        {nextUrl && totalUnreadNotifs && numUnreadNotifs &&
-          <Button
-            onClick={handleLoadNext}
-            variant='outline-primary'
-          >
-            {nextNotifsDidSet ? "Load more notifications" : "Loading..."}
-            {(totalUnreadNotifs - numUnreadNotifs) > 0 &&
-            ` (${totalUnreadNotifs - numUnreadNotifs})`}
-          </Button>
-        }
-      </div>
+          {nextUrl && totalUnreadNotifs !== undefined && numUnreadNotifs !== undefined &&
+            <Button
+              onClick={handleLoadNext}
+              variant='outline-primary'
+            >
+              {nextNotifsDidSet ? "Load more notifications" : "Loading..."}
+              {(totalUnreadNotifs - numUnreadNotifs) > 0 &&
+              ` (${totalUnreadNotifs - numUnreadNotifs})`}
+            </Button>
+          }
+        </div>
       </div>
     );
   }
