@@ -15,7 +15,7 @@ import { NoteEditor, NotesHomeList } from './notes';
 import { AutoNote, AutoFlashCard } from './notes/autonote';
 import { ManualSRHome } from './manual-sr';
 import { GameComponent, MatchingGame } from './decks/games';
-import { ClassroomDetail, ClassroomsHomepage, ClassroomStudentDetail, StudyAssignment } from './teachers';
+import { ClassroomDetail, ClassroomStudentDetail, StudyAssignment } from './teachers';
 
 const e = React.createElement;
 
@@ -70,7 +70,6 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [GameComponent, 'game-component'],
   [StaffForceLogin, 'staff-force-login'],
   [StatisticsPage, 'statistics-page'],
-  [ClassroomsHomepage, 'classrooms-homepage'],
   [ClassroomDetail, 'classroom-detail'],
   [ClassroomStudentDetail, 'classroom-student-detail'],
   [StudyAssignment, 'study-assignment'],
