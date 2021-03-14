@@ -2,10 +2,11 @@
 -----
 
 
-## ??? - Mar ?? - 0.5.4
-???
+## Essential-Only Option and Various Fixes - Mar 15 - 0.5.4
+Many teachers like to create two versions of every assignment: one with all of the flashcards for a unit and the other with only essential flashcards.  This update makes that process easier by introducing a simple checkbox that allows teachers to indicate if they want an essential-only copy of that assignment.
 
 
+* **Added Essential-Only Option:** Added an option for teachers when creating assignments that creates two copies of the assignment: one with the regular tag query and another with an essential only ("AND essential") copy.  This is intended to make it easier for teachers who want to make the full flashcard deck optional but highly encourage doing the essential flashcards.
 * **Reversed Order of Student Progress Bargraph:** Reversed the order of the student progress bar graph that teachers see for every assignment.  Now students that have made the most progress appear on top rather than the bottom.
 * **Fixed Older Notifications:** Fixed the link to older notifications and fixed the page that displayed older notifications.  I'm aware the notification system still isn't perfect, but it currently isn't used enough to justify committing serious time to improve it.
 * **Reversed Flashcard Browse Order:** Reversed the default flashcard browse order so that most recent flashcards are displayed first.  You can still reverse this order by clicking "Sort Ascending" at the top of the page.
