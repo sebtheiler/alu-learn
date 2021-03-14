@@ -14,7 +14,7 @@ from .models import Assignment, AssignmentStudySessionManager, Classroom
 User = get_user_model()
 
 
-class ClassroomTestCase(ImprovedTestCase):
+class TeacherTestCase(ImprovedTestCase):
     def setUp(self) -> None:
         super().setUp()
 
@@ -406,6 +406,33 @@ class ClassroomTestCase(ImprovedTestCase):
         self.assertEqual(assignment.classroom, classroom)
         self.assertEqual(assignment.tag_query, 'unit 1')
         self.assertEqual(assignment.due_date, dt.date(2011, 10, 5))
+
+        # Create assignment with non-esssential version too
+        data = {
+            'title': 'Finish Unit 2',
+            'tag_query': 'unit 2',
+            'due_date': '2013-10-05',
+            'create_essential_copy': True,
+        }
+        self.assertEqual(
+            Assignment.objects.count(),
+            1,
+        )
+        response = self.post_response(api_path, api_view, data, kwargs=kwargs)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(
+            Assignment.objects.count(),
+            3,
+        )
+        assignment = Assignment.objects.get(title='Finish Unit 2')
+        self.assertEqual(assignment.classroom, classroom)
+        self.assertEqual(assignment.tag_query, 'unit 2')
+        self.assertEqual(assignment.due_date, dt.date(2013, 10, 5))
+
+        assignment = Assignment.objects.get(title='Finish Unit 2 (Essential Only)')
+        self.assertEqual(assignment.classroom, classroom)
+        self.assertEqual(assignment.tag_query, 'unit 2 AND essential')
+        self.assertEqual(assignment.due_date, dt.date(2013, 10, 5))
 
     def test_assignments_teacher_list_api(self):
         # Create class

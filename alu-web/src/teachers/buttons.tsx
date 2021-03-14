@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import DatePicker from 'react-date-picker';
 import { apiClassroomCreate, apiClassroomDelete, apiClassroomEdit, apiCreateAssignment, apiDeleteAssignment, apiEditAssignment } from '../lookup';
-import { addDays, errorHandler, LoadingButton } from '../utils';
+import { addDays, errorHandler, FormCheckbox, LoadingButton, QuestionBubble } from '../utils';
 import { Assignment, Classroom } from './types';
 import './buttons.css';
 
@@ -154,6 +154,7 @@ export function CreateEditAssignmentModal(props: CreateEditAssignmentModalProps)
         form.elements.title.value,
         form.elements.tagQuery.value,
         dueDateString,
+        form.elements.essentialCopy.checked,
         (response, status) => {
           if (status === 201) {
             window.location.reload();
@@ -245,6 +246,16 @@ export function CreateEditAssignmentModal(props: CreateEditAssignmentModalProps)
               className='form-control'
             />
           </Form.Group>
+          {!assignment && <Form.Group>
+            <FormCheckbox name='essentialCopy'>
+              Create essential-only copy of this assignment?{' '}
+              <QuestionBubble>
+                If checked, this will create two assignments.
+                One with the tag query you specified above, and the other with
+                the same query but with "AND essential" added on.
+              </QuestionBubble>
+            </FormCheckbox>
+          </Form.Group>}
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={onHide} variant='secondary' className='mr-auto'>

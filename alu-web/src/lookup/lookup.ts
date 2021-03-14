@@ -754,12 +754,14 @@ export function apiCreateAssignment(
   title: string,
   tagQuery: string,
   dueDate: string | Date,
+  createEssentialCopy: boolean,
   callback: (response: Assignment, status: number) => void,
 ) {
   backendLookup('POST', `teachers/classroom/${classroomId}/assignments/create/`, callback, {
     title: title,
     tag_query: tagQuery,
     due_date: dueDate,
+    create_essential_copy: createEssentialCopy,
   });
 }
 

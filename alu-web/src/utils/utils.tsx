@@ -216,14 +216,14 @@ export function FormCheckbox(props: FormCheckboxProps) {
 
 
 // Generates a little question-bubble with tooltip
-export function QuestionBubble(props) {
-  // Type could be:
-  // question; info; times; stop; minus; plus;
-  // dot; usd; pause; etc.
-  const type = props.type ? props.type : 'question';
-
-  const showDelay = props.showDelay ? props.showDelay : 350;
-  const hideDelay = props.hideDelay ? props.hideDelay : 1800;
+interface QuestionBubbleProps {
+  type?: 'info' | 'question';
+  showDelay?: number;
+  hideDelay?: number;
+  children?: ReactNodeArray | ReactNode;
+}
+export function QuestionBubble(props: QuestionBubbleProps) {
+  const { type = 'question', showDelay = 350, hideDelay = 1800 } = props;
 
   return (
     <OverlayTrigger

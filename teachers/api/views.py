@@ -363,18 +363,31 @@ def create_assignment_view(request, classroom_id: int):
     title = request.data.get('title')
     tag_query = request.data.get('tag_query')
     due_date = request.data.get('due_date')
+    create_essential_copy = request.data.get('create_essential_copy', False)
     if None in (title, tag_query, due_date):
         return Response(
             {'message': 'You must specify `title`, `tag_query`, and `due_date`'},
             status=400,
         )
 
-    Assignment.objects.create(
-        title=title,
-        classroom=classroom,
-        tag_query=tag_query,
-        due_date=due_date,
-    )
+    assignments = [
+        Assignment(
+            title=title,
+            classroom=classroom,
+            tag_query=tag_query,
+            due_date=due_date,
+        )
+    ]
+    if create_essential_copy:
+        assignments.append(
+            Assignment(
+                title=f'{title} (Essential Only)',
+                classroom=classroom,
+                tag_query=f'{tag_query} AND essential',
+                due_date=due_date,
+            )
+        )
+    Assignment.objects.bulk_create(assignments)
 
     return Response({'message': 'Created assignment'}, status=201)
 
