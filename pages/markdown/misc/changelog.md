@@ -12,6 +12,7 @@ Many teachers like to create two versions of every assignment: one with all of t
 * **Reversed Flashcard Browse Order:** Reversed the default flashcard browse order so that most recent flashcards are displayed first.  You can still reverse this order by clicking "Sort Ascending" at the top of the page.
 * **Fixed Flashcard Rearranging:** Flashcard rearranging was broken when the browsing flashcard list was reversed.  I've fixed this now.
 * **Removed Old Classroom Homepage:** Removed the old, deprecated classroom homepage from before Alu 0.5.0.
+* **Added Temporary Feedback Survey:** A temporary feedback survey is now available to all students and will likely remain active until April.  Please fill it out to help improve Alu.
 
 
 ## Automatic Copied Deck Updates - Mar 10 - 0.5.3

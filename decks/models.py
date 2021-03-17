@@ -784,14 +784,15 @@ class StudySessionManager(models.Model):
         seen_flashcards: QuerySet[FlashCard],
         unseen_flashcards: QuerySet[FlashCard],
     ) -> QuerySet[FlashCard]:
-        if self.daily_new_card_limit - self.new_cards_done_today > 0:
+        unseen_flashcard_count = self.daily_new_card_limit - self.new_cards_done_today
+        if unseen_flashcard_count > 0:
             if self.shuffle_unseen_cards:
                 unseen_flashcards = random.sample(
                     list(unseen_flashcards),
-                    min(self.daily_new_card_limit - self.new_cards_done_today, unseen_flashcards.count()),
+                    min(unseen_flashcard_count, unseen_flashcards.count()),
                 )
             else:
-                unseen_flashcards = unseen_flashcards[:self.daily_new_card_limit - self.new_cards_done_today]
+                unseen_flashcards = unseen_flashcards[:unseen_flashcard_count]
         else:
             unseen_flashcards = []
 

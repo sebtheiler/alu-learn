@@ -329,6 +329,16 @@ function AssignmentsComponent({ setJoinClassModalIsOpen }) {
   return (<Container className='ml-0'>
     {classrooms !== undefined ? (classrooms.length > 0 ? <>
       <h1 className='ml-3 mt-3'>Assignments</h1>
+      <p className='ml-5'>
+        Please contribute to Alu's development by taking a quick survey{' '}
+        <a
+          href='https://forms.gle/UQuJ2aBCwike4YtL7'
+          target='_blank'
+          rel='noreferrer'
+        >
+          here
+        </a> (~5-10 mins; available until Apr 1st).
+      </p>
       <hr />
       <ul className='no-bullets'>
         {classrooms.map((classroom, i) =>

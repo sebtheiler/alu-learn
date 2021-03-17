@@ -718,7 +718,6 @@ def txt_file_upload(request, *args, **kwargs):
         for creator in creators
     ])
 
-    # Return
     return Response(DeckSerializer(deck).data, status=201)
 
 
