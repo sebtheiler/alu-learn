@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { apiProfileDetail, apiProfileFriendToggle, apiSendFriendReq } from '../lookup';
 import { UserLink } from './components';
 import { errorHandler } from '../utils';

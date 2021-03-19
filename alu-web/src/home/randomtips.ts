@@ -36,7 +36,6 @@ const randomTips = [
   'Every time you review a flashcard, it gets a little easier to remember',
   'Cloze flashcards allow you to {{c1::hide}} a phrase in a flashcard',
   'Only turn information you truly understand into flashcards',
-  'Learn before you memorize',
   'Start from the basics before going into complex subjects',
   'You can drag and drop images into the flashcard and note editors',
   'If you press "Add Notes" in autonote, without adding any notes, it will simply skip to the next section',
@@ -57,7 +56,7 @@ const randomTips = [
   // Random stuff
   'Hermann Ebbinghaus discovered the forgetting curve, which Alu is based on, in the 1800s',
   'Dr. Piotr Wozniak developed one of the first digital SR apps in the 1990s. His work has made Alu possible.',
-  'The word "flashcard" appears over 2500 times in Alu\'s source code',
+  'The word "flashcard" appears over 2700 times in Alu\'s source code',
   // 'You got this!',
   // '42 (forty-two) is the natural number that follows 41 and precedes 43.',
   // 'Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid of Giza.',

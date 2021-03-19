@@ -24,7 +24,7 @@ export function HomeComponent({ username }) {
   return (<Container fluid>
     <Row>
       <Col xs={2} id='home-nav-sidebar' className='mt-3'>
-        <ul className='no-bullets'>
+        <ul className='no-bullets pl-0'>
           {profile?.settings.user_type !== 'TEACHER' && <>
             <li>
               <ClassroomsComponent

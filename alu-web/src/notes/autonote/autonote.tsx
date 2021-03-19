@@ -3,7 +3,7 @@ import { AutoReader } from './reader';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { Slate, ReactEditor } from 'slate-react';
-import { Element, Node, Transforms } from 'slate';
+import { Node, Transforms } from 'slate';
 import { createFullEditor, EditorButtons, FullEditor } from '../editor-components';
 import { insertElement } from './inserter';
 import './reader.css';
