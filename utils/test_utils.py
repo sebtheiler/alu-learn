@@ -102,10 +102,6 @@ class SeleniumTestCase(LiveServerTestCase):
         # Open page
         self.driver.get(self.live_server_url)
 
-        # Hide DJDT
-        djdt_xpath = '//*[@id="djHideToolBarButton"]'
-        self.driver.find_element_by_xpath(djdt_xpath).click()
-
         # Login
         self.driver.find_element_by_id('login-navbar-btn').click()
         self.fill_text_element('loginUsername', self.user.username)
