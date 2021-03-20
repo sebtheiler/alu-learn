@@ -4,7 +4,7 @@ import re
 from typing import List
 
 from django.core.cache import cache
-from django.db.models import Q
+from django.db.models import Q, F
 from django.utils import timezone
 from django.views.decorators.cache import cache_control
 from django.views.decorators.vary import vary_on_cookie
@@ -219,6 +219,13 @@ def flashcard_delete_view(request, deck_id, flashcard_num, *args, **kwargs):
 
     # Delete the flashcard
     flashcard.delete()
+
+    # Rearrange all flashcards to fill in the missing gap
+    FlashCardCreator.objects.filter(
+        deck__pk=deck_id,
+        flashcard_num__gt=flashcard.flashcard_num,
+    ).update(flashcard_num=F('flashcard_num') - 1)
+
     return Response({'message': 'Flashcard deleted succesfully'}, status=200)
 
 

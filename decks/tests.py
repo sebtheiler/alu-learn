@@ -290,31 +290,39 @@ class DeckTestCase(ImprovedTestCase):
         deck = self.create_deck('Test')
         self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 0)
         self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 0)
-        flashcard = FlashCardCreator.create_flashcard(
+        flashcards = [FlashCardCreator.create_flashcard(
             deck,
             'a, b, c',
             'cloze',
             [create_slate_element(
                 '{{c1::abc}} {{c2::def}} {{c3::ghi}}'
             )],
-        )[0]
-        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 1)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 3)
+        )[0] for _ in range(10)]
+        flashcard = flashcards[0]
+        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 10)
+        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 30)
         api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.creator.flashcard_num}/delete/'
         api_view = api_views.flashcard_delete_view
         kwargs = {'deck_id': deck.id, 'flashcard_num': flashcard.creator.flashcard_num}
 
+        def check_flashcard_number_correct_order(deck):
+            for i, flashcard_creator in enumerate(deck.flashcards.all()):
+                self.assertEqual(flashcard_creator.flashcard_num, i)
+        check_flashcard_number_correct_order(deck)
+
         # Attempt to delete as non-owner
         response = self.post_response(api_path, api_view, kwargs=kwargs, user=self.users[1])
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 1)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 3)
+        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 10)
+        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 30)
+        check_flashcard_number_correct_order(deck)
 
         # Delete flashcard
         response = self.post_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 0)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 0)
+        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 9)
+        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 27)
+        check_flashcard_number_correct_order(deck)
 
     def test_flashcard_detail_api(self):
         deck = self.create_deck('Detail Test')
@@ -1132,7 +1140,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(ssm.max_ease, 290)
 
     def test_ssm_create_api(self):
-        api_path = f'/api/decks/ssm/create/'
+        api_path = '/api/decks/ssm/create/'
         api_view = api_views.ssm_create_view
 
         initial_cssms = CustomStudySessionManager.objects.filter(
@@ -1284,19 +1292,36 @@ class DeckTestCase(ImprovedTestCase):
                 self.assertEqual(creator_field.text, origin_field.text)
                 self.assertEqual(creator_field.field_number, origin_field.field_number)
 
-    # if you remove the "di_" the deck search test breaks for an unknown reason
-    def test_di_clone_flashcard_creator(self):
+    def test_clone_flashcard_creator(self):
         deck = self.create_deck('Deck with a flashcard', num_flashcards=2)
-        creator = deck.flashcards.first()  # type: FlashCardCreator
         deck_to_clone_into = self.create_deck('Deck to clone into')
-        self.assertEqual(deck_to_clone_into.flashcards.count(), 0)
 
-        self.assertEqual(deck.flashcards.count(), 2)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 2)
-        self.assertEqual(FlashCardField.objects.filter(creator__deck=deck).count(), 4)
-        self.assertEqual(deck_to_clone_into.flashcards.count(), 0)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck_to_clone_into).count(), 0)
-        self.assertEqual(FlashCardField.objects.filter(creator__deck=deck_to_clone_into).count(), 0)
+        def test_flashcard_amounts(
+            num_creators=None,
+            num_flashcards=None,
+            num_fields=None,
+            deck=deck,
+        ):
+            deck.refresh_from_db()
+            if num_creators is not None:
+                self.assertEqual(deck.flashcards.count(), num_creators)
+
+            if num_flashcards is not None:
+                self.assertEqual(
+                    FlashCard.objects.filter(creator__deck=deck).count(),
+                    num_flashcards,
+                )
+
+            if num_fields is not None:
+                self.assertEqual(
+                    FlashCardField.objects.filter(creator__deck=deck).count(),
+                    num_fields,
+                )
+
+        test_flashcard_amounts(2, 2, 4)
+        test_flashcard_amounts(0, 0, 0, deck_to_clone_into)
+
+        creator = deck.flashcards.first()  # type: FlashCardCreator
         cloned_creator, cloned_review_instances, cloned_fields = creator.clone(
             deck_to_clone_into,
             origin_or_copied='COPIED',
@@ -1305,17 +1330,11 @@ class DeckTestCase(ImprovedTestCase):
         cloned_creator.save()
         FlashCard.objects.bulk_create(cloned_review_instances)
         FlashCardField.objects.bulk_create(cloned_fields)
-        self.assertEqual(deck.flashcards.count(), 2)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 2)
-        self.assertEqual(FlashCardField.objects.filter(creator__deck=deck).count(), 4)
-        self.assertEqual(cloned_creator.deck, deck_to_clone_into)
 
-        deck_to_clone_into = Deck.objects.get(pk=deck_to_clone_into.pk)  # type: Deck
-        self.assertEqual(FlashCardCreator.objects.filter(deck=deck_to_clone_into).count(), 1)
-        self.assertEqual(FlashCardField.objects.filter(creator__deck=deck_to_clone_into).count(), 2)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck_to_clone_into).count(), 1)
+        test_flashcard_amounts(2, 2, 4)
+        test_flashcard_amounts(1, 1, 2, deck_to_clone_into)
 
-        cloned_creator = deck_to_clone_into.flashcards.first()  # type: FlashCardCreator
+        cloned_creator = deck_to_clone_into.flashcards.first()
         self.assertEqual(cloned_creator.tags, creator.tags)
         self.assertEqual(cloned_creator.copied_from_creator.pk, creator.pk)
         self.assertEqual(cloned_creator.flashcard_num, creator.flashcard_num)
@@ -1420,7 +1439,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(shared_deck.sharing_setting, 'FRIENDS')
 
     def test_shared_deck_update_api(self):
-        api_path = f'/api/decks/shared/update/'
+        api_path = '/api/decks/shared/update/'
         api_view = api_views.shared_deck_update_view
 
         # Create shared deck
