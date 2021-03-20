@@ -2,6 +2,13 @@
 -----
 
 
+## Flashcard Rearranging Fixes - Mar 20 - 0.5.5
+
+
+* **Fixed Flashcard Search Bug:**  Fixed a tiny bug that caused the "Load More Decks" button to appear even when there were no more decks to load or before any search had been made.
+* **Fixed Flashcard Number Displaying:** Fixed a bug that caused flashcards displayed when searching (and on shared deck preview pages) to be inversed and count from zero downwards rather than one upwards.
+
+
 ## Essential-Only Option and Various Fixes - Mar 15 - 0.5.4
 Many teachers like to create two versions of every assignment: one with all of the flashcards for a unit and the other with only essential flashcards.  This update makes that process easier by introducing a simple checkbox that allows teachers to indicate if they want an essential-only copy of that assignment.
 

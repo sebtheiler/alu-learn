@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { apiDeckDetail, apiDeckFlashcards, apiRearrangeFlashcard } from '../../lookup';
 import { RenderFlashCard } from './detail';
 import { errorHandler, updateURLParameter } from '../../utils';
@@ -34,7 +34,10 @@ export function FlashCardsList(props: FlashCardsListProps) {
   const [selectedFlashcards, setSelectedFlashcards] = useState<string[]>([]);
   const [tagEditorModalIsOpen, setTagEditorModalIsOpen] = useState(false);
   const [totalFlashcardsNum, setTotalFlashcardsNum] = useState(0);
-  const reverseOrder = new URLSearchParams(window.location.search).get('reverse') !== 'false';
+  const reverseOrder = useMemo(() => (
+    !flashcards &&
+    new URLSearchParams(window.location.search).get('reverse') !== 'false'
+  ), [flashcards]);
 
   useEffect(() => {
     // Re-renders flashcardList whenever updated, if specified

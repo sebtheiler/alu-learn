@@ -23,7 +23,7 @@ export function DeckSearchComponent(_props) {
     setDidSearch(true);
     apiDeckSearch(searchQueryRef!.current!.value, (response, status) => {
       if (status === 200) {
-        setNextUrl(response.next);
+        setNextUrl(response.next ?? '');
         setRetrievedDecks(response.results);
       } else {
         // Error performing deck search
@@ -38,7 +38,7 @@ export function DeckSearchComponent(_props) {
     if (nextUrl !== null) {
       apiDeckSearch(currentQuery, (response, status) => {
         if (status === 200) {
-          setNextUrl(response.next);
+          setNextUrl(response.next ?? '');
           const totalResults = [...retrievedDecks].concat(response.results);
           setRetrievedDecks(totalResults);
         } else {
@@ -51,7 +51,7 @@ export function DeckSearchComponent(_props) {
 
   return (
     <>
-      <div className='text-center'>
+      <div className='text-center mt-4'>
         <h2>Search for Decks</h2>
         <Form onSubmit={handleSubmit}>
           <Form.Control
@@ -85,7 +85,7 @@ export function DeckSearchComponent(_props) {
         }
       </div>
       <div className='text-center'>
-        {nextUrl !== null ?
+        {nextUrl.length > 0 ?
           <Button
             onClick={handleLoadNext}
             variant='outline-primary'
