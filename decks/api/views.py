@@ -1200,27 +1200,10 @@ def rearrange_flashcard_view(request, deck_id, flashcard_num, *args, **kwargs):
     except FlashCardCreator.DoesNotExist:
         return Response({'message': 'Flashcard creator not found'}, status=404)
 
-    deck = flashcard.deck
-    if deck.deck_type != 'standard':
-        return Response({'message': 'Can only rearrange flashcards on regular decks'}, status=400)
     rearrange_type = request.data.get('rearrange_type')
-
-    if rearrange_type == 'UP':
-        if flashcard.flashcard_num == 0:
-            return Response({'message': 'Flashcard already at top'}, status=400)
-        above_flashcard = deck.flashcards.get(flashcard_num=flashcard.flashcard_num - 1)
-        above_flashcard.flashcard_num += 1
-        flashcard.flashcard_num -= 1
-        FlashCardCreator.objects.bulk_update([flashcard, above_flashcard], ['flashcard_num'])
-    elif rearrange_type == 'DOWN':
-        if flashcard.flashcard_num == FlashCardCreator.get_max_creator_num(deck):
-            return Response({'message': 'Flashcard already at bottom'}, status=400)
-        below_flashcard = deck.flashcards.get(flashcard_num=flashcard.flashcard_num + 1)
-        below_flashcard.flashcard_num -= 1
-        flashcard.flashcard_num += 1
-        FlashCardCreator.objects.bulk_update([flashcard, below_flashcard], ['flashcard_num'])
-    else:
-        return Response({'message': 'Invalid `rearrange_type`'})
+    msg = flashcard.rearrange(rearrange_type)
+    if msg is not None:
+        return Response({'message': msg}, status=400)
 
     return Response(FlashCardCreatorSerializer(flashcard).data, status=200)
 

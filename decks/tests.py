@@ -1467,10 +1467,11 @@ class DeckTestCase(ImprovedTestCase):
                 FlashCardField.objects.filter(creator__deck=deck).count(),
             )
 
-            if creator:  # false when it is finally deleted
-                shared_creator = FlashCardCreator.objects.filter(
+            if creator:  # None when it is finally deleted
+                shared_creator = FlashCardCreator.objects.get(
                     deck=shared_deck,
-                ).order_by('flashcard_num').last()
+                    flashcard_num=creator.flashcard_num,
+                )
                 self.assertEqual(shared_creator.flashcard_num, creator.flashcard_num)
                 self.assertEqual(shared_creator.flashcard_type, creator.flashcard_type)
                 self.assertEqual(shared_creator.tags, creator.tags)
@@ -1617,6 +1618,27 @@ class DeckTestCase(ImprovedTestCase):
         })
         check_equal(deck, shared_deck, None, 3)
 
+        # Test rearranging flashcards
+        creator = deck.flashcards.all()[3]
+        creator.rearrange('UP')
+        response = self.post_response(api_path, api_view, {
+            'shared_deck_id': shared_deck.pk,
+            'origin_deck_id': deck.pk,
+            'check_diff_only': True,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, dict)
+        self.assertEqual(response.data, {'created': 0, 'modified': 2, 'deleted': 0})
+        shared_deck.refresh_from_db()
+        self.assertEqual(shared_deck.version_number, 3)
+
+        response = self.post_response(api_path, api_view, {
+            'shared_deck_id': shared_deck.pk,
+            'origin_deck_id': deck.pk,
+        })
+        self.assertEqual(response.status_code, 200)
+        check_equal(deck, shared_deck, creator, 4)
+
     def test_deck_get_updates_api(self):
         deck = self.create_deck('Deck to share and update and get updates from')
         shared_deck = deck.create_shared_deck('Shared deck to update and get updates from', '')
@@ -1738,7 +1760,7 @@ class DeckTestCase(ImprovedTestCase):
             'tags',
             'cloze',
             [create_slate_element('{{c1::123}} {{c2::456}} {{c3::789}} {{c4::abc}}')],
-        )[0].creator
+        )
         shared_deck.push_updates(deck)
         self.assertEqual(FlashCardCreator.objects.filter(deck=shared_deck).count(), num_shared_creators + 1)
         self.assertEqual(FlashCardField.objects.filter(creator__deck=shared_deck).count(), num_shared_fields + 1)
@@ -1860,7 +1882,14 @@ class DeckTestCase(ImprovedTestCase):
         )
         check_equal(cloned_deck, shared_deck, response)
 
-        # TODO: find why deck got soft-reset that one time
+        # Test rearranging flashcard
+        creator = deck.flashcards.all()[3]
+        creator.rearrange('UP')
+        shared_deck.push_updates(deck)
+        response = self.post_response(api_path, api_view, {
+            'to_pull_from': shared_deck.pk,
+        }, kwargs=kwargs)
+        check_equal(cloned_deck, shared_deck, response)
 
     def test_game_flashcards_api(self):
         api_view = api_views.game_flashcards_view

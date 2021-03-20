@@ -464,6 +464,38 @@ class FlashCardCreator(models.Model):
 
         return self, updated_fields, actual_difference
 
+    def rearrange(
+        self,
+        rearrange_type: Literal['UP', 'DOWN'],
+    ) -> Union[None, str]:
+        if self.deck.deck_type != 'standard':
+            return 'Can only rearrange flashcards on standard decks'
+
+        if rearrange_type == 'UP':
+            if self.flashcard_num == 0:
+                return 'Flashcard already at top'
+
+            above_flashcard = self.deck.flashcards.get(
+                flashcard_num=self.flashcard_num - 1
+            )
+            above_flashcard.flashcard_num += 1
+            self.flashcard_num -= 1
+
+            FlashCardCreator.objects.bulk_update([self, above_flashcard], ['flashcard_num'])
+        elif rearrange_type == 'DOWN':
+            if self.flashcard_num == FlashCardCreator.get_max_creator_num(self.deck):
+                return 'Flashcard already at bottom'
+
+            below_flashcard = self.deck.flashcards.get(
+                flashcard_num=self.flashcard_num + 1
+            )
+            below_flashcard.flashcard_num -= 1
+            self.flashcard_num += 1
+
+            FlashCardCreator.objects.bulk_update([self, below_flashcard], ['flashcard_num'])
+        else:
+            return 'Invalid `rearrange_type`'
+
 
 class FlashCardField(models.Model):
     creator = models.ForeignKey(
