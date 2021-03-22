@@ -23,7 +23,12 @@ export function HomeComponent({ username }) {
 
   return (<Container fluid>
     <Row>
-      <Col xs={2} id='home-nav-sidebar' className='mt-3'>
+      <Col
+        xs={12}
+        md={2}
+        id='home-nav-sidebar'
+        className='mt-3'
+      >
         <ul className='no-bullets pl-0'>
           {profile?.settings.user_type !== 'TEACHER' && <>
             <li>
@@ -64,7 +69,11 @@ export function HomeComponent({ username }) {
           </li>
         </ul>
       </Col>
-      <Col xs={10} id='home-main'>
+      <Col
+        xs={12}
+        md={10}
+        id='home-main'
+      >
         {profile?.settings.user_type === 'TEACHER' ?
           <TeacherClassesComponent />
         :
@@ -367,6 +376,7 @@ function AssignmentsComponent({ setJoinClassModalIsOpen }) {
                         {new Date(assignment.due_date).toDateString()}
                       </td>
                       <td className='assignment-table__percent-complete'>
+                        {/* TODO: make this a separate API call, so that the structure loads faster */}
                         {Math.floor((assignment.percent_complete ?? 0) * 100)}%
                       </td>
                     </tr>

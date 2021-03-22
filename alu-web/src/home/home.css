@@ -14,7 +14,6 @@ a.card:hover {
 .react-calendar-heatmap .color-scale-8 { fill: #303F5F; }
 
 #home-nav-sidebar {
-  min-height: 600px;
   border-right: 1px solid black;
 }
 

@@ -3,10 +3,13 @@
 
 
 ## Flashcard Rearranging Fixes - Mar 20 - 0.5.5
+I've fixed a couple of tiny issues involving flashcards, the biggest one being a fix to an old bug that stopped flashcards from being rearranged if another flashcard was deleted.
 
 
+* **Fixed Flashcard Rearranging:** Fixed a longstanding bug where deleting flashcards would break the ability to rearrange flashcards in a deck.
 * **Fixed Flashcard Search Bug:**  Fixed a tiny bug that caused the "Load More Decks" button to appear even when there were no more decks to load or before any search had been made.
 * **Fixed Flashcard Number Displaying:** Fixed a bug that caused flashcards displayed when searching (and on shared deck preview pages) to be inversed and count from zero downwards rather than one upwards.
+* **Mobile Improvements:** The left sidebar on the homepage was getting cut off on mobile phones.  Due to the increasing number of people using Alu on mobile devices, I've decided to fix this so that it now displays as two separate rows.  It's definitely still not perfect, and I'd like to eventually release a dedicated mobile app, but it works well enough for now.
 
 
 ## Essential-Only Option and Various Fixes - Mar 15 - 0.5.4
