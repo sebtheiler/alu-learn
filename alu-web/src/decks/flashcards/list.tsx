@@ -35,9 +35,9 @@ export function FlashCardsList(props: FlashCardsListProps) {
   const [tagEditorModalIsOpen, setTagEditorModalIsOpen] = useState(false);
   const [totalFlashcardsNum, setTotalFlashcardsNum] = useState(0);
   const reverseOrder = useMemo(() => (
-    !flashcards &&
+    !flashcardList &&
     new URLSearchParams(window.location.search).get('reverse') !== 'false'
-  ), [flashcards]);
+  ), [flashcardList]);
 
   useEffect(() => {
     // Re-renders flashcardList whenever updated, if specified

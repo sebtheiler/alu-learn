@@ -18,7 +18,7 @@ from django.db import models
 from django.db.models.aggregates import Avg
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
-from profiles.models import Notification, Profile
+from profiles.models import Profile
 
 User = settings.AUTH_USER_MODEL
 FlashCardTypes = Literal['cloze', 'basic', 'reversed']

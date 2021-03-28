@@ -135,7 +135,7 @@ class AssignmentStudySessionManager(StudySessionManager):
         # Get flashcards from deck
         ssm_flashcards = FlashCard.objects.filter(
             Q(creator__deck__pk=deck.pk) &
-            FlashCard.search_tags(self.assignment.tag_query)  # TODO: maybe change this
+            FlashCard.search_tags(self.assignment.tag_query)
         )
         seen_flashcards = ssm_flashcards.filter(
             Q(next_review__lt=review_cutoff) &
