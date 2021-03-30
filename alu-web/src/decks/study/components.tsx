@@ -126,7 +126,7 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
 
   // Inform backend of grade
   const backendGradeUpdate = (grade) => {
-    if (grade > 4 || !currentCard || !SSM || !flashcards || !setFlashcards) {
+    if (grade > 4 || grade < 1 || !currentCard || !SSM || !flashcards || !setFlashcards) {
       return;
     }
     setPreviousCard(currentCard);

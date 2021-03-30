@@ -2,6 +2,10 @@
 -----
 
 
+* **Fixed Tiny Studying Bug:** Fixed a slightly ridiculous bug that allowed you to press "zero" on your keyboard as a valid response when rating your performance on a flashcard, instead of the usual 1, 2, 3, and 4.
+* **Changed Reminder Email:** The reminder email's wording was a bit annoying, so I changed it.
+
+
 ## Flashcard Rearranging Fixes - Mar 20 - 0.5.5
 I've fixed a couple of tiny issues involving flashcards, the biggest one being a fix to an old bug that stopped flashcards from being rearranged if another flashcard was deleted.
 

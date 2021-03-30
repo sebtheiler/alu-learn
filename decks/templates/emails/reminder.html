@@ -25,11 +25,11 @@
 </style>
 </head>
 <body>
-<p>Hello {{ name }},</p>
+<p>Hi {{ name }},</p>
 
 <p>
-Improving requires practice every day.<br>
-Study at <a href="https://www.alulearn.com">Alu</a> today, or you'll lose your <strong>{{ streak }}-day streak!</strong>
+You're on a {{ streak }} day streak.<br />
+Study at <a href="https://www.alulearn.com">Alu</a> today to make it {{ streak | add:1 }}!  You got this!
 </p>
 <a href="https://www.alulearn.com" target="_blank" class="button">Study Today</a>
 <br>
