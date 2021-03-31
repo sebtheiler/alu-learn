@@ -17,8 +17,6 @@ export function DeckCreate(props) {
     setModalIsOpen(false);
   }
 
-  // Called when the user presses the 'Create' button
-  // Sends a request to the backend to create a deck
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.target;
@@ -50,7 +48,6 @@ export function DeckCreate(props) {
         Create new Deck
       </Button>
       <DeckEditCreateModal
-        mode='create'
         modalIsOpen={modalIsOpen}
         closeModal={closeModal}
         submitHandler={handleSubmit}

@@ -19,6 +19,7 @@ export interface Deck {
   shuffle_unseen_cards: boolean;
   new_cards_done_today: number;
   daily_new_card_limit: number;
+  daily_seen_card_limit: number;
   review_ahead_minutes: number;
   shared_deck: number;
   deck_type: 'standard' | 'shared';
@@ -37,8 +38,9 @@ export interface SharedDeck extends Deck {
 
 export interface SSMInterface {
   scheduling_algorithm: SchedulingAlgorithm;
-  shufffle_unseen_cards: boolean;
+  shuffle_unseen_cards: boolean;
   daily_new_card_limit: number;
+  daily_seen_card_limit: number;
   new_cards_done_today: number;
   review_ahead_minutes: number;
   difficulty: DeckDifficulty;
