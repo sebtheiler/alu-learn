@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags } from '../lookup';
-import { errorHandler, FormCheckbox, useApiObjectHook } from '../utils';
+import { errorHandler, FormCheckbox, QuestionBubble, useApiObjectHook } from '../utils';
 import { SearchForm } from './flashcards/search';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -288,12 +288,20 @@ export function DeckEditCreateModal(props) {
           </>}
           <Form.Group>
             <FormCheckbox name='shuffleUnseenCards' defaultChecked={deck.shuffle_unseen_cards}>
-              Shuffle Unseen Cards
+              Shuffle Unseen Cards{' '}
+              <QuestionBubble>
+                If checked, this will make it so that the order flashcards are displayed to you in this deck is random, rather than being from the beginning of the deck and slowly to the end.
+                You don't want this enabled for most unit-based decks, but if your deck is alphabetically ordered you should definitely enable it.
+              </QuestionBubble>
             </FormCheckbox>
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor='dailyNewCardLimit'>
-              Daily new card limit
+              Daily new card limit{' '}
+              <QuestionBubble>
+                This is the number of NEW flashcards you will see every day.
+                If you are being overwhelmed you might want to consider decreasing it.
+              </QuestionBubble>
             </Form.Label>
             <Form.Control
               type='number'
@@ -306,12 +314,16 @@ export function DeckEditCreateModal(props) {
           </Form.Group>
           <Form.Group>
             <Form.Label htmlFor='dailySeenCardLimit'>
-              Daily seen card limit
+              Daily seen card limit{' '}
+              <QuestionBubble>
+                This is maximum number of old reviews you will see every day.
+                If you are being overwhelmed you might want to consider decreasing it.
+              </QuestionBubble>
             </Form.Label>
             <Form.Control
               type='number'
               name='dailySeenCardLimit'
-              defaultValue={deck.daily_seen_card_limit ? deck.daily_seen_card_limit : 1000}
+              defaultValue={deck.daily_seen_card_limit ? deck.daily_seen_card_limit : 200}
               min='0'
               max='9999'
               required
@@ -319,7 +331,13 @@ export function DeckEditCreateModal(props) {
           </Form.Group>
           {Object.entries(deck).length > 0 &&
             <Form.Group>
-              <Form.Label htmlFor='reviewAheadMinutes'>Review Ahead Minutes</Form.Label>
+              <Form.Label htmlFor='reviewAheadMinutes'>
+                Review Ahead Minutes{' '}
+                <QuestionBubble>
+                  This is a more advanced setting and you probably shouldn't worry about it.
+                  Alu shows you flashcards within this value of minutes right now instead of making you wait a couple minutes.  This is relevant when the flashcard interval is in minutes, so that you don't have to wait multiple minutes to review flashcards.
+                </QuestionBubble>
+              </Form.Label>
               <Form.Control
                 type='number'
                 name='reviewAheadMinutes'
@@ -331,7 +349,13 @@ export function DeckEditCreateModal(props) {
             </Form.Group>
           }
           <Form.Group>
-            <Form.Label htmlFor='schedulingAlgo'>Scheduling Algorithm</Form.Label>
+            <Form.Label htmlFor='schedulingAlgo'>
+              Scheduling Algorithm{' '}
+              <QuestionBubble>
+                This is a more advanced setting and you probably shouldn't worry about it.
+                Alu uses a certain algorithm to determine when you should next see flashcards.  You can change that specific algorithm here.
+              </QuestionBubble>
+            </Form.Label>
             <Form.Control
               as='select'
               name='schedulingAlgo'

@@ -785,7 +785,7 @@ class StudySessionManager(models.Model):
     daily_new_card_limit = models.PositiveSmallIntegerField(default=20)
     new_cards_done_today = models.PositiveSmallIntegerField(default=0)
 
-    daily_seen_card_limit = models.PositiveSmallIntegerField(default=1000)
+    daily_seen_card_limit = models.PositiveSmallIntegerField(default=200)
     seen_cards_done_today = models.PositiveSmallIntegerField(default=0)
 
     DIFFICULTY_OPTIONS = [

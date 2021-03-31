@@ -550,7 +550,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(ssm.scheduling_algorithm, 'ANKING')
         self.assertEqual(ssm.shuffle_unseen_cards, False)
         self.assertEqual(ssm.daily_new_card_limit, 20)
-        self.assertEqual(ssm.daily_seen_card_limit, 1000)
+        self.assertEqual(ssm.daily_seen_card_limit, 200)
         self.assertEqual(ssm.review_ahead_minutes, 120)
         self.assertEqual(ssm.difficulty, 'HARD')
 

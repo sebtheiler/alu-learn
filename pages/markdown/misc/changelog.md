@@ -2,6 +2,8 @@
 -----
 
 
+* **Added Option to Control Max Seen Flashcards per Day:** When editing decks/assignments/custom-studies you can now change the maximum number of previously seen flashcards per day.  It defaults to 200, which is probably right for most people, but you can lower it if you have too many flashcards to review and are getting overwhelmed or increase it if you want to memorize with Alu better.
+* **Added Tooltips When Editing Decks:** There are now tooltips explaining all of the advanced options when editing a deck.
 * **Fixed Tiny Studying Bug:** Fixed a slightly ridiculous bug that allowed you to press "zero" on your keyboard as a valid response when rating your performance on a flashcard, instead of the usual 1, 2, 3, and 4.
 * **Changed Reminder Email:** The reminder email's wording was a bit annoying, so I changed it.
 
