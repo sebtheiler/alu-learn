@@ -1,5 +1,5 @@
 import { Node } from 'slate';
-import { CSSM, Deck, DeckDifficulty, FlashCard, FlashCardCreator, FlashCardTypes, LearningStatus, SchedulingAlgorithm, SharedDeck } from '../decks/types';
+import { CSSM, Deck, DeckDifficulty, FlashCard, FlashCardCreator, FlashCardTypes, LearningStatus, SchedulingAlgorithm, SharedDeck, SSMInterface } from '../decks/types';
 import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { backendLookup, baseUrl } from './components';
@@ -121,12 +121,23 @@ export function apiDeckDelete(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/delete/`, callback);
 }
 
-export function apiDeckEdit(deckId, newTitle, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, reviewAheadMinutes, deckDifficulty, callback) {
+export function apiDeckEdit(
+  deckId: number,
+  newTitle: string,
+  schedulingAlgo: SchedulingAlgorithm,
+  shuffleUnseenCards: boolean,
+  dailyNewCardLimit: number,
+  dailySeenCardLimit: number,
+  reviewAheadMinutes: number,
+  deckDifficulty: DeckDifficulty,
+  callback: (response: Deck, status: number) => void,
+) {
   backendLookup('POST', `decks/${deckId}/edit/`, callback, {
     new_title: newTitle,
     scheduling_algorithm: schedulingAlgo,
     shuffle_unseen_cards: shuffleUnseenCards,
     daily_new_card_limit: dailyNewCardLimit,
+    daily_seen_card_limit: dailySeenCardLimit,
     review_ahead_minutes: reviewAheadMinutes,
     difficulty: deckDifficulty,
   });
@@ -366,12 +377,29 @@ export function apiSSMFlashcardUpdate(
 }
 
 // Updates a study session manager
-export function apiSSMEdit(studySessionmanagerId, title, schedulingAlgo, shuffleUnseenCards, dailyNewCardLimit, reviewAheadMinutes, deckIds, tags, contains, leech, learningStatus, minEase, maxEase, callback) {
+export function apiSSMEdit(
+  studySessionmanagerId: number,
+  title: string,
+  schedulingAlgo: SchedulingAlgorithm,
+  shuffleUnseenCards: boolean,
+  dailyNewCardLimit: number,
+  dailySeenCardLimit: number,
+  reviewAheadMinutes: number,
+  deckIds: string,
+  tags: string,
+  contains: string,
+  leech: boolean | null,
+  learningStatus: LearningStatus,
+  minEase: number,
+  maxEase: number,
+  callback: (reponse: SSMInterface, status: number) => void,
+) {
   backendLookup('POST', `decks/ssm/${studySessionmanagerId}/edit/`, callback, {
     title: title,
     scheduling_algorithm: schedulingAlgo,
     shuffle_unseen_cards: shuffleUnseenCards,
     daily_new_card_limit: dailyNewCardLimit,
+    daily_seen_card_limit: dailySeenCardLimit,
     review_ahead_minutes: reviewAheadMinutes,
     deck_ids: deckIds,
     tags: tags,

@@ -475,6 +475,8 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
         `scheduling_algorithm`: (Data) Which scheduling algorithm to use, ANKI or ANKING
         `shufle_unseen_cards`: (Data) Whether or not to shuffle unseen cards
         `difficulty`: (Data) New difficulty of the deck, HARD, NORM, or EASY
+        `daily_new_card_limit`: (Data) New value for the # of unseen flashcards to show
+        `daily_seen_card_limit`: (Data) New value for the # of seen flashcards to show
     """
     # Get deck
     try:
@@ -504,6 +506,10 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     deck.study_session_manager.daily_new_card_limit = request.data.get(
         'daily_new_card_limit',
         deck.study_session_manager.daily_new_card_limit,
+    )
+    deck.study_session_manager.daily_seen_card_limit = request.data.get(
+        'daily_seen_card_limit',
+        deck.study_session_manager.daily_seen_card_limit,
     )
     deck.study_session_manager.review_ahead_minutes = request.data.get(
         'review_ahead_minutes',
@@ -790,6 +796,7 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
         `ease`: (Data) Ease of card
         `interval`: (Data) The new interval for the flashcard
         `increment_new_cards_done_today`: (Data) Whether or not to increment the SSM's `new_cards_done_today` attribute
+            If False, will increment `seen_cards_done_today` instead
         `utc_timezone_offset`: (Data) (Optional) UTC timezone offset used to mark date for completing flashcard
         `time_taken`: (Data) (Optional) Time in ms required to answer the flashcard
 
@@ -828,7 +835,9 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
 
     if request.data.get('increment_new_cards_done_today'):
         ssm.new_cards_done_today += 1
-        ssm.save()
+    else:
+        ssm.seen_cards_done_today += 1
+    ssm.save()
 
     return Response(FlashCardSerializer(instance=flashcard).data, 200)
 

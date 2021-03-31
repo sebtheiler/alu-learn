@@ -785,6 +785,9 @@ class StudySessionManager(models.Model):
     daily_new_card_limit = models.PositiveSmallIntegerField(default=20)
     new_cards_done_today = models.PositiveSmallIntegerField(default=0)
 
+    daily_seen_card_limit = models.PositiveSmallIntegerField(default=1000)
+    seen_cards_done_today = models.PositiveSmallIntegerField(default=0)
+
     DIFFICULTY_OPTIONS = [
         ('HARD', 'Memorize Everything'),
         ('NORM', 'Memorize Most Things'),
@@ -816,6 +819,13 @@ class StudySessionManager(models.Model):
         seen_flashcards: QuerySet[FlashCard],
         unseen_flashcards: QuerySet[FlashCard],
     ) -> QuerySet[FlashCard]:
+        # Get the earliest seen flashcards under the limit
+        seen_flashcard_count = self.daily_seen_card_limit - self.seen_cards_done_today
+        seen_flashcards = seen_flashcards.order_by(
+            'next_review'
+        )[:seen_flashcard_count]
+
+        # Determine which unseen flashcards to show
         unseen_flashcard_count = self.daily_new_card_limit - self.new_cards_done_today
         if unseen_flashcard_count > 0:
             if self.shuffle_unseen_cards:
@@ -828,6 +838,7 @@ class StudySessionManager(models.Model):
         else:
             unseen_flashcards = []
 
+        # Combine seen and unseen flashcards
         flashcards = list(chain(seen_flashcards, unseen_flashcards))
 
         return flashcards

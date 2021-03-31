@@ -244,6 +244,7 @@ class StudySessionManagerSerializer(serializers.ModelSerializer):
             'scheduling_algorithm',
             'shuffle_unseen_cards',
             'daily_new_card_limit',
+            'daily_seen_card_limit',
             'new_cards_done_today',
             'review_ahead_minutes',
             'difficulty',

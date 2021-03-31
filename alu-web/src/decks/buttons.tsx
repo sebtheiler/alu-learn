@@ -57,6 +57,7 @@ export function DeckDefaultButtonGroup({ deck, vertical=false, hideBrowse=false 
         form.elements.schedulingAlgo.value === deck.scheduling_algorithm &&
         form.elements.shuffleUnseenCards.checked === deck.shuffle_unseen_cards &&
         parseInt(form.elements.dailyNewCardLimit.value) === deck.daily_new_card_limit &&
+        parseInt(form.elements.dailySeenCardLimit.value) === deck.daily_seen_card_limit &&
         parseInt(form.reviewAheadMinutes.value) === deck.review_ahead_minutes &&
         form.elements.deckDifficulty.value === deck.difficulty
     ) {
@@ -71,6 +72,7 @@ export function DeckDefaultButtonGroup({ deck, vertical=false, hideBrowse=false 
         form.elements.schedulingAlgo.value,
         form.elements.shuffleUnseenCards.checked,
         parseInt(form.elements.dailyNewCardLimit.value),
+        parseInt(form.elements.dailySeenCardLimit.value),
         parseInt(form.elements.reviewAheadMinutes.value),
         form.elements.deckDifficulty.value,
         (response, status) => {
@@ -88,6 +90,7 @@ export function DeckDefaultButtonGroup({ deck, vertical=false, hideBrowse=false 
         form.elements.schedulingAlgo.value,
         form.elements.shuffleUnseenCards.checked,
         parseInt(form.dailyNewCardLimit.value),
+        parseInt(form.dailySeenCardLimit.value),
         parseInt(form.reviewAheadMinutes.value),
         deck.deck_ids, // editing `deckIds` is currently disabled, but will be re-added in the future
         form.elements.tags.value,
@@ -289,7 +292,9 @@ export function DeckEditCreateModal(props) {
             </FormCheckbox>
           </Form.Group>
           <Form.Group>
-            <Form.Label htmlFor='dailyNewCardLimit'>Daily new card limit</Form.Label>
+            <Form.Label htmlFor='dailyNewCardLimit'>
+              Daily new card limit
+            </Form.Label>
             <Form.Control
               type='number'
               name='dailyNewCardLimit'
@@ -299,18 +304,32 @@ export function DeckEditCreateModal(props) {
               required
             />
           </Form.Group>
-          {Object.entries(deck).length > 0 &&
           <Form.Group>
-            <Form.Label htmlFor='reviewAheadMinutes'>Review Ahead Minutes</Form.Label>
+            <Form.Label htmlFor='dailySeenCardLimit'>
+              Daily seen card limit
+            </Form.Label>
             <Form.Control
               type='number'
-              name='reviewAheadMinutes'
-              defaultValue={deck.review_ahead_minutes ? deck.review_ahead_minutes : 120}
+              name='dailySeenCardLimit'
+              defaultValue={deck.daily_seen_card_limit ? deck.daily_seen_card_limit : 1000}
               min='0'
-              max='5000000'
+              max='9999'
               required
             />
-          </Form.Group>}
+          </Form.Group>
+          {Object.entries(deck).length > 0 &&
+            <Form.Group>
+              <Form.Label htmlFor='reviewAheadMinutes'>Review Ahead Minutes</Form.Label>
+              <Form.Control
+                type='number'
+                name='reviewAheadMinutes'
+                defaultValue={deck.review_ahead_minutes ? deck.review_ahead_minutes : 120}
+                min='0'
+                max='5000000'
+                required
+              />
+            </Form.Group>
+          }
           <Form.Group>
             <Form.Label htmlFor='schedulingAlgo'>Scheduling Algorithm</Form.Label>
             <Form.Control

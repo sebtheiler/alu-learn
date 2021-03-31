@@ -550,6 +550,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(ssm.scheduling_algorithm, 'ANKING')
         self.assertEqual(ssm.shuffle_unseen_cards, False)
         self.assertEqual(ssm.daily_new_card_limit, 20)
+        self.assertEqual(ssm.daily_seen_card_limit, 1000)
         self.assertEqual(ssm.review_ahead_minutes, 120)
         self.assertEqual(ssm.difficulty, 'HARD')
 
@@ -558,16 +559,18 @@ class DeckTestCase(ImprovedTestCase):
             'scheduling_algorithm': 'ANKI',
             'shuffle_unseen_cards': True,
             'daily_new_card_limit': 25,
+            'daily_seen_card_limit': 100,
             'review_ahead_minutes': 150,
             'difficulty': 'NORM',
         }, kwargs=kwargs)
         deck = Deck.objects.get(pk=deck.pk)
-        ssm = DeckStudySessionManager.objects.get(pk=ssm.pk)
+        ssm.refresh_from_db()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(deck.title, 'Edited deck')
         self.assertEqual(ssm.scheduling_algorithm, 'ANKI')
         self.assertEqual(ssm.shuffle_unseen_cards, True)
         self.assertEqual(ssm.daily_new_card_limit, 25)
+        self.assertEqual(ssm.daily_seen_card_limit, 100)
         self.assertEqual(ssm.review_ahead_minutes, 150)
         self.assertEqual(ssm.difficulty, 'NORM')
 
@@ -961,6 +964,39 @@ class DeckTestCase(ImprovedTestCase):
             7,
         )
 
+        # Test daily seen card limit
+        ssm.daily_seen_card_limit = 3
+        ssm.save()
+
+        response = self.get_response(api_path, api_view, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), 23)
+        self.assertEqual(
+            len([f for f in response.data if f['learning_status'] == 'UNSEEN']),
+            20,
+        )
+        self.assertEqual(
+            len([f for f in response.data if f['learning_status'] == 'LEARNING']),
+            3,
+        )
+
+        ssm.seen_cards_done_today = 2
+        ssm.save()
+
+        response = self.get_response(api_path, api_view, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), 21)
+        self.assertEqual(
+            len([f for f in response.data if f['learning_status'] == 'UNSEEN']),
+            20,
+        )
+        self.assertEqual(
+            len([f for f in response.data if f['learning_status'] == 'LEARNING']),
+            1,
+        )
+
         # Test CSSMs
         deck = self.create_deck('Deck to study', num_flashcards=37)
         ssm = CustomStudySessionManager.objects.create(
@@ -1017,6 +1053,61 @@ class DeckTestCase(ImprovedTestCase):
         api_view = api_views.ssm_flashcard_update_view
         kwargs = {'ssm_id': ssm.pk, 'flashcard_id': flashcard.pk}
 
+        # Helper func
+        def check_flashcard_update(
+            flashcard: FlashCard,
+            num_hist: int,
+            target_new_done: int,
+            target_seen_done: int,
+            target_time_spent: int,
+            increment_new_cards_done_today: bool,
+        ):
+            self.assertEqual(flashcard.next_review, get_morning())
+            self.assertEqual(flashcard.learning_status, 'UNSEEN')
+            self.assertEqual(flashcard.ease, 250)
+            self.assertEqual(flashcard.interval, 0)
+            self.assertEqual(
+                ProfileHistorySegment.objects.filter(
+                    profile=self.user.profile
+                ).count(),
+                num_hist,
+            )
+
+            new_date = dt.datetime.now(tz=dt.timezone.utc) + dt.timedelta(days=4)
+            response = self.post_response(api_path, api_view, {
+                'next_review': new_date,
+                'learning_status': 'LEARNED',
+                'ease': 265,
+                'interval': 4,
+                'increment_new_cards_done_today': increment_new_cards_done_today,
+                'utc_timezone_offset': 300,
+                'time_taken': 1000,
+            }, kwargs=kwargs)
+            self.assertEqual(response.status_code, 200)
+
+            flashcard.refresh_from_db()
+            self.assertEqual(flashcard.next_review, new_date)
+            self.assertEqual(flashcard.learning_status, 'LEARNED')
+            self.assertEqual(flashcard.ease, 265)
+            self.assertEqual(flashcard.interval, 4)
+
+            ssm.refresh_from_db()
+            self.assertEqual(ssm.new_cards_done_today, target_new_done)
+            self.assertEqual(ssm.seen_cards_done_today, target_seen_done)
+
+            self.assertEqual(
+                ProfileHistorySegment.objects.filter(
+                    profile=self.user.profile
+                ).count(),
+                1,
+            )
+            history = ProfileHistorySegment.objects.filter(
+                    profile=self.user.profile
+            ).first()  # type: ProfileHistorySegment
+            self.assertIsNotNone(history)
+            self.assertEqual(history.cards_done, target_new_done + target_seen_done)
+            self.assertEqual(history.time_spent, target_time_spent)
+
         # Attempt as random user
         response = self.post_response(api_path, api_view, kwargs=kwargs, user=self.users[1])
         self.assertEqual(response.status_code, 400)
@@ -1024,45 +1115,29 @@ class DeckTestCase(ImprovedTestCase):
         response = self.post_response(api_path, api_view, kwargs=kwargs, is_anon=True)
         self.assertEqual(response.status_code, 403)
 
-        # Update flashcard
-        self.assertEqual(flashcard.next_review, get_morning())
-        self.assertEqual(flashcard.learning_status, 'UNSEEN')
-        self.assertEqual(flashcard.ease, 250)
-        self.assertEqual(flashcard.interval, 0)
-        self.assertEqual(
-            ProfileHistorySegment.objects.filter(
-                profile=self.user.profile
-            ).count(),
-            0,
+        # Update unseen flashcard
+        check_flashcard_update(
+            flashcard=flashcard,
+            num_hist=0,
+            target_new_done=1,
+            target_seen_done=0,
+            target_time_spent=1000,
+            increment_new_cards_done_today=True,
         )
-        new_date = dt.datetime.now(tz=dt.timezone.utc) + dt.timedelta(days=4)
-        response = self.post_response(api_path, api_view, {
-            'next_review': new_date,
-            'learning_status': 'LEARNED',
-            'ease': 265,
-            'interval': 4,
-            'increment_new_cards_done_today': True,
-            'utc_timezone_offset': 300,
-            'time_taken': 1000,
-        }, kwargs=kwargs)
-        self.assertEqual(response.status_code, 200)
-        flashcard = FlashCard.objects.filter(creator__deck=deck).first()  # type: FlashCard
-        self.assertEqual(flashcard.next_review, new_date)
-        self.assertEqual(flashcard.learning_status, 'LEARNED')
-        self.assertEqual(flashcard.ease, 265)
-        self.assertEqual(flashcard.interval, 4)
-        self.assertEqual(
-            ProfileHistorySegment.objects.filter(
-                profile=self.user.profile
-            ).count(),
-            1,
+
+        # Update seen flashcard
+        flashcard = FlashCard.objects.filter(creator__deck=deck).last()  # type: FlashCard
+        api_path = f'/api/decks/ssm/{ssm.pk}/flashcards/{flashcard.pk}/update/'
+        api_view = api_views.ssm_flashcard_update_view
+        kwargs = {'ssm_id': ssm.pk, 'flashcard_id': flashcard.pk}
+        check_flashcard_update(
+            flashcard=flashcard,
+            num_hist=1,
+            target_new_done=1,
+            target_seen_done=1,
+            target_time_spent=2000,
+            increment_new_cards_done_today=False,
         )
-        history = ProfileHistorySegment.objects.filter(
-                profile=self.user.profile
-        ).first()   # type: ProfileHistorySegment
-        self.assertIsNotNone(history)
-        self.assertEqual(history.cards_done, 1)
-        self.assertEqual(history.time_spent, 1000)
 
     def test_ssm_edit_api(self):
         deck = self.create_deck('Deck to house ssm')
@@ -2316,6 +2391,7 @@ class DeckBrowserTestCase(SeleniumTestCase):
         self.click_option('EASY')
         self.driver.find_element_by_name('shuffleUnseenCards').click()
         self.fill_text_element('dailyNewCardLimit', '25')
+        self.fill_text_element('dailySeenCardLimit', '100')
         self.fill_text_element('reviewAheadMinutes', '130')
         self.click_option('ANKI')
 
@@ -2328,6 +2404,7 @@ class DeckBrowserTestCase(SeleniumTestCase):
         self.assertEqual(dssm.difficulty, 'EASY')
         self.assertEqual(dssm.shuffle_unseen_cards, True)
         self.assertEqual(dssm.daily_new_card_limit, 25)
+        self.assertEqual(dssm.daily_seen_card_limit, 100)
         self.assertEqual(dssm.review_ahead_minutes, 130)
         self.assertEqual(dssm.scheduling_algorithm, 'ANKI')
 
