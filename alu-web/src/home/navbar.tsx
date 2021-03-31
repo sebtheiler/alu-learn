@@ -71,6 +71,7 @@ export function NavbarComponent(props) {
                   style={{
                     background: doneReviewsToday ? '#fd9626' : '#e5e5e5',
                     color: doneReviewsToday ? 'white' : '#36474f',
+                    fontSize: currentStreak < 100 ? '15px' : '12px',
                   }}
                 >
                   {currentStreak}
@@ -102,6 +103,7 @@ export function NavbarComponent(props) {
                 </NavDropdown.Item>
 
                 <NavDropdown.Divider />
+
                 <NavDropdown.Item href='/settings/' id='settings-option'>
                   <i className='fas fa-cog'></i>{' '}
                   Settings
