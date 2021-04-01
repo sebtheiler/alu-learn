@@ -35,17 +35,14 @@ def deck_create_view(request, *args, **kwargs):
     """
     Create a deck - POST
 
-    Required information:
-        `title`: (Data) Title of the deck to create
-        `shuffle_unseen_cards`: (Data) Whether or not to shuffle unseen cards in the new deck
-        `daily_new_card_limit`: (Data) Number of new cards to be done daily in the deck,
-        `scheduling_algorithm`: (Data) Scheduling algo for the new deck,
-        `difficulty`: (Data) Difficulty of the deck to create
-
-    Returns:
-        Author of the deck (PublicProfileSerializer): 'author'
-        Title of the deck: 'title'
-        ID of the deck: 'id'
+    Params:
+        `title` (Data)
+        `shuffle_unseen_cards` (Data)
+        `daily_new_card_limit` (Data)
+        `daily_seen_card_limit` (Data)
+        `scheduling_algorithm` (Data)
+        `difficulty` (Data)
+        `review_ahead_minutes` (Data)
     """
     # Get deck title
     title = request.data.get('title')
@@ -65,7 +62,9 @@ def deck_create_view(request, *args, **kwargs):
         scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKING'),
         shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', False),
         daily_new_card_limit=request.data.get('daily_new_card_limit', 20),
+        daily_seen_card_limit=request.data.get('daily_seen_card_limit', 200),
         difficulty=request.data.get('difficulty', 'HARD'),
+        review_ahead_minutes=request.data.get('review_ahead_minutes', 120),
     )
 
     return Response(DeckSerializer(new_deck).data, status=201)

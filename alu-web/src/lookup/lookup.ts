@@ -17,16 +17,20 @@ export function apiDeckCreate(
   title: string,
   shuffleUnseenCards: boolean,
   dailyNewCardLimit: number,
+  dailySeenCardLimit: number,
   schedulingAlgo: SchedulingAlgorithm,
   deckDifficulty: DeckDifficulty,
+  reviewAheadMinutes: number,
   callback: (response: Deck, status: number) => void,
 ) {
   backendLookup('POST', 'decks/create/', callback, {
     title: title,
     shuffle_unseen_cards: shuffleUnseenCards,
     daily_new_card_limit: dailyNewCardLimit,
+    daily_seen_card_limit: dailySeenCardLimit,
     scheduling_algorithm: schedulingAlgo,
     difficulty: deckDifficulty,
+    review_ahead_minutes: reviewAheadMinutes,
   });
 }
 

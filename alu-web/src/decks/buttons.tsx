@@ -264,6 +264,7 @@ interface DeckLikeEditCreateFormProps {
 }
 function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
   const { deckLike, mode, submitHandler, deleteHandler, closeModal } = props;
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
 
   return (
     <Form onSubmit={submitHandler}>
@@ -279,13 +280,6 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
           />
         </Form.Group>}
         {props.children}
-        <div className='text-center d-flex'>
-          <hr className='flex-grow-1' />
-          <span className='px-2 align-self-center'>
-            Scheduling Options
-          </span>
-          <hr className='flex-grow-1' />
-        </div>
         <Form.Group>
           <Form.Label htmlFor='deckDifficulty'>
             Difficulty{' '}
@@ -308,7 +302,7 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
         </Form.Group>
         <Form.Group>
           <Form.Label htmlFor='dailyNewCardLimit'>
-            Daily new card limit{' '}
+            New Cards Per Day{' '}
             <QuestionBubble>
               This is the number of NEW flashcards you will see every day.
               If you are being overwhelmed you might want to consider decreasing it.
@@ -325,7 +319,7 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
         </Form.Group>
         <Form.Group>
           <Form.Label htmlFor='dailySeenCardLimit'>
-            Daily seen card limit{' '}
+            Max Seen Cards Per Day{' '}
             <QuestionBubble>
               This is maximum number of OLD reviews you will see every day.
               If you are being overwhelmed you might want to consider decreasing it.
@@ -340,60 +334,66 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
             required
           />
         </Form.Group>
-        <Form.Group>
-          <FormCheckbox
-            name='shuffleUnseenCards'
-            defaultChecked={deckLike?.shuffle_unseen_cards}
-          >
-            Shuffle Unseen Cards{' '}
-            <QuestionBubble>
-              If checked, this will make it so that the order flashcards are displayed to you in this deck is random, rather than being from the beginning of the deck and slowly to the end.
-              You don't want this enabled for most unit-based decks, but if your deck is alphabetically ordered you should definitely enable it.
-            </QuestionBubble>
-          </FormCheckbox>
-        </Form.Group>
         <div className='text-center d-flex'>
           <hr className='flex-grow-1' />
           <span className='px-2 align-self-center'>
-            Advanced Options
+            <Button
+              className='mb-3'
+              onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+              id='toggle-advanced-options'
+            >
+              {showAdvancedOptions ? 'Hide' : 'Show'} Advanced Options
+            </Button>
           </span>
           <hr className='flex-grow-1' />
         </div>
-        <Form.Group>
-          <Form.Label htmlFor='reviewAheadMinutes'>
-            Review Ahead Minutes{' '}
-            <QuestionBubble>
-              This is a more advanced setting and you probably shouldn't worry about it.
-              Alu shows you flashcards within this value of minutes right now instead of making you wait a couple minutes.  This is relevant when the flashcard interval is in minutes, so that you don't have to wait multiple minutes to review flashcards.
-            </QuestionBubble>
-          </Form.Label>
-          <Form.Control
-            type='number'
-            name='reviewAheadMinutes'
-            defaultValue={deckLike?.review_ahead_minutes ? deckLike?.review_ahead_minutes : 120}
-            min='0'
-            max='5000000'
-            required
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label htmlFor='schedulingAlgo'>
-            Scheduling Algorithm{' '}
-            <QuestionBubble>
-              This is a more advanced setting and you probably shouldn't worry about it.
-              Alu uses a certain algorithm to determine when you should next see flashcards.  You can change that specific algorithm here.
-            </QuestionBubble>
-          </Form.Label>
-          <Form.Control
-            as='select'
-            name='schedulingAlgo'
-            defaultValue={deckLike?.scheduling_algorithm}
-            custom
-          >
-            <option value='ANKING'>Optimized Anki Settings</option>
-            <option value='ANKI'>Default Anki Settings</option>
-          </Form.Control>
-        </Form.Group>
+        {showAdvancedOptions && <>
+          <Form.Group>
+            <FormCheckbox
+              name='shuffleUnseenCards'
+              defaultChecked={deckLike?.shuffle_unseen_cards}
+            >
+              Shuffle Unseen Cards{' '}
+              <QuestionBubble>
+                If checked, this will make it so that the order flashcards are displayed to you in this deck is random, rather than being from the beginning of the deck and slowly to the end.
+                You don't want this enabled for most unit-based decks, but if your deck is alphabetically ordered you should definitely enable it.
+              </QuestionBubble>
+            </FormCheckbox>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label htmlFor='reviewAheadMinutes'>
+              Review Ahead Minutes{' '}
+              <QuestionBubble>
+                Alu shows you flashcards within this value of minutes right now instead of making you wait a couple minutes.  This is relevant when the flashcard interval is in minutes, so that you don't have to wait multiple minutes to review flashcards.
+              </QuestionBubble>
+            </Form.Label>
+            <Form.Control
+              type='number'
+              name='reviewAheadMinutes'
+              defaultValue={deckLike?.review_ahead_minutes ? deckLike?.review_ahead_minutes : 120}
+              min='0'
+              max='5000000'
+              required
+            />
+          </Form.Group>
+          <Form.Group>
+            <Form.Label htmlFor='schedulingAlgo'>
+              Scheduling Algorithm{' '}
+              <QuestionBubble>
+                Alu uses a certain algorithm to determine when you should next see flashcards.  You can change that specific algorithm here.
+              </QuestionBubble>
+            </Form.Label>
+            <Form.Control
+              as='select'
+              name='schedulingAlgo'
+              defaultValue={deckLike?.scheduling_algorithm}
+              custom
+            >
+              <option value='ANKING'>Optimized Anki Settings</option>
+              <option value='ANKI'>Default Anki Settings</option>
+            </Form.Control>
+          </Form.Group>
+        </>}
       </Modal.Body>
       <Modal.Footer>
         {deckLike && has(deckLike, 'serializer_name') &&

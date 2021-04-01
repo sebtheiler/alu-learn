@@ -23,10 +23,12 @@ export function DeckCreate(props) {
 
     apiDeckCreate(
       form.elements.title.value,
-      form.elements.shuffleUnseenCards.checked,
+      form.elements.shuffleUnseenCards?.checked,
       parseInt(form.elements.dailyNewCardLimit.value),
-      form.elements.schedulingAlgo.value,
+      parseInt(form.elements.dailySeenCardLimit.value),
+      form.elements.schedulingAlgo?.value,
       form.elements.deckDifficulty.value,
+      form.elements.reviewAheadMinutes?.value,
       (response, status) => {
         if (status === 201) {
           window.location.reload();

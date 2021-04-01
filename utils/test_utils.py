@@ -155,6 +155,19 @@ class SeleniumTestCase(LiveServerTestCase):
     def click_option(self, option_value: str):
         self.driver.find_element_by_xpath(f'//option[@value="{option_value}"]').click()
 
+    def click_button(self, /, html_id=None, html_class=None, html_name=None):
+        if html_id is None and html_class is None and html_name is None:
+            raise ValueError('You must either specify html_id, html_class, or html_name')
+
+        if html_id:
+            self.driver.find_element_by_id(html_id).click()
+        elif html_class:
+            self.driver.find_element_by_class_name(html_class).click()
+        elif html_name:
+            self.driver.find_element_by_name(html_name).click()
+        else:
+            raise ValueError('You must have at least one truthy input')
+
     def new_login(self, username: str):
         self.driver.find_element_by_id('profile-dropdown').click()
         self.driver.find_element_by_id('logout-option').click()

@@ -2262,13 +2262,38 @@ class DeckBrowserTestCase(SeleniumTestCase):
         deck_create_modal_xpath = '//*[@id="decks-home"]/div/div[1]/div/button'
 
         self.driver.find_element_by_xpath(deck_create_modal_xpath).click()
-        self.driver.find_element_by_name('title').send_keys('Deck created from selenium')
+        self.fill_text_element('title', 'Deck created from selenium')
+        self.click_option('NORM')
+        self.fill_text_element('dailyNewCardLimit', 25)
+        self.fill_text_element('dailySeenCardLimit', 250)
+        self.click_button(html_id='toggle-advanced-options')
+        self.click_button(html_name='shuffleUnseenCards')
+        self.fill_text_element('reviewAheadMinutes', 180)
+        self.click_option('ANKI')
         self.driver.find_element_by_id('edit-create-deck').click()
         self.sleep(1)
 
         # Assert deck created
         self.assertEqual(Deck.objects.count(), 1)
         self.assertTextExists('Deck created from selenium')
+        deck = Deck.objects.first()
+        ssm = deck.study_session_manager  # type: DeckStudySessionManager
+        self.assertEqual(deck.title, 'Deck created from selenium')
+        self.assertEqual(ssm.difficulty, 'NORM')
+        self.assertEqual(ssm.daily_new_card_limit, 25)
+        self.assertEqual(ssm.daily_seen_card_limit, 250)
+        self.assertEqual(ssm.shuffle_unseen_cards, True)
+        self.assertEqual(ssm.review_ahead_minutes, 180)
+        self.assertEqual(ssm.scheduling_algorithm, 'ANKI')
+
+        # Semi-reset the SSM so it doesn't actually mess anything up
+        ssm.difficulty = 'HARD'
+        ssm.daily_seen_card_limit = 20
+        ssm.daily_seen_card_limit = 200
+        ssm.shuffle_unseen_cards = False
+        ssm.review_ahead_minutes = 120
+        ssm.scheduling_algorithm = 'ANKING'
+        ssm.save()
 
         # Study the new deck
         self.driver.find_element_by_class_name('study-btn').click()
@@ -2411,9 +2436,10 @@ class DeckBrowserTestCase(SeleniumTestCase):
 
         self.fill_text_element('title', 'Edited selenium deck')
         self.click_option('EASY')
-        self.driver.find_element_by_name('shuffleUnseenCards').click()
         self.fill_text_element('dailyNewCardLimit', '25')
         self.fill_text_element('dailySeenCardLimit', '100')
+        self.click_button(html_id='toggle-advanced-options')
+        self.driver.find_element_by_name('shuffleUnseenCards').click()
         self.fill_text_element('reviewAheadMinutes', '130')
         self.click_option('ANKI')
 
