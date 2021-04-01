@@ -2,7 +2,6 @@ from datetime import timedelta
 from django.utils import timezone
 from profiles.models import Profile
 from rest_framework import serializers
-from profiles.serializers import MinifiedProfileSerializer
 from decks.serializers import SharedDeckSerializer
 from .models import Assignment, Classroom
 
@@ -34,7 +33,7 @@ class StudentSerializer(serializers.ModelSerializer):
             'today_stats',
             'id',
         ]
-    
+
     def get_first_name(self, obj):
         return obj.user.first_name
 
@@ -46,7 +45,7 @@ class StudentSerializer(serializers.ModelSerializer):
         today = timezone.now()
         if tz := self.context.get('tz'):
             today -= timedelta(minutes=int(tz))
- 
+
         if last_history is None:
             actually_today = False
         else:
@@ -73,17 +72,17 @@ class AssignmentSerializer(serializers.ModelSerializer):
             'study_session_manager',
             'id',
         ]
-    
+
     def get_percent_complete(self, obj):
         if not self.context.get('calc_percent_complete'):
             return None
-        
+
         return obj.calc_percent_complete(self.context['request'].user)
-    
+
     def get_study_session_manager(self, obj):
         if not self.context.get('get_study_session_manager'):
             return None
-        
+
         return obj.get_study_session_manager(self.context['request'].user)
 
 

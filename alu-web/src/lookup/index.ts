@@ -94,6 +94,7 @@ import {
   apiQuickDeckList,
   apiStudyAssignment,
   apiAssignmentDetail,
+  apiClassroomGetSSM,
 } from './lookup';
 
 export {
@@ -192,4 +193,5 @@ export {
   apiQuickDeckList,
   apiStudyAssignment,
   apiAssignmentDetail,
+  apiClassroomGetSSM,
 }

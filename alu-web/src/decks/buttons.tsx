@@ -1,5 +1,5 @@
 import React, { ReactNode, ReactNodeArray, useState } from 'react';
-import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags, apiSSMDetail } from '../lookup';
+import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags, apiClassroomGetSSM } from '../lookup';
 import { errorHandler, FormCheckbox, has, QuestionBubble, useApiObjectHook } from '../utils';
 import { SearchForm } from './flashcards/search';
 import Button from 'react-bootstrap/Button';
@@ -10,6 +10,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Deck, SharedDeck, CSSM, SSMInterface } from './types';
+import { Assignment } from '../teachers/types';
 
 
 // Buttons for when an owner views their deck
@@ -267,7 +268,7 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
   return (
     <Form onSubmit={submitHandler}>
       <Modal.Body>
-        {deckLike && has(deckLike, 'title') && <Form.Group>
+        {((deckLike && has(deckLike, 'title')) || !deckLike) && <Form.Group>
           <Form.Label htmlFor='title'>Title</Form.Label>
           <Form.Control
             type='text'
@@ -498,27 +499,54 @@ export function CSSMEditForm(props: CSSMEditFormProps) {
 }
 
 
-interface ASSMEditFormProps {
-  assmId: number;
-  submitHandler(event): void;
+interface ClassroomSSMEditFormProps {
+  classroomId: number;
+  assignments: Assignment[];
   closeModal(): void;
 }
-export function ASSMEditForm(props: ASSMEditFormProps) {
-  const { assmId, submitHandler, closeModal } = props;
-  const [assignment] = useApiObjectHook<SSMInterface>(
-    apiSSMDetail,
+export function ClassroomSSMEditForm(props: ClassroomSSMEditFormProps) {
+  const { classroomId, assignments, closeModal } = props;
+  const [SSM] = useApiObjectHook<SSMInterface>(
+    apiClassroomGetSSM,
     200,
     8022,
-    [assmId],
+    [classroomId],
     null, null,
-    !!assmId,
+    !!classroomId,
   );
+  if (!SSM) return <p>Loading...</p>
+
+  const editClassroomSSM = event => {
+    // Edits the classroom deck's SSM, as well as
+    // all of the ASSMs for the various assignments in that class
+    event.preventDefault();
+    const form = event.target;
+
+    apiSSMEdit(
+      SSM.id,
+      assignments.map(assignment => assignment.study_session_manager).concat[SSM.id],
+      undefined,
+      form.elements.schedulingAlgo.value,
+      form.elements.shuffleUnseenCards.checked,
+      form.elements.dailyNewCardLimit.value,
+      form.elements.dailySeenCardLimit.value,
+      form.elements.reviewAheadMinutes.value,
+      undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+      (response, status) => {
+        if (status === 200) {
+          window.location.reload();
+        } else {
+          errorHandler(response, status, 8023);
+        }
+      },
+    );
+  }
 
   return (
     <DeckishEditCreateForm
-      deckLike={assignment}
+      deckLike={SSM}
       mode='edit'
-      submitHandler={submitHandler}
+      submitHandler={editClassroomSSM}
       closeModal={closeModal}
     />
   );

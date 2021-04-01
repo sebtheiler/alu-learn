@@ -1146,23 +1146,30 @@ class DeckTestCase(ImprovedTestCase):
         api_view = api_views.ssm_edit_view
         kwargs = {'ssm_id': ssm.pk}
 
+        # Helper functions
+        def check_initial_ssm(ssm):
+            self.assertEqual(ssm.scheduling_algorithm, 'ANKING')
+            self.assertEqual(ssm.shuffle_unseen_cards, False)
+            self.assertEqual(ssm.daily_new_card_limit, 20)
+            self.assertEqual(ssm.review_ahead_minutes, 120)
+
+        def check_changed_ssm(ssm):
+            ssm.refresh_from_db()
+            self.assertEqual(ssm.scheduling_algorithm, 'ANKI')
+            self.assertEqual(ssm.shuffle_unseen_cards, True)
+            self.assertEqual(ssm.daily_new_card_limit, 25)
+            self.assertEqual(ssm.review_ahead_minutes, 150)
+
         # Test deck SSM
-        self.assertEqual(ssm.scheduling_algorithm, 'ANKING')
-        self.assertEqual(ssm.shuffle_unseen_cards, False)
-        self.assertEqual(ssm.daily_new_card_limit, 20)
-        self.assertEqual(ssm.review_ahead_minutes, 120)
+        check_initial_ssm(ssm)
         response = self.post_response(api_path, api_view, {
             'scheduling_algorithm': 'ANKI',
             'shuffle_unseen_cards': True,
             'daily_new_card_limit': 25,
             'review_ahead_minutes': 150,
         }, kwargs=kwargs)
-        ssm = DeckStudySessionManager.objects.get(pk=ssm.pk)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(ssm.scheduling_algorithm, 'ANKI')
-        self.assertEqual(ssm.shuffle_unseen_cards, True)
-        self.assertEqual(ssm.daily_new_card_limit, 25)
-        self.assertEqual(ssm.review_ahead_minutes, 150)
+        check_changed_ssm(ssm)
 
         # Test with CSSM
         ssm = CustomStudySessionManager.objects.create(
@@ -1179,10 +1186,7 @@ class DeckTestCase(ImprovedTestCase):
         api_path = f'/api/decks/ssm/{ssm.pk}/edit/'
         kwargs = {'ssm_id': ssm.pk}
 
-        self.assertEqual(ssm.scheduling_algorithm, 'ANKING')
-        self.assertEqual(ssm.shuffle_unseen_cards, False)
-        self.assertEqual(ssm.daily_new_card_limit, 20)
-        self.assertEqual(ssm.review_ahead_minutes, 120)
+        check_initial_ssm(ssm)
         self.assertEqual(ssm.title, 'CSSM to edit')
         self.assertEqual(ssm.deck_ids, '1,2,3')
         self.assertEqual(ssm.tags, 'a AND NOT b')
@@ -1201,18 +1205,36 @@ class DeckTestCase(ImprovedTestCase):
             'min_ease': 160,
             'max_ease': 290,
         }, kwargs=kwargs)
-        ssm = CustomStudySessionManager.objects.get(pk=ssm.pk)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(ssm.daily_new_card_limit, 25)
-        self.assertEqual(ssm.shuffle_unseen_cards, True)
-        self.assertEqual(ssm.scheduling_algorithm, 'ANKI')
-        self.assertEqual(ssm.review_ahead_minutes, 150)
+        check_changed_ssm(ssm)
         self.assertEqual(ssm.title, 'Edited CSSM')
         self.assertEqual(ssm.deck_ids, '2,3,4')
         self.assertEqual(ssm.tags, 'b AND NOT a')
         self.assertEqual(ssm.contains, 'drow')
         self.assertEqual(ssm.min_ease, 160)
         self.assertEqual(ssm.max_ease, 290)
+
+        # Test editing multiple SSMs at once
+        deck1 = self.create_deck('Deck to house ssm #1')
+        deck2 = self.create_deck('Deck to house ssm #2')
+        ssm1 = deck1.study_session_manager
+        ssm2 = deck2.study_session_manager
+
+        api_path = f'/api/decks/ssm/{ssm1.pk}/edit/'
+        kwargs = {'ssm_id': ssm1.pk}
+
+        check_initial_ssm(ssm1)
+        check_initial_ssm(ssm2)
+        response = self.post_response(api_path, api_view, {
+            'ssm_ids': [ssm1.pk, ssm2.pk],
+            'scheduling_algorithm': 'ANKI',
+            'shuffle_unseen_cards': True,
+            'daily_new_card_limit': 25,
+            'review_ahead_minutes': 150,
+        }, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        check_changed_ssm(ssm1)
+        check_changed_ssm(ssm2)
 
     def test_ssm_create_api(self):
         api_path = '/api/decks/ssm/create/'

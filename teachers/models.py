@@ -43,6 +43,27 @@ class Classroom(models.Model):
 
         return shared_deck
 
+    def get_student_copied_deck(
+        self,
+        student: User,
+        copy_if_missing: bool = False,
+    ) -> Deck:
+        """
+        Returns the deck the specified student copied from this class
+        """
+        try:
+            return Deck.objects.get(
+                user=student,
+                student_attached_to=self,
+            )
+        except Deck.DoesNotExist:
+            if copy_if_missing:
+                if self.deck is None:
+                    raise AttributeError('Teacher has not attached deck to this classroom')
+                return self.deck.clone(student)
+            else:
+                return None
+
     @staticmethod
     def generate_class_code() -> str:
         allowed_chars = 'bcdfghjkmpqrtvwxyBCDFGHJKMPQRTVWXY346789-_'

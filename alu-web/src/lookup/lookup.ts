@@ -873,3 +873,10 @@ export function apiAssignmentDetail(
 ) {
   backendLookup('GET', `teachers/classroom/${classroomId}/assignments/${assignmentId}/`, callback);
 }
+
+export function apiClassroomGetSSM(
+  classroomId: number,
+  callback: (response: SSMInterface, status: number) => void,
+) {
+  backendLookup('GET', `teachers/classroom/${classroomId}/ssm/`, callback);
+}

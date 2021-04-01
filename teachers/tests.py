@@ -637,7 +637,7 @@ class TeacherTestCase(ImprovedTestCase):
 
     def test_assignment_study_api(self):
         # Create class
-        classroom = self.create_classroom('Class with assignment to study', 1, 1)
+        classroom = self.create_classroom('Class with assignment to study', 1, 2)
         assignment = classroom.assignments.first()
         student = classroom.students.first().user
         api_view = api_views.study_assignment_view
@@ -737,6 +737,30 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertIsInstance(response.data, list)
         self.assertEqual(len(response.data), 20)
         check_deck_assignment_created()
+
+        # Modify the copied deck's SSM and study the other
+        # assignment to check the created ASSM has the settings
+        # from the modified SSM
+        assignment2 = classroom.assignments.last()
+        deck = Deck.objects.get(user=student)
+        ssm = deck.study_session_manager
+        ssm.daily_new_card_limit = 25
+        ssm.save()
+
+        api_path2 = f'/api/teachers/classroom/{classroom.pk}/assignments/{assignment2.pk}/study/'
+        kwargs2 = {'classroom_id': classroom.pk, 'assignment_id': assignment2.pk}
+
+        response = self.get_response(api_path2, api_view, user=student, kwargs=kwargs2)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(
+            AssignmentStudySessionManager.objects.filter(user=student.profile).count(),
+            2,
+        )
+        assm = AssignmentStudySessionManager.objects.filter(user=student.profile).last()
+        self.assertIsNotNone(assm)
+        self.assertEqual(assm.assignment, assignment2)
+        self.assertEqual(assm.daily_new_card_limit, ssm.daily_new_card_limit)
 
         # === TESTING AUTOUPDATE ===
         # Update the original deck
@@ -843,6 +867,86 @@ class TeacherTestCase(ImprovedTestCase):
         response = self.get_response(api_path, api_view, user=student, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['study_session_manager'], assm.pk)
+
+    def test_classroom_get_ssm_api(self):
+        # Create class
+        classroom = self.create_classroom('Class to get SSM from', 1)
+        student = classroom.students.first().user
+        api_view = api_views.classroom_get_ssm_view
+        api_path = f'/api/teachers/classroom/{classroom.pk}/ssm/'
+        kwargs = {'classroom_id': classroom.pk}
+
+        # Attempt to get SSM as unauthorized user
+        response = self.get_response(
+            api_path,
+            api_view,
+            user=self.users[1],
+            kwargs=kwargs,
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertIsInstance(response.data['message'], str)
+
+        response = self.get_response(
+            api_path,
+            api_view,
+            is_anon=True,
+            kwargs=kwargs,
+        )
+        self.assertEqual(response.status_code, 403)
+
+        # Attempt to get SSM before deck is attached to classroom
+        self.assertEqual(
+            Deck.objects.filter(user=student).count(),
+            0,
+        )
+        response = self.get_response(
+            api_path,
+            api_view,
+            user=student,
+            kwargs=kwargs,
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertTrue(response.data['message'].startswith('Classroom has no attached deck'))
+        self.assertEqual(
+            Deck.objects.filter(user=student).count(),
+            0,
+        )
+
+        # Attach deck to classroom
+        deck = self.create_deck('Deck to attach for to classroom for SSM', 5)
+        classroom.attach_deck(deck)
+
+        # Get SSM
+        response = self.get_response(
+            api_path,
+            api_view,
+            user=student,
+            kwargs=kwargs,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            Deck.objects.filter(user=student).count(),
+            1,
+        )
+        deck = Deck.objects.filter(user=student).first()
+        ssm = deck.study_session_manager
+        self.assertEqual(response.data['id'], ssm.pk)
+
+        # Get it again to make sure deck is not re-copied
+        response = self.get_response(
+            api_path,
+            api_view,
+            user=student,
+            kwargs=kwargs,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            Deck.objects.filter(user=student).count(),
+            1,
+        )
+        deck = Deck.objects.filter(user=student).first()
+        ssm = deck.study_session_manager
+        self.assertEqual(response.data['id'], ssm.pk)
 
 
 class TeacherBrowserTestCase(SeleniumTestCase):

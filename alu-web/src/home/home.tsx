@@ -6,7 +6,7 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiQuickDeckList, apiSSMEdit } from '../lookup';
+import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiQuickDeckList } from '../lookup';
 import { errorHandler, shiftDate, range, timezoneToISOString, useApiObjectHook } from '../utils';
 import { randomTip } from './randomtips';
 import CalendarHeatmap from 'react-calendar-heatmap';
@@ -16,7 +16,7 @@ import './home.css';
 import { MinifiedProfile, Profile, ProfileHistory } from '../profiles/types';
 import { Classroom, ClassroomAssignments } from '../teachers/types';
 import { ClassroomDefaultButtonGroup, ClassroomEditCreateButton } from '../teachers/buttons';
-import { ASSMEditForm } from '../decks/buttons';
+import { ClassroomSSMEditForm } from '../decks/buttons';
 
 export function HomeComponent({ username }) {
   const [profile] = useApiObjectHook<Profile>(apiProfileDetail, 200, 3010, [username]);
@@ -408,32 +408,13 @@ function AssignmentsComponent({ setJoinClassModalIsOpen }) {
   </Container>)
 }
 
-function RenderClassroom({ classroom }) {
+interface RenderClassroomProps {
+  classroom: ClassroomAssignments;
+}
+function RenderClassroom(props: RenderClassroomProps) {
+  const { classroom } = props;
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
 
-  const editClassroomASSMs = event => {
-    event.preventDefault();
-    const form = event.target;
-
-    apiSSMEdit(
-      classroom.assignments[0].study_session_manager,
-      classroom.assignments.map(assignment => assignment.study_session_manager),
-      undefined,
-      form.elements.schedulingAlgo.value,
-      form.elements.shuffleUnseenCards.checked,
-      form.elements.dailyNewCardLimit.value,
-      form.elements.dailySeenCardLimit.value,
-      form.elements.reviewAheadMinutes.value,
-      undefined, undefined, undefined, undefined, undefined, undefined, undefined,
-      (response, status) => {
-        if (status === 200) {
-          window.location.reload();
-        } else {
-          errorHandler(response, status, 8023);
-        }
-      },
-    );
-  }
 
   return (<>
     <li className='mb-5'>
@@ -492,9 +473,9 @@ function RenderClassroom({ classroom }) {
           Editing Flashcard Settings for {classroom.title}
         </Modal.Title>
       </Modal.Header>
-      <ASSMEditForm
-        assmId={classroom.assignments[0]?.study_session_manager}
-        submitHandler={editClassroomASSMs}
+      <ClassroomSSMEditForm
+        classroomId={classroom.id}
+        assignments={classroom.assignments}
         closeModal={() => setEditModalIsOpen(false)}
       />
     </Modal>

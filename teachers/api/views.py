@@ -3,7 +3,8 @@ from datetime import timedelta
 
 from decks.models import Deck, FlashCard, SharedDeck
 from decks.serializers import (DeckSerializer, FlashCardSerializer,
-                               SharedDeckSerializer)
+                               SharedDeckSerializer,
+                               StudySessionManagerSerializer)
 from django.db.models.query_utils import Q
 from django.utils import timezone
 from profiles.models import Profile
@@ -528,10 +529,34 @@ def study_assignment_view(request, classroom_id: int, assignment_id: int):
     except Assignment.DoesNotExist:
         return Response({'message': 'Assignment not found'}, status=404)
 
-    assm, created = AssignmentStudySessionManager.objects.get_or_create(
-        assignment=assignment,
-        user=request.user.profile,
-    )
+    try:
+        assm = AssignmentStudySessionManager.objects.get(
+            assignment=assignment,
+            user=request.user.profile,
+        )
+    except AssignmentStudySessionManager.DoesNotExist:
+        # Get default SSM values from the copied deck SSM
+        classroom = Classroom.objects.get(pk=classroom_id)
+        deck = classroom.get_student_copied_deck(request.user)
+
+        if deck is not None:
+            ssm = deck.study_session_manager
+            defaults = {
+                'scheduling_algorithm': ssm.scheduling_algorithm,
+                'shuffle_unseen_cards': ssm.shuffle_unseen_cards,
+                'review_ahead_minutes': ssm.review_ahead_minutes,
+                'daily_new_card_limit': ssm.daily_new_card_limit,
+                'daily_seen_card_limit': ssm.daily_seen_card_limit,
+                'difficulty': ssm.difficulty,
+            }
+        else:
+            defaults = {}
+
+        assm = AssignmentStudySessionManager.objects.create(
+            assignment=assignment,
+            user=request.user.profile,
+            **defaults
+        )
 
     # If there are any updates available, pull them
     attached_deck = assm.get_attached_deck()  # type: Deck
@@ -582,3 +607,31 @@ def assignment_detail_view(request, classroom_id: int, assignment_id: int):
         ).data,
         status=200,
     )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def classroom_get_ssm_view(request, classroom_id):
+    """
+    Gets the SSM the current user has for the deck that is copied from this class - GET
+    If the user hasn't copied the class deck yet, it copies the deck automatically
+    Fails if the classroom has no attached deck
+
+    Params:
+        `classroom_id`: (GET) Id of the classroom to get the SSM from
+    """
+    try:
+        classroom = Classroom.objects.get(
+            pk=classroom_id,
+            students=request.user.profile,
+        )
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    try:
+        deck = classroom.get_student_copied_deck(request.user, True)
+    except AttributeError:
+        return Response({'message': 'Classroom has no attached deck'}, status=400)
+    ssm = deck.study_session_manager
+
+    return Response(StudySessionManagerSerializer(ssm).data, status=200)
