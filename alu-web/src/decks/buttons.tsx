@@ -1,6 +1,6 @@
 import React, { ReactNode, ReactNodeArray, useState } from 'react';
-import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags } from '../lookup';
-import { errorHandler, FormCheckbox, QuestionBubble, useApiObjectHook } from '../utils';
+import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags, apiSSMDetail } from '../lookup';
+import { errorHandler, FormCheckbox, has, QuestionBubble, useApiObjectHook } from '../utils';
 import { SearchForm } from './flashcards/search';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -9,7 +9,7 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Deck, SharedDeck, CSSM } from './types';
+import { Deck, SharedDeck, CSSM, SSMInterface } from './types';
 
 
 // Buttons for when an owner views their deck
@@ -86,6 +86,7 @@ export function DeckDefaultButtonGroup({ deck, vertical=false, hideBrowse=false 
     } else if (deck.serializer_name === 'cssm') {
       apiSSMEdit(
         deck.id,
+        undefined,
         form.elements.title.value,
         form.elements.schedulingAlgo.value,
         form.elements.shuffleUnseenCards.checked,
@@ -252,12 +253,13 @@ export function DeckEditCreateModal(props: DeckEditCreateModalProps) {
 
 
 interface DeckLikeEditCreateFormProps {
-  deckLike?: Deck | CSSM;
+  deckLike?: Deck | CSSM | SSMInterface;
   mode: 'edit' | 'create';
   submitHandler(event): void;
   deleteHandler?(event): void;
   closeModal(): void;
-  children: ReactNode | ReactNodeArray;
+  children?: ReactNode | ReactNodeArray;
+  options?: { disableTitle?: boolean };
 }
 function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
   const { deckLike, mode, submitHandler, deleteHandler, closeModal } = props;
@@ -265,7 +267,7 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
   return (
     <Form onSubmit={submitHandler}>
       <Modal.Body>
-        <Form.Group>
+        {deckLike && has(deckLike, 'title') && <Form.Group>
           <Form.Label htmlFor='title'>Title</Form.Label>
           <Form.Control
             type='text'
@@ -274,7 +276,7 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
             defaultValue={deckLike?.title}
             required
           />
-        </Form.Group>
+        </Form.Group>}
         {props.children}
         <div className='text-center d-flex'>
           <hr className='flex-grow-1' />
@@ -285,7 +287,7 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
         </div>
         <Form.Group>
           <Form.Label htmlFor='deckDifficulty'>
-            Deck Difficulty{' '}
+            Difficulty{' '}
             <QuestionBubble>
               This option controls how spread apart reviews will be.
               Simpler difficulties will give you longer intervals between flashcard reviews, giving you less work.
@@ -314,7 +316,7 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
           <Form.Control
             type='number'
             name='dailyNewCardLimit'
-            defaultValue={deckLike?.daily_new_card_limit ? deckLike?.daily_new_card_limit : 20}
+            defaultValue={deckLike?.daily_new_card_limit ?? 20}
             min='0'
             max='9999'
             required
@@ -324,14 +326,14 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
           <Form.Label htmlFor='dailySeenCardLimit'>
             Daily seen card limit{' '}
             <QuestionBubble>
-              This is maximum number of old reviews you will see every day.
+              This is maximum number of OLD reviews you will see every day.
               If you are being overwhelmed you might want to consider decreasing it.
             </QuestionBubble>
           </Form.Label>
           <Form.Control
             type='number'
             name='dailySeenCardLimit'
-            defaultValue={deckLike?.daily_seen_card_limit ? deckLike?.daily_seen_card_limit : 200}
+            defaultValue={deckLike?.daily_seen_card_limit ?? 200}
             min='0'
             max='9999'
             required
@@ -393,13 +395,13 @@ function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
         </Form.Group>
       </Modal.Body>
       <Modal.Footer>
-        {mode === 'edit' &&
+        {deckLike && has(deckLike, 'serializer_name') &&
           <Button
             onClick={deleteHandler}
             variant='danger'
             className='text-left mr-auto'
           >
-            Delete {deckLike?.serializer_name === 'deck' ? 'Deck' : 'Custom Study'}
+            Delete {deckLike.serializer_name === 'deck' ? 'Deck' : 'Custom Study'}
           </Button>
         }
         <Button onClick={closeModal} variant='secondary'>
@@ -492,6 +494,33 @@ export function CSSMEditForm(props: CSSMEditFormProps) {
         />
       }
     </DeckishEditCreateForm>
+  );
+}
+
+
+interface ASSMEditFormProps {
+  assmId: number;
+  submitHandler(event): void;
+  closeModal(): void;
+}
+export function ASSMEditForm(props: ASSMEditFormProps) {
+  const { assmId, submitHandler, closeModal } = props;
+  const [assignment] = useApiObjectHook<SSMInterface>(
+    apiSSMDetail,
+    200,
+    8022,
+    [assmId],
+    null, null,
+    !!assmId,
+  );
+
+  return (
+    <DeckishEditCreateForm
+      deckLike={assignment}
+      mode='edit'
+      submitHandler={submitHandler}
+      closeModal={closeModal}
+    />
   );
 }
 

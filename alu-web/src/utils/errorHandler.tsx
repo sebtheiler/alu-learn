@@ -169,4 +169,6 @@ int(hexadecimal_string, 16)
 8019: Error getting assignment through apiAssignmentDetail
 8020: Error getting assignment flashcards through apiStudyAssignment
 8021: Error getting ASSM through apiSSMDetail
+8022: Error getting ASSM through apiSSMDetail for editing
+8023: Error editing ASSM through apiSSMEdit
 */

@@ -337,7 +337,10 @@ export function apiFeedbackSubmit(title, description, errorCode, urgency, email,
 }
 
 // Gets metadata about an SSM
-export function apiSSMDetail(studySessionmanagerId, callback) {
+export function apiSSMDetail(
+  studySessionmanagerId: number,
+  callback: (response: SSMInterface, status: number) => void,
+) {
   backendLookup('GET', `decks/ssm/${studySessionmanagerId}/`, callback);
 }
 
@@ -379,22 +382,29 @@ export function apiSSMFlashcardUpdate(
 // Updates a study session manager
 export function apiSSMEdit(
   studySessionmanagerId: number,
-  title: string,
-  schedulingAlgo: SchedulingAlgorithm,
-  shuffleUnseenCards: boolean,
-  dailyNewCardLimit: number,
-  dailySeenCardLimit: number,
-  reviewAheadMinutes: number,
-  deckIds: string,
-  tags: string,
-  contains: string,
-  leech: boolean | null,
-  learningStatus: LearningStatus,
-  minEase: number,
-  maxEase: number,
-  callback: (reponse: SSMInterface, status: number) => void,
+  studySessionmanagerIds?: number[],
+  title?: string,
+  schedulingAlgo?: SchedulingAlgorithm,
+  shuffleUnseenCards?: boolean,
+  dailyNewCardLimit?: number,
+  dailySeenCardLimit?: number,
+  reviewAheadMinutes?: number,
+  deckIds?: string,
+  tags?: string,
+  contains?: string,
+  leech?: boolean | null,
+  learningStatus?: LearningStatus,
+  minEase?: number,
+  maxEase?: number,
+  callback?: (reponse: SSMInterface, status: number) => void,
 ) {
+  if (!callback) {
+    console.error('Must provide `callback`');
+    return;
+  }
+
   backendLookup('POST', `decks/ssm/${studySessionmanagerId}/edit/`, callback, {
+    ssm_ids: studySessionmanagerIds,
     title: title,
     scheduling_algorithm: schedulingAlgo,
     shuffle_unseen_cards: shuffleUnseenCards,

@@ -105,7 +105,7 @@ export function NavbarComponent(props) {
                 <NavDropdown.Divider />
 
                 <NavDropdown.Item href='/settings/' id='settings-option'>
-                  <i className='fas fa-cog'></i>{' '}
+                  <i className='fas fa-cogs'></i>{' '}
                   Settings
                 </NavDropdown.Item>
                 <NavDropdown.Item href='/help/' id='help-option'>

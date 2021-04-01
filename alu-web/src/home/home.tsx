@@ -6,7 +6,7 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiQuickDeckList } from '../lookup';
+import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiQuickDeckList, apiSSMEdit } from '../lookup';
 import { errorHandler, shiftDate, range, timezoneToISOString, useApiObjectHook } from '../utils';
 import { randomTip } from './randomtips';
 import CalendarHeatmap from 'react-calendar-heatmap';
@@ -16,6 +16,7 @@ import './home.css';
 import { MinifiedProfile, Profile, ProfileHistory } from '../profiles/types';
 import { Classroom, ClassroomAssignments } from '../teachers/types';
 import { ClassroomDefaultButtonGroup, ClassroomEditCreateButton } from '../teachers/buttons';
+import { ASSMEditForm } from '../decks/buttons';
 
 export function HomeComponent({ username }) {
   const [profile] = useApiObjectHook<Profile>(apiProfileDetail, 200, 3010, [username]);
@@ -351,45 +352,7 @@ function AssignmentsComponent({ setJoinClassModalIsOpen }) {
       <hr />
       <ul className='no-bullets'>
         {classrooms.map((classroom, i) =>
-          <li className='mb-5' key={i}>
-            <h3>{classroom.title}</h3>
-            {classroom.assignments.length > 0 ? <table className='text-center'>
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Due Date</th>
-                  <th>Progress</th>
-                </tr>
-              </thead>
-              <tbody>
-                {classroom.assignments.map((assignment, i) => {
-                  const studyUrl = `/classrooms/${classroom.id}/assignments/${assignment.id}/study/`;
-
-                  return (
-                    <tr onClick={() => {window.location.href = studyUrl}} key={i}>
-                      <td>
-                        <a href={studyUrl} className='assignment-link'>
-                          {assignment.title}
-                        </a>
-                      </td>
-                      <td>
-                        {new Date(assignment.due_date).toDateString()}
-                      </td>
-                      <td className='assignment-table__percent-complete'>
-                        {/* TODO: make this a separate API call, so that the structure loads faster */}
-                        {Math.floor((assignment.percent_complete ?? 0) * 100)}%
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table> : <div>
-              <p>No assignments!  Yay!</p>
-              <small className='text-muted'>
-                You can study ahead by going to your <a href='/home/decks/'>Deck Homepage</a> and clicking "Study" on the deck for this class.
-              </small>
-            </div>}
-          </li>
+          <RenderClassroom key={i} classroom={classroom} />
         )}
       </ul>
     </> : (decks && decks.length === 0 && <div className='mt-3'>
@@ -443,6 +406,99 @@ function AssignmentsComponent({ setJoinClassModalIsOpen }) {
       </ul>
     </>) : <p>Loading...</p>}
   </Container>)
+}
+
+function RenderClassroom({ classroom }) {
+  const [editModalIsOpen, setEditModalIsOpen] = useState(false);
+
+  const editClassroomASSMs = event => {
+    event.preventDefault();
+    const form = event.target;
+
+    apiSSMEdit(
+      classroom.assignments[0].study_session_manager,
+      classroom.assignments.map(assignment => assignment.study_session_manager),
+      undefined,
+      form.elements.schedulingAlgo.value,
+      form.elements.shuffleUnseenCards.checked,
+      form.elements.dailyNewCardLimit.value,
+      form.elements.dailySeenCardLimit.value,
+      form.elements.reviewAheadMinutes.value,
+      undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+      (response, status) => {
+        if (status === 200) {
+          window.location.reload();
+        } else {
+          errorHandler(response, status, 8023);
+        }
+      },
+    );
+  }
+
+  return (<>
+    <li className='mb-5'>
+      <h3>
+        {classroom.title}{' '}
+        {classroom.assignments.length > 0 && <>
+          <i
+            className='fas fa-cog fa-sm classroom-assignments-options'
+            onClick={() => setEditModalIsOpen(true)}
+          />
+          <span style={{ fontSize: '15px', marginLeft: '15px' }}>
+            ⬅️ New feature: customize how many flashcards you see to avoid being overwhelmed
+          </span>
+        </>}
+      </h3>
+      {classroom.assignments.length > 0 ? <table className='text-center'>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Due Date</th>
+            <th>Progress</th>
+          </tr>
+        </thead>
+        <tbody>
+          {classroom.assignments.map((assignment, i) => {
+            const studyUrl = `/classrooms/${classroom.id}/assignments/${assignment.id}/study/`;
+
+            return (
+              <tr onClick={() => {window.location.href = studyUrl}} key={i}>
+                <td>
+                  <a href={studyUrl} className='assignment-link'>
+                    {assignment.title}
+                  </a>
+                </td>
+                <td>
+                  {new Date(assignment.due_date).toDateString()}
+                </td>
+                <td className='assignment-table__percent-complete'>
+                  {/* TODO: make this a separate API call, so that the structure loads faster */}
+                  {Math.floor((assignment.percent_complete ?? 0) * 100)}%
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table> : <div>
+        <p>No assignments!  Yay!</p>
+        <small className='text-muted'>
+          You can study ahead by going to your <a href='/home/decks/'>Deck Homepage</a> and clicking "Study" on the deck for this class.
+        </small>
+      </div>}
+    </li>
+    <Modal show={editModalIsOpen} onHide={() => setEditModalIsOpen(false)}>
+      <Modal.Header>
+        <Modal.Title>
+          Editing Flashcard Settings for {classroom.title}
+        </Modal.Title>
+      </Modal.Header>
+      <ASSMEditForm
+        assmId={classroom.assignments[0]?.study_session_manager}
+        submitHandler={editClassroomASSMs}
+        closeModal={() => setEditModalIsOpen(false)}
+      />
+    </Modal>
+  </>);
 }
 
 function TeacherClassesComponent() {
