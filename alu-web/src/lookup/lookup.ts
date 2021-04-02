@@ -386,7 +386,6 @@ export function apiSSMFlashcardUpdate(
 // Updates a study session manager
 export function apiSSMEdit(
   studySessionmanagerId: number,
-  studySessionmanagerIds?: number[],
   title?: string,
   schedulingAlgo?: SchedulingAlgorithm,
   shuffleUnseenCards?: boolean,
@@ -408,7 +407,6 @@ export function apiSSMEdit(
   }
 
   backendLookup('POST', `decks/ssm/${studySessionmanagerId}/edit/`, callback, {
-    ssm_ids: studySessionmanagerIds,
     title: title,
     scheduling_algorithm: schedulingAlgo,
     shuffle_unseen_cards: shuffleUnseenCards,

@@ -1218,29 +1218,6 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(ssm.min_ease, 160)
         self.assertEqual(ssm.max_ease, 290)
 
-        # Test editing multiple SSMs at once
-        deck1 = self.create_deck('Deck to house ssm #1')
-        deck2 = self.create_deck('Deck to house ssm #2')
-        ssm1 = deck1.study_session_manager
-        ssm2 = deck2.study_session_manager
-
-        api_path = f'/api/decks/ssm/{ssm1.pk}/edit/'
-        kwargs = {'ssm_id': ssm1.pk}
-
-        check_initial_ssm(ssm1)
-        check_initial_ssm(ssm2)
-        response = self.post_response(api_path, api_view, {
-            'ssm_ids': [ssm1.pk, ssm2.pk],
-            'scheduling_algorithm': 'ANKI',
-            'shuffle_unseen_cards': True,
-            'daily_new_card_limit': 25,
-            'daily_seen_card_limit': 250,
-            'review_ahead_minutes': 150,
-        }, kwargs=kwargs)
-        self.assertEqual(response.status_code, 200)
-        check_changed_ssm(ssm1)
-        check_changed_ssm(ssm2)
-
     def test_ssm_create_api(self):
         api_path = '/api/decks/ssm/create/'
         api_view = api_views.ssm_create_view

@@ -849,39 +849,12 @@ def ssm_edit_view(request, ssm_id, *args, **kwargs):
 
     Params:
         `ssm_id`: (URL) ID of the SSM to edit
-        `ssm_ids`: (Data) Optional list of other SSMs to edit at the same time
         `title`
         `scheduling_algorithm`
         `shuffle_unseen_cards`
         `daily_new_card_limit`
         All other CSSM information
     """
-    # If `ssm_ids` is specified, edit all of those SSMs
-    ssm_ids = request.data.get('ssm_ids')
-    if ssm_ids is not None and isinstance(ssm_ids, list):
-        ssms = StudySessionManager.objects.filter(pk__in=ssm_ids)
-        ssm = ssms.first()
-
-        scheduling_algorithm = request.data.get('scheduling_algorithm', ssm.scheduling_algorithm)
-        shuffle_unseen_cards = request.data.get('shuffle_unseen_cards', ssm.shuffle_unseen_cards)
-        daily_new_card_limit = request.data.get('daily_new_card_limit', ssm.daily_new_card_limit)
-        daily_seen_card_limit = request.data.get('daily_seen_card_limit', ssm.daily_seen_card_limit)
-        review_ahead_minutes = request.data.get('review_ahead_minutes', ssm.review_ahead_minutes)
-
-        ssms.update(
-            scheduling_algorithm=scheduling_algorithm,
-            shuffle_unseen_cards=shuffle_unseen_cards,
-            daily_new_card_limit=daily_new_card_limit,
-            daily_seen_card_limit=daily_seen_card_limit,
-            review_ahead_minutes=review_ahead_minutes,
-        )
-
-        return Response(
-            StudySessionManagerSerializer(ssms, many=True).data,
-            status=200,
-        )
-
-    # Otherwise edit the specified SSM
     try:
         ssm = DeckStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
     except DeckStudySessionManager.DoesNotExist:

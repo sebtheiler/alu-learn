@@ -86,7 +86,6 @@ export function DeckDefaultButtonGroup({ deck, vertical=false, hideBrowse=false 
     } else if (deck.serializer_name === 'cssm') {
       apiSSMEdit(
         deck.id,
-        undefined,
         form.elements.title.value,
         form.elements.schedulingAlgo.value,
         form.elements.shuffleUnseenCards.checked,
