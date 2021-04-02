@@ -884,3 +884,21 @@ export function apiClassroomGetSSM(
 ) {
   backendLookup('GET', `teachers/classroom/${classroomId}/ssm/`, callback);
 }
+
+export function apiClassroomEditSSM(
+  classroomId: number,
+  schedulingAlgo: SchedulingAlgorithm,
+  shuffleUnseenCards: boolean,
+  dailyNewCardLimit: number,
+  dailySeenCardLimit: number,
+  reviewAheadMinutes: number,
+  callback: (response: SSMInterface, status: number) => void,
+) {
+  backendLookup('POST', `teachers/classroom/${classroomId}/ssm/edit/`, callback, {
+    scheduling_algorithm: schedulingAlgo,
+    shuffle_unseen_cards: shuffleUnseenCards,
+    daily_new_card_limit: dailyNewCardLimit,
+    daily_seen_card_limit: dailySeenCardLimit,
+    review_ahead_minutes: reviewAheadMinutes,
+  });
+}

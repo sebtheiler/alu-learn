@@ -55,4 +55,7 @@ th {
 .classroom-assignments-options {
   color: gray;
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
 }

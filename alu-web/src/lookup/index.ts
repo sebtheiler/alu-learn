@@ -95,6 +95,7 @@ import {
   apiStudyAssignment,
   apiAssignmentDetail,
   apiClassroomGetSSM,
+  apiClassroomEditSSM,
 } from './lookup';
 
 export {
@@ -194,4 +195,5 @@ export {
   apiStudyAssignment,
   apiAssignmentDetail,
   apiClassroomGetSSM,
+  apiClassroomEditSSM,
 }

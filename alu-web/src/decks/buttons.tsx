@@ -1,5 +1,5 @@
 import React, { ReactNode, ReactNodeArray, useState } from 'react';
-import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags, apiClassroomGetSSM } from '../lookup';
+import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags, apiClassroomGetSSM, apiClassroomEditSSM } from '../lookup';
 import { errorHandler, FormCheckbox, has, QuestionBubble, useApiObjectHook } from '../utils';
 import { SearchForm } from './flashcards/search';
 import Button from 'react-bootstrap/Button';
@@ -10,7 +10,6 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Deck, SharedDeck, CSSM, SSMInterface } from './types';
-import { Assignment } from '../teachers/types';
 
 
 // Buttons for when an owner views their deck
@@ -501,11 +500,10 @@ export function CSSMEditForm(props: CSSMEditFormProps) {
 
 interface ClassroomSSMEditFormProps {
   classroomId: number;
-  assignments: Assignment[];
   closeModal(): void;
 }
 export function ClassroomSSMEditForm(props: ClassroomSSMEditFormProps) {
-  const { classroomId, assignments, closeModal } = props;
+  const { classroomId, closeModal } = props;
   const [SSM] = useApiObjectHook<SSMInterface>(
     apiClassroomGetSSM,
     200,
@@ -522,16 +520,13 @@ export function ClassroomSSMEditForm(props: ClassroomSSMEditFormProps) {
     event.preventDefault();
     const form = event.target;
 
-    apiSSMEdit(
-      SSM.id,
-      assignments.map(assignment => assignment.study_session_manager).concat[SSM.id],
-      undefined,
-      form.elements.schedulingAlgo.value,
-      form.elements.shuffleUnseenCards.checked,
+    apiClassroomEditSSM(
+      classroomId,
+      form.elements.schedulingAlgo?.value,
+      form.elements.shuffleUnseenCards?.checked,
       form.elements.dailyNewCardLimit.value,
       form.elements.dailySeenCardLimit.value,
-      form.elements.reviewAheadMinutes.value,
-      undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+      form.elements.reviewAheadMinutes?.value,
       (response, status) => {
         if (status === 200) {
           window.location.reload();
@@ -698,11 +693,6 @@ export function SelectFlashcardsButtonGroup(props) {
     const form = event.target;
     if (!updatingTags) {
       setUpdatingTags(true);
-      console.log(
-        selectedFlashcards,
-        tagEditAction,
-        form.elements.tagValue.value,
-      )
       apiFlashcardEditTags(selectedFlashcards, tagEditAction, form.elements.tagValue.value, (response, status) => {
         if (status === 200) {
           window.location.reload();

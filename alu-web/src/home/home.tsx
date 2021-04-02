@@ -421,10 +421,12 @@ function RenderClassroom(props: RenderClassroomProps) {
       <h3>
         {classroom.title}{' '}
         {classroom.assignments.length > 0 && <>
-          <i
-            className='fas fa-cog fa-sm classroom-assignments-options'
+          <button
             onClick={() => setEditModalIsOpen(true)}
-          />
+            className='classroom-assignments-options'
+          >
+            <i className='fas fa-cog fa-sm' />
+          </button>
           <span style={{ fontSize: '15px', marginLeft: '15px' }}>
             ⬅️ New feature: customize how many flashcards you see to avoid being overwhelmed
           </span>
@@ -475,7 +477,6 @@ function RenderClassroom(props: RenderClassroomProps) {
       </Modal.Header>
       <ClassroomSSMEditForm
         classroomId={classroom.id}
-        assignments={classroom.assignments}
         closeModal={() => setEditModalIsOpen(false)}
       />
     </Modal>

@@ -344,7 +344,9 @@ class TeacherTestCase(ImprovedTestCase):
         api_path = f'/api/teachers/classroom/{classroom.pk}/student/{student.pk}/stats/'
 
         # Attempt to get statistics without attaching deck
-        response = self.get_response(api_path, api_views.student_statistics_view,
+        response = self.get_response(
+            api_path,
+            api_views.student_statistics_view,
             kwargs={'classroom_id': classroom.pk, 'student_id': student.pk}
         )
         self.assertEqual(response.status_code, 404)
@@ -355,8 +357,10 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertEqual(deck.student_attached_to, classroom)
 
         # Get statistics
-        response = self.get_response(api_path, api_views.student_statistics_view,
-            kwargs={'classroom_id': classroom.pk, 'student_id': student.pk}
+        response = self.get_response(
+            api_path,
+            api_views.student_statistics_view,
+            kwargs={'classroom_id': classroom.pk, 'student_id': student.pk},
         )
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data['deck_stats'], dict)
@@ -948,6 +952,78 @@ class TeacherTestCase(ImprovedTestCase):
         ssm = deck.study_session_manager
         self.assertEqual(response.data['id'], ssm.pk)
 
+    def test_classroom_edit_ssm(self):
+        # Create class and attached deck
+        classroom = self.create_classroom('Class to get SSM from', 1, 1)
+        student = classroom.students.first().user
+        assignment = classroom.assignments.first()
+        api_view = api_views.classroom_edit_ssm_view
+        api_path = f'/api/teachers/classroom/{classroom.pk}/ssm/edit/'
+        kwargs = {'classroom_id': classroom.pk}
+
+        classroom_origin_deck = self.create_deck('Clasroom Deck', 10)
+        classroom.attach_deck(classroom_origin_deck)
+
+        # Create ASSM by studying assignment
+        self.assertEqual(
+            AssignmentStudySessionManager.objects.filter(user=student.profile).count(),
+            0,
+        )
+        self.assertEqual(
+            DeckStudySessionManager.objects.filter(user=student.profile).count(),
+            0,
+        )
+        study_kwargs = {'classroom_id': classroom.pk, 'assignment_id': assignment.pk}
+        study_response = self.get_response(
+            f'/api/teachers/classroom/{classroom.pk}/assignments/{assignment.pk}/study/',
+            api_views.study_assignment_view,
+            student,
+            kwargs=study_kwargs,
+        )
+        self.assertEqual(study_response.status_code, 200)
+        self.assertEqual(
+            AssignmentStudySessionManager.objects.filter(user=student.profile).count(),
+            1,
+        )
+        self.assertEqual(
+            DeckStudySessionManager.objects.filter(user=student.profile).count(),
+            1,
+        )
+        assm = AssignmentStudySessionManager.objects.filter(user=student.profile).first()
+        dssm = DeckStudySessionManager.objects.filter(user=student.profile).first()
+        self.assertEqual(assm.daily_new_card_limit, 20)
+        self.assertEqual(dssm.daily_new_card_limit, 20)
+        self.assertEqual(assm.daily_seen_card_limit, 200)
+        self.assertEqual(dssm.daily_seen_card_limit, 200)
+        self.assertEqual(assm.shuffle_unseen_cards, False)
+        self.assertEqual(dssm.shuffle_unseen_cards, False)
+        self.assertEqual(assm.review_ahead_minutes, 120)
+        self.assertEqual(dssm.review_ahead_minutes, 120)
+        self.assertEqual(assm.scheduling_algorithm, 'ANKING')
+        self.assertEqual(dssm.scheduling_algorithm, 'ANKING')
+
+        # Edit all classroom SSMs
+        response = self.post_response(api_path, api_view, {
+            'daily_new_card_limit': 25,
+            'daily_seen_card_limit': 250,
+            'shuffle_unseen_cards': True,
+            'review_ahead_minutes': 180,
+            'scheduling_algorithm': 'ANKI',
+        }, user=student, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        assm.refresh_from_db()
+        dssm.refresh_from_db()
+        self.assertEqual(assm.daily_new_card_limit, 25)
+        self.assertEqual(dssm.daily_new_card_limit, 25)
+        self.assertEqual(assm.daily_seen_card_limit, 250)
+        self.assertEqual(dssm.daily_seen_card_limit, 250)
+        self.assertEqual(assm.shuffle_unseen_cards, True)
+        self.assertEqual(dssm.shuffle_unseen_cards, True)
+        self.assertEqual(assm.review_ahead_minutes, 180)
+        self.assertEqual(dssm.review_ahead_minutes, 180)
+        self.assertEqual(assm.scheduling_algorithm, 'ANKI')
+        self.assertEqual(dssm.scheduling_algorithm, 'ANKI')
+
 
 class TeacherBrowserTestCase(SeleniumTestCase):
     def test_deck_homepage(self):
@@ -1125,10 +1201,97 @@ class TeacherBrowserTestCase(SeleniumTestCase):
             Q(flashcard_num__lt=5)
         ).update(tags=assignment.tag_query)
 
-        # Study assignment
         self.driver.refresh()
+        self.assertTextNotExists('Congratulations!')
 
-        # Study deck
+        # Change assignment settings
+        def change_assignment_settings(
+            difficulty,
+            daily_new_card_limit,
+            daily_seen_card_limit,
+            toggle_shuffle_unseen_cards,
+            review_ahead_minutes,
+            scheduling_algorithm,
+        ):
+            self.assertEqual(
+                AssignmentStudySessionManager.objects.filter(user=self.users[2].profile).count(),
+                1,
+            )
+            self.assertEqual(
+                DeckStudySessionManager.objects.filter(user=self.users[2].profile).count(),
+                1,
+            )
+            assm = AssignmentStudySessionManager.objects.filter(user=self.users[2].profile).first()
+            dssm = DeckStudySessionManager.objects.filter(user=self.users[2].profile).first()
+            initially_shuffled = assm.shuffle_unseen_cards
+
+            self.click_button(html_class='classroom-assignments-options')
+            self.click_option(difficulty)
+            self.fill_text_element('dailyNewCardLimit', daily_new_card_limit)
+            self.fill_text_element('dailySeenCardLimit', daily_seen_card_limit)
+            self.click_button(html_id='toggle-advanced-options')
+            if toggle_shuffle_unseen_cards:
+                self.click_button(html_name='shuffleUnseenCards')
+            self.fill_text_element('reviewAheadMinutes', review_ahead_minutes)
+            self.click_option(scheduling_algorithm)
+            self.driver.find_element_by_id('edit-create-deck').click()
+            self.sleep(0.5)
+
+            self.assertEqual(
+                AssignmentStudySessionManager.objects.filter(user=self.users[2].profile).count(),
+                1,
+            )
+            self.assertEqual(
+                DeckStudySessionManager.objects.filter(user=self.users[2].profile).count(),
+                1,
+            )
+            assm.refresh_from_db()
+            dssm.refresh_from_db()
+            self.assertEqual(assm.daily_new_card_limit, daily_new_card_limit)
+            self.assertEqual(assm.daily_new_card_limit, daily_new_card_limit)
+            self.assertEqual(assm.daily_seen_card_limit, daily_seen_card_limit)
+            self.assertEqual(assm.daily_seen_card_limit, daily_seen_card_limit)
+            self.assertEqual(
+                assm.shuffle_unseen_cards,
+                not initially_shuffled if toggle_shuffle_unseen_cards else initially_shuffled,
+            )
+            self.assertEqual(
+                dssm.shuffle_unseen_cards,
+                not initially_shuffled if toggle_shuffle_unseen_cards else initially_shuffled,
+            )
+            self.assertEqual(assm.review_ahead_minutes, review_ahead_minutes)
+            self.assertEqual(assm.review_ahead_minutes, review_ahead_minutes)
+            self.assertEqual(assm.scheduling_algorithm, scheduling_algorithm)
+            self.assertEqual(assm.scheduling_algorithm, scheduling_algorithm)
+
+        self.driver.execute_script('window.history.go(-1)')
+        change_assignment_settings(
+            'NORM',
+            0,
+            0,
+            True,
+            180,
+            'ANKI',
+        )
+        self.driver.find_element_by_class_name('assignment-link').click()
+        self.sleep(0.3)
+        self.assertTextExists('Congratulations!')
+
+        # Edit the assignment settings to be like the default
+        self.driver.execute_script('window.history.go(-1)')
+        change_assignment_settings(
+            'HARD',
+            20,
+            200,
+            True,
+            120,
+            'ANKING',
+        )
+
+        # Study assignment
+        self.driver.find_element_by_class_name('assignment-link').click()
+        self.sleep(0.3)
+
         for i in range(5):
             self.driver.find_element_by_id('showanswer').click()
 

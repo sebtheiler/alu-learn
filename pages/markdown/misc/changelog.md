@@ -2,8 +2,10 @@
 -----
 
 
-* **Added Option to Control Max Seen Flashcards per Day:** When editing decks/assignments/custom-studies you can now change the maximum number of previously seen flashcards per day.  It defaults to 200, which is probably right for most people, but you can lower it if you have too many flashcards to review and are getting overwhelmed or increase it if you want to memorize with Alu better.
-* **Added Tooltips When Editing Decks:** There are now tooltips explaining all of the advanced options when editing a deck.
+* **Added Settings for Classroom Studying:** You can now control the specifics of how many flashcards are shown to you when studying assignments for a classroom.  You can access these options by clicking the cog/gear icon next to the classroom title.  If you're feeling overwhelmed, lowering these values will make Alu give you less flashcards.  This feature was previously limited to just decks, but has no been expanded to classrooms as well.
+  * **Rearranged Deck-like Options:** The "advanced options" are now hidden by default when editing deck-likes to make it less confusing for new users.
+  * **Added Option to Control Max Seen Flashcards per Day:** When editing decks/assignments/custom-studies you can now change the maximum number of previously seen flashcards per day.  It defaults to 200, which is probably right for most people, but you can lower it if you have too many flashcards to review and are getting overwhelmed or increase it if you want to memorize with Alu better.
+  * **Added Tooltips When Editing Decks:** There are now tooltips explaining all of the advanced options when editing a deck.
 * **Fixed Tiny Studying Bug:** Fixed a slightly ridiculous bug that allowed you to press "zero" on your keyboard as a valid response when rating your performance on a flashcard, instead of the usual 1, 2, 3, and 4.
 * **Changed Reminder Email:** The reminder email's wording was a bit annoying, so I changed it.
 * **Fixed Streak Icon For Long Streaks:** The icon for displaying your streak was overflown if you had a streak greater than 100.  It's now fixed to dynamically make the text smaller if your streak gets longer than 100.  It'll break again if anyone's streak surpasses 1,000, but I should have at least 2.5 years to fix that.

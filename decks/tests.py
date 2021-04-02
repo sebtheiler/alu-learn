@@ -1151,6 +1151,7 @@ class DeckTestCase(ImprovedTestCase):
             self.assertEqual(ssm.scheduling_algorithm, 'ANKING')
             self.assertEqual(ssm.shuffle_unseen_cards, False)
             self.assertEqual(ssm.daily_new_card_limit, 20)
+            self.assertEqual(ssm.daily_seen_card_limit, 200)
             self.assertEqual(ssm.review_ahead_minutes, 120)
 
         def check_changed_ssm(ssm):
@@ -1158,6 +1159,7 @@ class DeckTestCase(ImprovedTestCase):
             self.assertEqual(ssm.scheduling_algorithm, 'ANKI')
             self.assertEqual(ssm.shuffle_unseen_cards, True)
             self.assertEqual(ssm.daily_new_card_limit, 25)
+            self.assertEqual(ssm.daily_seen_card_limit, 250)
             self.assertEqual(ssm.review_ahead_minutes, 150)
 
         # Test deck SSM
@@ -1166,6 +1168,7 @@ class DeckTestCase(ImprovedTestCase):
             'scheduling_algorithm': 'ANKI',
             'shuffle_unseen_cards': True,
             'daily_new_card_limit': 25,
+            'daily_seen_card_limit': 250,
             'review_ahead_minutes': 150,
         }, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
@@ -1197,6 +1200,7 @@ class DeckTestCase(ImprovedTestCase):
             'scheduling_algorithm': 'ANKI',
             'shuffle_unseen_cards': True,
             'daily_new_card_limit': 25,
+            'daily_seen_card_limit': 250,
             'review_ahead_minutes': 150,
             'title': 'Edited CSSM',
             'deck_ids': [2, 3, 4],
@@ -1230,6 +1234,7 @@ class DeckTestCase(ImprovedTestCase):
             'scheduling_algorithm': 'ANKI',
             'shuffle_unseen_cards': True,
             'daily_new_card_limit': 25,
+            'daily_seen_card_limit': 250,
             'review_ahead_minutes': 150,
         }, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)

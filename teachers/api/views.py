@@ -1,7 +1,7 @@
 import re
 from datetime import timedelta
 
-from decks.models import Deck, FlashCard, SharedDeck
+from decks.models import Deck, FlashCard, SharedDeck, DeckStudySessionManager
 from decks.serializers import (DeckSerializer, FlashCardSerializer,
                                SharedDeckSerializer,
                                StudySessionManagerSerializer)
@@ -635,3 +635,52 @@ def classroom_get_ssm_view(request, classroom_id):
     ssm = deck.study_session_manager
 
     return Response(StudySessionManagerSerializer(ssm).data, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def classroom_edit_ssm_view(request, classroom_id):
+    """
+    Edits the SSM of the deck a student attached to classroom, as well
+    as the ASSMs for all of the assignments in the class - POST
+
+    Params:
+        `daily_new_card_limit`? (Data)
+        `daily_seen_card_limit`? (Data)
+        `shuffle_unseen_cards`? (Data)
+        `review_ahead_minutes`? (Data)
+        `scheduling_algorithm`? (Data)
+    """
+    try:
+        ssm = DeckStudySessionManager.objects.get(
+            user=request.user.profile,
+            deck__student_attached_to__pk=classroom_id,
+        )
+    except DeckStudySessionManager.DoesNotExist:
+        return Response({'message': 'DeckStudySessionManager not found'}, status=404)
+
+    # Edit DSSM
+    ssm.scheduling_algorithm = request.data.get('scheduling_algorithm', ssm.scheduling_algorithm)
+    ssm.daily_new_card_limit = request.data.get('daily_new_card_limit', ssm.daily_new_card_limit)
+    ssm.daily_seen_card_limit = request.data.get(
+        'daily_seen_card_limit',
+        ssm.daily_seen_card_limit,
+    )
+    ssm.review_ahead_minutes = request.data.get('review_ahead_minutes', ssm.review_ahead_minutes)
+    ssm.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards', ssm.shuffle_unseen_cards)
+    ssm.save()
+
+    # Find and edit any available ASSMs
+    assms = AssignmentStudySessionManager.objects.filter(
+        user=request.user.profile,
+        assignment__classroom__pk=classroom_id,
+    )
+    assms.update(
+        scheduling_algorithm=request.data.get('scheduling_algorithm', ssm.scheduling_algorithm),
+        daily_new_card_limit=request.data.get('daily_new_card_limit', ssm.daily_new_card_limit),
+        daily_seen_card_limit=request.data.get('daily_seen_card_limit', ssm.daily_seen_card_limit),
+        review_ahead_minutes=request.data.get('review_ahead_minutes', ssm.review_ahead_minutes),
+        shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', ssm.shuffle_unseen_cards),
+    )
+
+    return Response({'message': 'Edited DSSM and any ASSMs available'}, status=200)
