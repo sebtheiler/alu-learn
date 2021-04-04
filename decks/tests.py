@@ -50,6 +50,51 @@ class DeckTestCase(ImprovedTestCase):
 
         return deck
 
+    def assertDecksEqual(
+        self,
+        deck1: Deck,
+        deck2: Deck,
+        test_review_instances_exists: bool = True,
+        test_review_instances_equal: bool = True,
+    ):
+        deck1_flashcards = deck1.flashcards.all().order_by('flashcard_num')
+        deck2_flashcards = deck2.flashcards.all().order_by('flashcard_num')
+        self.assertEqual(deck1_flashcards.count(), deck2_flashcards.count())
+        for deck1_flashcard, deck2_flashcard in zip(deck2_flashcards, deck1_flashcards):
+            # Assert FlashCardCreators are equal
+            self.assertEqual(deck1_flashcard.flashcard_num, deck2_flashcard.flashcard_num)
+            self.assertEqual(deck1_flashcard.flashcard_type, deck2_flashcard.flashcard_type)
+            self.assertEqual(deck1_flashcard.tags, deck2_flashcard.tags)
+
+            # Assert FlashCardFields are equal
+            deck1_fields = deck1_flashcard.fields.all().order_by('field_number')
+            deck2_fields = deck2_flashcard.fields.all().order_by('field_number')
+            self.assertEqual(deck1_fields.count(), deck2_fields.count())
+            for deck1_field, deck2_field in zip(deck1_fields, deck2_fields):
+                self.assertEqual(deck1_field.text, deck2_field.text)
+                self.assertEqual(deck1_field.field_number, deck2_field.field_number)
+
+            # Assert FlashCards are equal
+            if not test_review_instances_exists:
+                return
+
+            deck1_review_instances = deck1_flashcard.review_instances.all()
+            deck2_review_instances = deck2_flashcard.review_instances.all()
+            self.assertEqual(deck1_review_instances.count(), deck2_review_instances.count())
+
+            if not test_review_instances_equal:
+                return
+
+            for deck1_review_instance, deck2_review_instance in zip(deck1_review_instances, deck2_review_instances):
+                self.assertEqual(deck1_review_instance.content_indicies, deck2_review_instance.content_indicies)
+                self.assertEqual(deck1_review_instance.name, deck2_review_instance.name)
+                self.assertEqual(deck1_review_instance.learning_status, deck2_review_instance.learning_status)
+                self.assertEqual(deck1_review_instance.steps_index, deck2_review_instance.steps_index)
+                self.assertEqual(deck1_review_instance.ease, deck2_review_instance.ease)
+                self.assertEqual(deck1_review_instance.interval, deck2_review_instance.interval)
+                self.assertEqual(deck1_review_instance.is_suspended, deck2_review_instance.is_suspended)
+                self.assertEqual(deck1_review_instance.leech_index, deck2_review_instance.leech_index)
+
     def test_create_deck_api(self):
         api_path = '/api/decks/create/'
 
@@ -2138,6 +2183,7 @@ class DeckTestCase(ImprovedTestCase):
 
         # Test with changes
         flashcards = FlashCard.objects.filter(creator__deck=deck)
+
         def get_flashcard_slice(start=None, stop=None) -> QuerySet[FlashCard]:
             # NOTE: this function is required since you can't update a sliced queryset
             return FlashCard.objects.filter(pk__in=[f.pk for f in flashcards[start:stop]])
@@ -2232,20 +2278,22 @@ class DeckTestCase(ImprovedTestCase):
 
     def test_deck_json_export_api(self):
         deck = self.create_deck('Deck to export to JSON', num_flashcards=20)
-        api_path = f'/api/decks/{deck.pk}/export/json/'
-        api_view = api_views.deck_json_export_view
+        export_api_path = f'/api/decks/{deck.pk}/export/json/'
+        export_api_view = api_views.deck_json_export_view
+        import_api_path = '/api/decks/upload/json/'
+        import_api_view = api_views.deck_json_import_view
         kwargs = {'deck_id': deck.pk}
 
         # Test as unauthorized user
-        response = self.get_response(api_path, api_view, user=self.users[1], kwargs=kwargs)
+        response = self.get_response(export_api_path, export_api_view, user=self.users[1], kwargs=kwargs)
         self.assertEqual(response.status_code, 404)
         self.assertIsInstance(response.data['message'], str)
 
-        response = self.get_response(api_path, api_view, is_anon=True, kwargs=kwargs)
+        response = self.get_response(export_api_path, export_api_view, is_anon=True, kwargs=kwargs)
         self.assertEqual(response.status_code, 403)
 
         # Export deck to JSON
-        response = self.get_response(api_path, api_view, kwargs=kwargs)
+        response = self.get_response(export_api_path, export_api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         json_deck = response.data
 
@@ -2285,11 +2333,27 @@ class DeckTestCase(ImprovedTestCase):
 
         evaluate_json_deck(json_deck)
 
+        # Import JSON deck back to real deck
+        self.assertEqual(Deck.objects.count(), 1)
+        response = self.post_response(import_api_path, import_api_view, json_deck)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Deck.objects.count(), 2)
+        imported_deck = Deck.objects.get(pk=response.data['id'])
+        self.assertDecksEqual(imported_deck, deck)
+
         # Export deck to JSON without review instances
-        response = self.get_response(f'{api_path}?export_review_instances=false', api_view, kwargs=kwargs)
+        response = self.get_response(f'{export_api_path}?export_review_instances=false', export_api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         json_deck = response.data
         evaluate_json_deck(json_deck, review_instances=False)
+
+        # Import JSON deck back to real deck
+        self.assertEqual(Deck.objects.count(), 2)
+        response = self.post_response(import_api_path, import_api_view, json_deck)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Deck.objects.count(), 3)
+        imported_deck = Deck.objects.get(pk=response.data['id'])
+        self.assertDecksEqual(imported_deck, deck, test_review_instances_equal=False)
 
 
 class DeckBrowserTestCase(SeleniumTestCase):

@@ -2,6 +2,7 @@ import json
 import random
 import re
 from typing import List
+from utils.utils import get_morning
 
 from django.core.cache import cache
 from django.db.models import Q, F
@@ -1355,7 +1356,7 @@ def deck_json_export_view(request, deck_id, *args, **kwargs):
     Exports a deck to its serialized JSON form - GET
 
     Params:
-        `export_review_instances=True` (GET): If false this will not export review instances
+        `export_review_instances=True` (GET)?: If false this will not export review instances
     """
     try:
         deck = Deck.objects.get(pk=deck_id, user=request.user)
@@ -1400,3 +1401,84 @@ def deck_json_export_view(request, deck_id, *args, **kwargs):
     }
 
     return Response(json_deck, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deck_json_import_view(request, *args, **kwargs):
+    """
+    Imports a deck based on a JSON file exported from Alu - POST
+
+    Params:
+        The entire request object must be in the format of a json_deck
+    """
+    json_deck = request.data
+    title = json_deck.get('title')
+    json_flashcards = json_deck.get('flashcards')
+    if title is None or json_flashcards is None:
+        return Response({'message': '`json_deck` must have `title` and `flashcards` attributes'}, status=400)
+
+    # Create deck
+    deck = Deck.objects.create(
+        user=request.user,
+        title=title,
+    )
+
+    DeckStudySessionManager.objects.create(
+        deck=deck,
+        user=request.user.profile,
+    )
+
+    # Create flashcards
+    creators_to_create = []
+    fields_to_create = []
+    review_instances_to_create = []
+    for i, json_flashcard in enumerate(json_flashcards):
+        creator = FlashCardCreator(
+            deck=deck,
+            tags=json_flashcard.get('tags', ''),
+            flashcard_type=json_flashcard.get('flashcard_type', 'basic'),
+            flashcard_num=json_flashcard.get('flashcard_num', i),
+        )
+        creators_to_create.append(creator)
+
+        fields = [
+            FlashCardField(
+                creator=creator,
+                text=json_field.get('text', []),
+                field_number=json_field.get('field_number', j),
+            )
+            for j, json_field in enumerate(json_flashcard['fields'])
+        ]
+        fields_to_create += fields
+
+        if json_flashcard.get('review_instances') is None:
+            review_instances_to_create += FlashCard.create_review_instance(
+                json_flashcard.get('flashcard_type', 'basic'),
+                creator,
+                fields[0],
+            )
+
+            continue
+
+        review_instances_to_create += [
+            FlashCard(
+                creator=creator,
+                content_indicies=json_review_instance.get('content_indicies', []),
+                name=json_review_instance.get('name', ''),
+                learning_status=json_review_instance.get('learning_status', 'UNSEEN'),
+                steps_index=json_review_instance.get('steps_index', 0),
+                ease=json_review_instance.get('ease', 250),
+                next_review=json_review_instance.get('next_review', get_morning()),
+                interval=json_review_instance.get('interval', 0),
+                is_suspended=json_review_instance.get('is_suspended', False),
+                leech_index=json_review_instance.get('leech_index', 0),
+            )
+            for json_review_instance in json_flashcard.get('review_instances')
+        ]
+
+    FlashCardCreator.objects.bulk_create(creators_to_create)
+    FlashCardField.objects.bulk_create(fields_to_create)
+    FlashCard.objects.bulk_create(review_instances_to_create)
+
+    return Response(DeckSerializer(deck).data, status=200)

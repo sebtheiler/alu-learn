@@ -8,6 +8,8 @@ urlpatterns = [
     path('create/', views.deck_create_view),
     path('search/', views.deck_search_view),
     path('textupload/', views.txt_file_upload),
+    path('upload/json/', views.deck_json_import_view),
+    path('<int:deck_id>/export/json/', views.deck_json_export_view),
     path('list/', views.deck_private_list),
     path('quick/', views.deck_quick_list_view),
     path('detail/<str:username>/', views.deck_shared_view),
