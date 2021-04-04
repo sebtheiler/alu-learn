@@ -2230,6 +2230,67 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
 
+    def test_deck_json_export_api(self):
+        deck = self.create_deck('Deck to export to JSON', num_flashcards=20)
+        api_path = f'/api/decks/{deck.pk}/export/json/'
+        api_view = api_views.deck_json_export_view
+        kwargs = {'deck_id': deck.pk}
+
+        # Test as unauthorized user
+        response = self.get_response(api_path, api_view, user=self.users[1], kwargs=kwargs)
+        self.assertEqual(response.status_code, 404)
+        self.assertIsInstance(response.data['message'], str)
+
+        response = self.get_response(api_path, api_view, is_anon=True, kwargs=kwargs)
+        self.assertEqual(response.status_code, 403)
+
+        # Export deck to JSON
+        response = self.get_response(api_path, api_view, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        json_deck = response.data
+
+        def evaluate_json_deck(json_deck, review_instances=True):
+            self.assertIsInstance(json_deck, dict)
+            self.assertEqual(json_deck['title'], deck.title)
+            self.assertEqual(len(json_deck['flashcards']), deck.flashcards.count())
+
+            real_flashcards = deck.flashcards.all().order_by('flashcard_num')
+            for json_flashcard, real_flashcard in zip(json_deck['flashcards'], real_flashcards):
+                self.assertEqual(json_flashcard['tags'], real_flashcard.tags)
+                self.assertEqual(json_flashcard['flashcard_type'], real_flashcard.flashcard_type)
+                self.assertEqual(json_flashcard['flashcard_num'], real_flashcard.flashcard_num)
+                self.assertEqual(len(json_flashcard['fields']), real_flashcard.fields.count())
+
+                real_fields = real_flashcard.fields.all().order_by('field_number')
+                for json_field, real_field in zip(json_flashcard['fields'], real_fields):
+                    self.assertEqual(json_field['text'], real_field.text)
+                    self.assertEqual(json_field['field_number'], real_field.field_number)
+
+                if not review_instances:
+                    self.assertIsNone(json_flashcard['review_instances'])
+                    return
+
+                self.assertEqual(len(json_flashcard['review_instances']), real_flashcard.review_instances.count())
+                real_review_instances = real_flashcard.review_instances.all()
+                for json_review_instance, real_review_instance in zip(json_flashcard['review_instances'], real_review_instances):
+                    self.assertEqual(json_review_instance['content_indicies'], real_review_instance.content_indicies)
+                    self.assertEqual(json_review_instance['name'], real_review_instance.name)
+                    self.assertEqual(json_review_instance['learning_status'], real_review_instance.learning_status)
+                    self.assertEqual(json_review_instance['steps_index'], real_review_instance.steps_index)
+                    self.assertEqual(json_review_instance['ease'], real_review_instance.ease)
+                    self.assertEqual(json_review_instance['next_review'], real_review_instance.next_review)
+                    self.assertEqual(json_review_instance['interval'], real_review_instance.interval)
+                    self.assertEqual(json_review_instance['is_suspended'], real_review_instance.is_suspended)
+                    self.assertEqual(json_review_instance['leech_index'], real_review_instance.leech_index)
+
+        evaluate_json_deck(json_deck)
+
+        # Export deck to JSON without review instances
+        response = self.get_response(f'{api_path}?export_review_instances=false', api_view, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        json_deck = response.data
+        evaluate_json_deck(json_deck, review_instances=False)
+
 
 class DeckBrowserTestCase(SeleniumTestCase):
     def test_deck_homepage(self):

@@ -1346,3 +1346,57 @@ def deck_quick_list_view(request, *args, **kwargs):
     ]
 
     return Response(data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def deck_json_export_view(request, deck_id, *args, **kwargs):
+    """
+    Exports a deck to its serialized JSON form - GET
+
+    Params:
+        `export_review_instances=True` (GET): If false this will not export review instances
+    """
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    export_review_instances = request.GET.get('export_review_instances', True)
+    if isinstance(export_review_instances, str):
+        export_review_instances = export_review_instances.lower() == 'true'
+
+    json_deck = {
+        'title': deck.title,
+        'flashcards': [
+            {
+                'tags': flashcard.tags,
+                'flashcard_type': flashcard.flashcard_type,
+                'flashcard_num': flashcard.flashcard_num,
+                'fields': [
+                    {
+                        'text': field.text,
+                        'field_number': field.field_number,
+                    }
+                    for field in flashcard.fields.order_by('field_number').all()
+                ],
+                'review_instances': [
+                    {
+                        'content_indicies': review_instance.content_indicies,
+                        'name': review_instance.name,
+                        'learning_status': review_instance.learning_status,
+                        'steps_index': review_instance.steps_index,
+                        'ease': review_instance.ease,
+                        'next_review': review_instance.next_review,
+                        'interval': review_instance.interval,
+                        'is_suspended': review_instance.is_suspended,
+                        'leech_index': review_instance.leech_index,
+                    }
+                    for review_instance in flashcard.review_instances.all()
+                ] if export_review_instances else None,
+            }
+            for flashcard in deck.flashcards.order_by('flashcard_num').all()
+        ],
+    }
+
+    return Response(json_deck, status=200)
