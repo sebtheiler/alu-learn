@@ -9,6 +9,7 @@
 * **Fixed Tiny Studying Bug:** Fixed a slightly ridiculous bug that allowed you to press "zero" on your keyboard as a valid response when rating your performance on a flashcard, instead of the usual 1, 2, 3, and 4.
 * **Changed Reminder Email:** The reminder email's wording was a bit annoying, so I changed it.
 * **Fixed Streak Icon For Long Streaks:** The icon for displaying your streak was overflown if you had a streak greater than 100.  It's now fixed to dynamically make the text smaller if your streak gets longer than 100.  It'll break again if anyone's streak surpasses 1,000, but I should have at least 2.5 years to fix that.
+* **Added JSON Importing/Exporting:** Added the ability to export decks to downloadable JSON files and then import those JSON files back into useable decks.  This probably won't be a very widely used feature, but it is useful in some situations and I need it for prototyping the next big updating...
 
 
 ## Flashcard Rearranging Fixes - Mar 20 - 0.5.5

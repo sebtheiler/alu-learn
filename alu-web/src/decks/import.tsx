@@ -1,49 +1,49 @@
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { apiDeckTextImport } from '../lookup';
+import { apiDeckJSONImport, apiDeckTextImport } from '../lookup';
 import { errorHandler } from '../utils';
+import { FancyFormFileUpload } from '../utils/utils';
+import { Deck } from './types';
 
 export function DeckImportComponent() {
-  const fileRef = React.createRef<HTMLInputElement>();
   const titleRef = React.createRef<HTMLInputElement>();
 
   const [uploadType, setUploadType] = useState('TXT');
   const [isLoading, setIsLoading] = useState(false)
-  
-  // Used for dynamically changing object positioning
-  const calculateMarginClass = () => {
-    if (document.documentElement.clientWidth > 850) {return 'w-50'} else
-    if (document.documentElement.clientWidth < 850) {return 'w-75'} else
-    if (document.documentElement.clientWidth < 500) {return 'w-100'}
-  }
-
-  const [widthClass, setWidthClass] = useState(calculateMarginClass());
-
-  window.addEventListener("resize", (_event) => {
-    setWidthClass(calculateMarginClass())
-  });
 
   const handleImport = (event) => {
     event.preventDefault();
     setIsLoading(true);
     const form = event.target;
     const file = form.uploadFile.files[0];
-    const convertFormatting = false; // form.elements.convertFormatting.checked;
 
-    const apiImport = textData => apiDeckTextImport(form.elements.deckTitle.value, textData, convertFormatting, (response, status) => {
-      if (status === 201) {
-        window.location.href = `/decks/${response.id}/flashcards/`;
-      } else {
-        // Error importing deck from .txt file
-        errorHandler(response, status, 1013);
+    const apiImport = (textData: string) => {
+      const callback = (response: Deck, status: number) => {
+        if (status === 201) {
+          window.location.href = `/decks/${response.id}/flashcards/`;
+        } else {
+          // Error importing deck
+          errorHandler(response, status, 1013);
+        }
+        setIsLoading(false);
       }
-      setIsLoading(false);
-    });
+
+      switch (uploadType) {
+        case 'TXT':
+          apiDeckTextImport(form.elements.deckTitle.value, textData, false, callback);
+          break;
+        case 'JSON':
+          apiDeckJSONImport(JSON.parse(textData), callback);
+          break;
+        default:
+          return;
+      }
+    }
 
     if (file) {
       // If the user uploaded a file
-      file.text().then((fileContents) => {
+      file.text().then((fileContents: string) => {
         apiImport(fileContents);
       });
     } else {
@@ -55,23 +55,22 @@ export function DeckImportComponent() {
   return (
     <Form onSubmit={handleImport} className={`mx-auto mt-5 text-center container`}>
       <Form.Group>
-        {/* For some reason, switching this to a <label> freaks it out */}
         <p className='mb-0'>Type of Import</p>
         <Form.Control
           as='select'
-          className={widthClass}
           defaultValue={uploadType}
           onChange={(event) => setUploadType(event.target.value)}
           custom
         >
           <option value='TXT'>Upload from *.txt (Text file)</option>
+          <option value='JSON'>Upload from *.json (JSON file)</option>
           <option value='APKG'>Upload from *.apkg (Anki)</option>
           <option value='QUIZLET'>Upload from Quizlet</option>
         </Form.Control>
       </Form.Group>
       {uploadType === 'TXT' && <>
         <Form.Group>
-          <Form.Label className={widthClass} style={{lineHeight: '15px'}}>
+          <Form.Label style={{ lineHeight: '15px' }}>
             <p className='mb-1'>Title of deck</p>
             <small className='text-secondary w-50 mb-0'>
               If you enter the name of a deck that already exists, the uploaded contents will be appended to that deck.
@@ -81,7 +80,7 @@ export function DeckImportComponent() {
             ref={titleRef}
             type='text'
             placeholder='My deck'
-            className={`${widthClass} mx-auto`}
+            className='mx-auto'
             id='deckTitle' name='deckTitle'
             required
           />
@@ -92,31 +91,7 @@ export function DeckImportComponent() {
         <small className='text-secondary'>
           Not required if you copy-pasted directly
         </small><br />
-        <Form.Group className={`custom-file mb-4 ${widthClass}`}>
-          <Form.Label
-            className='custom-file-label text-left'
-            htmlFor='txtFileUpload'
-            id='txt-file-label'
-          >
-            Choose file
-          </Form.Label>
-          <Form.File
-            className='custom-file-input'
-            id='txtFileUpload'
-            name='uploadFile'
-            accept='.txt'
-            ref={fileRef}
-
-            // Update the label to the name of the uploaded file
-            onChange={() => {
-              const txtFileLabel = document.getElementById('txt-file-label');
-              if (txtFileLabel && fileRef) {
-                txtFileLabel.innerHTML =
-                  fileRef!.current!.value.replace('C:\\fakepath\\', '');
-              }
-            }}
-          />
-        </Form.Group>
+        <FancyFormFileUpload accept='.txt' />
         <Form.Group>
           <p className='mb-0'>
             Or Copy-Paste the Text Directly
@@ -128,25 +103,34 @@ export function DeckImportComponent() {
             as='textarea'
             rows={10}
             name='txtCopyPaste'
-            className={`mx-auto ${widthClass}`}
+            className='mx-auto'
           />
         </Form.Group>
-        {/* <Form.Group>
-          <FormCheckbox name='convertFormatting' id='convertFormatting'>
-            Convert Anki formatting to Alu formatting?{' '}
-            <QuestionBubble>
-              For example: \[$$\] ➡ $$, \[$\] ➡ $, $ ➡ \$
-            </QuestionBubble>
-          </FormCheckbox>
-        </Form.Group> */}
         <Form.Group>
           <Button
             type='submit'
-            className={`${widthClass} mx-auto`}
+            className='mx-auto'
             block
-          >{isLoading ? 'Loading...' : 'Import!'}</Button>
+          >
+            {isLoading ? 'Importing...' : 'Import!'}
+          </Button>
         </Form.Group>
       </>}
+      {uploadType === 'JSON' && <div className='container-fluid'>
+        <p className='mb-0'>
+          Select the file to import
+        </p>
+        <FancyFormFileUpload accept='.json' />
+        <Form.Group>
+          <Button
+            type='submit'
+            className='mx-auto'
+            block
+          >
+            {isLoading ? 'Importing...' : 'Import!'}
+          </Button>
+        </Form.Group>
+      </div>}
       {uploadType === 'QUIZLET' && <div className='container-fluid'>
         <p className='text-left'>
           We are working hard to make Quizlet imports as easy as possible.<br />

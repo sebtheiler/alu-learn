@@ -2336,7 +2336,7 @@ class DeckTestCase(ImprovedTestCase):
         # Import JSON deck back to real deck
         self.assertEqual(Deck.objects.count(), 1)
         response = self.post_response(import_api_path, import_api_view, json_deck)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(Deck.objects.count(), 2)
         imported_deck = Deck.objects.get(pk=response.data['id'])
         self.assertDecksEqual(imported_deck, deck)
@@ -2350,7 +2350,7 @@ class DeckTestCase(ImprovedTestCase):
         # Import JSON deck back to real deck
         self.assertEqual(Deck.objects.count(), 2)
         response = self.post_response(import_api_path, import_api_view, json_deck)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(Deck.objects.count(), 3)
         imported_deck = Deck.objects.get(pk=response.data['id'])
         self.assertDecksEqual(imported_deck, deck, test_review_instances_equal=False)

@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useMemo, Dispatch, SetStateAction, 
 import numeral from 'numeral';
 import ReactMarkdown from 'react-markdown/with-html';
 import RemarkMathPlugin from 'remark-math';
-import { Tooltip, OverlayTrigger, Button } from 'react-bootstrap';
+import { Tooltip, OverlayTrigger, Button, Form } from 'react-bootstrap';
 import { BlockMath, InlineMath } from 'react-katex';
 import { FullEditor, createFullEditor  } from '../notes/editor-components';
 import { Slate } from 'slate-react';
@@ -546,4 +546,52 @@ export function getMonthNumber(monthName: string) {
     'Nov',
     'Dec',
   ].indexOf(monthName) as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
+}
+
+
+/*
+Creates a pretty version of the file upload
+
+Get file from Form with:
+const file = form.uploadFile.files[0];
+
+Load file contents with
+file.text().then((fileContents) => {
+  // ...
+});
+*/
+interface FancyFormFileUploadProps {
+  accept: string; /** Type of file to accept (.txt, .json, etc.) */
+}
+export function FancyFormFileUpload(props: FancyFormFileUploadProps) {
+  const { accept } = props;
+  const fileRef = React.createRef<HTMLInputElement>();
+
+  return (
+    <Form.Group className='custom-file mb-4'>
+      <Form.Label
+        className='custom-file-label text-left'
+        htmlFor='txtFileUpload'
+        id='txt-file-label'
+      >
+        Choose file
+      </Form.Label>
+      <Form.File
+        className='custom-file-input'
+        id='txtFileUpload'
+        name='uploadFile'
+        accept={accept}
+        ref={fileRef}
+
+        // Update the label to the name of the uploaded file
+        onChange={() => {
+          const txtFileLabel = document.getElementById('txt-file-label');
+          if (txtFileLabel && fileRef) {
+            txtFileLabel.innerHTML =
+              fileRef!.current!.value.replace('C:\\fakepath\\', '');
+          }
+        }}
+      />
+    </Form.Group>
+  );
 }

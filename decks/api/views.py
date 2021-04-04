@@ -1481,4 +1481,4 @@ def deck_json_import_view(request, *args, **kwargs):
     FlashCardField.objects.bulk_create(fields_to_create)
     FlashCard.objects.bulk_create(review_instances_to_create)
 
-    return Response(DeckSerializer(deck).data, status=200)
+    return Response(DeckSerializer(deck).data, status=201)

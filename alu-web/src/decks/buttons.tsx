@@ -1,6 +1,6 @@
 import React, { ReactNode, ReactNodeArray, useState } from 'react';
 import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags, apiClassroomGetSSM, apiClassroomEditSSM, apiDeckJSONExport } from '../lookup';
-import { errorHandler, FormCheckbox, has, QuestionBubble, useApiObjectHook } from '../utils';
+import { errorHandler, FormCheckbox, has, LoadingButton, QuestionBubble, useApiObjectHook } from '../utils';
 import { SearchForm } from './flashcards/search';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -633,14 +633,11 @@ export function ExportModal(props: ExportModalProps) {
 
   const submitHandler = event => {
     event.preventDefault();
-    console.log(exportType)
     if (exportType === 'TXT') return;
     
     const form = event.target;
-    console.log(form.elements)
     apiDeckJSONExport(deck.id, form.elements.exportReviewInstances?.checked, (response, status) => {
       if (status === 200) {
-        console.log(response)
         // Adapted from https://stackoverflow.com/a/18197341/13042142
         const element = document.createElement('a');
         element.setAttribute(
@@ -655,6 +652,9 @@ export function ExportModal(props: ExportModalProps) {
         element.click();
 
         document.body.removeChild(element);
+
+        // After downloading the file, close the modal
+        closeModal();
       } else {
         errorHandler(response, status, 1030);
       }
@@ -697,9 +697,9 @@ export function ExportModal(props: ExportModalProps) {
           </p>}
         </Modal.Body>
         <Modal.Footer>
-          <Button type='submit' block>
+          <LoadingButton loadingMessage='Exporting...' type='submit' block>
             Export
-          </Button>
+          </LoadingButton>
         </Modal.Footer>
       </Form>
     </Modal>
