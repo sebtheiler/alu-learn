@@ -74,6 +74,7 @@ int(hexadecimal_string, 16)
 1027: Error getting flashcards for matching game through TODO in alu-web/src/decks/games/matching.js
 1028: Error getting deck's statistics through apiDeckStatistics
 1029: Error getting decks list for homepage of student through apiDeckPrivateList
+1030: Error exporting deck to JSON through apiDeckJSONExport
 
 === Flashcard related errors ===
 2000: Error getting flashcard detail through apiFlashCardDetail in alu-web/src/decks/flashcards/create.js

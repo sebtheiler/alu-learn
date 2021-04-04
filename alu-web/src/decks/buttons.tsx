@@ -1,5 +1,5 @@
 import React, { ReactNode, ReactNodeArray, useState } from 'react';
-import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags, apiClassroomGetSSM, apiClassroomEditSSM } from '../lookup';
+import { apiDeckDelete, apiDeckEdit, apiSharedDeckClone, apiSSMEdit, apiSSMDelete, apiDeckPrivateList, apiFlashcardEditTags, apiClassroomGetSSM, apiClassroomEditSSM, apiDeckJSONExport } from '../lookup';
 import { errorHandler, FormCheckbox, has, QuestionBubble, useApiObjectHook } from '../utils';
 import { SearchForm } from './flashcards/search';
 import Button from 'react-bootstrap/Button';
@@ -16,11 +16,14 @@ import { Deck, SharedDeck, CSSM, SSMInterface } from './types';
 export function DeckDefaultButtonGroup({ deck, vertical=false, hideBrowse=false }) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
   const [gameModalIsOpen, setGameModalIsOpen] = useState(false);
+  const [exportModalIsOpen, setExportModalIsOpen] = useState(false);
 
   const openEditModal = () => setEditModalIsOpen(true);
   const closeEditModal = () => setEditModalIsOpen(false);
   const openGameModal = () => setGameModalIsOpen(true);
   const closeGameModal = () => setGameModalIsOpen(false);
+  const openExportModal = () => setExportModalIsOpen(true);
+  const closeExportModal = () => setExportModalIsOpen(false);
 
   const gameSubmitHandler = event => {
     event.preventDefault();
@@ -153,7 +156,13 @@ If you wish to continue, please type "DELETE", without the quotes.
           Add Cards
         </Button>
       }
-      <DropdownButton className='other-btn mr-1' as={ButtonGroup} title='Other' id='bg-nested-dropdown' variant='secondary'>
+      <DropdownButton
+        title='Other'
+        className='other-btn mr-1'
+        as={ButtonGroup}
+        id='bg-nested-dropdown'
+        variant='secondary'
+      >
         <Dropdown.Item
           as='button'
           onClick={openEditModal}
@@ -183,17 +192,28 @@ If you wish to continue, please type "DELETE", without the quotes.
         >
           Games
         </Dropdown.Item>
+        <GameModal
+          deck={deck}
+          modalIsOpen={gameModalIsOpen}
+          closeModal={closeGameModal}
+          submitHandler={gameSubmitHandler}
+        />
         <Dropdown.Item
           href={`/decks/${deck.id}/stats/`}
           className='stats-btn w-100'
         >
           Statistics
         </Dropdown.Item>
-        <GameModal
+        <Dropdown.Item
+          onClick={openExportModal}
+          className='export-btn w-100'
+        >
+          Export
+        </Dropdown.Item>
+        <ExportModal
           deck={deck}
-          modalIsOpen={gameModalIsOpen}
-          closeModal={closeGameModal}
-          submitHandler={gameSubmitHandler}
+          modalIsOpen={exportModalIsOpen}
+          closeModal={closeExportModal}
         />
       </DropdownButton>
     </ButtonGroup>
@@ -601,12 +621,97 @@ export function DeckForeignUserButtonGroup({ deck, hideCopy=false }) {
   );
 }
 
+
+interface ExportModalProps {
+  modalIsOpen: boolean;
+  closeModal: () => void;
+  deck: Deck;
+}
+export function ExportModal(props: ExportModalProps) {
+  const { modalIsOpen, closeModal, deck } = props;
+  const [exportType, setExportType] = useState<'JSON' | 'TXT'>('JSON');
+
+  const submitHandler = event => {
+    event.preventDefault();
+    console.log(exportType)
+    if (exportType === 'TXT') return;
+    
+    const form = event.target;
+    console.log(form.elements)
+    apiDeckJSONExport(deck.id, form.elements.exportReviewInstances?.checked, (response, status) => {
+      if (status === 200) {
+        console.log(response)
+        // Adapted from https://stackoverflow.com/a/18197341/13042142
+        const element = document.createElement('a');
+        element.setAttribute(
+          'href',
+          'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(response)),
+        );
+        element.setAttribute('download', `${deck.title}.json`);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+      } else {
+        errorHandler(response, status, 1030);
+      }
+    });
+  }
+
+  return (
+    <Modal show={modalIsOpen} onHide={closeModal}>
+      <Modal.Header>
+        <Modal.Title>
+          Export "{deck.title}"
+        </Modal.Title>
+      </Modal.Header>
+      <Form onSubmit={submitHandler}>
+        <Modal.Body>
+          <Form.Group>
+            <Form.Label>
+              Type of Export
+            </Form.Label>
+            <Form.Control
+              as='select'
+              name='exportType'
+              onChange={event => setExportType(event.target.value as ('JSON' | 'TXT'))}
+              custom
+            >
+              <option value='JSON'>Export to *.json</option>
+              <option value='TXT'>Export to *.txt</option>
+            </Form.Control>
+          </Form.Group>
+          {exportType === 'JSON' &&
+            <FormCheckbox name='exportReviewInstances' defaultChecked>
+              Would you like to export your current flashcard progress as well?{' '}
+              <QuestionBubble>
+                If checked, this export will also contain your current progress (the flashcards you've studied) which you can import.  If you are sharing this deck with a friend you should probably NOT check this option.  If you plan to import the deck again for yourself, you probably SHOULD check this option.
+              </QuestionBubble>
+            </FormCheckbox>
+          }
+          {exportType === 'TXT' && <p>
+            Sorry, but exports to *.txt aren't actually implemented yet.  If you really need it let me know and I'll add it for you.
+          </p>}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type='submit' block>
+            Export
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+  );
+}
+
 // Modal for selecting a game to play
 export function GameModal({ modalIsOpen, closeModal, submitHandler, deck }) {
   const [gameType, setGameType] = useState('MATCHING');
   const [flashcardType, setFlashcardType] = useState('SEEN');
-  
-  return (<>
+
+  return (
     <Modal show={modalIsOpen} onHide={closeModal}>
       <Modal.Header>
         <Modal.Title>Play a Game with "{deck.title}"</Modal.Title>
@@ -679,7 +784,7 @@ export function GameModal({ modalIsOpen, closeModal, submitHandler, deck }) {
         </Modal.Footer>
       </Form>
     </Modal>
-  </>);
+  );
 }
 
 export function SelectFlashcardsButtonGroup(props) {

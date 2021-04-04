@@ -96,6 +96,8 @@ import {
   apiAssignmentDetail,
   apiClassroomGetSSM,
   apiClassroomEditSSM,
+  apiDeckJSONImport,
+  apiDeckJSONExport,
 } from './lookup';
 
 export {
@@ -196,4 +198,6 @@ export {
   apiAssignmentDetail,
   apiClassroomGetSSM,
   apiClassroomEditSSM,
+  apiDeckJSONImport,
+  apiDeckJSONExport,
 }

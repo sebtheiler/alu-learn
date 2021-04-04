@@ -185,12 +185,34 @@ export function apiDeckSearch(query, callback, nextUrl='') {
 }
 
 // Imports a deck from a text file
-export function apiDeckTextImport(title, fileContents, convertFormatting, callback) {
+export function apiDeckTextImport(
+  title: string,
+  fileContents: string,
+  convertFormatting: boolean,
+  callback: (response: Deck, status: number) => void,
+) {
   backendLookup('POST', 'decks/textupload/', callback, {
     deck_title: title,
     uploaded_file: fileContents,
     convert_formatting: convertFormatting,
   });
+}
+
+// Exports a deck to a JSON file
+export function apiDeckJSONExport(
+  deckId: number,
+  exportReviewInstances: boolean,
+  callback: (response: Object, status: number) => void,
+) {
+  backendLookup('GET', `decks/${deckId}/export/json/?export_review_instances=${exportReviewInstances}`, callback);
+}
+
+// Imports a deck from an exported JSON file
+export function apiDeckJSONImport(
+  jsonDeck: Object,
+  callback: (response: Deck, status: number) => void,
+) {
+  backendLookup('POST', `decks/upload/json/`, callback, jsonDeck);
 }
 
 // Gets detail information about a profile, such as bio, name, username, etc.
