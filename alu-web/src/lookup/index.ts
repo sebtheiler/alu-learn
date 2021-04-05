@@ -98,6 +98,8 @@ import {
   apiClassroomEditSSM,
   apiDeckJSONImport,
   apiDeckJSONExport,
+  apiFeedbackGetQuestion,
+  apiFeedbackRespondQuestion,
 } from './lookup';
 
 export {
@@ -200,4 +202,6 @@ export {
   apiClassroomEditSSM,
   apiDeckJSONImport,
   apiDeckJSONExport,
+  apiFeedbackGetQuestion,
+  apiFeedbackRespondQuestion,
 }

@@ -172,4 +172,8 @@ int(hexadecimal_string, 16)
 8021: Error getting ASSM through apiSSMDetail
 8022: Error getting SSM through apiSSMDetail for editing classroom
 8023: Error editing ASSM through apiSSMEdit
+
+=== Analytics related errors ===
+9000: Error getting quick feedback through apiFeedbackGetQuestion
+9001: Error responding to quick feedback question apiFeedbackRespondQuestion
 */

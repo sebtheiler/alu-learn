@@ -10,6 +10,7 @@
 * **Changed Reminder Email:** The reminder email's wording was a bit annoying, so I changed it.
 * **Fixed Streak Icon For Long Streaks:** The icon for displaying your streak was overflown if you had a streak greater than 100.  It's now fixed to dynamically make the text smaller if your streak gets longer than 100.  It'll break again if anyone's streak surpasses 1,000, but I should have at least 2.5 years to fix that.
 * **Added JSON Importing/Exporting:** Added the ability to export decks to downloadable JSON files and then import those JSON files back into useable decks.  This probably won't be a very widely used feature, but it is useful in some situations and I need it for prototyping the next big updating...
+* **Added Quick Feedback Questions:** There will sometimes be quick questions on the top of your homepage designed to get feedback about a feature in Alu.  These are entirely optional, but I would really appreciate it if you could fill them out if you see them to help guide Alu's future development.
 
 
 ## Flashcard Rearranging Fixes - Mar 20 - 0.5.5

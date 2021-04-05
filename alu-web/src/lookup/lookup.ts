@@ -922,3 +922,21 @@ export function apiClassroomEditSSM(
     review_ahead_minutes: reviewAheadMinutes,
   });
 }
+
+// Gets a possible feedback question to display to the user
+export function apiFeedbackGetQuestion(
+  callback: (response: Object, status: number) => void,
+) {
+  backendLookup('GET', 'analytics/feedback/get-question/', callback);
+}
+
+// Responds to a feedback question
+export function apiFeedbackRespondQuestion(
+  quickFeedbackId: number,
+  questionResponse: string,
+  callback: (response: Message, status: number) => void,
+) {
+  backendLookup('POST', `analytics/feedback/${quickFeedbackId}/respond/`, callback, {
+    response: questionResponse,
+  });
+}

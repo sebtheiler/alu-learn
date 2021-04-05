@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -6,7 +6,8 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiQuickDeckList } from '../lookup';
+import Alert from 'react-bootstrap/Alert';
+import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiQuickDeckList, apiFeedbackGetQuestion, apiFeedbackRespondQuestion } from '../lookup';
 import { errorHandler, shiftDate, range, timezoneToISOString, useApiObjectHook } from '../utils';
 import { randomTip } from './randomtips';
 import CalendarHeatmap from 'react-calendar-heatmap';
@@ -17,6 +18,7 @@ import { MinifiedProfile, Profile, ProfileHistory } from '../profiles/types';
 import { Classroom, ClassroomAssignments } from '../teachers/types';
 import { ClassroomDefaultButtonGroup, ClassroomEditCreateButton } from '../teachers/buttons';
 import { ClassroomSSMEditForm } from '../decks/buttons';
+import Likert from 'react-likert-scale';
 
 export function HomeComponent({ username }) {
   const [profile] = useApiObjectHook<Profile>(apiProfileDetail, 200, 3010, [username]);
@@ -75,6 +77,7 @@ export function HomeComponent({ username }) {
         md={10}
         id='home-main'
       >
+        <FeedbackComponent />
         {profile?.settings.user_type === 'TEACHER' ?
           <TeacherClassesComponent />
         :
@@ -507,4 +510,78 @@ function TeacherClassesComponent() {
       </ul>
     </> : <p>You don't have any classes yet.  Click the button above to create one.</p>) : <p>Loading...</p>}
   </Container>);
+}
+
+function FeedbackComponent() {
+  const attemptQuestion = useMemo(() => Math.random() < 0.5, []);
+  const [finishedAnswering, setFinishedAnswering] = useState(false);
+  const [quickFeedback] = useApiObjectHook<any>(
+    apiFeedbackGetQuestion,
+    200,
+    9000,
+    undefined, undefined, undefined,
+    attemptQuestion,
+  );
+  
+  if (!attemptQuestion || !quickFeedback || quickFeedback.message === 'No question available')
+    return null;
+
+  const answers = () => {
+    const respondToQuestion = (questionResponse: string) => {
+      return () => {
+        apiFeedbackRespondQuestion(quickFeedback.id, questionResponse, (response, status) => {
+          if (status === 200) {
+            setFinishedAnswering(true);
+          } else {
+            // Error responding to quick feedback question
+            errorHandler(response, status, 9001);
+          }
+        });
+      }
+    }
+
+    switch (quickFeedback.answer_type) {
+      case 'YES/NO':
+        return (<>
+          <Button onClick={respondToQuestion('Yes')}>
+            Yes
+          </Button>
+          <Button onClick={respondToQuestion('No')} className='ml-3'>
+            No
+          </Button>
+        </>);
+      case 'SCALE_1_TO_7':
+        return (<>
+          <Likert
+            question=''
+            responses={[
+              { value: 1, text: '1' },
+              { value: 2, text: '2' },
+              { value: 3, text: '3' },
+              { value: 4, text: '4' },
+              { value: 5, text: '5' },
+              { value: 6, text: '6' },
+              { value: 7, text: '7' },
+            ]}
+            onChange={val => respondToQuestion(val.text)()}
+          />
+        </>);
+    }
+  }
+
+  return (
+    <Alert variant='info' className='mt-3 container ml-3'>
+      {finishedAnswering ? <>
+        <p className='mb-0'>
+          Thank you for taking the time to provide feedback on Alu!
+        </p>
+      </> : <>
+        <p>Help Improve Alu</p>
+        <hr />
+        <h4>{quickFeedback.prompt}</h4>
+        <p>{quickFeedback.description}</p>
+        {answers()}
+      </>}
+    </Alert>
+  );
 }

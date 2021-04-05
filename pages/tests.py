@@ -7,6 +7,7 @@ from .models import ContactFeedback
 
 User = get_user_model()
 
+
 class PagesTestClass(ImprovedTestCase):
     def test_contact_us_api(self):
         self.assertFalse(ContactFeedback.objects.exists())
@@ -28,7 +29,7 @@ class PagesTestClass(ImprovedTestCase):
         self.assertEqual(feedback.urgency, 3)
         self.assertEqual(feedback.contact_allowed, True)
         self.assertEqual(feedback.is_legal_issue, False)
-    
+
     def test_update_settings_api(self):
         settings = self.user.profile.settings  # type: ProfileSettings
         self.assertEqual(settings.user_type, 'STUDENT')
@@ -40,16 +41,18 @@ class PagesTestClass(ImprovedTestCase):
         self.assertEqual(response.status_code, 400)
 
         # Update settings
-        response = self.post_response('/api/pages/settings/', api_views.update_settings_api_view, {'settings': {
-            'user_type': 'TEACHER',
-            'ideal_time_per_day': '20',
-            'send_reminders': True,
-        }})
+        response = self.post_response('/api/pages/settings/', api_views.update_settings_api_view, {
+            'settings': {
+                'user_type': 'TEACHER',
+                'ideal_time_per_day': '20',
+                'send_reminders': True,
+            },
+        })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(settings.user_type, 'TEACHER')
         self.assertEqual(settings.ideal_time_per_day, '20')
         self.assertEqual(settings.send_reminders, True)
-    
+
     def test_explore_lists_api(self):
         response = self.get_response('/api/pages/explore/lists/', api_views.api_explore_lists_view)
         self.assertEqual(response.status_code, 200)
