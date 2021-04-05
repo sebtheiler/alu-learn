@@ -927,7 +927,7 @@ export function apiClassroomEditSSM(
 export function apiFeedbackGetQuestion(
   callback: (response: Object, status: number) => void,
 ) {
-  backendLookup('GET', 'analytics/feedback/get-question/', callback);
+  backendLookup('GET', 'pages/feedback/get-question/', callback);
 }
 
 // Responds to a feedback question
@@ -936,7 +936,7 @@ export function apiFeedbackRespondQuestion(
   questionResponse: string,
   callback: (response: Message, status: number) => void,
 ) {
-  backendLookup('POST', `analytics/feedback/${quickFeedbackId}/respond/`, callback, {
+  backendLookup('POST', `pages/feedback/${quickFeedbackId}/respond/`, callback, {
     response: questionResponse,
   });
 }
