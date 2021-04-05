@@ -18,7 +18,7 @@ urlpatterns = [
     path('', include('manual_sr.urls')), path('api/manual-sr/', include('manual_sr.api.urls')),
     path('', include('teachers.urls')), path('api/teachers/', include('teachers.api.urls')),
     path('profiles/', include('profiles.urls')), path('api/profiles/', include('profiles.api.urls')),
-    path('', include('analytics.urls')),
+    path('', include('analytics.urls')), path('api/analytics/', include('analytics.api.urls')),
 ]
 
 if settings.DEBUG:

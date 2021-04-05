@@ -1,5 +1,3 @@
-from datetime import datetime as dt
-
 from utils import get_paginated_queryset_response, BLANK_SLATE_ELEMENT
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -18,7 +16,7 @@ def manual_sr_create_view(request, *args, **kwargs):
     Required information:
         `title`: (Data) Title of the new SR Object
         `description`: (Data) SlateJS-JSON description of the new object
-    
+
     Possible errors:
         Title is none: 400, Title must not be none
     """
