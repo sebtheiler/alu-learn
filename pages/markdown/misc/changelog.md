@@ -7,6 +7,7 @@
 
 * **Removed Strikethrough:**  There was absolutely no reason for strikethrough formatting to exist in creating flashcards or editing notes.  No one, including me, has ever used it.
 * **Added Keyboard Shortcut for Inline Math:** You can now use ctrl+= (or command on MacOS) to toggle writing inline math equations.
+* **Fixed a Bug In Studying:** Fixed a bug that caused studying to break if you studied a certain number of seen cards, then decreased your daily seen card limit to a number less than the number of seen cards you already studied.
 
 
 # Less Stress - Apr 05 - 0.6.0

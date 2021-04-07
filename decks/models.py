@@ -820,7 +820,7 @@ class StudySessionManager(models.Model):
         unseen_flashcards: QuerySet[FlashCard],
     ) -> QuerySet[FlashCard]:
         # Get the earliest seen flashcards under the limit
-        seen_flashcard_count = self.daily_seen_card_limit - self.seen_cards_done_today
+        seen_flashcard_count = max(self.daily_seen_card_limit - self.seen_cards_done_today, 0)
         seen_flashcards = seen_flashcards.order_by(
             'next_review'
         )[:seen_flashcard_count]
@@ -940,7 +940,8 @@ class SharedDeck(Deck):
     ) -> Deck:
         # Get or create the deck that the shared deck will be cloned into
         try:
-            # If the student is copying this deck from a teacher, this is the classroom the deck is attached to
+            # If the student is copying this deck from a teacher,
+            # this is the classroom the deck is attached to
             attached_to_classroom = self.attached_to_classroom
         except SharedDeck.attached_to_classroom.RelatedObjectDoesNotExist:
             attached_to_classroom = None

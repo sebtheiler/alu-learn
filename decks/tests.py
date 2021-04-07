@@ -1042,6 +1042,18 @@ class DeckTestCase(ImprovedTestCase):
             1,
         )
 
+        # Test what happens when the user studies a certain number
+        # of seen cards, then decreases the daily seen card limit
+        # to a number lower than the amount of cards they studied
+        ssm.seen_cards_done_today = 20
+        ssm.daily_seen_card_limit = 15
+        ssm.save()
+
+        response = self.get_response(api_path, api_view, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), ssm.daily_new_card_limit)
+
         # Test CSSMs
         deck = self.create_deck('Deck to study', num_flashcards=37)
         ssm = CustomStudySessionManager.objects.create(
