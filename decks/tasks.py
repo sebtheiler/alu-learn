@@ -19,13 +19,15 @@ def midnight_reset():
     not_studied_profiles.update(current_streak=0)
 
     # Reset all users to not having studied
-    Profile.objects.all().update(has_done_cards_today=False)
+    Profile.objects.update(has_done_cards_today=False)
 
     # Reset the number of cards each SSM has done
-    StudySessionManager.objects.all().update(new_cards_done_today=0)
+    StudySessionManager.objects.update(
+        new_cards_done_today=0,
+        seen_cards_done_today=0,
+    )
 
     # Calculate top deck Ids
-    # sorted_decks = SharedDeck.objects.annotate(num_thanks=Count('thanks')).order_by('-num_thanks')
     sorted_decks = SharedDeck.objects.annotate(num_clones=Count('clones')).order_by('-num_clones')
     top_deck_ids = [deck.id for deck in sorted_decks[:5]]
     with open('top_deck_ids.json', 'w+') as f:
@@ -55,22 +57,25 @@ def email_reminder():
         plain_message = f"""
 Hello {name},
 
-Improving requires practice every day.
-Study at Alu today, or you'll lose your {streak}-day streak!
+You're on a {streak} day streak.
+Study at Alu today to make it {streak + 1}!  You got this!
 
 Best,
 Alu
 
 (you can unsubscribe/opt-out of these reminders at Alu's setting page: https://www.alulearn.com/settings/)
 (Sent by Alu Learn | NYC, New York)
-        """ # only sent in non-HTML email clients
+        """  # only sent in non-HTML email clients
 
         mail.send_mail(
             f'Don\'t lose your {streak}-day streak in Alu!',
             plain_message,
             settings.EMAIL_HOST_USER,
             [user.user.email],
-            html_message=render_to_string('emails/reminder.html', {'name': name, 'streak': streak}),
+            html_message=render_to_string(
+                'emails/reminder.html',
+                {'name': name, 'streak': streak},
+            ),
             fail_silently=False,
             connection=connection,
         )
@@ -78,6 +83,6 @@ Alu
     connection.close()
 
 
-@periodic_task(run_every=crontab(hour=23, minute=0)) # hour=23 -> 1800 in NYC
+@periodic_task(run_every=crontab(hour=23, minute=0))  # hour=23 -> 1800 in NYC
 def run_email_reminder():
     email_reminder.delay()
