@@ -21,7 +21,6 @@ export function EditorButtons(props: EditorButtonProps) {
       <MarkButton format='bold' icon='bold' editor={editor} untabbable={untabbable} />
       <MarkButton format='italic' icon='italic' editor={editor} untabbable={untabbable} />
       <MarkButton format='underline' icon='underline' editor={editor} untabbable={untabbable} />
-      <MarkButton format='strikethrough' icon='strikethrough' editor={editor} untabbable={untabbable} />
       <MarkButton format='code' icon='code' editor={editor} untabbable={untabbable} />
       <MarkButton format='math_inline' icon='divide' editor={editor} untabbable={untabbable} />
 

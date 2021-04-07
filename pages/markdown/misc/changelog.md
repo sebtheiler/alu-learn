@@ -2,6 +2,13 @@
 -----
 
 
+## ??? - Apr 07 - 0.6.1
+
+
+* **Removed Strikethrough:**  There was absolutely no reason for strikethrough formatting to exist in creating flashcards or editing notes.  No one, including me, has ever used it.
+* **Added Keyboard Shortcut for Inline Math:** You can now use ctrl+= (or command on MacOS) to toggle writing inline math equations.
+
+
 # Less Stress - Apr 05 - 0.6.0
 Alu v0.6 is all about making studying easier, more enjoyable, and less stressful.  The next major version, v0.7, will be released sometime in April with massive changes to studying.  Until v0.7 is released, v0.6 will release a bunch of tiny and iterative changes improving studying.
 

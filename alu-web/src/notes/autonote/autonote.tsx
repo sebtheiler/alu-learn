@@ -86,9 +86,6 @@ export const parseText = (
               if (child.underline) {
                 childText = `<u>${childText}</u>`;
               }
-              if (child.strikethrough) {
-                childText = `<del>${childText}</del>`;
-              }
               htmlString += childText;
             }
             finalText.push(htmlString);

@@ -60,10 +60,6 @@ export const Leaf = ({ attributes, children, leaf, readOnly }) => {
     children = <u>{children}</u>
   }
 
-  if (leaf.strikethrough) {
-    children = <del>{children}</del>
-  }
-
   if (leaf.math_inline) {
     if (readOnly) {
       // I'm sure there's some way like Node.string(...) to avoid this parse error

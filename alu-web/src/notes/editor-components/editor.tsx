@@ -21,7 +21,7 @@ const HOTKEYS = {
   'mod+i': 'italic',
   'mod+u': 'underline',
   'mod+`': 'code',
-  'mod+5': 'strikethrough',
+  'mod+=': 'math_inline',
 };
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
