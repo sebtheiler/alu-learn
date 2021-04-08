@@ -28,6 +28,49 @@ export function NavbarComponent(props) {
     });
   }
 
+  const congratulationsMessage = (() => {
+    let text: string;
+    switch (currentStreak) {
+      case 10:
+        text = 'Congratulations on a 10 day streak!';
+        break;
+      case 30:
+        text = 'Congratulations on a month-long streak!';
+        break;
+      case 50:
+        text = 'Half-way to 100 days!  Congratulations!';
+        break;
+      case 100:
+        text = 'CONGRATULATIONS ON 100 DAYS OF ALU!!!';
+        break;
+      case 250:
+        text = '250 DAYS! YOU\'RE AMAZING!';
+        break;
+      case 365:
+        text = 'A WHOLE YEAR OF ALU!  AMAZING!'
+        break;
+      case 500:
+        text = '500 DAYS!  HALF-WAY TO FOUR DIGITS!  YOU\'RE AMAZING!';
+        break;
+      case 666:
+        text = 'I\'d be careful about this streak number...';
+        return <span className='navbar-text'>
+          <i className='fas fa-skull' />{' '}
+          {text}
+        </span>
+      case 1000:
+        text = '1000 DAYS!  4 DIGITS!  THANK YOU FOR BEING A PART OF ALU!';
+        break;
+      default:
+        text = '';
+        break;
+    }
+    return text && <span className='navbar-text'>
+      <i className='fas fa-crown' />{' '}
+      {text}
+    </span>
+  })();
+
   return (
     <Navbar bg='primary' variant='dark' expand='md' collapseOnSelect>
       <NavbarPopup showUpdateModal={showUpdateModal} firstName={firstName} />
@@ -49,6 +92,7 @@ export function NavbarComponent(props) {
             <i className='fa fa-book'></i>{' '}
             Changelog
           </Nav.Link>
+          {congratulationsMessage}
         </Nav>
         <Nav className='ml-auto'>
           {username && <Nav.Link className='mr-2' style={{ width: '57px', height: '57px', cursor: 'default' }}>
