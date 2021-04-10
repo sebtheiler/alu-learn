@@ -2119,20 +2119,35 @@ class DeckTestCase(ImprovedTestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, dict)
-        creators = FlashCardCreator.objects.filter(pk__in=creator_pks)  # type: List[FlashCardCreator]
+        creators = FlashCardCreator.objects.filter(pk__in=creator_pks)
         for creator in creators:
             self.assertTrue(creator.has_tag('wasd'))
 
+        # Test rename tag
         response = self.post_response(api_path, api_view, {
             'flashcard_ids': creator_pks,
-            'action': 'REMOVE',
+            'action': 'RENAME',
             'tag': 'wasd',
+            'rename_to': 'dsaw',
         })
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, dict)
-        creators = FlashCardCreator.objects.filter(pk__in=creator_pks)  # type: List[FlashCardCreator]
+        creators = FlashCardCreator.objects.filter(pk__in=creator_pks)
         for creator in creators:
             self.assertFalse(creator.has_tag('wasd'))
+            self.assertTrue(creator.has_tag('dsaw'))
+
+        # Test remove tag
+        response = self.post_response(api_path, api_view, {
+            'flashcard_ids': creator_pks,
+            'action': 'REMOVE',
+            'tag': 'dsaw',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, dict)
+        creators = FlashCardCreator.objects.filter(pk__in=creator_pks)
+        for creator in creators:
+            self.assertFalse(creator.has_tag('dsaw'))
 
     def test_review_instance_bulk_update_api(self):
         api_view = api_views.flashcard_review_instance_bulk_update_view

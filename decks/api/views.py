@@ -1249,7 +1249,11 @@ def edit_tags_bulk_view(request, *args, **kwargs):
         for flashcard in flashcards:
             flashcard.remove_tag(tag, False)
     elif action == 'RENAME':
-        return Response({'message': 'Will be implemented soon'}, status=501)
+        rename_to = request.data.get('rename_to')
+        if rename_to is None:
+            return Response({'message': 'If renaming, you must specify `rename_to`'}, status=400)
+        for flashcard in flashcards:
+            flashcard.rename_tag(tag, rename_to, False)
 
     FlashCardCreator.objects.bulk_update(flashcards, ['tags'])
     return Response({'message': 'Updated tags'}, status=200)

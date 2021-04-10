@@ -703,11 +703,18 @@ export function apiRearrangeFlashcard(
 }
 
 // Edits the tags of many flashcards at once
-export function apiFlashcardEditTags(flashcardIds, action, tag, callback) {
+export function apiFlashcardEditTags(
+  flashcardIds: number[],
+  action: 'ADD' | 'REMOVE' | 'RENAME',
+  tag: string,
+  renameTo: string | null,
+  callback: (response: Message, status: number) => void,
+) {
   backendLookup('POST', `decks/edit-tags/`, callback, {
     flashcard_ids: flashcardIds,
     action: action,
     tag: tag,
+    rename_to: renameTo,
   });
 }
 

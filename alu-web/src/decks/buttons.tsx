@@ -789,23 +789,30 @@ export function GameModal({ modalIsOpen, closeModal, submitHandler, deck }) {
 
 export function SelectFlashcardsButtonGroup(props) {
   const {selectionMode, setSelectionMode, selectedFlashcards, setSelectedFlashcards, tagEditorModalIsOpen, setTagEditorModalIsOpen} = props;
-  const [tagEditAction, setTagEditAction] = useState('ADD');
+  const [tagEditAction, setTagEditAction] = useState<'ADD' | 'REMOVE' | 'RENAME'>('ADD');
   const [updatingTags, setUpdatingTags] = useState(false);
 
   const editTags = event => {
     event.preventDefault();
     const form = event.target;
+
     if (!updatingTags) {
       setUpdatingTags(true);
-      apiFlashcardEditTags(selectedFlashcards, tagEditAction, form.elements.tagValue.value, (response, status) => {
-        if (status === 200) {
-          window.location.reload();
-        } else {
-          // Error updating flashcard tags in bulk
-          errorHandler(response, status, 2006);
-        }
-        setUpdatingTags(false);
-      })
+      apiFlashcardEditTags(
+        selectedFlashcards,
+        tagEditAction,
+        form.elements.tagValue.value,
+        form.elements.renameTo?.value,
+        (response, status) => {
+          if (status === 200) {
+            window.location.reload();
+          } else {
+            // Error updating flashcard tags in bulk
+            errorHandler(response, status, 2006);
+          }
+          setUpdatingTags(false);
+        },
+      );
     }
   }
 
@@ -828,24 +835,41 @@ export function SelectFlashcardsButtonGroup(props) {
                 <Form.Label>Action</Form.Label>
                 <Form.Control
                   as='select'
-                  onChange={event => setTagEditAction(event.target.value)}
+                  onChange={event => setTagEditAction(event.target.value as 'ADD' | 'REMOVE' | 'RENAME')}
                   custom
                 >
                   <option value='ADD'>Add Tag to All Selected</option>
                   <option value='REMOVE'>Remove Tag from all Selected</option>
-                  {/* <option value='RENAME'>Rename Tag in all Selected</option> */}
+                  <option value='RENAME'>Rename Tag in all Selected</option>
                 </Form.Control>
               </Form.Group>
+              {tagEditAction === 'RENAME' && <p className='text-danger'>
+                WARNING: "Rename" doesn't work perfectly.
+                If you have the tag "carpet" and attempt to rename
+                "car" to "vehicle", it will rename "carpet" to "vehiclepet."
+              </p>}
               <Form.Group>
-                <Form.Label>Tag to {tagEditAction === 'ADD' ? 'Add' : 'Remove'}</Form.Label>
+                <Form.Label>
+                  Tag to {tagEditAction.charAt(0) + tagEditAction.slice(1).toLowerCase()}
+                </Form.Label>
                 <Form.Control type='text' name='tagValue' required />
               </Form.Group>
+              {tagEditAction === 'RENAME' &&
+                <Form.Group>
+                  <Form.Label>
+                    Rename to...
+                  </Form.Label>
+                  <Form.Control type='text' name='renameTo' required />
+                </Form.Group>
+              }
             </Modal.Body>
             <Modal.Footer>
               <Button variant='secondary' onClick={() => setTagEditorModalIsOpen(false)}>
                 Cancel
               </Button>
-              <Button type='submit'>{updatingTags ? 'Updating...' : 'Update Tags'}</Button>
+              <Button type='submit'>
+                {updatingTags ? 'Updating...' : 'Update Tags'}
+              </Button>
             </Modal.Footer>
           </Form>
         </Modal>

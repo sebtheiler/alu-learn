@@ -326,6 +326,14 @@ class FlashCardCreator(models.Model):
 
         return self.tags
 
+    def rename_tag(self, tag: str, rename_to: str, save: bool = True) -> str:
+        self.tags = self.tags.replace(tag, rename_to)
+
+        if save:
+            self.save()
+
+        return self.tags
+
     @staticmethod
     def get_max_creator_num(deck: Deck) -> int:
         # Returns -1 if there are no flashcard creator in the deck
