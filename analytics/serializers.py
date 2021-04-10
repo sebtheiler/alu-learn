@@ -10,6 +10,7 @@ class QuickFeedbackSerializer(serializers.ModelSerializer):
             'prompt',
             'description',
             'answer_type',
+            'answer_choices',
             'requirements',
             'id',
         ]

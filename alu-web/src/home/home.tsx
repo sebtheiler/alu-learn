@@ -502,17 +502,27 @@ function TeacherClassesComponent() {
   </Container>);
 }
 
+
+interface QuickFeedback {
+  prompt: string;
+  description: string;
+  answer_type: 'YES/NO' | 'SCALE_1_TO_7' | 'CHECKBOX_CHOICE' | 'RADIO_CHOICE';
+  answer_choices?: string;
+  requirements: 'NONE' | 'STUDIED_TODAY' | 'STUDY_PAST_WEEK' | 'STUDY_TWICE_PAST_WEEK' | 'STUDY_TEN_TIMES_PAST_MONTH' | 'IS_TEACHER' | 'IS_STUDENT';
+  message?: string;
+  id: number;
+}
 function FeedbackComponent() {
   const attemptQuestion = useMemo(() => Math.random() < 0.5, []);
   const [finishedAnswering, setFinishedAnswering] = useState(false);
-  const [quickFeedback] = useApiObjectHook<any>(
+  const [quickFeedback] = useApiObjectHook<QuickFeedback>(
     apiFeedbackGetQuestion,
     200,
     9000,
     undefined, undefined, undefined,
     attemptQuestion,
   );
-  
+
   if (!attemptQuestion || !quickFeedback || quickFeedback.message === 'No question available')
     return null;
 
@@ -530,6 +540,20 @@ function FeedbackComponent() {
       }
     }
 
+    // Submits either a radio or checkbox answer
+    const submitMultipleChoice = event => {
+      event.preventDefault();
+
+      let selectedOptions: string[] = [];
+      const choices = document.getElementsByName('choice') as NodeListOf<HTMLInputElement>;
+      for (const choice of choices) {
+        if (choice.checked) selectedOptions.push(choice.value);
+      }
+
+      respondToQuestion(selectedOptions.join('; '))();
+    }
+
+
     switch (quickFeedback.answer_type) {
       case 'YES/NO':
         return (<>
@@ -541,7 +565,7 @@ function FeedbackComponent() {
           </Button>
         </>);
       case 'SCALE_1_TO_7':
-        return (<>
+        return (
           <Likert
             question=''
             responses={[
@@ -555,7 +579,39 @@ function FeedbackComponent() {
             ]}
             onChange={val => respondToQuestion(val.text)()}
           />
-        </>);
+        );
+      case 'RADIO_CHOICE':
+        return (
+          <form onSubmit={submitMultipleChoice}>
+            {quickFeedback.answer_choices?.split('; ').map((choice, i) => <React.Fragment key={i}>
+              <label className='feedback-radio-option'>
+                <input
+                  type='radio'
+                  name='choice'
+                  value={choice}
+                /> {choice}
+              </label>
+              <br />
+            </React.Fragment>)}
+            <Button type='submit'>Submit</Button>
+          </form>
+        );
+      case 'CHECKBOX_CHOICE':
+        return (
+          <form onSubmit={submitMultipleChoice}>
+            {quickFeedback.answer_choices?.split('; ').map((choice, i) => <React.Fragment key={i}>
+              <label className='feedback-checkbox-option'>
+                <input
+                  type='checkbox'
+                  name='choice'
+                  value={choice}
+                /> {choice}
+              </label>
+              <br />
+            </React.Fragment>)}
+            <Button type='submit'>Submit</Button>
+          </form>
+        );
     }
   }
 

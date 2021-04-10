@@ -37,8 +37,12 @@ class QuickFeedback(models.Model):
     ANSWER_TYPE_CHOICES = [
         ('YES/NO', 'Yes or no'),
         ('SCALE_1_TO_7', 'Scale of values from 1 to 7'),
+        ('RADIO_CHOICE', 'Select a single answer (must specify "answer choices")'),
+        ('CHECKBOX_CHOICE', 'Select multiple answers (must specify "answer choices")'),
     ]
     answer_type = models.CharField(max_length=64, choices=ANSWER_TYPE_CHOICES)
+    answer_choices = models.CharField(max_length=512, blank=True)  # separate with semi-colons
+
     REQUIREMENT_CHOICES = [
         ('NONE', 'No requirements'),
         ('STUDIED_TODAY', 'Studied today'),

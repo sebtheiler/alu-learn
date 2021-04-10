@@ -4,7 +4,7 @@ import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { backendLookup, baseUrl } from './components';
 
-type Message = {'message': string};
+type Message = { 'message': string };
 type PaginatedResponse = {
   count: number;
   next: string;
