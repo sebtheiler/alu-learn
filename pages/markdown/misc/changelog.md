@@ -2,7 +2,8 @@
 -----
 
 
-## ??? - Apr 07 - 0.6.1
+## Fixes 'n' Stuff - Apr 11 - 0.6.1
+A bunch of random fixes and improvements.  A huge number of improvements will come in Alu v0.7, so the rest of v0.6 will probably be slight fixes like this one.
 
 
 * **Removed Strikethrough:**  There was absolutely no reason for strikethrough formatting to exist in creating flashcards or editing notes.  No one, including me, has ever used it.
@@ -10,6 +11,9 @@
 * **Fixed a Bug In Studying:** Fixed a bug that caused studying to break if you studied a certain number of seen cards, then decreased your daily seen card limit to a number less than the number of seen cards you already studied.
 * **Fixed a Bug With Seen Flashcards:** Fixed a bug that caused seen flashcards to not get properly reset every midnight.
 * **Added a Couple Streak-based Easter Eggs:** See if you can find them...
+* **Added Bulk Tag Renaming:** You can now rename flashcard tags in bulk, similar to how you could previously add or delete tags in bulk.  This system isn't perfect, but it works well enough for now.
+* **Improved Quick Feedback Questions:**  I can now send out multiple choice feedback questions, as opposed to the previous Yes/No or Likert scales, helping you help me influence the future of Alu.
+* **Fixed Deck Editing:** Fixed an issue that prevented you from editing a deck without displaying the "Advanced Options."
 
 
 # Less Stress - Apr 05 - 0.6.0

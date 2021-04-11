@@ -470,7 +470,7 @@ class TeacherTestCase(ImprovedTestCase):
         classroom1 = self.create_classroom('Class 1 for student', num_students=1, num_assignments=5)
         classroom2 = self.create_classroom('Class 2 for student', num_assignments=5)
         api_view = api_views.assignments_student_list_view
-        api_path = f'/api/teachers/classroom/student/assignments/'
+        api_path = '/api/teachers/classroom/student/assignments/'
 
         student = classroom1.students.first().user
         classroom2.students.add(student.profile)

@@ -54,7 +54,7 @@ def email_reminder():
         streak = user.current_streak
         name = user.user.first_name
 
-        plain_message = f"""
+        non_html_email_client_message = f"""
 Hello {name},
 
 You're on a {streak} day streak.
@@ -65,11 +65,11 @@ Alu
 
 (you can unsubscribe/opt-out of these reminders at Alu's setting page: https://www.alulearn.com/settings/)
 (Sent by Alu Learn | NYC, New York)
-        """  # only sent in non-HTML email clients
+        """
 
         mail.send_mail(
             f'Don\'t lose your {streak}-day streak in Alu!',
-            plain_message,
+            non_html_email_client_message,
             settings.EMAIL_HOST_USER,
             [user.user.email],
             html_message=render_to_string(

@@ -69,7 +69,7 @@ class QuickFeedbackResponse(models.Model):
         on_delete=models.CASCADE,
         related_name='quick_feedback_responses',
     )
-    answer = models.CharField(max_length=256)
+    answer = models.CharField(max_length=512)
 
     def __str__(self) -> str:
         return f'Response for {self.quick_feedback.prompt} by {self.user.user.username}'

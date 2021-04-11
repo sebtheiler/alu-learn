@@ -37,11 +37,17 @@ export function NavbarComponent(props) {
       case 30:
         text = 'Congratulations on a month-long streak!';
         break;
+      case 42:
+        text = 'The answer to life the universe and everything';
+        break;
       case 50:
         text = 'Half-way to 100 days!  Congratulations!';
         break;
       case 100:
         text = 'CONGRATULATIONS ON 100 DAYS OF ALU!!!';
+        break;
+      case 111:
+        text = 'You are eleventy-one today! (or at least your streak is)';
         break;
       case 250:
         text = '250 DAYS! YOU\'RE AMAZING!';
