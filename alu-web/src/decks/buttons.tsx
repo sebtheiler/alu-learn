@@ -13,7 +13,13 @@ import { Deck, SharedDeck, CSSM, SSMInterface } from './types';
 
 
 // Buttons for when an owner views their deck
-export function DeckDefaultButtonGroup({ deck, vertical=false, hideBrowse=false }) {
+interface DeckDefaultButtonGroupProps {
+  deck: Deck | CSSM | SharedDeck;
+  vertical?: boolean;
+  hideBrowse?: boolean;
+}
+export function DeckDefaultButtonGroup(props: DeckDefaultButtonGroupProps) {
+  const { deck, vertical=false, hideBrowse=false } = props;
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
   const [gameModalIsOpen, setGameModalIsOpen] = useState(false);
   const [exportModalIsOpen, setExportModalIsOpen] = useState(false);
@@ -57,11 +63,11 @@ export function DeckDefaultButtonGroup({ deck, vertical=false, hideBrowse=false 
     if (
         deck.serializer_name === 'deck' &&
         form.elements.title.value === deck.title &&
-        form.elements.schedulingAlgo.value === deck.scheduling_algorithm &&
-        form.elements.shuffleUnseenCards.checked === deck.shuffle_unseen_cards &&
+        (form.elements.schedulingAlgo?.value ?? deck.scheduling_algorithm) === deck.scheduling_algorithm &&
+        (form.elements.shuffleUnseenCards?.checked ?? deck.shuffle_unseen_cards) === deck.shuffle_unseen_cards &&
         parseInt(form.elements.dailyNewCardLimit.value) === deck.daily_new_card_limit &&
         parseInt(form.elements.dailySeenCardLimit.value) === deck.daily_seen_card_limit &&
-        parseInt(form.reviewAheadMinutes.value) === deck.review_ahead_minutes &&
+        (parseInt(form.reviewAheadMinutes?.value ?? deck.review_ahead_minutes)) === deck.review_ahead_minutes &&
         form.elements.deckDifficulty.value === deck.difficulty
     ) {
       return;
@@ -72,11 +78,11 @@ export function DeckDefaultButtonGroup({ deck, vertical=false, hideBrowse=false 
       apiDeckEdit(
         deck.id,
         form.elements.title.value,
-        form.elements.schedulingAlgo.value,
-        form.elements.shuffleUnseenCards.checked,
+        form.elements.schedulingAlgo?.value,
+        form.elements.shuffleUnseenCards?.checked,
         parseInt(form.elements.dailyNewCardLimit.value),
         parseInt(form.elements.dailySeenCardLimit.value),
-        parseInt(form.elements.reviewAheadMinutes.value),
+        parseInt(form.elements.reviewAheadMinutes?.value),
         form.elements.deckDifficulty.value,
         (response, status) => {
           if (status === 200) {
@@ -86,22 +92,22 @@ export function DeckDefaultButtonGroup({ deck, vertical=false, hideBrowse=false 
             errorHandler(response, status, 1000);
           }
       });
-    } else if (deck.serializer_name === 'cssm') {
+    } else if (deck.serializer_name === 'cssm' && has(deck, 'deck_ids')) {
       apiSSMEdit(
         deck.id,
         form.elements.title.value,
-        form.elements.schedulingAlgo.value,
-        form.elements.shuffleUnseenCards.checked,
+        form.elements.schedulingAlgo?.value,
+        form.elements.shuffleUnseenCards?.checked,
         parseInt(form.dailyNewCardLimit.value),
         parseInt(form.dailySeenCardLimit.value),
-        parseInt(form.reviewAheadMinutes.value),
-        deck.deck_ids, // editing `deckIds` is currently disabled, but will be re-added in the future
-        form.elements.tags.value,
-        form.elements.contains.value,
-        form.elements.isLeech.value !== 'ANY' ? form.elements.isLeech.value === 'LEECH' : null,
-        form.elements.learningStatus.value !== 'ANY' ? form.elements.learningStatus.value : null,
-        parseInt(form.elements.minEase.value),
-        parseInt(form.elements.maxEase.value),
+        parseInt(form.reviewAheadMinutes?.value),
+        deck.deck_ids as string, // TODO: editing `deckIds` is currently disabled, but will be re-added in the future
+        form.elements.tags?.value,
+        form.elements.contains?.value,
+        form.elements.isLeech?.value !== 'ANY' ? form.elements.isLeech?.value === 'LEECH' : null,
+        form.elements.learningStatus?.value !== 'ANY' ? form.elements.learningStatus.value : null,
+        parseInt(form.elements.minEase?.value),
+        parseInt(form.elements.maxEase?.value),
         (response, status) => {
           if (status === 200) {
             window.location.reload();
@@ -204,17 +210,19 @@ If you wish to continue, please type "DELETE", without the quotes.
         >
           Statistics
         </Dropdown.Item>
-        <Dropdown.Item
-          onClick={openExportModal}
-          className='export-btn w-100'
-        >
-          Export
-        </Dropdown.Item>
-        <ExportModal
-          deck={deck}
-          modalIsOpen={exportModalIsOpen}
-          closeModal={closeExportModal}
-        />
+        {deck.serializer_name === 'deck' && <>
+          <Dropdown.Item
+            onClick={openExportModal}
+            className='export-btn w-100'
+          >
+            Export
+          </Dropdown.Item>
+          <ExportModal
+            deck={deck}
+            modalIsOpen={exportModalIsOpen}
+            closeModal={closeExportModal}
+          />
+        </>}
       </DropdownButton>
     </ButtonGroup>
   );

@@ -484,41 +484,19 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
     except Deck.DoesNotExist:
         return Response({'message': 'Deck not found / you are unauthorized'}, status=400)
 
-    # Get data
-    scheduling_algorithm = request.data.get(
-        'scheduling_algorithm',
-        deck.study_session_manager.scheduling_algorithm,
-    )
+    # Edit the deck and its SSM
+    def update_ssm_attribute(attribute_name: str):
+        request_attribute = request.data.get(attribute_name)
+        if request_attribute is not None:
+            setattr(deck.study_session_manager, attribute_name, request_attribute)
 
-    if scheduling_algorithm not in ('ANKI', 'ANKING'):
-        return Response(
-            {'message': 'Invalid `scheduling_algorithm`.  Must be `ANKI` or `ANKING`'},
-            status=400,
-        )
-
-    # Edit the deck
-    deck.title = request.data.get('new_title', deck.title)
-    deck.study_session_manager.scheduling_algorithm = scheduling_algorithm
-    deck.study_session_manager.shuffle_unseen_cards = request.data.get(
-        'shuffle_unseen_cards',
-        deck.study_session_manager.shuffle_unseen_cards,
-    )
-    deck.study_session_manager.daily_new_card_limit = request.data.get(
-        'daily_new_card_limit',
-        deck.study_session_manager.daily_new_card_limit,
-    )
-    deck.study_session_manager.daily_seen_card_limit = request.data.get(
-        'daily_seen_card_limit',
-        deck.study_session_manager.daily_seen_card_limit,
-    )
-    deck.study_session_manager.review_ahead_minutes = request.data.get(
-        'review_ahead_minutes',
-        deck.study_session_manager.review_ahead_minutes,
-    )
-    deck.study_session_manager.difficulty = request.data.get(
-        'difficulty',
-        deck.study_session_manager.difficulty,
-    )
+    deck.title = request.data.get('new_title') or deck.title
+    update_ssm_attribute('scheduling_algorithm')
+    update_ssm_attribute('shuffle_unseen_cards')
+    update_ssm_attribute('daily_new_card_limit')
+    update_ssm_attribute('daily_seen_card_limit')
+    update_ssm_attribute('review_ahead_minutes')
+    update_ssm_attribute('difficulty')
 
     deck.save()
     deck.study_session_manager.save()

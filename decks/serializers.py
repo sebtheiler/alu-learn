@@ -123,6 +123,7 @@ class DeckSerializer(serializers.ModelSerializer):
     serializer_name = serializers.SerializerMethodField(read_only=True)
     review_ahead_minutes = serializers.SerializerMethodField(read_only=True)
     difficulty = serializers.SerializerMethodField(read_only=True)
+    daily_seen_card_limit = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Deck
@@ -136,6 +137,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'shuffle_unseen_cards',
             'new_cards_done_today',
             'daily_new_card_limit',
+            'daily_seen_card_limit',
             'review_ahead_minutes',
             'shared_deck',
             'deck_type',
@@ -175,6 +177,9 @@ class DeckSerializer(serializers.ModelSerializer):
 
     def get_daily_new_card_limit(self, obj):
         return obj.study_session_manager.daily_new_card_limit
+
+    def get_daily_seen_card_limit(self, obj):
+        return obj.study_session_manager.daily_seen_card_limit
 
     def get_serializer_name(self, obj):
         return 'deck'

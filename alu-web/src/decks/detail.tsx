@@ -58,7 +58,7 @@ export function VariousCard(props: VariousCardProps) {
         return <ClassroomDefaultButtonGroup classroom={card} />
       case 'deck':
         if (has(card, 'author') && currentUsername === card.author.username) {
-          return <DeckDefaultButtonGroup deck={card} />
+          return <DeckDefaultButtonGroup deck={card as Deck} />
         } else {
           return <Button href={`/decks/${card.id}/`}>View</Button>
         }
