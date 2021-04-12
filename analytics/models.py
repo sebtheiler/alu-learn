@@ -41,7 +41,10 @@ class QuickFeedback(models.Model):
         ('CHECKBOX_CHOICE', 'Select multiple answers (must specify "answer choices")'),
     ]
     answer_type = models.CharField(max_length=64, choices=ANSWER_TYPE_CHOICES)
-    answer_choices = models.CharField(max_length=512, blank=True)  # separate with semi-colons
+
+    # Separate with semi-colons: Option A; Option B; Option C
+    # "Other" is a special word that allows a textbox
+    answer_choices = models.CharField(max_length=512, blank=True)
 
     REQUIREMENT_CHOICES = [
         ('NONE', 'No requirements'),

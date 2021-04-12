@@ -553,6 +553,48 @@ function FeedbackComponent() {
       respondToQuestion(selectedOptions.join('; '))();
     }
 
+    const MultipleChoice = (type: 'radio' | 'checkbox') => {
+      return (
+        <form onSubmit={submitMultipleChoice}>
+          {quickFeedback.answer_choices?.split('; ').map((choice, i) => <React.Fragment key={i}>
+            <label className='feedback-radio-option'>
+              {choice === 'Other' ? <>
+                <input
+                  type={type}
+                  name='choice'
+                  value={choice}
+                  id='otherChoice'
+                /> Other{' '}
+                <input
+                  type='text'
+                  name='otherTextInput'
+                  id='otherTextInput'
+                  maxLength={128}
+                  onClick={() => {
+                    const otherChoice = document.getElementById('otherChoice') as HTMLInputElement;
+                    otherChoice.checked = true;
+                  }}
+                  onBlur={() => {
+                    const otherChoice = document.getElementById('otherChoice') as HTMLInputElement;
+                    const otherTextInput = document.getElementById('otherTextInput') as HTMLInputElement;
+                    otherChoice.value = otherTextInput.value || 'Other';
+                  }}
+                />
+              </> : <>
+                <input
+                  type={type}
+                  name='choice'
+                  value={choice}
+                /> {choice}
+              </>}
+            </label>
+            <br />
+          </React.Fragment>)}
+          <Button type='submit'>Submit</Button>
+        </form>
+      );
+    }
+
 
     switch (quickFeedback.answer_type) {
       case 'YES/NO':
@@ -581,37 +623,9 @@ function FeedbackComponent() {
           />
         );
       case 'RADIO_CHOICE':
-        return (
-          <form onSubmit={submitMultipleChoice}>
-            {quickFeedback.answer_choices?.split('; ').map((choice, i) => <React.Fragment key={i}>
-              <label className='feedback-radio-option'>
-                <input
-                  type='radio'
-                  name='choice'
-                  value={choice}
-                /> {choice}
-              </label>
-              <br />
-            </React.Fragment>)}
-            <Button type='submit'>Submit</Button>
-          </form>
-        );
+        return MultipleChoice('radio');
       case 'CHECKBOX_CHOICE':
-        return (
-          <form onSubmit={submitMultipleChoice}>
-            {quickFeedback.answer_choices?.split('; ').map((choice, i) => <React.Fragment key={i}>
-              <label className='feedback-checkbox-option'>
-                <input
-                  type='checkbox'
-                  name='choice'
-                  value={choice}
-                /> {choice}
-              </label>
-              <br />
-            </React.Fragment>)}
-            <Button type='submit'>Submit</Button>
-          </form>
-        );
+        return MultipleChoice('checkbox');
     }
   }
 

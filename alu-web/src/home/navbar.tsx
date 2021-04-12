@@ -29,6 +29,8 @@ export function NavbarComponent(props) {
   }
 
   const congratulationsMessage = (() => {
+    if (doneReviewsToday) return null;
+
     let text: string;
     switch (currentStreak) {
       case 10:
