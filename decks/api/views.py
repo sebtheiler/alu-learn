@@ -730,7 +730,7 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
         try:
             ssm = CustomStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
         except CustomStudySessionManager.DoesNotExist:
-            return Response({'message': f'SSM #{ssm_id} does not exist for {request.user.username}'}, status=404)
+            return Response({'message': 'SSM does not exist'}, status=404)
 
     seen_flashcards, unseen_flashcards = ssm.get_flashcards()
     flashcards = ssm.get_reviews(seen_flashcards, unseen_flashcards)

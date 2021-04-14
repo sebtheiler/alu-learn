@@ -70,7 +70,7 @@ const isImageUrl = (url: string) => {
   const ext = new URL(url).pathname.split('.').pop();
   if (!ext) return false;
 
-  return imageExtensions.includes(ext);
+  return imageExtensions.includes(ext.toLowerCase());
 }
 
 const insertImage = (editor: ReactEditor, url: string) => {

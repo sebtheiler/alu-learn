@@ -211,7 +211,7 @@ function FriendsComponent() {
     {showFriends && friends && <ul>
       {friends.map((friend, i) =>
         <li key={i}>
-          <a href={`/profiles/u/${friend.id}/`} className='friend-link'>
+          <a href={`/profiles/u/${friend.username}/`} className='friend-link'>
             {friend.username}
           </a>
         </li>

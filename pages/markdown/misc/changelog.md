@@ -2,6 +2,13 @@
 -----
 
 
+## Moar Fixes 'n' Stuff - Apr ?? - 0.6.2
+
+
+* **Improved Automatic Image Pasting:** The ability to paste an image link and have it directly appear has been improved, as it now recognizes all-capital extensions as well (e.g., .PNG instead of just .png).
+* **Fixed Issue With Friend Links:** Fixed a longstanding issue with friend links directing to a 404 page.  They now properly lead to the user's page.
+
+
 ## Fixes 'n' Stuff - Apr 11 - 0.6.1
 A bunch of random fixes and improvements.  A huge number of improvements will come in Alu v0.7, so the rest of v0.6 will probably be slight fixes like this one.
 
