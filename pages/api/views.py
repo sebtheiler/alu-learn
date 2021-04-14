@@ -1,3 +1,4 @@
+from django.core.mail import mail_admins
 from decks.models import SharedDeck
 from decks.serializers import SharedDeckSerializer
 from django.db.models.query_utils import Q
@@ -24,14 +25,22 @@ def contact_us_api_view(request, *args, **kwargs):
         `contact_allowed`: (Data) Allow us to contact you? (default=False)
         `is_legal_issue`: (Data) Is this a legal issue?
     """
+    title = request.data.get('title', '<EMPTY TITLE>')
+    description = request.data.get('description', '<EMPTY DESCRIPTION>')
+
     ContactFeedback.objects.create(
-        title=request.data.get('title', '<EMPTY TITLE>'),
-        description=request.data.get('description', '<EMPTY DESCRIPTION>'),
+        title=title,
+        description=description,
         error_code=request.data.get('error_code', ''),
         urgency=request.data.get('urgency'),
         email_address=request.data.get('email', '') if not request.user.is_authenticated else request.user.email,
         contact_allowed=request.data.get('contact_allowed', False),
         is_legal_issue=request.data.get('is_legal_issue', False),
+    )
+
+    mail_admins(
+        'New Contact Feedback',
+        f"{title} - {description}",
     )
 
     return Response({'message': 'Feedback submitted successfully'}, status=201)

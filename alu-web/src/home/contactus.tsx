@@ -18,7 +18,7 @@ export function ContactUs(props) {
       form.title.value,
       form.description.value,
       !isLegalIssue ? form.errorCode.value : null,
-      !isLegalIssue ? form.urgency.value : 11,
+      !isLegalIssue ? 0 : 11,
       !userIsAuthenticated ? form.email.value : null,
       userIsAuthenticated && !isLegalIssue ? form.allowUsToContactYou.checked : form.email.value.length > 0,
       isLegalIssue,
@@ -36,6 +36,10 @@ export function ContactUs(props) {
 
   return (
     <Form onSubmit={handleSubmit} className='w-75 mx-auto'>
+      <p className='text-center'>
+        If you want faster support, please either use my WESS email or{' '}
+        <a href='mailto:aluflashcards@gmail.com'>aluflashcards@gmail.com</a>
+      </p>
       <Form.Group>
         <Form.Label className='mb-0'>
           Short Description<br />
@@ -83,15 +87,6 @@ export function ContactUs(props) {
             </small>
           </Form.Label>
           <Form.Control type='text' placeholder="bb8-194" name='errorCode' maxLength={8} />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label className='mb-0'>
-            How urgent is this? (optional)<br />
-            <small className='text-secondary'>
-              0 is not urgent at all, 10 is very urgent. This helps us prioritize the most pressing issues. Please don't lie about this.
-            </small>
-          </Form.Label>
-          <Form.Control type='number' name='urgency' min={0} max={10} />
         </Form.Group>
       </>}
       <Form.Group>

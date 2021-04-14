@@ -350,7 +350,16 @@ export function apiExploreLists(callback) {
 }
 
 // Submit a piece of feedback
-export function apiFeedbackSubmit(title, description, errorCode, urgency, email, contactAllowed, isLegalIssue, callback) {
+export function apiFeedbackSubmit(
+  title: string,
+  description: string,
+  errorCode: string,
+  urgency: number,
+  email: string,
+  contactAllowed: boolean,
+  isLegalIssue: boolean,
+  callback: (response: Message, status: number) => void,
+) {
   backendLookup('POST', 'pages/contactus/', callback, {
     title: title,
     description: description,
