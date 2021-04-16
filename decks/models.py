@@ -56,6 +56,10 @@ class Deck(models.Model):
         blank=True,
     )
 
+    # Since deck updates can take a few seconds, there is a lock on the update
+    # condition of decks so that two updates aren't triggered at the same time
+    is_updating = models.BooleanField(default=False)
+
     objects = DeckManager()
 
     class Meta:
@@ -145,6 +149,14 @@ class Deck(models.Model):
         }
 
     def pull_updates(self, shared_deck: SharedDeck) -> Deck:
+        # Since updating can take a few seconds, we have a lock
+        # here so that two updates can't be initiated at once
+        if self.is_updating:
+            raise ValueError('Deck is already updating')
+
+        self.is_updating = True
+        self.save()
+
         local_flashcard_creators = FlashCardCreator.objects.filter(
             deck=self,
             copied_from_deck=shared_deck,
@@ -204,6 +216,9 @@ class Deck(models.Model):
         shared_deck_relation = self.shared_deck_relations.get(shared_deck=shared_deck)
         shared_deck_relation.cloned_at_version = shared_deck.version_number
         shared_deck_relation.save()
+
+        self.is_updating = False
+        self.save()
 
         return self
 

@@ -8,6 +8,7 @@
 * **Improved Automatic Image Pasting:** The ability to paste an image link and have it directly appear has been improved, as it now recognizes all-capital extensions as well (e.g., .PNG instead of just .png).
 * **Fixed Issue With Friend Links:** Fixed a longstanding issue with friend links directing to a 404 page.  They now properly lead to the user's page.
 * **Fixed Issue With Flashcard Editing Title:**  The title of the tab used when editing a flashcard was previously "Creating a new flashcard...", but has now been changed to "Editing flashcard..."
+* **Added Lock to Flashcard Updating:** Added a lock to flashcard updating so that you can't accidentally initiate two updates at once.
 
 
 ## Fixes 'n' Stuff - Apr 11 - 0.6.1
