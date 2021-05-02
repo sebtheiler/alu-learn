@@ -2,6 +2,12 @@
 -----
 
 
+## ??? - May 0? - 0.6.3
+
+
+* **Removed Flashcard Buttons on Shared Deck:** Removed buttons that existed when you were browsing the shared copy of a deck you owned, since they couldn't be used anyways.  Also added marginally more padding beneath the "tags" list.
+
+
 ## Moar Fixes 'n' Stuff - May 02 - 0.6.2
 The long awaited sequel to Fixes 'n' Stuff: Moar Fixes 'n' Stuff!
 

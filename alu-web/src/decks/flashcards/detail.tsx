@@ -125,9 +125,10 @@ interface FlashCardProps {
   moveUp?(event): void;
   moveDown?(event): void;
   onChecked?(event): void;
+  showButtons?: boolean;
 }
 export function RenderFlashCard(props: FlashCardProps) {
-  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser, hideSuspend, fixSlateLazy, moveUp, moveDown, onChecked} = props;
+  const {flashcard, number, showParentDeckTitle, suspendCallback, deleteCallback, foreignUser, hideSuspend, fixSlateLazy, moveUp, moveDown, onChecked, showButtons} = props;
 
   const [deleteIsLoading, setDeleteIsLoading] = useState(false);
   const [suspendIsLoading, setSuspendIsLoading] = useState(false);
@@ -179,10 +180,6 @@ export function RenderFlashCard(props: FlashCardProps) {
 
   }
 
-  if (!flashcard) {
-    return null;
-  }
-
   const flashcardSuspendedLeechClassName = () => {
     if (foreignUser) return '';
 
@@ -196,6 +193,7 @@ export function RenderFlashCard(props: FlashCardProps) {
     return className;
   }
 
+  if (!flashcard) return null;
   return (
     <div
       className={'container-fluid border my-3' + flashcardSuspendedLeechClassName()}
@@ -269,14 +267,14 @@ export function RenderFlashCard(props: FlashCardProps) {
         <RenderFlashCardText flashcard={flashcard} fixSlateLazy={fixSlateLazy} />
       </div>
       <div className='text-center mx-auto w-50' style={{ wordWrap: 'break-word' }}>
-        {flashcard.tags ? 
-          <>
+        {flashcard.tags &&
+          <p>
             Tags: <br />
             {flashcard.tags}
-          </>
-        : null}
+          </p>
+        }
       </div>
-      {foreignUser ? null : 
+      {!foreignUser && showButtons &&
         <div className='col-md-12 mb-3 text-center'>
           <div className='btn-group'>
             <Button

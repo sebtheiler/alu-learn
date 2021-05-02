@@ -211,6 +211,7 @@ export function FlashCardsList(props: FlashCardsListProps) {
                 setSelectedFlashcards(selectedFlashcards.filter(flashcardId => flashcardId !== flashcard.id));
               }
             }) : undefined}
+            showButtons={deck && !deck['sharing_setting'] /* show buttons if not shared deck */}
           />
         );
       }) :
