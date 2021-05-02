@@ -989,7 +989,8 @@ class DeckTestCase(ImprovedTestCase):
         ssm.save()
 
         # Mark some flashcards as needing to be reviewed
-        flashcards = FlashCard.objects.filter(creator__deck=deck).reverse().values('pk')[:7]
+        num_reviews = 7
+        flashcards = FlashCard.objects.filter(creator__deck=deck).reverse().values('pk')[:num_reviews]
         flashcards = FlashCard.objects.filter(pk__in=flashcards)
         flashcards.update(
             next_review=dt.datetime.now(tz=dt.timezone.utc) - dt.timedelta(seconds=5),
@@ -998,7 +999,7 @@ class DeckTestCase(ImprovedTestCase):
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 27)
+        self.assertEqual(len(response.data), 20 + num_reviews)
         all_flashcards = FlashCard.objects.filter(creator__deck=deck)
         self.assertEqual(
             len([f for f in all_flashcards if f.learning_status == 'UNSEEN']),
@@ -1006,7 +1007,7 @@ class DeckTestCase(ImprovedTestCase):
         )
         self.assertEqual(
             len([f for f in all_flashcards if f.learning_status == 'LEARNING']),
-            7,
+            num_reviews,
         )
 
         # Test daily seen card limit
@@ -1054,6 +1055,26 @@ class DeckTestCase(ImprovedTestCase):
         self.assertIsInstance(response.data, list)
         self.assertEqual(len(response.data), ssm.daily_new_card_limit)
 
+        # Test Overflow Bucket
+        ssm.seen_cards_done_today = 0
+        ssm.daily_seen_card_limit = 20
+        ssm.save()
+
+        response = self.get_response(api_path, api_view, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), 20 + num_reviews)  # cards from earlier
+
+        flashcards.update(
+            next_review=dt.datetime.now(tz=dt.timezone.utc) - dt.timedelta(days=5),
+            learning_status='LEARNED',
+        )  # update the flashcards to be well past reviewed
+
+        response = self.get_response(api_path, api_view, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data, list)
+        self.assertEqual(len(response.data), 20)  # no longer in main reviews
+
         # Test CSSMs
         deck = self.create_deck('Deck to study', num_flashcards=37)
         ssm = CustomStudySessionManager.objects.create(
@@ -1066,7 +1087,7 @@ class DeckTestCase(ImprovedTestCase):
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 27)  # including 7 set to learning from earlier
+        self.assertEqual(len(response.data), 20)
 
         # Test various CSSM filter options
         ssm = CustomStudySessionManager.objects.create(

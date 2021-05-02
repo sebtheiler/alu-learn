@@ -724,6 +724,7 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
     Possible errors:
         SSM does not exist: 404, SSM does not exist
     """
+    ssm = None  # type: StudySessionManager
     try:
         ssm = DeckStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
     except DeckStudySessionManager.DoesNotExist:
