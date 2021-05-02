@@ -781,7 +781,10 @@ class FlashCard(models.Model):
         if return_query_only:
             return flashcard_query
         else:
-            return FlashCard.objects.filter(flashcard_query).prefetch_related('creator')
+            return FlashCard.objects \
+                .filter(flashcard_query) \
+                .prefetch_related('creator') \
+                .distinct()
 
 
 class StudySessionManager(models.Model):

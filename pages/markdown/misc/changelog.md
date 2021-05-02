@@ -2,14 +2,20 @@
 -----
 
 
-## Moar Fixes 'n' Stuff - Apr ?? - 0.6.2
+## Moar Fixes 'n' Stuff - May 02 - 0.6.2
+The long awaited sequel to Fixes 'n' Stuff: Moar Fixes 'n' Stuff!
+
+
+Yeah, nothing too special today, just a couple of fixes.  It's my birthday, but no one reads the changelog so I guess that will stay unknown.  "What did you do for your birthday?  Make flashcards))"
 
 
 * **Improved Automatic Image Pasting:** The ability to paste an image link and have it directly appear has been improved, as it now recognizes all-capital extensions as well (e.g., .PNG instead of just .png).
 * **Fixed Issue With Friend Links:** Fixed a longstanding issue with friend links directing to a 404 page.  They now properly lead to the user's page.
 * **Fixed Issue With Flashcard Editing Title:**  The title of the tab used when editing a flashcard was previously "Creating a new flashcard...", but has now been changed to "Editing flashcard..."
-* **Added Lock to Flashcard Updating:** Added a lock to flashcard updating so that you can't accidentally initiate two updates at once.
+* **Added Lock to Deck Updating:** Added a lock to deck updating so that you can't accidentally initiate two updates at once.
 * **Mandated Lowercase Tags:** Tags should always be lowercase, so that uppercase words are reserved as logical operators (AND/OR/NOT).  You can now no longer make tags lowercase when editing or creating flashcards.
+* **Changed ToS (Extremely Minor):** Some of the information in the Terms of Service was outdated, like Alu's URL, so I've updated it.
+* **Made Flashcard Search Results Distinct:** There was previously a chance that the same flashcard could appear multiple times when searching.  This has now been fixed.
 
 
 ## Fixes 'n' Stuff - Apr 11 - 0.6.1
