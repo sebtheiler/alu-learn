@@ -159,7 +159,7 @@ export function FlashCardCreate(props: FlashCardCreateProps) {
         deckId,
         flashcardNum,
         content,
-        tagsRef.current.value,
+        tagsRef.current.value.toLowerCase(),
         handleBackendUpdate,
       );
     } else {
@@ -168,7 +168,7 @@ export function FlashCardCreate(props: FlashCardCreateProps) {
       apiFlashCardCreate(
         deckId,
         content,
-        tagsRef.current.value,
+        tagsRef.current.value.toLowerCase(),
         flashcardType,
         handleBackendUpdate,
       );
@@ -255,7 +255,11 @@ export function FlashCardCreate(props: FlashCardCreateProps) {
           </>}
         </Form.Group>
         <Form.Group>
-          <Form.Label htmlFor='tags' className='mb-0 w-100'>
+          <Form.Label
+            htmlFor='tags'
+            className='mb-0 w-100'
+            style={{ textTransform: 'lowercase' }}
+          >
             <p className='mb-0'>
               {returnToPreviousPage ? null : <FreezeOverlay><i
                 className='far fa-snowflake mb-1 mr-1 fa-lg'

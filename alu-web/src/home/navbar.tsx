@@ -51,6 +51,9 @@ export function NavbarComponent(props) {
       case 111:
         text = 'You are eleventy-one today! (or at least your streak is)';
         break;
+      case 128:
+        text = '2^7';
+        break;
       case 250:
         text = '250 DAYS! YOU\'RE AMAZING!';
         break;

@@ -420,9 +420,6 @@ function RenderClassroom(props: RenderClassroomProps) {
           >
             <i className='fas fa-cog fa-sm' />
           </button>
-          <span style={{ fontSize: '15px', marginLeft: '15px' }}>
-            ⬅️ New feature: customize how many flashcards you see to avoid being overwhelmed
-          </span>
         </>}
       </h3>
       {classroom.assignments.length > 0 ? <table className='text-center'>

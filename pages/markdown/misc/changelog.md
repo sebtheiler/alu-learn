@@ -9,6 +9,7 @@
 * **Fixed Issue With Friend Links:** Fixed a longstanding issue with friend links directing to a 404 page.  They now properly lead to the user's page.
 * **Fixed Issue With Flashcard Editing Title:**  The title of the tab used when editing a flashcard was previously "Creating a new flashcard...", but has now been changed to "Editing flashcard..."
 * **Added Lock to Flashcard Updating:** Added a lock to flashcard updating so that you can't accidentally initiate two updates at once.
+* **Mandated Lowercase Tags:** Tags should always be lowercase, so that uppercase words are reserved as logical operators (AND/OR/NOT).  You can now no longer make tags lowercase when editing or creating flashcards.
 
 
 ## Fixes 'n' Stuff - Apr 11 - 0.6.1
