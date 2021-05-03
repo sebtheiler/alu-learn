@@ -239,7 +239,7 @@ export function StudyElement(props: StudyElementProps) {
           <div className='btn-group float-right'>
             <p className='mr-2' style={{ transform: 'translate(-2px, 6px)' }} id='flashcards-remaining'>
               {numRemainingFlashcards} flashcard{numRemainingFlashcards === 1 ? '' : 's'} remaining
-              {numOverflow ? ` (${numOverflow} in Overflow Bucket)` : ''}
+              {numOverflow ? ` (${numOverflow} extra in Overflow Bucket)` : ''}
             </p>
             <Collapse in={optionButtonsExpanded}>
               <div id='collapse-buttons'>

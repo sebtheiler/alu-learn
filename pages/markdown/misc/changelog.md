@@ -2,9 +2,20 @@
 -----
 
 
-## ??? - May 0? - 0.6.3
+## Overflow Bucket - May 03 - 0.6.3
+This update adds a key new feature: the "Overflow Bucket."
 
 
+Before, if you missed a day of studying (or didn't study all of the flashcards in that day), all of those flashcards you missed would pile up for the next day.  This could quickly become overwhelming, detering you from studying.  The Overflow Bucket attempts to fix this.
+
+
+Now, when you go to study a deck, you will _only_ see flashcards that are due that day.  After you finish all of the flashcards due that day, you will be able to review flashcards that were due before that day through the Overflow Bucket.  This ensures that (a) flashcards don't pile up too high and become overwhelming and (b) you keep remembering flashcards that are due, since it is assumed you have already forgotten many of the flashcards in the Overflow Bucket.
+
+
+If you don't see the Overflow Bucket it means that you are completely caught-up on your reviews.
+
+
+* **Added Overflow Bucket:**  After studying all of your flashcards, you will be able to review flashcards that were due previously but you didn't review.
 * **Removed Flashcard Buttons on Shared Deck:** Removed buttons that existed when you were browsing the shared copy of a deck you owned, since they couldn't be used anyways.  Also added marginally more padding beneath the "tags" list.
 
 
