@@ -848,21 +848,20 @@ class StudySessionManager(models.Model):
     ) -> QuerySet[FlashCard]:
         # Split the seen flashcards into recently due flashcards,
         # and old flashcards for the Overflow Bucket
-        recently_due = seen_flashcards.filter(
-            next_review__gte=get_morning(),
-        )
+        # TODO: 1 query
         overflow_bucket_cards = seen_flashcards.filter(
             next_review__lt=get_morning(),
         )
-
         if from_overflow_bucket:
-            seen_flashcards = overflow_bucket_cards
-        else:
-            seen_flashcards = recently_due
+            return {'flashcards': overflow_bucket_cards, 'overflow_num': None}
+
+        recently_due = seen_flashcards.filter(
+            next_review__gte=get_morning(),
+        )
 
         # Get the earliest seen flashcards under the limit
         seen_flashcard_count = max(self.daily_seen_card_limit - self.seen_cards_done_today, 0)
-        seen_flashcards = seen_flashcards.order_by(
+        seen_flashcards = recently_due.order_by(
             'next_review'
         )[:seen_flashcard_count]
 
@@ -881,9 +880,11 @@ class StudySessionManager(models.Model):
 
         # Combine seen and unseen flashcards
         flashcards = list(chain(seen_flashcards, unseen_flashcards))
-        print(overflow_bucket_cards.count())
 
-        return flashcards
+        return {
+            'flashcards': flashcards,
+            'overflow_num': overflow_bucket_cards.count() if not from_overflow_bucket else None,
+        }
 
 
 class DeckStudySessionManagerModelManager(models.Manager):

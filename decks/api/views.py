@@ -720,11 +720,12 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
 
     Required information:
         `ssm_id`: (URL) ID of the study session manager
+        `from_overflow_bucket`=false: (GET) If True, load reviews from
+            the overflow bucket rather than from the reviews for this single day
 
     Possible errors:
         SSM does not exist: 404, SSM does not exist
     """
-    ssm = None  # type: StudySessionManager
     try:
         ssm = DeckStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
     except DeckStudySessionManager.DoesNotExist:
@@ -734,12 +735,16 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
             return Response({'message': 'SSM does not exist'}, status=404)
 
     seen_flashcards, unseen_flashcards = ssm.get_flashcards()
-    flashcards = ssm.get_reviews(seen_flashcards, unseen_flashcards)
-
-    return Response(
-        FlashCardSerializer(flashcards, many=True).data,
-        status=200,
+    reviews = ssm.get_reviews(
+        seen_flashcards,
+        unseen_flashcards,
+        request.GET.get('from_overflow_bucket') == 'true',
     )
+
+    return Response({
+        'flashcards': FlashCardSerializer(reviews['flashcards'], many=True).data,
+        'overflow_num': reviews['overflow_num'],
+    }, status=200)
 
 
 @api_view(['GET'])

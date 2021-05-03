@@ -939,11 +939,14 @@ class DeckTestCase(ImprovedTestCase):
         # Test default flashcards
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 20)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(len(response.data['flashcards']), ssm.daily_new_card_limit)
+        self.assertEqual(response.data['overflow_num'], 0)
         self.assertEqual(
-            [data['id'] for data in response.data],
-            [str(f.pk) for f in FlashCard.objects.filter(creator__deck=deck).all()[:20]]
+            [flashcard['id'] for flashcard in response.data['flashcards']],
+            [str(f.pk) for f in FlashCard.objects.filter(
+                creator__deck=deck
+            ).all()[:ssm.daily_new_card_limit]]
         )
 
         # Shuffle unseen cards
@@ -951,11 +954,14 @@ class DeckTestCase(ImprovedTestCase):
         ssm.save()
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 20)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(len(response.data['flashcards']), ssm.daily_new_card_limit)
+        self.assertEqual(response.data['overflow_num'], 0)
         self.assertNotEqual(
-            [data['id'] for data in response.data],
-            [f.pk for f in FlashCard.objects.filter(creator__deck=deck).all()[:20]]
+            [flashcard['id'] for flashcard in response.data['flashcards']],
+            [f.pk for f in FlashCard.objects.filter(
+                creator__deck=deck
+            ).all()[:ssm.daily_new_card_limit]]
         )
         ssm.shuffle_unseen_cards = False
         ssm.save()
@@ -965,11 +971,14 @@ class DeckTestCase(ImprovedTestCase):
         ssm.save()
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 27)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(len(response.data['flashcards']), ssm.daily_new_card_limit)
+        self.assertEqual(response.data['overflow_num'], 0)
         self.assertEqual(
-            [data['id'] for data in response.data],
-            [str(f.pk) for f in FlashCard.objects.filter(creator__deck=deck).all()[:27]]
+            [flashcard['id'] for flashcard in response.data['flashcards']],
+            [str(f.pk) for f in FlashCard.objects.filter(
+                creator__deck=deck
+            ).all()[:ssm.daily_new_card_limit]]
         )
         ssm.daily_new_card_limit = 20
         ssm.save()
@@ -979,18 +988,26 @@ class DeckTestCase(ImprovedTestCase):
         ssm.save()
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 7)
+        self.assertIsInstance(response.data['flashcards'], list)
         self.assertEqual(
-            [data['id'] for data in response.data],
-            [str(f.pk) for f in FlashCard.objects.filter(creator__deck=deck).all()[:7]]
+            len(response.data['flashcards']),
+            ssm.daily_new_card_limit - ssm.new_cards_done_today,
+        )
+        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(
+            [flashcard['id'] for flashcard in response.data['flashcards']],
+            [str(f.pk) for f in FlashCard.objects.filter(
+                creator__deck=deck
+            ).all()[:ssm.daily_new_card_limit - ssm.new_cards_done_today]]
         )
         ssm.new_cards_done_today = 0
         ssm.save()
 
         # Mark some flashcards as needing to be reviewed
         num_reviews = 7
-        flashcards = FlashCard.objects.filter(creator__deck=deck).reverse().values('pk')[:num_reviews]
+        flashcards = FlashCard.objects.filter(
+            creator__deck=deck
+        ).reverse().values('pk')[:num_reviews]
         flashcards = FlashCard.objects.filter(pk__in=flashcards)
         flashcards.update(
             next_review=dt.datetime.now(tz=dt.timezone.utc) - dt.timedelta(seconds=5),
@@ -998,12 +1015,16 @@ class DeckTestCase(ImprovedTestCase):
         )
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 20 + num_reviews)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(
+            len(response.data['flashcards']),
+            ssm.daily_new_card_limit + num_reviews,
+        )
+        self.assertEqual(response.data['overflow_num'], 0)
         all_flashcards = FlashCard.objects.filter(creator__deck=deck)
         self.assertEqual(
             len([f for f in all_flashcards if f.learning_status == 'UNSEEN']),
-            30,
+            all_flashcards.count() - num_reviews,
         )
         self.assertEqual(
             len([f for f in all_flashcards if f.learning_status == 'LEARNING']),
@@ -1016,32 +1037,40 @@ class DeckTestCase(ImprovedTestCase):
 
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 23)
+        self.assertIsInstance(response.data['flashcards'], list)
         self.assertEqual(
-            len([f for f in response.data if f['learning_status'] == 'UNSEEN']),
-            20,
+            len(response.data['flashcards']),
+            ssm.daily_new_card_limit + ssm.daily_seen_card_limit,
         )
         self.assertEqual(
-            len([f for f in response.data if f['learning_status'] == 'LEARNING']),
-            3,
+            len([f for f in response.data['flashcards'] if f['learning_status'] == 'UNSEEN']),
+            ssm.daily_new_card_limit,
         )
+        self.assertEqual(
+            len([f for f in response.data['flashcards'] if f['learning_status'] == 'LEARNING']),
+            ssm.daily_seen_card_limit,
+        )
+        self.assertEqual(response.data['overflow_num'], 0)
 
         ssm.seen_cards_done_today = 2
         ssm.save()
 
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 21)
+        self.assertIsInstance(response.data['flashcards'], list)
         self.assertEqual(
-            len([f for f in response.data if f['learning_status'] == 'UNSEEN']),
-            20,
+            len(response.data['flashcards']),
+            ssm.daily_new_card_limit + ssm.daily_seen_card_limit - ssm.seen_cards_done_today,
         )
         self.assertEqual(
-            len([f for f in response.data if f['learning_status'] == 'LEARNING']),
-            1,
+            len([f for f in response.data['flashcards'] if f['learning_status'] == 'UNSEEN']),
+            ssm.daily_new_card_limit,
         )
+        self.assertEqual(
+            len([f for f in response.data['flashcards'] if f['learning_status'] == 'LEARNING']),
+            ssm.daily_seen_card_limit - ssm.seen_cards_done_today,
+        )
+        self.assertEqual(response.data['overflow_num'], 0)
 
         # Test what happens when the user studies a certain number
         # of seen cards, then decreases the daily seen card limit
@@ -1052,8 +1081,9 @@ class DeckTestCase(ImprovedTestCase):
 
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), ssm.daily_new_card_limit)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(len(response.data['flashcards']), ssm.daily_new_card_limit)
+        self.assertEqual(response.data['overflow_num'], 0)
 
         # Test Overflow Bucket
         ssm.seen_cards_done_today = 0
@@ -1062,8 +1092,12 @@ class DeckTestCase(ImprovedTestCase):
 
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 20 + num_reviews)  # cards from earlier
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(
+            len(response.data['flashcards']),
+            ssm.daily_seen_card_limit + num_reviews,
+        )  # cards from earlier
+        self.assertEqual(response.data['overflow_num'], 0)
 
         flashcards.update(
             next_review=dt.datetime.now(tz=dt.timezone.utc) - dt.timedelta(days=5),
@@ -1072,8 +1106,30 @@ class DeckTestCase(ImprovedTestCase):
 
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 20)  # no longer in main reviews
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(
+            len(response.data['flashcards']),
+            ssm.daily_new_card_limit,
+        )  # no longer in main reviews
+        self.assertEqual(response.data['overflow_num'], num_reviews)
+
+        response = self.get_response(
+            f'{api_path}?from_overflow_bucket=true',
+            api_view,
+            kwargs=kwargs,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(
+            len(response.data['flashcards']),
+            num_reviews,
+        )  # only shows flashcards from overflow bucket
+        self.assertEqual(response.data['overflow_num'], None)
+
+        flashcards.update(
+            next_review=dt.datetime.now(tz=dt.timezone.utc) - dt.timedelta(seconds=5),
+            learning_status='LEARNED',
+        )  # update the flashcards to be recent again
 
         # Test CSSMs
         deck = self.create_deck('Deck to study', num_flashcards=37)
@@ -1086,8 +1142,12 @@ class DeckTestCase(ImprovedTestCase):
 
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 20)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(
+            len(response.data['flashcards']),
+            ssm.daily_new_card_limit + num_reviews,
+        )
+        self.assertEqual(response.data['overflow_num'], 0)
 
         # Test various CSSM filter options
         ssm = CustomStudySessionManager.objects.create(
@@ -1100,8 +1160,9 @@ class DeckTestCase(ImprovedTestCase):
 
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 0)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(len(response.data['flashcards']), num_reviews)
+        self.assertEqual(response.data['overflow_num'], 0)
 
     def test_ssm_detail_api(self):
         deck = self.create_deck('Deck to study')
