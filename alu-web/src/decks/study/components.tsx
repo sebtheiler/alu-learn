@@ -9,18 +9,28 @@ import {
 import { StudyElement } from './study';
 import { getAnkiInterval } from './algorithm'
 import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import { errorHandler, useApiObjectHook } from '../../utils';
+import { errorHandler, QuestionBubble, updateURLParameter, useApiObjectHook } from '../../utils';
 import BrowserInteractionTime from 'browser-interaction-time';
 import { FlashCard, SSMInterface } from '../types';
 
+type SSMFlashcardsReturn = {flashcards: FlashCard[], num_overflow: number};
 export function StudyComponent({ studySessionManagerId }) {
+  const reviewOverflowBucket = useMemo(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('reviewOverflowBucket') === 'true';
+  }, []);
   const [notFound, setNotFound] = useState(false);
+  const [numOverflow, setNumOverflow] = useState<number | undefined>(undefined);
   const [flashcards, setFlashcards] = useApiObjectHook<FlashCard[]>(
     apiSSMFlashcards,
     [200, 404], 5001,
-    [studySessionManagerId],
-    (_response, status) => setNotFound(status === 404),
+    [studySessionManagerId, reviewOverflowBucket],
+    (response: SSMFlashcardsReturn, status: number) => {
+      setNotFound(status === 404);
+      setNumOverflow(response.num_overflow);
+    },
+    (response: SSMFlashcardsReturn) => response.flashcards,
   );
   const [SSM] = useApiObjectHook<SSMInterface>(
     apiSSMDetail,
@@ -32,7 +42,9 @@ export function StudyComponent({ studySessionManagerId }) {
   return (
     <StudyLogicComponent
       SSM={SSM}
-      flashcards={flashcards} setFlashcards={setFlashcards}
+      flashcards={flashcards}
+      setFlashcards={setFlashcards}
+      numOverflow={numOverflow}
       notFound={notFound}
     />
   );
@@ -45,9 +57,10 @@ interface StudyLogicComponentProps {
   setFlashcards?(newFlashcards: any): void;
   notFound?: boolean;
   isAssignment?: boolean;
+  numOverflow?: number;
 }
 export function StudyLogicComponent(props: StudyLogicComponentProps) {
-  const { SSM, flashcards, setFlashcards, notFound, isAssignment } = props;
+  const { SSM, flashcards, setFlashcards, notFound, isAssignment, numOverflow } = props;
 
   // Track time
   const browserInteractionTime = useMemo(() => {
@@ -126,9 +139,8 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
 
   // Inform backend of grade
   const backendGradeUpdate = (grade) => {
-    if (grade > 4 || grade < 1 || !currentCard || !SSM || !flashcards || !setFlashcards) {
+    if (grade > 4 || grade < 1 || !currentCard || !SSM || !flashcards || !setFlashcards)
       return;
-    }
     setPreviousCard(currentCard);
     setCurrentCardDidSet(false);
 
@@ -279,17 +291,34 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
       {finishedStudying ?
         <div className='text-center'>
           <p>Congratulations! You've finished studying these flashcards!</p>
-          <ButtonGroup>
-            {isAssignment ?
-              <Button href='/home/' id='assignments-home-btn'>
-                Assignments Home
-              </Button>
-            :
-              <Button href='/home/decks/' id='decks-home-btn'>
-                Decks Home
-              </Button>
-            }
-          </ButtonGroup>
+          {numOverflow && <>
+            <Button
+              onClick={() => window.location.href = updateURLParameter(
+                window.location.href,
+                'reviewOverflowBucket',
+                true,
+              )}
+              variant='success'
+              className='mb-3'
+            >
+              Review Overflow Bucket ({numOverflow} flashcards){' '}
+              <QuestionBubble>
+                The "Overflow Bucket" contains reviews for flashcards more than a day past ideal review.
+                This was introduced so that reviews would not pile-up too high if you missed a day.
+                Make sure to study the Overflow Bucket at your leisure to slowly cut down
+                the number of flashcards in it, and continue remembering old information.
+              </QuestionBubble>
+            </Button><br />
+          </>}
+          {isAssignment ?
+            <Button href='/home/' id='assignments-home-btn'>
+              Assignments Home
+            </Button>
+          :
+            <Button href='/home/decks/' id='decks-home-btn'>
+              Decks Home
+            </Button>
+          }
           {SSM.deck_id &&
             <Button href={`/decks/${SSM.deck_id}/flashcards/create/`}>
               Create a new flashcard
@@ -310,6 +339,7 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
               schedulingAlgorithm={SSM.scheduling_algorithm}
               deckDifficulty={SSM.difficulty}
               numRemainingFlashcards={flashcards && flashcards.length}
+              numOverflow={numOverflow}
             />
           </div>
         )

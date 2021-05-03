@@ -380,8 +380,17 @@ export function apiSSMDetail(
 }
 
 // Gets flashcards to review now from an SSM
-export function apiSSMFlashcards(studySessionmanagerId, callback) {
-  backendLookup('GET', `decks/ssm/${studySessionmanagerId}/flashcards/`, callback);
+export function apiSSMFlashcards(
+  studySessionmanagerId: number,
+  reviewOverflowBucket: boolean,
+  callback: (response: {
+    flashcards: FlashCard[],
+    num_overflow?: number,
+  }, status: number) => void,
+) {
+  let endpoint = `decks/ssm/${studySessionmanagerId}/flashcards/`;
+  if (reviewOverflowBucket) endpoint += '?from_overflow_bucket=true';
+  backendLookup('GET', endpoint, callback);
 }
 
 // Updates a flashcard in an SSM's database

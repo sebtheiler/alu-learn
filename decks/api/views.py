@@ -743,7 +743,7 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
 
     return Response({
         'flashcards': FlashCardSerializer(reviews['flashcards'], many=True).data,
-        'overflow_num': reviews['overflow_num'],
+        'num_overflow': reviews['num_overflow'],
     }, status=200)
 
 

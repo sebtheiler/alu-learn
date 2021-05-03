@@ -941,7 +941,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data['flashcards'], list)
         self.assertEqual(len(response.data['flashcards']), ssm.daily_new_card_limit)
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
         self.assertEqual(
             [flashcard['id'] for flashcard in response.data['flashcards']],
             [str(f.pk) for f in FlashCard.objects.filter(
@@ -956,7 +956,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data['flashcards'], list)
         self.assertEqual(len(response.data['flashcards']), ssm.daily_new_card_limit)
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
         self.assertNotEqual(
             [flashcard['id'] for flashcard in response.data['flashcards']],
             [f.pk for f in FlashCard.objects.filter(
@@ -973,7 +973,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data['flashcards'], list)
         self.assertEqual(len(response.data['flashcards']), ssm.daily_new_card_limit)
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
         self.assertEqual(
             [flashcard['id'] for flashcard in response.data['flashcards']],
             [str(f.pk) for f in FlashCard.objects.filter(
@@ -993,7 +993,7 @@ class DeckTestCase(ImprovedTestCase):
             len(response.data['flashcards']),
             ssm.daily_new_card_limit - ssm.new_cards_done_today,
         )
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
         self.assertEqual(
             [flashcard['id'] for flashcard in response.data['flashcards']],
             [str(f.pk) for f in FlashCard.objects.filter(
@@ -1020,7 +1020,7 @@ class DeckTestCase(ImprovedTestCase):
             len(response.data['flashcards']),
             ssm.daily_new_card_limit + num_reviews,
         )
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
         all_flashcards = FlashCard.objects.filter(creator__deck=deck)
         self.assertEqual(
             len([f for f in all_flashcards if f.learning_status == 'UNSEEN']),
@@ -1050,7 +1050,7 @@ class DeckTestCase(ImprovedTestCase):
             len([f for f in response.data['flashcards'] if f['learning_status'] == 'LEARNING']),
             ssm.daily_seen_card_limit,
         )
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
 
         ssm.seen_cards_done_today = 2
         ssm.save()
@@ -1070,7 +1070,7 @@ class DeckTestCase(ImprovedTestCase):
             len([f for f in response.data['flashcards'] if f['learning_status'] == 'LEARNING']),
             ssm.daily_seen_card_limit - ssm.seen_cards_done_today,
         )
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
 
         # Test what happens when the user studies a certain number
         # of seen cards, then decreases the daily seen card limit
@@ -1083,7 +1083,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data['flashcards'], list)
         self.assertEqual(len(response.data['flashcards']), ssm.daily_new_card_limit)
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
 
         # Test Overflow Bucket
         ssm.seen_cards_done_today = 0
@@ -1097,7 +1097,7 @@ class DeckTestCase(ImprovedTestCase):
             len(response.data['flashcards']),
             ssm.daily_seen_card_limit + num_reviews,
         )  # cards from earlier
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
 
         flashcards.update(
             next_review=dt.datetime.now(tz=dt.timezone.utc) - dt.timedelta(days=5),
@@ -1111,7 +1111,7 @@ class DeckTestCase(ImprovedTestCase):
             len(response.data['flashcards']),
             ssm.daily_new_card_limit,
         )  # no longer in main reviews
-        self.assertEqual(response.data['overflow_num'], num_reviews)
+        self.assertEqual(response.data['num_overflow'], num_reviews)
 
         response = self.get_response(
             f'{api_path}?from_overflow_bucket=true',
@@ -1124,7 +1124,7 @@ class DeckTestCase(ImprovedTestCase):
             len(response.data['flashcards']),
             num_reviews,
         )  # only shows flashcards from overflow bucket
-        self.assertEqual(response.data['overflow_num'], None)
+        self.assertEqual(response.data['num_overflow'], None)
 
         flashcards.update(
             next_review=dt.datetime.now(tz=dt.timezone.utc) - dt.timedelta(seconds=5),
@@ -1147,7 +1147,7 @@ class DeckTestCase(ImprovedTestCase):
             len(response.data['flashcards']),
             ssm.daily_new_card_limit + num_reviews,
         )
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
 
         # Test various CSSM filter options
         ssm = CustomStudySessionManager.objects.create(
@@ -1162,7 +1162,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data['flashcards'], list)
         self.assertEqual(len(response.data['flashcards']), num_reviews)
-        self.assertEqual(response.data['overflow_num'], 0)
+        self.assertEqual(response.data['num_overflow'], 0)
 
     def test_ssm_detail_api(self):
         deck = self.create_deck('Deck to study')
@@ -2636,7 +2636,9 @@ class DeckBrowserTestCase(SeleniumTestCase):
                 if flashcards_remaining > 0:
                     self.assertEqual(
                         self.driver.find_element_by_id('flashcards-remaining').text,
-                        f'{flashcards_remaining} flashcards remaining',
+                        f'{flashcards_remaining} flashcards remaining'
+                        if flashcards_remaining > 1 else
+                        '1 flashcard remaining',
                     )
                 else:
                     self.assertTextExists('Congratulations! You\'ve finished studying these flashcards!')

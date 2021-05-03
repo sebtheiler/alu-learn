@@ -828,6 +828,7 @@ class StudySessionManager(models.Model):
     def calc_review_cutoff(self) -> dt.date:
         # Calculate the review cutoff time using `review_ahead_minutes`
 
+        # TODO: despite the comment, this is definitely getting flashcards from tomorrow
         now = timezone.now()
         review_cutoff = min(  # if the user is studying late, don't get flashcards from tomorrow
             now + dt.timedelta(minutes=self.review_ahead_minutes),
@@ -849,14 +850,15 @@ class StudySessionManager(models.Model):
         # Split the seen flashcards into recently due flashcards,
         # and old flashcards for the Overflow Bucket
         # TODO: 1 query
+        recent_cutoff = timezone.now() - dt.timedelta(days=1, hours=2)
         overflow_bucket_cards = seen_flashcards.filter(
-            next_review__lt=get_morning(),
+            next_review__lt=recent_cutoff,
         )
         if from_overflow_bucket:
-            return {'flashcards': overflow_bucket_cards, 'overflow_num': None}
+            return {'flashcards': overflow_bucket_cards, 'num_overflow': None}
 
         recently_due = seen_flashcards.filter(
-            next_review__gte=get_morning(),
+            next_review__gte=recent_cutoff,
         )
 
         # Get the earliest seen flashcards under the limit
@@ -883,7 +885,7 @@ class StudySessionManager(models.Model):
 
         return {
             'flashcards': flashcards,
-            'overflow_num': overflow_bucket_cards.count() if not from_overflow_bucket else None,
+            'num_overflow': overflow_bucket_cards.count() if not from_overflow_bucket else None,
         }
 
 
