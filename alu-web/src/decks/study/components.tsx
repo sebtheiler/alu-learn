@@ -291,7 +291,7 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
       {finishedStudying ?
         <div className='text-center'>
           <p>Congratulations! You've finished studying these flashcards!</p>
-          {numOverflow && <>
+          {numOverflow ? <>
             <Button
               onClick={() => window.location.href = updateURLParameter(
                 window.location.href,
@@ -309,7 +309,7 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
                 the number of flashcards in it, and continue remembering old information.
               </QuestionBubble>
             </Button><br />
-          </>}
+          </> : null /* the ?: syntax is just to prevent the number 0 from appearing */}
           {isAssignment ?
             <Button href='/home/' id='assignments-home-btn'>
               Assignments Home

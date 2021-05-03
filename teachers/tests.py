@@ -718,8 +718,9 @@ class TeacherTestCase(ImprovedTestCase):
         # Study the deck (but the tags in the deck are wrong)
         response = self.get_response(api_path, api_view, user=student, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 0)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(len(response.data['flashcards']), 0)
+        self.assertEqual(response.data['num_overflow'], 0)
         check_deck_assignment_created()
 
         # Update to have proper tags
@@ -731,15 +732,17 @@ class TeacherTestCase(ImprovedTestCase):
         # Study the deck
         response = self.get_response(api_path, api_view, user=student, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 20)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(len(response.data['flashcards']), 20)
+        self.assertEqual(response.data['num_overflow'], 0)
         check_deck_assignment_created()
 
         # Study again (to make sure assm/deck aren't created again)
         response = self.get_response(api_path, api_view, user=student, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 20)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(len(response.data['flashcards']), 20)
+        self.assertEqual(response.data['num_overflow'], 0)
         check_deck_assignment_created()
 
         # Modify the copied deck's SSM and study the other
@@ -756,7 +759,8 @@ class TeacherTestCase(ImprovedTestCase):
 
         response = self.get_response(api_path2, api_view, user=student, kwargs=kwargs2)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(response.data['num_overflow'], 0)
         self.assertEqual(
             AssignmentStudySessionManager.objects.filter(user=student.profile).count(),
             2,
@@ -820,8 +824,9 @@ class TeacherTestCase(ImprovedTestCase):
         )
         response = self.get_response(api_path, api_view, user=student, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(len(response.data), 20)
+        self.assertIsInstance(response.data['flashcards'], list)
+        self.assertEqual(len(response.data['flashcards']), 20)
+        self.assertEqual(response.data['num_overflow'], 0)
         self.assertEqual(
             FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
             FlashCardCreator.objects.filter(deck=student_deck).count(),

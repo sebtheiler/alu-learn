@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { StudyLogicComponent } from '../decks/study/components';
 import { FlashCard, SSMInterface } from '../decks/types';
 import { apiAssignmentDetail, apiSSMDetail, apiStudyAssignment } from '../lookup';
@@ -6,13 +6,24 @@ import { useApiObjectHook } from '../utils';
 import { Assignment } from './types';
 
 
+type SSMFlashcardsReturn = {flashcards: FlashCard[], num_overflow: number};
 export function StudyAssignment({ classroomId, assignmentId }) {
+  const reviewOverflowBucket = useMemo(() => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    return urlParams.get('reviewOverflowBucket') === 'true';
+  }, []);
   const [notFound, setNotFound] = useState(false);
+  const [numOverflow, setNumOverflow] = useState<number | undefined>(undefined);
   const [flashcards, setFlashcards] = useApiObjectHook<FlashCard[]>(
     apiStudyAssignment,
     [200, 404], 8020,
-    [classroomId, assignmentId],
-    (_response, status) => setNotFound(status === 404),
+    [classroomId, assignmentId, reviewOverflowBucket],
+    (response: SSMFlashcardsReturn, status: number) => {
+      setNotFound(status === 404);
+      setNumOverflow(response.num_overflow);
+    },
+    (response: SSMFlashcardsReturn) => response.flashcards,
   );
   const [assignment] = useApiObjectHook<Assignment>(
     apiAssignmentDetail,
@@ -41,6 +52,7 @@ export function StudyAssignment({ classroomId, assignmentId }) {
       flashcards={flashcards}
       setFlashcards={setFlashcards}
       notFound={notFound}
+      numOverflow={numOverflow}
       isAssignment
     />
   </>);

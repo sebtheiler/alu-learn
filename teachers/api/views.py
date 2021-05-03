@@ -569,12 +569,16 @@ def study_assignment_view(request, classroom_id: int, assignment_id: int):
 
     # Get the flashcards
     seen_flashcards, unseen_flashcards = assm.get_flashcards()
-    flashcards = assm.get_reviews(seen_flashcards, unseen_flashcards)
-
-    return Response(
-        FlashCardSerializer(flashcards, many=True).data,
-        status=200,
+    reviews = assm.get_reviews(
+        seen_flashcards,
+        unseen_flashcards,
+        request.GET.get('from_overflow_bucket') == 'true',
     )
+
+    return Response({
+        'flashcards': FlashCardSerializer(reviews['flashcards'], many=True).data,
+        'num_overflow': reviews['num_overflow'],
+    }, status=200)
 
 
 @api_view(['GET'])

@@ -910,9 +910,12 @@ export function apiQuickDeckList(
 export function apiStudyAssignment(
   classroomId: number,
   assignmentId: number,
+  reviewOverflowBucket: boolean,
   callback: (response: FlashCard[], status: number) => void,
 ) {
-  backendLookup('GET', `teachers/classroom/${classroomId}/assignments/${assignmentId}/study/`, callback);
+  let endpoint = `teachers/classroom/${classroomId}/assignments/${assignmentId}/study/`;
+  if (reviewOverflowBucket) endpoint += '?from_overflow_bucket=true';
+  backendLookup('GET', endpoint, callback);
 }
 
 export function apiAssignmentDetail(
