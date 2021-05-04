@@ -2,6 +2,13 @@
 -----
 
 
+## ??? - May ?? - 0.6.4
+
+
+
+* **Fixed Password Reset Case-Sensitivity:** Updated password resets to no longer be case-sensitive when asking for email addresses.
+
+
 ## Overflow Bucket - May 03 - 0.6.3
 This update adds a key new feature: the "Overflow Bucket."
 

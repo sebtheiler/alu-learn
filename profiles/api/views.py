@@ -407,7 +407,7 @@ def change_password(request, *args, **kwargs):
 
         # Get user
         try:
-            profile = Profile.objects.get(user__email=email)
+            profile = Profile.objects.get(user__email__iexact=email)
         except Profile.DoesNotExist:
             return Response({'message': 'Email not found'}, status=404)
 

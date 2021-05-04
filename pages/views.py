@@ -13,9 +13,11 @@ from utils import permissions
 def home_page(request, *args, **kwargs):
     return render(request, 'misc/home.html', context={'username': request.user.username})
 
-@cache_page(timeout=60*60*48) # 2 days - this page will almost never be updated
+
+@cache_page(timeout=60*60*48)  # 2 days - this page will almost never be updated
 def welcome_view(request, *args, **kwargs):
     return render(request, 'help/welcome.html')
+
 
 def md_view_wrapper(path, title, redirect_if_unauth=False):
     @cache_page(timeout=60*60*48)
@@ -40,6 +42,7 @@ def md_view_wrapper(path, title, redirect_if_unauth=False):
 
     return help_view
 
+
 def change_reset_password_view_wrapper(is_reset):
     def change_reset_password_view(request, *args, **kwargs):
         if (is_reset and request.user.is_authenticated) or \
@@ -48,7 +51,9 @@ def change_reset_password_view_wrapper(is_reset):
             return redirect('/confirm-email/')
 
         return render(request, 'misc/settings/change-reset-password.html', context={'is_reset': is_reset})
+
     return change_reset_password_view
+
 
 def confirm_email_view(request, *args, **kwargs):
     if not request.user.is_authenticated or (request.user.is_confirmed and len(request.user.unconfirmed_emails) == 0):
@@ -58,15 +63,18 @@ def confirm_email_view(request, *args, **kwargs):
         'email': request.user.unconfirmed_emails[0] if request.user.unconfirmed_emails else request.user.email
     })
 
+
 def send_password_reset(request, *args, **kwargs):
     if request.user.is_authenticated:
         return redirect('/home/')
 
     return render(request, 'misc/settings/send-password-reset.html')
 
+
 @permissions()
 def profile_redirect_view(request, *args, **kwargs):
     return redirect(f'/profiles/u/{request.user.username}')
+
 
 
 @cache_page(timeout=60*15)
@@ -88,10 +96,12 @@ def contact_view_wrapper(is_legal_issue):
         })
     return contact_us_view
 
+
 def contact_finished_view_wrapper(is_legal_issue):
     def contact_us_finished_view(request, *args, **kwargs):
         return render(request, 'help/contactus.html', context={'is_finished': True, 'is_legal_issue': is_legal_issue})
     return contact_us_finished_view
+
 
 @cache_page(timeout=60*30)
 def landing_page(request, *args, **kwargs):
@@ -105,6 +115,7 @@ def landing_page(request, *args, **kwargs):
         'return_url': return_url if return_url else '',
     }
     return render(request, 'misc/landing.html', context=context)
+
 
 # Explore page
 @cache_page(60*15)
