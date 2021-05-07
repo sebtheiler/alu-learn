@@ -40,7 +40,7 @@ export function NavbarComponent(props) {
         text = 'Congratulations on a month-long streak!';
         break;
       case 42:
-        text = 'The answer to life the universe and everything';
+        text = 'The answer to life, the universe, and everything';
         break;
       case 50:
         text = 'Half-way to 100 days!  Congratulations!';

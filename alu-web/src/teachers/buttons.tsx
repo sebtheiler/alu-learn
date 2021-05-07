@@ -180,7 +180,10 @@ export function CreateEditAssignmentModal(props: CreateEditAssignmentModalProps)
     const unitNum = unitNumMatch[0];
     const tagQueryEl = document.getElementsByName('tagQuery')[0] as HTMLInputElement;
     if (!tagQueryEl || tagQueryEl.value) return;
-    tagQueryEl.value = `unit ${unitNum}`;
+    let value = `unit ${unitNum}`;
+    if (title.toLowerCase().includes('essential'))
+      value += ' AND essential';
+    tagQueryEl.value = value;
   }
 
   const handleDelete = event => {

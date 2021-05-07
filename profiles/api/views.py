@@ -465,10 +465,15 @@ def password_reset_email_api_view(request, email, *args, **kwargs):
     # Send confirmation email
     subject = 'Alu Password Reset'
     message = f"""
-Looks like you forgot your password—don't worry, it happens to all of us.
+Looks like you forgot your password.
 
 Click this link to reset your password: https://www.alulearn.com/reset-password/confirm/?k={unique_id}&email={profile.user.email}
 If this wasn't you, you can safely ignore this email, however, be aware someone may know your email address.
+
+(if you need it, your username is: {request.user.username})
+
+Best,
+Alu
     """
     email_from = settings.EMAIL_HOST_USER
     recipient_list = [profile.user.email]

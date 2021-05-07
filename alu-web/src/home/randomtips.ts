@@ -56,11 +56,9 @@ const randomTips = [
   // Random stuff
   'Hermann Ebbinghaus discovered the forgetting curve, which Alu is based on, in the 1800s',
   'Dr. Piotr Wozniak developed one of the first digital SR apps in the 1990s. His work has made Alu possible.',
-  'The word "flashcard" appears over 2700 times in Alu\'s source code',
-  // 'You got this!',
-  // '42 (forty-two) is the natural number that follows 41 and precedes 43.',
-  // 'Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid of Giza.',
-  // 'Some static you see on TV screens is residual radiation from the big-bang.',
+  'The word "flashcard" appears over 3000 times in Alu\'s source code',
+  'Cleopatra lived closer in time to the Moon landing than to the construction of the Great Pyramid of Giza.',
+  'Some static you see on TV screens is residual radiation from the big-bang.',
 ];
 
 export const randomTip = randomTips[Math.floor(Math.random()*randomTips.length)];

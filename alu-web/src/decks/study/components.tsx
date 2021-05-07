@@ -291,6 +291,7 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
       {finishedStudying ?
         <div className='text-center'>
           <p>Congratulations! You've finished studying these flashcards!</p>
+          <p>Come back tomorrow to continue reviewing flashcards!</p>
           {numOverflow ? <>
             <Button
               onClick={() => window.location.href = updateURLParameter(
