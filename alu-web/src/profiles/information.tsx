@@ -33,6 +33,11 @@ function ProfileInformation(props: ProfileInfoProps) {
     event.preventDefault();
     if (currentVerb !== 'Requested' && currentVerb !== 'Loading...' && !profileLoading) {
       const action = currentVerb === 'Remove Friend' ? 'unfriend' : 'friend';
+
+      const msg = `Are you sure you want to unfriend ${user.username}?`;
+      if (action === 'unfriend' && !window.confirm(msg))
+        return
+
       didFriendToggle(action);
 
       switch (currentVerb) {

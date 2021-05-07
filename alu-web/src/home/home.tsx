@@ -194,7 +194,13 @@ function ClassroomsComponent({ joinClassModalIsOpen, setJoinClassModalIsOpen }) 
 
 function FriendsComponent() {
   const [showFriends, setShowFriends] = useState(false);
-  const [friends] = useApiObjectHook<MinifiedProfile[]>(apiProfileFriends, 200, 3011);
+  const [friends] = useApiObjectHook<MinifiedProfile[]>(
+    apiProfileFriends,
+    200,
+    3011,
+    [], null, null,
+    showFriends,
+  );
 
   return (<>
     <h4>
