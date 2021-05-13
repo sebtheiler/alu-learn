@@ -15,11 +15,14 @@ import { FlashCard, SSMInterface } from '../types';
 
 type SSMFlashcardsReturn = {flashcards: FlashCard[], num_overflow: number};
 export function StudyComponent({ studySessionManagerId }) {
+  // Params
   const reviewOverflowBucket = useMemo(() => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     return urlParams.get('reviewOverflowBucket') === 'true';
   }, []);
+
+  // States
   const [notFound, setNotFound] = useState(false);
   const [numOverflow, setNumOverflow] = useState<number | undefined>(undefined);
   const [flashcards, setFlashcards] = useApiObjectHook<FlashCard[]>(
@@ -36,7 +39,7 @@ export function StudyComponent({ studySessionManagerId }) {
     apiSSMDetail,
     [200, 404], 5000,
     [studySessionManagerId],
-    (_response, status) => setNotFound(status === 404),
+    (_response, status: number) => setNotFound(status === 404),
   );
 
   return (
@@ -58,9 +61,10 @@ interface StudyLogicComponentProps {
   notFound?: boolean;
   isAssignment?: boolean;
   numOverflow?: number;
+  updateReviewInfo?: boolean;
 }
 export function StudyLogicComponent(props: StudyLogicComponentProps) {
-  const { SSM, flashcards, setFlashcards, notFound, isAssignment, numOverflow } = props;
+  const { SSM, flashcards, setFlashcards, notFound, isAssignment, numOverflow, updateReviewInfo=true } = props;
 
   // Track time
   const browserInteractionTime = useMemo(() => {
@@ -152,29 +156,31 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
 
     if (interval !== -1) {
       // Update date in SSM
-      apiSSMFlashcardUpdate(
-        SSM.id,
-        currentCard.id,
-        nextReviewDate.toISOString(),
-        isMinute ? 0 : interval,
-        easeFactor,
-        learningStatus,
-        stepsIndex,
-        leechIndex,
-        isLeech,
-        currentCard.learning_status === 'UNSEEN', // incrementNewCardsDoneToday
-        new Date().getTimezoneOffset(), // timezoneOffset
-        browserInteractionTime.getTimeInMilliseconds(), // timeTaken
-        (response, status) => {
-          if (status === 200) {
-            // setCurrentCardDidSet(true);
-          } else {
-            // Error updating flashcard with information returned from studying
-            errorHandler(response, status, 5002);
-          }
-          browserInteractionTime.reset();
-          browserInteractionTime.startTimer();
-      });
+      if (updateReviewInfo) {
+        apiSSMFlashcardUpdate(
+          SSM.id,
+          currentCard.id,
+          nextReviewDate.toISOString(),
+          isMinute ? 0 : interval,
+          easeFactor,
+          learningStatus,
+          stepsIndex,
+          leechIndex,
+          isLeech,
+          currentCard.learning_status === 'UNSEEN', // incrementNewCardsDoneToday
+          new Date().getTimezoneOffset(), // timezoneOffset
+          browserInteractionTime.getTimeInMilliseconds(), // timeTaken
+          (response, status) => {
+            if (status === 200) {
+              // setCurrentCardDidSet(true);
+            } else {
+              // Error updating flashcard with information returned from studying
+              errorHandler(response, status, 5002);
+            }
+            browserInteractionTime.reset();
+            browserInteractionTime.startTimer();
+        });
+      }
       // Update date locally
       let flashcardsCopy = flashcards;
       const index = flashcardsCopy.map(e => e.id).indexOf(currentCard.id);

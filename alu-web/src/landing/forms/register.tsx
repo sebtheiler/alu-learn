@@ -78,7 +78,8 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
         if (
            birthMonth === 'UNSELECTED' ||
            birthDate === 'UNSELECTED' ||
-           birthYear === 'UNSELECTED') {
+           birthYear === 'UNSELECTED'
+        ) {
             document.getElementById('dateError')!.innerText =
               'You must select your birthdate. Don\'t worry, this isn\'t public.'
           error = true;

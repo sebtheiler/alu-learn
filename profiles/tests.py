@@ -17,8 +17,10 @@ class ProfileTestCase(ImprovedTestCase):
         self.assertEqual(profile_qs.count(), self.num_users)
 
     def test_profile_detail_api(self):
-        response = self.get_response('user1', api_views.profile_detail_api_view,
-            kwargs={'username': 'user1'}
+        response = self.get_response(
+            'user1',
+            api_views.profile_detail_api_view,
+            kwargs={'username': 'user1'},
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['username'], 'user1')
@@ -396,6 +398,7 @@ class ProfileBrowserTestCase(SeleniumTestCase):
             2,
         )
         self.driver.find_element_by_class_name('friend-btn').click()
+        self.driver.switch_to.alert.accept()
         self.sleep(0.5)
         self.assertTextExists('Add Friend')
         self.assertEqual(

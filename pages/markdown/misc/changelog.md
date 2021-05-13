@@ -6,6 +6,7 @@
 
 
 
+* **Added Cram Game:** Added a cramming "game" that allows you to study as many flashcards as you want.  This is intended to help people study outside of normal schedules, especially as we approach the AP Tests.
 * **Fixed Password Reset Case-Sensitivity:** Updated password resets to no longer be case-sensitive when asking for email addresses.
 * **Improved Autocomplete for Assignments:** Improved autocomplete for when teachers are creating assignments.  If the assignment title contains "essential" in it, Alu will now automatically fill the tag query to be: "Unit # AND essential".
 * **Unfriend Confirmation:** Added confirmation before removing a user as a friend, to prevent accidentally unfriending someone.

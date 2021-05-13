@@ -2,10 +2,9 @@ import json
 import random
 import re
 from typing import List
-from utils.utils import get_morning
 
 from django.core.cache import cache
-from django.db.models import Q, F
+from django.db.models import F, Q
 from django.utils import timezone
 from django.views.decorators.cache import cache_control
 from django.views.decorators.vary import vary_on_cookie
@@ -20,6 +19,7 @@ from rest_framework.decorators import (api_view, authentication_classes,
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from utils import get_paginated_queryset_response, weighted_sample
+from utils.utils import get_morning
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
                       DeckThank, FlashCard, FlashCardCreator, FlashCardField,
@@ -1115,7 +1115,9 @@ def game_flashcards_view(request, *args, **kwargs):
     if None in (method_type, deck_id, amount):
         return Response({'message': f'You must specify `type`, `deck_id`, and `amount`: {method_type}, {deck_id}, {amount}'}, status=400)
 
-    query = Q(creator__deck__user=request.user) & ~Q(creator__flashcard_type='cloze')
+    query = Q(creator__deck__user=request.user)
+    if not request.data.get('options').get('include_cloze'):
+        query &= ~Q(creator__flashcard_type='cloze')
 
     # See if the "deck" is actually a CSSM
     try:
@@ -1124,6 +1126,7 @@ def game_flashcards_view(request, *args, **kwargs):
         cssm = None
 
     if cssm:
+        # TODO: turn this into a function on the CSSM class
         query &= FlashCard.search_flashcards(
             request.user,
             cssm.deck_ids,
@@ -1157,7 +1160,8 @@ def game_flashcards_view(request, *args, **kwargs):
 
     # Get `amount` random flashcards from the list
     if method_type == 'PERSONAL':
-        flashcard_weights = [(350 - flashcard.ease)**2 for flashcard in flashcards] # 350 = max ease
+        # 350 = max ease
+        flashcard_weights = [(350 - flashcard.ease)**2 for flashcard in flashcards]
         flashcards = weighted_sample(list(flashcards), flashcard_weights, amount)
     elif request.data.get('random_order'):
         flashcard_ids = flashcards.values_list('id', flat=True)

@@ -2,7 +2,7 @@ import { ManualSRTask } from '../../manual-sr/types';
 import { errorHandler } from '../../utils';
 import { FlashCard, SchedulingAlgorithm, DeckDifficulty } from '../types';
 
-function minutesToDays(minutes) {
+function minutesToDays(minutes: number) {
   return minutes / (60*24);
 }
 
@@ -84,6 +84,24 @@ function generateConfig(
         LAPSES_STEPS: [1440, 4320], // in minutes
         NEW_INTERVAL: 40, // in percent
         MINIMUM_INTERVAL: 2, // in days
+        LEECH_THRESHOLD: 8, // number wrong
+      } as Config;
+    case 'CRAM':
+      // Settings for cramming a deck before a test
+      // Not saved on a deck itself: only used in the "Cram" mode
+      return {
+        // "New Cards" tab
+        NEW_STEPS: [1, 5, 10, 20, 40, 60, 90], // in minutes
+        GRADUATING_INTERVAL: 1, // in days
+        EASY_INTERVAL: 1, // in days
+        // "Reviews" tab
+        EASY_BONUS: 130, // in percent
+        INTERVAL_MODIFIER: INTERVAL_MODIFIER, // in percent
+        MAXIMUM_INTERVAL: 1, // in days
+        // "Lapses" tab
+        LAPSES_STEPS: [10], // in minutes
+        NEW_INTERVAL: 70, // in percent
+        MINIMUM_INTERVAL: 1, // in days
         LEECH_THRESHOLD: 8, // number wrong
       } as Config;
     default:

@@ -45,6 +45,7 @@ export function DeckDefaultButtonGroup(props: DeckDefaultButtonGroupProps) {
         gameOptions += `&size=${form.elements.size.value}`;
         break;
       case 'QUIZ':
+      case 'CRAM':
         gameOptions += `&num=${form.elements.num.value}`;
         break;
       default:
@@ -737,6 +738,7 @@ export function GameModal({ modalIsOpen, closeModal, submitHandler, deck }) {
               <option value='MATCHING'>Matching</option>
               {/* <option value='GRAVITY'>Gravity</option> */}
               <option value='QUIZ'>Quiz</option>
+              <option value='CRAM'>Cram</option>
               {/* <option value='FOREHEAD'>Forehead/Charades</option> */}
             </Form.Control>
           </Form.Group>
@@ -779,6 +781,16 @@ export function GameModal({ modalIsOpen, closeModal, submitHandler, deck }) {
               min={5}
               max={50}
               defaultValue={10}
+            />
+          </Form.Group>}
+          {gameType === 'CRAM' && <Form.Group>
+            <Form.Label>Maximum Number of Flashcards</Form.Label>
+            <Form.Control
+              type='number'
+              name='num'
+              min={10} max={9999}
+              step={10}
+              defaultValue={200}
             />
           </Form.Group>}
           {flashcardType !== 'PERSONAL' && <Form.Group>

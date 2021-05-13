@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { MatchingGame } from './matching';
 import { QuizGame } from './quiz';
+import { CramGame } from './cram';
 import { apiGameFlashcards, gameFlashcardTypes } from '../../lookup/lookup';
 import { errorHandler } from '../../utils';
 import { FlashCard } from '../types';
@@ -17,11 +18,11 @@ export function GameComponent({ deckId }) {
     const size = urlParams.get('size');
     const num = urlParams.get('num');
     return {
-      gameType: urlParams.get('game'),
+      gameType: urlParams.get('game') as 'MATCHING' | 'QUIZ' | 'CRAM',
       flashcardType: urlParams.get('flashcards') as gameFlashcardTypes,
       randomOrder: urlParams.get('random') === 'true',
-      size: size && parseInt(size),
-      num: num && parseInt(num),
+      size: (size && parseInt(size)) as number | undefined,
+      num: (num && parseInt(num)) as number | undefined,
       tag: urlParams.get('tag'),
     };
   }, []);
@@ -41,6 +42,7 @@ Game type unspecified: you must specify "?game=..." in the URL. If this happened
             if (!size) return;
             return size**2 / 2;
           case 'QUIZ':
+          case 'CRAM':
             return num;
           default:
             return 0;
@@ -54,49 +56,60 @@ Failed to calculate required number of flashcards.  You may need "?size=N" or "?
       }
 
       const options = (() => {
-        switch (flashcardType) {
-          case 'TAG':
-            return { tag: tag };
-          default:
-            return {};
+        if (flashcardType === 'TAG') {
+          return { tag: tag }
+        } else if (gameType === 'CRAM') {
+          return { include_cloze: true };
         }
+
+        return {};
       })();
 
       setFlashcardsDidSet(true);
-      apiGameFlashcards(parseInt(deckId), flashcardType, numFlashcards, randomOrder, options, (response, status) => {
-        if (status === 200) {
-          if (response.length < numFlashcards) {
-            setErrorMessage(`
-You don't have enough flashcards to play this game.  You have ${response.length} flashcards, but ${numFlashcards} are required.
-This may be due to the flashcard type requirements you listed: ${flashcardType}
-            `);
+      apiGameFlashcards(
+        parseInt(deckId),
+        flashcardType,
+        numFlashcards,
+        randomOrder,
+        options,
+        (response, status) => {
+          if (status === 200) {
+            if (response.length < numFlashcards && gameType !== 'CRAM') {
+              setErrorMessage(`
+  You don't have enough flashcards to play this game.  You have ${response.length} flashcards, but ${numFlashcards} are required.
+  This may be due to the flashcard type requirements you listed: ${flashcardType}
+              `);
+            }
+            setFlashcards(response);
+          } else {
+            // Error getting flashcards for games
+            errorHandler(response, status, 1027);
           }
-          setFlashcards(response);
-        } else {
-          // Error getting flashcards for games
-          errorHandler(response, status, 1027);
-        }
-      });
+        },
+      );
     }
   }, [flashcardsDidSet, flashcards, deckId, randomOrder, flashcardType, gameType, num, size, tag]);
+
   const game = (() => {
-    if (!flashcards) return <p>Loading...</p>;
+    if (!flashcards) return <p>Loading...</p>
+
     switch (gameType) {
       case 'MATCHING':
         if (!size) return;
         return <MatchingGame flashcards={flashcards} size={size} />
       case 'QUIZ':
         return <QuizGame flashcards={flashcards} numQuestions={num} />
+      case 'CRAM':
+        return <CramGame initialFlashcards={flashcards} />
       default:
-        return <p className='text-center'>Unrecognized Game</p>
+        return <p>Unrecognized Game</p>
     }
   })();
 
   return (
-    <div className='container-fluid w-90 mb-5'>
-      <h1 className='text-center mt-5'>Playing</h1>
-      {errorMessage ? <p className='text-center'>{errorMessage}</p> :
-      (flashcards ? game : <p className='text-center'>Loading...</p>)}
+    <div className='text-center container-fluid w-90 mb-5'>
+      <h1 className='mt-5'>Playing</h1>
+      {errorMessage ? <p>{errorMessage}</p> : game}
     </div>
   );
 }
