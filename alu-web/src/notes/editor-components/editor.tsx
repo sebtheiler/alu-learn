@@ -11,9 +11,10 @@ import { withReact } from 'slate-react';
 import { withHistory } from 'slate-history';
 import { withLinks } from './links';
 import { withImages } from './images';
+import { withShortcuts } from './shortcuts';
 
 export function createFullEditor() {
-  return withImages(withLinks(withHistory(withReact(createEditor()))));
+  return withShortcuts(withImages(withLinks(withHistory(withReact(createEditor())))));
 }
 
 const HOTKEYS = {

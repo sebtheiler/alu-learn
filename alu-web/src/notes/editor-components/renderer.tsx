@@ -9,8 +9,6 @@ export const Element = (props) => {
   const { attributes, children, element, readOnly } = props;
 
   switch (element.type) {
-    case 'block-quote':
-      return <blockquote {...attributes}>{children}</blockquote>
     case 'bulleted-list':
       return <ul {...attributes} style={{ listStylePosition: 'inside' }}>{children}</ul>
     case 'heading-one':
