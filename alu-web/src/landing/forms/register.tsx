@@ -61,8 +61,8 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
         // Check if username and email is available
         const { username_is_available: usernameAvailable, email_is_available: emailAvailable } = response;
         if (!usernameAvailable) {
-          document.getElementById('registerUsernameTakenError')!.innerText =
-            'That username is already taken!'
+          document.getElementById('registerUsernameTakenError')!.innerHTML =
+            'That username is already taken! Click <a href="/reset-password/">here</a> to reset your password.'
           error = true;
         } else {
           document.getElementById('registerUsernameTakenError')!.innerText = '';
@@ -70,6 +70,7 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
         if (!emailAvailable) {
           document.getElementById('registerEmailTakenError')!.innerHTML = 
             'That email is already taken! Click <a href="/reset-password/">here</a> to reset your password.'
+          error = true;
         } else {
           document.getElementById('registerEmailTakenError')!.innerHTML = '';
         }
