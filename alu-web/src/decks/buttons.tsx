@@ -589,6 +589,10 @@ export function DeckForeignUserButtonGroup({ deck, hideCopy=false }) {
       apiSharedDeckClone(deck.id, form.elements.destinationTitle.value, (response, status) => {
         if (status === 200) {
           window.location.href = `/decks/${response.id}/flashcards/`;
+        } else if (response.message === 'You have already cloned this deck') {
+          const errorMsg = document.getElementById('clone-error');
+          if (errorMsg)
+            errorMsg.innerHTML = "You have already cloned this deck.  Please check your <a href='/home/decks/'>decks homepage</a> to see it.";
         } else {
           // Error copying deck
           errorHandler(response, status, 1002)
@@ -612,7 +616,13 @@ export function DeckForeignUserButtonGroup({ deck, hideCopy=false }) {
             <Form onSubmit={handleCopyDeck}>
               <Modal.Body>
                 <Form.Label>Destination</Form.Label>
-                <Form.Control type='text' defaultValue={deck.title} name='destinationTitle' required />
+                <p className='text-danger' id='clone-error' />
+                <Form.Control
+                  type='text'
+                  defaultValue={deck.title}
+                  name='destinationTitle'
+                  required
+                />
               </Modal.Body>
               <Modal.Footer>
                 <Button type='submit' id='copy-deck-submit-btn'>

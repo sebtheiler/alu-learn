@@ -1634,6 +1634,16 @@ class DeckTestCase(ImprovedTestCase):
                 self.assertEqual(review_instance.is_suspended, False)
                 self.assertEqual(review_instance.leech_index, 0)
 
+        # Make sure you can't clone the same deck twice
+        num_decks = Deck.objects.filter(user=self.user).count()
+        response = self.post_response(api_path, api_view, {
+            'destination_deck_title': 'Cloned deck with flashcards',
+        }, kwargs=kwargs)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(Deck.objects.filter(user=self.user).count(), num_decks)
+        self.assertIsInstance(response.data, dict)
+        self.assertEqual(response.data['message'], 'You have already cloned this deck')
+
     def test_shared_deck_edit_api(self):
         deck = self.create_deck('Deck to share and edit')
         shared_deck = deck.create_shared_deck('Shared deck to edit', 'desc')

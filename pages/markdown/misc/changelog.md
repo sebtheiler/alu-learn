@@ -13,6 +13,7 @@
 * **Removed Unnecessary API Request:** Fixed a bug that caused Alu to look for a list of your friends every time you opened the homepage, rather than just when you clicked the friends dropdown.  This will marginally increase loading speeds.
 * **Added Formatting Shortcuts:** When writing flashcards/notes, you can now use shortcuts to automatically format the text.  You can use "*", "-", or "+" to automatically create a bulleted list, "1." to create a numbered list, "$$" to create a math block, and 1-6 "#"s to enter that level of heading.
 * **Fixed Search Button Bug:** Fixed a bug that caused buttons on flashcards that appeared when searching to not appear.
+* **Prevented Multiple Clones of Decks:** You can no longer clone a deck multiple times (the only times people ever did were by accident).
 
 
 ## Overflow Bucket - May 03 - 0.6.3

@@ -23,7 +23,7 @@ from utils.utils import get_morning
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
                       DeckThank, FlashCard, FlashCardCreator, FlashCardField,
-                      SharedDeck, StudySessionManager)
+                      SharedDeck, StudySessionManager, SharedDeckRelation)
 from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
                            DeckThankSerializer, FlashCardCreatorSerializer,
                            FlashCardSerializer, SharedDeckSerializer,
@@ -968,6 +968,13 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
             return Response({'message': 'You are unauthorized to clone this deck'}, status=403)
     except SharedDeck.DoesNotExist:
         return Response({'message': 'Shared deck not found'}, status=404)
+
+    # Check if the user has already cloned this deck
+    if SharedDeckRelation.objects.filter(
+        deck__user=request.user,
+        shared_deck=shared_deck,
+    ).exists():
+        return Response({'message': 'You have already cloned this deck'}, status=400)
 
     deck = shared_deck.clone(
         request.user,
