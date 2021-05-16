@@ -2,6 +2,12 @@
 -----
 
 
+## ??? - May ?? - 0.6.5
+
+
+* **Links in Flashcards Open in New Tabs:** Links in flashcards/notes now open in new tabs.
+
+
 ## Cram - May 16 - 0.6.4
 With the AP tests approaching, I decided it might be nice to have an easy way to "cram" before the tests.  You can access this new "game" (it's only considered a game because I have nothing better to label it as), by going to your decks homepage, then clicking "Other > Games" and changing the game type to "Cram".
 

@@ -46,7 +46,7 @@ export const LinkElement = ({ attributes, children, element }) => {
       placement='top'
       delay={{ show: 20, hide: 550 }}
     >
-      <a {...attributes} href={element.url}>
+      <a {...attributes} href={element.url} target='_blank' rel='noreferrer'>
         {children}
       </a>
     </OverlayTrigger>
