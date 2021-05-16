@@ -6,6 +6,7 @@
 
 
 * **Links in Flashcards Open in New Tabs:** Links in flashcards/notes now open in new tabs.
+* **Fixed Flashcard Buttons Not Appearing in Browse:** Fixed an issue where flashcard edit buttons didn't appear when browsing.  (first there was an issue where buttons incorrectly appeared on shared decks, then there was an issue where they didn't appear when searching, and now there's an issue of them not appearing when browsing - this is the last one, I promise).
 
 
 ## Cram - May 16 - 0.6.4
