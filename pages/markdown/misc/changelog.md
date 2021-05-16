@@ -2,8 +2,14 @@
 -----
 
 
-## ??? - May ?? - 0.6.4
+## Cram - May 16 - 0.6.4
+With the AP tests approaching, I decided it might be nice to have an easy way to "cram" before the tests.  You can access this new "game" (it's only considered a game because I have nothing better to label it as), by going to your decks homepage, then clicking "Other > Games" and changing the game type to "Cram".
 
+
+When cramming, you are shown flashcards as usual, however, the reviews are much shorter in duration (only takes a few minutes instead of multiple days) and they won't affect your regular scheduling.  You can cram flashcards as much as you'd like, without any limits.
+
+
+Note about Alu v0.7: I had originally planned for v0.7 to be a huge rework of studying, but the AP exams are so soon there's no point in adding it now.  What was planned for v0.7 will be moved to v0.8 and I'll implement it over the summer.  The new v0.7, though, will be just as huge a new feature.  Something to do with habits...
 
 
 * **Added Cram Game:** Added a cramming "game" that allows you to study as many flashcards as you want.  This is intended to help people study outside of normal schedules, especially as we approach the AP Tests.
@@ -14,6 +20,7 @@
 * **Added Formatting Shortcuts:** When writing flashcards/notes, you can now use shortcuts to automatically format the text.  You can use "*", "-", or "+" to automatically create a bulleted list, "1." to create a numbered list, "$$" to create a math block, and 1-6 "#"s to enter that level of heading.
 * **Fixed Search Button Bug:** Fixed a bug that caused buttons on flashcards that appeared when searching to not appear.
 * **Prevented Multiple Clones of Decks:** You can no longer clone a deck multiple times (the only times people ever did were by accident).
+* **Fixed Issue With Flashcard Searching Decks:** The links to flashcards' decks when searching were broken.
 
 
 ## Overflow Bucket - May 03 - 0.6.3

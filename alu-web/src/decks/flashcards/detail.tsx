@@ -238,7 +238,7 @@ export function RenderFlashCard(props: FlashCardProps) {
           </p>
           {showParentDeckTitle && has(flashcard, 'parent_deck_title') && 
             <small className='text-secondary'>
-              From <a href={`/decks/${flashcard.parent_deck_id}/`}>
+              From <a href={`/decks/${flashcard.parent_deck_id}/flashcards/`}>
                 "{flashcard.parent_deck_title}"
               </a>
             </small>

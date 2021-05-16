@@ -1,5 +1,5 @@
-import { SharedDeck } from "../decks/types";
-import { ProfileHistory } from "../profiles/types";
+import { SharedDeck } from '../decks/types';
+import { ProfileHistory } from '../profiles/types';
 
 export interface Classroom {
   title: string;

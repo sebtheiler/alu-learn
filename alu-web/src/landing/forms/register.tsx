@@ -93,7 +93,8 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
           form.elements.registerFirstName.value.length > 50 ||
           form.elements.registerLastName.value.length > 50 ||
           ['@','#','$'].some(el => form.elements.registerFirstName.value.includes(el)) ||
-          ['@','#','$'].some(el => form.elements.registerLastName.value.includes(el)))) {
+          ['@','#','$'].some(el => form.elements.registerLastName.value.includes(el)))
+        ) {
             document.getElementById('nameError')!.innerText =
             'Your name must be less than 50 characters and not contain special characters such as @, #, or $.'
             error = true;
@@ -273,7 +274,7 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
           type='text'
           name='registerUsername'
           maxLength={15}
-          style={{textTransform: 'lowercase'}}
+          style={{ textTransform: 'lowercase' }}
           autoComplete='username'
           required
         />
