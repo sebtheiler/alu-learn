@@ -127,9 +127,8 @@ export function NoteEditor(props: NoteEditorProps) {
   }
 
   const renderEditor = () => {
-    if (!note) {
+    if (!note)
       return <p className='text-center'>Loading...</p>
-    }
 
     const editorProps = {
       initialValue: (page as NotePage),
@@ -163,14 +162,13 @@ export function NoteEditor(props: NoteEditorProps) {
     }
   }
 
-  if (!note) {
-    return <>Loading...</>
-  }
+  if (!note)
+    return <p>Loading...</p>
 
   return (
     <div className='container mt-5'>
       {isViewing ? <>
-        <h1>Studying "{note ? (note as Note).title : 'Loading...'}"</h1>
+        <h1>Studying "{note ? note.title : 'Loading...'}"</h1>
         <Button href={`/notes/edit/${noteId}/`} className='mb-3'>
           Edit
         </Button>

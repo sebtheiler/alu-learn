@@ -32,9 +32,8 @@ export function SettingsPage({ username }) {
     );
   }
 
-  if (!profile) {
-    return <p>Loading...</p>;
-  }
+  if (!profile)
+    return <p>Loading...</p>
 
   return (<>
     <h1 className='text-center mt-5'>Settings</h1>

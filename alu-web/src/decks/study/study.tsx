@@ -192,9 +192,8 @@ export function StudyElement(props: StudyElementProps) {
   const interval3 = getAnkiInterval(currentCard, 3, schedulingAlgorithm, deckDifficulty);
   const interval4 = getAnkiInterval(currentCard, 4, schedulingAlgorithm, deckDifficulty);
 
-  if (currentCard === null) {
-    return <>Loading...</>;
-  }
+  if (currentCard === null)
+    return <p className='text-center'>Loading...</p>
 
   return (
     <>

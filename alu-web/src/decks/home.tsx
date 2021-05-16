@@ -12,7 +12,9 @@ import { Deck, CSSM } from './types';
 export function DecksHomeList({ username }) {
   const [decks] = useApiObjectHook<(Deck | CSSM)[]>(apiDeckHome, 200, 1006);
 
-  if (decks === undefined) return <p className='text-center'>Loading...</p>
+  if (decks === undefined)
+    return <p className='text-center'>Loading...</p>
+
   return (<>
     {decks.length > 0 ? <>
       <HomePageCards

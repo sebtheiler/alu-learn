@@ -289,7 +289,10 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
   if (notFound) {
     return <p className='text-center'>Couldn't find this deck</p>
   } else if (!SSM) {
-    return <p className='text-center'>Loading...</p>
+    return (<div className='text-center'>
+      <p>Loading...</p>
+      <p>(if this takes a while, it's because your deck is updating)</p>
+    </div>);
   }
 
   return (
