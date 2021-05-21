@@ -222,7 +222,7 @@ class Deck(models.Model):
 
         return self
 
-    def calc_percent_complete(self, flashcards: QuerySet[FlashCard] = None):
+    def calc_percent_complete(self, flashcards: QuerySet[FlashCard] = None) -> float:
         if flashcards is None:
             flashcards = FlashCard.objects.filter(creator__deck=self)
         else:
@@ -235,7 +235,7 @@ class Deck(models.Model):
         except ZeroDivisionError:
             return 0
 
-    def list_available_updates(self):
+    def list_available_updates(self) -> List[dict]:
         needs_updating = []
         for shared_deck_relation in self.shared_deck_relations.all().prefetch_related('shared_deck'):
             if shared_deck_relation.cloned_at_version < shared_deck_relation.shared_deck.version_number:

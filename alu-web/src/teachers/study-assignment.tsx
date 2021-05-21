@@ -13,31 +13,31 @@ export function StudyAssignment({ classroomId, assignmentId }) {
     const urlParams = new URLSearchParams(queryString);
     return urlParams.get('reviewOverflowBucket') === 'true';
   }, []);
-  const [notFound, setNotFound] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const [numOverflow, setNumOverflow] = useState<number | undefined>(undefined);
   const [flashcards, setFlashcards] = useApiObjectHook<FlashCard[]>(
     apiStudyAssignment,
-    [200, 404], 8020,
+    [200, 400, 404], 8020,
     [classroomId, assignmentId, reviewOverflowBucket],
-    (response: SSMFlashcardsReturn, status: number) => {
-      setNotFound(status === 404);
+    (response: any, status: number) => {
+      setErrorMsg(status !== 200 ? response.message : '');
       setNumOverflow(response.num_overflow);
     },
     (response: SSMFlashcardsReturn) => response.flashcards,
   );
   const [assignment] = useApiObjectHook<Assignment>(
     apiAssignmentDetail,
-    [200, 404], 8019,
+    [200, 400, 404], 8019,
     [classroomId, assignmentId],
-    (_response, status) => setNotFound(status === 404),
+    (response: any, status: number) => setErrorMsg(status !== 200 ? response.message : ''),
     null,
     !!flashcards,
   );
   const [SSM] = useApiObjectHook<SSMInterface>(
     apiSSMDetail,
-    [200, 404], 8021,
+    [200, 400, 404], 8021,
     [assignment?.study_session_manager],
-    (_response, status) => setNotFound(status === 404),
+    (response: any, status: number) => setErrorMsg(status !== 200 ? response.message : ''),
     null,
     !!assignment,
   );
@@ -51,7 +51,7 @@ export function StudyAssignment({ classroomId, assignmentId }) {
       SSM={SSM}
       flashcards={flashcards}
       setFlashcards={setFlashcards}
-      notFound={notFound}
+      errorMsg={errorMsg}
       numOverflow={numOverflow}
       isAssignment
     />

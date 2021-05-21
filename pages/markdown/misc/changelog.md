@@ -2,11 +2,14 @@
 -----
 
 
-## ??? - May ?? - 0.6.5
+## Running Out of Quirky Names - May 21 - 0.6.5
+I'm running out of names for minor updates.
 
 
 * **Links in Flashcards Open in New Tabs:** Links in flashcards/notes now open in new tabs.
 * **Fixed Flashcard Buttons Not Appearing in Browse:** Fixed an issue where flashcard edit buttons didn't appear when browsing.  (first there was an issue where buttons incorrectly appeared on shared decks, then there was an issue where they didn't appear when searching, and now there's an issue of them not appearing when browsing - this is the last one, I promise).
+* **Improved Deck Already Updating Error:** A while ago, I introduced a feature that prevented you from accidentally triggering two updates at once for a deck.  This succesfully prevented quite a few errors, but the error message it produced was quite ugly.  It now produces a much more appealing error, instead of literally crashing.
+* **Fixed Username In Password Reset:**  Fixed an issue where your username didn't properly render in password resets.
 
 
 ## Cram - May 16 - 0.6.4

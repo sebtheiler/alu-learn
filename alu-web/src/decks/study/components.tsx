@@ -23,23 +23,23 @@ export function StudyComponent({ studySessionManagerId }) {
   }, []);
 
   // States
-  const [notFound, setNotFound] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const [numOverflow, setNumOverflow] = useState<number | undefined>(undefined);
   const [flashcards, setFlashcards] = useApiObjectHook<FlashCard[]>(
     apiSSMFlashcards,
-    [200, 404], 5001,
+    [200, 400, 404], 5001,
     [studySessionManagerId, reviewOverflowBucket],
-    (response: SSMFlashcardsReturn, status: number) => {
-      setNotFound(status === 404);
+    (response: any, status: number) => {
+      setErrorMsg(status !== 200 ? response.message : '');
       setNumOverflow(response.num_overflow);
     },
     (response: SSMFlashcardsReturn) => response.flashcards,
   );
   const [SSM] = useApiObjectHook<SSMInterface>(
     apiSSMDetail,
-    [200, 404], 5000,
+    [200, 400, 404], 5000,
     [studySessionManagerId],
-    (_response, status: number) => setNotFound(status === 404),
+    (response: any, status: number) => setErrorMsg(status !== 200 ? response.message : ''),
   );
 
   return (
@@ -48,7 +48,7 @@ export function StudyComponent({ studySessionManagerId }) {
       flashcards={flashcards}
       setFlashcards={setFlashcards}
       numOverflow={numOverflow}
-      notFound={notFound}
+      errorMsg={errorMsg}
     />
   );
 }
@@ -58,13 +58,13 @@ interface StudyLogicComponentProps {
   SSM?: SSMInterface;
   flashcards?: FlashCard[];
   setFlashcards?(newFlashcards: any): void;
-  notFound?: boolean;
+  errorMsg?: string;
   isAssignment?: boolean;
   numOverflow?: number;
   updateReviewInfo?: boolean;
 }
 export function StudyLogicComponent(props: StudyLogicComponentProps) {
-  const { SSM, flashcards, setFlashcards, notFound, isAssignment, numOverflow, updateReviewInfo=true } = props;
+  const { SSM, flashcards, setFlashcards, errorMsg, isAssignment, numOverflow, updateReviewInfo=true } = props;
 
   // Track time
   const browserInteractionTime = useMemo(() => {
@@ -286,8 +286,8 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
     }
   }
   
-  if (notFound) {
-    return <p className='text-center'>Couldn't find this deck</p>
+  if (errorMsg) {
+    return <p className='text-center'>{errorMsg}</p>
   } else if (!SSM) {
     return (<div className='text-center'>
       <p>Loading...</p>

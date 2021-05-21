@@ -556,16 +556,21 @@ def study_assignment_view(request, classroom_id: int, assignment_id: int):
             assignment=assignment,
             user=request.user.profile,
             **defaults
-        )
+        )  # type: AssignmentStudySessionManager
 
     # If there are any updates available, pull them
-    attached_deck = assm.get_attached_deck()  # type: Deck
+    attached_deck = assm.get_attached_deck()
     if attached_deck:
         needs_updating = attached_deck.list_available_updates()
         if len(needs_updating) > 0:
-            for update in needs_updating:
-                classroom_deck = SharedDeck.objects.get(pk=update['id'])
-                attached_deck.pull_updates(classroom_deck)
+            try:
+                for update in needs_updating:
+                    classroom_deck = SharedDeck.objects.get(pk=update['id'])
+                    attached_deck.pull_updates(classroom_deck)
+            except ValueError:
+                return Response({
+                    'message': 'Deck is already updating. Please try again in a few seconds.'
+                }, status=400)
 
     # Get the flashcards
     seen_flashcards, unseen_flashcards = assm.get_flashcards()

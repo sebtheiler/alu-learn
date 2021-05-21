@@ -470,7 +470,7 @@ Looks like you forgot your password.
 Click this link to reset your password: https://www.alulearn.com/reset-password/confirm/?k={unique_id}&email={profile.user.email}
 If this wasn't you, you can safely ignore this email, however, be aware someone may know your email address.
 
-(if you need it, your username is: {request.user.username})
+(if you need it, your username is: {profile.user.username})
 
 Best,
 Alu
