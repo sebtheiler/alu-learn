@@ -71,7 +71,7 @@ int(hexadecimal_string, 16)
 1024: Error pulling deck updates through apiDeckPullUpdates in alu-web/src/decks/update.js
 1025: Error getting list of private decks for searching through apiDeckPrivateList in alu-web/src/flashcards/search.js
 1026: Error getting private decks for CSSM edit modal through apiDeckPrivateList in alu-web/src/decks/buttons.js
-1027: Error getting flashcards for matching game through TODO in alu-web/src/decks/games/matching.js
+1027: Error getting flashcards for games through apiGameFlashcards
 1028: Error getting deck's statistics through apiDeckStatistics
 1029: Error getting decks list for homepage of student through apiDeckPrivateList
 1030: Error exporting deck to JSON through apiDeckJSONExport

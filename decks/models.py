@@ -223,6 +223,7 @@ class Deck(models.Model):
         return self
 
     def calc_percent_complete(self, flashcards: QuerySet[FlashCard] = None) -> float:
+        # TODO: Cache this
         if flashcards is None:
             flashcards = FlashCard.objects.filter(creator__deck=self)
         else:
@@ -940,10 +941,8 @@ class CustomStudySessionManager(StudySessionManager):
     def __str__(self) -> str:
         return f'CSSM: "{self.title}" by @{self.user}'
 
-    def get_flashcards(self) -> Tuple[QuerySet[FlashCard], QuerySet[FlashCard]]:
-        review_cutoff = self.calc_review_cutoff()
-
-        searched_flashcards = FlashCard.search_flashcards(
+    def generate_query(self, review_cutoff: dt.date = None) -> Q:
+        return FlashCard.search_flashcards(
             self.user,
             self.deck_ids,
             self.tags,
@@ -954,7 +953,12 @@ class CustomStudySessionManager(StudySessionManager):
             self.min_ease,
             self.max_ease,
             review_cutoff,
+            return_query_only=True,
         )
+
+    def get_flashcards(self) -> Tuple[QuerySet[FlashCard], QuerySet[FlashCard]]:
+        review_cutoff = self.calc_review_cutoff()
+        searched_flashcards = FlashCard.objects.filter(self.generate_query(review_cutoff))
 
         seen_flashcards = searched_flashcards.filter(~Q(learning_status__iexact='UNSEEN'))
         unseen_flashcards = searched_flashcards.filter(learning_status__iexact='UNSEEN')

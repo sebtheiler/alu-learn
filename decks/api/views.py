@@ -1133,19 +1133,7 @@ def game_flashcards_view(request, *args, **kwargs):
         cssm = None
 
     if cssm:
-        # TODO: turn this into a function on the CSSM class
-        query &= FlashCard.search_flashcards(
-            request.user,
-            cssm.deck_ids,
-            cssm.tags,
-            cssm.contains,
-            False,  # suspended (can't study suspended cards)
-            cssm.leech,
-            None,  # learning status is specified above
-            cssm.min_ease,
-            cssm.max_ease,
-            return_query_only=True,
-        )
+        query &= cssm.generate_query()
     else:
         query &= Q(creator__deck__id=deck_id)
 
@@ -1334,13 +1322,12 @@ def deck_quick_list_view(request, *args, **kwargs):
         creator__deck__in=decks,
     )
 
-    # calc = request.user.profile.settings.user_type != 'TEACHER'
     calc = request.GET.get('calc_percent_complete', False)
     data = [
         {
             'title': deck.title,
             'id': deck.pk,
-            'percent_complete': deck.calc_percent_complete(flashcards) if calc else None,  # TODO: this results in a DB hit `len(decks)` times
+            'percent_complete': deck.calc_percent_complete(flashcards) if calc else None,
         }
         for deck in decks
     ]
