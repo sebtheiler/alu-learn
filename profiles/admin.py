@@ -14,6 +14,11 @@ class ProfileSettingsAdmin(admin.ModelAdmin):
     actions = [new_update]
 
 
+class ProfileAdmin(admin.ModelAdmin):
+    model = Profile
+    search_fields = ('user__username', 'user__first_name', 'user__last_name')
+
+
 class ProfileHistorySegmentAdmin(admin.ModelAdmin):
     model = ProfileHistorySegment
     list_display = ('date', 'profile', 'cards_done', 'formatted_time_spent', 'time_per_card')
@@ -43,7 +48,7 @@ class ProfileHistorySegmentAdmin(admin.ModelAdmin):
         return f'{(seconds / obj.cards_done):.2f} seconds'
 
 
-admin.site.register(Profile)
+admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Notification)
 admin.site.register(ProfileBadge)
 admin.site.register(ProfileHistorySegment, ProfileHistorySegmentAdmin)

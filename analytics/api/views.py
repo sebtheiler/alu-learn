@@ -19,7 +19,7 @@ def get_quick_feedback_question(request, *args, **kwargs):
     # Get all questions the user has not answered before
     possible_questions = QuickFeedback.objects.filter(~Q(
         responses__user__user__pk__contains=request.user.pk,
-    ))
+    ) & Q(disabled=False))
 
     # Helper functions
     def get_previous_history_count(num_days):

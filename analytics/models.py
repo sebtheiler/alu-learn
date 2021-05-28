@@ -42,6 +42,9 @@ class QuickFeedback(models.Model):
     ]
     answer_type = models.CharField(max_length=64, choices=ANSWER_TYPE_CHOICES)
 
+    # Disable the question to stop it from being displayed but preserve the responses
+    disabled = models.BooleanField(default=False)
+
     # Separate with semi-colons: Option A; Option B; Option C
     # "Other" is a special word that allows a textbox
     answer_choices = models.CharField(max_length=512, blank=True)
