@@ -94,6 +94,12 @@ export function DeckDefaultButtonGroup(props: DeckDefaultButtonGroupProps) {
           }
       });
     } else if (deck.serializer_name === 'cssm' && has(deck, 'deck_ids')) {
+      const deckSelectElement = form.elements.deckSelect;
+      const selectedDecks = deckSelectElement ? Array.from(
+        deckSelectElement.querySelectorAll("option:checked"),
+        e => parseInt((e as HTMLOptionElement).value),
+      ) : undefined;
+
       apiSSMEdit(
         deck.id,
         form.elements.title.value,
@@ -102,7 +108,7 @@ export function DeckDefaultButtonGroup(props: DeckDefaultButtonGroupProps) {
         parseInt(form.dailyNewCardLimit.value),
         parseInt(form.dailySeenCardLimit.value),
         parseInt(form.reviewAheadMinutes?.value),
-        deck.deck_ids as string, // TODO: editing `deckIds` is currently disabled, but will be re-added in the future
+        selectedDecks,
         form.elements.tags?.value,
         form.elements.contains?.value,
         form.elements.isLeech?.value !== 'ANY' ? form.elements.isLeech?.value === 'LEECH' : null,

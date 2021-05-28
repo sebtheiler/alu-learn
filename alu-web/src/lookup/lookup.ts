@@ -432,7 +432,7 @@ export function apiSSMEdit(
   dailyNewCardLimit?: number,
   dailySeenCardLimit?: number,
   reviewAheadMinutes?: number,
-  deckIds?: string,
+  deckIds?: number[],
   tags?: string,
   contains?: string,
   leech?: boolean | null,
@@ -464,12 +464,30 @@ export function apiSSMEdit(
 }
 
 // Deletes a study session manager
-export function apiSSMDelete(studySessionmanagerId, callback) {
+export function apiSSMDelete(
+  studySessionmanagerId: number,
+  callback: (reponse: Message, status: number) => void,
+) {
   backendLookup('POST', `decks/ssm/${studySessionmanagerId}/delete/`, callback);
 }
 
 // Creates a study session manager
-export function apiSSMCreate(title, deckIds, tags, contains, leech, learningStatus, minEase, maxEase, callback) {
+export function apiSSMCreate(
+  title: string,
+  deckIds?: number[],
+  tags?: string,
+  contains?: string,
+  leech?: boolean,
+  learningStatus?: LearningStatus,
+  minEase?: number,
+  maxEase?: number,
+  callback?: (reponse: CSSM, status: number) => void,
+) {
+  if (!callback) {
+    console.error('Must provide `callback`');
+    return;
+  }
+
   backendLookup('POST', `decks/ssm/create/`, callback, {
     title: title,
     deck_ids: deckIds,

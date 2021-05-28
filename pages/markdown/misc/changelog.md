@@ -3,6 +3,7 @@
 
 
 * **Fixed Custom Study Editing:** Fixed a bug that prevented Custom Studies from being edited.
+* **Fixed Selected Decks Editing Bug:** Fixed an issue that prevented you from being able to edit which decks were selected on a custom study.
 * **Fixed Flashcard Create Freezing:** Fixed an issue that caused the flashcard create editor to crash if you enabled the freezing of the front/back field.  There's still another issue with when the backside has a bulleted list, but I can't figure that one out at the moment
 
 

@@ -10,7 +10,7 @@ import { errorHandler, useApiObjectHook } from '../../utils';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
-import { Deck, FlashCard } from '../types';
+import { Deck, FlashCard, LearningStatus } from '../types';
 
 // Does some magic with SlateJS that prevents weird errors
 // DO NOT REMOVE
@@ -67,10 +67,12 @@ export function SearchForm(props: SearchFormProps) {
     </Form.Group>
     <hr />
     <Form.Group>
-      <Form.Label htmlFor='tags' as={as}>List of tags to search in (use AND/OR/NOT for advanced searches)</Form.Label>
+      <Form.Label htmlFor='tags' as={as}>
+        List of tags to search in (use AND/OR/NOT for advanced searches)
+      </Form.Label>
       <Form.Control
         type='text'
-        placeholder='Calculus, Integrals, Exponentials, ...'
+        placeholder='unit 3 AND essential'
         name='tags'
         defaultValue={defaultTags}
       />
@@ -231,8 +233,8 @@ export function FlashCardSearchComponent(props) {
           selectedDecks,
           elements.tags.value,
           elements.contains.value,
-          elements.isLeech.value !== 'ANY' ? elements.isLeech.value === 'LEECH' : null,
-          elements.learningStatus.value !== 'ANY' ? elements.learningStatus.value : null,
+          elements.isLeech.value !== 'ANY' ? elements.isLeech.value === 'LEECH' : undefined,
+          elements.learningStatus.value !== 'ANY' ? elements.learningStatus.value as LearningStatus : undefined,
           minEaseValue,
           maxEaseValue,
           (response, status) => {
