@@ -96,16 +96,26 @@ export function FlashCardCreate(props: FlashCardCreateProps) {
         window.history.back();
       } else if (!flashcardNum || flashcardNum === 'None') {
         // Make the textareas empty
-        Transforms.move(backEditor, { edge: 'anchor', distance: 9999999, reverse: true });
-        Transforms.move(backEditor, { edge: 'focus', distance: 9999999, reverse: true });
-        Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999, reverse: true });
-        Transforms.move(frontEditor, { edge: 'focus', distance: 9999999, reverse: true });
-        ReactEditor.focus(frontEditor);
-        if (!freezeFront) setFrontValue(emptyValue);
-        if (!freezeBack) setBackValue(emptyValue);
+        // TODO: Flashcard breaks when bulleted list is selected element when create is pressed
+        // Possible solution:
+        /*
+          Transforms.select(frontEditor, {
+            path: [0, 0],
+            offset: 0,
+          });
+        */
+        if (!freezeFront) {
+          Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999, reverse: true });
+          Transforms.move(frontEditor, { edge: 'focus', distance: 9999999, reverse: true });
+          setFrontValue(emptyValue);
+        }
+        if (!freezeBack) {
+          Transforms.move(backEditor, { edge: 'anchor', distance: 9999999, reverse: true });
+          Transforms.move(backEditor, { edge: 'focus', distance: 9999999, reverse: true });
+          setBackValue(emptyValue);
+        }
         if (!freezeTags) tagsRef.current.value = '';
-        Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999 });
-        Transforms.move(frontEditor, { edge: 'focus', distance: 9999999 });
+
         const flashcardTypeEl = document.getElementById('flashcardType');
         if (flashcardTypeEl) flashcardTypeEl.focus()
 

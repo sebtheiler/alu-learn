@@ -3,6 +3,7 @@
 
 
 * **Fixed Custom Study Editing:** Fixed a bug that prevented Custom Studies from being edited.
+* **Fixed Flashcard Create Freezing:** Fixed an issue that caused the flashcard create editor to crash if you enabled the freezing of the front/back field.  There's still another issue with when the backside has a bulleted list, but I can't figure that one out at the moment
 
 
 ## Running Out of Quirky Names - May 21 - 0.6.5
