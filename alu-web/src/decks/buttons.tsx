@@ -106,7 +106,7 @@ export function DeckDefaultButtonGroup(props: DeckDefaultButtonGroupProps) {
         form.elements.tags?.value,
         form.elements.contains?.value,
         form.elements.isLeech?.value !== 'ANY' ? form.elements.isLeech?.value === 'LEECH' : null,
-        form.elements.learningStatus?.value !== 'ANY' ? form.elements.learningStatus.value : null,
+        form.elements.learningStatus?.value !== 'ANY' ? form.elements.learningStatus?.value : null,
         parseInt(form.elements.minEase?.value),
         parseInt(form.elements.maxEase?.value),
         (response, status) => {

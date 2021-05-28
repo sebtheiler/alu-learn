@@ -2,6 +2,9 @@
 -----
 
 
+* **Fixed Custom Study Editing:** Fixed a bug that prevented Custom Studies from being edited.
+
+
 ## Running Out of Quirky Names - May 21 - 0.6.5
 I'm running out of names for minor updates.
 
