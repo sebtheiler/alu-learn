@@ -1,12 +1,20 @@
 
 -----
+## Deprecated Notes - May 30 - 0.6.6
+In the final minor version of Alu v0.6, I've made the hard decision to deprecate Notes.
 
 
+Notes has been a feature of Alu for quite some time, but it never gained the same sort of traction that Decks did.  As of today, you can no longer create new notes, however, you can still access all existing notes.  Sometime during the summer, all notes will be deleted.
+
+
+The next major release of Alu, v0.7, will introduce an entirely new feature to fill the lacuna: Habits.
+
+
+* **Deprecated Notes:**  Notes has officially been deprecated - you can no longer create any new notes.  Only a handful of people ever used Notes, it's always been riddled with bugs, and it's just no match for a full text editor like Google Docs or Obsidian.  If you currently have any notes, they are still available, but please back them up soon.  Notes will officially be deleted sometime in the summer.
+* **Removed Undo/Redo Buttons:** In the interest of making Alu more slick, I've removed the undo/redo _buttons_ from all rich text editors.  Note that you can obviously still undo and redo with Ctrl+Z and Ctrl+Y, it's only the buttons that are gone.
 * **Fixed Custom Study Editing:** Fixed a bug that prevented Custom Studies from being edited.
 * **Fixed Selected Decks Editing Bug:** Fixed an issue that prevented you from being able to edit which decks were selected on a custom study.
 * **Fixed Flashcard Create Freezing:** Fixed an issue that caused the flashcard create editor to crash if you enabled the freezing of the front/back field.  There's still another issue with when the backside has a bulleted list, but I can't figure that one out at the moment
-* **Removed Undo/Redo Buttons:** In the interest of making Alu more slick, I've removed the undo/redo _buttons_ from all rich text editors.  Note that you can obviously still undo and redo with Ctrl+Z and Ctrl+Y, it's only the buttons that are gone.
-* **Deprecated Notes:**  Notes have officially been deprecated - you can no longer create any new notes.  Only a handful of people ever used notes, they've always been riddled with bugs, and they're just no match for a full text editor like Google Docs or Obsidian.  If you currently have any notes, they are still available, but please back them up soon.  Notes will officially be deleted sometime in the summer.
 
 
 ## Running Out of Quirky Names - May 21 - 0.6.5
