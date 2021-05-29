@@ -20,6 +20,7 @@ urlpatterns = [
     path('', include('teachers.urls')), path('api/teachers/', include('teachers.api.urls')),
     path('profiles/', include('profiles.urls')), path('api/profiles/', include('profiles.api.urls')),
     path('', include('analytics.urls')), path('api/analytics/', include('analytics.api.urls')),
+    path('', include('habits.urls')), path('api/habits/', include('habits.api.urls')),
 ]
 
 if settings.DEBUG:

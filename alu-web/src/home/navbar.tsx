@@ -148,6 +148,10 @@ export function NavbarComponent(props) {
                   <i className='fas fa-window-restore'></i>{' '}
                   Decks
                 </NavDropdown.Item>
+                <NavDropdown.Item href='/home/habits/' id='habits-option'>
+                  <i className='fas fa-seedling'></i>{' '}
+                  Habits
+                </NavDropdown.Item>
                 <NavDropdown.Item href='/home/notes/' id='notes-option'>
                   <i className='fas fa-edit'></i>{' '}
                   Notes
