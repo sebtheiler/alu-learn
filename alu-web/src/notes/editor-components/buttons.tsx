@@ -52,23 +52,6 @@ export function EditorButtons(props: EditorButtonProps) {
 
       <span className='mx-2' />
 
-      <Button
-        variant='light'
-        onClick={() => (editor.undo as (() => void))()}
-        tabIndex={untabbable ? -1 : undefined}
-      >
-        <i className='fas fa-undo' />
-      </Button>
-      <Button
-        variant='light'
-        onClick={() => (editor.redo as (() => void))()}
-        tabIndex={untabbable ? -1 : undefined}
-      >
-        <i className='fas fa-redo' />
-      </Button>
-
-      <span className='mx-2' />
-
       {saveHandler && <Button
         variant='light'
         onClick={saveHandler}

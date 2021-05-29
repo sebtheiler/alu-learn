@@ -1,9 +1,7 @@
 import React from 'react';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { HomePageCards } from '../decks';
 import { apiNoteHome } from '../lookup';
 import { useApiObjectHook } from '../utils';
-import { NoteCreateButton } from './buttons';
 import { Note } from './types';
 
 export function NotesHomeList({ username }) {
@@ -12,9 +10,9 @@ export function NotesHomeList({ username }) {
   return (
     <>
       <div className='text-center my-3'>
-        <ButtonGroup>
-          <NoteCreateButton />
-        </ButtonGroup>
+        <p>Notes are officially deprecated and will be removed sometime over the summer</p>
+        <p>Please backup all current notes into Google Docs before they will be permanently deleted</p>
+        <hr />
       </div>
       {notes && notes.length > 0 ?
         <HomePageCards
