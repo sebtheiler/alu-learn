@@ -16,6 +16,7 @@ import { AutoNote, AutoFlashCard } from './notes/autonote';
 import { ManualSRHome } from './manual-sr';
 import { GameComponent, MatchingGame } from './decks/games';
 import { ClassroomDetail, ClassroomStudentDetail, StudyAssignment } from './teachers';
+import { Habits } from './habits';
 
 const e = React.createElement;
 
@@ -73,6 +74,7 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [ClassroomDetail, 'classroom-detail'],
   [ClassroomStudentDetail, 'classroom-student-detail'],
   [StudyAssignment, 'study-assignment'],
+  [Habits, 'habits-component'],
 ] as ElementRow[]).map(el => renderElement(...el));
 
 // If you want your app to work offline and load faster, you can change
