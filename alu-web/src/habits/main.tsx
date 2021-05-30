@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 // TODO: turn these imports into the direct ones
-import { Card, Col, Container, Form, Row } from 'react-bootstrap';
+import { Alert, Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { Habit, Routine } from './types';
 
 
-const testRoutine = {
+const testRoutines = Array(5).fill({
   title: 'Morning Routine',
   habits: [
     {
@@ -48,14 +48,32 @@ const testRoutine = {
       value: 'POSITIVE',
     },
   ]
-} as Routine;
+}) as Routine[];
 
 
 export default function Habits() {
+  const [selectedRoutine, setSelectedRoutine] = useState(0);
+
   return (<>
     <h1 className='text-center'>Habits</h1>
     <Container>
-      <RenderRoutine routine={testRoutine} />
+      <Row>
+        <Col xs={2}>
+          {testRoutines.map((routine, index) =>
+            <Alert
+              key={index}
+              variant={index === selectedRoutine ? 'success' : 'primary'}
+              onClick={() => setSelectedRoutine(index)}
+              role='button'
+            >
+              {routine.title}
+            </Alert>)
+          }
+        </Col>
+        <Col xs={10} style={{ borderLeft: '1px solid' }}>
+          <RenderRoutine routine={testRoutines[selectedRoutine]} />
+        </Col>
+      </Row>
     </Container>
   </>);
 }

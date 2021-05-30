@@ -1,6 +1,8 @@
+export type HabitValue = 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+
 export interface Habit {
   title: string;
-  value: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+  value: HabitValue;
   cue?: string;
   craving?: string;
   response?: string;
