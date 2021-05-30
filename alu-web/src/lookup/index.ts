@@ -100,6 +100,13 @@ import {
   apiDeckJSONExport,
   apiFeedbackGetQuestion,
   apiFeedbackRespondQuestion,
+  apiRoutineCreate,
+  apiRoutineList,
+  apiRoutineEdit,
+  apiRoutineDelete,
+  apiHabitCreate,
+  apiHabitEdit,
+  apiHabitDelete,
 } from './lookup';
 
 export {
@@ -204,4 +211,11 @@ export {
   apiDeckJSONExport,
   apiFeedbackGetQuestion,
   apiFeedbackRespondQuestion,
+  apiRoutineCreate,
+  apiRoutineList,
+  apiRoutineEdit,
+  apiRoutineDelete,
+  apiHabitCreate,
+  apiHabitEdit,
+  apiHabitDelete,
 }

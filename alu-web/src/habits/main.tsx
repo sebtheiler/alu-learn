@@ -2,78 +2,71 @@ import React, { useMemo, useState } from 'react';
 // TODO: turn these imports into the direct ones
 import { Alert, Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { Habit, Routine } from './types';
-
-
-const testRoutines = Array(5).fill({
-  title: 'Morning Routine',
-  habits: [
-    {
-      title: 'Wake up',
-      value: 'NEUTRAL',
-    },
-    {
-      title: 'Turn on computer',
-      value: 'NEUTRAL',
-    },
-    {
-      title: 'Browse internet',
-      value: 'NEGATIVE',
-    },
-    {
-      title: 'Exercise',
-      value: 'POSITIVE',
-    },
-    {
-      title: 'Eat breakfast',
-      value: 'NEUTRAL',
-    },
-    {
-      title: 'Watch YouTube',
-      value: 'NEGATIVE',
-    },
-    {
-      title: 'Play games',
-      value: 'NEGATIVE',
-    },
-    {
-      title: 'Brush teeth',
-      value: 'NEUTRAL',
-    },
-    {
-      title: 'Do Alu reviews',
-      value: 'POSITIVE',
-    },
-    {
-      title: 'Do homework',
-      value: 'POSITIVE',
-    },
-  ]
-}) as Routine[];
+import { CreateRoutineButton, CreateHabitButton } from './buttons';
+import { useApiObjectHook } from '../utils';
+import { apiRoutineList } from '../lookup';
 
 
 export default function Habits() {
+  const [routines, setRoutines] = useApiObjectHook<Routine[]>(apiRoutineList, [200], 9001);
   const [selectedRoutine, setSelectedRoutine] = useState(0);
+
+  const createRoutineCallback = (routine: Routine) => {
+    if (!routines) return;
+    setRoutines([...routines, routine]);
+    setSelectedRoutine(routines.length - 1);
+  }
+
+  const createHabitCallback = (habit: Habit) => {
+    if (!routines) return;
+    let editedRoutine = routines[selectedRoutine];
+    editedRoutine.habits = [...editedRoutine.habits, habit];
+
+    setRoutines([
+      ...routines.slice(0, selectedRoutine),
+      editedRoutine,
+      ...routines.slice(selectedRoutine + 1),
+    ]);
+  }
+
+  if (!routines) return <p className='text-center'>Loading...</p>
 
   return (<>
     <h1 className='text-center'>Habits</h1>
     <Container>
-      <Row>
-        <Col xs={2}>
-          {testRoutines.map((routine, index) =>
-            <Alert
-              key={index}
-              variant={index === selectedRoutine ? 'success' : 'primary'}
-              onClick={() => setSelectedRoutine(index)}
-              role='button'
-            >
-              {routine.title}
-            </Alert>)
-          }
-        </Col>
-        <Col xs={10} style={{ borderLeft: '1px solid' }}>
-          <RenderRoutine routine={testRoutines[selectedRoutine]} />
-        </Col>
-      </Row>
+      {routines.length === 0 ? <div className='text-center'>
+        <p>You don't have any routines yet</p>
+        <CreateRoutineButton
+          createRoutineCallback={createRoutineCallback}
+        />
+        {/* TODO: tutorial for Habits will go here */}
+      </div> :
+        <Row>
+          <Col xs={2}>
+            <CreateRoutineButton
+              createRoutineCallback={createRoutineCallback}
+              className='w-100 mb-3'
+            />
+            {routines.map((routine, index) =>
+              <Alert
+                key={index}
+                variant={index === selectedRoutine ? 'success' : 'primary'}
+                onClick={() => setSelectedRoutine(index)}
+                role='button'
+                className='text-center'
+              >
+                {routine.title}
+              </Alert>)
+            }
+          </Col>
+          <Col xs={10} style={{ borderLeft: '1px solid' }}>
+            <RenderRoutine
+              routine={routines[selectedRoutine]}
+              createHabitCallback={createHabitCallback}
+            />
+          </Col>
+        </Row>
+      }
     </Container>
   </>);
 }
@@ -81,14 +74,22 @@ export default function Habits() {
 
 interface RenderRoutineProps {
   routine: Routine;
+  createHabitCallback(newHabit: Habit): void;
 }
 function RenderRoutine(props: RenderRoutineProps) {
-  const { routine } = props;
+  const { routine, createHabitCallback } = props;
 
   return (<>
     <h3>{routine.title}</h3>
     <hr />
-    {routine.habits.map((habit, i) => <RenderHabit habit={habit} key={i} />)}
+    {routine.habits.length === 0 &&
+      <p>This routine doesn't have any habits yet</p>
+    }
+    {routine.habits.map((habit, i) =>
+      <RenderHabit habit={habit} key={i} />
+    )}
+    <hr />
+    <CreateHabitButton createHabitCallback={createHabitCallback} routineId={routine.id} />
   </>);
 }
 

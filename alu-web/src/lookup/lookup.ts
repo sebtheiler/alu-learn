@@ -1,5 +1,8 @@
+// TODO: Break this file up into a separate file for each "package"
+// Each file should contain the lookups for just that package
 import { Node } from 'slate';
 import { CSSM, Deck, DeckDifficulty, FlashCard, FlashCardCreator, FlashCardTypes, LearningStatus, SchedulingAlgorithm, SharedDeck, SSMInterface } from '../decks/types';
+import { Routine, Habit, HabitValue } from '../habits/types';
 import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { backendLookup, baseUrl } from './components';
@@ -985,4 +988,94 @@ export function apiFeedbackRespondQuestion(
   backendLookup('POST', `pages/feedback/${quickFeedbackId}/respond/`, callback, {
     response: questionResponse,
   });
+}
+
+// Creates a new routine
+export function apiRoutineCreate(
+  title: string,
+  ordered: boolean,
+  callback: (response: Routine, status: number) => void,
+) {
+  backendLookup('POST', `habits/routines/create/`, callback, {
+    title: title,
+    ordered: ordered,
+  });
+}
+
+// Lists all the user's existing routines
+export function apiRoutineList(callback: (response: Routine[], status: number) => void) {
+  backendLookup('GET', 'habits/routines/', callback);
+}
+
+// Edits a routine
+export function apiRoutineEdit(
+  routineId: number,
+  newTitle: string,
+  newOrdered: boolean,
+  callback: (response: Routine, status: number) => void,
+) {
+  backendLookup('POST', `habits/routines/${routineId}/edit/`, callback, {
+    new_title: newTitle,
+    new_ordered: newOrdered,
+  });
+}
+
+// Deletes a routine
+export function apiRoutineDelete(
+  routineId: number,
+  callback: (response: Message, status: number) => void,
+) {
+  backendLookup('POST', `habits/routines/delete/${routineId}/`, callback, {});
+}
+
+// Creates a new habit
+export function apiHabitCreate(
+  routineId: number,
+  title: string,
+  cue: string,
+  craving: string,
+  response: string,
+  reward: string,
+  value: HabitValue,
+  callback: (response: Habit, status: number) => void,
+) {
+  backendLookup('POST', `habits/routines/${routineId}/habits/create/`, callback, {
+    title: title,
+    cue: cue,
+    craving: craving,
+    response: response,
+    reward: reward,
+    value: value,
+  });
+}
+
+// Edits a habit
+export function apiHabitEdit(
+  routineId: number,
+  habitId: number,
+  newTitle: string | null,
+  newCue: string | null,
+  newCraving: string | null,
+  newResponse: string | null,
+  newReward: string | null,
+  newValue: HabitValue | null,
+  callback: (response: Habit, status: number) => void
+) {
+  backendLookup('POST', `habits/routines/${routineId}/habits/edit/${habitId}/`, callback, {
+    new_title: newTitle,
+    new_cue: newCue,
+    new_craving: newCraving,
+    new_response: newResponse,
+    new_reward: newReward,
+    new_value: newValue,
+  });
+}
+
+// Deletes a habit
+export function apiHabitDelete(
+  routineId: number,
+  habitId: number,
+  callback: (response: Message, status: number) => void,
+) {
+  backendLookup('POST', `habits/routines/${routineId}/habits/delete/${habitId}/`, callback);
 }

@@ -119,6 +119,8 @@ int(hexadecimal_string, 16)
 === Misc ===
 4000: Error submitting feedback through apiFeedbackSubmit in alu-web/src/home/contactus.js
 4001: Invalid scheduling algorithm through generateConfig in alu-web/src/decks/study/algorithm.js
+4002: Error getting quick feedback through apiFeedbackGetQuestion
+4003: Error responding to quick feedback question apiFeedbackRespondQuestion
 
 === Study Session Manager ===
 5000: Error getting SSM through apiSSMDetail in alu-web/src/decks/study/components.js
@@ -173,7 +175,8 @@ int(hexadecimal_string, 16)
 8022: Error getting SSM through apiSSMDetail for editing classroom
 8023: Error editing ASSM through apiSSMEdit
 
-=== Analytics related errors ===
-9000: Error getting quick feedback through apiFeedbackGetQuestion
-9001: Error responding to quick feedback question apiFeedbackRespondQuestion
+=== Habit related errors ===
+9000: Error creating new routine through apiRoutineCreate
+9001: Error getting list of routines through apiRoutineList
+9002: Error creating new habit through apiHabitCreate
 */

@@ -7,10 +7,12 @@ export interface Habit {
   craving?: string;
   response?: string;
   reward?: string;
+  id: number;
 }
 
 export interface Routine {
   title: string;
   habits: Habit[];
   ordered: boolean;
+  id: number;
 }
