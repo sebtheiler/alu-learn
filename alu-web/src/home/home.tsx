@@ -529,7 +529,7 @@ function FeedbackComponent() {
   const [quickFeedback] = useApiObjectHook<QuickFeedback>(
     apiFeedbackGetQuestion,
     200,
-    9000,
+    4002,
     undefined, undefined, undefined,
     attemptQuestion,
   );
@@ -545,7 +545,7 @@ function FeedbackComponent() {
             setFinishedAnswering(true);
           } else {
             // Error responding to quick feedback question
-            errorHandler(response, status, 9001);
+            errorHandler(response, status, 4003);
           }
         });
       }
