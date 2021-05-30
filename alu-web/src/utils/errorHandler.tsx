@@ -179,4 +179,5 @@ int(hexadecimal_string, 16)
 9000: Error creating new routine through apiRoutineCreate
 9001: Error getting list of routines through apiRoutineList
 9002: Error creating new habit through apiHabitCreate
+9003: Error editing habit through apiHabitEdit
 */

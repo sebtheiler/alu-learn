@@ -98,20 +98,5 @@ export function CreateHabitButton(props: CreateHabitButtonProps) {
         </InputGroup.Append>
       </InputGroup>
     </Form>
-    // <Form onSubmit={createHabit}>
-    //   <Form.Group>
-    //     <Form.Label>Habit Name</Form.Label>
-    //     <Form.Control
-    //       type='text'
-    //       placeholder='My Habit'
-    //       name='title'
-    //       maxLength={64}
-    //       required
-    //     />
-    //   </Form.Group>
-    //   <Button type='submit' block>
-    //     Create
-    //   </Button>
-    // </Form>
   );
 }

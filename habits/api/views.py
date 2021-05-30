@@ -96,7 +96,7 @@ def habit_edit(request, routine_id, habit_id, *args, **kwargs):
     """
     Edits a habit - POST
     """
-    habit = Habit.objects.get(pk=routine_id, routine__user=request.user.profile)
+    habit = Habit.objects.get(pk=habit_id, routine__user=request.user.profile)
 
     habit.title = request.data.get('new_title', habit.title)
     habit.cue = request.data.get('new_cue', habit.cue)

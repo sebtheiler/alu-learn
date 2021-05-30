@@ -7,6 +7,9 @@ class Routine(models.Model):
     title = models.CharField(max_length=64)
     ordered = models.BooleanField(default=True)
 
+    def __str__(self) -> str:
+        return self.title
+
 
 class Habit(models.Model):
     title = models.CharField(max_length=64)
@@ -27,3 +30,6 @@ class Habit(models.Model):
         on_delete=models.CASCADE,
         related_name='habits',
     )
+
+    def __str__(self) -> str:
+        return self.title

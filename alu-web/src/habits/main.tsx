@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 // TODO: turn these imports into the direct ones
-import { Alert, Card, Col, Container, Form, Row } from 'react-bootstrap';
-import { Habit, Routine } from './types';
+import { Alert, ButtonGroup, Card, Col, Container, Form, Row, ToggleButton } from 'react-bootstrap';
+import { Habit, HabitValue, Routine } from './types';
 import { CreateRoutineButton, CreateHabitButton } from './buttons';
-import { useApiObjectHook } from '../utils';
-import { apiRoutineList } from '../lookup';
+import { errorHandler, useApiObjectHook } from '../utils';
+import { apiHabitEdit, apiRoutineList } from '../lookup';
 
 
 export default function Habits() {
@@ -21,6 +21,22 @@ export default function Habits() {
     if (!routines) return;
     let editedRoutine = routines[selectedRoutine];
     editedRoutine.habits = [...editedRoutine.habits, habit];
+
+    setRoutines([
+      ...routines.slice(0, selectedRoutine),
+      editedRoutine,
+      ...routines.slice(selectedRoutine + 1),
+    ]);
+  }
+
+  const editHabitCallback = (habit: Habit) => {
+    if (!routines) return;
+    // TODO: there's probably a better way to do this
+    const indexOfHabit = routines[selectedRoutine].habits.map(
+      habit => habit.id
+    ).indexOf(habit.id);
+    let editedRoutine = routines[selectedRoutine];
+    editedRoutine.habits[indexOfHabit] = habit;
 
     setRoutines([
       ...routines.slice(0, selectedRoutine),
@@ -63,6 +79,7 @@ export default function Habits() {
             <RenderRoutine
               routine={routines[selectedRoutine]}
               createHabitCallback={createHabitCallback}
+              editHabitCallback={editHabitCallback}
             />
           </Col>
         </Row>
@@ -74,30 +91,48 @@ export default function Habits() {
 
 interface RenderRoutineProps {
   routine: Routine;
-  createHabitCallback(newHabit: Habit): void;
+  createHabitCallback(habit: Habit): void;
+  editHabitCallback(habit: Habit): void;
 }
 function RenderRoutine(props: RenderRoutineProps) {
-  const { routine, createHabitCallback } = props;
+  const { routine, createHabitCallback, editHabitCallback  } = props;
 
   return (<>
     <h3>{routine.title}</h3>
     <hr />
-    {routine.habits.length === 0 &&
+    {routine.habits.length === 0 ?
       <p>This routine doesn't have any habits yet</p>
-    }
-    {routine.habits.map((habit, i) =>
-      <RenderHabit habit={habit} key={i} />
+    : routine.habits.map((habit, i) =>
+      <RenderHabit
+        habit={habit}
+        routineId={routine.id}
+        editHabitCallback={editHabitCallback}
+        key={i}
+      />
     )}
     <hr />
-    <CreateHabitButton createHabitCallback={createHabitCallback} routineId={routine.id} />
+    <CreateHabitButton
+      createHabitCallback={createHabitCallback}
+      routineId={routine.id}
+    />
   </>);
 }
 
+interface EditHabitOptions {
+  title?: string;
+  cue?: string;
+  craving?: string;
+  response?: string;
+  reward?: string;
+  value?: HabitValue;
+}
 interface RenderHabitProps {
   habit: Habit;
+  routineId: number,
+  editHabitCallback(habit: Habit): void,
 }
 function RenderHabit(props: RenderHabitProps) {
-  const { habit } = props;
+  const { habit, routineId, editHabitCallback } = props;
   const [showBody, setShowBody] = useState(false);
   const color = useMemo(() => {
     switch (habit.value) {
@@ -109,6 +144,16 @@ function RenderHabit(props: RenderHabitProps) {
         return 'primary';
     }
   }, [habit]);
+
+  const editHabit = (options: EditHabitOptions) => {
+    apiHabitEdit(routineId, habit.id, options.title, options.cue, options.craving, options.response, options.reward, options.value, (response, status) => {
+      if (status === 200) {
+        editHabitCallback(response);
+      } else {
+        errorHandler(response, status, 9003);
+      }
+    });
+  }
 
   return (<>
     <Card
@@ -123,30 +168,74 @@ function RenderHabit(props: RenderHabitProps) {
         {habit.title}
       </Card.Header>
       {showBody && <Card.Body>
-        <Card.Text>
-          <Row>
-            <Col>
-              <Form.Label>Cue</Form.Label>
-              <Form.Control
-              />
-            </Col>
-            <Col>
-              <Form.Label>Craving</Form.Label>
-              <Form.Control
-              />
-            </Col>
-            <Col>
-              <Form.Label>Response</Form.Label>
-              <Form.Control
-              />
-            </Col>
-            <Col>
-              <Form.Label>Reward</Form.Label>
-              <Form.Control
-              />
-            </Col>
-          </Row>
-        </Card.Text>
+        <Row>
+          <Col>
+            <Form.Label>Cue</Form.Label>
+            <Form.Control
+              type='text'
+              name='cue'
+              maxLength={128}
+              required
+              defaultValue={habit.cue}
+              onBlur={e => editHabit({ cue: e.target.value })}
+            />
+          </Col>
+          <Col>
+            <Form.Label>Craving</Form.Label>
+            <Form.Control
+              type='text'
+              name='craving'
+              maxLength={128}
+              required
+              defaultValue={habit.craving}
+              onBlur={e => editHabit({ craving: e.target.value })}
+            />
+          </Col>
+          <Col>
+            <Form.Label>Response</Form.Label>
+            <Form.Control
+              type='text'
+              name='response'
+              maxLength={128}
+              required
+              defaultValue={habit.response}
+              onBlur={e => editHabit({ response: e.target.value })}
+            />
+          </Col>
+          <Col>
+            <Form.Label>Reward</Form.Label>
+            <Form.Control
+              type='text'
+              name='reward'
+              maxLength={128}
+              required
+              defaultValue={habit.reward}
+              onBlur={e => editHabit({ reward: e.target.value })}
+            />
+          </Col>
+        </Row>
+        <hr />
+        <Row>
+          <Col>
+            <Form.Label>Value</Form.Label>
+            <br />
+            <ButtonGroup toggle>
+              {['POSITIVE', 'NEUTRAL', 'NEGATIVE'].map((value, i) => (
+                <ToggleButton
+                  key={i}
+                  type='radio'
+                  variant={['success', 'primary', 'danger'][i]}
+                  name='radio'
+                  value={value}
+                  checked={habit.value === value}
+                  onChange={(e) => editHabit({ value: e.currentTarget.value as HabitValue })}
+                >
+                  {value[0] + value.slice(1).toLowerCase()}
+                </ToggleButton>
+              ))}
+            </ButtonGroup>
+          </Col>
+        </Row>
       </Card.Body>}
     </Card>
   </>);

@@ -1053,12 +1053,12 @@ export function apiHabitCreate(
 export function apiHabitEdit(
   routineId: number,
   habitId: number,
-  newTitle: string | null,
-  newCue: string | null,
-  newCraving: string | null,
-  newResponse: string | null,
-  newReward: string | null,
-  newValue: HabitValue | null,
+  newTitle: string | undefined,
+  newCue: string | undefined,
+  newCraving: string | undefined,
+  newResponse: string | undefined,
+  newReward: string | undefined,
+  newValue: HabitValue | undefined,
   callback: (response: Habit, status: number) => void
 ) {
   backendLookup('POST', `habits/routines/${routineId}/habits/edit/${habitId}/`, callback, {
