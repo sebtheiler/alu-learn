@@ -47,8 +47,8 @@ def routine_edit(request, routine_id, *args, **kwargs):
     Edits a routine - POST
     """
     routine = Routine.objects.get(pk=routine_id, user=request.user.profile)
-    routine.title = request.data.get('new_title', routine.title)
-    routine.ordered = request.data.get('new_ordered', routine.ordered)
+    routine.title = request.data.get('new_title') or routine.title
+    routine.ordered = request.data.get('new_ordered') or routine.ordered
     routine.save()
 
     return Response(RoutineSerializer(routine).data, status=200)

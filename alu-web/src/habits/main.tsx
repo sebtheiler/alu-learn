@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 // TODO: turn these imports into the direct ones
-import { Alert, ButtonGroup, Card, Col, Container, Form, Row, ToggleButton } from 'react-bootstrap';
+import { Alert, Button, ButtonGroup, Card, Col, Container, Form, Row, ToggleButton } from 'react-bootstrap';
 import { Habit, HabitValue, Routine } from './types';
-import { CreateRoutineButton, CreateHabitButton } from './buttons';
+import { CreateRoutineButton, CreateHabitButton, DeleteHabitButton } from './buttons';
 import { errorHandler, useApiObjectHook } from '../utils';
-import { apiHabitEdit, apiRoutineEdit, apiRoutineList } from '../lookup';
+import { apiHabitEdit, apiRoutineDelete, apiRoutineEdit, apiRoutineList } from '../lookup';
 import './main.css';
 
 
@@ -15,7 +15,7 @@ export default function Habits() {
   const createRoutineCallback = (routine: Routine) => {
     if (!routines) return;
     setRoutines([...routines, routine]);
-    setSelectedRoutine(routines.length - 1);
+    setSelectedRoutine(routines.length);
   }
 
   const editRoutineCallback = (routine: Routine) => {
@@ -55,6 +55,28 @@ export default function Habits() {
     ]);
   }
 
+  const deleteRoutineCallback = (routineId: number) => {
+    if (!routines) return;
+    const newRoutines = routines.filter(routine => routine.id !== routineId);
+    setSelectedRoutine(Math.min(selectedRoutine, newRoutines.length - 1));
+    setRoutines(newRoutines);
+  }
+
+  const deleteHabitCallback = (habitId: number) => {
+    if (!routines) return;
+    const indexOfHabit = routines[selectedRoutine].habits.map(
+      habit => habitId
+    ).indexOf(habitId);
+    let editedRoutine = routines[selectedRoutine];
+    editedRoutine.habits.splice(indexOfHabit, 1);
+
+    setRoutines([
+      ...routines.slice(0, selectedRoutine),
+      editedRoutine,
+      ...routines.slice(selectedRoutine + 1),
+    ]);
+  }
+
   if (!routines) return <p className='text-center'>Loading...</p>
 
   return (<>
@@ -86,12 +108,14 @@ export default function Habits() {
             }
           </Col>
           <Col xs={10} style={{ borderLeft: '1px solid' }}>
-            <RenderRoutine
+            {routines[selectedRoutine] && <RenderRoutine
               routine={routines[selectedRoutine]}
               createHabitCallback={createHabitCallback}
               editHabitCallback={editHabitCallback}
               editRoutineCallback={editRoutineCallback}
-            />
+              deleteRoutineCallback={deleteRoutineCallback}
+              deleteHabitCallback={deleteHabitCallback}
+            />}
           </Col>
         </Row>
       }
@@ -109,9 +133,11 @@ interface RenderRoutineProps {
   createHabitCallback(habit: Habit): void;
   editHabitCallback(habit: Habit): void;
   editRoutineCallback(routine: Routine): void;
+  deleteRoutineCallback(routineId: number): void;
+  deleteHabitCallback(habitId: number): void;
 }
 function RenderRoutine(props: RenderRoutineProps) {
-  const { routine, createHabitCallback, editHabitCallback, editRoutineCallback  } = props;
+  const { routine, createHabitCallback, editHabitCallback, editRoutineCallback, deleteHabitCallback, deleteRoutineCallback } = props;
 
   const editRoutine = (options: EditRoutineOptions) => {
     apiRoutineEdit(routine.id, options.title, options.ordered, (response, status) => {
@@ -120,16 +146,39 @@ function RenderRoutine(props: RenderRoutineProps) {
       } else {
         errorHandler(response, status, 9004);
       }
+    });
+  }
+
+  const deleteRoutine = event => {
+    event.preventDefault();
+    if (window.prompt('Are you sure you want to delete this routine?  This action is permanent and irreversible.  Please type "DELETE" if you want to proceed.') !== 'DELETE')
+      return;
+
+    apiRoutineDelete(routine.id, (response, status) => {
+      if (status === 200) {
+        deleteRoutineCallback(routine.id);
+      } else {
+        errorHandler(response, status, 9006);
+      }
     })
   }
 
   return (<>
-    <h3
-      role='button'
-      className='underline-on-hover'
-      onClick={() => editRoutine({ title: window.prompt(`Renaming Routing ${routine.title}`) })}
-    >
-      {routine.title}
+    <h3>
+      <span
+        role='button'
+        className='underline-on-hover'
+        onClick={() => editRoutine({ title: window.prompt(`Renaming Routing ${routine.title}`) })}
+      >
+        {routine.title}
+      </span>
+      <Button
+        className='float-right'
+        variant='danger'
+        onClick={deleteRoutine}
+      >
+        Delete Routine
+      </Button>
     </h3>
     <hr />
     {routine.habits.length === 0 ?
@@ -139,6 +188,7 @@ function RenderRoutine(props: RenderRoutineProps) {
         habit={habit}
         routineId={routine.id}
         editHabitCallback={editHabitCallback}
+        deleteHabitCallback={deleteHabitCallback}
         key={`${routine.id}-${i}`}
       />
     )}
@@ -160,11 +210,12 @@ interface EditHabitOptions {
 }
 interface RenderHabitProps {
   habit: Habit;
-  routineId: number,
-  editHabitCallback(habit: Habit): void,
+  routineId: number;
+  editHabitCallback(habit: Habit): void;
+  deleteHabitCallback(habitId: number): void;
 }
 function RenderHabit(props: RenderHabitProps) {
-  const { habit, routineId, editHabitCallback } = props;
+  const { habit, routineId, editHabitCallback, deleteHabitCallback } = props;
   const [showBody, setShowBody] = useState(false);
   const color = useMemo(() => {
     switch (habit.value) {
@@ -274,6 +325,16 @@ function RenderHabit(props: RenderHabitProps) {
                 </ToggleButton>
               ))}
             </ButtonGroup>
+          </Col>
+        </Row>
+        <hr />
+        <Row>
+          <Col>
+            <DeleteHabitButton
+              routineId={routineId}
+              habitId={habit.id}
+              deleteHabitCallback={deleteHabitCallback}
+            />
           </Col>
         </Row>
       </Card.Body>}

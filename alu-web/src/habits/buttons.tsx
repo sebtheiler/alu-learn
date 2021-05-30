@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, FormControl, InputGroup, Modal } from 'react-bootstrap';
-import { apiHabitCreate, apiRoutineCreate } from '../lookup';
+import { apiHabitCreate, apiHabitDelete, apiRoutineCreate } from '../lookup';
 import { errorHandler } from '../utils';
 import { Routine, Habit } from './types';
 
@@ -45,10 +45,11 @@ export function CreateRoutineButton(props: CreateRoutineButtonProps) {
             <Form.Label>Routine Name</Form.Label>
             <Form.Control
               type='text'
-              placeholder='My routine'
+              placeholder='My Routine'
               name='title'
               maxLength={64}
               required
+              autoFocus
             />
           </Form.Group>
         </Modal.Body>
@@ -98,5 +99,37 @@ export function CreateHabitButton(props: CreateHabitButtonProps) {
         </InputGroup.Append>
       </InputGroup>
     </Form>
+  );
+}
+
+
+interface DeleteHabitButtonProps {
+  routineId: number;
+  habitId: number;
+  deleteHabitCallback(habitId: number): void;
+}
+export function DeleteHabitButton(props: DeleteHabitButtonProps) {
+  const { routineId, habitId, deleteHabitCallback } = props;
+
+  const deleteHabit = event => {
+    event.preventDefault();
+    if (!window.confirm('Are you sure you want to delete this habit?')) return;
+    apiHabitDelete(routineId, habitId, (response, status) => {
+      if (status === 200) {
+        deleteHabitCallback(habitId);
+      } else {
+        errorHandler(response, status, 9005);
+      }
+    })
+  }
+
+  return (
+    <Button
+      variant='danger'
+      className='float-right'
+      onClick={deleteHabit}
+    >
+      Delete
+    </Button>
   );
 }
