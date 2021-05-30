@@ -98,12 +98,16 @@ def habit_edit(request, routine_id, habit_id, *args, **kwargs):
     """
     habit = Habit.objects.get(pk=habit_id, routine__user=request.user.profile)
 
-    habit.title = request.data.get('new_title', habit.title)
-    habit.cue = request.data.get('new_cue', habit.cue)
-    habit.craving = request.data.get('new_craving', habit.craving)
-    habit.response = request.data.get('new_response', habit.response)
-    habit.reward = request.data.get('new_reward', habit.reward)
-    habit.value = request.data.get('new_value', habit.value)
+    title = request.data.get('new_title')
+    if title and len(title) == 0:
+        title = None
+
+    habit.title = title or habit.title
+    habit.cue = request.data.get('new_cue') or habit.cue
+    habit.craving = request.data.get('new_craving') or habit.craving
+    habit.response = request.data.get('new_response') or habit.response
+    habit.reward = request.data.get('new_reward') or habit.reward
+    habit.value = request.data.get('new_value') or habit.value
     habit.save()
 
     return Response(HabitSerializer(habit).data, status=200)

@@ -4,7 +4,8 @@ import { Alert, ButtonGroup, Card, Col, Container, Form, Row, ToggleButton } fro
 import { Habit, HabitValue, Routine } from './types';
 import { CreateRoutineButton, CreateHabitButton } from './buttons';
 import { errorHandler, useApiObjectHook } from '../utils';
-import { apiHabitEdit, apiRoutineList } from '../lookup';
+import { apiHabitEdit, apiRoutineEdit, apiRoutineList } from '../lookup';
+import './main.css';
 
 
 export default function Habits() {
@@ -15,6 +16,15 @@ export default function Habits() {
     if (!routines) return;
     setRoutines([...routines, routine]);
     setSelectedRoutine(routines.length - 1);
+  }
+
+  const editRoutineCallback = (routine: Routine) => {
+    if (!routines) return;
+    setRoutines([
+      ...routines.slice(0, selectedRoutine),
+      routine,
+      ...routines.slice(selectedRoutine + 1),
+    ]);
   }
 
   const createHabitCallback = (habit: Habit) => {
@@ -80,6 +90,7 @@ export default function Habits() {
               routine={routines[selectedRoutine]}
               createHabitCallback={createHabitCallback}
               editHabitCallback={editHabitCallback}
+              editRoutineCallback={editRoutineCallback}
             />
           </Col>
         </Row>
@@ -89,16 +100,37 @@ export default function Habits() {
 }
 
 
+interface EditRoutineOptions {
+  title?: string | null;
+  ordered?: boolean;
+}
 interface RenderRoutineProps {
   routine: Routine;
   createHabitCallback(habit: Habit): void;
   editHabitCallback(habit: Habit): void;
+  editRoutineCallback(routine: Routine): void;
 }
 function RenderRoutine(props: RenderRoutineProps) {
-  const { routine, createHabitCallback, editHabitCallback  } = props;
+  const { routine, createHabitCallback, editHabitCallback, editRoutineCallback  } = props;
+
+  const editRoutine = (options: EditRoutineOptions) => {
+    apiRoutineEdit(routine.id, options.title, options.ordered, (response, status) => {
+      if (status === 200) {
+        editRoutineCallback(response);
+      } else {
+        errorHandler(response, status, 9004);
+      }
+    })
+  }
 
   return (<>
-    <h3>{routine.title}</h3>
+    <h3
+      role='button'
+      className='underline-on-hover'
+      onClick={() => editRoutine({ title: window.prompt(`Renaming Routing ${routine.title}`) })}
+    >
+      {routine.title}
+    </h3>
     <hr />
     {routine.habits.length === 0 ?
       <p>This routine doesn't have any habits yet</p>
@@ -107,7 +139,7 @@ function RenderRoutine(props: RenderRoutineProps) {
         habit={habit}
         routineId={routine.id}
         editHabitCallback={editHabitCallback}
-        key={i}
+        key={`${routine.id}-${i}`}
       />
     )}
     <hr />
@@ -119,7 +151,7 @@ function RenderRoutine(props: RenderRoutineProps) {
 }
 
 interface EditHabitOptions {
-  title?: string;
+  title?: string | null;
   cue?: string;
   craving?: string;
   response?: string;
@@ -162,10 +194,18 @@ function RenderHabit(props: RenderHabitProps) {
       className='mb-2'
     >
       <Card.Header
-        onClick={() => setShowBody(!showBody)}
+        // The weird check in here is to prevent clicking on the title
+        // to rename the Habit from expanding the body
+        onClick={e => {if (e.target === e.currentTarget) setShowBody(!showBody)}}
         role='button'
       >
-        {habit.title}
+        <span
+          role='button'
+          onClick={() => editHabit({ title: window.prompt(`Renaming Habit "${habit.title}"`) })}
+          className='underline-on-hover'
+        >
+          {habit.title}
+        </span>
       </Card.Header>
       {showBody && <Card.Body>
         <Row>

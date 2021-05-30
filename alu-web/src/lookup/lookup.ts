@@ -1010,11 +1010,11 @@ export function apiRoutineList(callback: (response: Routine[], status: number) =
 // Edits a routine
 export function apiRoutineEdit(
   routineId: number,
-  newTitle: string,
-  newOrdered: boolean,
+  newTitle: string | undefined | null,
+  newOrdered: boolean | undefined | null,
   callback: (response: Routine, status: number) => void,
 ) {
-  backendLookup('POST', `habits/routines/${routineId}/edit/`, callback, {
+  backendLookup('POST', `habits/routines/edit/${routineId}/`, callback, {
     new_title: newTitle,
     new_ordered: newOrdered,
   });
@@ -1053,7 +1053,7 @@ export function apiHabitCreate(
 export function apiHabitEdit(
   routineId: number,
   habitId: number,
-  newTitle: string | undefined,
+  newTitle: string | undefined | null,
   newCue: string | undefined,
   newCraving: string | undefined,
   newResponse: string | undefined,
