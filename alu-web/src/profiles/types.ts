@@ -20,10 +20,10 @@ export interface Profile extends MinifiedProfile {
 }
 
 export interface Settings {
-  disable_all_tooltips: boolean;
   send_reminders: boolean;
   user_type: 'STUDENT' | 'TEACHER';
   ideal_time_per_day: 'MAX' | '20' | '15' | '10' | '5';
+  is_opted_dev: boolean;
   id: number;
 }
 

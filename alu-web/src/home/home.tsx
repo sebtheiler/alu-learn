@@ -50,14 +50,14 @@ export function HomeComponent({ username }) {
               </a>
             </h4>
           </li>
-          <li>
+          {profile && profile.settings.is_opted_dev && <li>
             <h4>
               <a href='/home/habits/' id='decks-link'>
                 <i className='fas fa-seedling'></i>{' '}
                 Habits (NEW!)
               </a>
             </h4>
-          </li>
+          </li>}
           <li>
             <h4>
               <a href='/home/notes/' id='notes-link'>

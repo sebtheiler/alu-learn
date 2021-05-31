@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework import serializers
 
 from .models import Profile, Notification, ProfileBadge, ProfileHistorySegment, ProfileSettings
@@ -8,10 +7,10 @@ class ProfileSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileSettings
         fields = [
-            'disable_all_tooltips',
             'send_reminders',
             'user_type',
             'ideal_time_per_day',
+            'is_opted_dev',
             'id',
         ]
 
@@ -75,16 +74,16 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
     def get_first_name(self, obj):
         return obj.user.first_name
-    
+
     def get_last_name(self, obj):
         return obj.user.last_name
-    
+
     def get_username(self, obj):
         return obj.user.username
-    
+
     def get_friend_count(self, obj):
         return obj.user.friends.count()
-    
+
     def get_email(self, obj):
         return obj.user.email
 
@@ -102,13 +101,13 @@ class MinifiedProfileSerializer(serializers.ModelSerializer):
             'username',
             'id',
         ]
-    
+
     def get_first_name(self, obj):
         if isinstance(obj, Profile):
             return obj.user.first_name
         else:
             return obj.first_name
-    
+
     def get_last_name(self, obj):
         if isinstance(obj, Profile):
             return obj.user.last_name
@@ -136,7 +135,7 @@ class NotificationSerializer(serializers.ModelSerializer):
             'timestamp',
             'id',
         ]
-    
+
     def get_username(self, obj):
         return obj.profile.user.username
 

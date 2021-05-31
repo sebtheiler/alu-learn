@@ -62,17 +62,18 @@ def update_settings_api_view(request, *args, **kwargs):
     if settings is None:
         return Response({'message': 'You must specify the settings'}, status=400)
 
-    # request.user.profile.settings.disable_all_tooltips = \
-    #     settings.get('disable_all_tooltips', request.user.profile.settings.disable_all_tooltips)
     request.user.profile.settings.user_type = \
         settings.get('user_type', request.user.profile.settings.user_type)
     request.user.profile.settings.ideal_time_per_day = \
         settings.get('ideal_time_per_day', request.user.profile.settings.ideal_time_per_day)
     request.user.profile.settings.send_reminders = \
         settings.get('send_reminders', request.user.profile.settings.send_reminders)
+    request.user.profile.settings.is_opted_dev = \
+        settings.get('is_opted_dev', request.user.profile.settings.is_opted_dev)
 
     request.user.profile.settings.save()
     return Response({'message': 'Updated account settings'}, status=200)
+
 
 # Explore views
 with open('editor_deck_ids.json', 'r') as f:
@@ -81,6 +82,7 @@ with open('editor_deck_ids.json', 'r') as f:
 with open('top_deck_ids.json', 'r') as f:
     TOP_DECK_IDS = json.loads(f.read())
 
+
 def get_decks_from_ids(id_list, public_only=False):
     query = Q(pk__in=id_list)
     if public_only:
@@ -88,6 +90,7 @@ def get_decks_from_ids(id_list, public_only=False):
 
     decks_qs = SharedDeck.objects.filter(query)
     return SharedDeckSerializer(decks_qs, many=True).data
+
 
 @cache_page(60*15)
 @api_view(['GET'])
@@ -98,7 +101,7 @@ def api_explore_lists_view(request, *args, **kwargs):
     data = {
         'EDITOR': get_decks_from_ids(EDITOR_PICKS_DECK_IDS, public_only=True),
         'TOP': get_decks_from_ids(TOP_DECK_IDS, public_only=True),
-        'HOT': [], #get_decks_from_ids(HOT_DECK_IDS, public_only=True),
+        'HOT': [],  # get_decks_from_ids(HOT_DECK_IDS, public_only=True),
     }
 
     return Response(data, status=200)

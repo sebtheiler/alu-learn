@@ -17,7 +17,11 @@ class Profile(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     friends = models.ManyToManyField(User, related_name='friends', blank=True)
-    pending_friends = models.ManyToManyField(User, blank=True, related_name='users_who_requested')
+    pending_friends = models.ManyToManyField(
+        User,
+        blank=True,
+        related_name='users_who_requested',
+    )
     total_thanks_recieved = models.IntegerField(default=0)
 
     longest_streak = models.PositiveSmallIntegerField(default=0)
@@ -32,7 +36,8 @@ class Profile(models.Model):
 
     def increment_total_thanks_recieved(self) -> int:
         # Do not use this method if you need to make other changes to the profile obj
-        # Only use this method if the `total_thanks_recieved` is the only attr that needs to be changed
+        # Only use this method if the `total_thanks_recieved` is the only attr that
+        # needs to be changed
         self.total_thanks_recieved += 1
         self.save()
         return self.total_thanks_recieved
@@ -60,7 +65,7 @@ class Profile(models.Model):
 
         # Increment the cards done today
         return history_obj.increment_cards_done(time_taken)
-    
+
     def toggle_friend(
         self,
         requesting_user: User,
@@ -92,7 +97,7 @@ class Profile(models.Model):
                 return 'You cannot unfriend a user who is not your friend'
         else:
             return 'Unknown action'
-    
+
     def request_friend(
         self,
         sending_user: User,
@@ -190,7 +195,6 @@ class ProfileHistorySegment(models.Model):
 
 class ProfileSettings(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='settings')
-    disable_all_tooltips = models.BooleanField(default=False)
     send_reminders = models.BooleanField(default=False)
     USER_TYPE_OPTIONS = [
         ('STUDENT', 'Student/Learner'),
@@ -204,7 +208,12 @@ class ProfileSettings(models.Model):
         ('10', '10 minutes'),
         ('5', '5 minutes'),
     ]
-    ideal_time_per_day = models.CharField(max_length=3, choices=TIME_PER_DAY_OPTIONS, default='MAX')
+    ideal_time_per_day = models.CharField(
+        max_length=3,
+        choices=TIME_PER_DAY_OPTIONS,
+        default='MAX',
+    )
+    is_opted_dev = models.BooleanField(default=False)
     show_update_modal = models.BooleanField(default=False)
 
     def __str__(self) -> str:
@@ -221,5 +230,6 @@ def user_did_save(sender, instance, created, *args, **kwargs):
             title='Need help?',
             description="If you ever get lost or need help, you can check our [user-guide](/help/) pages."
         )
+
 
 post_save.connect(user_did_save, sender=User)

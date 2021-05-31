@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import { apiProfileDetail, apiProfileSettingsUpdate } from '../../lookup';
 import { UserLink } from '../../profiles';
 import { Profile } from '../../profiles/types';
-import { errorHandler, FormCheckbox, useApiObjectHook } from '../../utils';
+import { errorHandler, FormCheckbox, QuestionBubble, useApiObjectHook } from '../../utils';
 import './settings.css';
 
 export function SettingsPage({ username }) {
@@ -16,10 +16,10 @@ export function SettingsPage({ username }) {
 
     apiProfileSettingsUpdate(
       {
-        // disable_all_tooltips: form.elements.disableTooltips?.checked, // unused
         send_reminders: form.elements.sendReminders?.checked,
         user_type: form.elements.userType?.value,
         ideal_time_per_day: form.elements.timePerDay?.value,
+        is_opted_dev: form.elements.isOptedDev?.checked,
       },
       (response, status) => {
         if (status === 200) {
@@ -43,10 +43,10 @@ export function SettingsPage({ username }) {
     <Form onSubmit={handleSubmit}>
       <Form.Group>
         <h3>Account and Security</h3>
-        <UserLink user={profile as Profile} showAllBadges noLink />
+        <UserLink user={profile} showAllBadges noLink />
         <br />
         <p>
-          Your email (hover to view): <span className='hidden-email'>{(profile as Profile).email}</span><br />
+          Your email (hover to view): <span className='hidden-email'>{profile.email}</span><br />
         </p>
         <ul>
           <li><a href='/settings/change-email/'>
@@ -60,15 +60,9 @@ export function SettingsPage({ username }) {
           </a></li>
         </ul>
       </Form.Group>
-      {/* <Form.Group>
-        <Form.Label as='h3'>Misc.</Form.Label>
-        <FormCheckbox name='disableTooltips' defaultChecked={profile.settings.disable_all_tooltips}>
-          Disable all tooltips (not recommended for beginners)
-        </FormCheckbox>
-      </Form.Group> */}
       <Form.Label as='h3'>Misc.</Form.Label>
       <Form.Group>
-        <FormCheckbox name='sendReminders' defaultChecked={(profile as Profile).settings.send_reminders}>
+        <FormCheckbox name='sendReminders' defaultChecked={profile.settings.send_reminders}>
           Send Email Reminders at 6PM if you haven't studied yet
         </FormCheckbox>
       </Form.Group>
@@ -77,7 +71,7 @@ export function SettingsPage({ username }) {
         <Form.Control
           as='select'
           name='timePerDay'
-          defaultValue={(profile as Profile).settings.ideal_time_per_day}
+          defaultValue={profile.settings.ideal_time_per_day}
           custom
         >
           <option value='MAX'>as long as it takes</option>
@@ -92,12 +86,22 @@ export function SettingsPage({ username }) {
         <Form.Control
           as='select'
           name='userType'
-          defaultValue={(profile as Profile).settings.user_type}
+          defaultValue={profile.settings.user_type}
           custom
         >
           <option value='STUDENT'>Student/Learner</option>
           <option value='TEACHER'>Teacher/Parent</option>
         </Form.Control>
+      </Form.Group>
+      <Form.Group>
+        <FormCheckbox name='isOptedDev' defaultChecked={profile.settings.is_opted_dev}>
+          Opt into development features{' '}
+          <QuestionBubble>
+            If checked, you will be allowed to access feature still in development.
+            These features are the latest Alu offers, but may be unstable.
+            No guarantee is made about the stability or safety of development features.
+          </QuestionBubble>
+        </FormCheckbox>
       </Form.Group>
       <Form.Group>
         <Button type='submit' id='save-changes-btn' block>
