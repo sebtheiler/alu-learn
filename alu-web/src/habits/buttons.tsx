@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Form, FormControl, InputGroup, Modal } from 'react-bootstrap';
-import { apiHabitCreate, apiHabitDelete, apiRoutineCreate } from '../lookup';
+import { Button, ButtonGroup, Form, FormControl, InputGroup, Modal } from 'react-bootstrap';
+import { apiHabitCreate, apiHabitDelete, apiHabitRearrange, apiRoutineCreate, apiRoutineDelete, apiRoutineRearrange } from '../lookup';
 import { errorHandler } from '../utils';
 import { Routine, Habit } from './types';
 
@@ -103,33 +103,123 @@ export function CreateHabitButton(props: CreateHabitButtonProps) {
 }
 
 
-interface DeleteHabitButtonProps {
-  routineId: number;
-  habitId: number;
+interface HabitButtonGroupProps {
+  routine: Routine;
+  habit: Habit;
   deleteHabitCallback(habitId: number): void;
+  rearrangeHabitCallback(habitId: number, direction: 'UP' | 'DOWN'): void;
 }
-export function DeleteHabitButton(props: DeleteHabitButtonProps) {
-  const { routineId, habitId, deleteHabitCallback } = props;
+export function HabitButtonGroup(props: HabitButtonGroupProps) {
+  const { routine, habit, deleteHabitCallback, rearrangeHabitCallback } = props;
 
   const deleteHabit = event => {
     event.preventDefault();
     if (!window.confirm('Are you sure you want to delete this habit?')) return;
-    apiHabitDelete(routineId, habitId, (response, status) => {
+    apiHabitDelete(routine.id, habit.id, (response, status) => {
       if (status === 200) {
-        deleteHabitCallback(habitId);
+        deleteHabitCallback(habit.id);
       } else {
         errorHandler(response, status, 9005);
       }
-    })
+    });
+  }
+
+  const rearrangeHabit = (direction: 'UP' | 'DOWN') => {
+    return event => {
+      apiHabitRearrange(routine.id, habit.id, direction, (response, status) => {
+        if (status === 200) {
+          rearrangeHabitCallback(habit.id, direction);
+        } else {
+          errorHandler(response, status, 9008);
+        }
+      });
+    }
   }
 
   return (
-    <Button
-      variant='danger'
+    <ButtonGroup
       className='float-right'
-      onClick={deleteHabit}
     >
-      Delete
-    </Button>
+      {habit.habit_num > 0 && <Button
+        variant='secondary'
+        onClick={rearrangeHabit('UP')}
+        className='mr-1'
+      >
+        Move Up
+      </Button>}
+      {habit.habit_num < routine.habits.length - 1 && <Button
+        variant='secondary'
+        onClick={rearrangeHabit('DOWN')}
+        className='mr-1'
+      >
+        Move Down
+      </Button>}
+      <Button
+        variant='danger'
+        onClick={deleteHabit}
+      >
+        Delete
+      </Button>
+    </ButtonGroup>
+  );
+}
+
+interface RoutineButtonGroupProps {
+  routine: Routine;
+  numRoutines: number;
+  deleteRoutineCallback(routineId: number): void;
+  rearrangeRoutineCallback(routineId: number, direction: 'UP' | 'DOWN'): void;
+}
+export function RoutineButtonGroup(props: RoutineButtonGroupProps) {
+  const { routine, numRoutines, deleteRoutineCallback, rearrangeRoutineCallback } = props;
+
+  const deleteRoutine = event => {
+    event.preventDefault();
+    if (window.prompt('Are you sure you want to delete this routine?  This action is permanent and irreversible.  Please type "DELETE" if you want to proceed.') !== 'DELETE')
+      return;
+
+    apiRoutineDelete(routine.id, (response, status) => {
+      if (status === 200) {
+        deleteRoutineCallback(routine.id);
+      } else {
+        errorHandler(response, status, 9006);
+      }
+    });
+  }
+
+  const rearrangeRoutine = (direction: 'UP' | 'DOWN') => {
+    return event => {
+      event.preventDefault();
+      apiRoutineRearrange(routine.id, direction, (response, status) => {
+        if (status === 200) {
+          rearrangeRoutineCallback(routine.id, direction);
+        } else {
+          errorHandler(response, status, 9007);
+        }
+      });
+    }
+  }
+
+  return (
+    <ButtonGroup className='float-right'>
+      {routine.routine_num > 0 && <Button
+        onClick={rearrangeRoutine('UP')}
+        className='mr-1'
+      >
+        Move Up
+      </Button>}
+      {routine.routine_num < numRoutines - 1 && <Button
+        onClick={rearrangeRoutine('DOWN')}
+        className='mr-1'
+      >
+        Move Down
+      </Button>}
+      <Button
+        variant='danger'
+        onClick={deleteRoutine}
+      >
+        Delete Routine
+      </Button>
+    </ButtonGroup>
   );
 }

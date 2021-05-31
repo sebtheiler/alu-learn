@@ -125,11 +125,11 @@ export function FlashCardsList(props: FlashCardsListProps) {
           if (status === 200) {
             let otherFlashcard = direction === 'UP' ? flashcards[index - 1] : flashcards[index + 1];
             if (trueDirection === 'UP') {
-              flashcard.flashcard_num -= 1;
-              otherFlashcard.flashcard_num += 1;
+              flashcard.flashcard_num--;
+              otherFlashcard.flashcard_num++;
             } else {
-              flashcard.flashcard_num += 1;
-              otherFlashcard.flashcard_num -= 1;
+              flashcard.flashcard_num++;
+              otherFlashcard.flashcard_num--;
             }
 
             // This uses `direction` instead of `trueDirection` since

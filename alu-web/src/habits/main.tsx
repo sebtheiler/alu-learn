@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
 // TODO: turn these imports into the direct ones
-import { Alert, Button, ButtonGroup, Card, Col, Container, Form, Row, ToggleButton } from 'react-bootstrap';
+import { Alert, ButtonGroup, Card, Col, Container, Form, Row, ToggleButton } from 'react-bootstrap';
 import { Habit, HabitValue, Routine } from './types';
-import { CreateRoutineButton, CreateHabitButton, DeleteHabitButton } from './buttons';
+import { CreateRoutineButton, CreateHabitButton, HabitButtonGroup, RoutineButtonGroup } from './buttons';
 import { errorHandler, useApiObjectHook } from '../utils';
-import { apiHabitEdit, apiRoutineDelete, apiRoutineEdit, apiRoutineList } from '../lookup';
+import { apiHabitEdit, apiRoutineEdit, apiRoutineList } from '../lookup';
 import './main.css';
 
 
@@ -65,10 +65,77 @@ export default function Habits() {
   const deleteHabitCallback = (habitId: number) => {
     if (!routines) return;
     const indexOfHabit = routines[selectedRoutine].habits.map(
-      habit => habitId
+      habit => habit.id
     ).indexOf(habitId);
     let editedRoutine = routines[selectedRoutine];
     editedRoutine.habits.splice(indexOfHabit, 1);
+
+    setRoutines([
+      ...routines.slice(0, selectedRoutine),
+      editedRoutine,
+      ...routines.slice(selectedRoutine + 1),
+    ]);
+  }
+
+  const rearrangeRoutineCallback = (routineId: number, direction: 'UP' | 'DOWN') => {
+    if (!routines) return;
+    if (direction === 'UP') {
+      let editedRoutine = routines[selectedRoutine];
+      let otherRoutine = routines[selectedRoutine - 1];
+      editedRoutine.routine_num--;
+      otherRoutine.routine_num++;
+
+      setRoutines([
+        ...routines.slice(0, selectedRoutine - 1),
+        editedRoutine,
+        otherRoutine,
+        ...routines.slice(selectedRoutine + 1),
+      ]);
+      setSelectedRoutine(selectedRoutine - 1);
+    } else {
+      let editedRoutine = routines[selectedRoutine];
+      let otherRoutine = routines[selectedRoutine + 1];
+      editedRoutine.routine_num++;
+      otherRoutine.routine_num--;
+
+      setRoutines([
+        ...routines.slice(0, selectedRoutine),
+        otherRoutine,
+        editedRoutine,
+        ...routines.slice(selectedRoutine + 2),
+      ]);
+      setSelectedRoutine(selectedRoutine + 1);
+    }
+  }
+  
+  const rearrangeHabitCallback = (habitId: number, direction: 'UP' | 'DOWN') => {
+    if (!routines) return;
+    const indexOfHabit = routines[selectedRoutine].habits.map(
+      habit => habit.id
+    ).indexOf(habitId);
+    let editedRoutine = routines[selectedRoutine];
+
+    if (direction === 'UP') {
+      editedRoutine.habits[indexOfHabit].habit_num--;
+      editedRoutine.habits[indexOfHabit - 1].habit_num++;
+      [
+        editedRoutine.habits[indexOfHabit - 1],
+        editedRoutine.habits[indexOfHabit],
+      ] = [
+        editedRoutine.habits[indexOfHabit],
+        editedRoutine.habits[indexOfHabit - 1],
+      ];
+    } else {
+      editedRoutine.habits[indexOfHabit].habit_num++;
+      editedRoutine.habits[indexOfHabit + 1].habit_num--;
+      [
+        editedRoutine.habits[indexOfHabit],
+        editedRoutine.habits[indexOfHabit + 1],
+      ] = [
+        editedRoutine.habits[indexOfHabit + 1],
+        editedRoutine.habits[indexOfHabit],
+      ];
+    }
 
     setRoutines([
       ...routines.slice(0, selectedRoutine),
@@ -110,11 +177,14 @@ export default function Habits() {
           <Col xs={10} style={{ borderLeft: '1px solid' }}>
             {routines[selectedRoutine] && <RenderRoutine
               routine={routines[selectedRoutine]}
+              numRoutines={routines.length}
               createHabitCallback={createHabitCallback}
               editHabitCallback={editHabitCallback}
               editRoutineCallback={editRoutineCallback}
               deleteRoutineCallback={deleteRoutineCallback}
               deleteHabitCallback={deleteHabitCallback}
+              rearrangeRoutineCallback={rearrangeRoutineCallback}
+              rearrangeHabitCallback={rearrangeHabitCallback}
             />}
           </Col>
         </Row>
@@ -130,14 +200,17 @@ interface EditRoutineOptions {
 }
 interface RenderRoutineProps {
   routine: Routine;
+  numRoutines: number;
   createHabitCallback(habit: Habit): void;
   editHabitCallback(habit: Habit): void;
   editRoutineCallback(routine: Routine): void;
   deleteRoutineCallback(routineId: number): void;
   deleteHabitCallback(habitId: number): void;
+  rearrangeRoutineCallback(routineId: number, direction: 'UP' | 'DOWN'): void;
+  rearrangeHabitCallback(habitId: number, direction: 'UP' | 'DOWN'): void;
 }
 function RenderRoutine(props: RenderRoutineProps) {
-  const { routine, createHabitCallback, editHabitCallback, editRoutineCallback, deleteHabitCallback, deleteRoutineCallback } = props;
+  const { routine, numRoutines, createHabitCallback, editHabitCallback, editRoutineCallback, deleteHabitCallback, deleteRoutineCallback, rearrangeRoutineCallback, rearrangeHabitCallback } = props;
 
   const editRoutine = (options: EditRoutineOptions) => {
     apiRoutineEdit(routine.id, options.title, options.ordered, (response, status) => {
@@ -149,20 +222,6 @@ function RenderRoutine(props: RenderRoutineProps) {
     });
   }
 
-  const deleteRoutine = event => {
-    event.preventDefault();
-    if (window.prompt('Are you sure you want to delete this routine?  This action is permanent and irreversible.  Please type "DELETE" if you want to proceed.') !== 'DELETE')
-      return;
-
-    apiRoutineDelete(routine.id, (response, status) => {
-      if (status === 200) {
-        deleteRoutineCallback(routine.id);
-      } else {
-        errorHandler(response, status, 9006);
-      }
-    })
-  }
-
   return (<>
     <h3>
       <span
@@ -172,24 +231,24 @@ function RenderRoutine(props: RenderRoutineProps) {
       >
         {routine.title}
       </span>
-      <Button
-        className='float-right'
-        variant='danger'
-        onClick={deleteRoutine}
-      >
-        Delete Routine
-      </Button>
+      <RoutineButtonGroup
+        routine={routine}
+        numRoutines={numRoutines}
+        deleteRoutineCallback={deleteRoutineCallback}
+        rearrangeRoutineCallback={rearrangeRoutineCallback}
+      />
     </h3>
     <hr />
     {routine.habits.length === 0 ?
       <p>This routine doesn't have any habits yet</p>
     : routine.habits.map((habit, i) =>
       <RenderHabit
+        routine={routine}
         habit={habit}
-        routineId={routine.id}
         editHabitCallback={editHabitCallback}
         deleteHabitCallback={deleteHabitCallback}
-        key={`${routine.id}-${i}`}
+        rearrangeHabitCallback={rearrangeHabitCallback}
+        key={`${routine.id}-${habit.id}`}
       />
     )}
     <hr />
@@ -209,13 +268,14 @@ interface EditHabitOptions {
   value?: HabitValue;
 }
 interface RenderHabitProps {
+  routine: Routine;
   habit: Habit;
-  routineId: number;
   editHabitCallback(habit: Habit): void;
   deleteHabitCallback(habitId: number): void;
+  rearrangeHabitCallback(habitId: number, direction: 'UP' | 'DOWN'): void;
 }
 function RenderHabit(props: RenderHabitProps) {
-  const { habit, routineId, editHabitCallback, deleteHabitCallback } = props;
+  const { habit, routine, editHabitCallback, deleteHabitCallback, rearrangeHabitCallback } = props;
   const [showBody, setShowBody] = useState(false);
   const color = useMemo(() => {
     switch (habit.value) {
@@ -229,7 +289,7 @@ function RenderHabit(props: RenderHabitProps) {
   }, [habit]);
 
   const editHabit = (options: EditHabitOptions) => {
-    apiHabitEdit(routineId, habit.id, options.title, options.cue, options.craving, options.response, options.reward, options.value, (response, status) => {
+    apiHabitEdit(routine.id, habit.id, options.title, options.cue, options.craving, options.response, options.reward, options.value, (response, status) => {
       if (status === 200) {
         editHabitCallback(response);
       } else {
@@ -255,7 +315,7 @@ function RenderHabit(props: RenderHabitProps) {
           onClick={() => editHabit({ title: window.prompt(`Renaming Habit "${habit.title}"`) })}
           className='underline-on-hover'
         >
-          {habit.title}
+          {habit.title} ({habit.habit_num})
         </span>
       </Card.Header>
       {showBody && <Card.Body>
@@ -330,10 +390,11 @@ function RenderHabit(props: RenderHabitProps) {
         <hr />
         <Row>
           <Col>
-            <DeleteHabitButton
-              routineId={routineId}
-              habitId={habit.id}
+            <HabitButtonGroup
+              routine={routine}
+              habit={habit}
               deleteHabitCallback={deleteHabitCallback}
+              rearrangeHabitCallback={rearrangeHabitCallback}
             />
           </Col>
         </Row>

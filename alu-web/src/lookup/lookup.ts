@@ -1028,6 +1028,17 @@ export function apiRoutineDelete(
   backendLookup('POST', `habits/routines/delete/${routineId}/`, callback, {});
 }
 
+// Rearranges a routine
+export function apiRoutineRearrange(
+  routineId: number,
+  direction: 'UP' | 'DOWN',
+  callback: (response: Message, status: number) => void,
+) {
+  backendLookup('POST', `habits/routines/rearrange/${routineId}/`, callback, {
+    direction: direction,
+  });
+}
+
 // Creates a new habit
 export function apiHabitCreate(
   routineId: number,
@@ -1078,4 +1089,16 @@ export function apiHabitDelete(
   callback: (response: Message, status: number) => void,
 ) {
   backendLookup('POST', `habits/routines/${routineId}/habits/delete/${habitId}/`, callback);
+}
+
+// Rearranges a routine
+export function apiHabitRearrange(
+  routineId: number,
+  habitId: number,
+  direction: 'UP' | 'DOWN',
+  callback: (response: Message, status: number) => void,
+) {
+  backendLookup('POST', `habits/routines/${routineId}/habits/rearrange/${habitId}/`, callback, {
+    direction: direction,
+  });
 }

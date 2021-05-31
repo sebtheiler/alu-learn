@@ -192,14 +192,15 @@ def habit_rearrange(request, routine_id, habit_id, *args, **kwargs):
     if direction is None:
         return Response({'message': 'You must specify `direction`'}, status=400)
 
-    habit = Habit.objects.get(pk=habit_id, routine__user=request.user.profile)
+    routine = Routine.objects.get(pk=routine_id, user=request.user.profile)
+    habit = Habit.objects.get(pk=habit_id, routine=routine)
     if direction == 'UP':
         if habit.habit_num == 0:
             return Response({'message': 'Habit is already at the top'}, status=400)
 
         other_habit = Habit.objects.get(
             habit_num=habit.habit_num - 1,
-            routine__user=request.user.profile,
+            routine=routine,
         )
         habit.habit_num -= 1
         other_habit.habit_num += 1
@@ -209,7 +210,7 @@ def habit_rearrange(request, routine_id, habit_id, *args, **kwargs):
 
         other_habit = Habit.objects.get(
             habit_num=habit.habit_num + 1,
-            routine__user=request.user.profile,
+            routine=routine,
         )
         habit.habit_num += 1
         other_habit.habit_num -= 1

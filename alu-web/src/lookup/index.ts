@@ -104,9 +104,11 @@ import {
   apiRoutineList,
   apiRoutineEdit,
   apiRoutineDelete,
+  apiRoutineRearrange,
   apiHabitCreate,
   apiHabitEdit,
   apiHabitDelete,
+  apiHabitRearrange,
 } from './lookup';
 
 export {
@@ -215,7 +217,9 @@ export {
   apiRoutineList,
   apiRoutineEdit,
   apiRoutineDelete,
+  apiRoutineRearrange,
   apiHabitCreate,
   apiHabitEdit,
   apiHabitDelete,
+  apiHabitRearrange,
 }

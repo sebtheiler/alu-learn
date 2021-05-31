@@ -182,5 +182,7 @@ int(hexadecimal_string, 16)
 9003: Error editing habit through apiHabitEdit
 9004: Error editing routine through apiRoutineEdit
 9005: Error deleting habit through apiHabitDelete
-9006: Error deleting routing through apiRoutineDelete
+9006: Error deleting routine through apiRoutineDelete
+9007: Error rearranging routine through apiRoutineRearrange
+9008: Error rearranging habit through apiHabitRearrange
 */
