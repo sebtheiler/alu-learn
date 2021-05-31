@@ -16,6 +16,7 @@ class HabitTestCase(ImprovedTestCase):
             user=user or self.user.profile,
             title=title,
             ordered=ordered,
+            routine_num=Routine.get_routine_num(user or self.user.profile),
         )
 
         for i in range(num_habits):
@@ -27,6 +28,7 @@ class HabitTestCase(ImprovedTestCase):
                 reward=f'Reward #{i + 1}',
                 value='POSITIVE' if i % 2 == 0 else 'NEGATIVE',
                 routine=routine,
+                habit_num=i,
             )
 
         return routine
@@ -46,6 +48,17 @@ class HabitTestCase(ImprovedTestCase):
         routine = Routine.objects.first()
         self.assertEqual(routine.title, data['title'])
         self.assertEqual(routine.ordered, data['ordered'])
+        self.assertEqual(routine.routine_num, 0)
+
+        # Create another to test `routine_num` incrementing
+        response = self.post_response(api_path, api_views.routine_create, data)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Routine.objects.count(), 2)
+
+        routine = Routine.objects.last()
+        self.assertEqual(routine.title, data['title'])
+        self.assertEqual(routine.ordered, data['ordered'])
+        self.assertEqual(routine.routine_num, 1)
 
     def test_routine_list(self):
         api_path = '/api/habits/routines/'
@@ -71,6 +84,7 @@ class HabitTestCase(ImprovedTestCase):
         for data_routine, real_routine in zip(response.data, real_routines):
             self.assertEqual(data_routine['title'], real_routine.title)
             self.assertEqual(data_routine['ordered'], real_routine.ordered)
+            self.assertEqual(data_routine['routine_num'], real_routine.routine_num)
             self.assertEqual(data_routine['id'], real_routine.pk)
 
             for data_habit, real_habit in zip(data_routine['habits'], real_routine.habits.all()):
@@ -80,6 +94,8 @@ class HabitTestCase(ImprovedTestCase):
                 self.assertEqual(data_habit['response'], real_habit.response)
                 self.assertEqual(data_habit['reward'], real_habit.reward)
                 self.assertEqual(data_habit['value'], real_habit.value)
+                self.assertEqual(data_habit['habit_num'], real_habit.habit_num)
+                self.assertEqual(data_habit['id'], real_habit.id)
 
     def test_routine_edit(self):
         routine = self.create_routine('Routine to Edit', num_habits=5)
@@ -104,16 +120,55 @@ class HabitTestCase(ImprovedTestCase):
 
     def test_routine_delete(self):
         routine = self.create_routine('Routine to Delete', num_habits=5)
+        other_routine = self.create_routine('Routine to Rearrange', num_habits=5)
         api_path = f'/api/habits/routines/{routine.pk}/delete/'
-        self.assertEqual(Routine.objects.count(), 1)
-        self.assertEqual(Habit.objects.count(), 5)
+        self.assertEqual(Routine.objects.count(), 2)
+        self.assertEqual(Habit.objects.count(), 10)
+        self.assertEqual(routine.routine_num, 0)
+        self.assertEqual(other_routine.routine_num, 1)
 
         response = self.post_response(api_path, api_views.routine_delete, kwargs={
             'routine_id': routine.pk
         })
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Routine.objects.count(), 0)
-        self.assertEqual(Habit.objects.count(), 0)
+        self.assertEqual(Routine.objects.count(), 1)
+        self.assertEqual(Habit.objects.count(), 5)
+
+        other_routine.refresh_from_db()
+        self.assertEqual(other_routine.routine_num, 0)
+
+    def test_routine_rearrange(self):
+        routine1 = self.create_routine('Routine #1')
+        routine2 = self.create_routine('Routine #2')
+        routine3 = self.create_routine('Routine #3')
+        self.assertEqual(routine1.routine_num, 0)
+        self.assertEqual(routine2.routine_num, 1)
+        self.assertEqual(routine3.routine_num, 2)
+
+        def move_routine(direction, expected_orders, routine_id, should_fail=False):
+            api_path = f'/api/habits/routines/rearrange/{routine_id}/'
+            kwargs = {'routine_id': routine_id}
+            response = self.post_response(api_path, api_views.routine_rearrange, {
+                'direction': direction,
+            }, kwargs=kwargs)
+            self.assertEqual(response.status_code, 400 if should_fail else 200)
+
+            routine1.refresh_from_db()
+            routine2.refresh_from_db()
+            routine3.refresh_from_db()
+            if not should_fail:
+                self.assertEqual(routine1.routine_num, expected_orders[0])
+                self.assertEqual(routine2.routine_num, expected_orders[1])
+                self.assertEqual(routine3.routine_num, expected_orders[2])
+
+        move_routine('DOWN', [1, 0, 2], routine1.pk)
+        move_routine('DOWN', [2, 0, 1], routine1.pk)
+        move_routine('DOWN', [2, 0, 1], routine1.pk, should_fail=True)
+        move_routine('DOWN', [2, 1, 0], routine2.pk)
+        move_routine('DOWN', [1, 2, 0], routine2.pk)
+        move_routine('UP', [0, 2, 1], routine1.pk)
+        move_routine('UP', [0, 2, 1], routine1.pk, should_fail=True)
+        move_routine('UP', [0, 1, 2], routine2.pk)
 
     def test_habit_create(self):
         routine = self.create_routine('Routine to create a habit in')
@@ -143,6 +198,16 @@ class HabitTestCase(ImprovedTestCase):
         self.assertEqual(habit.response, data['response'])
         self.assertEqual(habit.reward, data['reward'])
         self.assertEqual(habit.value, data['value'])
+        self.assertEqual(habit.habit_num, 0)
+
+        # Create another to make sure `habit_num` increments
+        response = self.post_response(api_path, api_views.habit_create, data, kwargs=kwargs)
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Routine.objects.count(), 1)
+        self.assertEqual(Habit.objects.count(), 2)
+
+        habit = Habit.objects.last()
+        self.assertEqual(habit.habit_num, 1)
 
     def test_habit_edit(self):
         routine = self.create_routine('Routine With Habit to Edit', num_habits=1)
@@ -174,14 +239,56 @@ class HabitTestCase(ImprovedTestCase):
         self.assertEqual(habit.value, data['new_value'])
 
     def test_habit_delete(self):
-        routine = self.create_routine('Routine With Habit to Delete', num_habits=1)
+        num_habits = 5
+        routine = self.create_routine('Routine With Habit to Delete', num_habits=num_habits)
         habit = routine.habits.first()
         api_path = f'/api/habits/routines/{routine.pk}/habits/delete/{habit.pk}'
         kwargs = {'routine_id': routine.pk, 'habit_id': habit.pk}
 
+        for i, habit in enumerate(routine.habits.all()):
+            self.assertEqual(habit.habit_num, i)
+
         self.assertEqual(Routine.objects.count(), 1)
-        self.assertEqual(Habit.objects.count(), 1)
+        self.assertEqual(Habit.objects.count(), num_habits)
         response = self.post_response(api_path, api_views.habit_delete, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Routine.objects.count(), 1)
-        self.assertEqual(Habit.objects.count(), 0)
+        self.assertEqual(Habit.objects.count(), num_habits - 1)
+
+        # Make sure that all the other habits were rearranged
+        for i, habit in enumerate(routine.habits.all()):
+            self.assertEqual(habit.habit_num, i)
+
+    def test_habit_rearrange(self):
+        routine = self.create_routine('Routine', num_habits=3)
+        habit1 = routine.habits.all()[0]
+        habit2 = routine.habits.all()[1]
+        habit3 = routine.habits.all()[2]
+        self.assertEqual(habit1.habit_num, 0)
+        self.assertEqual(habit2.habit_num, 1)
+        self.assertEqual(habit3.habit_num, 2)
+
+        def move_habit(direction, expected_orders, habit_id, should_fail=False):
+            api_path = f'/api/habits/routines/{routine.id}/habits/{habit_id}/rearrange/'
+            kwargs = {'routine_id': routine.id, 'habit_id': habit_id}
+            response = self.post_response(api_path, api_views.habit_rearrange, {
+                'direction': direction,
+            }, kwargs=kwargs)
+            self.assertEqual(response.status_code, 400 if should_fail else 200)
+
+            habit1.refresh_from_db()
+            habit2.refresh_from_db()
+            habit3.refresh_from_db()
+            if not should_fail:
+                self.assertEqual(habit1.habit_num, expected_orders[0])
+                self.assertEqual(habit2.habit_num, expected_orders[1])
+                self.assertEqual(habit3.habit_num, expected_orders[2])
+
+        move_habit('DOWN', [1, 0, 2], habit1.pk)
+        move_habit('DOWN', [2, 0, 1], habit1.pk)
+        move_habit('DOWN', [2, 0, 1], habit1.pk, should_fail=True)
+        move_habit('DOWN', [2, 1, 0], habit2.pk)
+        move_habit('DOWN', [1, 2, 0], habit2.pk)
+        move_habit('UP', [0, 2, 1], habit1.pk)
+        move_habit('UP', [0, 2, 1], habit1.pk, should_fail=True)
+        move_habit('UP', [0, 1, 2], habit2.pk)

@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 
 from ..models import Routine, Habit
 from ..serializers import RoutineSerializer, HabitSerializer
+from django.db.models import F
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
@@ -25,6 +26,7 @@ def routine_create(request, *args, **kwargs):
         user=request.user.profile,
         title=title,
         ordered=ordered,
+        routine_num=Routine.get_routine_num(request.user.profile),
     )
 
     return Response(RoutineSerializer(routine).data, status=201)
@@ -37,6 +39,7 @@ def routine_list(request, *args, **kwargs):
     Gets a list of the current users' routines - GET
     """
     routines = Routine.objects.filter(user=request.user.profile)
+
     return Response(RoutineSerializer(routines, many=True).data, status=200)
 
 
@@ -63,7 +66,53 @@ def routine_delete(request, routine_id, *args, **kwargs):
     routine = Routine.objects.get(pk=routine_id, user=request.user.profile)
     routine.delete()
 
+    # Slide down all routines after this routine
+    routines_to_move = Routine.objects.filter(routine_num__gt=routine.routine_num)
+    routines_to_move.update(routine_num=F('routine_num') - 1)
+
     return Response({'message': 'Deleted routine'}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def routine_rearrange(request, routine_id, *args, **kwargs):
+    """
+    Rearranges a routine - POST
+
+    Params:
+        `direction`: "UP" _decrements_ routine_num, "DOWN" _increments_ routine_num
+    """
+    direction = request.data.get('direction')
+    if direction is None:
+        return Response({'message': 'You must specify `direction`'}, status=400)
+
+    routine = Routine.objects.get(pk=routine_id, user=request.user.profile)
+    if direction == 'UP':
+        if routine.routine_num == 0:
+            return Response({'message': 'Routine is already at the top'}, status=400)
+
+        other_routine = Routine.objects.get(
+            routine_num=routine.routine_num - 1,
+            user=request.user.profile,
+        )
+        routine.routine_num -= 1
+        other_routine.routine_num += 1
+    elif direction == 'DOWN':
+        if routine.routine_num == Routine.get_routine_num(request.user.profile) - 1:
+            return Response({'message': 'Routine is already at the bottom'}, status=400)
+
+        other_routine = Routine.objects.get(
+            routine_num=routine.routine_num + 1,
+            user=request.user.profile,
+        )
+        routine.routine_num += 1
+        other_routine.routine_num -= 1
+    else:
+        return Response({'message': 'Unrecognized `direction`'}, status=400)
+
+    Routine.objects.bulk_update([routine, other_routine], ['routine_num'])
+
+    return Response({'message': 'Rearranged routine'}, status=200)
 
 
 @api_view(['POST'])
@@ -85,6 +134,7 @@ def habit_create(request, routine_id, *args, **kwargs):
         response=request.data.get('response', ''),
         reward=request.data.get('reward', ''),
         value=request.data.get('value', 'NEUTRAL'),
+        habit_num=routine.get_habit_num(),
     )
 
     return Response(HabitSerializer(habit).data, status=201)
@@ -122,4 +172,50 @@ def habit_delete(request, routine_id, habit_id, *args, **kwargs):
     habit = Habit.objects.get(pk=habit_id, routine__user=request.user.profile)
     habit.delete()
 
+    # Slide down all routines after this routine
+    habits_to_move = Habit.objects.filter(habit_num__gt=habit.habit_num)
+    habits_to_move.update(habit_num=F('habit_num') - 1)
+
     return Response({'message': 'Deleted habit'}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def habit_rearrange(request, routine_id, habit_id, *args, **kwargs):
+    """
+    Rearranges a habit - POST
+
+    Params:
+        `direction`: "UP" _decrements_ habit_num, "DOWN" _increments_ habit_num
+    """
+    direction = request.data.get('direction')
+    if direction is None:
+        return Response({'message': 'You must specify `direction`'}, status=400)
+
+    habit = Habit.objects.get(pk=habit_id, routine__user=request.user.profile)
+    if direction == 'UP':
+        if habit.habit_num == 0:
+            return Response({'message': 'Habit is already at the top'}, status=400)
+
+        other_habit = Habit.objects.get(
+            habit_num=habit.habit_num - 1,
+            routine__user=request.user.profile,
+        )
+        habit.habit_num -= 1
+        other_habit.habit_num += 1
+    elif direction == 'DOWN':
+        if habit.habit_num == habit.routine.get_habit_num() - 1:
+            return Response({'message': 'habit is already at the bottom'}, status=400)
+
+        other_habit = Habit.objects.get(
+            habit_num=habit.habit_num + 1,
+            routine__user=request.user.profile,
+        )
+        habit.habit_num += 1
+        other_habit.habit_num -= 1
+    else:
+        return Response({'message': 'Unrecognized `direction`'}, status=400)
+
+    Habit.objects.bulk_update([habit, other_habit], ['habit_num'])
+
+    return Response({'message': 'Rearranged habit'}, status=200)

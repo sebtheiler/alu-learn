@@ -168,7 +168,7 @@ function RenderRoutine(props: RenderRoutineProps) {
       <span
         role='button'
         className='underline-on-hover'
-        onClick={() => editRoutine({ title: window.prompt(`Renaming Routing ${routine.title}`) })}
+        onClick={() => editRoutine({ title: window.prompt(`Renaming Routine ${routine.title}`) })}
       >
         {routine.title}
       </span>

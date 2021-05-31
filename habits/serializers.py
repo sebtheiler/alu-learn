@@ -12,6 +12,7 @@ class HabitSerializer(serializers.ModelSerializer):
             'response',
             'reward',
             'value',
+            'habit_num',
             'id',
         ]
 
@@ -25,5 +26,6 @@ class RoutineSerializer(serializers.ModelSerializer):
             'title',
             'habits',
             'ordered',
+            'routine_num',
             'id',
         ]
