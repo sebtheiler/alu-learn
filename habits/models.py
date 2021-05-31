@@ -28,6 +28,7 @@ class Habit(models.Model):
     craving = models.CharField(max_length=128, blank=True)
     response = models.CharField(max_length=128, blank=True)
     reward = models.CharField(max_length=128, blank=True)
+    notes = models.TextField(blank=True)
     habit_num = models.PositiveSmallIntegerField()  # 0-indexed
 
     VALUE_CHOICES = [

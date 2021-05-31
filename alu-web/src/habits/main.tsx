@@ -265,6 +265,7 @@ interface EditHabitOptions {
   craving?: string;
   response?: string;
   reward?: string;
+  notes?: string;
   value?: HabitValue;
 }
 interface RenderHabitProps {
@@ -289,13 +290,24 @@ function RenderHabit(props: RenderHabitProps) {
   }, [habit]);
 
   const editHabit = (options: EditHabitOptions) => {
-    apiHabitEdit(routine.id, habit.id, options.title, options.cue, options.craving, options.response, options.reward, options.value, (response, status) => {
-      if (status === 200) {
-        editHabitCallback(response);
-      } else {
-        errorHandler(response, status, 9003);
+    apiHabitEdit(
+      routine.id,
+      habit.id,
+      options.title,
+      options.cue,
+      options.craving,
+      options.response,
+      options.reward,
+      options.notes,
+      options.value,
+      (response, status) => {
+        if (status === 200) {
+          editHabitCallback(response);
+        } else {
+          errorHandler(response, status, 9003);
+        }
       }
-    });
+    );
   }
 
   return (<>
@@ -315,7 +327,7 @@ function RenderHabit(props: RenderHabitProps) {
           onClick={() => editHabit({ title: window.prompt(`Renaming Habit "${habit.title}"`) })}
           className='underline-on-hover'
         >
-          {habit.title} ({habit.habit_num})
+          {habit.title}
         </span>
       </Card.Header>
       {showBody && <Card.Body>
@@ -326,7 +338,6 @@ function RenderHabit(props: RenderHabitProps) {
               type='text'
               name='cue'
               maxLength={128}
-              required
               defaultValue={habit.cue}
               onBlur={e => editHabit({ cue: e.target.value })}
             />
@@ -337,7 +348,6 @@ function RenderHabit(props: RenderHabitProps) {
               type='text'
               name='craving'
               maxLength={128}
-              required
               defaultValue={habit.craving}
               onBlur={e => editHabit({ craving: e.target.value })}
             />
@@ -348,7 +358,6 @@ function RenderHabit(props: RenderHabitProps) {
               type='text'
               name='response'
               maxLength={128}
-              required
               defaultValue={habit.response}
               onBlur={e => editHabit({ response: e.target.value })}
             />
@@ -359,9 +368,21 @@ function RenderHabit(props: RenderHabitProps) {
               type='text'
               name='reward'
               maxLength={128}
-              required
               defaultValue={habit.reward}
               onBlur={e => editHabit({ reward: e.target.value })}
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Label>Notes</Form.Label>
+            <Form.Control
+              as='textarea'
+              name='notes'
+              maxLength={4096}
+              rows={10}
+              defaultValue={habit.notes}
+              onBlur={e => editHabit({ notes: e.target.value })}
             />
           </Col>
         </Row>

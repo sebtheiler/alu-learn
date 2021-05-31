@@ -73,14 +73,20 @@ export function CreateHabitButton(props: CreateHabitButtonProps) {
   const createHabit = event => {
     event.preventDefault();
     const form = event.target;
-    apiHabitCreate(routineId, form.elements.title.value, '', '', '', '', 'NEUTRAL', (response, status) => {
-      if (status === 201) {
-        form.elements.title.value = '';
-        createHabitCallback(response);
-      } else {
-        errorHandler(response, status, 9002);
-      }
-    });
+    apiHabitCreate(
+      routineId,
+      form.elements.title.value,
+      '', '', '', '', '',
+      'NEUTRAL',
+      (response, status) => {
+        if (status === 201) {
+          form.elements.title.value = '';
+          createHabitCallback(response);
+        } else {
+          errorHandler(response, status, 9002);
+        }
+      },
+    );
   }
 
   return (

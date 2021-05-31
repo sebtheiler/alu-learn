@@ -7,6 +7,7 @@ export interface Habit {
   craving?: string;
   response?: string;
   reward?: string;
+  notes?: string;
   habit_num: number;
   id: number;
 }

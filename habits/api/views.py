@@ -133,6 +133,7 @@ def habit_create(request, routine_id, *args, **kwargs):
         craving=request.data.get('craving', ''),
         response=request.data.get('response', ''),
         reward=request.data.get('reward', ''),
+        notes=request.data.get('notes', ''),
         value=request.data.get('value', 'NEUTRAL'),
         habit_num=routine.get_habit_num(),
     )
@@ -157,6 +158,7 @@ def habit_edit(request, routine_id, habit_id, *args, **kwargs):
     habit.craving = request.data.get('new_craving') or habit.craving
     habit.response = request.data.get('new_response') or habit.response
     habit.reward = request.data.get('new_reward') or habit.reward
+    habit.notes = request.data.get('new_notes') or habit.notes
     habit.value = request.data.get('new_value') or habit.value
     habit.save()
 

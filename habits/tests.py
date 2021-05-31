@@ -26,6 +26,7 @@ class HabitTestCase(ImprovedTestCase):
                 craving=f'Craving #{i + 1}',
                 response=f'Response #{i + 1}',
                 reward=f'Reward #{i + 1}',
+                notes=f'Notes #{i + 1}',
                 value='POSITIVE' if i % 2 == 0 else 'NEGATIVE',
                 routine=routine,
                 habit_num=i,
@@ -94,6 +95,7 @@ class HabitTestCase(ImprovedTestCase):
                 self.assertEqual(data_habit['response'], real_habit.response)
                 self.assertEqual(data_habit['reward'], real_habit.reward)
                 self.assertEqual(data_habit['value'], real_habit.value)
+                self.assertEqual(data_habit['notes'], real_habit.notes)
                 self.assertEqual(data_habit['habit_num'], real_habit.habit_num)
                 self.assertEqual(data_habit['id'], real_habit.id)
 
@@ -183,6 +185,7 @@ class HabitTestCase(ImprovedTestCase):
             'craving': 'Craving',
             'response': 'Response',
             'reward': 'Reward',
+            'notes': 'Notes',
             'value': 'POSITIVE',
         }
         response = self.post_response(api_path, api_views.habit_create, data, kwargs=kwargs)
@@ -197,6 +200,7 @@ class HabitTestCase(ImprovedTestCase):
         self.assertEqual(habit.craving, data['craving'])
         self.assertEqual(habit.response, data['response'])
         self.assertEqual(habit.reward, data['reward'])
+        self.assertEqual(habit.notes, data['notes'])
         self.assertEqual(habit.value, data['value'])
         self.assertEqual(habit.habit_num, 0)
 
@@ -223,6 +227,7 @@ class HabitTestCase(ImprovedTestCase):
             'new_craving': 'want to look at internet',
             'new_response': 'browse internet',
             'new_reward': 'feel good by seeing dank memes',
+            'new_notes': 'what is this',
             'new_value': 'NEGATIVE',
         }
         response = self.post_response(api_path, api_views.habit_edit, data, kwargs=kwargs)
@@ -236,6 +241,7 @@ class HabitTestCase(ImprovedTestCase):
         self.assertEqual(habit.craving, data['new_craving'])
         self.assertEqual(habit.response, data['new_response'])
         self.assertEqual(habit.reward, data['new_reward'])
+        self.assertEqual(habit.notes, data['new_notes'])
         self.assertEqual(habit.value, data['new_value'])
 
     def test_habit_delete(self):

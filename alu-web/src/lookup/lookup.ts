@@ -1047,6 +1047,7 @@ export function apiHabitCreate(
   craving: string,
   response: string,
   reward: string,
+  notes: string,
   value: HabitValue,
   callback: (response: Habit, status: number) => void,
 ) {
@@ -1056,6 +1057,7 @@ export function apiHabitCreate(
     craving: craving,
     response: response,
     reward: reward,
+    notes: notes,
     value: value,
   });
 }
@@ -1069,6 +1071,7 @@ export function apiHabitEdit(
   newCraving: string | undefined,
   newResponse: string | undefined,
   newReward: string | undefined,
+  newNotes: string | undefined,
   newValue: HabitValue | undefined,
   callback: (response: Habit, status: number) => void
 ) {
@@ -1078,6 +1081,7 @@ export function apiHabitEdit(
     new_craving: newCraving,
     new_response: newResponse,
     new_reward: newReward,
+    new_notes: newNotes,
     new_value: newValue,
   });
 }
