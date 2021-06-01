@@ -227,7 +227,7 @@ function RenderRoutine(props: RenderRoutineProps) {
       <span
         role='button'
         className='underline-on-hover'
-        onClick={() => editRoutine({ title: window.prompt(`Renaming Routine ${routine.title}`) })}
+        onClick={() => editRoutine({ title: window.prompt(`Renaming routine "${routine.title}"`) })}
       >
         {routine.title}
       </span>
@@ -324,7 +324,7 @@ function RenderHabit(props: RenderHabitProps) {
       >
         <span
           role='button'
-          onClick={() => editHabit({ title: window.prompt(`Renaming Habit "${habit.title}"`) })}
+          onClick={() => editHabit({ title: window.prompt(`Renaming habit "${habit.title}"`) })}
           className='underline-on-hover'
         >
           {habit.title}
@@ -373,6 +373,7 @@ function RenderHabit(props: RenderHabitProps) {
             />
           </Col>
         </Row>
+        <hr />
         <Row>
           <Col>
             <Form.Label>Notes</Form.Label>
@@ -385,6 +386,15 @@ function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ notes: e.target.value })}
             />
           </Col>
+          {habit.value !== 'NEUTRAL' && <Col>
+            <p>Strategies to {habit.value === 'POSITIVE' ? 'build' : 'break'} this habit:</p>
+            <ul>
+              <li>How can I make it {habit.value === 'POSITIVE' ? 'obvious' : 'invisible'}?</li>
+              <li>How can I make it {habit.value === 'POSITIVE' ? 'attractive' : 'unattractive'}?</li>
+              <li>How can I make it {habit.value === 'POSITIVE' ? 'easy' : 'difficult'}?</li>
+              <li>How can I make it {habit.value === 'POSITIVE' ? 'satisfying' : 'unsatisfying'}?</li>
+            </ul>
+          </Col>}
         </Row>
         <hr />
         <Row>

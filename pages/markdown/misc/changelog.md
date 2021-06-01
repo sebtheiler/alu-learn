@@ -1,6 +1,18 @@
 
 -----
-## Deprecated Notes - May 30 - 0.6.6
+
+# Habits (DEVELOPMENT) - June 01 - 0.7.0a
+Note: this is a highly experimental feature and is only available if you opt-in to it.  Also note that this is version 0.7a, not 0.7.
+
+
+Habits aims to be an easy way to build good habits and break bad ones.  I'm honestly not going to elaborate any further, because (a) no one reads the changelog and (b) it is still under development.
+
+
+* **Added Habits:** If _opted in_, there will be another option on the home sidebar to access Habits.
+* **Added Dev-Opt-In Setting:** You can opt into development features by checking this in settings.
+
+
+## End of Line - June 01 - 0.6.6
 In the final minor version of Alu v0.6, I've made the hard decision to deprecate Notes.
 
 

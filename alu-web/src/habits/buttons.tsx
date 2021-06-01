@@ -91,7 +91,7 @@ export function CreateHabitButton(props: CreateHabitButtonProps) {
 
   return (
     <Form onSubmit={createHabit}>
-      <InputGroup className='mb-3' style={{ maxWidth: '500px' }}>
+      <InputGroup className='mb-3 mx-auto' style={{ maxWidth: '500px' }}>
         <FormControl
           placeholder='New habit'
           aria-label='New habit'
