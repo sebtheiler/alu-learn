@@ -8,7 +8,7 @@ import Modal from 'react-bootstrap/Modal';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Alert from 'react-bootstrap/Alert';
 import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiQuickDeckList, apiFeedbackGetQuestion, apiFeedbackRespondQuestion } from '../lookup';
-import { errorHandler, shiftDate, range, timezoneToISOString, useApiObjectHook } from '../utils';
+import { errorHandler, shiftDate, range, timezoneToISOString, useApiObjectHook, stringDate } from '../utils';
 import { randomTip } from './randomtips';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import ReactTooltip from 'react-tooltip';
@@ -245,13 +245,21 @@ const blankValues = range(0, 366).map(i => {
     date: shiftDate(today, -i),
     cardsDone: 0,
     timeSpent: 0,
+    habitsDone: 0,
   } as ProfileHistory;
 });
+const calcWorkDone = hist => {
+  if (hist.cards_done !== undefined) {
+    return hist.cards_done + hist.habits_done * 10;
+  } else {
+    return hist.cardsDone + hist.habitsDone * 10;
+  }
+}
 
 function StatsComponent({ profile }) {
   const [userHistory, setUserHistory] = useState<ProfileHistory[]>(blankValues);
   const [gotHistory, setGotHistory] = useState(false);
-  const [maxReviews, setMaxReviews] = useState(0);
+  const [maxWorkDone, setMaxWorkDone] = useState(0);
 
   // Get profile history
   useEffect(() => {
@@ -259,7 +267,9 @@ function StatsComponent({ profile }) {
       setGotHistory(true);
       apiProfileHistory(profile.username, (response, status) => {
         if (status === 200) {
-          setMaxReviews(Math.max(...response.map(hist => hist.cards_done)));
+          setMaxWorkDone(Math.max(...response.map(
+            hist => calcWorkDone(hist),
+          )));
           const gottenDates = response.map(hist => hist.date);
           const historyValues = userHistory.map(hist => {
             // Check if we have that date in history
@@ -270,7 +280,8 @@ function StatsComponent({ profile }) {
                 ...hist,
                 cardsDone: date.cards_done,
                 timeSpent: date.time_spent,
-              }
+                habitsDone: date.habits_done,
+              };
             } else {
               // Return the standard/blank value
               return hist;
@@ -296,26 +307,45 @@ function StatsComponent({ profile }) {
           endDate={today}
           values={userHistory}
           tooltipDataAttrs={(value: ProfileHistory) => {
-            return {
-              'data-tip': value && value.date ? `You reviewed ${value.cardsDone} flashcards on ${
-                timezoneToISOString(value.date).slice(0, 10)}${!!value.timeSpent ? ` in ${Math.round(value.timeSpent/1000/60)} minutes` : ''}
-              ` : 'Error, please report this',
-            };
+            if (!value || !value.date)
+              return {'data-tip': 'Error, please report this'};
+
+            let dataTip = '';
+            if (value.cardsDone) {
+              dataTip += `You reviewed ${value.cardsDone} flashcard`;
+              if (value.cardsDone > 1)
+                dataTip += 's';
+            }
+            if (value.habitsDone) {
+              if (dataTip === '')
+                dataTip += `You did ${value.habitsDone} habit`;
+              else
+                dataTip += ` and did ${value.habitsDone} habit`;
+              
+                if (value.habitsDone > 1)
+                  dataTip += 's';
+            }
+            if (dataTip !== '')
+              dataTip += ` on ${stringDate()}`
+            if (value.timeSpent)
+              dataTip += ` in ${Math.round(value.timeSpent/1000/60)} minutes`;
+
+            return { 'data-tip': dataTip };
           }}
           classForValue={(value) => {
             let colorValue: number;
             if (!value) {
               colorValue = 0;
             } else {
-              const unit = maxReviews / 7; // 7 = number of colors that aren't zero
-              const cardsDone = value.cardsDone;
-              if (cardsDone === 0) {colorValue = 0} else
-              if (cardsDone > maxReviews - unit*1) {colorValue = 7} else
-              if (cardsDone > maxReviews - unit*2) {colorValue = 6} else
-              if (cardsDone > maxReviews - unit*3) {colorValue = 5} else
-              if (cardsDone > maxReviews - unit*4) {colorValue = 4} else
-              if (cardsDone > maxReviews - unit*5) {colorValue = 3} else
-              if (cardsDone > maxReviews - unit*6) {colorValue = 2} else
+              const unit = maxWorkDone / 7; // 7 = number of colors that aren't zero
+              const workDone = calcWorkDone(value);
+              if (workDone === 0) {colorValue = 0} else
+              if (workDone > maxWorkDone - unit*1) {colorValue = 7} else
+              if (workDone > maxWorkDone - unit*2) {colorValue = 6} else
+              if (workDone > maxWorkDone - unit*3) {colorValue = 5} else
+              if (workDone > maxWorkDone - unit*4) {colorValue = 4} else
+              if (workDone > maxWorkDone - unit*5) {colorValue = 3} else
+              if (workDone > maxWorkDone - unit*6) {colorValue = 2} else
               {colorValue = 1}
             }
             return `color-scale-${Math.min(colorValue, 7)}`;

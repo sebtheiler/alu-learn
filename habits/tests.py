@@ -1,7 +1,8 @@
 from utils.test_utils import ImprovedTestCase
 from .api import views as api_views
-from profiles.models import Profile
+from profiles.models import Profile, ProfileHistorySegment
 from .models import Habit, Routine
+import datetime as dt
 
 
 class HabitTestCase(ImprovedTestCase):
@@ -231,11 +232,6 @@ class HabitTestCase(ImprovedTestCase):
             'new_response': 'browse internet',
             'new_reward': 'feel good by seeing dank memes',
             'new_notes': 'what is this',
-            'new_history': [
-                {'date': '2021-05-05', 'done': True},
-                {'date': '2021-05-06', 'done': True},
-                {'date': '2021-05-07', 'done': True},
-            ],
             'new_value': 'NEGATIVE',
         }
         response = self.post_response(api_path, api_views.habit_edit, data, kwargs=kwargs)
@@ -250,8 +246,60 @@ class HabitTestCase(ImprovedTestCase):
         self.assertEqual(habit.response, data['new_response'])
         self.assertEqual(habit.reward, data['new_reward'])
         self.assertEqual(habit.notes, data['new_notes'])
-        self.assertEqual(habit.history, data['new_history'])
         self.assertEqual(habit.value, data['new_value'])
+
+        # Test history action (since it's more complicated)
+        data = {'history_action': {
+            'action': 'INCREMENT',
+            'utc_timezone_offset': 0,
+        }}
+        initial_hist_len = len(habit.history)
+        initial_prof_hist_num = ProfileHistorySegment.objects.count()
+        response = self.post_response(api_path, api_views.habit_edit, data, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Routine.objects.count(), 1)
+        self.assertEqual(Habit.objects.count(), 1)
+
+        habit.refresh_from_db()
+        self.assertEqual(initial_hist_len, len(habit.history) - 1)
+        self.assertEqual(
+            initial_prof_hist_num,
+            ProfileHistorySegment.objects.count() - 1,
+        )
+        self.assertEqual(self.user.profile.has_done_work_today, True)
+
+        latest_hist_seg = ProfileHistorySegment.objects.last()
+        latest_history = habit.history[-1]
+        date = dt.datetime.today().strftime('%Y-%m-%d')
+        self.assertEqual(str(latest_hist_seg.date), date)
+        self.assertEqual(latest_hist_seg.habits_done, 1)
+        self.assertEqual(latest_history['date'], date)
+        self.assertEqual(latest_history['done'], True)
+
+        # Test undoing the history
+        data = {'history_action': {
+            'action': 'DECREMENT',
+            'utc_timezone_offset': 0,
+        }}
+        response = self.post_response(api_path, api_views.habit_edit, data, kwargs=kwargs)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Routine.objects.count(), 1)
+        self.assertEqual(Habit.objects.count(), 1)
+
+        habit.refresh_from_db()
+        self.assertEqual(initial_hist_len, len(habit.history))
+        self.assertEqual(
+            initial_prof_hist_num,
+            ProfileHistorySegment.objects.count() - 1,
+        )
+        self.assertEqual(self.user.profile.has_done_work_today, True)
+
+        latest_hist_seg.refresh_from_db()
+        latest_history = habit.history[-1]
+        date = dt.datetime.today().strftime('%Y-%m-%d')
+        self.assertEqual(str(latest_hist_seg.date), date)
+        self.assertEqual(latest_hist_seg.habits_done, 0)
+        self.assertNotEqual(latest_history['date'], date)
 
     def test_habit_delete(self):
         num_habits = 5

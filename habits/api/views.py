@@ -5,6 +5,7 @@ from ..serializers import RoutineSerializer, HabitSerializer
 from django.db.models import F
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+import datetime as dt
 
 
 @api_view(['POST'])
@@ -162,9 +163,24 @@ def habit_edit(request, routine_id, habit_id, *args, **kwargs):
     if title and len(title) == 0:
         title = None
 
-    history = request.data.get('new_history')
-    if isinstance(history, list):
-        habit.history = history
+    history_action = request.data.get('history_action')
+    if history_action:
+        if history_action.get('action') == 'INCREMENT':
+            date = (dt.datetime.today() - dt.timedelta(minutes=300)) \
+                .strftime('%Y-%m-%d')
+            habit.history.append({
+                'date': date,
+                'done': True,
+            })
+            habits_done = 1
+        else:
+            del habit.history[-1]
+            habits_done = -1
+
+        request.user.profile.increment_work_done_today(
+            habits_done=habits_done,
+            utc_timezone_offset=history_action.get('utc_timezone_offset'),
+        )
 
     habit.title = title or habit.title
     habit.cue = request.data.get('new_cue') or habit.cue

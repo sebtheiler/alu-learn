@@ -812,7 +812,8 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
     flashcard.save()
 
     # Increment the number of cards that the profile and SSM are registed as doing today
-    flashcard.creator.deck.user.profile.increment_cards_done_today(
+    flashcard.creator.deck.user.profile.increment_work_done_today(
+        1,
         request.data.get('utc_timezone_offset'),
         request.data.get('time_taken'),
     )

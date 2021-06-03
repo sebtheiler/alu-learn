@@ -15,11 +15,11 @@ from decks.models import SharedDeck, StudySessionManager
 @shared_task
 def midnight_reset():
     # Break the streaks of users who haven't studied today
-    not_studied_profiles = Profile.objects.filter(has_done_cards_today=False)
+    not_studied_profiles = Profile.objects.filter(has_done_work_today=False)
     not_studied_profiles.update(current_streak=0)
 
     # Reset all users to not having studied
-    Profile.objects.update(has_done_cards_today=False)
+    Profile.objects.update(has_done_work_today=False)
 
     # Reset the number of cards each SSM has done
     StudySessionManager.objects.update(
@@ -42,7 +42,7 @@ def run_midnight_reset():
 @shared_task
 def email_reminder():
     users_to_notify = Profile.objects.filter(
-        has_done_cards_today=False,
+        has_done_work_today=False,
         current_streak__gt=0,
         settings__send_reminders=True,
     )

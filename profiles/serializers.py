@@ -147,5 +147,6 @@ class HistorySerializer(serializers.ModelSerializer):
             'date',
             'cards_done',
             'time_spent',
+            'habits_done',
             'id',
         ]

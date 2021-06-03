@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
 // TODO: turn these imports into the direct ones
 import { Alert, ButtonGroup, Card, Col, Container, Form, OverlayTrigger, Row, ToggleButton } from 'react-bootstrap';
-import { Habit, HabitValue, Routine, HabitHistory } from './types';
+import { Habit, HabitValue, Routine } from './types';
 import { CreateRoutineButton, CreateHabitButton, HabitButtonGroup, RoutineButtonGroup } from './buttons';
 import { errorHandler, generateTooltip, stringDate, useApiObjectHook } from '../utils';
 import { apiHabitEdit, apiRoutineEdit, apiRoutineList } from '../lookup';
 import './main.css';
+import { HistoryAction } from '../lookup/lookup';
 
 
 export default function Habits() {
@@ -266,7 +267,7 @@ interface EditHabitOptions {
   response?: string;
   reward?: string;
   notes?: string;
-  history?: HabitHistory[];
+  historyAction?: HistoryAction;
   value?: HabitValue;
 }
 interface RenderHabitProps {
@@ -342,7 +343,7 @@ function RenderHabit(props: RenderHabitProps) {
       options.response,
       options.reward,
       options.notes,
-      options.history,
+      options.historyAction,
       options.value,
       (response, status) => {
         if (status === 200) {
@@ -355,16 +356,20 @@ function RenderHabit(props: RenderHabitProps) {
   }
 
   const updateHistory = event => {
-    let newHistory = habit.history;
+    let historyAction: HistoryAction;
+    const utcTimezoneOffset = new Date().getTimezoneOffset();
     if (completedToday)
-      newHistory.pop();
+      historyAction = {
+        action: 'DECREMENT',
+        utc_timezone_offset: utcTimezoneOffset,
+      }
     else
-      newHistory.push({
-        date: new Date().toISOString().slice(0, 10),
-        done: true
-      });
+      historyAction = {
+        action: 'INCREMENT',
+        utc_timezone_offset: utcTimezoneOffset,
+      }
     
-    editHabit({ history: newHistory });
+    editHabit({ historyAction: historyAction });
   }
 
   return (<>

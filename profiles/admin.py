@@ -21,7 +21,11 @@ class ProfileAdmin(admin.ModelAdmin):
 
 class ProfileHistorySegmentAdmin(admin.ModelAdmin):
     model = ProfileHistorySegment
-    list_display = ('date', 'profile', 'cards_done', 'formatted_time_spent', 'time_per_card')
+    list_display = (
+        'date', 'profile', 'cards_done',
+        'habits_done', 'formatted_time_spent',
+        'time_per_card',
+    )
     list_filter = ('date',)
     search_fields = (
         'profile__user__first_name',
@@ -45,7 +49,10 @@ class ProfileHistorySegmentAdmin(admin.ModelAdmin):
 
     def time_per_card(self, obj):
         seconds = obj.time_spent / 1000
-        return f'{(seconds / obj.cards_done):.2f} seconds'
+        try:
+            return f'{(seconds / obj.cards_done):.2f} seconds'
+        except ZeroDivisionError:
+            return 0
 
 
 admin.site.register(Profile, ProfileAdmin)

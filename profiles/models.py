@@ -26,7 +26,7 @@ class Profile(models.Model):
 
     longest_streak = models.PositiveSmallIntegerField(default=0)
     current_streak = models.PositiveSmallIntegerField(default=0)
-    has_done_cards_today = models.BooleanField(default=False)
+    has_done_work_today = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         if self.user.first_name and self.user.last_name:
@@ -42,29 +42,37 @@ class Profile(models.Model):
         self.save()
         return self.total_thanks_recieved
 
-    def increment_cards_done_today(self, utc_timezone_offset=None, time_taken=None) -> int:
+    def increment_work_done_today(
+        self,
+        cards_done: int = 0,
+        utc_timezone_offset: int = None,  # in mins
+        time_taken: int = 0,
+        habits_done: int = 0,
+    ) -> int:
         # Get or create history for today
         date = datetime.datetime.now()
         if utc_timezone_offset is not None:
             date -= datetime.timedelta(minutes=utc_timezone_offset)
-        history_obj, created = self.history.get_or_create(date=date.date())
+
+        history_obj, created = self.history.get_or_create(
+            date=date.date()
+        )
 
         # Increment the current streak if this is the first card done today
         if created:
             self.current_streak += 1
-
-            # Update the longest streak if the current streak is longer
+            self.has_done_work_today = True
             if self.current_streak > self.longest_streak:
                 self.longest_streak = self.current_streak
 
-            # Register that the profile has studied today
-            self.has_done_cards_today = True
-
-            # Save
             self.save()
 
         # Increment the cards done today
-        return history_obj.increment_cards_done(time_taken)
+        return history_obj.increment_work_done(
+            cards_done,
+            time_taken,
+            habits_done,
+        )
 
     def toggle_friend(
         self,
@@ -177,18 +185,25 @@ class ProfileHistorySegment(models.Model):
     date = models.DateField(default=datetime.date.today)
     cards_done = models.PositiveSmallIntegerField(default=0)
     time_spent = models.PositiveIntegerField(default=0)
+    habits_done = models.PositiveSmallIntegerField(default=0)
 
     objects = ProfileHistorySegmentModelManager()
 
     def __str__(self) -> str:
-        return f"History for {self.profile.user.username} on {self.date}: Cards Done: {self.cards_done} | Time Spent: {(self.time_spent/1000/60):.2f}"
+        return f'History for {self.profile.user.username} on {self.date}'
 
-    def increment_cards_done(self, time_taken=None) -> int:
+    def increment_work_done(
+        self,
+        cards_done: int = 0,
+        time_taken: int = 0,  # in ms
+        habits_done: int = 0,
+    ) -> int:
         # Do not use this method if you need to make other changes to the profile obj
         # Only use this method if the `cards_done` is the only attr that needs to be changed
-        self.cards_done += 1
-        if time_taken:
-            self.time_spent += time_taken
+        self.cards_done += cards_done
+        self.time_spent += time_taken
+        self.habits_done += habits_done
+
         self.save()
         return self.cards_done
 

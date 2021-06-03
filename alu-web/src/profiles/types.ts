@@ -47,4 +47,5 @@ export interface ProfileHistory {
   date: Date;
   cardsDone: number;
   timeSpent: number;
+  habitsDone: number;
 }
