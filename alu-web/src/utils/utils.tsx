@@ -597,6 +597,11 @@ export function FancyFormFileUpload(props: FancyFormFileUploadProps) {
 }
 
 // Returns the current day's date in the form YYYY-MM-DD (2020-06-02)
-export function stringDate(date: Date = new Date()): string {
-  return (date || new Date()).toISOString().slice(0, 10);
+export function stringDate(
+  date: Date = new Date(),
+  tzAware: boolean = true,
+): string {
+  const offset = tzAware ? date.getTimezoneOffset() : 0;
+  date = new Date(date.getTime() - (offset*60*1000));
+  return date.toISOString().split('T')[0];
 }

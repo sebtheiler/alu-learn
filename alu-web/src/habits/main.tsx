@@ -322,8 +322,12 @@ function RenderHabit(props: RenderHabitProps) {
     for (let i = 1; i < sorted.length; i++) {
       const currentDate = new Date(sorted[i].date);
       const previousDate = new Date(sorted[i - 1].date);
-      previousDate.setDate(previousDate.getDate() - 1);
-      if (currentDate === previousDate) {
+      currentDate.setDate(currentDate.getDate() + 1);
+      if (
+        currentDate.getDate() === previousDate.getDate() &&
+        currentDate.getMonth() === previousDate.getMonth() &&
+        currentDate.getFullYear() === previousDate.getFullYear()
+      ) {
         streak++;
       } else {
         break;
