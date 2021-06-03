@@ -26,6 +26,7 @@ import {
   getMonthNumber,
   dateDiff,
   addDays,
+  stringDate,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -59,4 +60,5 @@ export {
   getMonthNumber,
   dateDiff,
   addDays,
+  stringDate,
 }

@@ -595,3 +595,8 @@ export function FancyFormFileUpload(props: FancyFormFileUploadProps) {
     </Form.Group>
   );
 }
+
+// Returns the current day's date in the form YYYY-MM-DD (2020-06-02)
+export function stringDate(date: Date = new Date()): string {
+  return (date || new Date()).toISOString().slice(0, 10);
+}

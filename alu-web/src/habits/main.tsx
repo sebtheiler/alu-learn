@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { Alert, ButtonGroup, Card, Col, Container, Form, OverlayTrigger, Row, ToggleButton } from 'react-bootstrap';
 import { Habit, HabitValue, Routine, HabitHistory } from './types';
 import { CreateRoutineButton, CreateHabitButton, HabitButtonGroup, RoutineButtonGroup } from './buttons';
-import { errorHandler, generateTooltip, useApiObjectHook } from '../utils';
+import { errorHandler, generateTooltip, stringDate, useApiObjectHook } from '../utils';
 import { apiHabitEdit, apiRoutineEdit, apiRoutineList } from '../lookup';
 import './main.css';
 
@@ -296,9 +296,40 @@ function RenderHabit(props: RenderHabitProps) {
 
     if (sorted.length === 0)
       return false;
-    if (sorted[0].date === new Date().toISOString().slice(0, 10))
+    if (sorted[0].date === stringDate())
       return true;
     return false;
+  }, [habit]);
+  const streak = useMemo(() => {
+    const sorted = habit.history.sort((a, b) =>
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (
+      sorted.length === 0 ||
+      (
+        sorted[0].date !== stringDate() &&
+        sorted[0].date !== stringDate(yesterday)
+      )
+    )
+      return 0;
+    
+    let streak = 1;  // initialized to 1 because we know the
+                     // user did the habit in the last day or so
+    for (let i = 1; i < sorted.length; i++) {
+      const currentDate = new Date(sorted[i].date);
+      const previousDate = new Date(sorted[i - 1].date);
+      previousDate.setDate(previousDate.getDate() - 1);
+      if (currentDate === previousDate) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    
+    return streak;
   }, [habit]);
 
   const editHabit = (options: EditHabitOptions) => {
@@ -450,8 +481,12 @@ function RenderHabit(props: RenderHabitProps) {
         <hr />
         <Row>
           <Col>
-            <Form.Label>Value</Form.Label>
-            <br />
+            Streak: {streak}
+          </Col>
+        </Row>
+        <hr />
+        <Row>
+          <Col>
             <ButtonGroup toggle>
               {['POSITIVE', 'NEUTRAL', 'NEGATIVE'].map((value, i) => (
                 <ToggleButton
@@ -468,9 +503,6 @@ function RenderHabit(props: RenderHabitProps) {
               ))}
             </ButtonGroup>
           </Col>
-        </Row>
-        <hr />
-        <Row>
           <Col>
             <HabitButtonGroup
               routine={routine}

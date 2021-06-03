@@ -1,6 +1,11 @@
 
 -----
 
+## Habit Streaks (DEVELOPMENT) - June ?? - 0.7.1a
+
+
+* **Added Habit Streaks:** You can now mark a habit as complete/avoided for the day.
+
 # Habits (DEVELOPMENT) - June 01 - 0.7.0a
 Note: this is a highly experimental feature and is only available if you opt-in to it.  Also note that this is version 0.7a, not 0.7.
 
