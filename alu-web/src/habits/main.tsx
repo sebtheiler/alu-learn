@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 // TODO: turn these imports into the direct ones
-import { Alert, ButtonGroup, Card, Col, Container, Form, Row, ToggleButton } from 'react-bootstrap';
-import { Habit, HabitValue, Routine } from './types';
+import { Alert, ButtonGroup, Card, Col, Container, Form, OverlayTrigger, Row, ToggleButton } from 'react-bootstrap';
+import { Habit, HabitValue, Routine, HabitHistory } from './types';
 import { CreateRoutineButton, CreateHabitButton, HabitButtonGroup, RoutineButtonGroup } from './buttons';
-import { errorHandler, useApiObjectHook } from '../utils';
+import { errorHandler, generateTooltip, useApiObjectHook } from '../utils';
 import { apiHabitEdit, apiRoutineEdit, apiRoutineList } from '../lookup';
 import './main.css';
 
@@ -266,6 +266,7 @@ interface EditHabitOptions {
   response?: string;
   reward?: string;
   notes?: string;
+  history?: HabitHistory[];
   value?: HabitValue;
 }
 interface RenderHabitProps {
@@ -288,6 +289,17 @@ function RenderHabit(props: RenderHabitProps) {
         return 'primary';
     }
   }, [habit]);
+  const completedToday = useMemo(() => {
+    const sorted = habit.history.sort((a, b) =>
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    if (sorted.length === 0)
+      return false;
+    if (sorted[0].date === new Date().toISOString().slice(0, 10))
+      return true;
+    return false;
+  }, [habit]);
 
   const editHabit = (options: EditHabitOptions) => {
     apiHabitEdit(
@@ -299,6 +311,7 @@ function RenderHabit(props: RenderHabitProps) {
       options.response,
       options.reward,
       options.notes,
+      options.history,
       options.value,
       (response, status) => {
         if (status === 200) {
@@ -308,6 +321,19 @@ function RenderHabit(props: RenderHabitProps) {
         }
       }
     );
+  }
+
+  const updateHistory = event => {
+    let newHistory = habit.history;
+    if (completedToday)
+      newHistory.pop();
+    else
+      newHistory.push({
+        date: new Date().toISOString().slice(0, 10),
+        done: true
+      });
+    
+    editHabit({ history: newHistory });
   }
 
   return (<>
@@ -328,6 +354,28 @@ function RenderHabit(props: RenderHabitProps) {
           className='underline-on-hover'
         >
           {habit.title}
+        </span>
+        <span
+          className='float-right'
+          role='button'
+          onClick={updateHistory}
+        >
+          {habit.value !== 'NEUTRAL' && <OverlayTrigger
+            placement='left'
+            delay={{ show: 250, hide: 400 }}
+            overlay={generateTooltip(
+              habit.value === 'POSITIVE' ?
+              'Mark this habit as completed for the day'
+              :
+              'Mark this habit as avoided for the day'
+            )}
+          >
+            {completedToday ?
+              <i className='fas fa-check-circle' />
+            :
+              <i className='far fa-circle' />
+            }
+          </OverlayTrigger>}
         </span>
       </Card.Header>
       {showBody && <Card.Body>
@@ -393,6 +441,9 @@ function RenderHabit(props: RenderHabitProps) {
               <li>How can I make it {habit.value === 'POSITIVE' ? 'attractive' : 'unattractive'}?</li>
               <li>How can I make it {habit.value === 'POSITIVE' ? 'easy' : 'difficult'}?</li>
               <li>How can I make it {habit.value === 'POSITIVE' ? 'satisfying' : 'unsatisfying'}?</li>
+              {habit.value === 'NEGATIVE' &&
+                <li>What habit can I replace this with?</li>
+              }
             </ul>
           </Col>}
         </Row>

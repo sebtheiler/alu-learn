@@ -1,5 +1,10 @@
 export type HabitValue = 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
 
+export interface HabitHistory {
+  date: string;
+  done: boolean;
+}
+
 export interface Habit {
   title: string;
   value: HabitValue;
@@ -9,6 +14,7 @@ export interface Habit {
   reward?: string;
   notes?: string;
   habit_num: number;
+  history: HabitHistory[];
   id: number;
 }
 

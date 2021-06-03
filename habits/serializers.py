@@ -14,6 +14,7 @@ class HabitSerializer(serializers.ModelSerializer):
             'value',
             'notes',
             'habit_num',
+            'history',
             'id',
         ]
 

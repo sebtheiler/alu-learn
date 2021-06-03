@@ -27,6 +27,7 @@ class HabitTestCase(ImprovedTestCase):
                 response=f'Response #{i + 1}',
                 reward=f'Reward #{i + 1}',
                 notes=f'Notes #{i + 1}',
+                history=[{'date': '2013-01-01', 'done': True}],
                 value='POSITIVE' if i % 2 == 0 else 'NEGATIVE',
                 routine=routine,
                 habit_num=i,
@@ -96,6 +97,7 @@ class HabitTestCase(ImprovedTestCase):
                 self.assertEqual(data_habit['reward'], real_habit.reward)
                 self.assertEqual(data_habit['value'], real_habit.value)
                 self.assertEqual(data_habit['notes'], real_habit.notes)
+                self.assertEqual(data_habit['history'], real_habit.history)
                 self.assertEqual(data_habit['habit_num'], real_habit.habit_num)
                 self.assertEqual(data_habit['id'], real_habit.id)
 
@@ -201,6 +203,7 @@ class HabitTestCase(ImprovedTestCase):
         self.assertEqual(habit.response, data['response'])
         self.assertEqual(habit.reward, data['reward'])
         self.assertEqual(habit.notes, data['notes'])
+        self.assertEqual(habit.history, [])
         self.assertEqual(habit.value, data['value'])
         self.assertEqual(habit.habit_num, 0)
 
@@ -228,6 +231,11 @@ class HabitTestCase(ImprovedTestCase):
             'new_response': 'browse internet',
             'new_reward': 'feel good by seeing dank memes',
             'new_notes': 'what is this',
+            'new_history': [
+                {'date': '2021-05-05', 'done': True},
+                {'date': '2021-05-06', 'done': True},
+                {'date': '2021-05-07', 'done': True},
+            ],
             'new_value': 'NEGATIVE',
         }
         response = self.post_response(api_path, api_views.habit_edit, data, kwargs=kwargs)
@@ -242,6 +250,7 @@ class HabitTestCase(ImprovedTestCase):
         self.assertEqual(habit.response, data['new_response'])
         self.assertEqual(habit.reward, data['new_reward'])
         self.assertEqual(habit.notes, data['new_notes'])
+        self.assertEqual(habit.history, data['new_history'])
         self.assertEqual(habit.value, data['new_value'])
 
     def test_habit_delete(self):

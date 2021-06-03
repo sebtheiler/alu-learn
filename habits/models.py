@@ -30,6 +30,7 @@ class Habit(models.Model):
     reward = models.CharField(max_length=128, blank=True)
     notes = models.TextField(blank=True)
     habit_num = models.PositiveSmallIntegerField()  # 0-indexed
+    history = models.JSONField(default=list)
 
     VALUE_CHOICES = [
         ('POSITIVE', 'Positive'),

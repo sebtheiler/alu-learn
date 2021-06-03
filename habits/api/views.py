@@ -120,6 +120,15 @@ def routine_rearrange(request, routine_id, *args, **kwargs):
 def habit_create(request, routine_id, *args, **kwargs):
     """
     Creates a habit - POST
+
+    Params:
+        `title`
+        `cue`
+        `craving`
+        `response`
+        `reward`
+        `notes`
+        `value`
     """
     title = request.data.get('title')
     if title is None:
@@ -152,6 +161,10 @@ def habit_edit(request, routine_id, habit_id, *args, **kwargs):
     title = request.data.get('new_title')
     if title and len(title) == 0:
         title = None
+
+    history = request.data.get('new_history')
+    if isinstance(history, list):
+        habit.history = history
 
     habit.title = title or habit.title
     habit.cue = request.data.get('new_cue') or habit.cue

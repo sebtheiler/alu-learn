@@ -2,7 +2,7 @@
 // Each file should contain the lookups for just that package
 import { Node } from 'slate';
 import { CSSM, Deck, DeckDifficulty, FlashCard, FlashCardCreator, FlashCardTypes, LearningStatus, SchedulingAlgorithm, SharedDeck, SSMInterface } from '../decks/types';
-import { Routine, Habit, HabitValue } from '../habits/types';
+import { Routine, Habit, HabitValue, HabitHistory } from '../habits/types';
 import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { backendLookup, baseUrl } from './components';
@@ -1072,6 +1072,7 @@ export function apiHabitEdit(
   newResponse: string | undefined,
   newReward: string | undefined,
   newNotes: string | undefined,
+  newHistory: HabitHistory[] | undefined,
   newValue: HabitValue | undefined,
   callback: (response: Habit, status: number) => void
 ) {
@@ -1082,6 +1083,7 @@ export function apiHabitEdit(
     new_response: newResponse,
     new_reward: newReward,
     new_notes: newNotes,
+    new_history: newHistory,
     new_value: newValue,
   });
 }
