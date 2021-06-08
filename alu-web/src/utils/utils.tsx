@@ -15,7 +15,7 @@ import { Node } from 'slate';
 export const generateTooltip = (text) => {
   return (props) => (
     <Tooltip className='button-tooltip' {...props}>
-      <ReactMarkdown source={text} />
+      {text}
     </Tooltip>
   );
 }
@@ -221,9 +221,10 @@ interface QuestionBubbleProps {
   showDelay?: number;
   hideDelay?: number;
   children?: ReactNodeArray | ReactNode;
+  isWhite?: boolean;
 }
 export function QuestionBubble(props: QuestionBubbleProps) {
-  const { type = 'question', showDelay = 350, hideDelay = 1800 } = props;
+  const { type = 'question', showDelay = 350, hideDelay = 1800, isWhite = false, } = props;
 
   return (
     <OverlayTrigger
@@ -231,7 +232,7 @@ export function QuestionBubble(props: QuestionBubbleProps) {
       placement='right'
       delay={{ show: showDelay, hide: hideDelay }}
     >
-      <i className={`fas fa-${type}-circle text-secondary`} />
+      <i className={`fas fa-${type}-circle` + (isWhite ? '' : ' text-secondary')} />
     </OverlayTrigger>
   );
 }

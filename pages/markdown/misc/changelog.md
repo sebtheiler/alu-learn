@@ -5,6 +5,7 @@
 
 
 * **Added Habit Streaks:** You can now mark a habit as complete/avoided for the day.  This increments the habits streaks count, which you can view in its details.  It also contributes towards your user streak and you can now see the number of habits you completed on a given day using the review heatmap.
+* **Added Tooltips:** Added a couple of tooltips to the four stages of the habit cycle and to the strategies for building/breaking the habit for ease of reference.
 
 # Habits (DEVELOPMENT) - June 01 - 0.7.0a
 Note: this is a highly experimental feature and is only available if you opt-in to it.  Also note that this is version 0.7a, not 0.7.

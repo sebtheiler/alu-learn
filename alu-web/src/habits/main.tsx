@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { Alert, ButtonGroup, Card, Col, Container, Form, OverlayTrigger, Row, ToggleButton } from 'react-bootstrap';
 import { Habit, HabitValue, Routine } from './types';
 import { CreateRoutineButton, CreateHabitButton, HabitButtonGroup, RoutineButtonGroup } from './buttons';
-import { errorHandler, generateTooltip, stringDate, useApiObjectHook } from '../utils';
+import { errorHandler, generateTooltip, QuestionBubble, stringDate, useApiObjectHook } from '../utils';
 import { apiHabitEdit, apiRoutineEdit, apiRoutineList } from '../lookup';
 import './main.css';
 import { HistoryAction } from '../lookup/lookup';
@@ -148,7 +148,8 @@ export default function Habits() {
   if (!routines) return <p className='text-center'>Loading...</p>
 
   return (<>
-    <h1 className='text-center'>Habits</h1>
+    <h1 className='text-center'>Habits (Dev)</h1>
+    <p className='text-center'>Habits is still under development.  See more info in the changelog.</p>
     <Container>
       {routines.length === 0 ? <div className='text-center'>
         <p>You don't have any routines yet</p>
@@ -421,7 +422,16 @@ function RenderHabit(props: RenderHabitProps) {
       {showBody && <Card.Body>
         <Row>
           <Col>
-            <Form.Label>Cue</Form.Label>
+            <Form.Label>
+              Cue{' '}
+              <QuestionBubble isWhite>
+                Cue is the trigger your brain receives to start a certain behavior.{' '}
+                {habit.value === 'POSITIVE' && 'For example, finishing brushing your teeth might be the cue to study with Alu for 15 minutes.'}
+                {habit.value === 'NEGATIVE' && 'For example, feeling stuck on an assignment might be the cue to check social media.'}
+                {habit.value === 'NEUTRAL' && 'For example, finishing exercising might be the cue to take a shower.'}
+                {' '}Cues should be specific and immediately actionable.
+              </QuestionBubble>
+            </Form.Label>
             <Form.Control
               type='text'
               name='cue'
@@ -431,7 +441,15 @@ function RenderHabit(props: RenderHabitProps) {
             />
           </Col>
           <Col>
-            <Form.Label>Craving</Form.Label>
+            <Form.Label>
+              Craving{' '}
+              <QuestionBubble isWhite>
+                Craving is the reason you are motivated to do this habit.{' '}
+                {habit.value === 'POSITIVE' && 'For example, wanting to do well in school and feel productive might be the craving to study.'}
+                {habit.value === 'NEGATIVE' && 'For example, wanting to escape the work you have to do might be the craving to open social media.'}
+                {habit.value === 'NEUTRAL' && 'For example, wanting to feel clean might be the craving to take a shower.'}
+              </QuestionBubble>
+            </Form.Label>
             <Form.Control
               type='text'
               name='craving'
@@ -441,7 +459,15 @@ function RenderHabit(props: RenderHabitProps) {
             />
           </Col>
           <Col>
-            <Form.Label>Response</Form.Label>
+            <Form.Label>
+              Response{' '}
+              <QuestionBubble isWhite>
+                Response is the behavior you do to perform this habit.{' '}
+                {habit.value === 'POSITIVE' && 'For example, opening Alu or Khan Academy and studying might be the response to wanting to study.'}
+                {habit.value === 'NEGATIVE' && 'For example, browsing social media is the response to wanting to escape your work.'}
+                {habit.value === 'NEUTRAL' && 'For example, taking a shower might be the response to wanting to feel clean.'}
+              </QuestionBubble>
+            </Form.Label>
             <Form.Control
               type='text'
               name='response'
@@ -451,7 +477,15 @@ function RenderHabit(props: RenderHabitProps) {
             />
           </Col>
           <Col>
-            <Form.Label>Reward</Form.Label>
+            <Form.Label>
+              Reward{' '}
+              <QuestionBubble isWhite>
+                Reward is the positive feeling you get for completing the habit.{' '}
+                {habit.value === 'POSITIVE' && 'For example, finishing studying, increasing your streak, and feeling productive might make you satisfied since you have less work to do.  Studying becomes associated with wanting to feel productive.'}
+                {habit.value === 'NEGATIVE' && 'For example, browsing social media might give relieve you from having to do work.  Browsing social media becomes associated with feeling stuck.'}
+                {habit.value === 'NEUTRAL' && 'For example, taking a shower satisfies your craving to feel clean.  Taking a shower becomes associated with wanting to feel clean.'}
+              </QuestionBubble>
+            </Form.Label>
             <Form.Control
               type='text'
               name='reward'
@@ -476,24 +510,93 @@ function RenderHabit(props: RenderHabitProps) {
           </Col>
           {habit.value !== 'NEUTRAL' && <Col>
             <p>Strategies to {habit.value === 'POSITIVE' ? 'build' : 'break'} this habit:</p>
-            <ul>
-              <li>How can I make it {habit.value === 'POSITIVE' ? 'obvious' : 'invisible'}?</li>
-              <li>How can I make it {habit.value === 'POSITIVE' ? 'attractive' : 'unattractive'}?</li>
-              <li>How can I make it {habit.value === 'POSITIVE' ? 'easy' : 'difficult'}?</li>
-              <li>How can I make it {habit.value === 'POSITIVE' ? 'satisfying' : 'unsatisfying'}?</li>
-              {habit.value === 'NEGATIVE' &&
-                <li>What habit can I replace this with?</li>
-              }
-            </ul>
+            {habit.value === 'POSITIVE' ? <ul>
+              <li>
+                How can I make it obvious?{' '}
+                <QuestionBubble isWhite>
+                  Design your environment in a way that makes the cues of this habit obvious and visible.{' '}
+                  For example, promise to study for an hour (action) in your room (place) every evening after you finish your homework (time).
+                  If you are specific like this example, you are more likely to actually follow through with your intentions.
+                </QuestionBubble>
+              </li>
+              <li>
+                How can I make it attractive?{' '}
+                <QuestionBubble isWhite>
+                  Highlight the benefits of doing your good habit regularly.
+                  For example, list out the benefits of studying everyday to clarify your motivation.
+                  Another option is to join a group of people who also want to build the same habit, such as a study-group.
+                  You can also "bundle" your good habit with something you naturally enjoy doing, like listening to an audiobook/podcast as you clean your room.
+                </QuestionBubble>
+              </li>
+              <li>
+                How can I make it easy?{' '}
+                <QuestionBubble isWhite>
+                  Change your environment to decrease your good habit's friction and make it easier to complete.
+                  For example, keep study materials at arms reach so that there's little friction between you and studying, while keeping distractions (like your phone) in another room.
+                </QuestionBubble>{' '}
+                <QuestionBubble isWhite>
+                  When you first start building study habits, you can also start with ridiculously tiny habits, like just studying for a single minute or doing a single flashcard.
+                  These tiny habits give you no excuse to not do them, and you can slowly build them into larger habits.
+                  You can't improve a habit you don't have, so start small.
+                </QuestionBubble>
+              </li>
+              <li>
+                How can I make it satisfying?{' '}
+                <QuestionBubble isWhite>
+                  Give yourself a reward for completing your good habit.
+                  For example, if you can study without distractions for a 25 minutes, give yourself 5 minutes of freedom (or longer intervals, if you'd like).
+                </QuestionBubble>
+              </li>
+            </ul> : <ul>
+              <li>
+                How can I make it invisible?{' '}
+                <QuestionBubble isWhite>
+                  Design your environment in a way that reduces exposure to this habit and makes its cues invisible.{' '}
+                  For example, disable notifications or move your phone to another room.
+                </QuestionBubble>
+              </li>
+              <li>
+                How can I make it unattractive?{' '}
+                <QuestionBubble isWhite>
+                  Highlight the benefits of avoiding your bad habit.
+                  For example, make a list of benefits you would gain from avoiding social media, like having more time and energy available.
+                </QuestionBubble>
+              </li>
+              <li>
+                How can I make it difficult?{' '}
+                <QuestionBubble isWhite>
+                  Change your environment to increase your bad habit's friction and make it more difficult.
+                  For example, install an app/<a href='https://chrome.google.com/webstore/detail/self-control/ncaaipdfhdijmfdfmeoagmogddhkfdec?hl=en' target='_blank' rel='noreferrer'>browser-extension</a> that stops you from accessing an app/website that you spend too much time on.
+                  You could also put your phone in another room to completely avoid temptation.
+                </QuestionBubble>
+              </li>
+              <li>
+                How can I make it unsatisfying?{' '}
+                <QuestionBubble isWhite>
+                  How can you make the costs of your bad habit as unsatisfying and immediately painful as possible?
+                  For example, get an "accountability partner" who has the same goal as you, and you promise to update on how well you did your bad habit.
+                </QuestionBubble>
+              </li>
+              <li>
+                What habit can I replace this with?{' '}
+                <QuestionBubble isWhite>
+                  It is easier to replace a habit than simply remove it.
+                  For example, instead of checking social media when you get a notification, you could associate that cue with doing a few jumping-jacks instead.
+                </QuestionBubble>
+              </li>
+            </ul>}
+            You don't need all of these to be successful, but the more the better
           </Col>}
         </Row>
         <hr />
-        <Row>
-          <Col>
-            Streak: {streak}
-          </Col>
-        </Row>
-        <hr />
+        {habit.value !== 'NEUTRAL' && <>
+          <Row>
+            <Col>
+              Streak: {streak}
+            </Col>
+          </Row>
+          <hr />
+        </>}
         <Row>
           <Col>
             <ButtonGroup toggle>
