@@ -138,7 +138,8 @@ function StudentDataTable(props: { classroomId: number }) {
         data={students}
         expandableRows
         expandOnRowClicked
-        expandableRowsComponent={<ExpandableStudentDetailComponent classroomId={classroomId} />}
+        expandableRowsComponent={ExpandableStudentDetailComponent}
+        expandableRowsComponentProps={{ classroomId: classroomId }}
         noDataComponent={<p>You don't have any students yet.</p>}
         defaultSortFieldId='First Name'
         striped
