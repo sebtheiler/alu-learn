@@ -45,7 +45,7 @@ export function CreateRoutineButton(props: CreateRoutineButtonProps) {
             <Form.Label>Routine Name</Form.Label>
             <Form.Control
               type='text'
-              placeholder='My Routine'
+              placeholder='Morning Habits'
               name='title'
               maxLength={64}
               required

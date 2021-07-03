@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from 'react';
 // TODO: turn these imports into the direct ones
-import { Alert, ButtonGroup, Card, Col, Container, Form, OverlayTrigger, Row, ToggleButton } from 'react-bootstrap';
+import { Alert, Button, ButtonGroup, Card, Col, Container, Form, OverlayTrigger, Row, ToggleButton } from 'react-bootstrap';
 import { Habit, HabitValue, Routine } from './types';
 import { CreateRoutineButton, CreateHabitButton, HabitButtonGroup, RoutineButtonGroup } from './buttons';
 import { errorHandler, generateTooltip, QuestionBubble, stringDate, useApiObjectHook } from '../utils';
+import { SetupTutorial, SlidesPlayer } from './tutorials';
 import { apiHabitEdit, apiRoutineEdit, apiRoutineList } from '../lookup';
 import './main.css';
 import { HistoryAction } from '../lookup/lookup';
@@ -12,6 +13,7 @@ import { HistoryAction } from '../lookup/lookup';
 export default function Habits() {
   const [routines, setRoutines] = useApiObjectHook<Routine[]>(apiRoutineList, [200], 9001);
   const [selectedRoutine, setSelectedRoutine] = useState(0);
+  const [tutorial, setTutorial] = useState('intro');
 
   const createRoutineCallback = (routine: Routine) => {
     if (!routines) return;
@@ -148,16 +150,12 @@ export default function Habits() {
   if (!routines) return <p className='text-center'>Loading...</p>
 
   return (<>
-    <h1 className='text-center'>Habits (Dev)</h1>
-    <p className='text-center'>Habits is still under development.  See more info in the changelog.</p>
     <Container>
       {routines.length === 0 ? <div className='text-center'>
-        <p>You don't have any routines yet</p>
-        <CreateRoutineButton
-          createRoutineCallback={createRoutineCallback}
-        />
-        {/* TODO: tutorial for Habits will go here */}
-      </div> :
+        {tutorial === 'intro' && <SlidesPlayer preset='intro' finishedCallback={() => setTutorial('setup')} />}
+        {tutorial === 'setup' && <SetupTutorial createRoutineCallback={createRoutineCallback} />}
+      </div> : <>
+        <h1 className='text-center'>Habits</h1>
         <Row>
           <Col xs={2}>
             <CreateRoutineButton
@@ -190,7 +188,7 @@ export default function Habits() {
             />}
           </Col>
         </Row>
-      }
+      </>}
     </Container>
   </>);
 }
@@ -213,6 +211,9 @@ interface RenderRoutineProps {
 }
 function RenderRoutine(props: RenderRoutineProps) {
   const { routine, numRoutines, createHabitCallback, editHabitCallback, editRoutineCallback, deleteHabitCallback, deleteRoutineCallback, rearrangeRoutineCallback, rearrangeHabitCallback } = props;
+
+  const tutorialParts = ['setup', 'values', 'habit-parts', 'strategies', 'final'];
+  const [tutorialPart, setTutorialPart] = useState(0);
 
   const editRoutine = (options: EditRoutineOptions) => {
     apiRoutineEdit(routine.id, options.title, options.ordered, (response, status) => {
@@ -241,9 +242,70 @@ function RenderRoutine(props: RenderRoutineProps) {
       />
     </h3>
     <hr />
-    {routine.habits.length === 0 ?
-      <p>This routine doesn't have any habits yet</p>
-    : routine.habits.map((habit, i) =>
+    {numRoutines === 1 && tutorialParts[tutorialPart] !== 'final' && <>
+      <p>
+        {tutorialParts[tutorialPart] === 'setup' && <>
+          Great!  Now we are going to fill this routine with a couple habits. Create a habit using the input below.<br />
+          (example below)
+        </>}
+        {tutorialParts[tutorialPart] === 'values' && <>
+          Now, click on each of the habits and assign it a "value": positive/neutral/negative.
+          This represents whether the habit is good (positive) or bad (negative).<br />
+          (example below)
+        </>}
+        {tutorialParts[tutorialPart] === 'habit-parts' && <>
+          As you might've seen when assigning values, there are are four parts that influence a habit (and a section for taking notes).
+          These are:
+          <ul>
+            <li>Cue: the trigger your brain receives to start a certain habit</li>
+            <li>Craving: the reason you are motivated to do this habit</li>
+            <li>Response: the behavior you do to perform this habit</li>
+            <li>Reward: the positive feeling you get for completing the habit</li>
+          </ul>
+          A cue triggers a craving, which motivates a response resulting in a reward.
+          <br/>
+          Look at some of your good or bad habits that you want to build or break, and identify these four components for those habits.
+          This is essential to being able to modify your habits.<br />
+          (you can hover the question bubbles for more info)
+        </>}
+        {tutorialParts[tutorialPart] === 'strategies' && <>
+          That's pretty much it!  Now that you have the four components of some  habits,
+          you can try to answer some strategies to break this habit.
+          <br /><br />
+          These strategies are built on the four components and will help you turn your habit change into action.
+          (don't forget you can hover the question bubbles for more info)
+        </>}
+        {tutorialParts[tutorialPart] === 'final' && <>
+          There you go!  You've just started changing your habits!  What next?<br />
+          After completing a good habit, or avoiding a bad one, you can mark it as finished by clicking the circle icon on its right.  This will reset every day.<br />
+          If you want to build/break more habits in this routine, you can fill out their four components and try to answer some strategies for them.
+          If you want to work on a different set of habits, you can create a different routine (e.g., one for the evening).
+          Outside of just routines, you can also have more general habits, such as checking social media when you're stuck.
+          (remember not to make too many changes at once, or you will get burnt out and won't make any of them.)
+          <br /><br />
+          Changing habits isn't instant, and that can be frustrating.  But if you follow the strategies in Alu and give it enough
+          dedication, it will happen.
+          <br /><br />
+          The book <em><a href='https://www.amazon.com/Atomic-Habits-Proven-Build-Break/dp/0735211299' target='_blank' rel='noopener noreferrer'>Atomic Habits</a></em> by James Clear
+          has inspired a lot of the devices in <em>Habits</em> and is a great read if you want to learn more about habits.
+          <br /><br />
+          Final tips: you can rearrange habits with "Move Up/Down" and rename them by clicking their titles.
+        </>}
+      </p>
+      {routine.habits.length > 0 && tutorialPart < tutorialParts.length - 1 &&
+        <Button
+          className='mb-3 mx-auto text-center'
+          onClick={() => setTutorialPart(tutorialPart + 1)}
+        >
+          I'm Finished
+        </Button>
+      }
+      <hr />
+    </>}
+    {(routine.habits.length === 0) && (numRoutines > 1) &&
+      <p className='text-center'>Create some habits to get started!</p>
+    }
+    {routine.habits.map((habit) =>
       <RenderHabit
         routine={routine}
         habit={habit}
@@ -251,13 +313,46 @@ function RenderRoutine(props: RenderRoutineProps) {
         deleteHabitCallback={deleteHabitCallback}
         rearrangeHabitCallback={rearrangeHabitCallback}
         key={`${routine.id}-${habit.id}`}
-      />
-    )}
+      />)
+    }
     <hr />
     <CreateHabitButton
       createHabitCallback={createHabitCallback}
       routineId={routine.id}
     />
+    {(numRoutines === 1) && <>
+      <br />
+      <hr />
+      <p>Example:</p>
+      {(tutorialParts[tutorialPart] === 'setup') && <>
+        <img
+          src='/static/images/basic-routine.png'
+          alt='An example routine: Wake up; Turn on computer; Check social media; Eat breakfast; Watch YouTube; Study with Alu; Start School'
+          width='100%'
+        />
+      </>}
+      {(tutorialParts[tutorialPart] === 'values') && <>
+        <img
+          src='/static/images/values-routine.png'
+          alt='An example routine, annotated with values'
+          width='100%'
+        />
+      </>}
+      {(tutorialParts[tutorialPart] === 'habit-parts') && <>
+        <img
+          src='/static/images/habit-components.png'
+          alt='Two example habits, annotated with each of their four components'
+          width='100%'
+        />
+      </>}
+      {(tutorialParts[tutorialPart] === 'strategies') && <>
+        <img
+          src='/static/images/habit-strategies.png'
+          alt='Two example habits, annotated with strategies to build/break them'
+          width='100%'
+        />
+      </>}
+    </>}
   </>);
 }
 
@@ -425,7 +520,7 @@ function RenderHabit(props: RenderHabitProps) {
             <Form.Label>
               Cue{' '}
               <QuestionBubble isWhite>
-                Cue is the trigger your brain receives to start a certain behavior.{' '}
+                Cue is the trigger your brain receives to start a certain habit.{' '}
                 {habit.value === 'POSITIVE' && 'For example, finishing brushing your teeth might be the cue to study with Alu for 15 minutes.'}
                 {habit.value === 'NEGATIVE' && 'For example, feeling stuck on an assignment might be the cue to check social media.'}
                 {habit.value === 'NEUTRAL' && 'For example, finishing exercising might be the cue to take a shower.'}
@@ -482,7 +577,7 @@ function RenderHabit(props: RenderHabitProps) {
               <QuestionBubble isWhite>
                 Reward is the positive feeling you get for completing the habit.{' '}
                 {habit.value === 'POSITIVE' && 'For example, finishing studying, increasing your streak, and feeling productive might make you satisfied since you have less work to do.  Studying becomes associated with wanting to feel productive.'}
-                {habit.value === 'NEGATIVE' && 'For example, browsing social media might give relieve you from having to do work.  Browsing social media becomes associated with feeling stuck.'}
+                {habit.value === 'NEGATIVE' && 'For example, browsing social media might relieve you from having to do work.  Browsing social media becomes associated with feeling stuck.'}
                 {habit.value === 'NEUTRAL' && 'For example, taking a shower satisfies your craving to feel clean.  Taking a shower becomes associated with wanting to feel clean.'}
               </QuestionBubble>
             </Form.Label>
