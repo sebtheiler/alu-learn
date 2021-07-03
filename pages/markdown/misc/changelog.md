@@ -1,17 +1,25 @@
 
 -----
 
-## Habit Streaks (DEVELOPMENT) - June ?? - 0.7.1a
+## Habit Tutorial & Streaks (DEVELOPMENT) - July 03 - 0.7.1a
+This update introduces two major features: a tutorial for _Habits_ and the ability to mark habits as completed for a day.
 
 
-* **Added Habit Streaks:** You can now mark a habit as complete/avoided for the day.  This increments the habits streaks count, which you can view in its details.  It also contributes towards your user streak and you can now see the number of habits you completed on a given day using the review heatmap.
-* **Added Tooltips:** Added a couple of tooltips to the four stages of the habit cycle and to the strategies for building/breaking the habit for ease of reference.
+If you haven't already started with Habits, there is now a welcome tutorial when you first open it.  This guides you through the goals, methodology, and philosophy of _Habits_.  You can also now mark a habit as completed/avoided for the day by clicking the circle icon on its right.
+
+
+Note that _Habits_ is still heavily under development, and there are plenty of improvements to be made.
+
+
+* **Added Habit Tutorial:** Added a tutorial for _Habits_ that guides you through what it does and how to set up your first routine and habits.
+* **Added Habit Streaks:** You can now mark a habit as complete/avoided for the day.  This increments the habits streaks count, which you can view in its details.  It also contributes towards your user streak, and you can now see the number of habits you completed on a given day using the review heatmap.
+* **Added Tooltips:** Added a couple of tooltips to the four stages of the habit cycle and to the strategies for building/breaking the habit, for ease of reference.
 
 # Habits (DEVELOPMENT) - June 01 - 0.7.0a
 Note: this is a highly experimental feature and is only available if you opt-in to it.  Also note that this is version 0.7a, not 0.7.
 
 
-Habits aims to be an easy way to build good habits and break bad ones.  I'm honestly not going to elaborate any further, because (a) no one reads the changelog and (b) it is still under development.
+Habits aims to be an easy way to build good habits and break bad ones.  I'm honestly not going to elaborate any further, because (a) no one reads the changelog, and (b) it is still under development.
 
 
 * **Added Habits:** If _opted in_, there will be another option on the home sidebar to access Habits.

@@ -12,6 +12,8 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 
+from alu.settings import env_vars
+
 User = get_user_model()
 
 
@@ -90,7 +92,7 @@ class SeleniumTestCase(LiveServerTestCase):
         options.add_argument('--start-maximized')
 
         self.driver = webdriver.Chrome(
-            executable_path='/media/evolvedsquid/2.0 TB HDD/code/in-progress/alu/chromedriver',
+            executable_path=env_vars['DRIVER_EXECUTABLE_PATH'],
             options=options,
         )
         self.driver.implicitly_wait(3)
@@ -107,7 +109,7 @@ class SeleniumTestCase(LiveServerTestCase):
         self.fill_text_element('loginUsername', self.user.username)
         self.fill_text_element('loginPassword', 'password')
         self.driver.find_element_by_id('login-btn').click()
-        self.sleep(1)
+        self.sleep(3)
 
         # Assert logged in
         self.assertIn('Home', self.driver.title)

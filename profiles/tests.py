@@ -474,7 +474,7 @@ class ProfileBrowserTestCase(SeleniumTestCase):
 
         self.fill_text_element('registerEmail', 'allowedemail@abcdef123xyz.com')
         self.driver.find_element_by_id('register-signup').click()
-        self.sleep(1)
+        self.sleep(3)
         self.assertEqual(
             Profile.objects.count(),
             len(self.users) + 1,

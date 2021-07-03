@@ -2613,7 +2613,7 @@ class DeckBrowserTestCase(SeleniumTestCase):
                 if i < 3:
                     # For the first half, press Easy
                     self.find_element_by_text('Easy').click()
-                    self.sleep(0.1)
+                    self.sleep(0.5)
                     self.assertEqual(
                         FlashCard.objects.filter(
                             learning_status='LEARNED',
@@ -2624,7 +2624,7 @@ class DeckBrowserTestCase(SeleniumTestCase):
                 else:
                     # For the second half, press Good
                     self.find_element_by_text('Good', class_name='btn').click()
-                    self.sleep(0.1)
+                    self.sleep(0.5)
                     self.assertEqual(
                         FlashCard.objects.filter(
                             learning_status='LEARNING',
