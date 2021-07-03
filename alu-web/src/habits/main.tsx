@@ -215,6 +215,8 @@ function RenderRoutine(props: RenderRoutineProps) {
   const tutorialParts = ['setup', 'values', 'habit-parts', 'strategies', 'final'];
   const [tutorialPart, setTutorialPart] = useState(0);
 
+  const showTutorial = useMemo(() => window.sessionStorage.getItem('finishedTutorial') !== 'true', []);
+
   const editRoutine = (options: EditRoutineOptions) => {
     apiRoutineEdit(routine.id, options.title, options.ordered, (response, status) => {
       if (status === 200) {
@@ -242,14 +244,14 @@ function RenderRoutine(props: RenderRoutineProps) {
       />
     </h3>
     <hr />
-    {numRoutines === 1 && tutorialParts[tutorialPart] !== 'final' && <>
+    {showTutorial && numRoutines === 1 && <>
       <p>
         {tutorialParts[tutorialPart] === 'setup' && <>
-          Great!  Now we are going to fill this routine with a couple habits. Create a habit using the input below.<br />
+          Great!  Now we are going to fill this routine with a couple habits. Create a habit using the input.<br />
           (example below)
         </>}
         {tutorialParts[tutorialPart] === 'values' && <>
-          Now, click on each of the habits and assign it a "value": positive/neutral/negative.
+          Now, click on each of the habits and assign it a value: positive/neutral/negative.
           This represents whether the habit is good (positive) or bad (negative).<br />
           (example below)
         </>}
@@ -263,14 +265,13 @@ function RenderRoutine(props: RenderRoutineProps) {
             <li>Reward: the positive feeling you get for completing the habit</li>
           </ul>
           A cue triggers a craving, which motivates a response resulting in a reward.
-          <br/>
+          <br/><br />
           Look at some of your good or bad habits that you want to build or break, and identify these four components for those habits.
           This is essential to being able to modify your habits.<br />
           (you can hover the question bubbles for more info)
         </>}
         {tutorialParts[tutorialPart] === 'strategies' && <>
-          That's pretty much it!  Now that you have the four components of some  habits,
-          you can try to answer some strategies to break this habit.
+          Almost done!  With these four components, you can try to answer the some strategies that will help you build/break the habit.
           <br /><br />
           These strategies are built on the four components and will help you turn your habit change into action.
           (don't forget you can hover the question bubbles for more info)
@@ -287,15 +288,21 @@ function RenderRoutine(props: RenderRoutineProps) {
           dedication, it will happen.
           <br /><br />
           The book <em><a href='https://www.amazon.com/Atomic-Habits-Proven-Build-Break/dp/0735211299' target='_blank' rel='noopener noreferrer'>Atomic Habits</a></em> by James Clear
-          has inspired a lot of the devices in <em>Habits</em> and is a great read if you want to learn more about habits.
+          has inspired a lot of the content here and is a great read if you want to learn more about habits.
           <br /><br />
           Final tips: you can rearrange habits with "Move Up/Down" and rename them by clicking their titles.
         </>}
       </p>
-      {routine.habits.length > 0 && tutorialPart < tutorialParts.length - 1 &&
+      {routine.habits.length > 0 && tutorialPart < tutorialParts.length &&
         <Button
           className='mb-3 mx-auto text-center'
-          onClick={() => setTutorialPart(tutorialPart + 1)}
+          onClick={() => {
+            setTutorialPart(tutorialPart + 1);
+
+            // If this is the last part, mark the tutorial as finished
+            if (tutorialPart === tutorialParts.length - 1)
+              window.sessionStorage.setItem('finishedTutorial', 'true')
+          }}
         >
           I'm Finished
         </Button>
@@ -320,7 +327,7 @@ function RenderRoutine(props: RenderRoutineProps) {
       createHabitCallback={createHabitCallback}
       routineId={routine.id}
     />
-    {(numRoutines === 1) && <>
+    {numRoutines === 1 && showTutorial && tutorialPart < tutorialParts.length && <>
       <br />
       <hr />
       <p>Example:</p>
