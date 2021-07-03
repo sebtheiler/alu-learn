@@ -5,14 +5,15 @@ import re
 
 base_dir = os.getcwd()
 with open(os.path.join(base_dir, 'alu/env-vars.json'), 'r') as f:
-    PRODUCTION = json.loads(f.read())['ALU_PRODUCTION']
+    env_vars = json.loads(f.read())
+    PRODUCTION = env_vars['ALU_PRODUCTION']
 REACT_DIRECTORY = os.path.join(base_dir, 'alu-web/')
 
 if PRODUCTION:
     PYTHON_PATH = '/home/aluadmin/aludir/aluenv/bin/python3'
 else:
-    PYTHON_PATH = '/media/evolvedsquid/2.0\ TB\ HDD/code/in-progress/alu/aluenv/bin/python3'
-COMPILE_REACT = True # not PRODUCTION
+    PYTHON_PATH = env_vars['PYTHON_PATH']
+COMPILE_REACT = True  # not PRODUCTION
 
 # Compile react
 if COMPILE_REACT:
@@ -23,7 +24,7 @@ if COMPILE_REACT:
 
 # Copy static files
 print('Copying static files...')
-sub_directories = [ # NOT IMAGES!!!
+sub_directories = [  # NOT IMAGES!!!
     'css',
     'js',
     'media',
@@ -47,7 +48,10 @@ os.system(f'{PYTHON_PATH} manage.py collectstatic')
 
 # Copy HTML files
 print('Copying HTML files...')
-copyfile(os.path.join(base_dir, 'alu-web/build/index.html'), os.path.join(base_dir, 'decks/templates/react.html'))
+copyfile(
+    os.path.join(base_dir, 'alu-web/build/index.html'),
+    os.path.join(base_dir, 'decks/templates/react.html'),
+)
 if not os.path.isdir(os.path.join(base_dir, 'decks/templates/react/')):
     os.mkdir(os.path.join(base_dir, 'decks/templates/react/'))
 
@@ -55,10 +59,12 @@ with open(os.path.join(base_dir, 'decks/templates/react.html'), 'r') as f:
     contents = f.read()
 
     # <script>!function(e){function r(r) .......... r(a[i]);var p=f;t()}([])</script>
-    base_embed_html = '<script>!' + re.findall(r"(?<=<script>!).*?(?=</script>)", contents)[0] + '</script>'
+    base_embed_regex = r"(?<=<script>!).*?(?=</script>)"
+    base_embed_html = '<script>!' + re.findall(base_embed_regex, contents)[0] + '</script>'
 
     # <script src="/static/js/?.????????.chunk.js"></script><script src="/static/js/main.????????.chunk.js">
-    js_html = re.findall(r"<script src=\"/static/js/.{10,13}.chunk.js\"></script>", contents)
+    js_html_regex = r"<script src=\"/static/js/.{10,13}.chunk.js\"></script>"
+    js_html = re.findall(js_html_regex, contents)
     js_html = js_html[0] + js_html[1]
 
     # <link href="/static/css/main.????????.chunk.css" rel="stylesheet">
@@ -71,6 +77,7 @@ with open(os.path.join(base_dir, 'decks/templates/react.html'), 'r') as f:
 def write_file(filename, contents):
     with open(os.path.join(base_dir, filename), 'w+') as f:
         f.write(contents)
+
 
 write_file('decks/templates/react/base_embed.html', base_embed_html)
 write_file('decks/templates/react/js.html', js_html)

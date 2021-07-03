@@ -6,7 +6,8 @@ git clone https://github.com/EvolvedSquid/Alu.git
 cd Alu/
 python3 -m venv aluenv
 aluenv/bin/pip install -r requirements.txt
-echo '{"ALU_DEBUG": true, "ALU_PRODUCTION": false}' > alu/env-vars.json
+echo "{\"ALU_DEBUG\": true, \"ALU_PRODUCTION\": false, \"PYTHON_PATH\": \"$PWD/aluenv/bin/python\"}" > alu/env-vars.json
+echo "[]" > alu/allowed-emails.json
 echo "[]" > editor_deck_ids.json
 echo "[]" > top_deck_ids.json
 sudo su - postgres
