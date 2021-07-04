@@ -54,7 +54,7 @@ export function HomeComponent({ username }) {
             <h4>
               <a href='/home/habits/' id='decks-link'>
                 <i className='fas fa-seedling'></i>{' '}
-                Habits (NEW!)
+                Habits (beta)
               </a>
             </h4>
           </li>}

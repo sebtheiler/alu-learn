@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, ButtonGroup, Form, FormControl, InputGroup, Modal } from 'react-bootstrap';
 import { apiHabitCreate, apiHabitDelete, apiHabitRearrange, apiRoutineCreate, apiRoutineDelete, apiRoutineRearrange } from '../lookup';
-import { errorHandler } from '../utils';
+import { errorHandler, LoadingButton } from '../utils';
 import { Routine, Habit } from './types';
 
 
@@ -54,9 +54,9 @@ export function CreateRoutineButton(props: CreateRoutineButtonProps) {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button type='submit' block>
+          <LoadingButton type='submit' block loadingMessage='Creating...'>
             Create
-          </Button>
+          </LoadingButton>
         </Modal.Footer>
       </Form>
     </Modal>
@@ -69,9 +69,11 @@ interface CreateHabitButtonProps {
 }
 export function CreateHabitButton(props: CreateHabitButtonProps) {
   const { createHabitCallback, routineId } = props;
+  const [creatingHabit, setCreatingHabit] = useState(false);
 
   const createHabit = event => {
     event.preventDefault();
+    setCreatingHabit(true);
     const form = event.target;
     apiHabitCreate(
       routineId,
@@ -85,6 +87,7 @@ export function CreateHabitButton(props: CreateHabitButtonProps) {
         } else {
           errorHandler(response, status, 9002);
         }
+        setCreatingHabit(false);
       },
     );
   }
@@ -100,7 +103,7 @@ export function CreateHabitButton(props: CreateHabitButtonProps) {
         />
         <InputGroup.Append>
           <Button variant='primary' type='submit'>
-            Create Habit
+            {creatingHabit ? 'Creating...' : 'Create Habit'}
           </Button>
         </InputGroup.Append>
       </InputGroup>

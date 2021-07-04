@@ -256,7 +256,7 @@ function RenderRoutine(props: RenderRoutineProps) {
           (example below)
         </>}
         {tutorialParts[tutorialPart] === 'habit-parts' && <>
-          As you might've seen when assigning values, there are are four parts that influence a habit (and a section for taking notes).
+          As you might've seen when assigning values, there are are four components that influence a habit.
           These are:
           <ul>
             <li>Cue: the trigger your brain receives to start a certain habit</li>
@@ -277,7 +277,7 @@ function RenderRoutine(props: RenderRoutineProps) {
           (don't forget you can hover the question bubbles for more info)
         </>}
         {tutorialParts[tutorialPart] === 'final' && <>
-          There you go!  You've just started changing your habits!  What next?<br />
+          There you go!  You've just started changing your habits!  What next?<br /><br />
           After completing a good habit, or avoiding a bad one, you can mark it as finished by clicking the circle icon on its right.  This will reset every day.<br />
           If you want to build/break more habits in this routine, you can fill out their four components and try to answer some strategies for them.
           If you want to work on a different set of habits, you can create a different routine (e.g., one for the evening).
