@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { Alert, Button, ButtonGroup, Card, Col, Container, Form, OverlayTrigger, Row, ToggleButton } from 'react-bootstrap';
 import { Habit, HabitValue, Routine } from './types';
 import { CreateRoutineButton, CreateHabitButton, HabitButtonGroup, RoutineButtonGroup } from './buttons';
-import { errorHandler, generateTooltip, QuestionBubble, stringDate, useApiObjectHook } from '../utils';
+import { errorHandler, generateTooltip, getCookie, QuestionBubble, setCookie, stringDate, useApiObjectHook } from '../utils';
 import { SetupTutorial, SlidesPlayer } from './tutorials';
 import { apiHabitEdit, apiRoutineEdit, apiRoutineList } from '../lookup';
 import './main.css';
@@ -215,7 +215,7 @@ function RenderRoutine(props: RenderRoutineProps) {
   const tutorialParts = ['setup', 'values', 'habit-parts', 'strategies', 'final'];
   const [tutorialPart, setTutorialPart] = useState(0);
 
-  const showTutorial = useMemo(() => window.sessionStorage.getItem('finishedTutorial') !== 'true', []);
+  const showTutorial = useMemo(() => getCookie('finishedTutorial') !== 'true', []);
 
   const editRoutine = (options: EditRoutineOptions) => {
     apiRoutineEdit(routine.id, options.title, options.ordered, (response, status) => {
@@ -301,7 +301,7 @@ function RenderRoutine(props: RenderRoutineProps) {
 
             // If this is the last part, mark the tutorial as finished
             if (tutorialPart === tutorialParts.length - 1)
-              window.sessionStorage.setItem('finishedTutorial', 'true')
+              setCookie('finishedTutorial', 'true', 30);
           }}
         >
           I'm Finished

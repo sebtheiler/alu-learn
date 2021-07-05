@@ -26,7 +26,7 @@ const introSlides = [
     <p>Your habits are personal information about yourself.  If you use <em>Habits</em>, you will voluntarily be sharing these with Alu</p>
     <p>This information will absolutely never be looked at by anyone, nor will it ever be given to any third parties*</p>
     <p>You can review the <a href='/legal/privacy-policy/'>Privacy Policy</a> for more information</p>
-    <small className='text-secondary'>*Unless you specifically request we do so, or we are required by law (very unlikely)</small>
+    <small className='text-secondary'>*Unless you specifically request we do so, or we are required by law (incredibly unlikely)</small>
     <br />
   </>),
   (<>

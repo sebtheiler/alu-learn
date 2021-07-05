@@ -27,6 +27,9 @@ import {
   dateDiff,
   addDays,
   stringDate,
+  setCookie,
+  getCookie,
+  eraseCookie,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -61,4 +64,7 @@ export {
   dateDiff,
   addDays,
   stringDate,
+  setCookie,
+  getCookie,
+  eraseCookie,
 }
