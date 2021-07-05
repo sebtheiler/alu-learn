@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { Button, ButtonGroup, Form, FormControl, InputGroup, Modal } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
 import { apiHabitCreate, apiHabitDelete, apiHabitRearrange, apiRoutineCreate, apiRoutineDelete, apiRoutineRearrange } from '../lookup';
 import { errorHandler, LoadingButton } from '../utils';
 import { Routine, Habit } from './types';
@@ -15,6 +20,7 @@ export function CreateRoutineButton(props: CreateRoutineButtonProps) {
 
   const createRoutine = event => {
     event.preventDefault();
+
     const form = event.target;
     apiRoutineCreate(form.elements.title.value, true, (response, status) => {
       if (status === 201) {
