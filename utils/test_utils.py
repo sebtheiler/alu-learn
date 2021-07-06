@@ -178,3 +178,19 @@ class SeleniumTestCase(LiveServerTestCase):
         self.fill_text_element('loginPassword', 'password')
         self.driver.find_element_by_id('login-btn').click()
         self.sleep(0.3)
+
+    def assert_for_n_seconds(
+        self,
+        assertion: Callable[[], bool],
+        n_seconds: int = 10,
+        interval: int = 1,
+    ):
+        asserted = False
+        for _ in range(n_seconds // interval):
+            if assertion():
+                asserted = True
+                break
+
+            self.sleep(interval)
+
+        self.assertTrue(asserted)

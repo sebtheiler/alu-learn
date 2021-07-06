@@ -8,6 +8,7 @@ from django.db.models.query import QuerySet
 from profiles.models import ProfileHistorySegment
 from utils.test_utils import ImprovedTestCase, SeleniumTestCase
 from utils.utils import create_slate_element, get_morning
+from selenium.common.exceptions import NoSuchElementException
 
 from .api import views as api_views
 from .models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
@@ -2476,7 +2477,7 @@ class DeckTestCase(ImprovedTestCase):
 
 
 class DeckBrowserTestCase(SeleniumTestCase):
-    def test_deck_homepage(self):
+    def test_decks(self):
         self.common_login()
 
         # Navigate to decks homepage
@@ -2562,10 +2563,15 @@ class DeckBrowserTestCase(SeleniumTestCase):
                 '{{c1::example}} {{c2::cloze}} {{c3::flashcard}}'
             )
             self.driver.find_element_by_id('create').click()
-            self.sleep(0.5)
-            self.assertEqual(FlashCardCreator.objects.count(), original_creator_num + 3)
-            self.assertEqual(FlashCardField.objects.count(), original_field_num + 5)
-            self.assertEqual(FlashCard.objects.count(), original_card_num + 6)
+
+            def test_cloze_created():
+                return (
+                    FlashCardCreator.objects.count() == original_creator_num + 3 and
+                    FlashCardField.objects.count() == original_field_num + 5 and
+                    FlashCard.objects.count() == original_card_num + 6
+                )
+
+            self.assert_for_n_seconds(test_cloze_created)
 
         create_flashcards()
 
@@ -2610,49 +2616,59 @@ class DeckBrowserTestCase(SeleniumTestCase):
                 self.assertTextExists('Easy')
                 self.assertTextNotExists('Hard')
 
+                def test_flashcard_studied(study_type, i):
+                    def func():
+                        return (
+                            FlashCard.objects.filter(
+                                learning_status=study_type,
+                                creator__deck=deck,
+                            ).count()
+                            ==
+                            i + 1 + (num_learned if study_type == 'LEARNED' else num_learning),
+                        )
+
+                    return func
+
                 if i < 3:
                     # For the first half, press Easy
                     self.find_element_by_text('Easy').click()
-                    self.sleep(0.5)
-                    self.assertEqual(
-                        FlashCard.objects.filter(
-                            learning_status='LEARNED',
-                            creator__deck=deck,
-                        ).count(),
-                        i + 1 + num_learned,
-                    )
+                    self.assert_for_n_seconds(test_flashcard_studied('LEARNED', i))
                 else:
                     # For the second half, press Good
                     self.find_element_by_text('Good', class_name='btn').click()
-                    self.sleep(0.5)
-                    self.assertEqual(
-                        FlashCard.objects.filter(
-                            learning_status='LEARNING',
-                            creator__deck=deck,
-                        ).count(),
-                        i - 3 + 1 + num_learning,
-                    )
+                    self.assert_for_n_seconds(test_flashcard_studied('LEARNING', i))
 
                 flashcards_remaining = 6 - i - 1
-                self.assertEqual(
-                    FlashCard.objects.filter(
+                self.assert_for_n_seconds(
+                    lambda: FlashCard.objects.filter(
                         learning_status='UNSEEN',
                         creator__deck=deck,
-                    ).count(),
+                    ).count()
+                    ==
                     flashcards_remaining,
                 )
 
-                self.sleep(0.1)
-                if flashcards_remaining > 0:
-                    self.assertEqual(
-                        self.driver.find_element_by_id('flashcards-remaining').text,
-                        f'{flashcards_remaining} flashcards remaining'
-                        if flashcards_remaining > 1 else
-                        '1 flashcard remaining',
-                    )
-                else:
-                    self.assertTextExists('Congratulations! You\'ve finished studying these flashcards!')
-                    self.driver.find_element_by_id('decks-home-btn').click()
+                def test_remaining_text():
+                    if flashcards_remaining > 0:
+                        return (
+                            self.driver.find_element_by_id('flashcards-remaining').text
+                            ==
+                            (
+                                f'{flashcards_remaining} flashcards remaining'
+                                if flashcards_remaining > 1 else
+                                '1 flashcard remaining'
+                            )
+                        )
+                    else:
+                        try:
+                            self.find_element_by_text(
+                                'Congratulations! You\'ve finished studying these flashcards!',
+                            )
+                            self.driver.find_element_by_id('decks-home-btn').click()
+                            return True
+                        except NoSuchElementException:
+                            return False
+                self.assert_for_n_seconds(test_remaining_text)
 
         self.assertEqual(Deck.objects.count(), 1)
         deck = Deck.objects.first()  # type: Deck
@@ -2670,19 +2686,21 @@ class DeckBrowserTestCase(SeleniumTestCase):
         self.driver.find_element_by_name('shuffleUnseenCards').click()
         self.fill_text_element('reviewAheadMinutes', '130')
         self.click_option('ANKI')
-
         self.driver.find_element_by_id('edit-create-deck').click()
-        self.sleep(0.5)
 
-        deck = Deck.objects.first()  # type: Deck
-        dssm = deck.study_session_manager  # type: DeckStudySessionManager
-        self.assertEqual(deck.title, 'Edited selenium deck')
-        self.assertEqual(dssm.difficulty, 'EASY')
-        self.assertEqual(dssm.shuffle_unseen_cards, True)
-        self.assertEqual(dssm.daily_new_card_limit, 25)
-        self.assertEqual(dssm.daily_seen_card_limit, 100)
-        self.assertEqual(dssm.review_ahead_minutes, 130)
-        self.assertEqual(dssm.scheduling_algorithm, 'ANKI')
+        def test_deck_edited():
+            deck.refresh_from_db()
+            dssm = deck.study_session_manager  # type: DeckStudySessionManager
+            return (
+                deck.title == 'Edited selenium deck' and
+                dssm.difficulty == 'EASY' and
+                dssm.shuffle_unseen_cards is True and
+                dssm.daily_new_card_limit == 25 and
+                dssm.daily_seen_card_limit == 100 and
+                dssm.review_ahead_minutes == 130 and
+                dssm.scheduling_algorithm == 'ANKI'
+            )
+        self.assert_for_n_seconds(test_deck_edited)
 
         # Share deck
         self.driver.find_element_by_class_name('other-btn').click()
@@ -2740,23 +2758,12 @@ class DeckBrowserTestCase(SeleniumTestCase):
         self.driver.find_element_by_id('copy-deck-btn').click()
         self.fill_text_element('destinationTitle', 'Cloned selenium deck')
         self.driver.find_element_by_id('copy-deck-submit-btn').click()
-        self.sleep(0.5)
-
-        self.assertEqual(
-            Deck.objects.filter(user=self.user).count(),
-            1,
-        )
-        self.assertEqual(
-            FlashCardCreator.objects.filter(deck__user=self.user).count(),
-            3,
-        )
-        self.assertEqual(
-            FlashCardField.objects.filter(creator__deck__user=self.user).count(),
-            5,
-        )
-        self.assertEqual(
-            FlashCard.objects.filter(creator__deck__user=self.user).count(),
-            6,
+        self.assert_for_n_seconds(
+            lambda:
+            Deck.objects.filter(user=self.user).count() == 1 and
+            FlashCardCreator.objects.filter(deck__user=self.user).count() == 3 and
+            FlashCardField.objects.filter(creator__deck__user=self.user).count() == 5 and
+            FlashCard.objects.filter(creator__deck__user=self.user).count() == 6
         )
         cloned_deck = Deck.objects.filter(user=self.user).first()
         self.driver.get(f'{self.live_server_url}/home/decks/')
@@ -2806,17 +2813,15 @@ class DeckBrowserTestCase(SeleniumTestCase):
         )
         self.assertEqual(shared_deck.version_number, 0)
         self.driver.find_element_by_id('push-changes').click()
-        self.sleep(1)
-        self.assertEqual(
-            FlashCardCreator.objects.filter(deck=shared_deck).count(),
-            6,
-        )
-        self.assertEqual(
-            FlashCardField.objects.filter(creator__deck=shared_deck).count(),
-            10,
-        )
-        shared_deck = SharedDeck.objects.first()  # type: SharedDeck
-        self.assertEqual(shared_deck.version_number, 1)
+
+        def test_updated_deck():
+            shared_deck.refresh_from_db()
+            return (
+                FlashCardCreator.objects.filter(deck=shared_deck).count() == 6 and
+                FlashCardField.objects.filter(creator__deck=shared_deck).count() == 10 and
+                shared_deck.version_number == 1
+            )
+        self.assert_for_n_seconds(test_updated_deck)
 
         # Pull shared deck updates
         cloned_deck.user = self.user
@@ -2848,22 +2853,16 @@ class DeckBrowserTestCase(SeleniumTestCase):
         self.assertEqual(cloned_deck.shared_deck_relations.first().cloned_at_version, 0)
 
         self.driver.find_element_by_class_name('update-btn').click()
-        self.sleep(0.5)
 
-        cloned_deck = Deck.objects.get(pk=cloned_deck.pk)
-        self.assertEqual(
-            FlashCardCreator.objects.filter(deck=cloned_deck).count(),
-            6,
-        )
-        self.assertEqual(
-            FlashCardField.objects.filter(creator__deck=cloned_deck).count(),
-            10,
-        )
-        self.assertEqual(
-            FlashCard.objects.filter(creator__deck=cloned_deck).count(),
-            12,
-        )
-        self.assertEqual(cloned_deck.shared_deck_relations.first().cloned_at_version, 1)
+        def test_cloned_deck_updated():
+            cloned_deck.refresh_from_db()
+            return (
+                FlashCardCreator.objects.filter(deck=cloned_deck).count() == 6 and
+                FlashCardField.objects.filter(creator__deck=cloned_deck).count() == 10 and
+                FlashCard.objects.filter(creator__deck=cloned_deck).count() == 12 and
+                cloned_deck.shared_deck_relations.first().cloned_at_version == 1
+            )
+        self.assert_for_n_seconds(test_cloned_deck_updated)
 
         self.driver.get(f'{self.live_server_url}/home/decks/')
         self.sleep(1)

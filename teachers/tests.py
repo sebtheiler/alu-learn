@@ -1031,7 +1031,7 @@ class TeacherTestCase(ImprovedTestCase):
 
 
 class TeacherBrowserTestCase(SeleniumTestCase):
-    def test_deck_homepage(self):
+    def test_teachers(self):
         self.common_login()
         self.user.profile.settings.user_type = 'TEACHER'
         self.user.profile.settings.save()
@@ -1045,10 +1045,8 @@ class TeacherBrowserTestCase(SeleniumTestCase):
         self.driver.find_element_by_id('create-classroom-btn').click()
         self.fill_text_element('title', 'Selenium class')
         self.driver.find_element_by_id('create-edit-btn').click()
-        self.sleep(0.5)
-        self.assertEqual(
-            Classroom.objects.count(),
-            1,
+        self.assert_for_n_seconds(
+            lambda: Classroom.objects.count() == 1
         )
         classroom = Classroom.objects.first()
         self.assertEqual(classroom.title, 'Selenium class')
@@ -1061,16 +1059,15 @@ class TeacherBrowserTestCase(SeleniumTestCase):
         self.driver.find_element_by_class_name('classroom-edit-btn').click()
         self.fill_text_element('title', 'Edited Selenium class')
         self.driver.find_element_by_id('create-edit-btn').click()
-        self.sleep(0.5)
-        self.assertEqual(
-            Classroom.objects.count(),
-            1,
-        )
-        classroom = Classroom.objects.first()
-        self.assertEqual(classroom.title, 'Edited Selenium class')
-        self.assertEqual(classroom.teachers.first(), self.user.profile)
-        self.assertEqual(classroom.students.count(), 0)
-        self.assertIsNone(classroom.deck)
+        def test_class_edited():
+            classroom.refresh_from_db()
+            return (
+                Classroom.objects.count() == 1 and
+                classroom.title == 'Edited Selenium class' and
+                classroom.teachers.first() == self.user.profile and
+                classroom.students.count() == 0
+            )
+        self.assert_for_n_seconds(test_class_edited)
         self.assertTextExists('Edited Selenium class')
 
         # View the class
@@ -1136,9 +1133,11 @@ class TeacherBrowserTestCase(SeleniumTestCase):
         self.driver.find_element_by_id('join-class-btn').click()
         self.fill_text_element('classCode', classroom.code)
         self.driver.find_element_by_id('join-modal-btn').click()
-        self.sleep(0.5)
-        self.assertEqual(classroom.students.count(), 2)
-        self.assertEqual(classroom.students.last(), self.users[2].profile)
+        self.assert_for_n_seconds(
+            lambda:
+            classroom.students.count() == 2 and
+            classroom.students.last() == self.users[2].profile
+        )
         self.driver.find_element_by_id('classes-dropdown').click()
         self.assertTextExists(classroom.title)
         self.assertTextExists('No assignments!  Yay!')
@@ -1162,10 +1161,8 @@ class TeacherBrowserTestCase(SeleniumTestCase):
         )
         self.driver.find_element_by_id('assignment-edit-create-btn').click()
         self.sleep(1)
-        self.assertEqual(
-            Assignment.objects.count(),
-            1,
-            'Assignment model object not created',
+        self.assert_for_n_seconds(
+            lambda: Assignment.objects.count() == 1
         )
         assignment = Assignment.objects.first()
         self.assertEqual(assignment.title, 'Finish Unit 1')
@@ -1176,14 +1173,15 @@ class TeacherBrowserTestCase(SeleniumTestCase):
         self.sleep(1)
         self.fill_text_element('title', 'Finish Unit 1!')
         self.driver.find_element_by_id('assignment-edit-create-btn').click()
-        self.sleep(1)
-        self.assertEqual(
-            Assignment.objects.count(),
-            1,
-        )
-        assignment = Assignment.objects.first()
-        self.assertEqual(assignment.title, 'Finish Unit 1!')
-        self.assertEqual(assignment.tag_query, 'unit 1')
+
+        def test_assignment_edited():
+            assignment.refresh_from_db()
+            return (
+                Assignment.objects.count() == 1 and
+                assignment.title == 'Finish Unit 1!' and
+                assignment.tag_query == 'unit 1'
+            )
+        self.assert_for_n_seconds(test_assignment_edited)
 
         # Login as student
         self.new_login(self.users[2].username)
@@ -1250,24 +1248,22 @@ class TeacherBrowserTestCase(SeleniumTestCase):
                 DeckStudySessionManager.objects.filter(user=self.users[2].profile).count(),
                 1,
             )
-            assm.refresh_from_db()
-            dssm.refresh_from_db()
-            self.assertEqual(assm.daily_new_card_limit, daily_new_card_limit)
-            self.assertEqual(assm.daily_new_card_limit, daily_new_card_limit)
-            self.assertEqual(assm.daily_seen_card_limit, daily_seen_card_limit)
-            self.assertEqual(assm.daily_seen_card_limit, daily_seen_card_limit)
-            self.assertEqual(
-                assm.shuffle_unseen_cards,
-                not initially_shuffled if toggle_shuffle_unseen_cards else initially_shuffled,
-            )
-            self.assertEqual(
-                dssm.shuffle_unseen_cards,
-                not initially_shuffled if toggle_shuffle_unseen_cards else initially_shuffled,
-            )
-            self.assertEqual(assm.review_ahead_minutes, review_ahead_minutes)
-            self.assertEqual(assm.review_ahead_minutes, review_ahead_minutes)
-            self.assertEqual(assm.scheduling_algorithm, scheduling_algorithm)
-            self.assertEqual(assm.scheduling_algorithm, scheduling_algorithm)
+
+            def test_assignment_edited():
+                assm.refresh_from_db()
+                dssm.refresh_from_db()
+                return (
+                    assm.daily_new_card_limit == daily_new_card_limit and
+                    assm.daily_seen_card_limit == daily_seen_card_limit and
+                    assm.shuffle_unseen_cards == (
+                        not initially_shuffled
+                        if toggle_shuffle_unseen_cards else
+                        initially_shuffled
+                    ) and
+                    assm.review_ahead_minutes == review_ahead_minutes and
+                    assm.scheduling_algorithm == scheduling_algorithm
+                )
+            self.assert_for_n_seconds(test_assignment_edited)
 
         self.driver.execute_script('window.history.go(-1)')
         change_assignment_settings(
@@ -1306,12 +1302,12 @@ class TeacherBrowserTestCase(SeleniumTestCase):
             self.assertTextNotExists('Hard')
 
             self.find_element_by_text('Easy').click()
-            self.sleep(0.1)
+            self.sleep(0.5)
 
         self.assertTextExists('Congratulations!')
         self.driver.find_element_by_id('assignments-home-btn').click()
-        self.sleep(1)
-        self.assertEqual(
-            self.driver.find_element_by_class_name('assignment-table__percent-complete').text,
-            '100%',
+        self.assert_for_n_seconds(
+            lambda: self.driver.find_element_by_class_name(
+                'assignment-table__percent-complete'
+            ).text == '100%'
         )

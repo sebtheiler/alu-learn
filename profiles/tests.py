@@ -322,7 +322,7 @@ class ProfileTestCase(ImprovedTestCase):
 
 
 class ProfileBrowserTestCase(SeleniumTestCase):
-    def test_deck_homepage(self):
+    def test_profiles(self):
         self.common_login()
 
         # Check the landing notification worked
@@ -342,23 +342,26 @@ class ProfileBrowserTestCase(SeleniumTestCase):
 
         # Make sure the notification is marked as read after the popup is closed
         self.driver.find_element_by_xpath('//body').click()
-        self.sleep(0.5)
-        self.assertEqual(
-            Notification.objects.filter(profile=self.user.profile, read=False).count(),
-            0,
+        self.assert_for_n_seconds(
+            lambda: Notification.objects.filter(
+                profile=self.user.profile,
+                read=False,
+            ).count() == 0
         )
 
         # Go to someone's profile and friend them
         self.driver.get(f'{self.live_server_url}/profiles/u/{self.users[1].username}/')
         self.driver.find_element_by_class_name('friend-btn').click()
-        self.sleep(0.5)
-        self.assertEqual(
-            self.users[1].profile.pending_friends.first(),
-            self.user,
-        )
-        self.assertEqual(
-            Notification.objects.filter(profile=self.users[1].profile, read=False).count(),
-            2,  # one for signing up, one for the friend request
+        self.assert_for_n_seconds(
+            lambda:
+            # Test that user is added to pending friends list
+            self.users[1].profile.pending_friends.first() == self.user
+            and
+            # Test new notification is created for friend request
+            Notification.objects.filter(
+                profile=self.users[1].profile,
+                read=False,
+            ).count() == 2  # one for signing up, one for the friend request
         )
 
         # Simulate someone else sending a friend request to the user
@@ -375,14 +378,16 @@ class ProfileBrowserTestCase(SeleniumTestCase):
         self.sleep(0.1)
         self.assertTextExists('Friends')
         self.driver.find_element_by_xpath('//body').click()
-        self.sleep(0.5)
-        self.assertEqual(
-            Notification.objects.filter(profile=self.user.profile, read=False).count(),
-            0,
-        )
-        self.assertEqual(
-            self.user.profile.friends.first(),
-            self.users[2],
+        self.assert_for_n_seconds(
+            lambda:
+            # Assert notification read
+            Notification.objects.filter(
+                profile=self.user.profile,
+                read=False,
+            ).count() == 0
+            and
+            # And friend added
+            self.user.profile.friends.first() == self.users[2]
         )
 
         # Have users[1] accept the original friend request
@@ -432,12 +437,15 @@ class ProfileBrowserTestCase(SeleniumTestCase):
         self.click_option('5')
         self.click_option('TEACHER')
         self.driver.find_element_by_id('save-changes-btn').click()
-        self.sleep(0.5)
 
-        settings = ProfileSettings.objects.get(pk=settings.pk)
-        self.assertEqual(settings.send_reminders, True)
-        self.assertEqual(settings.ideal_time_per_day, '5')
-        self.assertEqual(settings.user_type, 'TEACHER')
+        def test_settings_update():
+            settings.refresh_from_db()
+            return (
+                settings.send_reminders is True and
+                settings.ideal_time_per_day == '5' and
+                settings.user_type == 'TEACHER'
+            )
+        self.assert_for_n_seconds(test_settings_update)
 
         # Logout and create a new profile
         self.driver.find_element_by_id('profile-dropdown').click()
@@ -474,10 +482,8 @@ class ProfileBrowserTestCase(SeleniumTestCase):
 
         self.fill_text_element('registerEmail', 'allowedemail@abcdef123xyz.com')
         self.driver.find_element_by_id('register-signup').click()
-        self.sleep(3)
-        self.assertEqual(
-            Profile.objects.count(),
-            len(self.users) + 1,
+        self.assert_for_n_seconds(
+            lambda: Profile.objects.count() == len(self.users) + 1
         )
         profile = Profile.objects.last()
         self.assertEqual(profile.user.first_name, 'First')
