@@ -4,7 +4,6 @@ import selenium
 
 from django.contrib.auth import get_user_model
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Model
 from django.test import TestCase
 from django.test.testcases import LiveServerTestCase
 from django.test.utils import override_settings
@@ -104,6 +103,13 @@ class SeleniumTestCase(LiveServerTestCase):
     def common_login(self):
         # Open page
         self.driver.get(self.live_server_url)
+
+        # Hide DJDT
+        try:
+            djdt_xpath = '//*[@id="djHideToolBarButton"]'
+            self.driver.find_element_by_xpath(djdt_xpath).click()
+        except NoSuchElementException:
+            pass
 
         # Login
         self.driver.find_element_by_id('login-navbar-btn').click()

@@ -1,7 +1,6 @@
 import datetime as dt
 
 from profiles.models import Profile, ProfileHistorySegment
-from selenium.webdriver.common.action_chains import ActionChains
 from utils.test_utils import ImprovedTestCase, SeleniumTestCase
 
 from .api import views as api_views
@@ -390,9 +389,12 @@ class HabitBrowserTestCase(SeleniumTestCase):
         self.assert_for_n_seconds(lambda: Habit.objects.count() == len(habits))
         self.click_el('next-btn')
 
-        # helper func
+        # helper funcs
         def get_habit(num):
             return Habit.objects.get(habit_num=num)
+
+        def deselect(els_list):
+            return lambda: els_list[(i + 1) % len(els_list)].click()
 
         # Give habits values
         habit_els = self.driver.find_elements_by_class_name('habit-card')
@@ -417,12 +419,12 @@ class HabitBrowserTestCase(SeleniumTestCase):
                 part_text = f'{part.capitalize()} - {i}'
                 part_els = self.driver.find_elements_by_name(part)
                 part_els[i].send_keys(part_text)
-                self.deselect_all()
+                deselect(part_els)()
 
                 habit = get_habit(i)
                 self.assert_for_n_seconds(
                     lambda: getattr(habit, part) == part_text,
-                    precall=lambda: (habit.refresh_from_db(), self.deselect_all()),
+                    precall=lambda: (habit.refresh_from_db(), deselect(part_els)()),
                 )
         self.click_el('next-btn')
 
@@ -431,16 +433,14 @@ class HabitBrowserTestCase(SeleniumTestCase):
             notes = f'Notes - {i}'
             note_els = self.driver.find_elements_by_name('notes')
             note_els[i].send_keys(notes)
+            deselect(note_els)()
 
-            habit = get_habit()
+            habit = get_habit(i)
             self.assert_for_n_seconds(
                 lambda: habit.notes == notes,
-                precall=lambda: habit.refresh_from_db(),
+                precall=lambda: (habit.refresh_from_db(), deselect(note_els)()),
             )
         self.click_el('next-btn')
 
         # Final
         self.click_el('next-btn')
-
-        import pdb
-        pdb.set_trace()

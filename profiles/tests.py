@@ -507,7 +507,12 @@ class ProfileBrowserTestCase(SeleniumTestCase):
         self.driver.find_element_by_id('next-btn').click()
         self.click_option('NO')
         self.driver.find_element_by_id('next-btn').click()
-        self.sleep(0.5)
-        self.assertEqual(profile.settings.user_type, 'TEACHER')
-        self.assertEqual(profile.settings.ideal_time_per_day, '10')
-        self.assertEqual(profile.settings.send_reminders, False)
+
+        settings = profile.settings
+        self.assert_for_n_seconds(
+            lambda:
+            settings.user_type == 'TEACHER' and
+            settings.ideal_time_per_day == '10' and
+            settings.send_reminders is False,
+            precall=lambda: settings.refresh_from_db(),
+        )

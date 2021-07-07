@@ -1310,5 +1310,6 @@ class TeacherBrowserTestCase(SeleniumTestCase):
         self.assert_for_n_seconds(
             lambda: self.driver.find_element_by_class_name(
                 'assignment-table__percent-complete'
-            ).text == '100%'
+            ).text == '100%',
+            precall=lambda: self.driver.refresh(),
         )

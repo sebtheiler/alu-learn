@@ -1,16 +1,17 @@
 import datetime
 
-from utils import get_paginated_queryset_response
-from django.utils import timezone
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.mail import send_mail
 from django.shortcuts import redirect
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from simple_email_confirmation.models import EmailAddress
+from utils import get_paginated_queryset_response
+
 from ..models import Notification, Profile
 from ..serializers import (HistorySerializer, MinifiedProfileSerializer,
                            NotificationSerializer, PublicProfileSerializer)
@@ -31,7 +32,10 @@ def profile_detail_api_view(request, username, *args, **kwargs):
     try:
         profile = Profile.objects.get(user__username=username)
 
-        return Response(PublicProfileSerializer(profile, context={'request': request}).data, status=200)
+        return Response(PublicProfileSerializer(
+            profile,
+            context={'request': request},
+        ).data, status=200)
     except Profile.DoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 
@@ -239,7 +243,7 @@ def create_profile_api_view(request, *args, **kwargs):
 
     if None in (birthdate, last_name, first_name, username, email, password):
         return Response({'message': 'Not all parameters were specified'}, status=400)
-    
+
     username = username.lower().replace('@', '').replace('$', '').replace('#', '')
 
     months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
@@ -521,9 +525,6 @@ def profile_history_view(request, username, *args, **kwargs):
 
     return Response(HistorySerializer(profile.history, many=True).data, status=200)
 
-from django.conf import settings
-from django.core.mail import send_mail
-
 
 @api_view(['POST'])
 def confirm_email_api_view(request, username, *args, **kwargs):
@@ -569,6 +570,7 @@ def read_changelog_popup_api_view(request, *args, **kwargs):
     settings.save()
 
     return Response({'message': 'Marked popup as read'}, status=200)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
