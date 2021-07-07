@@ -36,6 +36,7 @@ export function CreateRoutineButton(props: CreateRoutineButtonProps) {
     <Button
       onClick={() => setModalIsOpen(true)}
       className={className}
+      id='create-routine-btn'
     >
       Create Routine
     </Button>
@@ -108,7 +109,7 @@ export function CreateHabitButton(props: CreateHabitButtonProps) {
           required
         />
         <InputGroup.Append>
-          <Button variant='primary' type='submit'>
+          <Button variant='primary' type='submit' id='create-habit-btn'>
             {creatingHabit ? 'Creating...' : 'Create Habit'}
           </Button>
         </InputGroup.Append>

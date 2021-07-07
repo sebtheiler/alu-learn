@@ -1,8 +1,11 @@
-from utils.test_utils import ImprovedTestCase
-from .api import views as api_views
-from profiles.models import Profile, ProfileHistorySegment
-from .models import Habit, Routine
 import datetime as dt
+
+from profiles.models import Profile, ProfileHistorySegment
+from selenium.webdriver.common.action_chains import ActionChains
+from utils.test_utils import ImprovedTestCase, SeleniumTestCase
+
+from .api import views as api_views
+from .models import Habit, Routine
 
 
 class HabitTestCase(ImprovedTestCase):
@@ -355,3 +358,89 @@ class HabitTestCase(ImprovedTestCase):
         move_habit('UP', [0, 2, 1], habit1.pk)
         move_habit('UP', [0, 2, 1], habit1.pk, should_fail=True)
         move_habit('UP', [0, 1, 2], habit2.pk)
+
+
+class HabitBrowserTestCase(SeleniumTestCase):
+    def test_habits(self):
+        self.common_login()
+        self.user.profile.settings.is_opted_dev = True
+        self.user.profile.settings.save()
+        self.driver.refresh()
+
+        # Open habits page
+        self.click_el('habits-link')
+        for _ in range(5):
+            self.click_el('next-btn')
+
+        # Create routine
+        self.click_el('create-routine-btn')
+        self.fill_text_element('title', 'Morning')
+        self.submit_form()
+
+        self.assert_for_n_seconds(lambda: Routine.objects.count() == 1)
+
+        # Create habits
+        habits = ['Wake up', 'Turn on computer', 'Check social media',
+                  'Eat breakfast', 'Watch YouTube', 'Study with Alu', 'Start School']
+        for habit in habits:
+            self.fill_text_element('title', habit)
+            self.click_el('create-habit-btn')
+            self.sleep(2)
+
+        self.assert_for_n_seconds(lambda: Habit.objects.count() == len(habits))
+        self.click_el('next-btn')
+
+        # helper func
+        def get_habit(num):
+            return Habit.objects.get(habit_num=num)
+
+        # Give habits values
+        habit_els = self.driver.find_elements_by_class_name('habit-card')
+        values = ['positive', 'neutral', 'negative']
+        for i, habit_el in enumerate(habit_els):
+            habit_el.click()
+            value = values[i % 3]
+            btns = self.driver.find_elements_by_id(f'{value}-btn')
+            btns[i].click()
+
+            habit = get_habit(i)
+            self.assert_for_n_seconds(
+                lambda: habit.value == value.upper(),
+                precall=lambda: habit.refresh_from_db(),
+            )
+        self.click_el('next-btn')
+
+        # Label habit parts
+        habit_parts = ['cue', 'craving', 'response', 'reward']
+        for i, habit_el in enumerate(habit_els):
+            for part in habit_parts:
+                part_text = f'{part.capitalize()} - {i}'
+                part_els = self.driver.find_elements_by_name(part)
+                part_els[i].send_keys(part_text)
+                self.deselect_all()
+
+                habit = get_habit(i)
+                self.assert_for_n_seconds(
+                    lambda: getattr(habit, part) == part_text,
+                    precall=lambda: (habit.refresh_from_db(), self.deselect_all()),
+                )
+        self.click_el('next-btn')
+
+        # Answer habit strategies
+        for i, habit_el in enumerate(habit_els):
+            notes = f'Notes - {i}'
+            note_els = self.driver.find_elements_by_name('notes')
+            note_els[i].send_keys(notes)
+
+            habit = get_habit()
+            self.assert_for_n_seconds(
+                lambda: habit.notes == notes,
+                precall=lambda: habit.refresh_from_db(),
+            )
+        self.click_el('next-btn')
+
+        # Final
+        self.click_el('next-btn')
+
+        import pdb
+        pdb.set_trace()

@@ -70,6 +70,7 @@ export function SlidesPlayer(props: SlidesPlayerProps) {
       onClick={() => slideNum < slides.length - 1 ? setSlideNum(slideNum + 1) : finishedCallback()}
       className='mt-5 mr-auto text-center'
       style={{ width: '200px', transform: slideNum > 0 ? 'translateX(-27px)' : '' }}
+      id='next-btn'
     >
       {slideNum < slides.length - 1 ? 'Next' : 'Get Started'}
     </Button>
@@ -152,6 +153,7 @@ export function WalkthroughText(props: WalkthroughProps) {
     </p>
     <Button
       className='mb-3 mx-auto text-center'
+      id='next-btn'
       onClick={() => {
         if (increaseTutorialPart) increaseTutorialPart();
 

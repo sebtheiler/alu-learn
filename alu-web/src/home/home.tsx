@@ -52,7 +52,7 @@ export function HomeComponent({ username }) {
           </li>
           {profile && profile.settings.is_opted_dev && <li>
             <h4>
-              <a href='/home/habits/' id='decks-link'>
+              <a href='/home/habits/' id='habits-link'>
                 <i className='fas fa-seedling'></i>{' '}
                 Habits (beta)
               </a>

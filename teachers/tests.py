@@ -1059,6 +1059,7 @@ class TeacherBrowserTestCase(SeleniumTestCase):
         self.driver.find_element_by_class_name('classroom-edit-btn').click()
         self.fill_text_element('title', 'Edited Selenium class')
         self.driver.find_element_by_id('create-edit-btn').click()
+
         def test_class_edited():
             classroom.refresh_from_db()
             return (

@@ -4,6 +4,7 @@ import selenium
 
 from django.contrib.auth import get_user_model
 from django.core.handlers.wsgi import WSGIRequest
+from django.db.models import Model
 from django.test import TestCase
 from django.test.testcases import LiveServerTestCase
 from django.test.utils import override_settings
@@ -184,9 +185,13 @@ class SeleniumTestCase(LiveServerTestCase):
         assertion: Callable[[], bool],
         n_seconds: int = 10,
         interval: int = 1,
+        precall: Callable[[], any] = None,
     ):
         asserted = False
         for _ in range(n_seconds // interval):
+            if precall:
+                precall()
+
             if assertion():
                 asserted = True
                 break
@@ -194,3 +199,12 @@ class SeleniumTestCase(LiveServerTestCase):
             self.sleep(interval)
 
         self.assertTrue(asserted)
+
+    def click_el(self, el_id: str):
+        self.driver.find_element_by_id(el_id).click()
+
+    def submit_form(self):
+        self.driver.find_element_by_xpath('//button[@type=\'submit\']').click()
+
+    def deselect_all(self):
+        self.driver.find_element_by_xpath('//body').click()

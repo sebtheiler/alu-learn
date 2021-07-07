@@ -133,7 +133,7 @@ export function RenderHabit(props: RenderHabitProps) {
     <Card
       bg={color}
       text='white'
-      className='mb-2'
+      className='habit-card mb-2'
     >
       <Card.Header
         // The weird check in here is to prevent clicking on the title
@@ -359,6 +359,7 @@ export function RenderHabit(props: RenderHabitProps) {
                   variant={['success', 'primary', 'danger'][i]}
                   name='radio'
                   value={value}
+                  id={`${value.toLowerCase()}-btn`}
                   checked={habit.value === value}
                   onChange={(e) => editHabit({ value: e.currentTarget.value as HabitValue })}
                 >
