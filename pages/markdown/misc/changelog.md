@@ -1,5 +1,11 @@
 
 -----
+## Slight Habit Changes - July 08 - 0.7.2a
+A couple of minor wording changes and loading button improvements.
+
+
+* **Wording Changes:** Slight wording changes to the _Habits_ tutorial
+* **Internal Code Refactoring:** The code for _Habits_ is more clean and tested now.  This might contribute to saving a couple of milliseconds every time you load the page.  If it saves 3 milliseconds per refresh and you open _Habits_ an average of once per day for the next 10,000 years, this will save 30 seconds in total (thank me later).
 
 ## Habit Tutorial & Streaks (DEVELOPMENT) - July 03 - 0.7.1a
 This update introduces two major features: a tutorial for _Habits_ and the ability to mark habits as completed for a day.

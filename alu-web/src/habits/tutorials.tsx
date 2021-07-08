@@ -32,8 +32,8 @@ const introSlides = [
   </>),
   (<>
     <h1>Get Started?</h1>
-    <p><em>Habits</em> isn't a miracle, but if you want to make meaningful changes to your habits (and your life), it's for you!</p>
-    <p>It only takes a couple minutes to get started, so why not start now?</p>
+    <p><em>Habits</em> isn't a panacea, but if you want to make meaningful changes to your habits, it's for you!</p>
+    <p>It only takes a couple minutes to get started, so why not now?</p>
     <hr />
     <p><strong>
       Note: <em>Habits</em> is still in Beta!  It is better than nothing but there are still plenty of improvements to be made!<br />
