@@ -27,5 +27,5 @@ aluenv/bin/python manage.py migrate --run-syncdb
 cd alu-web
 npm install
 cd ..
-aluenv/bin/python build-react-into-django.py
+aluenv/bin/python build_react_into_django.py
 ```

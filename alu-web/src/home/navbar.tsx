@@ -45,6 +45,9 @@ export function NavbarComponent(props) {
       case 50:
         text = 'Half-way to 100 days!  Congratulations!';
         break;
+      case 80:
+        text = 'Around the world in 80 decks (of flashcards)';
+        break;
       case 100:
         text = 'CONGRATULATIONS ON 100 DAYS OF ALU!!!';
         break;
@@ -53,6 +56,9 @@ export function NavbarComponent(props) {
         break;
       case 128:
         text = '2^7';
+        break;
+      case 200:
+        text = '20 0(00) days under the flashcards';
         break;
       case 250:
         text = '250 DAYS! YOU\'RE AMAZING!';
