@@ -4,7 +4,7 @@ import { CreateHabitButton, RoutineButtonGroup } from './buttons';
 import { errorHandler, getCookie } from '../utils';
 import { apiRoutineEdit } from '../lookup';
 import { RenderHabit } from './habit';
-import { WalkthroughText, WalkthroughImage } from './tutorials';
+// import { WalkthroughText, WalkthroughImage } from './tutorials';
 
 
 interface EditRoutineOptions {
@@ -24,8 +24,8 @@ interface RenderRoutineProps {
 }
 export function RenderRoutine(props: RenderRoutineProps) {
   const { routine, numRoutines, createHabitCallback, editHabitCallback, editRoutineCallback, deleteHabitCallback, deleteRoutineCallback, rearrangeRoutineCallback, rearrangeHabitCallback } = props;
-  const [tutorialPart, setTutorialPart] = useState(0);
-  const showTutorial = useMemo(() => getCookie('finishedTutorial') !== 'true', []);
+  // const [tutorialPart, setTutorialPart] = useState(0);
+  // const showTutorial = useMemo(() => getCookie('finishedTutorial') !== 'true', []);
 
   const editRoutine = (options: EditRoutineOptions) => {
     apiRoutineEdit(routine.id, options.title, options.ordered, (response, status) => {
@@ -54,11 +54,11 @@ export function RenderRoutine(props: RenderRoutineProps) {
       />
     </h3>
     <hr />
-    <WalkthroughText
+    {/* <WalkthroughText
       showTutorial={showTutorial && numRoutines === 1}
       tutorialPart={tutorialPart}
       increaseTutorialPart={() => setTutorialPart(tutorialPart + 1)}
-    />
+    /> */}
     {(routine.habits.length === 0) && (numRoutines > 1) &&
       <p className='text-center'>Create some habits to get started!</p>
     }
@@ -79,9 +79,9 @@ export function RenderRoutine(props: RenderRoutineProps) {
     />
     <br />
     <hr />
-    <WalkthroughImage
+    {/* <WalkthroughImage
       showTutorial={showTutorial && numRoutines === 1}
       tutorialPart={tutorialPart}
-    />
+    /> */}
   </>);
 }

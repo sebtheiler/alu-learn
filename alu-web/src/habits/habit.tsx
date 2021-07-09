@@ -23,15 +23,17 @@ interface EditHabitOptions {
   historyAction?: HistoryAction;
   value?: HabitValue;
 }
+type ShowOptions = 'VALUES' | 'COMPONENTS' | 'NOTES' | 'OTHER';
 interface RenderHabitProps {
   routine: Routine;
   habit: Habit;
   editHabitCallback(habit: Habit): void;
   deleteHabitCallback(habitId: number): void;
   rearrangeHabitCallback(habitId: number, direction: 'UP' | 'DOWN'): void;
+  show?: ShowOptions[];  /** Used in the tutorial for only displaying parts of the habit */
 }
 export function RenderHabit(props: RenderHabitProps) {
-  const { habit, routine, editHabitCallback, deleteHabitCallback, rearrangeHabitCallback } = props;
+  const { habit, routine, editHabitCallback, deleteHabitCallback, rearrangeHabitCallback, show=['VALUES', 'COMPONENTS', 'NOTES', 'OTHER'] } = props;
   const [showBody, setShowBody] = useState(false);
   const color = useMemo(() => {
     switch (habit.value) {
@@ -172,7 +174,7 @@ export function RenderHabit(props: RenderHabitProps) {
         </span>
       </Card.Header>
       {showBody && <Card.Body>
-        <Row>
+        {show.includes('COMPONENTS') && <Row>
           <Col>
             <Form.Label>
               Cue{' '}
@@ -246,9 +248,9 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ reward: e.target.value })}
             />
           </Col>
-        </Row>
+        </Row>}
         <hr />
-        <Row>
+        {show.includes('NOTES') && <Row>
           <Col>
             <Form.Label>Notes</Form.Label>
             <Form.Control
@@ -339,9 +341,9 @@ export function RenderHabit(props: RenderHabitProps) {
             </ul>}
             You don't need all of these to be successful, but the more the better
           </Col>}
-        </Row>
+        </Row>}
         <hr />
-        {habit.value !== 'NEUTRAL' && <>
+        {habit.value !== 'NEUTRAL' && show.includes('OTHER') && <>
           <Row>
             <Col>
               Streak: {streak}
@@ -349,7 +351,7 @@ export function RenderHabit(props: RenderHabitProps) {
           </Row>
           <hr />
         </>}
-        <Row>
+        {show.includes('VALUES') && <Row>
           <Col>
             <ButtonGroup toggle>
               {['POSITIVE', 'NEUTRAL', 'NEGATIVE'].map((value, i) => (
@@ -376,7 +378,7 @@ export function RenderHabit(props: RenderHabitProps) {
               rearrangeHabitCallback={rearrangeHabitCallback}
             />
           </Col>
-        </Row>
+        </Row>}
       </Card.Body>}
     </Card>
   </>);

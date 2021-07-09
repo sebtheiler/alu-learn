@@ -192,12 +192,13 @@ interface FormCheckboxProps {
   name?: string;
   defaultChecked?: boolean;
   id?: string;
+  value?: string;
   onChange?(event: ChangeEvent<HTMLInputElement>): void;
   children?: ReactNodeArray | ReactNode;
   type?: 'checkbox' | 'radio';
 }
 export function FormCheckbox(props: FormCheckboxProps) {
-  const { required, name, defaultChecked, id, onChange, type='checkbox' } = props;
+  const { required, name, defaultChecked, id, value, onChange, type='checkbox' } = props;
 
   return (
     <label className='form-check-label'>
@@ -207,6 +208,7 @@ export function FormCheckbox(props: FormCheckboxProps) {
         defaultChecked={defaultChecked}
         name={name}
         id={id}
+        value={value}
         onChange={onChange}
       />{' '}
       {props.children}

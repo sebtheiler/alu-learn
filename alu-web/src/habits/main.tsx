@@ -5,7 +5,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import { Habit, Routine } from './types';
 import { CreateRoutineButton } from './buttons';
-import { useApiObjectHook } from '../utils';
+import { getCookie, useApiObjectHook } from '../utils';
 import { SetupTutorial, SlidesPlayer } from './tutorials';
 import { apiRoutineList } from '../lookup';
 import { RenderRoutine } from './routine';
@@ -15,7 +15,7 @@ import './main.css';
 export default function Habits() {
   const [routines, setRoutines] = useApiObjectHook<Routine[]>(apiRoutineList, [200], 9001);
   const [selectedRoutine, setSelectedRoutine] = useState(0);
-  const [tutorial, setTutorial] = useState('intro');
+  const [tutorial, setTutorial] = useState(getCookie('finishedTutorial') === 'true' ? 'finished' : 'intro');
 
   const createRoutineCallback = (routine: Routine) => {
     if (!routines) return;
@@ -151,10 +151,20 @@ export default function Habits() {
   if (!routines) return <p className='text-center'>Loading...</p>
   return (<>
     <Container>
-      {routines.length === 0 ? <div className='text-center'>
-        {tutorial === 'intro' && <SlidesPlayer preset='intro' finishedCallback={() => setTutorial('setup')} />}
-        {tutorial === 'setup' && <SetupTutorial createRoutineCallback={createRoutineCallback} />}
-      </div> : <>
+      {tutorial === 'intro' && <SlidesPlayer finishedCallback={() => setTutorial('setup')} />}
+      {tutorial === 'setup' && <SetupTutorial
+        routine={routines[0]}
+        createRoutineCallback={createRoutineCallback}
+        createHabitCallback={createHabitCallback}
+        editHabitCallback={editHabitCallback}
+        // editRoutineCallback={editRoutineCallback}
+        // deleteRoutineCallback={deleteRoutineCallback}
+        deleteHabitCallback={deleteHabitCallback}
+        // rearrangeRoutineCallback={rearrangeRoutineCallback}
+        rearrangeHabitCallback={rearrangeHabitCallback}
+        finishedCallback={() => setTutorial('finished')}
+      />}
+      {tutorial === 'finished' && <>
         <h1 className='text-center'>Habits</h1>
         <Row>
           <Col xs={2}>
