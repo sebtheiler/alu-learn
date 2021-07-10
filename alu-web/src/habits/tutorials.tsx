@@ -163,11 +163,33 @@ export function SetupTutorial(props: SetupTutorialProps) {
         width='100%'
       />
     </>),
-    // (<>
-    //   <p>Nice!  Now add some (1-3) good habits that you would like to build.</p>
-    //   <p>TK TODO:</p>
-    // TK TODO: add images
-    // </>),
+    (<>
+      <h1>Add New Good Habits</h1>
+      <p>Nice!  Now add some (1-3) good habits that you would like to build</p>
+      <p>Then label these habits as positive and <strong>rearrange them using the up/down arrows</strong></p>
+      {routine.habits.map(habit =>
+        <RenderHabit
+          routine={routine}
+          habit={habit}
+          editHabitCallback={editHabitCallback}
+          rearrangeHabitCallback={rearrangeHabitCallback}
+          deleteHabitCallback={deleteHabitCallback}
+          key={`${routine.id}-${habit.id}`}
+          show={['VALUES', 'BUTTONS']}
+        />
+      )}
+      <CreateHabitButton
+        createHabitCallback={createHabitCallback}
+        routineId={routine.id}
+      />
+      <br />
+      {routine.habits.length > 3 && <Button
+        onClick={() => setSlideNum(slideNum + 1)}
+        variant='info'
+      >
+        I'm Finished
+      </Button>}
+    </>),
     (<>
       <h1>Habit Components</h1>
       <p>Nice!  Here's the part where we start breaking habits down into their core components.</p>
@@ -236,7 +258,7 @@ export function SetupTutorial(props: SetupTutorialProps) {
           rearrangeHabitCallback={rearrangeHabitCallback}
           deleteHabitCallback={deleteHabitCallback}
           key={`${routine.id}-${habit.id}`}
-          show={['VALUES', 'COMPONENTS']}
+          show={['VALUES', 'BUTTONS', 'COMPONENTS']}
         />
       )}
       {completedEnough('cue') &&
@@ -260,7 +282,7 @@ export function SetupTutorial(props: SetupTutorialProps) {
           rearrangeHabitCallback={rearrangeHabitCallback}
           deleteHabitCallback={deleteHabitCallback}
           key={`${routine.id}-${habit.id}`}
-          show={['VALUES', 'COMPONENTS', 'NOTES']}
+          show={['VALUES', 'BUTTONS', 'COMPONENTS', 'NOTES']}
         />
       )}
       {completedEnough('notes') &&
@@ -273,6 +295,7 @@ export function SetupTutorial(props: SetupTutorialProps) {
       }
     </>),
     (<>
+      <h1>What next?</h1>
       <p>Congratulations!  You've just started changing your habits! What next?</p>
       <ul>
         <li>After completing a good habit, or avoiding a bad one, you can <strong>mark it as finished by clicking the circle icon on its right</strong>.  This will reset every day.</li>
@@ -280,22 +303,43 @@ export function SetupTutorial(props: SetupTutorialProps) {
         <li>If you want to work on a different set of habits, you can create a different routine (e.g., one for the evening).</li>
         <li>Outside of just routines, you can also have more general habits, such as checking social media when you're stuck.</li>
       </ul>
-      <Button onClick={() => setSlideNum(slideNum + 1)}>Got it!</Button>
+      <Button
+        onClick={() => setSlideNum(slideNum + 1)}
+        variant='info'
+      >
+        Got it!
+      </Button>
     </>),
     (<>
+      <h1>Conclusion</h1>
       <p>You've learned everything you needed to know from this tutorial</p>
       <p>After this, you'll be introduced to the real habits page.  It's essentially the same as everything you've just done, but all put together.</p>
       <hr />
       <p>Changing habits isn't instant, and that can be frustrating.  But if you follow the strategies in Alu and give it enough dedication, it will happen.</p>
-      <p><strong>What to do next?</strong>  Mark habits as completed/avoided every day, and continue to use the four components + strategies to build/break those habits.</p>
+      <p><strong>Mark habits as completed/avoided every day, and continue to use the four components + strategies to build/break those habits.</strong></p>
       <p><em>Habits</em> gives you a framework to help modify your habits.  Use that in any way you wish!</p>
       <hr/>
       <p>The book <em><a href='https://www.amazon.com/Atomic-Habits-Proven-Build-Break/dp/0735211299' target='_blank' rel='noopener noreferrer'>Atomic Habits</a></em> by James Clear has inspired a lot of the content here and is a great read if you want to learn more about habits.</p>
-      <Button onClick={finishedCallback}>Finish</Button>
+      <Button
+        onClick={finishedCallback}
+        variant='info'
+      >
+        Finish
+      </Button>
     </>),
   ];
 
-  return <>{slides[slideNum]}</>;
+  return <div>
+    {slides[slideNum]}
+    <br />
+    {slideNum > 0 && <Button
+      onClick={() => setSlideNum(slideNum - 1)}
+      className='float-left'
+      variant='secondary'
+    >
+      Back
+    </Button>}
+  </div>;
 }
 
 const walkthroughTutorialParts = ['setup', 'values', 'habit-parts', 'strategies', 'final'];

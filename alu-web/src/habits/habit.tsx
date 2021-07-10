@@ -3,27 +3,14 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Row from 'react-bootstrap/Row';
 import ToggleButton from 'react-bootstrap/ToggleButton';
-import { Habit, HabitValue, Routine } from './types';
-import { HabitButtonGroup } from './buttons';
-import { errorHandler, generateTooltip, QuestionBubble, stringDate } from '../utils';
+import { Habit, HabitValue, Routine, ShowOptions, EditHabitOptions } from './types';
+import { HabitBottomButtonGroup, HabitTopButtonGroup } from './buttons';
+import { errorHandler, QuestionBubble, stringDate } from '../utils';
 import { apiHabitEdit } from '../lookup';
-import { HistoryAction } from '../lookup/lookup';
 
 
-interface EditHabitOptions {
-  title?: string | null;
-  cue?: string;
-  craving?: string;
-  response?: string;
-  reward?: string;
-  notes?: string;
-  historyAction?: HistoryAction;
-  value?: HabitValue;
-}
-type ShowOptions = 'VALUES' | 'COMPONENTS' | 'NOTES' | 'OTHER';
 interface RenderHabitProps {
   routine: Routine;
   habit: Habit;
@@ -33,7 +20,7 @@ interface RenderHabitProps {
   show?: ShowOptions[];  /** Used in the tutorial for only displaying parts of the habit */
 }
 export function RenderHabit(props: RenderHabitProps) {
-  const { habit, routine, editHabitCallback, deleteHabitCallback, rearrangeHabitCallback, show=['VALUES', 'COMPONENTS', 'NOTES', 'OTHER'] } = props;
+  const { habit, routine, editHabitCallback, deleteHabitCallback, rearrangeHabitCallback, show=['VALUES', 'BUTTONS', 'COMPONENTS', 'NOTES', 'OTHER'] } = props;
   const [showBody, setShowBody] = useState(false);
   const color = useMemo(() => {
     switch (habit.value) {
@@ -44,17 +31,6 @@ export function RenderHabit(props: RenderHabitProps) {
       case 'NEUTRAL':
         return 'primary';
     }
-  }, [habit]);
-  const completedToday = useMemo(() => {
-    const sorted = habit.history.sort((a, b) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-
-    if (sorted.length === 0)
-      return false;
-    if (sorted[0].date === stringDate())
-      return true;
-    return false;
   }, [habit]);
   const streak = useMemo(() => {
     const sorted = habit.history.sort((a, b) =>
@@ -114,23 +90,6 @@ export function RenderHabit(props: RenderHabitProps) {
     );
   }
 
-  const updateHistory = event => {
-    let historyAction: HistoryAction;
-    const utcTimezoneOffset = new Date().getTimezoneOffset();
-    if (completedToday)
-      historyAction = {
-        action: 'DECREMENT',
-        utc_timezone_offset: utcTimezoneOffset,
-      }
-    else
-      historyAction = {
-        action: 'INCREMENT',
-        utc_timezone_offset: utcTimezoneOffset,
-      }
-    
-    editHabit({ historyAction: historyAction });
-  }
-
   return (<>
     <Card
       bg={color}
@@ -150,28 +109,12 @@ export function RenderHabit(props: RenderHabitProps) {
         >
           {habit.title}
         </span>
-        <span
-          className='float-right'
-          role='button'
-          onClick={updateHistory}
-        >
-          {habit.value !== 'NEUTRAL' && <OverlayTrigger
-            placement='left'
-            delay={{ show: 250, hide: 400 }}
-            overlay={generateTooltip(
-              habit.value === 'POSITIVE' ?
-              'Mark this habit as completed for the day'
-              :
-              'Mark this habit as avoided for the day'
-            )}
-          >
-            {completedToday ?
-              <i className='fas fa-check-circle' />
-            :
-              <i className='far fa-circle' />
-            }
-          </OverlayTrigger>}
-        </span>
+        {show.includes('BUTTONS') && <HabitTopButtonGroup
+          habit={habit}
+          routine={routine}
+          editHabit={editHabit}
+          rearrangeHabitCallback={rearrangeHabitCallback}
+        />}
       </Card.Header>
       {showBody && <Card.Body>
         {show.includes('COMPONENTS') && <Row className='mb-2'>
@@ -371,7 +314,7 @@ export function RenderHabit(props: RenderHabitProps) {
             </ButtonGroup>
           </Col>
           <Col>
-            <HabitButtonGroup
+            <HabitBottomButtonGroup
               routine={routine}
               habit={habit}
               deleteHabitCallback={deleteHabitCallback}
