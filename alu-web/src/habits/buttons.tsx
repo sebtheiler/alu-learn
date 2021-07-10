@@ -240,7 +240,7 @@ export function HabitBottomButtonGroup(props: HabitBottomButtonGroupProps) {
 
   return (
     <ButtonGroup
-      className='float-right mt-2'
+      className='float-right mt-2 w-100'
     >
       <Button
         onClick={() => editHabit({ title: window.prompt(`Renaming habit "${habit.title}"`) })}

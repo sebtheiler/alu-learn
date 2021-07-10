@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
@@ -112,7 +113,7 @@ export function RenderHabit(props: RenderHabitProps) {
       </Card.Header>
       {showBody && <Card.Body>
         {show.includes('COMPONENTS') && <Row className='mb-2'>
-          <Col>
+          <Col xs={6} md={3}>
             <Form.Label>
               Cue{' '}
               <QuestionBubble isWhite>
@@ -131,7 +132,7 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ cue: e.target.value })}
             />
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <Form.Label>
               Craving{' '}
               <QuestionBubble isWhite>
@@ -149,7 +150,7 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ craving: e.target.value })}
             />
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <Form.Label>
               Response{' '}
               <QuestionBubble isWhite>
@@ -167,7 +168,7 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ response: e.target.value })}
             />
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <Form.Label>
               Reward{' '}
               <QuestionBubble isWhite>
@@ -188,7 +189,7 @@ export function RenderHabit(props: RenderHabitProps) {
           <hr />
         </Row>}
         {show.includes('NOTES') && <Row>
-          <Col>
+          <Col xs={12} md={habit.value === 'NEUTRAL' ? 12 : 6}>
             <Form.Label>Notes</Form.Label>
             <Form.Control
               as='textarea'
@@ -199,7 +200,7 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ notes: e.target.value })}
             />
           </Col>
-          {habit.value !== 'NEUTRAL' && <Col>
+          {habit.value !== 'NEUTRAL' && <Col xs={12} md={6}>
             <p>Strategies to {habit.value === 'POSITIVE' ? 'build' : 'break'} this habit:</p>
             {habit.value === 'POSITIVE' ? <ul>
               <li>
@@ -289,8 +290,8 @@ export function RenderHabit(props: RenderHabitProps) {
           </Row>
         </>}
         {show.includes('VALUES') && <Row>
-          <Col>
-            <ButtonGroup toggle>
+          <Col sm={12} md={4}>
+            <ButtonGroup className='w-100' toggle>
               {['POSITIVE', 'NEUTRAL', 'NEGATIVE'].map((value, i) => (
                 <ToggleButton
                   key={i}
@@ -298,7 +299,7 @@ export function RenderHabit(props: RenderHabitProps) {
                   variant={['success', 'primary', 'danger'][i]}
                   name='radio'
                   value={value}
-                  className='mt-2'
+                  className='mt-2 w-100'
                   id={`${value.toLowerCase()}-btn`}
                   checked={habit.value === value}
                   onChange={(e) => editHabit({ value: e.currentTarget.value as HabitValue })}
@@ -308,7 +309,17 @@ export function RenderHabit(props: RenderHabitProps) {
               ))}
             </ButtonGroup>
           </Col>
-          <Col>
+          <Col className='text-center' sm={12} md={4}>
+            <Button
+              onClick={() => setShowBody(false)}
+              variant='secondary'
+              className='mt-2 w-100'
+              style={{ width: '100px' }}
+            >
+              Close
+            </Button>
+          </Col>
+          <Col sm={12} md={4}>
             <HabitBottomButtonGroup
               routine={routine}
               habit={habit}

@@ -5,6 +5,7 @@ import { Routine, Habit } from './types';
 import { FormCheckbox } from '../utils';
 import { RenderHabit } from './habit';
 import { Form } from 'react-bootstrap';
+import './main.css';
 
 const introSlides = [
   (<>
@@ -39,7 +40,6 @@ const introSlides = [
     <hr />
     <p><strong>
       Note: <em>Habits</em> is still in Beta!  It is better than nothing but there are still plenty of improvements to be made!<br />
-      It also currently is not designed to work with mobile, please use a laptop or desktop.
     </strong></p>
   </>),
 ];
@@ -193,7 +193,7 @@ export function SetupTutorial(props: SetupTutorialProps) {
       <h1>Habit Components</h1>
       <p>Nice!  Here's the part where we start breaking habits down into their core components.</p>
       <p>These components are:</p>
-      <ul style={{ 'listStylePosition': 'inside' }}>
+      <ul className='centered-list'>
         <li>Cue: the trigger your brain receives to start a certain habit</li>
         <li>Craving: the reason you are motivated to do this habit</li>
         <li>Response: the behavior you do to perform this habit</li>
@@ -210,30 +210,39 @@ export function SetupTutorial(props: SetupTutorialProps) {
     (<>
       <h1>Choose Habits to Improve</h1>
       <p>Choose a couple of habits you've created that you want to focus on building or breaking</p>
-      <Form onSubmit={event => {
-        event.preventDefault();
-        const newChosenHabits = routine.habits.filter(h => Array.from(document.forms['select-habits'].elements['habits']).filter(
-          (e: any) => e.checked
-        ).map(
-          (e: any) => parseInt(e.value)
-        ).includes(h.id)
-        );
-        setChosenHabits(newChosenHabits);
+      <Form
+        onSubmit={event => {
+          event.preventDefault();
+          const newChosenHabits = routine.habits.filter(h => Array.from(document.forms['select-habits'].elements['habits']).filter(
+            (e: any) => e.checked
+          ).map(
+            (e: any) => parseInt(e.value)
+          ).includes(h.id)
+          );
+          setChosenHabits(newChosenHabits);
 
-        if (newChosenHabits.length === 0) {
-          const selectHabitsError = document.getElementById('select-habits-error');
-          if (!selectHabitsError) return;
-          selectHabitsError.innerText = 'You must select at least one habit to work on building/breaking';
-          return;
-        }
+          if (newChosenHabits.length === 0) {
+            const selectHabitsError = document.getElementById('select-habits-error');
+            if (!selectHabitsError) return;
+            selectHabitsError.innerText = 'You must select at least one habit to work on building/breaking';
+            return;
+          }
 
-        setSlideNum(slideNum + 1);
-      }} name='select-habits'>
-        {routine.habits.map((habit, i) => habit.value !== 'NEUTRAL' && <React.Fragment key={i}>
-          <FormCheckbox name='habits' value={habit.id.toString()}>
-            {habit.title}
-          </FormCheckbox><br />
-        </React.Fragment>)}
+          setSlideNum(slideNum + 1);
+        }}
+        name='select-habits'
+      >
+        <ul className='centered-list p-0' style={{ listStyleType: 'none' }}>
+          {routine.habits.map((habit, i) => habit.value !== 'NEUTRAL' &&
+            <li key={i}>
+              <FormCheckbox name='habits' value={habit.id.toString()}>
+                <span className={habit.value === 'NEGATIVE' ? 'text-danger' : 'text-success'}>
+                  <strong>{habit.title}</strong>
+                </span>
+              </FormCheckbox>
+            </li>
+          )}
+        </ul>
         <Button
           type='submit'
           variant='info'
@@ -311,11 +320,10 @@ export function SetupTutorial(props: SetupTutorialProps) {
     (<>
       <h1>What next?</h1>
       <p>Congratulations!  You've just started changing your habits! What next?</p>
-      <ul>
+      <ul className='centered-list'>
         <li>After completing a good habit, or avoiding a bad one, you can <strong>mark it as finished by clicking the circle icon on its right</strong>.  This will reset every day.</li>
         <li>If you want to build/break more habits in this routine, you can fill out their four components and try to answer some strategies for them.</li>
         <li>If you want to work on a different set of habits, you can create a different routine (e.g., one for the evening).</li>
-        <li>Outside of just routines, you can also have more general habits, such as checking social media when you're stuck.</li>
       </ul>
       <Button
         onClick={() => setSlideNum(slideNum + 1)}

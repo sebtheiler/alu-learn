@@ -187,7 +187,7 @@ export default function Habits() {
       {tutorial === 'finished' && <>
         <h1 className='text-center'>Habits</h1>
         <Row>
-          <Col xs={2}>
+          <Col xs={12} md={2}>
             <CreateRoutineButton
               createRoutineCallback={createRoutineCallback}
               className='w-100 mb-3'
@@ -204,7 +204,7 @@ export default function Habits() {
               </Alert>)
             }
           </Col>
-          <Col xs={10} style={{ borderLeft: '1px solid' }}>
+          <Col xs={12} md={10} style={{ borderLeft: '1px solid' }}>
             {routines[selectedRoutine] && <RenderRoutine
               routine={routines[selectedRoutine]}
               numRoutines={routines.length}
