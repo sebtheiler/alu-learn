@@ -221,9 +221,10 @@ interface HabitBottomButtonGroupProps {
   habit: Habit;
   deleteHabitCallback(habitId: number): void;
   rearrangeHabitCallback(habitId: number, direction: 'UP' | 'DOWN'): void;
+  editHabit(options: EditHabitOptions): void;
 }
 export function HabitBottomButtonGroup(props: HabitBottomButtonGroupProps) {
-  const { routine, habit, deleteHabitCallback } = props;
+  const { routine, habit, deleteHabitCallback, editHabit } = props;
 
   const deleteHabit = event => {
     event.preventDefault();
@@ -239,11 +240,17 @@ export function HabitBottomButtonGroup(props: HabitBottomButtonGroupProps) {
 
   return (
     <ButtonGroup
-      className='float-right'
+      className='float-right mt-2'
     >
       <Button
-        variant='danger'
+        onClick={() => editHabit({ title: window.prompt(`Renaming habit "${habit.title}"`) })}
+        variant='secondary'
+      >
+        Rename
+      </Button>
+      <Button
         onClick={deleteHabit}
+        variant='secondary'
       >
         Delete
       </Button>

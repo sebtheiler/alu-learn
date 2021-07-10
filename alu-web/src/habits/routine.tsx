@@ -4,7 +4,6 @@ import { CreateHabitButton, RoutineButtonGroup } from './buttons';
 import { errorHandler } from '../utils';
 import { apiRoutineEdit } from '../lookup';
 import { RenderHabit } from './habit';
-// import { WalkthroughText, WalkthroughImage } from './tutorials';
 
 
 interface EditRoutineOptions {
@@ -54,11 +53,6 @@ export function RenderRoutine(props: RenderRoutineProps) {
       />
     </h3>
     <hr />
-    {/* <WalkthroughText
-      showTutorial={showTutorial && numRoutines === 1}
-      tutorialPart={tutorialPart}
-      increaseTutorialPart={() => setTutorialPart(tutorialPart + 1)}
-    /> */}
     {(routine.habits.length === 0) && (numRoutines > 1) &&
       <p className='text-center'>Create some habits to get started!</p>
     }
@@ -79,9 +73,5 @@ export function RenderRoutine(props: RenderRoutineProps) {
     />
     <br />
     <hr />
-    {/* <WalkthroughImage
-      showTutorial={showTutorial && numRoutines === 1}
-      tutorialPart={tutorialPart}
-    /> */}
   </>);
 }

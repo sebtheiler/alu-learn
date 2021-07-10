@@ -99,16 +99,10 @@ export function RenderHabit(props: RenderHabitProps) {
       <Card.Header
         // The weird check in here is to prevent clicking on the title
         // to rename the Habit from expanding the body
-        onClick={e => {if (e.target === e.currentTarget) setShowBody(!showBody)}}
+        onClick={e => setShowBody(!showBody)}
         role='button'
       >
-        <span
-          role='button'
-          onClick={() => editHabit({ title: window.prompt(`Renaming habit "${habit.title}"`) })}
-          className='underline-on-hover'
-        >
-          {habit.title}
-        </span>
+        {habit.title}
         {show.includes('BUTTONS') && <HabitTopButtonGroup
           habit={habit}
           routine={routine}
@@ -287,12 +281,12 @@ export function RenderHabit(props: RenderHabitProps) {
           <hr />
         </Row>}
         {habit.value !== 'NEUTRAL' && show.includes('OTHER') && <>
+          <hr />
           <Row>
             <Col>
               Streak: {streak}
             </Col>
           </Row>
-          <hr />
         </>}
         {show.includes('VALUES') && <Row>
           <Col>
@@ -304,6 +298,7 @@ export function RenderHabit(props: RenderHabitProps) {
                   variant={['success', 'primary', 'danger'][i]}
                   name='radio'
                   value={value}
+                  className='mt-2'
                   id={`${value.toLowerCase()}-btn`}
                   checked={habit.value === value}
                   onChange={(e) => editHabit({ value: e.currentTarget.value as HabitValue })}
@@ -319,6 +314,7 @@ export function RenderHabit(props: RenderHabitProps) {
               habit={habit}
               deleteHabitCallback={deleteHabitCallback}
               rearrangeHabitCallback={rearrangeHabitCallback}
+              editHabit={editHabit}
             />
           </Col>
         </Row>}
