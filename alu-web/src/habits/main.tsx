@@ -5,7 +5,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import { Habit, Routine } from './types';
 import { CreateRoutineButton } from './buttons';
-import { getCookie, useApiObjectHook } from '../utils';
+import { getCookie, setCookie, useApiObjectHook } from '../utils';
 import { SetupTutorial, SlidesPlayer } from './tutorials';
 import { apiRoutineList } from '../lookup';
 import { RenderRoutine } from './routine';
@@ -13,7 +13,13 @@ import './main.css';
 
 
 export default function Habits() {
-  const [routines, setRoutines] = useApiObjectHook<Routine[]>(apiRoutineList, [200], 9001);
+  const [routines, setRoutines] = useApiObjectHook<Routine[]>(apiRoutineList, [200], 9001, [], (response: Routine[]) => {
+    let newTutorial;
+    if (getCookie('finishedTutorial') === 'true') newTutorial = 'finished';
+    else if (response.length > 0) newTutorial = 'setup';
+    else newTutorial = 'intro';
+    setTutorial(newTutorial);
+  });
   const [selectedRoutine, setSelectedRoutine] = useState(0);
   const [tutorial, setTutorial] = useState(getCookie('finishedTutorial') === 'true' ? 'finished' : 'intro');
 
@@ -151,19 +157,33 @@ export default function Habits() {
   if (!routines) return <p className='text-center'>Loading...</p>
   return (<>
     <Container>
-      {tutorial === 'intro' && <SlidesPlayer finishedCallback={() => setTutorial('setup')} />}
-      {tutorial === 'setup' && <SetupTutorial
-        routine={routines[0]}
-        createRoutineCallback={createRoutineCallback}
-        createHabitCallback={createHabitCallback}
-        editHabitCallback={editHabitCallback}
-        // editRoutineCallback={editRoutineCallback}
-        // deleteRoutineCallback={deleteRoutineCallback}
-        deleteHabitCallback={deleteHabitCallback}
-        // rearrangeRoutineCallback={rearrangeRoutineCallback}
-        rearrangeHabitCallback={rearrangeHabitCallback}
-        finishedCallback={() => setTutorial('finished')}
-      />}
+      <div className='text-center'>
+        {tutorial === 'intro' && <SlidesPlayer finishedCallback={() => setTutorial('create-routine')} />}
+        {tutorial === 'create-routine' && <>
+          <h1>Create a Routine</h1>
+          <p>Great!  I'm glad you decided to use <em>Habits!</em></p>
+          <p>Habits are organized into routines, which makes it easier to group similar ones together</p>
+          <p>To get started, create a routine below (maybe you want to call it "Morning")</p>
+          <CreateRoutineButton createRoutineCallback={routine => {
+            setTutorial('setup');
+            createRoutineCallback(routine);
+          }} />
+        </>}
+        {tutorial === 'setup' && <SetupTutorial
+          routine={routines[0]}
+          createHabitCallback={createHabitCallback}
+          editHabitCallback={editHabitCallback}
+          // editRoutineCallback={editRoutineCallback}
+          // deleteRoutineCallback={deleteRoutineCallback}
+          deleteHabitCallback={deleteHabitCallback}
+          // rearrangeRoutineCallback={rearrangeRoutineCallback}
+          rearrangeHabitCallback={rearrangeHabitCallback}
+          finishedCallback={() => {
+            setTutorial('finished');
+            setCookie('finishedTutorial', 'true', 90);
+          }}
+        />}
+      </div>
       {tutorial === 'finished' && <>
         <h1 className='text-center'>Habits</h1>
         <Row>

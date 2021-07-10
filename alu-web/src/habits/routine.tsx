@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { Habit, Routine } from './types';
 import { CreateHabitButton, RoutineButtonGroup } from './buttons';
-import { errorHandler, getCookie } from '../utils';
+import { errorHandler } from '../utils';
 import { apiRoutineEdit } from '../lookup';
 import { RenderHabit } from './habit';
 // import { WalkthroughText, WalkthroughImage } from './tutorials';

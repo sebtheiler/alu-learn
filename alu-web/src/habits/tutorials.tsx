@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import { CreateRoutineButton, CreateHabitButton } from './buttons';
+import { CreateHabitButton } from './buttons';
 import { Routine, Habit } from './types';
 import { FormCheckbox, setCookie } from '../utils';
 import { RenderHabit } from './habit';
@@ -50,7 +50,7 @@ export function SlidesPlayer(props: SlidesPlayerProps) {
   const { finishedCallback } = props;
   const [slideNum, setSlideNum] = useState(0);
 
-  return (<div className='text-center'>
+  return (<>
     {introSlides[slideNum]}
     {slideNum > 0 && <Button
       onClick={() => setSlideNum(slideNum - 1)}
@@ -68,12 +68,11 @@ export function SlidesPlayer(props: SlidesPlayerProps) {
     >
       {slideNum < introSlides.length - 1 ? 'Next' : 'Get Started'}
     </Button>
-  </div>);
+  </>);
 }
 
 interface SetupTutorialProps {
   routine: Routine;
-  createRoutineCallback(routine: Routine): void;
   createHabitCallback(habit: Habit): void;
   editHabitCallback(habit: Habit): void;
   deleteHabitCallback(habitId: number): void;
@@ -81,21 +80,20 @@ interface SetupTutorialProps {
   finishedCallback(): void;
 }
 export function SetupTutorial(props: SetupTutorialProps) {
-  const { createRoutineCallback, createHabitCallback, editHabitCallback, deleteHabitCallback, rearrangeHabitCallback, routine, finishedCallback } = props;
+  const { createHabitCallback, editHabitCallback, deleteHabitCallback, rearrangeHabitCallback, routine, finishedCallback } = props;
   const [slideNum, setSlideNum] = useState(0);
-  let habits: Number[] = [];
+  const [chosenHabits, setChosenHabits] = useState<Habit[]>([]);
+  if (!routine) return null;
+
+  const completedEnough = (attr: 'cue' | 'notes') => (
+    routine.habits.filter(
+      h => chosenHabits.map(
+        ch => ch.id
+      ).includes(h.id) && (h[attr] || '').length > 0
+    ).length >= chosenHabits.length - 1
+  )
+
   const slides = [
-    (<>
-      <h1>Create a Routine</h1>
-      <p>Great!  I'm glad you decided to use <em>Habits!</em></p>
-      <p>Habits are organized into routines, which makes it easier to group similar ones together</p>
-      <p>To get started, create a routine below (maybe you want to call it "Morning")</p>
-      <CreateRoutineButton createRoutineCallback={routine => {
-        setSlideNum(slideNum + 1);
-        createRoutineCallback(routine);
-      }} />
-    </>),
-  ].concat(!routine ? [] : [
     (<>
       <h1>Adding Habits</h1>
       <p>Now we are going to fill "{routine.title}" with some habits</p>
@@ -136,6 +134,7 @@ export function SetupTutorial(props: SetupTutorialProps) {
       <h1>Positive/Neutral/Negative</h1>
       <p>Decide whether each of these habits are good, bad, or neutral.</p>
       <p>Click on them and use the three buttons to label the habits</p>
+      <p>(you can click the habit again to close it)</p>
       <br />
       {routine.habits.map((habit, i) =>
         <RenderHabit
@@ -148,7 +147,7 @@ export function SetupTutorial(props: SetupTutorialProps) {
           show={['VALUES']}
         />
       )}
-      {routine.habits.filter(habit => habit.value !== 'NEUTRAL').length > 0 && <Button
+      {routine.habits.filter(habit => habit.value !== 'NEUTRAL').length >= 3 && <Button
         onClick={() => setSlideNum(slideNum + 1)}
         variant='info'
       >
@@ -170,6 +169,7 @@ export function SetupTutorial(props: SetupTutorialProps) {
     // TK TODO: add images
     // </>),
     (<>
+      <h1>Habit Components</h1>
       <p>Nice!  Here's the part where we start breaking habits down into their core components.</p>
       <p>These components are:</p>
       {/* TK TODO: center the bullets */}
@@ -188,26 +188,47 @@ export function SetupTutorial(props: SetupTutorialProps) {
       </Button>
     </>),
     (<>
+      <h1>Choose Habits to Improve</h1>
       <p>Choose a couple of habits you've created that you want to focus on building or breaking</p>
       <Form onSubmit={event => {
         event.preventDefault();
-        habits = document.forms['select-habits'].elements['habits'].filter(
-          e => e.checked
-        ).map(e => e.value);
+        const newChosenHabits = routine.habits.filter(h => Array.from(document.forms['select-habits'].elements['habits']).filter(
+          (e: any) => e.checked
+        ).map(
+          (e: any) => parseInt(e.value)
+        ).includes(h.id)
+        );
+        setChosenHabits(newChosenHabits);
+
+        if (newChosenHabits.length === 0) {
+          const selectHabitsError = document.getElementById('select-habits-error');
+          if (!selectHabitsError) return;
+          selectHabitsError.innerText = 'You must select at least one habit to work on building/breaking';
+          return;
+        }
+
         setSlideNum(slideNum + 1);
       }} name='select-habits'>
-        {routine.habits.map((habit, i) => habit.value !== 'NEUTRAL' &&
-          <FormCheckbox name='habits' value={habit.id.toString()} key={i}>
+        {routine.habits.map((habit, i) => habit.value !== 'NEUTRAL' && <React.Fragment key={i}>
+          <FormCheckbox name='habits' value={habit.id.toString()}>
             {habit.title}
-          </FormCheckbox>
-        )}
-        <Button type='submit'>I'm Finished</Button>
+          </FormCheckbox><br />
+        </React.Fragment>)}
+        <Button
+          type='submit'
+          variant='info'
+          className='mt-3'
+        >
+          I'm Finished
+        </Button>
+        <p id='select-habits-error' className='text-danger mt-2' />
       </Form>
     </>),
     (<>
+      <h1>Identify Core Components</h1>
       <p>Now, click on each habit you chose to expand it.  Then use your knowledge of the components to identify its components.</p>
       <p>If you get stuck, hover the question icon for more details and examples</p>
-      {routine.habits.filter(h => habits.includes(h.id)).map(habit =>
+      {chosenHabits.map(habit =>
         <RenderHabit
           routine={routine}
           habit={habit}
@@ -218,17 +239,20 @@ export function SetupTutorial(props: SetupTutorialProps) {
           show={['VALUES', 'COMPONENTS']}
         />
       )}
-      <Button id='component-habit-btn' className='d-none'>I'm Finished</Button>
-      {setTimeout(() => {
-        let btn = document.getElementById('component-habit-btn');
-        if (btn)
-          btn.className = btn.className.replace('d-none', '');
-      }, 10_000)}
+      {completedEnough('cue') &&
+        <Button
+          onClick={() => setSlideNum(slideNum + 1)}
+          variant='info'
+        >
+          I'm Finished
+        </Button>
+      }
     </>),
     (<>
+      <h1>Notes &amp; Strategies</h1>
       <p>Almost done!  With these four components, expand the habits again and, in the "Notes" section, try to answer some of questions on the right side</p>
       <p>If you get stuck, hover the question icon for more details and examples</p>
-      {routine.habits.filter(h => habits.includes(h.id)).map(habit =>
+      {chosenHabits.map(habit =>
         <RenderHabit
           routine={routine}
           habit={habit}
@@ -239,12 +263,14 @@ export function SetupTutorial(props: SetupTutorialProps) {
           show={['VALUES', 'COMPONENTS', 'NOTES']}
         />
       )}
-      <Button id='component-habit-btn' className='d-none'>I'm Finished</Button>
-      {setTimeout(() => {
-        let btn = document.getElementById('component-habit-btn');
-        if (btn)
-          btn.className = btn.className.replace('d-none', '');
-      }, 10_000)}
+      {completedEnough('notes') &&
+        <Button
+          onClick={() => setSlideNum(slideNum + 1)}
+          variant='info'
+        >
+          I'm Finished
+        </Button>
+      }
     </>),
     (<>
       <p>Congratulations!  You've just started changing your habits! What next?</p>
@@ -267,9 +293,9 @@ export function SetupTutorial(props: SetupTutorialProps) {
       <p>The book <em><a href='https://www.amazon.com/Atomic-Habits-Proven-Build-Break/dp/0735211299' target='_blank' rel='noopener noreferrer'>Atomic Habits</a></em> by James Clear has inspired a lot of the content here and is a great read if you want to learn more about habits.</p>
       <Button onClick={finishedCallback}>Finish</Button>
     </>),
-  ]);
+  ];
 
-  return <div className='text-center'>{slides[slideNum]}</div>;
+  return <>{slides[slideNum]}</>;
 }
 
 const walkthroughTutorialParts = ['setup', 'values', 'habit-parts', 'strategies', 'final'];

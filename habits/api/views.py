@@ -183,12 +183,17 @@ def habit_edit(request, routine_id, habit_id, *args, **kwargs):
         )
 
     habit.title = title or habit.title
-    habit.cue = request.data.get('new_cue') or habit.cue
-    habit.craving = request.data.get('new_craving') or habit.craving
-    habit.response = request.data.get('new_response') or habit.response
-    habit.reward = request.data.get('new_reward') or habit.reward
-    habit.notes = request.data.get('new_notes') or habit.notes
     habit.value = request.data.get('new_value') or habit.value
+    new_cue = request.data.get('new_cue')
+    new_craving = request.data.get('new_craving')
+    new_response = request.data.get('new_response')
+    new_reward = request.data.get('new_reward')
+    new_notes = request.data.get('new_notes')
+    habit.cue = new_cue if isinstance(new_cue, str) else habit.cue
+    habit.craving = new_craving if isinstance(new_craving, str) else habit.craving
+    habit.response = new_response if isinstance(new_response, str) else habit.response
+    habit.reward = new_reward if isinstance(new_reward, str) else habit.reward
+    habit.notes = new_notes if isinstance(new_notes, str) else habit.notes
     habit.save()
 
     return Response(HabitSerializer(habit).data, status=200)

@@ -8,7 +8,7 @@ import { FullEditor, createFullEditor  } from '../notes/editor-components';
 import { Slate } from 'slate-react';
 import 'katex/dist/katex.min.css';
 import { errorHandler } from './errorHandler';
-import { Node } from 'slate';
+import { Node as SlateNode } from 'slate';
 // import { Element } from 'slate';
 
 // Creates a simple tooltip
@@ -326,7 +326,7 @@ export function shuffle(array) {
 
 // Renders Slate rich text
 interface RenderRichTextProps {
-  text: Node[];
+  text: SlateNode[];
   fixSlateLazy?: boolean;
 }
 export function RenderRichText(props: RenderRichTextProps) {

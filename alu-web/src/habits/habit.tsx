@@ -135,7 +135,7 @@ export function RenderHabit(props: RenderHabitProps) {
     <Card
       bg={color}
       text='white'
-      className='habit-card mb-2'
+      className='habit-card mb-2 text-left'
     >
       <Card.Header
         // The weird check in here is to prevent clicking on the title
@@ -174,7 +174,7 @@ export function RenderHabit(props: RenderHabitProps) {
         </span>
       </Card.Header>
       {showBody && <Card.Body>
-        {show.includes('COMPONENTS') && <Row>
+        {show.includes('COMPONENTS') && <Row className='mb-2'>
           <Col>
             <Form.Label>
               Cue{' '}
@@ -248,8 +248,8 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ reward: e.target.value })}
             />
           </Col>
+          <hr />
         </Row>}
-        <hr />
         {show.includes('NOTES') && <Row>
           <Col>
             <Form.Label>Notes</Form.Label>
@@ -341,8 +341,8 @@ export function RenderHabit(props: RenderHabitProps) {
             </ul>}
             You don't need all of these to be successful, but the more the better
           </Col>}
+          <hr />
         </Row>}
-        <hr />
         {habit.value !== 'NEUTRAL' && show.includes('OTHER') && <>
           <Row>
             <Col>
