@@ -188,4 +188,5 @@ int(hexadecimal_string, 16)
 9009: Error creating todo through apiTodoCreate
 9010: Error listing todos through apiTodoList
 9011: Error deleting todo through apiTodoDelete
+9012: Error marking todo as completed/not completed through apiTodoComplete
 */

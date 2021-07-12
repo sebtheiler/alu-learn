@@ -305,7 +305,7 @@ def todo_delete(request, todo_id, *args, **kwargs):
     Deletes a given todo - POST
 
     Params:
-        `id`: (GET) (int) Id of the todo to delete
+        `id`: (URL) (int) Id of the todo to delete
     """
     try:
         todo = Todo.objects.get(
@@ -317,3 +317,31 @@ def todo_delete(request, todo_id, *args, **kwargs):
     todo.delete()
 
     return Response({'message': 'Todo deleted successfully'}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def todo_complete(request, todo_id, *args, **kwargs):
+    """
+    Marks a given todo as completed or not completed - POST
+
+    Params:
+        `completed`: (Post) (bool) Whether or not the todo is completed
+        `id`: (URL) (int) Id of the todo to delete
+    """
+    try:
+        todo = Todo.objects.get(
+            pk=todo_id,
+            profile=request.user.profile,
+        )
+    except Todo.DoesNotExist:
+        return Response({'message': 'Todo not found'}, status=404)
+
+    completed = request.data.get('completed')
+    if not isinstance(completed, bool):
+        return Response({'message': '`completed` must be a bool'}, status=400)
+
+    todo.completed = completed
+    todo.save()
+
+    return Response({'message': 'Updated todo'}, status=200)

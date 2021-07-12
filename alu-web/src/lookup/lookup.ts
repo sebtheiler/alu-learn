@@ -1137,3 +1137,14 @@ export function apiTodoDelete(
 ) {
   backendLookup('POST', `habits/todos/${todoId}/delete/`, callback);
 }
+
+// Marks a todo as completed or not completed
+export function apiTodoComplete(
+  todoId: number,
+  completed: boolean,
+  callback: (response: Message, status: number) => void,
+) {
+  backendLookup('POST', `habits/todos/${todoId}/complete/`, callback, {
+    completed: completed,
+  });
+}

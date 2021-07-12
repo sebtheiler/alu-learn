@@ -40,6 +40,7 @@ class TodoSerializer(serializers.ModelSerializer):
         model = Todo
         fields = (
             'text',
+            'completed',
             'id',
         )
         read_only_fields = fields

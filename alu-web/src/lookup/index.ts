@@ -112,6 +112,7 @@ import {
   apiTodoCreate,
   apiTodoList,
   apiTodoDelete,
+  apiTodoComplete,
 } from './lookup';
 
 export {
@@ -228,4 +229,5 @@ export {
   apiTodoCreate,
   apiTodoList,
   apiTodoDelete,
+  apiTodoComplete,
 }

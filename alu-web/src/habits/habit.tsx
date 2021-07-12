@@ -219,6 +219,7 @@ export function RenderHabit(props: RenderHabitProps) {
                   Design your environment in a way that makes the cues of this habit obvious and visible.{' '}
                   For example, promise to study for an hour (action) in your room (place) every evening after you finish your homework (time).
                   If you are specific like this example, you are more likely to actually follow through with your intentions.
+                  Hint: look at your habit's cue.
                 </QuestionBubble>
               </li>
               <li>
@@ -228,18 +229,20 @@ export function RenderHabit(props: RenderHabitProps) {
                   For example, list out the benefits of studying everyday to clarify your motivation.
                   Another option is to join a group of people who also want to build the same habit, such as a study-group.
                   You can also "bundle" your good habit with something you naturally enjoy doing, like listening to an audiobook/podcast as you clean your room.
+                  Hint: look at your habit's craving.
                 </QuestionBubble>
               </li>
               <li>
                 How can I make it easy?{' '}
                 <QuestionBubble isWhite>
-                  Change your environment to decrease your good habit's friction and make it easier to complete.
-                  For example, keep study materials at arms reach so that there's little friction between you and studying, while keeping distractions (like your phone) in another room.
-                </QuestionBubble>{' '}
-                <QuestionBubble isWhite>
-                  When you first start building study habits, you can also start with ridiculously tiny habits, like just studying for a single minute or doing a single flashcard.
+                  When you first start building study habits, you can start with ridiculously tiny habits, like just studying for a single minute or doing a single flashcard.
                   These tiny habits give you no excuse to not do them, and you can slowly build them into larger habits.
                   You can't improve a habit you don't have, so start small.
+                </QuestionBubble>{' '}
+                <QuestionBubble isWhite>
+                  Change your environment to decrease your good habit's friction and make it easier to complete.
+                  For example, keep study materials at arms reach so that there's little friction between you and studying, while keeping distractions (like your phone) in another room.
+                  Hint: look at your habit's response.
                 </QuestionBubble>
               </li>
               <li>
@@ -247,6 +250,7 @@ export function RenderHabit(props: RenderHabitProps) {
                 <QuestionBubble isWhite>
                   Give yourself a reward for completing your good habit.
                   For example, if you can study without distractions for a 25 minutes, give yourself 5 minutes of freedom (or longer intervals, if you'd like).
+                  Hint: look at your habit's reward.
                 </QuestionBubble>
               </li>
             </ul> : <ul>
@@ -255,6 +259,7 @@ export function RenderHabit(props: RenderHabitProps) {
                 <QuestionBubble isWhite>
                   Design your environment in a way that reduces exposure to this habit and makes its cues invisible.{' '}
                   For example, disable notifications or move your phone to another room.
+                  Hint: look at your habit's cue.
                 </QuestionBubble>
               </li>
               <li>
@@ -262,6 +267,7 @@ export function RenderHabit(props: RenderHabitProps) {
                 <QuestionBubble isWhite>
                   Highlight the benefits of avoiding your bad habit.
                   For example, make a list of benefits you would gain from avoiding social media, like having more time and energy available.
+                  Hint: look at your habits craving.
                 </QuestionBubble>
               </li>
               <li>
@@ -270,6 +276,7 @@ export function RenderHabit(props: RenderHabitProps) {
                   Change your environment to increase your bad habit's friction and make it more difficult.
                   For example, install an app/<a href='https://chrome.google.com/webstore/detail/self-control/ncaaipdfhdijmfdfmeoagmogddhkfdec?hl=en' target='_blank' rel='noreferrer'>browser-extension</a> that stops you from accessing an app/website that you spend too much time on.
                   You could also put your phone in another room to completely avoid temptation.
+                  Hint: look at your habits response.
                 </QuestionBubble>
               </li>
               <li>
@@ -277,6 +284,7 @@ export function RenderHabit(props: RenderHabitProps) {
                 <QuestionBubble isWhite>
                   How can you make the costs of your bad habit as unsatisfying and immediately painful as possible?
                   For example, get an "accountability partner" who has the same goal as you, and you promise to update on how well you did your bad habit.
+                  Hint: look at your habits reward.
                 </QuestionBubble>
               </li>
               <li>
@@ -334,7 +342,7 @@ export function RenderHabit(props: RenderHabitProps) {
               onClick={() => setShowBody(false)}
               style={{ width: '100px' }}
               variant='secondary'
-              className='mt-2 w-100'
+              className='mt-2 mx-auto'
             >
               Close
             </Button>

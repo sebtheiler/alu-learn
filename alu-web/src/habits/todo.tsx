@@ -3,8 +3,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import { Todo } from './types';
-import { apiTodoCreate, apiTodoList, apiTodoDelete } from '../lookup';
-import { errorHandler, useApiObjectHook } from '../utils';
+import { apiTodoCreate, apiTodoList, apiTodoDelete, apiTodoComplete } from '../lookup';
+import { errorHandler, useApiObjectHook, FormCheckbox } from '../utils';
 import './main.css';
 
 
@@ -28,31 +28,47 @@ export function TodoList() {
 
   if (todos === undefined) return <p>Loading...</p>
   return (<div className='text-center'>
-    <h3>Todo</h3>
+    <h3>To-do</h3>
     <hr />
-    {todos.length === 0 && <p>You have no todos</p>}
-    <ul className='text-left pl-3' style={{  }}>
+    {todos.length === 0 && <p>You have no to-dos</p>}
+    <ul className='text-left pl-0' style={{ listStyle: 'none' }}>
       {todos.map((todo, i) =>
         <li
-          onClick={() => {
-            // Delete the todo
-            let todoId = todo.id;
-            setTodos([...todos.slice(0, i), ...todos.slice(i + 1)]);
-            apiTodoDelete(todoId, (response, status) => {
-              if (status !== 200) errorHandler(response, status, 9011);
-            })
-          }}
-          className='todo-element'
-          key={i}
+          className={'todo-element' + (todo.completed ? ' todo-completed' : '')}
+          key={`todo-${todo.id}`}
         >
-          {todo.text}
+          <FormCheckbox
+            defaultChecked={todo.completed}
+            onChange={() => {
+              // Toggle whether or not the todo is completed
+              let newTodo = todo;
+              newTodo.completed = !newTodo.completed;
+              setTodos([...todos.slice(0, i), newTodo, ...todos.slice(i + 1)]);
+              apiTodoComplete(newTodo.id, newTodo.completed, (response, status) => {
+                if (status !== 200) errorHandler(response, status, 9012);
+              })
+            }}
+          >
+            {todo.text}
+            {' '}{todo.completed && <i
+              className='fas fa-trash text-danger'
+              onClick={() => {
+                // Delete the todo when the trash icon is clicked
+                if (!window.confirm('Are you sure you want to delete this todo? ')) return;
+                setTodos([...todos.slice(0, i), ...todos.slice(i + 1)]);
+                apiTodoDelete(todo.id, (response, status) => {
+                  if (status !== 200) errorHandler(response, status, 9011);
+                });
+              }}
+            />}
+          </FormCheckbox>
         </li>
       )}
     </ul>
     <Form onSubmit={addTodo}>
       <FormControl
-        placeholder='New todo'
-        aria-label='New todo'
+        placeholder='New to-do'
+        aria-label='New to-do'
         name='todoText'
         required
       />
@@ -62,7 +78,7 @@ export function TodoList() {
         id='create-todo-btn'
         block
       >
-        Add Todo
+        Add To-do
       </Button>
     </Form>
   </div>);

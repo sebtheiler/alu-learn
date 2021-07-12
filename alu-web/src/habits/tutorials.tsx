@@ -199,6 +199,7 @@ export function SetupTutorial(props: SetupTutorialProps) {
         <li>Response: the behavior you do to perform this habit</li>
         <li>Reward: the positive feeling you get for completing the habit</li>
       </ul>
+      <br />
       <p>A cue triggers a craving, which motivates a response resulting in a reward.</p>
       <Button
         onClick={() => setSlideNum(slideNum + 1)}

@@ -53,8 +53,9 @@ class Habit(models.Model):
 
 
 class Todo(models.Model):
-    text = models.CharField(max_length=512)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    text = models.CharField(max_length=512)
+    completed = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -71,6 +72,7 @@ class Todo(models.Model):
             'Mark your completed habits as finished for the day (click circle)',
             'Fill out the components and strategies for another habit',
             'Create another routine (e.g., evening)',
+            'Come back tomorrow to continue working on your habits!',
         ]
         Todo.objects.bulk_create([
             Todo(
