@@ -185,4 +185,7 @@ int(hexadecimal_string, 16)
 9006: Error deleting routine through apiRoutineDelete
 9007: Error rearranging routine through apiRoutineRearrange
 9008: Error rearranging habit through apiHabitRearrange
+9009: Error creating todo through apiTodoCreate
+9010: Error listing todos through apiTodoList
+9011: Error deleting todo through apiTodoDelete
 */

@@ -7,3 +7,9 @@
   margin: 0 auto;
   text-align: left;
 }
+
+.todo-element:hover {
+  text-decoration: line-through;
+  cursor: pointer;
+  color: gray;
+}

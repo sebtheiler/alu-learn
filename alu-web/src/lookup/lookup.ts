@@ -2,7 +2,7 @@
 // Each file should contain the lookups for just that package
 import { Node } from 'slate';
 import { CSSM, Deck, DeckDifficulty, FlashCard, FlashCardCreator, FlashCardTypes, LearningStatus, SchedulingAlgorithm, SharedDeck, SSMInterface } from '../decks/types';
-import { Routine, Habit, HabitValue } from '../habits/types';
+import { Routine, Habit, HabitValue, Todo } from '../habits/types';
 import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { backendLookup, baseUrl } from './components';
@@ -1111,4 +1111,29 @@ export function apiHabitRearrange(
   backendLookup('POST', `habits/routines/${routineId}/habits/rearrange/${habitId}/`, callback, {
     direction: direction,
   });
+}
+
+// Creates a todo
+export function apiTodoCreate(
+  text: string,
+  callback: (response: Todo, status: number) => void,
+) {
+  backendLookup('POST', 'habits/todos/create/', callback, {
+    text: text,
+  });
+}
+
+// Lists the user's todos
+export function apiTodoList(
+  callback: (response: Todo[], status: number) => void,
+) {
+  backendLookup('GET', 'habits/todos/', callback);
+}
+
+// Deletes a given todo
+export function apiTodoDelete(
+  todoId: number,
+  callback: (response: Message, status: number) => void,
+) {
+  backendLookup('POST', `habits/todos/${todoId}/delete/`, callback);
 }

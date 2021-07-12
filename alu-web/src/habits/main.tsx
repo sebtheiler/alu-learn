@@ -9,6 +9,7 @@ import { getCookie, setCookie, useApiObjectHook } from '../utils';
 import { SetupTutorial, SlidesPlayer } from './tutorials';
 import { apiRoutineList } from '../lookup';
 import { RenderRoutine } from './routine';
+import { TodoList } from './todo';
 import './main.css';
 
 
@@ -204,7 +205,7 @@ export default function Habits() {
               </Alert>)
             }
           </Col>
-          <Col xs={12} md={10} style={{ borderLeft: '1px solid' }}>
+          <Col xs={12} md={8} style={{ borderLeft: '1px solid', borderRight: '1px solid' }}>
             {routines[selectedRoutine] && <RenderRoutine
               routine={routines[selectedRoutine]}
               numRoutines={routines.length}
@@ -216,6 +217,9 @@ export default function Habits() {
               rearrangeRoutineCallback={rearrangeRoutineCallback}
               rearrangeHabitCallback={rearrangeHabitCallback}
             />}
+          </Col>
+          <Col xs={12} md={2}>
+            <TodoList />
           </Col>
         </Row>
       </>}

@@ -23,8 +23,6 @@ interface RenderRoutineProps {
 }
 export function RenderRoutine(props: RenderRoutineProps) {
   const { routine, numRoutines, createHabitCallback, editHabitCallback, editRoutineCallback, deleteHabitCallback, deleteRoutineCallback, rearrangeRoutineCallback, rearrangeHabitCallback } = props;
-  // const [tutorialPart, setTutorialPart] = useState(0);
-  // const showTutorial = useMemo(() => getCookie('finishedTutorial') !== 'true', []);
 
   const editRoutine = (options: EditRoutineOptions) => {
     apiRoutineEdit(routine.id, options.title, options.ordered, (response, status) => {

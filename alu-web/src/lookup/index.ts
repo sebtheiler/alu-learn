@@ -109,6 +109,9 @@ import {
   apiHabitEdit,
   apiHabitDelete,
   apiHabitRearrange,
+  apiTodoCreate,
+  apiTodoList,
+  apiTodoDelete,
 } from './lookup';
 
 export {
@@ -222,4 +225,7 @@ export {
   apiHabitEdit,
   apiHabitDelete,
   apiHabitRearrange,
+  apiTodoCreate,
+  apiTodoList,
+  apiTodoDelete,
 }

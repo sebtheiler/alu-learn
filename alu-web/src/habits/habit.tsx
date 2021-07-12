@@ -70,6 +70,16 @@ export function RenderHabit(props: RenderHabitProps) {
   }, [habit]);
 
   const editHabit = (options: EditHabitOptions) => {
+    let newHabit = habit;
+    newHabit.title = options.title ?? habit.title;
+    newHabit.cue = options.cue ?? habit.cue;
+    newHabit.craving = options.craving ?? habit.craving;
+    newHabit.response = options.response ?? habit.response;
+    newHabit.reward = options.reward ?? habit.reward;
+    newHabit.notes = options.notes ?? habit.notes;
+    newHabit.value = options.value ?? habit.value;
+    editHabitCallback(newHabit);
+
     apiHabitEdit(
       routine.id,
       habit.id,
@@ -98,9 +108,9 @@ export function RenderHabit(props: RenderHabitProps) {
       className='habit-card mb-2 text-left'
     >
       <Card.Header
-        // The weird check in here is to prevent clicking on the title
-        // to rename the Habit from expanding the body
-        onClick={e => setShowBody(!showBody)}
+        // The weird check in here is to prevent clicking on the top buttons
+        // (finished, move up/down) from expanding the body
+        onClick={e => {if (e.target === e.currentTarget) setShowBody(!showBody)}}
         role='button'
       >
         {habit.title}
@@ -309,16 +319,7 @@ export function RenderHabit(props: RenderHabitProps) {
               ))}
             </ButtonGroup>
           </Col>
-          <Col className='text-center' sm={12} md={4}>
-            <Button
-              onClick={() => setShowBody(false)}
-              variant='secondary'
-              className='mt-2 w-100'
-              style={{ width: '100px' }}
-            >
-              Close
-            </Button>
-          </Col>
+          <Col sm={0} md={4} />
           <Col sm={12} md={4}>
             <HabitBottomButtonGroup
               routine={routine}
@@ -327,6 +328,16 @@ export function RenderHabit(props: RenderHabitProps) {
               rearrangeHabitCallback={rearrangeHabitCallback}
               editHabit={editHabit}
             />
+          </Col>
+          <Col className='text-center' md={12}>
+            <Button
+              onClick={() => setShowBody(false)}
+              style={{ width: '100px' }}
+              variant='secondary'
+              className='mt-2 w-100'
+            >
+              Close
+            </Button>
           </Col>
         </Row>}
       </Card.Body>}

@@ -1,11 +1,12 @@
-from rest_framework.decorators import api_view, permission_classes
-
-from ..models import Routine, Habit
-from ..serializers import RoutineSerializer, HabitSerializer
-from django.db.models import F
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 import datetime as dt
+
+from django.db.models import F
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from ..models import Habit, Routine, Todo
+from ..serializers import HabitSerializer, RoutineSerializer, TodoSerializer
 
 
 @api_view(['POST'])
@@ -23,12 +24,19 @@ def routine_create(request, *args, **kwargs):
     if title is None or ordered is None:
         return Response({'message': '`title` and `ordered` must not be None'}, status=400)
 
+    profile = request.user.profile
+    routine_num = Routine.get_routine_num(profile)
     routine = Routine.objects.create(
-        user=request.user.profile,
+        user=profile,
         title=title,
         ordered=ordered,
-        routine_num=Routine.get_routine_num(request.user.profile),
+        routine_num=routine_num,
     )
+
+    # If this is the user's first routine, and they have no existing todos
+    # populate their todos with some basic stuff
+    if routine_num == 0 and Todo.objects.filter(profile=profile).count() == 0:
+        Todo.initial_populate(profile)
 
     return Response(RoutineSerializer(routine).data, status=201)
 
@@ -256,3 +264,56 @@ def habit_rearrange(request, routine_id, habit_id, *args, **kwargs):
     Habit.objects.bulk_update([habit, other_habit], ['habit_num'])
 
     return Response({'message': 'Rearranged habit'}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def todo_create(request, *args, **kwargs):
+    """
+    Creates a todo - POST
+
+    Params:
+        `text`: (Data) (str) Text of the todo
+    """
+    text = request.data.get('text')
+    if not isinstance(text, str):
+        return Response({'message': '`text` must be a string'}, status=400)
+
+    todo = Todo.objects.create(text=text, profile=request.user.profile)
+    return Response(TodoSerializer(todo).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def todo_list(request, *args, **kwargs):
+    """
+    Lists the current user's todos - GET
+    """
+    return Response(
+        TodoSerializer(
+            Todo.objects.filter(profile=request.user.profile),
+            many=True,
+        ).data,
+        status=200,
+    )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def todo_delete(request, todo_id, *args, **kwargs):
+    """
+    Deletes a given todo - POST
+
+    Params:
+        `id`: (GET) (int) Id of the todo to delete
+    """
+    try:
+        todo = Todo.objects.get(
+            pk=todo_id,
+            profile=request.user.profile,
+        )
+    except Todo.DoesNotExist:
+        return Response({'message': 'Todo not found'}, status=404)
+    todo.delete()
+
+    return Response({'message': 'Todo deleted successfully'}, status=200)

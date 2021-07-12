@@ -28,6 +28,11 @@ export interface Routine {
   id: number;
 }
 
+export interface Todo {
+  text: string;
+  id: number;
+}
+
 // Less important types
 export interface EditHabitOptions {
   title?: string | null;

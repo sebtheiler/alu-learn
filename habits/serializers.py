@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Habit, Routine
+from .models import Habit, Routine, Todo
 
 
 class HabitSerializer(serializers.ModelSerializer):
@@ -17,6 +17,7 @@ class HabitSerializer(serializers.ModelSerializer):
             'history',
             'id',
         ]
+        read_only_fields = fields
 
 
 class RoutineSerializer(serializers.ModelSerializer):
@@ -31,3 +32,14 @@ class RoutineSerializer(serializers.ModelSerializer):
             'routine_num',
             'id',
         ]
+        read_only_fields = fields
+
+
+class TodoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = (
+            'text',
+            'id',
+        )
+        read_only_fields = fields
