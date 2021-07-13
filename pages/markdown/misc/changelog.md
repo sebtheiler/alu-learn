@@ -1,6 +1,21 @@
 
 -----
-## Slight Habit Changes - July 08 - 0.7.2a
+## To-dos & Revamped Tutorial (DEVELOPMENT) - Jul 13 - 0.7.3b
+The tutorial for _Habits_ has been completely revamped to be less confusing, easier to use, and more instructive.  On top of this, _Habits_ now has a subfeature: To-dos.  To-dos is automatically populated with a couple of starting points after finishing the _Habits_ tutorial to give you an idea of what to do next.
+
+
+Note that 0.7 has progressed from alpha to beta, as I am now beginning to share it with some of you (not that "you" are reading this, because no one reads the changelog, so I'm essentially writing to myself).
+
+
+* **Revamped Habits Tutorial:** Completely redid the _Habits_ tutorial to be more in-depth, and give clearer instructions.  It is now "full-screen" instead of an "embed."
+* **Added To-dos:** There is now a to-do list on the right side of the _Habits_ page with, well, to-dos!  Four to-dos are automatically populated after you finish the tutorial, giving you a place to go.
+* **Added Habits Mobile Support:** _Habits_ now supports mobile devices, including phones and tablets.  It isn't perfect, but it's usable now.
+* **Added Close Button to Habits:** Added a simple close button to the bottom of each habit, for clarity's sake.  You could already close habits by clicking their top bar (and still can), but this is another option.
+* **Moved Re-arrange Habit Buttons:** There are now up/down arrows to click on the habit's top area, instead of the old gray buttons.
+* **Moved Rename Habit Button:** Rename is now a separate button (where re-arrange used to be), rather than being activated by clicking on its title.
+
+
+## Slight Habit Changes (DEVELOPMENT) - July 08 - 0.7.2a
 A couple of minor wording changes and loading button improvements.
 
 
