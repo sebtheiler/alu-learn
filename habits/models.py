@@ -46,7 +46,38 @@ class Habit(models.Model):
     )
 
     class Meta:
-        ordering = ['habit_num']
+        ordering = ('habit_num',)
 
     def __str__(self) -> str:
         return self.title
+
+
+class Todo(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    text = models.CharField(max_length=512)
+    completed = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('timestamp',)
+
+    def __str__(self) -> str:
+        return self.text
+
+    # Called when the user creates their first routine
+    # POpulates their todo-list with some examples
+    @staticmethod
+    def initial_populate(user: Profile):
+        examples = [
+            'Mark your completed habits as finished for the day (click circle)',
+            'Fill out the components and strategies for another habit',
+            'Create another routine (e.g., evening)',
+            'Come back tomorrow to continue working on your habits!',
+        ]
+        Todo.objects.bulk_create([
+            Todo(
+                text=example,
+                profile=user,
+            )
+            for example in examples
+        ])

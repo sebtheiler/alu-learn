@@ -1,3 +1,5 @@
+import { HistoryAction } from '../lookup/lookup';
+
 export type HabitValue = 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
 
 export interface HabitHistory {
@@ -25,3 +27,22 @@ export interface Routine {
   routine_num: number;
   id: number;
 }
+
+export interface Todo {
+  text: string;
+  completed: boolean;
+  id: number;
+}
+
+// Less important types
+export interface EditHabitOptions {
+  title?: string | null;
+  cue?: string;
+  craving?: string;
+  response?: string;
+  reward?: string;
+  notes?: string;
+  historyAction?: HistoryAction;
+  value?: HabitValue;
+}
+export type ShowOptions = 'VALUES' | 'BUTTONS' | 'COMPONENTS' | 'NOTES' | 'OTHER';

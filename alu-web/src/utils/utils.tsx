@@ -8,7 +8,7 @@ import { FullEditor, createFullEditor  } from '../notes/editor-components';
 import { Slate } from 'slate-react';
 import 'katex/dist/katex.min.css';
 import { errorHandler } from './errorHandler';
-import { Node } from 'slate';
+import { Node as SlateNode } from 'slate';
 // import { Element } from 'slate';
 
 // Creates a simple tooltip
@@ -192,12 +192,13 @@ interface FormCheckboxProps {
   name?: string;
   defaultChecked?: boolean;
   id?: string;
+  value?: string;
   onChange?(event: ChangeEvent<HTMLInputElement>): void;
   children?: ReactNodeArray | ReactNode;
   type?: 'checkbox' | 'radio';
 }
 export function FormCheckbox(props: FormCheckboxProps) {
-  const { required, name, defaultChecked, id, onChange, type='checkbox' } = props;
+  const { required, name, defaultChecked, id, value, onChange, type='checkbox' } = props;
 
   return (
     <label className='form-check-label'>
@@ -207,6 +208,7 @@ export function FormCheckbox(props: FormCheckboxProps) {
         defaultChecked={defaultChecked}
         name={name}
         id={id}
+        value={value}
         onChange={onChange}
       />{' '}
       {props.children}
@@ -324,7 +326,7 @@ export function shuffle(array) {
 
 // Renders Slate rich text
 interface RenderRichTextProps {
-  text: Node[];
+  text: SlateNode[];
   fixSlateLazy?: boolean;
 }
 export function RenderRichText(props: RenderRichTextProps) {
@@ -620,14 +622,11 @@ export function setCookie(name: string, value: string, days: number) {
 }
 
 export function getCookie(name: string) {
-  let nameEQ = `${name}=;`
-  let ca = document.cookie.split(';');
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+
+  // @ts-ignore  /** TS fails to realize `parts.length === 1` ensures `.pop()` isn't undefined */
+  if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
 export function eraseCookie(name: string) {   

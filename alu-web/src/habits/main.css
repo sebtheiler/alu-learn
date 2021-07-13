@@ -1,3 +1,18 @@
 .underline-on-hover:hover {
   text-decoration: underline;
 }
+
+.centered-list {
+  display: table;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.todo-element {
+  cursor: pointer;
+}
+
+.todo-completed {
+  text-decoration: line-through;
+  color: gray;
+}

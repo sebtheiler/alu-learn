@@ -1,37 +1,27 @@
 import React, { useMemo, useState } from 'react';
+import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Row from 'react-bootstrap/Row';
 import ToggleButton from 'react-bootstrap/ToggleButton';
-import { Habit, HabitValue, Routine } from './types';
-import { HabitButtonGroup } from './buttons';
-import { errorHandler, generateTooltip, QuestionBubble, stringDate } from '../utils';
+import { Habit, HabitValue, Routine, ShowOptions, EditHabitOptions } from './types';
+import { HabitBottomButtonGroup, HabitTopButtonGroup } from './buttons';
+import { errorHandler, QuestionBubble, stringDate } from '../utils';
 import { apiHabitEdit } from '../lookup';
-import { HistoryAction } from '../lookup/lookup';
 
 
-interface EditHabitOptions {
-  title?: string | null;
-  cue?: string;
-  craving?: string;
-  response?: string;
-  reward?: string;
-  notes?: string;
-  historyAction?: HistoryAction;
-  value?: HabitValue;
-}
 interface RenderHabitProps {
   routine: Routine;
   habit: Habit;
   editHabitCallback(habit: Habit): void;
   deleteHabitCallback(habitId: number): void;
   rearrangeHabitCallback(habitId: number, direction: 'UP' | 'DOWN'): void;
+  show?: ShowOptions[];  /** Used in the tutorial for only displaying parts of the habit */
 }
 export function RenderHabit(props: RenderHabitProps) {
-  const { habit, routine, editHabitCallback, deleteHabitCallback, rearrangeHabitCallback } = props;
+  const { habit, routine, editHabitCallback, deleteHabitCallback, rearrangeHabitCallback, show=['VALUES', 'BUTTONS', 'COMPONENTS', 'NOTES', 'OTHER'] } = props;
   const [showBody, setShowBody] = useState(false);
   const color = useMemo(() => {
     switch (habit.value) {
@@ -42,17 +32,6 @@ export function RenderHabit(props: RenderHabitProps) {
       case 'NEUTRAL':
         return 'primary';
     }
-  }, [habit]);
-  const completedToday = useMemo(() => {
-    const sorted = habit.history.sort((a, b) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-
-    if (sorted.length === 0)
-      return false;
-    if (sorted[0].date === stringDate())
-      return true;
-    return false;
   }, [habit]);
   const streak = useMemo(() => {
     const sorted = habit.history.sort((a, b) =>
@@ -91,6 +70,16 @@ export function RenderHabit(props: RenderHabitProps) {
   }, [habit]);
 
   const editHabit = (options: EditHabitOptions) => {
+    let newHabit = habit;
+    newHabit.title = options.title ?? habit.title;
+    newHabit.cue = options.cue ?? habit.cue;
+    newHabit.craving = options.craving ?? habit.craving;
+    newHabit.response = options.response ?? habit.response;
+    newHabit.reward = options.reward ?? habit.reward;
+    newHabit.notes = options.notes ?? habit.notes;
+    newHabit.value = options.value ?? habit.value;
+    editHabitCallback(newHabit);
+
     apiHabitEdit(
       routine.id,
       habit.id,
@@ -112,68 +101,29 @@ export function RenderHabit(props: RenderHabitProps) {
     );
   }
 
-  const updateHistory = event => {
-    let historyAction: HistoryAction;
-    const utcTimezoneOffset = new Date().getTimezoneOffset();
-    if (completedToday)
-      historyAction = {
-        action: 'DECREMENT',
-        utc_timezone_offset: utcTimezoneOffset,
-      }
-    else
-      historyAction = {
-        action: 'INCREMENT',
-        utc_timezone_offset: utcTimezoneOffset,
-      }
-    
-    editHabit({ historyAction: historyAction });
-  }
-
   return (<>
     <Card
       bg={color}
       text='white'
-      className='habit-card mb-2'
+      className='habit-card mb-2 text-left'
     >
       <Card.Header
-        // The weird check in here is to prevent clicking on the title
-        // to rename the Habit from expanding the body
+        // The weird check in here is to prevent clicking on the top buttons
+        // (finished, move up/down) from expanding the body
         onClick={e => {if (e.target === e.currentTarget) setShowBody(!showBody)}}
         role='button'
       >
-        <span
-          role='button'
-          onClick={() => editHabit({ title: window.prompt(`Renaming habit "${habit.title}"`) })}
-          className='underline-on-hover'
-        >
-          {habit.title}
-        </span>
-        <span
-          className='float-right'
-          role='button'
-          onClick={updateHistory}
-        >
-          {habit.value !== 'NEUTRAL' && <OverlayTrigger
-            placement='left'
-            delay={{ show: 250, hide: 400 }}
-            overlay={generateTooltip(
-              habit.value === 'POSITIVE' ?
-              'Mark this habit as completed for the day'
-              :
-              'Mark this habit as avoided for the day'
-            )}
-          >
-            {completedToday ?
-              <i className='fas fa-check-circle' />
-            :
-              <i className='far fa-circle' />
-            }
-          </OverlayTrigger>}
-        </span>
+        {habit.title}
+        {show.includes('BUTTONS') && <HabitTopButtonGroup
+          habit={habit}
+          routine={routine}
+          editHabit={editHabit}
+          rearrangeHabitCallback={rearrangeHabitCallback}
+        />}
       </Card.Header>
       {showBody && <Card.Body>
-        <Row>
-          <Col>
+        {show.includes('COMPONENTS') && <Row className='mb-2'>
+          <Col xs={6} md={3}>
             <Form.Label>
               Cue{' '}
               <QuestionBubble isWhite>
@@ -192,7 +142,7 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ cue: e.target.value })}
             />
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <Form.Label>
               Craving{' '}
               <QuestionBubble isWhite>
@@ -210,7 +160,7 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ craving: e.target.value })}
             />
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <Form.Label>
               Response{' '}
               <QuestionBubble isWhite>
@@ -228,7 +178,7 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ response: e.target.value })}
             />
           </Col>
-          <Col>
+          <Col xs={6} md={3}>
             <Form.Label>
               Reward{' '}
               <QuestionBubble isWhite>
@@ -246,10 +196,10 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ reward: e.target.value })}
             />
           </Col>
-        </Row>
-        <hr />
-        <Row>
-          <Col>
+          <hr />
+        </Row>}
+        {show.includes('NOTES') && <Row>
+          <Col xs={12} md={habit.value === 'NEUTRAL' ? 12 : 6}>
             <Form.Label>Notes</Form.Label>
             <Form.Control
               as='textarea'
@@ -260,7 +210,7 @@ export function RenderHabit(props: RenderHabitProps) {
               onBlur={e => editHabit({ notes: e.target.value })}
             />
           </Col>
-          {habit.value !== 'NEUTRAL' && <Col>
+          {habit.value !== 'NEUTRAL' && <Col xs={12} md={6}>
             <p>Strategies to {habit.value === 'POSITIVE' ? 'build' : 'break'} this habit:</p>
             {habit.value === 'POSITIVE' ? <ul>
               <li>
@@ -269,6 +219,7 @@ export function RenderHabit(props: RenderHabitProps) {
                   Design your environment in a way that makes the cues of this habit obvious and visible.{' '}
                   For example, promise to study for an hour (action) in your room (place) every evening after you finish your homework (time).
                   If you are specific like this example, you are more likely to actually follow through with your intentions.
+                  Hint: look at your habit's cue.
                 </QuestionBubble>
               </li>
               <li>
@@ -278,18 +229,20 @@ export function RenderHabit(props: RenderHabitProps) {
                   For example, list out the benefits of studying everyday to clarify your motivation.
                   Another option is to join a group of people who also want to build the same habit, such as a study-group.
                   You can also "bundle" your good habit with something you naturally enjoy doing, like listening to an audiobook/podcast as you clean your room.
+                  Hint: look at your habit's craving.
                 </QuestionBubble>
               </li>
               <li>
                 How can I make it easy?{' '}
                 <QuestionBubble isWhite>
-                  Change your environment to decrease your good habit's friction and make it easier to complete.
-                  For example, keep study materials at arms reach so that there's little friction between you and studying, while keeping distractions (like your phone) in another room.
-                </QuestionBubble>{' '}
-                <QuestionBubble isWhite>
-                  When you first start building study habits, you can also start with ridiculously tiny habits, like just studying for a single minute or doing a single flashcard.
+                  When you first start building study habits, you can start with ridiculously tiny habits, like just studying for a single minute or doing a single flashcard.
                   These tiny habits give you no excuse to not do them, and you can slowly build them into larger habits.
                   You can't improve a habit you don't have, so start small.
+                </QuestionBubble>{' '}
+                <QuestionBubble isWhite>
+                  Change your environment to decrease your good habit's friction and make it easier to complete.
+                  For example, keep study materials at arms reach so that there's little friction between you and studying, while keeping distractions (like your phone) in another room.
+                  Hint: look at your habit's response.
                 </QuestionBubble>
               </li>
               <li>
@@ -297,6 +250,7 @@ export function RenderHabit(props: RenderHabitProps) {
                 <QuestionBubble isWhite>
                   Give yourself a reward for completing your good habit.
                   For example, if you can study without distractions for a 25 minutes, give yourself 5 minutes of freedom (or longer intervals, if you'd like).
+                  Hint: look at your habit's reward.
                 </QuestionBubble>
               </li>
             </ul> : <ul>
@@ -305,6 +259,7 @@ export function RenderHabit(props: RenderHabitProps) {
                 <QuestionBubble isWhite>
                   Design your environment in a way that reduces exposure to this habit and makes its cues invisible.{' '}
                   For example, disable notifications or move your phone to another room.
+                  Hint: look at your habit's cue.
                 </QuestionBubble>
               </li>
               <li>
@@ -312,6 +267,7 @@ export function RenderHabit(props: RenderHabitProps) {
                 <QuestionBubble isWhite>
                   Highlight the benefits of avoiding your bad habit.
                   For example, make a list of benefits you would gain from avoiding social media, like having more time and energy available.
+                  Hint: look at your habits craving.
                 </QuestionBubble>
               </li>
               <li>
@@ -320,6 +276,7 @@ export function RenderHabit(props: RenderHabitProps) {
                   Change your environment to increase your bad habit's friction and make it more difficult.
                   For example, install an app/<a href='https://chrome.google.com/webstore/detail/self-control/ncaaipdfhdijmfdfmeoagmogddhkfdec?hl=en' target='_blank' rel='noreferrer'>browser-extension</a> that stops you from accessing an app/website that you spend too much time on.
                   You could also put your phone in another room to completely avoid temptation.
+                  Hint: look at your habits response.
                 </QuestionBubble>
               </li>
               <li>
@@ -327,6 +284,7 @@ export function RenderHabit(props: RenderHabitProps) {
                 <QuestionBubble isWhite>
                   How can you make the costs of your bad habit as unsatisfying and immediately painful as possible?
                   For example, get an "accountability partner" who has the same goal as you, and you promise to update on how well you did your bad habit.
+                  Hint: look at your habits reward.
                 </QuestionBubble>
               </li>
               <li>
@@ -339,19 +297,19 @@ export function RenderHabit(props: RenderHabitProps) {
             </ul>}
             You don't need all of these to be successful, but the more the better
           </Col>}
-        </Row>
-        <hr />
-        {habit.value !== 'NEUTRAL' && <>
+          <hr />
+        </Row>}
+        {habit.value !== 'NEUTRAL' && show.includes('OTHER') && <>
+          <hr />
           <Row>
             <Col>
               Streak: {streak}
             </Col>
           </Row>
-          <hr />
         </>}
-        <Row>
-          <Col>
-            <ButtonGroup toggle>
+        {show.includes('VALUES') && <Row>
+          <Col sm={12} md={4}>
+            <ButtonGroup className='w-100' toggle>
               {['POSITIVE', 'NEUTRAL', 'NEGATIVE'].map((value, i) => (
                 <ToggleButton
                   key={i}
@@ -359,6 +317,7 @@ export function RenderHabit(props: RenderHabitProps) {
                   variant={['success', 'primary', 'danger'][i]}
                   name='radio'
                   value={value}
+                  className='mt-2 w-100'
                   id={`${value.toLowerCase()}-btn`}
                   checked={habit.value === value}
                   onChange={(e) => editHabit({ value: e.currentTarget.value as HabitValue })}
@@ -368,15 +327,27 @@ export function RenderHabit(props: RenderHabitProps) {
               ))}
             </ButtonGroup>
           </Col>
-          <Col>
-            <HabitButtonGroup
+          <Col sm={0} md={4} />
+          <Col sm={12} md={4}>
+            <HabitBottomButtonGroup
               routine={routine}
               habit={habit}
               deleteHabitCallback={deleteHabitCallback}
               rearrangeHabitCallback={rearrangeHabitCallback}
+              editHabit={editHabit}
             />
           </Col>
-        </Row>
+          <Col className='text-center' md={12}>
+            <Button
+              onClick={() => setShowBody(false)}
+              style={{ width: '100px' }}
+              variant='secondary'
+              className='mt-2 mx-auto'
+            >
+              Close
+            </Button>
+          </Col>
+        </Row>}
       </Card.Body>}
     </Card>
   </>);
