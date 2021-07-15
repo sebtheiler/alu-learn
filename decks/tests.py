@@ -2475,6 +2475,60 @@ class DeckTestCase(ImprovedTestCase):
         imported_deck = Deck.objects.get(pk=response.data['id'])
         self.assertDecksEqual(imported_deck, deck, test_review_instances_equal=False)
 
+    def test_deck_generate_skill_tree(self):
+        target_skill_tree = {
+            'a': {
+                'b': {},
+            },
+        }
+        deck = self.create_deck('Deck to generate skill tree from', num_flashcards=2)
+        fc1, fc2 = deck.flashcards.first(), deck.flashcards.last()
+        fc1.tags = 'a'
+        fc2.tags = 'a, b'
+        fc1.save()
+        fc2.save()
+        self.assertEqual(deck.generate_skill_tree(), target_skill_tree)
+
+        # More complicated test
+        target_skill_tree = {
+            'a': {
+                'a.b': {},
+                'a.c': {
+                    'a.c.d': {},
+                    'a.c.e': {},
+                },
+                'a.f': {},
+            },
+            'g': {
+                'g.h': {
+                    'g.h.i': {}
+                },
+                'g.j': {},
+                'g.k': {},
+                'g.l': {
+                    'g.l.m': {},
+                    'g.l.n': {},
+                },
+            },
+        }
+        deck = self.create_deck('Deck to generate skill tree from', num_flashcards=12)
+        flashcards = list(deck.flashcards.all())
+        flashcards[0].tags = 'a'
+        flashcards[1].tags = 'a, a.b'
+        flashcards[2].tags = 'a, a.b'
+        flashcards[3].tags = 'a, a.c, a.c.d'
+        flashcards[4].tags = 'a, a.c, a.c.e'
+        flashcards[5].tags = 'a, a.f'
+        flashcards[6].tags = 'g, g.h, g.h.i, g.h.i.<none>'
+        flashcards[7].tags = 'g, g.j'
+        flashcards[8].tags = 'g, g.k'
+        flashcards[9].tags = 'g, g.l, g.l.m'
+        flashcards[10].tags = 'g, g.l, g.l.m, g.l.m.<none>'
+        flashcards[11].tags = 'g, g.l, g.l.n'
+        FlashCardCreator.objects.bulk_update(flashcards, ['tags'])
+
+        self.assertEqual(deck.generate_skill_tree(), target_skill_tree)
+
 
 class DeckBrowserTestCase(SeleniumTestCase):
     def test_decks(self):
