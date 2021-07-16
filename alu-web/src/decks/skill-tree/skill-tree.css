@@ -7,14 +7,19 @@
 .main-section {
   padding: 10px;
   margin-bottom: 20px;
-  min-height: 300px;
-  border-radius: 20px;
 
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.05);
+  border: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+.main-section-body {
   display: flex;
   justify-content: center;
   align-items: center;
 
-  background: rgba(0, 0, 0, 0.05); }
+  min-height: 200px;
+}
 
 .sub-section {
   margin-left: auto;
