@@ -45,6 +45,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
+  user-select: none;
 }
 
 .sub-section:hover {
@@ -52,6 +53,7 @@
   border: 2px solid rgba(var(--sub-section-border-color), 0.9);
   transform: scale(1.1);
   transition-duration: 0.2s;
+  cursor: pointer;
 }
 
 a.no-underline, a.no-underline:hover, a.no-underline:focus, a.no-underline:active {

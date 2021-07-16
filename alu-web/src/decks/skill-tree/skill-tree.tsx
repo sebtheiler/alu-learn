@@ -1,5 +1,7 @@
 import React from 'react';
+import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
 import MainSection from './main-section';
 import './skill-tree.css';
 
@@ -9,17 +11,26 @@ import './skill-tree.css';
 const skillTree = {'unit 1': {'people': {'precursors': {}, 'women': {}, 'people': {}, 'conformity': {}, 'aggression': {}, 'groups': {}, 'prejudice': {}, 'problem solving': {}, 'intelligence': {}}, 'precursors': {'precursors': {}, 'theories': {}}, 'theoretical approach': {'perceptual process': {}}, 'theories': {'theories': {}, 'evolution': {}, 'drive reduction': {}, 'incentive': {}, 'arousal': {}, 'maslow': {}}, 'psychological domain': {}, 'research': {'research design': {}, 'statistics': {}, 'ethics': {}, 'research': {}}}, 'unit 2': {'biology': {'nervous system': {}, 'endocrine system': {}, 'research': {}, 'consciousness': {}, 'three stage model': {}}, 'consciousness': {'consciousness': {}}, 'sleep': {'disorder': {}}, 'drugs': {}, 'people': {'precursors': {}, 'women': {}, 'people': {}, 'conformity': {}, 'aggression': {}, 'groups': {}, 'prejudice': {}, 'problem solving': {}, 'intelligence': {}}}, 'unit 9': {'attitudes': {'behavior': {}, 'persuasion': {}, 'attribution': {}}, 'attribution': {'attribution': {}, 'bias': {}}, 'attraction': {}, 'altruism': {}, 'aggression': {'aggression': {}}, 'persuasion': {'persuasion': {}}, 'groups': {'people': {}, 'groups': {}, 'conformity': {}}, 'prejudice': {'experiment': {}, 'prejudice': {}}, 'people': {'precursors': {}, 'women': {}, 'people': {}, 'conformity': {}, 'aggression': {}, 'groups': {}, 'prejudice': {}, 'problem solving': {}, 'intelligence': {}}}, 'unit 4': {'learning': {'principles': {}, 'conditioning': {}, 'applications': {}, 'solutions': {}}, 'operant conditioning': {'law': {}, 'technology': {}, 'reinforcement': {}, 'schedule of reinforcement': {}, 'behavior': {}, 'behavioral therapies': {}}, 'observational learning': {}, 'people': {'precursors': {}, 'women': {}, 'people': {}, 'conformity': {}, 'aggression': {}, 'groups': {}, 'prejudice': {}, 'problem solving': {}, 'intelligence': {}}}, 'unit 3': {'sensation': {'perception': {}, 'somatic senses': {}, 'vision': {}}, 'perception': {'theory': {}, 'vision': {}, 'hearing': {}, 'taste and smell': {}, 'somatic senses': {}, 'pain': {}, 'perceptual process': {}, 'attention': {}, 'parapsychology': {}, 'people': {}, 'effect': {}, 'perception': {}}}, 'unit 6': {'developmental psychology': {'gestation': {}, 'motor development': {}, 'attachment': {}, 'parenting': {}, 'cognitive development': {}, 'moral development': {}, 'socialization': {}, 'gender': {}, 'adolescence': {}, 'aging': {}, 'people': {}}}, 'unit 5': {'memory': {'person': {}, 'levels of processing': {}, 'three stage model': {}}, 'language': {'combination': {}, 'language acquisition': {}, 'thinking': {}}, 'thinking': {'thinking': {}, 'problem solving': {}}, 'testing': {'standardization': {}, 'reliability': {}, 'types of tests': {}, 'intelligence': {}}}, 'unit 8': {'causes': {'medical model': {}}, 'disorders': {'anxiety disorders': {}, 'obsessive-compulsive disorders': {}, 'trauma disorders': {}, 'somatic disorders': {}, 'dissociative disorders': {}, 'depressive disorders': {}, 'bipolar disorders': {}, 'psychotic disorders': {}, 'neurodevelopmental disorders': {}, 'personality disorders': {}, 'neurocognitive disorders': {}}, 'mental health practitioners': {}, 'history': {}, 'treatment': {'insight therapies': {}, 'behavioral therapies': {}, 'cognitive-behavioral therapies': {}, 'biological/biomedical treatments': {}, 'modes of therapy': {}}}, 'unit 7': {'motivation theories': {'evolution': {}, 'drive reduction': {}, 'incentive': {}, 'arousal': {}, 'maslow': {}}, 'physiological motives': {'eating': {}, 'sex': {}}, 'social motivation': {}, 'emotion': {'personality disorders': {}}, 'stress': {}, 'personality': {'personality disorders': {}, 'psychoanalytic': {}, 'humanistic': {}, 'trait theory': {}}, 'assessments': {}}};
 
 export function SkillTree() {
-  return (<>
-    <Container className='text-center'>
+  return (
+    <Container className='text-center' fluid>
       <h1>Deck Title</h1>
-      <br />
-      {Object.keys(skillTree).map((mainSectionTitle, i) =>
-        <MainSection
-          title={mainSectionTitle}
-          section={skillTree[mainSectionTitle]}
-          key={i}
-        />
-      )}
+      <Row>
+        <Col md={3} sm={12}>
+          <p>deck list goes here</p>
+        </Col>
+        <Col md={6} sm={12}>
+          {Object.keys(skillTree).map((mainSectionTitle, i) =>
+            <MainSection
+              title={mainSectionTitle}
+              section={skillTree[mainSectionTitle]}
+              key={i}
+            />
+          )}
+        </Col>
+        <Col md={3} sm={12}>
+          <p>meta stuff goes here</p>
+        </Col>
+      </Row>
     </Container>
-  </>);
+  );
 }

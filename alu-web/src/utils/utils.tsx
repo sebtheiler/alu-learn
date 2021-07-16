@@ -632,3 +632,11 @@ export function getCookie(name: string) {
 export function eraseCookie(name: string) {   
   document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
 }
+
+// Capitalizes the first letter of a string
+// If `all` is true, it does this for each word in the string
+export function capitalize(str: string, all: boolean = false) {
+  if (all)
+    return str.split(' ').map(s => capitalize(s)).join(' ');
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
