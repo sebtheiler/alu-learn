@@ -251,6 +251,7 @@ class Deck(models.Model):
         self,
         max_depth: int = 3,  # how many layers deep to go (1-5)
         sort: bool = False,  # whether or not to sort the final tree alphabetically
+        # TODO: fix `remove_essential`
         remove_essential: bool = False  # whether or not to remove the `essential` tag
     ) -> dict:
         if max_depth < 1 or max_depth > 5:
@@ -266,7 +267,7 @@ class Deck(models.Model):
                 continue
 
             tag = creator_tags[0]
-            if tag != 'essential':
+            if tag != 'essential' or not remove_essential:
                 skill_tree[tag] = {}
 
         def recursive_layer(skill_tree_branch, depth=0):
@@ -284,8 +285,9 @@ class Deck(models.Model):
                     if len(same_tag_card_tags) == 0:
                         continue
 
-                    if tag != 'essential':
-                        skill_tree_branch[tag][same_tag_card_tags[0]] = {}
+                    same_tag_card_tag = same_tag_card_tags[0]
+                    if same_tag_card_tag != 'essential' or not remove_essential:
+                        skill_tree_branch[tag][same_tag_card_tag] = {}
                     had_tags = True
 
                 if had_tags:
