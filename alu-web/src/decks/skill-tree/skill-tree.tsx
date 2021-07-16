@@ -1,5 +1,6 @@
 import React from 'react';
-import { Col, Container, Row } from 'react-bootstrap';
+import Container from 'react-bootstrap/Container';
+import MainSection from './main-section';
 import './skill-tree.css';
 
 // const skillTree = {'unit 1': {'unit 1.1': {'china': {}, 'government': {}, 'japan': {}}, 'unit 1.2': {'islam': {}, 'christianity': {}, 'middle-east': {}}, 'unit 1.3': {'india': {}, 'islam': {}, 'indonesia': {}}, 'unit 1.4': {'americas': {}}, 'unit 1.5': {'government': {}, 'africa': {}}, 'unit 1.6': {'roman empire': {}, 'europe': {}}}, 'unit 2': {'unit 2.1': {'silk road': {}, 'technology': {}, 'china': {}, 'europe': {}}, 'unit 2.2': {'mongols': {}, 'disease': {}}, 'unit 2.3': {'india': {}, 'middle east': {}, 'place': {}, 'slavery': {}, 'environment': {}, 'technology': {}, 'culture': {}, 'person': {}}, 'unit 2.4': {'place': {}, 'technology': {}, 'africa': {}}, 'unit 2.5': {'people': {}}, 'unit 2.6': {'africa': {}}}, 'unit 4': {'unit 4.1': {'technology': {}, 'demography': {}, 'trade': {}, 'ocean': {}}, 'unit 4.2': {'exploration': {}}, 'unit 4.3': {'colombian exchange': {}}, 'unit 4.4': {'maritime empires': {}}, 'unit 4.5': {'maritime empires': {}}, 'unit 4.6': {'france': {}, 'birtain': {}, 'africa': {}, 'russia': {}, 'india': {}, 'americas': {}, 'britain': {}}, 'unit 4.7': {'ottoman empire': {}, 'china': {}, 'europe': {}, 'spain': {}}}, 'unit 3': {'unit 3.1': {'empires': {}, 'europe': {}, 'asia': {}}, 'unit 3.2': {'idea': {}, 'europe': {}, 'middle-east': {}, 'asia': {}, 'africa': {}}, 'unit 3.3': {'religion': {}, 'science': {}}}, 'unit 5': {'unit 5.1': {'enlightenment': {}}, 'unit 5.2': {'revolution': {}}, 'unit 5.3': {'technology': {}, 'industrial revolution': {}}, 'unit 5.4': {'industrial revolution': {}}, 'unit 5.5': {'industrial revolution': {}}, 'unit 5.6': {'government': {}}, 'unit 5.7': {'industrial revolution': {}}, 'unit 5.8': {'industrial revolution': {}}, 'unit 5.9': {'industrial revolution': {}}}, 'unit 6': {'unit 6.1': {'imperialism': {}}, 'unit 6.2': {'imperialism': {}}, 'unit 6.3': {'imperialism': {}}, 'unit 6.4': {'imperialism': {}}, 'unit 6.5': {'imperialism': {}}, 'unit 6.6': {'imperialism': {}}, 'unit 6.7': {'imperialism': {}}}, 'unit 7': {'unit 7.1': {'russia': {}, 'china': {}, 'ottoman empire': {}, 'north america': {}}, 'unit 7.2': {'world war i': {}}, 'unit 7.3': {'world war i': {}}, 'unit 7.4': {'world war i': {}, 'great depression': {}}, 'unit 7.5': {'world war i': {}}, 'unit 7.6': {'world war ii': {}}, 'unit 7.7': {'world war ii': {}}, 'unit 7.8': {'atrocities': {}}}, 'unit 8': {'unit 8.1': {'ending wwii': {}, 'shifting power': {}, 'cold war': {}}, 'unit 8.2': {'united nations': {}, 'cold war': {}}, 'unit 8.3': {'occupation of germany': {}, 'alliances': {}, 'proxy wars': {}, 'essential': {}}, 'unit 8.4': {'essential': {}, 'china': {}, 'iran': {}, 'latin america': {}, 'asia and africa': {}}, 'unit 8.5': {'india and pakistan': {}, 'ghana and algeria': {}, 'other': {}}, 'unit 8.6': {'israel': {}, 'cambodia': {}, 'india and pakistan': {}, 'women in power in south asia': {}, 'tanzania': {}, 'migration': {}}, 'unit 8.7': {'nonviolent resistance': {}, 'soviet union': {}, 'revolt in 1968': {}, 'terrorism': {}}, 'unit 8.8': {'essential': {}, 'final decades': {}, 'end of the soviet union': {}}}, 'unit 9': {'unit 9.1': {'communication': {}, 'transportation': {}, 'green revolution': {}, 'energy technology': {}, 'medical innovations': {}}, 'unit 9.2': {'disease and poverty': {}, 'emerging epidemics': {}, 'longevity diseases': {}}, 'unit 9.3': {'essential': {}, 'effects of environmental change': {}, 'global warming': {}}, 'unit 9.4': {'essential': {}, 'free-market economies': {}, 'knowledge economies': {}, 'shifting manufacturing': {}, 'transnational trade organizations': {}, 'multinational corporations': {}}, 'unit 9.5': {'era of rights': {}, 'racial equality': {}, 'environmental repair': {}}, 'unit 9.6': {'political/social/artistic changes': {}, 'popular culture': {}, 'global culture': {}}, 'unit 9.7': {'essential': {}, 'reasons for antiglobalization': {}, 'economic resistance': {}, 'social media': {}}, 'unit 9.8': {'assemblies of the united nations': {}, 'peacekeeping': {}, 'other priorities': {}, 'other non-governmental organizations': {}}}};
@@ -13,33 +14,11 @@ export function SkillTree() {
       <h1>Deck Title</h1>
       <br />
       {Object.keys(skillTree).map((mainSectionTitle, i) =>
-        <>
-          <div className='d-flex'>
-            <hr className='flex-grow-1' />
-            <h3 className='px-2 align-self-center'>
-              <a href='/study/TODO:/' >
-                {mainSectionTitle.toUpperCase()}
-              </a>
-            </h3>
-            <hr className='flex-grow-1' />
-          </div>
-          <Row className='main-section'>
-            {Object.keys(skillTree[mainSectionTitle]).map((subSectionTitle, i) =>
-              <Col
-                md={3}
-                xs={4}
-                key={i}
-                className='mx-auto'
-              >
-                <a href='/study/TODO:/' className='no-underline'>
-                  <div className='sub-section'>
-                    <p className='sub-section-text'>{subSectionTitle}</p>
-                  </div>
-                </a>
-              </Col>
-            )}
-          </Row>
-        </>
+        <MainSection
+          title={mainSectionTitle}
+          section={skillTree[mainSectionTitle]}
+          key={i}
+        />
       )}
     </Container>
   </>);
