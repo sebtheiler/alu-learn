@@ -23,12 +23,12 @@ export function SkillTree() {
       <h1>Deck Title</h1>
       <Row>
         <Col md={3} sm={12}>
-          {decks && decks.map((deck, i) =>
+          {decks ? decks.map((deck, i) =>
             <DeckSelection
               deck={deck}
               key={i}
             />
-          )}
+          ) : <p>Loading decks...</p>}
         </Col>
         <Col md={6} sm={12}>
           {Object.keys(skillTree).map((mainSectionTitle, i) =>

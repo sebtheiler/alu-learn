@@ -732,7 +732,14 @@ export function ExportModal(props: ExportModalProps) {
 }
 
 // Modal for selecting a game to play
-export function GameModal({ modalIsOpen, closeModal, submitHandler, deck }) {
+interface GameModalProps {
+  deck: Deck | CSSM | SharedDeck;
+  modalIsOpen: boolean;
+  closeModal(): void;
+  submitHandler(event): void;
+};
+export function GameModal(props: GameModalProps) {
+  const { modalIsOpen, closeModal, submitHandler, deck } = props;
   const [gameType, setGameType] = useState('MATCHING');
   const [flashcardType, setFlashcardType] = useState('SEEN');
 

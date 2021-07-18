@@ -25,7 +25,8 @@
   padding: 10px;
   margin-left: 10px;
   margin-right: 25px;
-  /* width: 92%; */
+
+  border-radius: 0 0 10px 10px;
 
   background: rgba(var(--deck-selection-expand-color), 0.9);
   color: white;
