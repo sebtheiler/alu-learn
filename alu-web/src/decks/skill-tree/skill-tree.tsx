@@ -7,15 +7,16 @@ import MainSection from './main-section';
 
 interface SkillTreeProps {
   deck: Deck;
+  selectedDeck: number;
 }
 export default function SkillTree(props: SkillTreeProps) {
-  const { deck } = props;
+  const { deck, selectedDeck } = props;
 
   const generateSkillTree = event => {
     event.preventDefault();
     apiDeckGenerateSkillTree(deck.id, false, true, (response, status) => {
       if (status === 200) {
-        window.location.reload();
+        window.location.href = `${window.location.href}?selected=${selectedDeck}`
       } else {
         errorHandler(response, status, 1031);
       }
