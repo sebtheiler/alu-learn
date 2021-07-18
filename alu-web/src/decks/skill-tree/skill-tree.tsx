@@ -1,48 +1,49 @@
-import React, { useState } from 'react';
-import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
+import React from 'react';
+import Button from 'react-bootstrap/Button';
+import { apiDeckGenerateSkillTree } from '../../lookup';
+import { errorHandler, LoadingButton } from '../../utils';
+import { Deck } from '../types';
 import MainSection from './main-section';
-import DeckSelection from './deck-selection';
-import { useApiObjectHook } from '../../utils';
-import { apiDeckHome } from '../../lookup';
-import { Deck, CSSM} from '../types';
-import './skill-tree.css';
 
-// const skillTree = {'unit 1': {'unit 1.1': {'china': {}, 'government': {}, 'japan': {}}, 'unit 1.2': {'islam': {}, 'christianity': {}, 'middle-east': {}}, 'unit 1.3': {'india': {}, 'islam': {}, 'indonesia': {}}, 'unit 1.4': {'americas': {}}, 'unit 1.5': {'government': {}, 'africa': {}}, 'unit 1.6': {'roman empire': {}, 'europe': {}}}, 'unit 2': {'unit 2.1': {'silk road': {}, 'technology': {}, 'china': {}, 'europe': {}}, 'unit 2.2': {'mongols': {}, 'disease': {}}, 'unit 2.3': {'india': {}, 'middle east': {}, 'place': {}, 'slavery': {}, 'environment': {}, 'technology': {}, 'culture': {}, 'person': {}}, 'unit 2.4': {'place': {}, 'technology': {}, 'africa': {}}, 'unit 2.5': {'people': {}}, 'unit 2.6': {'africa': {}}}, 'unit 4': {'unit 4.1': {'technology': {}, 'demography': {}, 'trade': {}, 'ocean': {}}, 'unit 4.2': {'exploration': {}}, 'unit 4.3': {'colombian exchange': {}}, 'unit 4.4': {'maritime empires': {}}, 'unit 4.5': {'maritime empires': {}}, 'unit 4.6': {'france': {}, 'birtain': {}, 'africa': {}, 'russia': {}, 'india': {}, 'americas': {}, 'britain': {}}, 'unit 4.7': {'ottoman empire': {}, 'china': {}, 'europe': {}, 'spain': {}}}, 'unit 3': {'unit 3.1': {'empires': {}, 'europe': {}, 'asia': {}}, 'unit 3.2': {'idea': {}, 'europe': {}, 'middle-east': {}, 'asia': {}, 'africa': {}}, 'unit 3.3': {'religion': {}, 'science': {}}}, 'unit 5': {'unit 5.1': {'enlightenment': {}}, 'unit 5.2': {'revolution': {}}, 'unit 5.3': {'technology': {}, 'industrial revolution': {}}, 'unit 5.4': {'industrial revolution': {}}, 'unit 5.5': {'industrial revolution': {}}, 'unit 5.6': {'government': {}}, 'unit 5.7': {'industrial revolution': {}}, 'unit 5.8': {'industrial revolution': {}}, 'unit 5.9': {'industrial revolution': {}}}, 'unit 6': {'unit 6.1': {'imperialism': {}}, 'unit 6.2': {'imperialism': {}}, 'unit 6.3': {'imperialism': {}}, 'unit 6.4': {'imperialism': {}}, 'unit 6.5': {'imperialism': {}}, 'unit 6.6': {'imperialism': {}}, 'unit 6.7': {'imperialism': {}}}, 'unit 7': {'unit 7.1': {'russia': {}, 'china': {}, 'ottoman empire': {}, 'north america': {}}, 'unit 7.2': {'world war i': {}}, 'unit 7.3': {'world war i': {}}, 'unit 7.4': {'world war i': {}, 'great depression': {}}, 'unit 7.5': {'world war i': {}}, 'unit 7.6': {'world war ii': {}}, 'unit 7.7': {'world war ii': {}}, 'unit 7.8': {'atrocities': {}}}, 'unit 8': {'unit 8.1': {'ending wwii': {}, 'shifting power': {}, 'cold war': {}}, 'unit 8.2': {'united nations': {}, 'cold war': {}}, 'unit 8.3': {'occupation of germany': {}, 'alliances': {}, 'proxy wars': {}, 'essential': {}}, 'unit 8.4': {'essential': {}, 'china': {}, 'iran': {}, 'latin america': {}, 'asia and africa': {}}, 'unit 8.5': {'india and pakistan': {}, 'ghana and algeria': {}, 'other': {}}, 'unit 8.6': {'israel': {}, 'cambodia': {}, 'india and pakistan': {}, 'women in power in south asia': {}, 'tanzania': {}, 'migration': {}}, 'unit 8.7': {'nonviolent resistance': {}, 'soviet union': {}, 'revolt in 1968': {}, 'terrorism': {}}, 'unit 8.8': {'essential': {}, 'final decades': {}, 'end of the soviet union': {}}}, 'unit 9': {'unit 9.1': {'communication': {}, 'transportation': {}, 'green revolution': {}, 'energy technology': {}, 'medical innovations': {}}, 'unit 9.2': {'disease and poverty': {}, 'emerging epidemics': {}, 'longevity diseases': {}}, 'unit 9.3': {'essential': {}, 'effects of environmental change': {}, 'global warming': {}}, 'unit 9.4': {'essential': {}, 'free-market economies': {}, 'knowledge economies': {}, 'shifting manufacturing': {}, 'transnational trade organizations': {}, 'multinational corporations': {}}, 'unit 9.5': {'era of rights': {}, 'racial equality': {}, 'environmental repair': {}}, 'unit 9.6': {'political/social/artistic changes': {}, 'popular culture': {}, 'global culture': {}}, 'unit 9.7': {'essential': {}, 'reasons for antiglobalization': {}, 'economic resistance': {}, 'social media': {}}, 'unit 9.8': {'assemblies of the united nations': {}, 'peacekeeping': {}, 'other priorities': {}, 'other non-governmental organizations': {}}}};
-// const skillTree = {'unit 1': {'elements': {'chemistry': {}, 'life': {}, 'radioactivity': {}}, 'chemistry': {'chemistry': {}, 'bonds': {}, 'atoms': {}, 'acid': {}, 'liquids': {}, 'cell parts': {}, 'diffusion': {}, 'reactions': {}}, 'atoms': {'essential': {}, 'atoms': {}, 'bonds': {}}, 'molecules': {'essential': {}, 'carbohydrates': {}, 'chemistry': {}, 'proteins': {}, 'lipids': {}, 'nucleic acids': {}}, 'liquid': {'essential': {}, 'liquids': {}}, 'compounds': {'life': {}}, 'macromolecules': {'essential': {}, 'carbohydrates': {}, 'chemistry': {}, 'proteins': {}, 'lipids': {}, 'nucleic acids': {}}}, 'unit 8': {'behavior': {'survival': {}, 'essential': {}, 'communication': {}, 'social': {}, 'plants': {}}, 'survival': {'survival': {}}, 'ecology': {'essential': {}, 'ecological organization': {}, 'food chain': {}, 'biodiversity': {}, 'ecological succession': {}}, 'humans': {'human impact': {}}}, 'unit 7': {'evolution': {'essential': {}, 'people': {}, 'causes': {}, 'evidence': {}, 'common ancestors': {}, 'species': {}, 'artificial selection': {}, 'hardy-weinberg': {}}}, 'unit 2': {'cells': {'essential': {}, 'technology': {}, 'organelles': {}, 'cell parts': {}, 'chemistry': {}, 'water': {}, 'diffusion': {}, 'evidence': {}, 'dna': {}, 'energy': {}, 'cells': {}, 'reactions': {}}}, 'unit 3': {'cells': {'essential': {}, 'technology': {}, 'organelles': {}, 'cell parts': {}, 'chemistry': {}, 'water': {}, 'diffusion': {}, 'evidence': {}, 'dna': {}, 'energy': {}, 'cells': {}, 'reactions': {}}, 'physics': {'energy': {}, 'cells': {}}, 'chemistry': {'chemistry': {}, 'bonds': {}, 'atoms': {}, 'acid': {}, 'liquids': {}, 'cell parts': {}, 'diffusion': {}, 'reactions': {}}}, 'unit 4': {'cell communication': {'essential': {}, 'signaling': {}}, 'cell division': {'prokaryotes': {}, 'cell cycle': {}}, 'hormones': {'plants': {}, 'feedback': {}}}, 'unit 5': {'haploid/diploid': {'essential': {}}, 'meiosis': {'essential': {}, 'oogenesis': {}, 'fertilization': {}, 'differences with mitosis': {}, 'crossover': {}}, 'mendel': {'background': {}, 'peas': {}, 'sex determination and sex linkage': {}}, 'non-mendial genetics': {'essential': {}, 'incomplete dominance': {}, 'codominance': {}, 'other inheritance': {}}, 'non-mendelian genetics': {'sex determination and sex linkage': {}}, 'pedigrees': {'essential': {}}, 'disorders': {'essential': {}, 'chromosomal complications': {}}}, 'unit 6': {'essential': {}, 'dna replication': {'essential': {}, 'semiconservative replication': {}}, 'telomeres': {'essential': {}}, 'dna transcription': {'essential': {}, 'polyribosomes': {}}, 'rna processing': {}, 'rna translation': {'essential': {}}, 'gene regulation': {'essential': {}, 'prokaryotic gene regulation': {}, 'eukaryotic gene regulation': {}}, 'cell specialization': {'essential': {}}, 'mutations': {'essential': {}}, 'virus genetics': {'essential': {}}, 'bacteria genetics': {'essential': {}}, 'biotechnology': {'essential': {}}}};
-// const skillTree = {'limits': {'derivatives': {'rule': {}}, 'theorems': {}, 'strategies': {}}, 'logarithm': {'property': {'common': {}}, 'common': {'common': {}, 'trig': {}, 'logarithm': {}}, 'common expansions': {'trig': {}, 'logarithm': {}}}, 'algebra': {'slope': {'slope': {}, 'integral': {}}}, 'derivative': {'derivatives': {'rule': {}}, 'slope': {'slope': {}, 'integral': {}}, 'rules': {}, 'common': {'common': {}, 'trig': {}, 'logarithm': {}}, 'theorem': {'analysis': {}}, 'analysis': {'analysis': {}}, 'derivative': {'rule': {}, 'trig': {}, 'logarithm': {}, 'analysis': {}, 'slope': {}, 'integral': {}}, 'related rates': {}, 'implicit differentiation': {}, 'inverse': {}}, 'integral': {'analysis': {'analysis': {}}, 'theorem': {'analysis': {}}, 'common': {'common': {}, 'trig': {}, 'logarithm': {}}, 'technique': {}, 'application': {'distance': {}, 'volume': {}, 'area': {}}, 'calculator': {}, 'integral': {'logarithm': {}, 'trig': {}, 'distance': {}, 'volume': {}, 'integral': {}, 'area': {}}, 'derivative': {'rule': {}, 'trig': {}, 'logarithm': {}, 'analysis': {}, 'slope': {}, 'integral': {}}, 'riemann sum': {}, 'solving': {}}, 'differential equations': {'logistic': {}}, 'polar curve': {'integral': {'logarithm': {}, 'trig': {}, 'distance': {}, 'volume': {}, 'integral': {}, 'area': {}}, 'derivative': {'rule': {}, 'trig': {}, 'logarithm': {}, 'analysis': {}, 'slope': {}, 'integral': {}}}, 'parametric equation': {'derivative': {'rule': {}, 'trig': {}, 'logarithm': {}, 'analysis': {}, 'slope': {}, 'integral': {}}}, 'infinite series': {'geometric series': {}, 'tests for divergence': {}, 'taylor series': {}, 'common expansions': {'trig': {}, 'logarithm': {}}, 'factorial': {}, 'error bound': {'alternating series': {}, 'lagrange error bound': {}}, 'partial sums': {}}};
-const skillTree = {'unit 1': {'people': {'precursors': {}, 'women': {}, 'people': {}, 'conformity': {}, 'aggression': {}, 'groups': {}, 'prejudice': {}, 'problem solving': {}, 'intelligence': {}}, 'precursors': {'precursors': {}, 'theories': {}}, 'theoretical approach': {'perceptual process': {}}, 'theories': {'theories': {}, 'evolution': {}, 'drive reduction': {}, 'incentive': {}, 'arousal': {}, 'maslow': {}}, 'psychological domain': {}, 'research': {'research design': {}, 'statistics': {}, 'ethics': {}, 'research': {}}}, 'unit 2': {'biology': {'nervous system': {}, 'endocrine system': {}, 'research': {}, 'consciousness': {}, 'three stage model': {}}, 'consciousness': {'consciousness': {}}, 'sleep': {'disorder': {}}, 'drugs': {}, 'people': {'precursors': {}, 'women': {}, 'people': {}, 'conformity': {}, 'aggression': {}, 'groups': {}, 'prejudice': {}, 'problem solving': {}, 'intelligence': {}}}, 'unit 9': {'attitudes': {'behavior': {}, 'persuasion': {}, 'attribution': {}}, 'attribution': {'attribution': {}, 'bias': {}}, 'attraction': {}, 'altruism': {}, 'aggression': {'aggression': {}}, 'persuasion': {'persuasion': {}}, 'groups': {'people': {}, 'groups': {}, 'conformity': {}}, 'prejudice': {'experiment': {}, 'prejudice': {}}, 'people': {'precursors': {}, 'women': {}, 'people': {}, 'conformity': {}, 'aggression': {}, 'groups': {}, 'prejudice': {}, 'problem solving': {}, 'intelligence': {}}}, 'unit 4': {'learning': {'principles': {}, 'conditioning': {}, 'applications': {}, 'solutions': {}}, 'operant conditioning': {'law': {}, 'technology': {}, 'reinforcement': {}, 'schedule of reinforcement': {}, 'behavior': {}, 'behavioral therapies': {}}, 'observational learning': {}, 'people': {'precursors': {}, 'women': {}, 'people': {}, 'conformity': {}, 'aggression': {}, 'groups': {}, 'prejudice': {}, 'problem solving': {}, 'intelligence': {}}}, 'unit 3': {'sensation': {'perception': {}, 'somatic senses': {}, 'vision': {}}, 'perception': {'theory': {}, 'vision': {}, 'hearing': {}, 'taste and smell': {}, 'somatic senses': {}, 'pain': {}, 'perceptual process': {}, 'attention': {}, 'parapsychology': {}, 'people': {}, 'effect': {}, 'perception': {}}}, 'unit 6': {'developmental psychology': {'gestation': {}, 'motor development': {}, 'attachment': {}, 'parenting': {}, 'cognitive development': {}, 'moral development': {}, 'socialization': {}, 'gender': {}, 'adolescence': {}, 'aging': {}, 'people': {}}}, 'unit 5': {'memory': {'person': {}, 'levels of processing': {}, 'three stage model': {}}, 'language': {'combination': {}, 'language acquisition': {}, 'thinking': {}}, 'thinking': {'thinking': {}, 'problem solving': {}}, 'testing': {'standardization': {}, 'reliability': {}, 'types of tests': {}, 'intelligence': {}}}, 'unit 8': {'causes': {'medical model': {}}, 'disorders': {'anxiety disorders': {}, 'obsessive-compulsive disorders': {}, 'trauma disorders': {}, 'somatic disorders': {}, 'dissociative disorders': {}, 'depressive disorders': {}, 'bipolar disorders': {}, 'psychotic disorders': {}, 'neurodevelopmental disorders': {}, 'personality disorders': {}, 'neurocognitive disorders': {}}, 'mental health practitioners': {}, 'history': {}, 'treatment': {'insight therapies': {}, 'behavioral therapies': {}, 'cognitive-behavioral therapies': {}, 'biological/biomedical treatments': {}, 'modes of therapy': {}}}, 'unit 7': {'motivation theories': {'evolution': {}, 'drive reduction': {}, 'incentive': {}, 'arousal': {}, 'maslow': {}}, 'physiological motives': {'eating': {}, 'sex': {}}, 'social motivation': {}, 'emotion': {'personality disorders': {}}, 'stress': {}, 'personality': {'personality disorders': {}, 'psychoanalytic': {}, 'humanistic': {}, 'trait theory': {}}, 'assessments': {}}};
+interface SkillTreeProps {
+  deck: Deck;
+}
+export default function SkillTree(props: SkillTreeProps) {
+  const { deck } = props;
 
-export function SkillTree() {
-  const [decks] = useApiObjectHook<(Deck | CSSM)[]>(apiDeckHome, 200, 1006);
-  const [selectedDeck, setSelectedDeck] = useState<number | null>(null);
+  const generateSkillTree = event => {
+    event.preventDefault();
+    apiDeckGenerateSkillTree(deck.id, false, true, (response, status) => {
+      if (status === 200) {
+        window.location.reload();
+      } else {
+        errorHandler(response, status, 1031);
+      }
+    });
+  }
 
-  return (
-    <Container className='text-center' fluid>
-      <h1>Deck Title</h1>
-      <Row>
-        <Col md={3} sm={12}>
-          {decks ? decks.map((deck, i) =>
-            <DeckSelection
-              deck={deck}
-              key={i}
-            />
-          ) : <p>Loading decks...</p>}
-        </Col>
-        <Col md={6} sm={12}>
-          {Object.keys(skillTree).map((mainSectionTitle, i) =>
-            <MainSection
-              title={mainSectionTitle}
-              section={skillTree[mainSectionTitle]}
-              key={i}
-            />
-          )}
-        </Col>
-        <Col md={3} sm={12}>
-          <p>meta stuff goes here</p>
-        </Col>
-      </Row>
-    </Container>
-  );
+  return (<>
+    <h1>{deck.title}</h1>
+    {deck.skill_tree ? Object.keys(deck.skill_tree).map((mainSectionTitle, i) =>
+      <MainSection
+        title={mainSectionTitle}
+        // @ts-ignore
+        section={deck.skill_tree[mainSectionTitle]}
+        key={i}
+      />
+    )
+    : <>
+      <Button href={`/decks/${deck.id}/study/`}>Study</Button>
+      <hr />
+      <p>This deck doesn't have a "skill tree yet"</p>
+      <p>Generate one to have access to specific parts of your deck</p>
+    </>}
+    <LoadingButton
+      callback={generateSkillTree}
+      loadingMessage='Generating...'
+      className='mb-3'
+    >
+      {deck.skill_tree ? 'Regenerate' : 'Generate'} Skill Tree
+    </LoadingButton>
+  </>)
 }

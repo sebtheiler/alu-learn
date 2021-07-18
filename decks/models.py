@@ -37,6 +37,7 @@ class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
     deck_type = models.CharField(default='standard', max_length=12)
+    skill_tree = models.JSONField(null=True, default=None)
 
     # Note that although this allows for multiple creators, it is currently only using one
     # Also note that this specifies the shared deck this deck creates, not the one it is cloned from

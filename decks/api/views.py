@@ -283,6 +283,7 @@ def deck_shared_view(request, username, *args, **kwargs):
 @cache_control(private=True)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+# TODO: merge this function with quick, public, and others
 def deck_private_list(request, *args, **kwargs):
     """
     Gets a list of the current user's private decks - GET
@@ -965,7 +966,10 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
     """
     try:
         shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
-        if shared_deck.sharing_setting == 'FRIENDS' and request.user not in shared_deck.user.friends:
+        if (
+            shared_deck.sharing_setting == 'FRIENDS' and
+            request.user not in shared_deck.user.friends
+        ):
             return Response({'message': 'You are unauthorized to clone this deck'}, status=403)
     except SharedDeck.DoesNotExist:
         return Response({'message': 'Shared deck not found'}, status=404)
@@ -1004,9 +1008,12 @@ def shared_deck_edit_view(request, shared_deck_id, *args, **kwargs):
         return Response({'message': 'Could not find the specified shared deck'}, status=404)
 
     # Update shared deck
-    shared_deck.title = request.data.get('new_title', shared_deck.title) 
+    shared_deck.title = request.data.get('new_title', shared_deck.title)
     shared_deck.description = request.data.get('new_description', shared_deck.description)
-    shared_deck.sharing_setting = request.data.get('new_sharing_setting', shared_deck.sharing_setting)
+    shared_deck.sharing_setting = request.data.get(
+        'new_sharing_setting',
+        shared_deck.sharing_setting,
+    )
     shared_deck.save()
 
     return Response(SharedDeckSerializer(shared_deck).data, status=200)
@@ -1304,8 +1311,8 @@ def deck_quick_list_view(request, *args, **kwargs):
     Gets a minified list of decks and their progress for use on the main homepage - GET
 
     Parameters:
-        calc_percent_complete=False: (GET) Whether or not to calc the percent complete for each deck
-        include_has_shared_deck=False: (GET) Whether or not to include decks that have been shared
+        calc_percent_complete=False: (GET) Calc the percent complete for each deck
+        include_has_shared_deck=False: (GET) Include decks that have been shared
     """
     decks_query = Q(
         user=request.user,
@@ -1403,7 +1410,10 @@ def deck_json_import_view(request, *args, **kwargs):
     title = json_deck.get('title')
     json_flashcards = json_deck.get('flashcards')
     if title is None or json_flashcards is None:
-        return Response({'message': '`json_deck` must have `title` and `flashcards` attributes'}, status=400)
+        return Response(
+            {'message': '`json_deck` must have `title` and `flashcards` attributes'},
+            status=400,
+        )
 
     # Create deck
     deck = Deck.objects.create(
@@ -1469,3 +1479,30 @@ def deck_json_import_view(request, *args, **kwargs):
     FlashCard.objects.bulk_create(review_instances_to_create)
 
     return Response(DeckSerializer(deck).data, status=201)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deck_generate_skill_tree_view(request, deck_id, *args, **kwargs):
+    """
+    Generates and saves a skill tree for a deck - POST
+
+    Params:
+        `deck_id` (URL, int): Id of the deck to generate the skill tree for
+        `sort` (data, bool): Whether or not to alphabetically sort the skill tree
+        `remove_essential` (data, bool): If True, ignore the "essential" tag
+    """
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    sort = request.data.get('sort')
+    remove_essential = request.data.get('remove_essential')
+    deck.skill_tree = deck.generate_skill_tree(
+        sort=sort,
+        remove_essential=remove_essential,
+    )
+    deck.save()
+
+    return Response({'message': 'Generated skill tree'}, status=200)

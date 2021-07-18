@@ -75,6 +75,7 @@ int(hexadecimal_string, 16)
 1028: Error getting deck's statistics through apiDeckStatistics
 1029: Error getting decks list for homepage of student through apiDeckPrivateList
 1030: Error exporting deck to JSON through apiDeckJSONExport
+1031: Error generating skill tree for deck through apiDeckGenerateSkillTree
 
 === Flashcard related errors ===
 2000: Error getting flashcard detail through apiFlashCardDetail in alu-web/src/decks/flashcards/create.js

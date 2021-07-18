@@ -142,6 +142,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'shared_deck',
             'deck_type',
             'difficulty',
+            'skill_tree',
             'id',
         ]
 
@@ -166,6 +167,7 @@ class DeckSerializer(serializers.ModelSerializer):
     def get_num_thanks(self, obj):
         return obj.thanks.count()
 
+    # TODO: does the deck really need all of the attributes of its SSM?
     def get_scheduling_algorithm(self, obj):
         return obj.study_session_manager.scheduling_algorithm
 

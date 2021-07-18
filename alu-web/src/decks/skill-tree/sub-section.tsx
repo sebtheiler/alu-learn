@@ -39,7 +39,7 @@ export default function SubSection(props: SubSectionProps) {
         trigger='click'
         rootClose
       >
-        <div className='sub-section'>
+        <div className='sub-section' role='button'>
           <p className='sub-section-text'>{capitalize(title, true)}</p>
         </div>
       </OverlayTrigger>

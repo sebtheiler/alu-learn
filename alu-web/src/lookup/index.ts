@@ -113,6 +113,7 @@ import {
   apiTodoList,
   apiTodoDelete,
   apiTodoComplete,
+  apiDeckGenerateSkillTree,
 } from './lookup';
 
 export {
@@ -230,4 +231,5 @@ export {
   apiTodoList,
   apiTodoDelete,
   apiTodoComplete,
+  apiDeckGenerateSkillTree,
 }

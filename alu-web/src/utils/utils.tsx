@@ -508,9 +508,10 @@ interface LoadingButtonProps {
   type?: 'submit' | 'reset' | 'button';
   id?: string;
   block?: boolean;
+  className?: string;
 }
 export function LoadingButton(props: LoadingButtonProps) {
-  const { children, loadingMessage, callback, variant, type, id, block } = props;
+  const { children, loadingMessage, callback, variant, type, id, block, className } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = event => {
@@ -521,7 +522,7 @@ export function LoadingButton(props: LoadingButtonProps) {
   }
 
   return (
-    <Button onClick={onClick} variant={variant} type={type} id={id} block={block}>
+    <Button onClick={onClick} variant={variant} type={type} id={id} block={block} className={className}>
       {isLoading ? loadingMessage : children}
     </Button>
   );

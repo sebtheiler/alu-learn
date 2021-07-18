@@ -14,7 +14,7 @@
   color: white;
 }
 
-.deck-selection-main:hover {
+.deck-selection-main:hover, .deck-selection-main-selected {
   transform: scale(1.05, 1);
   transform-origin: left;
   transition-duration: .3s;
