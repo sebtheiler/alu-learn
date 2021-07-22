@@ -67,14 +67,6 @@ class DeckTestCase(ImprovedTestCase):
             self.assertEqual(deck1_flashcard.tags, deck2_flashcard.tags)
             self.assertEqual(deck1_flashcard.fields, deck2_flashcard.fields)
 
-            # Assert FlashCardFields are equal
-            deck1_fields = deck1_flashcard.fields.all().order_by('field_number')
-            deck2_fields = deck2_flashcard.fields.all().order_by('field_number')
-            self.assertEqual(deck1_fields.count(), deck2_fields.count())
-            for deck1_field, deck2_field in zip(deck1_fields, deck2_fields):
-                self.assertEqual(deck1_field.text, deck2_field.text)
-                self.assertEqual(deck1_field.field_number, deck2_field.field_number)
-
             # Assert FlashCards are equal
             if not test_review_instances_exists:
                 return
@@ -176,10 +168,10 @@ class DeckTestCase(ImprovedTestCase):
         flashcards, _, flashcard_fields = create_flashcard(
             tags, fields, 'basic', 1
         )
-        flashcard = FlashCard.objects.get(pk=flashcards[0]['id'])
-        self.assertEqual(flashcard.content_indicies, [0, 1])
+        review_instance = FlashCard.objects.get(pk=flashcards[0]['id'])
+        self.assertEqual(review_instance.content_indicies, [0, 1])
         self.assertEqual(
-            [f.text for f in flashcard.get_content()],
+            [ri.text for ri in review_instance.creator.fields],
             list(fields)
         )
         self.assertEqual(flashcard_fields.count(), 2)
@@ -191,17 +183,17 @@ class DeckTestCase(ImprovedTestCase):
         flashcards, _, flashcard_fields = create_flashcard(
             tags, fields, 'reversed', 2
         )
-        flashcard = FlashCard.objects.get(pk=flashcards[0]['id'])
-        self.assertEqual(flashcard.content_indicies, [0, 1])
+        review_instance = FlashCard.objects.get(pk=flashcards[0]['id'])
+        self.assertEqual(review_instance.content_indicies, [0, 1])
         self.assertEqual(
-            [f.text for f in flashcard.get_content()],
+            [ri.text for ri in review_instance.creator.fields],
             [fields[0], fields[1]]
         )
 
-        flashcard = FlashCard.objects.get(pk=flashcards[1]['id'])
-        self.assertEqual(flashcard.content_indicies, [1, 0])
+        review_instance = FlashCard.objects.get(pk=flashcards[1]['id'])
+        self.assertEqual(review_instance.content_indicies, [1, 0])
         self.assertEqual(
-            [f.text for f in flashcard.get_content()],
+            [ri.text for ri in review_instance.creator.fields],
             [fields[1], fields[0]]
         )
 
@@ -220,11 +212,11 @@ class DeckTestCase(ImprovedTestCase):
         )
 
         for i in range(3):
-            flashcard = FlashCard.objects.get(pk=flashcards[i]['id'])
-            self.assertEqual(flashcard.content_indicies, [0])
-            self.assertEqual(flashcard.name, f'cloze-{i+1}')
+            review_instance = FlashCard.objects.get(pk=flashcards[i]['id'])
+            self.assertEqual(review_instance.content_indicies, [0])
+            self.assertEqual(review_instance.name, f'cloze-{i+1}')
             self.assertEqual(
-                [f.text for f in flashcard.get_content()],
+                [ri.text for ri in review_instance.creator.fields],
                 [fields[0]]
             )
 
@@ -256,53 +248,40 @@ class DeckTestCase(ImprovedTestCase):
             expected_reviews_finish: int,
         ):
             deck = self.create_deck(f'Edit test - {flashcard_type}')
-            flashcard = FlashCardCreator.create_flashcard(
+            review_instance = FlashCardCreator.create_flashcard(
                 deck,
                 'a, b, c',
                 flashcard_type,
                 fields,
             )[0]
-            api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.creator.id}/edit/'
+            api_path = f'/api/decks/{deck.pk}/flashcards/{review_instance.creator.id}/edit/'
             self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 1)
             self.assertEqual(
                 FlashCard.objects.filter(creator__deck=deck).count(),
                 expected_reviews_initial,
             )
-            self.assertEqual(flashcard.creator.tags, 'a, b, c')
-            self.assertEqual(flashcard.creator.flashcard_type, flashcard_type)
-            self.assertEqual(
-                flashcard.creator.fields.all()[0].text,
-                fields[0],
-            )
-            if flashcard.creator.fields.count() > 1:
-                self.assertEqual(
-                    flashcard.creator.fields.all()[1].text,
-                    fields[1],
-                )
+            self.assertEqual(review_instance.creator.tags, 'a, b, c')
+            self.assertEqual(review_instance.creator.flashcard_type, flashcard_type)
+            self.assertEqual(review_instance.creator.fields, fields)
 
             response = self.post_response(api_path, api_view, {
                 'fields': fields_edited,
                 'tags': '1, 2, 3',
-            }, kwargs={'deck_id': deck.id, 'flashcard_num': flashcard.creator.flashcard_num})
-            flashcard = FlashCard.objects.get(pk=flashcard.pk)
+            }, kwargs={'deck_id': deck.id, 'flashcard_num': review_instance.creator.flashcard_num})
+            review_instance = FlashCard.objects.get(pk=review_instance.pk)
             self.assertEqual(response.status_code, 200)
             self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 1)
             self.assertEqual(
                 FlashCard.objects.filter(creator__deck=deck).count(),
                 expected_reviews_finish,
             )
-            self.assertEqual(flashcard.creator.tags, '1, 2, 3')
-            self.assertEqual(flashcard.creator.flashcard_type, flashcard_type)
+            self.assertEqual(review_instance.creator.tags, '1, 2, 3')
+            self.assertEqual(review_instance.creator.flashcard_type, flashcard_type)
             self.assertEqual(
-                flashcard.creator.fields.all()[0].text,
-                fields_edited[0],
+                review_instance.creator.fields,
+                fields_edited,
             )
-            if flashcard.creator.fields.count() > 1:
-                self.assertEqual(
-                    flashcard.creator.fields.all()[1].text,
-                    fields_edited[1],
-                )
-            flashcard.creator.delete()
+            review_instance.creator.delete()
 
         # Edit basic flashcard
         edit_flashcard(
@@ -913,14 +892,14 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(FlashCardCreator.objects.count(), initial_creators + 2)
         self.assertEqual(FlashCard.objects.count(), initial_instances + 2)
 
-        flashcard = FlashCard.objects.filter(creator__deck__pk=response.data['id']).first()
+        review_instance = FlashCard.objects.filter(creator__deck__pk=response.data['id']).first()
         self.assertEqual(
-            [field.text for field in flashcard.get_content()],
+            [field.text for field in review_instance.creator.fields],
             [create_slate_element('123'), create_slate_element('456')],
         )
-        flashcard = FlashCard.objects.filter(creator__deck__pk=response.data['id']).last()
+        review_instance = FlashCard.objects.filter(creator__deck__pk=response.data['id']).last()
         self.assertEqual(
-            [field.text for field in flashcard.get_content()],
+            [field.text for field in review_instance.creator.fields],
             [create_slate_element('abc'), create_slate_element('def')],
         )
 
@@ -1677,15 +1656,9 @@ class DeckTestCase(ImprovedTestCase):
                     deck=shared_deck,
                     flashcard_num=creator.flashcard_num,
                 )
-                self.assertEqual(shared_creator.flashcard_num, creator.flashcard_num)
-                self.assertEqual(shared_creator.flashcard_type, creator.flashcard_type)
-                self.assertEqual(shared_creator.tags, creator.tags)
+                attrs = ['fields', 'tags', 'flashcard_num', 'flashcard_type']
+                self.assertEqualAttrs(shared_creator, creator, attrs)
                 self.assertEqual(shared_creator.origin_creator, creator)
-                shared_fields = shared_creator.fields.all()
-                creator_fields = creator.fields.all()
-                for shared_field, creator_field in zip(shared_fields, creator_fields):
-                    self.assertEqual(shared_field.field_number, creator_field.field_number)
-                    self.assertEqual(shared_field.text, creator_field.text)
 
         # Test adding new flashcards
         flashcard = FlashCardCreator.create_flashcard(
@@ -1724,9 +1697,8 @@ class DeckTestCase(ImprovedTestCase):
         check_equal(deck, shared_deck, creator, 1)
 
         # Test modifying flashcards
-        field = creator.fields.first()
-        field.text = create_slate_element('{{c1::zyx}} {{c2::wvu}} {{c3::tsr}}')
-        field.save()
+        creator.fields[0] = create_slate_element('{{c1::zyx}} {{c2::wvu}} {{c3::tsr}}')
+        creator.save()
         creator = FlashCardCreator.objects.filter(deck=deck).last()
         shared_creator = FlashCardCreator.objects.filter(deck=shared_deck).last()
 
@@ -1734,11 +1706,7 @@ class DeckTestCase(ImprovedTestCase):
             FlashCardCreator.objects.filter(deck=shared_deck).count(),
             FlashCardCreator.objects.filter(deck=deck).count(),
         )
-        shared_fields = shared_creator.fields.all()
-        creator_fields = creator.fields.all()
-        for shared_field, creator_field in zip(shared_fields, creator_fields):
-            self.assertEqual(shared_field.field_number, creator_field.field_number)
-            self.assertNotEqual(shared_field.text, creator_field.text)
+        self.assertEqual(shared_creator.fields, creator.fields)
 
         response = self.post_response(api_path, api_view, {
             'shared_deck_id': shared_deck.pk,
@@ -1755,11 +1723,7 @@ class DeckTestCase(ImprovedTestCase):
             FlashCardCreator.objects.filter(deck=shared_deck).count(),
             FlashCardCreator.objects.filter(deck=deck).count(),
         )
-        shared_fields = shared_creator.fields.all()
-        creator_fields = creator.fields.all()
-        for shared_field, creator_field in zip(shared_fields, creator_fields):
-            self.assertEqual(shared_field.field_number, creator_field.field_number)
-            self.assertNotEqual(shared_field.text, creator_field.text)
+        self.assertEqual(shared_creator.fields, creator.fields)
 
         response = self.post_response(api_path, api_view, {
             'shared_deck_id': shared_deck.pk,
@@ -1979,12 +1943,11 @@ class DeckTestCase(ImprovedTestCase):
         creators = FlashCardCreator.objects.filter(deck=shared_deck)
         num_shared_creators = creators.count()
 
-        creator = creators.order_by('-flashcard_num')[1]  # type:  FlashCardCreator
-        fields = creator.fields.all()  # edit the basic flashcard we created earlier
-        fields[0].text = create_slate_element('edited front')
-        fields[1].text = create_slate_element('edited back')
-        fields[0].save()
-        fields[1].save()
+        creator = creators.order_by('-flashcard_num')[1]
+        creator.fields = [
+            create_slate_element('edited front'),
+            create_slate_element('edited back'),
+        ]
 
         shared_deck.push_updates(deck)
         self.assertEqual(
@@ -2024,10 +1987,9 @@ class DeckTestCase(ImprovedTestCase):
         num_shared_creators = FlashCardCreator.objects.filter(deck=shared_deck).count()
 
         creator = FlashCardCreator.objects.filter(deck=deck).last()  # type:  FlashCardCreator
-        fields = creator.fields.all()  # edit the basic flashcard we created earlier
-        example_cloze = '{{c1::123}} {{c2::456}} {{c3::789}} {{c4::abc}} {{c5::abc}}'
-        fields[0].text = create_slate_element(example_cloze)
-        fields[0].save()
+        creator.fields = [
+            '{{c1::123}} {{c2::456}} {{c3::789}} {{c4::abc}} {{c5::abc}}'
+        ]
 
         shared_deck.push_updates(deck)
         self.assertEqual(
@@ -2402,12 +2364,11 @@ class DeckTestCase(ImprovedTestCase):
                 self.assertEqual(json_flashcard['tags'], real_flashcard.tags)
                 self.assertEqual(json_flashcard['flashcard_type'], real_flashcard.flashcard_type)
                 self.assertEqual(json_flashcard['flashcard_num'], real_flashcard.flashcard_num)
-                self.assertEqual(len(json_flashcard['fields']), real_flashcard.fields.count())
+                self.assertEqual(len(json_flashcard['fields']), len(real_flashcard.fields))
 
-                real_fields = real_flashcard.fields.all().order_by('field_number')
+                real_fields = real_flashcard.fields
                 for json_field, real_field in zip(json_flashcard['fields'], real_fields):
-                    self.assertEqual(json_field['text'], real_field.text)
-                    self.assertEqual(json_field['field_number'], real_field.field_number)
+                    self.assertEqual(json_field['text'], real_field)
 
                 if not review_instances:
                     self.assertIsNone(json_flashcard['review_instances'])

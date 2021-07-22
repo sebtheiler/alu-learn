@@ -530,12 +530,8 @@ class FlashCard(models.Model):
     class Meta:
         ordering = ['creator__flashcard_num']
 
-    def get_content(self) -> List[str]:
-        fields = self.creator.fields.all()
-        return [fields[i] for i in self.content_indicies]
-
     def __str__(self) -> str:
-        return str(self.get_content())
+        return str(self.creator.fields)
 
     def is_leech(self) -> bool:
         return self.creator.has_tag('leech')

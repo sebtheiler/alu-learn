@@ -1352,16 +1352,10 @@ def deck_json_export_view(request, deck_id, *args, **kwargs):
         'title': deck.title,
         'flashcards': [
             {
+                'fields': flashcard.fields,
                 'tags': flashcard.tags,
                 'flashcard_type': flashcard.flashcard_type,
                 'flashcard_num': flashcard.flashcard_num,
-                'fields': [
-                    {
-                        'text': field.text,
-                        'field_number': field.field_number,
-                    }
-                    for field in flashcard.fields.order_by('field_number').all()
-                ],
                 'review_instances': [
                     {
                         'content_indicies': review_instance.content_indicies,
