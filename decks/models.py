@@ -39,7 +39,8 @@ class Deck(models.Model):
     deck_type = models.CharField(default='standard', max_length=12)
 
     # Note that although this allows for multiple creators, it is currently only using one
-    # Also note that this specifies the shared deck this deck creates, not the one it is cloned from
+    # Also note that this specifies the shared deck this deck creates, not the one it
+    # is cloned from
     shared_deck = models.ForeignKey(
         'SharedDeck',
         on_delete=models.SET_NULL,
@@ -88,38 +89,30 @@ class Deck(models.Model):
 
         # Clone flashcard creators and fields
         flashcard_creators = self.flashcards.\
-            prefetch_related('fields').\
             prefetch_related('review_instances')  # type: List[FlashCardCreator]
 
         creators_to_create = []
-        fields_to_create = []
 
         for flashcard_creator in flashcard_creators:
             if flashcard_creator.copied_from_creator and not include_copied_flashcards:
-                # By default, this stops flashcards copied from another deck from being re-published
+                # By default, this stops flashcards copied from another deck from
+                # being re-published
                 continue
 
             # Clone flashcard creator
             shared_flashcard_creator = FlashCardCreator(
                 deck=shared_deck,
-                tags=flashcard_creator.tags,
                 flashcard_type=flashcard_creator.flashcard_type,
                 flashcard_num=flashcard_creator.flashcard_num,
                 origin_creator=flashcard_creator,
+                # Text info
+                field_1=flashcard_creator.field_1,
+                field_2=flashcard_creator.field_2,
+                tags=flashcard_creator.tags,
             )
             creators_to_create.append(shared_flashcard_creator)
 
-            # Clone flashcard creator fields
-            creator_fields = flashcard_creator.fields.all()
-            fields = [FlashCardField(
-                creator=shared_flashcard_creator,
-                text=field.text,
-                field_number=field.field_number,
-            ) for field in creator_fields]
-            fields_to_create += fields
-
         FlashCardCreator.objects.bulk_create(creators_to_create)
-        FlashCardField.objects.bulk_create(fields_to_create)
 
         return shared_deck
 
@@ -128,10 +121,11 @@ class Deck(models.Model):
 
     def get_statistics(self) -> Dict:
         # Get various flashcard types (only counts are used)
-        unseen_flashcards = FlashCard.objects.filter(learning_status='UNSEEN', is_suspended=False, creator__deck=self)
-        learning_flashcards = FlashCard.objects.filter(learning_status='LEARNING', is_suspended=False, creator__deck=self)
-        learned_flashcards = FlashCard.objects.filter(learning_status='LEARNED', is_suspended=False, creator__deck=self)
-        relearning_flashcards = FlashCard.objects.filter(learning_status='RELEARNING', is_suspended=False, creator__deck=self)
+        default = Q(is_suspended=False, creator__deck=self)
+        unseen_flashcards = FlashCard.objects.filter(Q(learning_status='UNSEEN') & default)
+        learning_flashcards = FlashCard.objects.filter(Q(learning_status='LEARNING') & default)
+        learned_flashcards = FlashCard.objects.filter(Q(learning_status='LEARNED') & default)
+        relearning_flashcards = FlashCard.objects.filter(Q(learning_status='RELEARNING') & default)
         suspended_flashcards = FlashCard.objects.filter(is_suspended=True, creator__deck=self)
 
         # Get other data
@@ -166,9 +160,7 @@ class Deck(models.Model):
 
         creators_to_create = []  # type: List[FlashCardCreator]
         flashcards_to_create = []  # type: List[FlashCard]
-        fields_to_create = []  # type: List[FlashCardField]
         creators_to_update = []  # type: List[FlashCardCreator]
-        fields_to_update = []  # type: List[FlashCardField]
         creators_not_to_delete = []  # type: List[str]
         for shared_flashcard_creator in shared_flashcard_creators:
             try:
@@ -179,33 +171,26 @@ class Deck(models.Model):
                 local_flashcard_creator = None
 
             if local_flashcard_creator is None:
-                new_creator, new_flashcards, new_fields = shared_flashcard_creator.clone(
+                new_creator, new_flashcards = shared_flashcard_creator.clone(
                     self,
                 )
                 creators_to_create.append(new_creator)
                 creators_not_to_delete.append(new_creator.pk)
                 flashcards_to_create += new_flashcards
-                fields_to_create += new_fields
             else:
                 # Update existing flashcard creator
-                creator, updated_fields, _ = local_flashcard_creator.update(
+                creator, _ = local_flashcard_creator.update(
                     creator_to_get_updates_from=shared_flashcard_creator,
                 )
                 creators_to_update.append(creator)
                 creators_not_to_delete.append(creator.pk)
-                fields_to_update += updated_fields
 
         # Create all flashcard review instances
         FlashCardCreator.objects.bulk_create(creators_to_create)
-        FlashCardField.objects.bulk_create(fields_to_create)
         FlashCard.objects.bulk_create(flashcards_to_create)
         FlashCardCreator.objects.bulk_update(
             creators_to_update,
             ['tags', 'flashcard_num'],
-        )
-        FlashCardField.objects.bulk_update(
-            fields_to_update,
-            ['text'],
         )
 
         # Delete all flashcards that weren't updated
@@ -238,8 +223,13 @@ class Deck(models.Model):
 
     def list_available_updates(self) -> List[dict]:
         needs_updating = []
-        for shared_deck_relation in self.shared_deck_relations.all().prefetch_related('shared_deck'):
-            if shared_deck_relation.cloned_at_version < shared_deck_relation.shared_deck.version_number:
+        for shared_deck_relation in self.shared_deck_relations.all()\
+                .prefetch_related('shared_deck'):
+            if (
+                shared_deck_relation.cloned_at_version
+                <
+                shared_deck_relation.shared_deck.version_number
+            ):
                 needs_updating.append({
                     'title': shared_deck_relation.shared_deck.title,
                     'id': shared_deck_relation.shared_deck.id,
@@ -271,15 +261,21 @@ class FlashCardCreatorManager(models.Manager):
 
 
 class FlashCardCreator(models.Model):
+    # === BASIC INFO ===
     deck = models.ForeignKey(
         Deck,
         on_delete=models.CASCADE,
         related_name='flashcards',
     )  # type: Deck
-    tags = models.CharField(default='', max_length=1024, blank=True)
     flashcard_type = models.CharField(default='basic', max_length=16)
     flashcard_num = models.PositiveSmallIntegerField()  # zero-indexed
 
+    # === TEXT INFO ===
+    field_1 = models.JSONField()
+    field_2 = models.JSONField()
+    tags = models.CharField(default='', max_length=1024, blank=True)
+
+    # === SHARING INFO ===
     # Used when creating a shared deck
     origin_creator = models.OneToOneField(
         'self',
@@ -301,8 +297,9 @@ class FlashCardCreator(models.Model):
         related_name='flashcards_copied_from',
     )  # type: FlashCardCreator
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # === OTHER ===
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     objects = FlashCardCreatorManager()
 
     class Meta:
@@ -363,28 +360,23 @@ class FlashCardCreator(models.Model):
         deck: Deck,
         tags: str,
         flashcard_type: FlashCardTypes,
-        fields: List[list],
+        field_1: list,
+        field_2: list,
     ) -> List[FlashCard]:
         creator = FlashCardCreator.objects.create(
             deck=deck,
-            tags=tags,
             flashcard_type=flashcard_type,
             flashcard_num=FlashCardCreator.get_max_creator_num(deck) + 1,
+            # Text
+            field_1=field_1,
+            field_2=field_2,
+            tags=tags,
         )
-
-        FlashCardField.objects.bulk_create([
-            FlashCardField(
-                creator=creator,
-                text=text,
-                field_number=i,
-            )
-            for i, text in enumerate(fields)
-        ])
 
         flashcards = FlashCard.create_review_instance(
             flashcard_type,
             creator,
-            fields[0],
+            field_1,
         )
         FlashCard.objects.bulk_create(flashcards)
 
@@ -395,17 +387,20 @@ class FlashCardCreator(models.Model):
         new_deck: Deck = None,
         origin_or_copied: Literal['COPIED', 'ORIGIN'] = 'COPIED',
         skip_creating_review_instances: bool = False,
-    ) -> Tuple[FlashCardCreator, List[FlashCard], List[FlashCardField]]:
+    ) -> Tuple[FlashCardCreator, List[FlashCard]]:
         """
         Clones and saves a full copy of a flashcard creator
         (returns--but does not create--the creator's review instances)
         """
         new_flashcard_creator = FlashCardCreator(
             deck=new_deck or self.deck,
-            tags=self.tags,
             flashcard_num=self.flashcard_num,
             flashcard_type=self.flashcard_type,
             id=uuid.uuid4(),
+            # Text
+            field_1=self.field_1,
+            field_2=self.field_2,
+            tags=self.tags,
         )
 
         if origin_or_copied == 'COPIED':
@@ -418,24 +413,17 @@ class FlashCardCreator(models.Model):
         else:
             raise ValueError('Invlaid value for `origin_or_copied`')
 
-        # Clone the flashcard creator's fields
-        new_fields = [FlashCardField(
-            creator=new_flashcard_creator,
-            field_number=field.field_number,
-            text=field.text,
-        ) for field in self.fields.all()]
-
         # Derive the flashcards review instances from the creator
         if not skip_creating_review_instances:
             new_flashcards = FlashCard.create_review_instance(
                 new_flashcard_creator.flashcard_type,
                 new_flashcard_creator,
-                new_fields[0].text,
+                self.field_1,
             )
         else:
             new_flashcards = None
 
-        return new_flashcard_creator, new_flashcards, new_fields
+        return new_flashcard_creator, new_flashcards
 
     def update(
         self,
@@ -443,50 +431,17 @@ class FlashCardCreator(models.Model):
         check_diff_only: bool = False,
     ) -> Tuple[FlashCardCreator, bool]:
         # FIXME: this function does not work for cloze, when the number of RIs changes
-        # Keep track if there were any actual changes
+        attrs_to_update = ['field_1', 'field_2', 'tags', 'flashcard_num']
         actual_difference = False
 
-        # Update flashcard fields
-        fields_to_update = self.fields.all()
-        fields_to_get_updates_from = creator_to_get_updates_from.fields.all()
-
-        updated_fields = []
-        for field_with_updates in fields_to_get_updates_from:
-            try:
-                field_to_update = fields_to_update.get(
-                    field_number=field_with_updates.field_number
-                )
-
-                if field_to_update.text != field_with_updates.text:
-                    if not check_diff_only:
-                        field_to_update.text = field_with_updates.text
-                        updated_fields.append(field_to_update)
-                    actual_difference = True
-            except FlashCardField.DoesNotExist:
-                if not check_diff_only:
-                    # NOTE: this could be made into a bulk operation,
-                    # but it happens so infrequently that it would be
-                    # less efficient
-                    FlashCardField.objects.create(
-                        creator=self,
-                        text=field_with_updates.text,
-                        field_number=field_with_updates.field_number,
-                    )
+        for attr in attrs_to_update:
+            updated_attr = getattr(creator_to_get_updates_from, attr)
+            if getattr(self, attr) != updated_attr:
                 actual_difference = True
-                continue
+                if not check_diff_only:
+                    setattr(self, attr, updated_attr)
 
-        # Update tags, order, and mark as being updated
-        if self.tags != creator_to_get_updates_from.tags:
-            if not check_diff_only:
-                self.tags = creator_to_get_updates_from.tags
-            actual_difference = True
-
-        if self.flashcard_num != creator_to_get_updates_from.flashcard_num:
-            if not check_diff_only:
-                self.flashcard_num = creator_to_get_updates_from.flashcard_num
-            actual_difference = True
-
-        return self, updated_fields, actual_difference
+        return self, actual_difference
 
     def rearrange(
         self,
@@ -519,27 +474,6 @@ class FlashCardCreator(models.Model):
             FlashCardCreator.objects.bulk_update([self, below_flashcard], ['flashcard_num'])
         else:
             return 'Invalid `rearrange_type`'
-
-
-class FlashCardField(models.Model):
-    creator = models.ForeignKey(
-        FlashCardCreator,
-        on_delete=models.CASCADE,
-        related_name='fields'
-    )
-    text = models.JSONField(null=True)
-    field_number = models.PositiveSmallIntegerField()
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    class Meta:
-        ordering = ['field_number']
-
-    def __str__(self) -> str:
-        try:
-            return str(self.text[0]['children'][0]['text'])
-        except KeyError:
-            return '<< Couldn\'t get text easily >>'
 
 
 class FlashCardManager(models.Manager):
@@ -627,7 +561,6 @@ class FlashCard(models.Model):
     def create_review_instance(
         flashcard_type: FlashCardTypes,
         creator: FlashCardCreator,
-        field: str = None,
     ) -> List[FlashCard]:
         """
         Function for creating flashcard review instances, given a flashcard
@@ -667,7 +600,7 @@ class FlashCard(models.Model):
             return [
                 cloze_flashcard(match)
                 for match in re.finditer(
-                    r"{{c\d*::.*?}}", json.dumps(field), re.MULTILINE
+                    r"{{c\d*::.*?}}", json.dumps(creator.field_1), re.MULTILINE
                 ) if int(match.group().split("::")[0][3:]) not in cloze_ids
             ]
         else:
@@ -1028,16 +961,13 @@ class SharedDeck(Deck):
 
         creators = []
         flashcards = []
-        fields = []
         for shared_flashcard_creator in shared_flashcard_creators:
-            new_creator, new_flashcards, new_fields = shared_flashcard_creator.clone(deck)
+            new_creator, new_flashcards = shared_flashcard_creator.clone(deck)
             creators.append(new_creator)
             flashcards += new_flashcards
-            fields += new_fields
 
         FlashCardCreator.objects.bulk_create(creators)
         FlashCard.objects.bulk_create(flashcards)
-        FlashCardField.objects.bulk_create(fields)
 
         return deck
 
@@ -1055,8 +985,6 @@ class SharedDeck(Deck):
         )  # type: List[FlashCardCreator]
         shared_creators_to_update = []  # type: List[FlashCardCreator]
         new_creators_to_create = []  # type: List[FlashCardCreator]
-        new_fields_to_create = []  # type: List[FlashCardField]
-        fields_to_update = []  # type: List[FlashCardField]
         creators_not_to_delete = []  # type: List[str]
 
         for origin_flashcard_creator in origin_flashcard_creators:
@@ -1068,18 +996,17 @@ class SharedDeck(Deck):
 
             if shared_mirror is None:
                 if not check_diff_only:
-                    new_creator, _, new_fields = origin_flashcard_creator.clone(
+                    new_creator, _ = origin_flashcard_creator.clone(
                         self,
                         origin_or_copied='ORIGIN',
                         skip_creating_review_instances=True,
                     )
                     new_creators_to_create.append(new_creator)
-                    new_fields_to_create += new_fields
                     creators_not_to_delete.append(new_creator.pk)
 
                 diff['created'] += 1
             else:
-                creator, updated_fields, actual_difference = shared_mirror.update(
+                creator, actual_difference = shared_mirror.update(
                     creator_to_get_updates_from=origin_flashcard_creator,
                     check_diff_only=check_diff_only,
                 )
@@ -1088,19 +1015,13 @@ class SharedDeck(Deck):
                 if actual_difference:
                     diff['modified'] += 1
                     shared_creators_to_update.append(creator)
-                    fields_to_update += updated_fields
 
         # Bulk create and update
         if not check_diff_only:
             FlashCardCreator.objects.bulk_create(new_creators_to_create)
-            FlashCardField.objects.bulk_create(new_fields_to_create)
             FlashCardCreator.objects.bulk_update(
                 shared_creators_to_update,
                 ['tags', 'flashcard_num'],
-            )
-            FlashCardField.objects.bulk_update(
-                fields_to_update,
-                ['text'],
             )
 
         # Delete all flashcards that weren't updated
@@ -1117,20 +1038,6 @@ class SharedDeck(Deck):
             self.version_number += 1
             self.save()
 
-            # # Create notification for everyone who's cloned this deck
-            # profs_to_notify = Profile.objects.filter(
-            #     user__decks__shared_deck_relations__shared_deck=self,
-            # )
-
-            # Notification.objects.bulk_create([
-            #     Notification(
-            #         title=f'Update for "{self.title}"',
-            #         description=f'The creator of "{self.title}" has released a new update.  You can update your deck with "Other > Edit > Check For Updates > Update."',
-            #         profile=profile,
-            #     )
-            #     for profile in profs_to_notify
-            # ])
-
             return self
 
     def user_has_access(self, user: User) -> bool:
@@ -1138,8 +1045,16 @@ class SharedDeck(Deck):
             user == self.user or
             self.sharing_setting == 'PUBLIC' or
             (not user.is_anonymous and (
-                (self.sharing_setting == 'FRIENDS' and user in self.user.profile.friends.all()) or # user is friend
-                (self.sharing_setting == 'STUDENT' and self.attached_to_classroom.students.filter(pk=user.profile.pk).exists()) # user is student
+                (  # user is friend
+                    self.sharing_setting == 'FRIENDS' and
+                    user in self.user.profile.friends.all()
+                ) or
+                (  # user is student
+                    self.sharing_setting == 'STUDENT' and
+                    self.attached_to_classroom.students.filter(
+                        pk=user.profile.pk,
+                    ).exists()
+                )
             ))
         )
 

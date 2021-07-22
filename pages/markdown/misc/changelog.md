@@ -1,4 +1,12 @@
 
+
+* Revamped flashcard fields
+  * Reduced complexity
+  * Easier to update
+  * Faster loading speeds
+* Changed importing/exporting
+  * Not backwards compatible
+
 -----
 ## To-dos & Revamped Tutorial (DEVELOPMENT) - Jul 13 - 0.7.3b
 The tutorial for _Habits_ has been completely revamped to be less confusing, easier to use, and more instructive.  On top of this, _Habits_ now has a subfeature: To-dos.  To-dos is automatically populated with a couple of starting points after finishing the _Habits_ tutorial to give you an idea of what to do next.

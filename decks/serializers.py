@@ -3,8 +3,7 @@ from profiles.serializers import (MinifiedProfileSerializer,
 from rest_framework import serializers
 
 from .models import (CustomStudySessionManager, Deck, DeckThank, FlashCard,
-                     FlashCardCreator, FlashCardField, SharedDeck,
-                     StudySessionManager)
+                     FlashCardCreator, SharedDeck, StudySessionManager)
 
 
 class DeckThankSerializer(serializers.ModelSerializer):
@@ -26,27 +25,19 @@ class DeckThankSerializer(serializers.ModelSerializer):
         return obj.profile.user.username
 
 
-class FlashCardFieldSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FlashCardField
-        fields = [
-            'text',
-            'field_number',
-            'id',
-        ]
-
-
 class FlashCardCreatorSerializer(serializers.ModelSerializer):
-    deck_fields = FlashCardFieldSerializer(source='fields', many=True, read_only=True)
     parent_deck_id = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FlashCardCreator
         fields = [
-            'deck_fields',
+            # Text
+            'field_1',
+            'field_2',
+            'tags',
+            # Other
             'flashcard_type',
             'flashcard_num',
-            'tags',
             'parent_deck_id',
             'id',
         ]
@@ -56,7 +47,6 @@ class FlashCardCreatorSerializer(serializers.ModelSerializer):
 
 
 class FlashCardSerializer(serializers.ModelSerializer):
-    deck_fields = serializers.SerializerMethodField(read_only=True)
     parent_deck_id = serializers.SerializerMethodField(read_only=True)
     parent_deck_title = serializers.SerializerMethodField(read_only=True)
     tags = serializers.SerializerMethodField(read_only=True)
@@ -68,7 +58,6 @@ class FlashCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlashCard
         fields = [
-            'deck_fields',
             'tags',
             'next_review',
             'steps_index',
@@ -98,9 +87,6 @@ class FlashCardSerializer(serializers.ModelSerializer):
 
     def get_tags(self, obj):
         return obj.creator.tags
-
-    def get_deck_fields(self, obj):
-        return FlashCardFieldSerializer(obj.get_content(), many=True).data
 
     def get_flashcard_type(self, obj):
         return obj.creator.flashcard_type

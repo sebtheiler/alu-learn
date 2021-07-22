@@ -3,34 +3,19 @@ from django.contrib import admin
 # Register your models here.
 from .models import (CustomStudySessionManager, Deck, DeckClone,
                      DeckStudySessionManager, DeckThank, FlashCard,
-                     FlashCardCreator, FlashCardField, SharedDeck,
-                     SharedDeckRelation)
-
-
-class FlashCardFieldTabAdmin(admin.TabularInline):
-    fields = [
-        'text',
-        'field_number',
-    ]
-    model = FlashCardField
-
-
-class FlashCardFieldAdmin(admin.ModelAdmin):
-    search_fields = ['text']
-    ordering = ['-id']
-    model = FlashCardField
+                     FlashCardCreator, SharedDeck, SharedDeckRelation)
 
 
 class FlashCardCreatorAdmin(admin.ModelAdmin):
     search_fields = ['tags']
-    ordering = ['-id']
     fields = [
         'deck',
-        'tags',
         'flashcard_type',
         'flashcard_num',
+        'field_1',
+        'field_2',
+        'tags',
     ]
-    inlines = [FlashCardFieldTabAdmin]
     model = FlashCardCreator
 
 
@@ -70,7 +55,6 @@ admin.site.register(SharedDeck, SharedDeckAdmin)
 admin.site.register(SharedDeckRelation)
 admin.site.register(FlashCardCreator, FlashCardCreatorAdmin)
 admin.site.register(FlashCard, FlashCardAdmin)
-admin.site.register(FlashCardField, FlashCardFieldAdmin)
 admin.site.register(DeckThank)
 admin.site.register(DeckClone)
 admin.site.register(DeckStudySessionManager)

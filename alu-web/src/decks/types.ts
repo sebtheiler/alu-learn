@@ -71,7 +71,6 @@ export interface FlashCardField {
 
 
 export interface FlashCardCreator {
-  deck_fields: FlashCardField[];
   flashcard_type: FlashCardTypes;
   flashcard_num: number;
   tags: string;
@@ -81,7 +80,6 @@ export interface FlashCardCreator {
 
 
 export interface FlashCard extends FlashCardCreator {
-  deck_fields: FlashCardField[];
   tags: string;
   next_review: string; // ISO date string
   steps_index: number;

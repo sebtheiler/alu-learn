@@ -5,7 +5,6 @@ from typing import List
 
 from django.core.cache import cache
 from django.db.models import F, Q
-from django.utils import timezone
 from django.views.decorators.cache import cache_control
 from django.views.decorators.vary import vary_on_cookie
 # For calculating advanced string similarities (used in searching)
@@ -19,10 +18,10 @@ from rest_framework.decorators import (api_view, authentication_classes,
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from utils import get_paginated_queryset_response, weighted_sample
-from utils.utils import get_morning
+from utils.utils import create_slate_element, get_morning
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
-                      DeckThank, FlashCard, FlashCardCreator, FlashCardField,
+                      DeckThank, FlashCard, FlashCardCreator,
                       SharedDeck, StudySessionManager, SharedDeckRelation)
 from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
                            DeckThankSerializer, FlashCardCreatorSerializer,
@@ -135,59 +134,53 @@ def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
     except FlashCardCreator.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
-    # Edit the flashcard
-    flashcard.tags = request.data.get('tags', '')
+    # Edit the tags
+    flashcard.tags = request.data.get('tags', flashcard.tags)
 
     new_fields = request.data.get('fields')
     if new_fields is not None:
-        fields = flashcard.fields.all()
-        if len(new_fields) == fields.count():
-            if flashcard.flashcard_type == 'cloze':
-                # Create or delete new flashcards depending on how the cloze has changed
-                now = timezone.now()
-                this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        try:
+            flashcard.field_1 = new_fields[0]
+            flashcard.field_2 = new_fields[1]
+        except KeyError:
+            pass
 
-                flashcards = flashcard.review_instances.all()
-                flashcards_to_create = []
-                created_flashcard_cloze_nums = []
-                flashcards_to_delete = [fc.id for fc in flashcards]
+        if flashcard.flashcard_type == 'cloze':
+            # Create or delete new flashcards depending on how the cloze has changed
+            review_instances = flashcard.review_instances.all()
+            flashcards_to_create = []
+            created_flashcard_cloze_nums = []
+            flashcards_to_delete = [ri.id for ri in review_instances]
 
-                # Go through all segments identified as a cloze
-                cloze_regex = r"{{c\d*::.*?}}"
-                for match in re.finditer(cloze_regex, json.dumps(new_fields[0]), re.MULTILINE):
-                    cloze_id = int(match.group().split("::")[0][3:])
+            # Go through all segments identified as a cloze
+            this_morning = get_morning()
+            cloze_regex = r"{{c\d*::.*?}}"
+            for match in re.finditer(cloze_regex, json.dumps(new_fields[0]), re.MULTILINE):
+                cloze_num = int(match.group().split("::")[0][3:])
+                try:
+                    # If the flashcard already exists, mark it as not needing deletion
+                    ri = review_instances.get(name=f'cloze-{cloze_num}')
                     try:
-                        # If the flashcard already exists, mark it as not needing deletion
-                        fc = flashcards.get(name=f'cloze-{cloze_id}')
-                        try:
-                            # The flashcard is still used, so we shouldn't delete it
-                            flashcards_to_delete.remove(fc.id)
-                        except ValueError:
-                            pass
-                    except FlashCard.DoesNotExist:
-                        # If the flashcard does not exist, create it
-                        if cloze_id not in created_flashcard_cloze_nums:
-                            created_flashcard_cloze_nums.append(cloze_id)
-                            flashcards_to_create.append(
-                                FlashCard(
-                                    creator=flashcard,
-                                    next_review=this_morning,
-                                    content_indicies=[0],
-                                    name=f'cloze-{cloze_id}'
-                                )
+                        # The flashcard is still used, so we shouldn't delete it
+                        flashcards_to_delete.remove(ri.id)
+                    except ValueError:
+                        pass
+                except FlashCard.DoesNotExist:
+                    # If the flashcard does not exist, create it
+                    if cloze_num not in created_flashcard_cloze_nums:
+                        created_flashcard_cloze_nums.append(cloze_num)
+                        flashcards_to_create.append(
+                            FlashCard(
+                                creator=flashcard,
+                                next_review=this_morning,
+                                content_indicies=[0],
+                                name=f'cloze-{cloze_num}'
                             )
+                        )
 
-                # Apply delete and create operations
-                FlashCard.objects.bulk_create(flashcards_to_create)
-                flashcards.filter(id__in=flashcards_to_delete).delete()
-
-            # Update text fields
-            _ = (f.text for f in fields)  # for some reason, this line is needed
-            for i, text in enumerate(new_fields):
-                fields[i].text = text
-            FlashCardField.objects.bulk_update(fields, ['text'])
-        else:
-            return Response({'message': 'Incorrect number of fields specified'}, status=400)
+            # Apply delete and create operations
+            FlashCard.objects.bulk_create(flashcards_to_create)
+            review_instances.filter(id__in=flashcards_to_delete).delete()
 
     flashcard.save()
     return Response(FlashCardCreatorSerializer(instance=flashcard).data, 200)
@@ -687,19 +680,13 @@ def txt_file_upload(request, *args, **kwargs):
             deck=deck,
             flashcard_type='basic',
             flashcard_num=max_flashcard_num + i + 1,
+            field_1=create_slate_element(front_and_back[i][0]),
+            field_2=create_slate_element(front_and_back[i][1]),
         )
         for i in range(len(front_and_back))
     ])
-    FlashCardField.objects.bulk_create([
-        FlashCardField(
-            creator=creator,
-            text=[{"type": "paragraph", "children": [{"text": front_and_back[i][num]}]}],
-            field_number=num,
-        )
-        for i, creator in enumerate(creators) for num in range(2)
-    ])
-    now = timezone.now()
-    this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    this_morning = get_morning()
     FlashCard.objects.bulk_create([
         FlashCard(
             creator=creator,
@@ -779,9 +766,11 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
         `learning_status`: (Data) Learning status of the card
         `ease`: (Data) Ease of card
         `interval`: (Data) The new interval for the flashcard
-        `increment_new_cards_done_today`: (Data) Whether or not to increment the SSM's `new_cards_done_today` attribute
+        `increment_new_cards_done_today`: (Data) Whether or not to
+            increment the SSM's `new_cards_done_today` attribute
             If False, will increment `seen_cards_done_today` instead
-        `utc_timezone_offset`: (Data) (Optional) UTC timezone offset used to mark date for completing flashcard
+        `utc_timezone_offset`: (Data) (Optional) UTC timezone offset used to mark date
+            for completing flashcard
         `time_taken`: (Data) (Optional) Time in ms required to answer the flashcard
 
     Possible errors:
@@ -803,12 +792,15 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
 
     # Edit the flashcard
     flashcard.next_review = request.data.get('next_review', flashcard.next_review)
-    flashcard.learning_status = request.data.get('learning_status', flashcard.learning_status).upper()
+    flashcard.learning_status = request.data.get(
+        'learning_status',
+        flashcard.learning_status,
+    ).upper()
     flashcard.interval = request.data.get('interval', flashcard.interval)
     flashcard.ease = request.data.get('ease', flashcard.ease)
     flashcard.steps_index = request.data.get('steps_index', flashcard.steps_index)
-    flashcard.leech_index = request.data.get('leech_index', flashcard.leech_index)
-    flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
+    # flashcard.leech_index = request.data.get('leech_index', flashcard.leech_index)
+    # flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
     flashcard.save()
 
     # Increment the number of cards that the profile and SSM are registed as doing today
@@ -870,7 +862,8 @@ def ssm_edit_view(request, ssm_id, *args, **kwargs):
     ssm.scheduling_algorithm = request.data.get('scheduling_algorithm') or ssm.scheduling_algorithm
     ssm.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards') or ssm.shuffle_unseen_cards
     ssm.daily_new_card_limit = request.data.get('daily_new_card_limit') or ssm.daily_new_card_limit
-    ssm.daily_seen_card_limit = request.data.get('daily_seen_card_limit') or ssm.daily_seen_card_limit
+    ssm.daily_seen_card_limit = request.data.get('daily_seen_card_limit') or \
+        ssm.daily_seen_card_limit
     ssm.review_ahead_minutes = request.data.get('review_ahead_minutes') or ssm.review_ahead_minutes
     ssm.save()
 
@@ -894,7 +887,7 @@ def ssm_delete_view(request, ssm_id, *args, **kwargs):
         ssm.delete()
         return Response({'message': 'SSM deleted'}, status=200)
     except StudySessionManager.DoesNotExist:
-        return Response({'message': 'SSM does not exist / you are unauthorized, 400: SSM does not exist / you are unauthorized'}, status=404)
+        return Response({'message': 'SSM does not exist'}, status=404)
 
 
 @api_view(['POST'])
@@ -906,7 +899,7 @@ def ssm_create_view(request, *args, **kwargs):
     ssm = CustomStudySessionManager.objects.create(
         user=request.user.profile,
         title=request.data.get('title', f'New Custom Study - {random.randint(0, 1000)}'),
-        deck_ids=str(request.data.get('deck_ids')).replace('[', '').replace(']', '').replace(' ', ''),
+        deck_ids=','.join(map(str, request.data.get('deck_ids', []))),
         tags=request.data.get('tags', ''),
         contains=request.data.get('contains', ''),
         leech=request.data.get('leech', ''),
@@ -961,11 +954,11 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
 
     Required information:
         `shared_deck_id`: (URL) Id of the shared deck
-        `destination_deck_title`: (Data) Title of the deck to clone into (this can also be a new title) 
+        `destination_deck_title`: (Data) Title of the deck to clone into
     """
     try:
         shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
-        if shared_deck.sharing_setting == 'FRIENDS' and request.user not in shared_deck.user.friends:
+        if not shared_deck.user_has_access(request.user):
             return Response({'message': 'You are unauthorized to clone this deck'}, status=403)
     except SharedDeck.DoesNotExist:
         return Response({'message': 'Shared deck not found'}, status=404)
@@ -1004,9 +997,12 @@ def shared_deck_edit_view(request, shared_deck_id, *args, **kwargs):
         return Response({'message': 'Could not find the specified shared deck'}, status=404)
 
     # Update shared deck
-    shared_deck.title = request.data.get('new_title', shared_deck.title) 
+    shared_deck.title = request.data.get('new_title', shared_deck.title)
     shared_deck.description = request.data.get('new_description', shared_deck.description)
-    shared_deck.sharing_setting = request.data.get('new_sharing_setting', shared_deck.sharing_setting)
+    shared_deck.sharing_setting = request.data.get(
+        'new_sharing_setting',
+        shared_deck.sharing_setting,
+    )
     shared_deck.save()
 
     return Response(SharedDeckSerializer(shared_deck).data, status=200)
@@ -1092,14 +1088,14 @@ def deck_pull_updates_view(request, deck_id, *args, **kwargs):
             user=request.user,
         )  # type: Deck
     except Deck.DoesNotExist:
-        return Response({'message': 'Deck does not exist / you are unauthorized'}, status=400)
+        return Response({'message': 'Deck does not exist'}, status=400)
 
     # Get shared deck
     to_pull_from = request.data.get('to_pull_from')
     try:
         shared_deck = SharedDeck.objects.get(pk=to_pull_from)
     except SharedDeck.DoesNotExist:
-        return Response({'message': 'Shared deck does not exist / you are unauthorized'}, status=400)
+        return Response({'message': 'Shared deck does not exist'}, status=400)
 
     deck = deck.pull_updates(shared_deck)
 
@@ -1121,7 +1117,7 @@ def game_flashcards_view(request, *args, **kwargs):
     deck_id = request.data.get('deck_id')
     amount = request.data.get('amount')
     if None in (method_type, deck_id, amount):
-        return Response({'message': f'You must specify `type`, `deck_id`, and `amount`: {method_type}, {deck_id}, {amount}'}, status=400)
+        return Response({'message': 'You must specify type, deck_id, and amount'}, status=400)
 
     query = Q(creator__deck__user=request.user)
     if not request.data.get('options').get('include_cloze'):
@@ -1304,7 +1300,7 @@ def deck_quick_list_view(request, *args, **kwargs):
     Gets a minified list of decks and their progress for use on the main homepage - GET
 
     Parameters:
-        calc_percent_complete=False: (GET) Whether or not to calc the percent complete for each deck
+        calc_percent_complete=False: (GET) Whether or not to calc each deck's percent complete
         include_has_shared_deck=False: (GET) Whether or not to include decks that have been shared
     """
     decks_query = Q(
@@ -1403,7 +1399,10 @@ def deck_json_import_view(request, *args, **kwargs):
     title = json_deck.get('title')
     json_flashcards = json_deck.get('flashcards')
     if title is None or json_flashcards is None:
-        return Response({'message': '`json_deck` must have `title` and `flashcards` attributes'}, status=400)
+        return Response(
+            {'message': '`json_deck` must have `title` and `flashcards` attributes'},
+            status=400,
+        )
 
     # Create deck
     deck = Deck.objects.create(
@@ -1418,32 +1417,23 @@ def deck_json_import_view(request, *args, **kwargs):
 
     # Create flashcards
     creators_to_create = []
-    fields_to_create = []
     review_instances_to_create = []
     for i, json_flashcard in enumerate(json_flashcards):
         creator = FlashCardCreator(
             deck=deck,
-            tags=json_flashcard.get('tags', ''),
             flashcard_type=json_flashcard.get('flashcard_type', 'basic'),
             flashcard_num=json_flashcard.get('flashcard_num', i),
+            # Tags
+            field_1=json_flashcard['fields'][0],
+            field_2=json_flashcard['fields'][1],
+            tags=json_flashcard.get('tags', ''),
         )
         creators_to_create.append(creator)
-
-        fields = [
-            FlashCardField(
-                creator=creator,
-                text=json_field.get('text', []),
-                field_number=json_field.get('field_number', j),
-            )
-            for j, json_field in enumerate(json_flashcard['fields'])
-        ]
-        fields_to_create += fields
 
         if json_flashcard.get('review_instances') is None:
             review_instances_to_create += FlashCard.create_review_instance(
                 json_flashcard.get('flashcard_type', 'basic'),
                 creator,
-                fields[0],
             )
 
             continue
@@ -1465,7 +1455,6 @@ def deck_json_import_view(request, *args, **kwargs):
         ]
 
     FlashCardCreator.objects.bulk_create(creators_to_create)
-    FlashCardField.objects.bulk_create(fields_to_create)
     FlashCard.objects.bulk_create(review_instances_to_create)
 
     return Response(DeckSerializer(deck).data, status=201)

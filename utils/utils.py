@@ -10,7 +10,13 @@ from rest_framework.response import Response
 
 
 # Helper function for pagination
-def get_paginated_queryset_response(qs, request, Serializer, page_size=50, other_information={}) -> Response:
+def get_paginated_queryset_response(
+    qs,
+    request,
+    Serializer,
+    page_size: int = 50,
+    other_information: dict = {},
+) -> Response:
     paginator = PageNumberPagination()
     paginator.page_size = page_size
     paginated_qs = paginator.paginate_queryset(qs, request)
@@ -42,7 +48,11 @@ def weighted_sample(population, weights, k=1) -> List[int]:
 
 
 # Decorator for non-API views
-def permissions(is_authenticated: bool=True, is_confirmed: bool=True, is_staff: bool=False):
+def permissions(
+    is_authenticated: bool = True,
+    is_confirmed: bool = True,
+    is_staff: bool = False,
+):
     """
     Ensures the user has the specified permissions, or otherwise redirects them
     """
