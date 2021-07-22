@@ -1,5 +1,5 @@
 import time
-from typing import Callable, List
+from typing import Any, Callable, List
 import selenium
 
 from django.contrib.auth import get_user_model
@@ -65,6 +65,15 @@ class ImprovedTestCase(TestCase):
         response = view(request, **kwargs)
 
         return response
+
+    def assertEqualAttrs(
+        self,
+        obj1: Any,
+        obj2: Any,
+        attrs: List[str],
+    ):
+        for attr in attrs:
+            self.assertEqual(getattr(obj1, attr), getattr(obj2, attr))
 
 
 @override_settings(DEFAULT_AUTHENTICATION_CLASSES=[])

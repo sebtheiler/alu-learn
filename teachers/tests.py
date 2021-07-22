@@ -1,7 +1,7 @@
 import datetime as dt
 
 from decks.models import (Deck, DeckStudySessionManager, FlashCard,
-                          FlashCardCreator, FlashCardField, SharedDeck)
+                          FlashCardCreator, SharedDeck)
 from django.contrib.auth import get_user_model
 from django.db.models.query_utils import Q
 from rest_framework.test import APIRequestFactory
@@ -31,7 +31,12 @@ class TeacherTestCase(ImprovedTestCase):
 
         self.factory = APIRequestFactory()
 
-    def create_classroom(self, title: str, num_students: int = 0, num_assignments: int = 0) -> Classroom:
+    def create_classroom(
+        self,
+        title: str,
+        num_students: int = 0,
+        num_assignments: int = 0,
+    ) -> Classroom:
         classroom, _ = Classroom.objects.get_or_create(
             title=title,
             code=Classroom.generate_class_code(),
@@ -100,7 +105,10 @@ class TeacherTestCase(ImprovedTestCase):
             'title': 'My Class',
         })
         self.assertEqual(response.status_code, 201)
-        classroom = Classroom.objects.filter(title='My Class', teachers=self.teacher.profile).first()
+        classroom = Classroom.objects.filter(
+            title='My Class',
+            teachers=self.teacher.profile,
+        ).first()
         self.assertIsNotNone(classroom)
         self.assertIn(self.teacher.profile, classroom.teachers.all())
 
@@ -183,9 +191,12 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertEqual(response.status_code, 404)
 
         # Join class
-        response = self.post_response(api_path, api_views.student_join_class_view, user=student, data={
-            'classroom_code': classroom.code,
-        })
+        response = self.post_response(
+            api_path,
+            api_views.student_join_class_view,
+            user=student,
+            data={'classroom_code': classroom.code},
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(classroom.students.count(), 1)
 
@@ -198,9 +209,12 @@ class TeacherTestCase(ImprovedTestCase):
             email='different@email.com',
         )
 
-        response = self.post_response(api_path, api_views.student_join_class_view, user=student, data={
-            'classroom_code': classroom.code,
-        })
+        response = self.post_response(
+            api_path,
+            api_views.student_join_class_view,
+            user=student,
+            data={'classroom_code': classroom.code},
+        )
         self.assertEqual(response.status_code, 404)
         self.assertEqual(classroom.students.count(), 1)
 
@@ -221,7 +235,11 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertEqual(student.profile.classrooms_in.count(), 1)
 
         # Get list
-        response = self.get_response('/api/teachers/classroom/joined/', api_views.student_joined_classes_view, user=student)
+        response = self.get_response(
+            '/api/teachers/classroom/joined/',
+            api_views.student_joined_classes_view,
+            user=student,
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
@@ -253,7 +271,11 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertEqual(classroom.students.count(), N)
 
         # Get student list
-        response = self.get_response(api_path, api_views.classroom_students_view, kwargs={'classroom_id': classroom.pk})
+        response = self.get_response(
+            api_path,
+            api_views.classroom_students_view,
+            kwargs={'classroom_id': classroom.pk},
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), N)
 
@@ -265,14 +287,19 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertIsNone(deck.shared_deck)
 
         # Attempt to attach without specifying deck id
-        response = self.post_response(api_path, api_views.teacher_attach_deck_view,
+        response = self.post_response(
+            api_path,
+            api_views.teacher_attach_deck_view,
             kwargs={'classroom_id': classroom.pk},
         )
         self.assertEqual(response.status_code, 404)
 
         # Attach deck
-        response = self.post_response(api_path, api_views.teacher_attach_deck_view,
-            {'deck_id': deck.pk}, kwargs={'classroom_id': classroom.pk},
+        response = self.post_response(
+            api_path,
+            api_views.teacher_attach_deck_view,
+            {'deck_id': deck.pk},
+            kwargs={'classroom_id': classroom.pk},
         )
         deck = Deck.objects.get(pk=deck.pk)
         self.assertEqual(response.status_code, 200)
@@ -287,8 +314,11 @@ class TeacherTestCase(ImprovedTestCase):
         api_path = f'/api/teachers/classroom/students/attach-deck/{classroom.pk}/'
 
         # Attempt to attach without deck
-        response = self.post_response(api_path, api_views.student_attach_deck_view,
-            kwargs={'classroom_id': classroom.pk}, user=student.user,
+        response = self.post_response(
+            api_path,
+            api_views.student_attach_deck_view,
+            kwargs={'classroom_id': classroom.pk},
+            user=student.user,
         )
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.data['message'], 'Deck not found')
@@ -298,23 +328,32 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertIsNone(deck.student_attached_to)
 
         # Attempt to attach as non-student
-        response = self.post_response(api_path, api_views.student_attach_deck_view,
-            data={'deck_id': deck.pk}, kwargs={'classroom_id': classroom.pk},
+        response = self.post_response(
+            api_path,
+            api_views.student_attach_deck_view,
+            data={'deck_id': deck.pk},
+            kwargs={'classroom_id': classroom.pk},
         )
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.data['message'], 'Classroom not found')
 
         # Attach deck
-        response = self.post_response(api_path, api_views.student_attach_deck_view,
-            data={'deck_id': deck.pk}, kwargs={'classroom_id': classroom.pk}, user=student.user,
+        response = self.post_response(
+            api_path,
+            api_views.student_attach_deck_view,
+            data={'deck_id': deck.pk},
+            kwargs={'classroom_id': classroom.pk}, user=student.user,
         )
         deck = Deck.objects.get(pk=deck.pk)
         self.assertEqual(response.status_code, 200)
         self.assertIsNotNone(deck.student_attached_to)
 
         # Attempt to attach again
-        response = self.post_response(api_path, api_views.student_attach_deck_view,
-            data={'deck_id': deck.pk}, kwargs={'classroom_id': classroom.pk}, user=student.user,
+        response = self.post_response(
+            api_path,
+            api_views.student_attach_deck_view,
+            data={'deck_id': deck.pk},
+            kwargs={'classroom_id': classroom.pk}, user=student.user,
         )
         deck = Deck.objects.get(pk=deck.pk)
         self.assertEqual(response.status_code, 400)
@@ -331,8 +370,11 @@ class TeacherTestCase(ImprovedTestCase):
         url_path = f'/api/teachers/classroom/{classroom.pk}/student/{student.pk}/attached-deck/'
 
         # Get attached deck
-        response = self.get_response(url_path, api_views.student_get_attached_deck_view,
-            kwargs={'classroom_id': classroom.pk, 'student_id': student.pk}, user=student.user,
+        response = self.get_response(
+            url_path,
+            api_views.student_get_attached_deck_view,
+            kwargs={'classroom_id': classroom.pk, 'student_id': student.pk},
+            user=student.user,
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['id'], deck.id)
@@ -353,7 +395,11 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertEqual(response.data['message'], 'Student deck not found')
 
         # Create and attach deck
-        deck = Deck.objects.create(user=student.user, title='Attached deck', student_attached_to=classroom)
+        deck = Deck.objects.create(
+            user=student.user,
+            title='Attached deck',
+            student_attached_to=classroom,
+        )
         self.assertEqual(deck.student_attached_to, classroom)
 
         # Get statistics
@@ -467,8 +513,8 @@ class TeacherTestCase(ImprovedTestCase):
 
     def test_assignments_student_list_api(self):
         # Create class
-        classroom1 = self.create_classroom('Class 1 for student', num_students=1, num_assignments=5)
-        classroom2 = self.create_classroom('Class 2 for student', num_assignments=5)
+        classroom1 = self.create_classroom('Class 1', num_students=1, num_assignments=5)
+        classroom2 = self.create_classroom('Class 2', num_assignments=5)
         api_view = api_views.assignments_student_list_view
         api_path = '/api/teachers/classroom/student/assignments/'
 
@@ -496,12 +542,13 @@ class TeacherTestCase(ImprovedTestCase):
 
     def test_assignments_calc_percent_complete(self):
         # Create class
-        classroom1 = self.create_classroom('Class 1 for student', num_students=1, num_assignments=1)
-        classroom2 = self.create_classroom('Class 2 for student', num_assignments=1)
+        classroom1 = self.create_classroom('Class 1', num_students=1, num_assignments=1)
+        classroom2 = self.create_classroom('Class 2', num_assignments=1)
         assignment1 = classroom1.assignments.first()
         assignment2 = classroom2.assignments.first()
 
-        api_path = f'/api/teachers/classroom/{classroom1.pk}/assignments/{assignment1.pk}/progress/'
+        api_path = \
+            f'/api/teachers/classroom/{classroom1.pk}/assignments/{assignment1.pk}/progress/'
         api_view = api_views.student_percent_complete_list
         kwargs = {'classroom_id': classroom1.pk, 'assignment_id': assignment1.pk}
 
@@ -523,12 +570,20 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertEqual(percent_complete2, None)
 
         # Have student copy decks
-        cloned_classroom1_deck = shared_classroom1_deck.clone(student, 'Copy of "Classroom #1 Deck"')
-        cloned_classroom2_deck = shared_classroom2_deck.clone(student, 'Copy of "Classroom #2 Deck"')
+        cloned_classroom1_deck = shared_classroom1_deck.clone(
+            student,
+            'Copy of "Classroom #1 Deck"',
+        )
+        cloned_classroom2_deck = shared_classroom2_deck.clone(
+            student,
+            'Copy of "Classroom #2 Deck"',
+        )
+        c1_flashcards = FlashCard.objects.filter(creator__deck=cloned_classroom1_deck)
+        c2_flashcards = FlashCard.objects.filter(creator__deck=cloned_classroom2_deck)
 
         # Study and check progress
-        flashcard_ids1 = [f.pk for f in FlashCard.objects.filter(creator__deck=cloned_classroom1_deck)]
-        flashcard_ids2 = [f.pk for f in FlashCard.objects.filter(creator__deck=cloned_classroom2_deck)]
+        flashcard_ids1 = [f.pk for f in c1_flashcards]
+        flashcard_ids2 = [f.pk for f in c2_flashcards]
 
         for i in range(len(flashcard_ids1)):
             # Check percent complete
@@ -677,10 +732,6 @@ class TeacherTestCase(ImprovedTestCase):
                 FlashCard.objects.filter(creator__deck=deck).count(),
                 30,
             )
-            self.assertEqual(
-                FlashCardField.objects.filter(creator__deck=deck).count(),
-                60,
-            )
 
             # check that assm was created
             self.assertEqual(
@@ -774,7 +825,6 @@ class TeacherTestCase(ImprovedTestCase):
         # Update the original deck
         creator_num = FlashCardCreator.objects.filter(deck=classroom_origin_deck).count()
         flashcard_num = FlashCard.objects.filter(creator__deck=classroom_origin_deck).count()
-        field_num = FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count()
         FlashCardCreator.objects.filter(deck=classroom_origin_deck).first().delete()
         self.assertEqual(
             FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
@@ -784,28 +834,16 @@ class TeacherTestCase(ImprovedTestCase):
             FlashCard.objects.filter(creator__deck=classroom_origin_deck).count(),
             flashcard_num - 1,
         )
-        self.assertEqual(
-            FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count(),
-            field_num - 2,
-        )
 
         # Update the classroom deck
         self.assertNotEqual(
             FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
             FlashCardCreator.objects.filter(deck=classroom_shared_deck).count(),
         )
-        self.assertNotEqual(
-            FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count(),
-            FlashCardField.objects.filter(creator__deck=classroom_shared_deck).count(),
-        )
         classroom_shared_deck.push_updates(classroom_origin_deck)
         self.assertEqual(
             FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
             FlashCardCreator.objects.filter(deck=classroom_shared_deck).count(),
-        )
-        self.assertEqual(
-            FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count(),
-            FlashCardField.objects.filter(creator__deck=classroom_shared_deck).count(),
         )
 
         # Study the assignment and make sure the student-copied deck gets updated
@@ -817,10 +855,6 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertNotEqual(
             FlashCard.objects.filter(creator__deck=classroom_origin_deck).count(),
             FlashCard.objects.filter(creator__deck=student_deck).count(),
-        )
-        self.assertNotEqual(
-            FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count(),
-            FlashCardField.objects.filter(creator__deck=student_deck).count(),
         )
         response = self.get_response(api_path, api_view, user=student, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
@@ -834,10 +868,6 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertEqual(
             FlashCard.objects.filter(creator__deck=classroom_origin_deck).count(),
             FlashCard.objects.filter(creator__deck=student_deck).count(),
-        )
-        self.assertEqual(
-            FlashCardField.objects.filter(creator__deck=classroom_origin_deck).count(),
-            FlashCardField.objects.filter(creator__deck=student_deck).count(),
         )
 
     def test_assignment_detail_api(self):
