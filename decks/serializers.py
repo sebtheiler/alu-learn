@@ -31,11 +31,8 @@ class FlashCardCreatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlashCardCreator
         fields = [
-            # Text
-            'field_1',
-            'field_2',
+            'fields',
             'tags',
-            # Other
             'flashcard_type',
             'flashcard_num',
             'parent_deck_id',

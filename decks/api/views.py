@@ -139,11 +139,7 @@ def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
 
     new_fields = request.data.get('fields')
     if new_fields is not None:
-        try:
-            flashcard.field_1 = new_fields[0]
-            flashcard.field_2 = new_fields[1]
-        except KeyError:
-            pass
+        flashcard.fields = new_fields
 
         if flashcard.flashcard_type == 'cloze':
             # Create or delete new flashcards depending on how the cloze has changed
@@ -680,8 +676,10 @@ def txt_file_upload(request, *args, **kwargs):
             deck=deck,
             flashcard_type='basic',
             flashcard_num=max_flashcard_num + i + 1,
-            field_1=create_slate_element(front_and_back[i][0]),
-            field_2=create_slate_element(front_and_back[i][1]),
+            fields=[
+                create_slate_element(front_and_back[i][0]),
+                create_slate_element(front_and_back[i][1]),
+            ],
         )
         for i in range(len(front_and_back))
     ])
@@ -1424,8 +1422,7 @@ def deck_json_import_view(request, *args, **kwargs):
             flashcard_type=json_flashcard.get('flashcard_type', 'basic'),
             flashcard_num=json_flashcard.get('flashcard_num', i),
             # Tags
-            field_1=json_flashcard['fields'][0],
-            field_2=json_flashcard['fields'][1],
+            fields=json_flashcard.get('fields', []),
             tags=json_flashcard.get('tags', ''),
         )
         creators_to_create.append(creator)

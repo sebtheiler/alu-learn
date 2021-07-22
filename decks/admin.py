@@ -12,8 +12,7 @@ class FlashCardCreatorAdmin(admin.ModelAdmin):
         'deck',
         'flashcard_type',
         'flashcard_num',
-        'field_1',
-        'field_2',
+        'fields',
         'tags',
     ]
     model = FlashCardCreator

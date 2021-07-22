@@ -106,8 +106,7 @@ class Deck(models.Model):
                 flashcard_num=flashcard_creator.flashcard_num,
                 origin_creator=flashcard_creator,
                 # Text info
-                field_1=flashcard_creator.field_1,
-                field_2=flashcard_creator.field_2,
+                field=flashcard_creator.fields,
                 tags=flashcard_creator.tags,
             )
             creators_to_create.append(shared_flashcard_creator)
@@ -271,8 +270,7 @@ class FlashCardCreator(models.Model):
     flashcard_num = models.PositiveSmallIntegerField()  # zero-indexed
 
     # === TEXT INFO ===
-    field_1 = models.JSONField()
-    field_2 = models.JSONField()
+    fields = models.JSONField()  # list of two lists of Slate Nodes
     tags = models.CharField(default='', max_length=1024, blank=True)
 
     # === SHARING INFO ===
@@ -360,23 +358,19 @@ class FlashCardCreator(models.Model):
         deck: Deck,
         tags: str,
         flashcard_type: FlashCardTypes,
-        field_1: list,
-        field_2: list,
+        fields: List[list],
     ) -> List[FlashCard]:
         creator = FlashCardCreator.objects.create(
             deck=deck,
             flashcard_type=flashcard_type,
             flashcard_num=FlashCardCreator.get_max_creator_num(deck) + 1,
-            # Text
-            field_1=field_1,
-            field_2=field_2,
+            fields=fields,
             tags=tags,
         )
 
         flashcards = FlashCard.create_review_instance(
             flashcard_type,
             creator,
-            field_1,
         )
         FlashCard.objects.bulk_create(flashcards)
 
@@ -398,8 +392,7 @@ class FlashCardCreator(models.Model):
             flashcard_type=self.flashcard_type,
             id=uuid.uuid4(),
             # Text
-            field_1=self.field_1,
-            field_2=self.field_2,
+            fields=self.fields,
             tags=self.tags,
         )
 
@@ -418,7 +411,6 @@ class FlashCardCreator(models.Model):
             new_flashcards = FlashCard.create_review_instance(
                 new_flashcard_creator.flashcard_type,
                 new_flashcard_creator,
-                self.field_1,
             )
         else:
             new_flashcards = None
@@ -431,7 +423,7 @@ class FlashCardCreator(models.Model):
         check_diff_only: bool = False,
     ) -> Tuple[FlashCardCreator, bool]:
         # FIXME: this function does not work for cloze, when the number of RIs changes
-        attrs_to_update = ['field_1', 'field_2', 'tags', 'flashcard_num']
+        attrs_to_update = ['fields', 'tags', 'flashcard_num']
         actual_difference = False
 
         for attr in attrs_to_update:
@@ -600,7 +592,7 @@ class FlashCard(models.Model):
             return [
                 cloze_flashcard(match)
                 for match in re.finditer(
-                    r"{{c\d*::.*?}}", json.dumps(creator.field_1), re.MULTILINE
+                    r"{{c\d*::.*?}}", json.dumps(creator.fields[0]), re.MULTILINE
                 ) if int(match.group().split("::")[0][3:]) not in cloze_ids
             ]
         else:
