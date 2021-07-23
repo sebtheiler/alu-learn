@@ -67,11 +67,11 @@ export function FlashCardCreate(props: FlashCardCreateProps) {
           if (status === 200) {
             switch (response.flashcard_type) {
               case 'basic': case 'reversed':
-                setFrontValue(response.deck_fields[0].text);
-                setBackValue(response.deck_fields[1].text);
+                setFrontValue(response.fields[0]);
+                setBackValue(response.fields[1]);
                 break;
               case 'cloze':
-                setFrontValue(response.deck_fields[0].text);
+                setFrontValue(response.fields[0]);
                 break;
               default:
                 return;
@@ -321,7 +321,7 @@ export function FlashCardCreate(props: FlashCardCreateProps) {
             <option value='-1'>-----</option>
             {createdFlashcards.map((flashcard, i) =>
               <option key={i} value={flashcard.flashcard_num}>
-                {(flashcard.deck_fields[0].text[0] as any).children[0].text.slice(0, 20)}...
+                {(flashcard.fields[0][0] as any).children[0].slice(0, 20)}...
               </option>
             )}
           </Form.Control>

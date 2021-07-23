@@ -75,8 +75,8 @@ export function QuizGame({ flashcards, numQuestions }) {
         {failedQuestions.length > 0 && <h3 className='mt-5'>Questions You Missed:</h3>}
         {failedQuestions.map((question, i) => (<React.Fragment key={i}>
           <hr />
-          <RenderRichText text={question.deck_fields[0].text} />
-          <RenderRichText text={question.deck_fields[1].text} />
+          <RenderRichText text={question.fields[0]} />
+          <RenderRichText text={question.fields[1]} />
         </React.Fragment>))}
       </div>
     </>);
@@ -85,7 +85,7 @@ export function QuizGame({ flashcards, numQuestions }) {
   return (<>
     <p>Question {currentQuestion + 1}/{numQuestions}</p>
     <div className='text-center'>
-      <RenderRichText text={flashcards[currentQuestion].deck_fields[0].text} fixSlateLazy />
+      <RenderRichText text={flashcards[currentQuestion].fields[0]} fixSlateLazy />
       <hr />
       <ol style={{ paddingInlineStart: '0' }}>
         {answers.map((answer, i) => (
@@ -97,7 +97,7 @@ export function QuizGame({ flashcards, numQuestions }) {
             key={i}
           >
             <button className='not-a-button' onClick={handleAnswerClick(i)}>
-              <RenderRichText text={answer.deck_fields[1].text} fixSlateLazy />
+              <RenderRichText text={answer.fields[1]} fixSlateLazy />
             </button>
           </li>
         ))}

@@ -8,7 +8,7 @@ import { createFullEditor, FullEditor } from '../../notes/editor-components';
 import { Slate } from 'slate-react';
 import { emptyValue } from '../../notes/autonote/autonote';
 import { Transforms } from 'slate';
-import { DeckDifficulty, FlashCard, SchedulingAlgorithm } from '../types';
+import { DeckDifficulty, FlashCard, FlashCardCreator, SchedulingAlgorithm } from '../types';
 
 // Does some magic with SlateJS that prevents weird errors
 // DO NOT REMOVE
@@ -17,12 +17,12 @@ import { DeckDifficulty, FlashCard, SchedulingAlgorithm } from '../types';
 const processFront = (flashcard, showAnswer) => {
   switch (flashcard.flashcard_type) {
     case 'basic': case 'reversed':
-      return flashcard.deck_fields[0].text;
+      return flashcard.fields[0];
     case 'cloze':
-      const currentCardText = JSON.stringify(flashcard.deck_fields[0].text);
+      const currentCardText = JSON.stringify(flashcard.fields[0]);
       const targetClozeNum = parseInt(flashcard.name.split('-')[1]);
       const regex = /{{c\d*::.*?}}/gm;
-      const str = JSON.stringify(flashcard.deck_fields[0].text);
+      const str = JSON.stringify(flashcard.fields[0]);
       
       let answerHiddenText = currentCardText;
       let answerRevealedText = currentCardText;
@@ -57,14 +57,19 @@ const processFront = (flashcard, showAnswer) => {
   }
 }
 
-function RenderFlashCardStudy({ flashcard, showAnswer }) {
+interface RenderFlashCardStudyProps {
+  flashcard: FlashCardCreator;
+  showAnswer: boolean;
+};
+function RenderFlashCardStudy(props: RenderFlashCardStudyProps) {
+  const { flashcard, showAnswer } = props;
 
   const [frontValue, setFrontValue] = useState(processFront(flashcard, showAnswer));
   const frontEditor = useMemo(
     () => createFullEditor(),
     []
   );
-  const [backValue, setBackValue] = useState(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
+  const [backValue, setBackValue] = useState(flashcard.fields.length > 1 ? flashcard.fields[1] : []);
   const backEditor = useMemo(
     () => createFullEditor(),
     []
@@ -76,7 +81,7 @@ function RenderFlashCardStudy({ flashcard, showAnswer }) {
     // The frontValue dependency is excluded on purpose - including it causes infinite loop
     if (processFront(flashcard, showAnswer) !== frontValue) {
       setFrontValue(processFront(flashcard, showAnswer));
-      setBackValue(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
+      setBackValue(flashcard.fields.length > 1 ? flashcard.fields[1] : []);
     }
     // eslint-disable-next-line
   }, [flashcard, showAnswer]);

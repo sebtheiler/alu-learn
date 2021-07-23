@@ -9,13 +9,19 @@ import './detail.css';
 import { FlashCard, FlashCardCreator } from '../types';
 
 
-export function RenderFlashCardText({ flashcard, fixSlateLazy }) {
-  const [frontValue, setFrontValue] = useState(flashcard.deck_fields[0].text);
+interface RenderFlashCardTextProps {
+  flashcard: FlashCardCreator;
+  fixSlateLazy: boolean;
+};
+export function RenderFlashCardText(props: RenderFlashCardTextProps) {
+  const { flashcard, fixSlateLazy } = props;
+
+  const [frontValue, setFrontValue] = useState(flashcard.fields[0]);
   const frontEditor = useMemo(
     () => createFullEditor(),
     []
   );
-  const [backValue, setBackValue] = useState(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
+  const [backValue, setBackValue] = useState(flashcard.fields.length > 1 && flashcard.fields[1]);
   const backEditor = useMemo(
     () => createFullEditor(),
     []
@@ -27,9 +33,15 @@ export function RenderFlashCardText({ flashcard, fixSlateLazy }) {
         // Slate is lazy and won't automatically update the editor when the flashcard
         // prop is changed, so we manually have to check if it has changed
         // The frontValue dependency is excluded on purpose - including it causes infinite loop
-        if (flashcard.deck_fields[0].text !== frontValue || (flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text !== backValue)) {
-          setFrontValue(flashcard.deck_fields[0].text);
-          setBackValue(flashcard.deck_fields.length > 1 && flashcard.deck_fields[1].text);
+        if (
+          flashcard.fields[0] !== frontValue ||
+          (
+            flashcard.fields.length > 1 &&
+            flashcard.fields[1] !== backValue
+          )
+        ) {
+          setFrontValue(flashcard.fields[0]);
+          setBackValue(flashcard.fields.length > 1 ? flashcard.fields[1] : []);
         }
       }
     } catch (e) {

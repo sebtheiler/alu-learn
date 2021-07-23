@@ -63,17 +63,11 @@ export interface CSSM extends SSMInterface {
 }
 
 
-export interface FlashCardField {
-  text: Node[];
-  field_number: number;
-  id: string;
-}
-
-
 export interface FlashCardCreator {
+  fields: Node[][];
+  tags: string;
   flashcard_type: FlashCardTypes;
   flashcard_num: number;
-  tags: string;
   parent_deck_id: number;
   id: UUID;
 }

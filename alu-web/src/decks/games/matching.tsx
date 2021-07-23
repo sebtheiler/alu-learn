@@ -16,8 +16,8 @@ export function MatchingGame(props: MatchingProps) {
   const randomizedFlashcards = useMemo(() => {
     let randomOrder = [] as any;
     for (const [i, flashcard] of flashcards.entries()) {
-      randomOrder.push([flashcard.deck_fields[0], i]);
-      randomOrder.push([flashcard.deck_fields[1], i]);
+      randomOrder.push([flashcard.fields[0], i]);
+      randomOrder.push([flashcard.fields[1], i]);
     }
     randomOrder = shuffle(randomOrder);
     return randomOrder;
@@ -84,7 +84,7 @@ export function MatchingGame(props: MatchingProps) {
               onClick={getBoxClassName(i, j) === ' correct' ? undefined: handleBoxClick(i, j)}
             >
               <RenderRichText
-                text={randomizedFlashcards[i*size + j][0].text}
+                text={randomizedFlashcards[i*size + j][0]}
               />
             </Col>
           )}
@@ -101,8 +101,8 @@ export function MatchingGame(props: MatchingProps) {
       {failedQuestions.length > 0 && <h3 className='mt-5'>Questions You Missed:</h3>}
       {failedQuestions.map((question, i) => (<React.Fragment key={i}>
         <hr />
-        <RenderRichText text={question.deck_fields[0].text} />
-        <RenderRichText text={question.deck_fields[1].text} />
+        <RenderRichText text={question.fields[0]} />
+        <RenderRichText text={question.fields[1]} />
       </React.Fragment>))}
     </div>}
   </>);
