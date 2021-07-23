@@ -508,9 +508,10 @@ interface LoadingButtonProps {
   type?: 'submit' | 'reset' | 'button';
   id?: string;
   block?: boolean;
+  className?: string;
 }
 export function LoadingButton(props: LoadingButtonProps) {
-  const { children, loadingMessage, callback, variant, type, id, block } = props;
+  const { children, loadingMessage, callback, variant, type, id, block, className } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = event => {
@@ -521,7 +522,7 @@ export function LoadingButton(props: LoadingButtonProps) {
   }
 
   return (
-    <Button onClick={onClick} variant={variant} type={type} id={id} block={block}>
+    <Button onClick={onClick} variant={variant} type={type} id={id} block={block} className={className}>
       {isLoading ? loadingMessage : children}
     </Button>
   );
@@ -631,4 +632,12 @@ export function getCookie(name: string) {
 
 export function eraseCookie(name: string) {   
   document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+}
+
+// Capitalizes the first letter of a string
+// If `all` is true, it does this for each word in the string
+export function capitalize(str: string, all: boolean = false) {
+  if (all)
+    return str.split(' ').map(s => capitalize(s)).join(' ');
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

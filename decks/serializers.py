@@ -102,6 +102,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'shared_deck',
             'deck_type',
             'difficulty',
+            'skill_tree',
             'id',
         ]
 

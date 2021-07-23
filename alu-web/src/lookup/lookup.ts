@@ -157,7 +157,7 @@ export function apiDeckSharedList(username, callback) {
 }
 
 // Gets a list of the current user's decks
-export function apiDeckPrivateList(callback) {
+export function apiDeckPrivateList(callback: (response: Deck[], status: number) => void) {
   backendLookup('GET', 'decks/list/', callback);
 }
 
@@ -1141,5 +1141,18 @@ export function apiTodoComplete(
 ) {
   backendLookup('POST', `habits/todos/${todoId}/complete/`, callback, {
     completed: completed,
+  });
+}
+
+// Generates (or re-generates) a skill tree for a deck
+export function apiDeckGenerateSkillTree(
+  deckId: number,
+  sort: boolean,
+  removeEssential: boolean,
+  callback: (response: Message, status: number) => void,
+) {
+  backendLookup('POST', `decks/${deckId}/gen-skill-tree/`, callback, {
+    sort: sort,
+    remove_essential: removeEssential,
   });
 }

@@ -37,6 +37,7 @@ class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
     deck_type = models.CharField(default='standard', max_length=12)
+    skill_tree = models.JSONField(null=True, default=None)
 
     # Note that although this allows for multiple creators, it is currently only using one
     # Also note that this specifies the shared deck this deck creates, not the one it
@@ -241,6 +242,63 @@ class Deck(models.Model):
                 })
 
         return needs_updating
+
+    def generate_skill_tree(
+        self,
+        max_depth: int = 3,  # how many layers deep to go (1-5)
+        sort: bool = False,  # whether or not to sort the final tree alphabetically
+        # TODO: fix `remove_essential`
+        remove_essential: bool = False  # whether or not to remove the `essential` tag
+    ) -> dict:
+        if max_depth < 1 or max_depth > 5:
+            raise ValueError('`max_depth` must be between 1 and 5')
+
+        skill_tree = {}
+        flashcards = self.flashcards.all()
+
+        # Make dictionary of top tags, each mapping to an empty dict
+        for creator in flashcards:
+            creator_tags = creator.tags.split(', ')
+            if len(creator_tags) == 0:
+                continue
+
+            tag = creator_tags[0]
+            if tag != 'essential' or not remove_essential:
+                skill_tree[tag] = {}
+
+        def recursive_layer(skill_tree_branch, depth=0):
+            if depth >= max_depth - 1:
+                return
+
+            for tag in skill_tree_branch.keys():
+                # Find cards with the same top level tag
+                had_tags = False
+                # TODO: this also triggers if the tag is lower down
+                # same_tag_cards = flashcards.filter(tags__icontains=tag)
+                same_tag_cards = flashcards.filter(tags__icontains=tag)
+                for same_tag_card in same_tag_cards:
+                    same_tag_card_tags = same_tag_card.tags.split(', ')[depth + 1:]
+                    if len(same_tag_card_tags) == 0:
+                        continue
+
+                    same_tag_card_tag = same_tag_card_tags[0]
+                    if same_tag_card_tag != 'essential' or not remove_essential:
+                        skill_tree_branch[tag][same_tag_card_tag] = {}
+                    had_tags = True
+
+                if had_tags:
+                    recursive_layer(skill_tree_branch[tag], depth + 1)
+
+        recursive_layer(skill_tree)
+
+        if sort:
+            skill_tree = dict(sorted(
+                skill_tree.items(),
+                key=lambda x: x[0],
+                reverse=True,
+            ))
+
+        return skill_tree
 
 
 class SharedDeckRelation(models.Model):

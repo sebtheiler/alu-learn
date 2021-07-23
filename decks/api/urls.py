@@ -17,6 +17,7 @@ urlpatterns = [
     path('<int:deck_id>/delete/', views.deck_delete_view),
     path('<int:deck_id>/edit/', views.deck_edit_view),
     path('<int:deck_id>/flashcards/', views.deck_flashcards_view),
+    path('<int:deck_id>/gen-skill-tree/', views.deck_generate_skill_tree_view),
     path('<int:deck_id>/flashcards/create/', views.flashcard_create_view),
     path('<int:deck_id>/flashcards/<int:flashcard_num>/', views.flashcard_detail_view),
     path('<int:deck_id>/flashcards/<int:flashcard_num>/edit/', views.flashcard_edit_view),

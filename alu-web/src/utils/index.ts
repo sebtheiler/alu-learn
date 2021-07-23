@@ -30,6 +30,7 @@ import {
   setCookie,
   getCookie,
   eraseCookie,
+  capitalize,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -67,4 +68,5 @@ export {
   setCookie,
   getCookie,
   eraseCookie,
+  capitalize,
 }

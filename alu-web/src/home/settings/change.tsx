@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { apiPasswordChange, apiPasswordReset, apiEmailChange } from '../../lookup';
-import { errorHandler } from '../../utils';
+import { capitalize, errorHandler } from '../../utils';
 
 
 interface ChangePasswordEmailProps {
@@ -130,7 +130,7 @@ export function ChangePasswordEmail(props: ChangePasswordEmailProps) {
   } else {
     return (<>
       <h1 className='text-center mt-5'>
-        Update {type[0].toUpperCase() + type.substring(1)}
+        Update {capitalize(type)}
       </h1>
       <Form onSubmit={event => {handleSubmit(event); setIsLoading(false);}}>
         <Form.Group>

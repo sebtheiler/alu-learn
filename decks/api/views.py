@@ -271,6 +271,7 @@ def deck_shared_view(request, username, *args, **kwargs):
 @cache_control(private=True)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+# TODO: merge this function with quick, public, and others
 def deck_private_list(request, *args, **kwargs):
     """
     Gets a list of the current user's private decks - GET
@@ -1266,8 +1267,8 @@ def deck_quick_list_view(request, *args, **kwargs):
     Gets a minified list of decks and their progress for use on the main homepage - GET
 
     Parameters:
-        calc_percent_complete=False: (GET) Whether or not to calc each deck's percent complete
-        include_has_shared_deck=False: (GET) Whether or not to include decks that have been shared
+        calc_percent_complete=False: (GET) Calc the percent complete for each deck
+        include_has_shared_deck=False: (GET) Include decks that have been shared
     """
     decks_query = Q(
         user=request.user,
@@ -1417,3 +1418,30 @@ def deck_json_import_view(request, *args, **kwargs):
     ReviewInstance.objects.bulk_create(review_instances_to_create)
 
     return Response(DeckSerializer(deck).data, status=201)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deck_generate_skill_tree_view(request, deck_id, *args, **kwargs):
+    """
+    Generates and saves a skill tree for a deck - POST
+
+    Params:
+        `deck_id` (URL, int): Id of the deck to generate the skill tree for
+        `sort` (data, bool): Whether or not to alphabetically sort the skill tree
+        `remove_essential` (data, bool): If True, ignore the "essential" tag
+    """
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    sort = request.data.get('sort')
+    remove_essential = request.data.get('remove_essential')
+    deck.skill_tree = deck.generate_skill_tree(
+        sort=sort,
+        remove_essential=remove_essential,
+    )
+    deck.save()
+
+    return Response({'message': 'Generated skill tree'}, status=200)

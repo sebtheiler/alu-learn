@@ -22,6 +22,7 @@ export interface Deck {
   shared_deck: number;
   deck_type: 'standard' | 'shared';
   difficulty: DeckDifficulty;
+  skill_tree?: Object;
   id: number;
 }
 
