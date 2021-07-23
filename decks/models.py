@@ -72,8 +72,7 @@ class Deck(models.Model):
     def create_shared_deck(
         self,
         title: str,
-        description: str,
-        /,
+        description: str = '',
         sharing_setting: str = 'PUBLIC',
         include_copied_flashcards: bool = False,
     ) -> SharedDeck:
@@ -998,7 +997,7 @@ class SharedDeck(Deck):
             FlashCardCreator.objects.bulk_create(new_creators_to_create)
             FlashCardCreator.objects.bulk_update(
                 shared_creators_to_update,
-                ['tags', 'flashcard_num'],
+                ['fields', 'tags', 'flashcard_num'],
             )
 
         # Delete all flashcards that weren't updated
