@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { DeckDefaultButtonGroup, DeckForeignUserButtonGroup, DefaultSharedDeckButtons } from './buttons';
+import { DeckForeignUserButtonGroup, DefaultSharedDeckButtons } from './buttons';
 import { NoteDefaultButtonGroup } from '../notes/buttons';
 import { FlashCardsList } from './flashcards';
 import { DisplayCountChar, has, MarkdownRender } from '../utils';
@@ -58,7 +58,8 @@ export function VariousCard(props: VariousCardProps) {
         return <ClassroomDefaultButtonGroup classroom={card} />
       case 'deck':
         if (has(card, 'author') && currentUsername === card.author.username) {
-          return <DeckDefaultButtonGroup deck={card as Deck} />
+          // return <DeckDefaultButtonGroup deck={card as Deck} />
+          return <p>No</p>
         } else {
           return <Button href={`/decks/${card.id}/`}>View</Button>
         }

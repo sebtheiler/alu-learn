@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Deck, CSSM } from '../types';
-import { DeckEditCreateModal, ExportModal, GameModal } from '../buttons';
+import { Deck } from '../types';
+import { ExportModal, GameModal } from '../buttons';
 import { apiDeckEdit, apiSSMEdit, apiDeckDelete, apiSSMDelete } from '../../lookup';
 import { errorHandler, has } from '../../utils';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
+import EditModal from './modals/edit';
 
 interface DeckSelectionButtonsProps {
-  deck: Deck | CSSM;
+  deck: Deck;
   collapse: boolean;
 }
 export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
@@ -142,16 +143,17 @@ If you wish to continue, please type "DELETE", without the quotes.
 
   return (
     <Collapse in={collapse}>
-      <div id={`collapse-deck-selection-${deck.id}`} className='deck-selection-expand mb-1'>
-        {/* TODO: make this work with CSSMs */}
+      <div
+        id={`collapse-deck-selection-${deck.id}`}
+        className='deck-selection-expand mb-1'
+        onClick={e => e.stopPropagation()}
+      >
         <Button href={`/decks/${deck.id}/flashcards/create/`} block>Add Cards</Button>
         <Button onClick={() => setEditModalOpen(true)} block>Edit</Button>
-        <DeckEditCreateModal
+        <EditModal
           deck={deck}
           modalIsOpen={editModalOpen}
           closeModal={() => setEditModalOpen(false)}
-          submitHandler={editSaveHandler}
-          deleteHandler={editDeleteHandler}
         />
         <Button href={`/decks/${deck.id}/flashcards/`} block>Browse</Button>
         <hr />

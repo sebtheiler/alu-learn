@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { apiDeckDetail, apiDeckFlashcards, apiRearrangeFlashcard } from '../../lookup';
 import { RenderFlashCard } from './detail';
 import { errorHandler, updateURLParameter } from '../../utils';
-import { DeckDefaultButtonGroup, SelectFlashcardsButtonGroup } from '../buttons';
+import { SelectFlashcardsButtonGroup } from '../buttons';
 import Button from 'react-bootstrap/Button';
 import { Deck, SharedDeck, ReviewInstance, FlashCard } from '../types';
 
@@ -162,8 +162,6 @@ export function FlashCardsList(props: FlashCardsListProps) {
       {flashcardList ? null : <h2 className='text-center mt-3'>Browsing Flashcards{deck ? ` in "${deck?.title}"` : null}</h2>}
       <div className='text-center'>
         {!(flashcardList || isForeignUser || !deck || deck.serializer_name === 'shared_deck') && <>
-          <DeckDefaultButtonGroup deck={deck} hideBrowse={true} />
-          <br />
           <SelectFlashcardsButtonGroup
             selectionMode={selectionMode}
             setSelectionMode={setSelectionMode}

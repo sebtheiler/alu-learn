@@ -30,6 +30,7 @@
 
   background: rgba(var(--deck-selection-expand-color), 0.9);
   color: white;
-
   text-align: left;
+
+  cursor: default;
 }

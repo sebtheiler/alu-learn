@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Deck, CSSM } from '../types';
+import { Deck } from '../types';
 import './deck-selection.css';
 import DeckSelectionButtons from './buttons';
 
 interface DeckSelectionProps {
-  deck: Deck | CSSM;
+  deck: Deck;
   onClick(): void;
   selected: boolean;
 }
