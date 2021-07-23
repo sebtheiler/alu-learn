@@ -8,7 +8,7 @@ import { createFullEditor, FullEditor } from '../../notes/editor-components';
 import { Slate } from 'slate-react';
 import { emptyValue } from '../../notes/autonote/autonote';
 import { Transforms } from 'slate';
-import { DeckDifficulty, FlashCard, FlashCardCreator, SchedulingAlgorithm } from '../types';
+import { DeckDifficulty, ReviewInstance, FlashCard, SchedulingAlgorithm } from '../types';
 
 // Does some magic with SlateJS that prevents weird errors
 // DO NOT REMOVE
@@ -58,7 +58,7 @@ const processFront = (flashcard, showAnswer) => {
 }
 
 interface RenderFlashCardStudyProps {
-  flashcard: FlashCardCreator;
+  flashcard: FlashCard;
   showAnswer: boolean;
 };
 function RenderFlashCardStudy(props: RenderFlashCardStudyProps) {
@@ -157,7 +157,7 @@ function RenderFlashCardStudy(props: RenderFlashCardStudyProps) {
 
 
 interface StudyElementProps {
-  currentCard: FlashCard;
+  currentCard: ReviewInstance;
   showAnswer: boolean;
   showAnswerHandler(event: any): void;
   message: { variant?: string, content?: string };

@@ -4,12 +4,12 @@ import { RenderFlashCard } from './detail';
 import { errorHandler, updateURLParameter } from '../../utils';
 import { DeckDefaultButtonGroup, SelectFlashcardsButtonGroup } from '../buttons';
 import Button from 'react-bootstrap/Button';
-import { Deck, SharedDeck, FlashCard, FlashCardCreator } from '../types';
+import { Deck, SharedDeck, ReviewInstance, FlashCard } from '../types';
 
 // TODO: break this component into multiple components
 interface FlashCardsListProps {
   deckId?: number;
-  flashcardList?: FlashCardCreator[] | FlashCard[];
+  flashcardList?: FlashCard[] | ReviewInstance[];
   showParentDeckTitle?: boolean;
   artificialPaginationNumFlashcards?: number;
   fixSlateLazy?: boolean;
@@ -24,7 +24,7 @@ export function FlashCardsList(props: FlashCardsListProps) {
   const {deckId, flashcardList, showParentDeckTitle, artificialPaginationNumFlashcards, fixSlateLazy} = props;
   const isForeignUser = typeof props.foreignUser === 'string' ? props.foreignUser.toLowerCase() === 'true' : props.foreignUser;
   const [deck, setDeck] = useState<Deck | SharedDeck>();
-  const [flashcards, setFlashCards] = useState<FlashCard[] | FlashCardCreator[]>([]);
+  const [flashcards, setFlashCards] = useState<ReviewInstance[] | FlashCard[]>([]);
   const [flashcardsDidSet, setFlashCardsDidSet] = useState(false);
   const [nextUrl, setNextUrl] = useState('');
   const [flashcardsLoading, setFlashCardsLoading] = useState(false);
@@ -110,7 +110,7 @@ export function FlashCardsList(props: FlashCardsListProps) {
     }
   }
 
-  const moveFlashcard = (direction: 'UP' | 'DOWN', index: number, flashcard: FlashCardCreator) => {
+  const moveFlashcard = (direction: 'UP' | 'DOWN', index: number, flashcard: FlashCard) => {
     // Reverse the direction to be moved if the flashcard list is reversed
     const trueDirection = !reverseOrder ? direction : (
       direction === 'UP' ? 'DOWN' : 'UP'

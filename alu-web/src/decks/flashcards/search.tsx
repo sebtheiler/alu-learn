@@ -10,7 +10,7 @@ import { errorHandler, useApiObjectHook } from '../../utils';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
-import { Deck, FlashCard, LearningStatus } from '../types';
+import { Deck, ReviewInstance, LearningStatus } from '../types';
 
 // Does some magic with SlateJS that prevents weird errors
 // DO NOT REMOVE
@@ -173,7 +173,7 @@ interface FlashCardSearchFormElements extends HTMLFormControlsCollection {
 // Renders the form for searching for flashcards
 export function FlashCardSearchComponent(props) {
   const [decks] = useApiObjectHook<Deck[]>(apiDeckPrivateList, 200, 1025);
-  const [searchedFlashcards, setSearchedFlashcards] = useState<FlashCard[]>();
+  const [searchedFlashcards, setSearchedFlashcards] = useState<ReviewInstance[]>();
   const [didSearch, setDidSearch] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [minEaseValue, setMinEaseValue] = useState(130);

@@ -86,31 +86,29 @@ class Deck(models.Model):
 
         shared_deck.creators.add(self)
 
-        # Clone flashcard creators and fields
-        flashcard_creators = self.flashcards.\
-            prefetch_related('review_instances')  # type: List[FlashCardCreator]
+        # Clone flashcards
+        flashcards = self.flashcards.prefetch_related('review_instances')
+        flashcards_to_create = []
 
-        creators_to_create = []
-
-        for flashcard_creator in flashcard_creators:
-            if flashcard_creator.copied_from_creator and not include_copied_flashcards:
+        for flashcard in flashcards:
+            if flashcard.copied_from_creator and not include_copied_flashcards:
                 # By default, this stops flashcards copied from another deck from
                 # being re-published
                 continue
 
-            # Clone flashcard creator
-            shared_flashcard_creator = FlashCardCreator(
+            # Clone flashcard
+            shared_flashcard = FlashCard(
                 deck=shared_deck,
-                flashcard_type=flashcard_creator.flashcard_type,
-                flashcard_num=flashcard_creator.flashcard_num,
-                origin_creator=flashcard_creator,
+                flashcard_type=flashcard.flashcard_type,
+                flashcard_num=flashcard.flashcard_num,
+                origin_creator=flashcard,
                 # Text info
-                fields=flashcard_creator.fields,
-                tags=flashcard_creator.tags,
+                fields=flashcard.fields,
+                tags=flashcard.tags,
             )
-            creators_to_create.append(shared_flashcard_creator)
+            flashcards_to_create.append(shared_flashcard)
 
-        FlashCardCreator.objects.bulk_create(creators_to_create)
+        FlashCard.objects.bulk_create(flashcards_to_create)
 
         return shared_deck
 
@@ -119,16 +117,26 @@ class Deck(models.Model):
 
     def get_statistics(self) -> Dict:
         # Get various flashcard types (only counts are used)
-        default = Q(is_suspended=False, creator__deck=self)
-        unseen_flashcards = FlashCard.objects.filter(Q(learning_status='UNSEEN') & default)
-        learning_flashcards = FlashCard.objects.filter(Q(learning_status='LEARNING') & default)
-        learned_flashcards = FlashCard.objects.filter(Q(learning_status='LEARNED') & default)
-        relearning_flashcards = FlashCard.objects.filter(Q(learning_status='RELEARNING') & default)
-        suspended_flashcards = FlashCard.objects.filter(is_suspended=True, creator__deck=self)
+        default = Q(is_suspended=False, flashcard__deck=self)
+        unseen_flashcards = ReviewInstance.objects.filter(
+            Q(learning_status='UNSEEN') & default,
+        )
+        learning_flashcards = ReviewInstance.objects.filter(
+            Q(learning_status='LEARNING') & default,
+        )
+        learned_flashcards = ReviewInstance.objects.filter(
+            Q(learning_status='LEARNED') & default,
+        )
+        relearning_flashcards = ReviewInstance.objects.filter(
+            Q(learning_status='RELEARNING') & default,
+        )
+        suspended_flashcards = ReviewInstance.objects.filter(
+            is_suspended=True, flashcard__deck=self,
+        )
 
         # Get other data
-        avg_ease = FlashCard.objects.filter(
-            ~Q(learning_status='UNSEEN') & Q(creator__deck=self)
+        avg_ease = ReviewInstance.objects.filter(
+            ~Q(learning_status='UNSEEN') & Q(flashcard__deck=self)
         ).aggregate(Avg('ease'))['ease__avg']
 
         return {
@@ -149,49 +157,49 @@ class Deck(models.Model):
         self.is_updating = True
         self.save()
 
-        local_flashcard_creators = FlashCardCreator.objects.filter(
+        local_flashcards = FlashCard.objects.filter(
             deck=self,
             copied_from_deck=shared_deck,
-        )  # type: List[FlashCardCreator]
-        shared_flashcard_creators = shared_deck.flashcards.all()
+        )  # type: List[FlashCard]
+        shared_flashcards = shared_deck.flashcards.all()
 
-        creators_to_create = []  # type: List[FlashCardCreator]
         flashcards_to_create = []  # type: List[FlashCard]
-        creators_to_update = []  # type: List[FlashCardCreator]
-        creators_not_to_delete = []  # type: List[str]
-        for shared_flashcard_creator in shared_flashcard_creators:
+        flashcards_to_update = []  # type: List[FlashCard]
+        flashcard_ids_not_to_delete = []  # type: List[str]
+        review_instances_to_create = []  # type: List[ReviewInstance]
+        for shared_flashcard in shared_flashcards:
             try:
-                local_flashcard_creator = local_flashcard_creators.get(
-                    copied_from_creator=shared_flashcard_creator,
-                )  # type: FlashCardCreator
-            except FlashCardCreator.DoesNotExist:
-                local_flashcard_creator = None
+                local_flashcard = local_flashcards.get(
+                    copied_from_creator=shared_flashcard,
+                )  # type: FlashCard
+            except FlashCard.DoesNotExist:
+                local_flashcard = None
 
-            if local_flashcard_creator is None:
-                new_creator, new_flashcards = shared_flashcard_creator.clone(
+            if local_flashcard is None:
+                new_flashcards, new_review_instances = shared_flashcard.clone(
                     self,
                 )
-                creators_to_create.append(new_creator)
-                creators_not_to_delete.append(new_creator.pk)
-                flashcards_to_create += new_flashcards
+                flashcards_to_create.append(new_flashcards)
+                flashcard_ids_not_to_delete.append(new_flashcards.pk)
+                review_instances_to_create += new_review_instances
             else:
-                # Update existing flashcard creator
-                creator, _ = local_flashcard_creator.update(
-                    creator_to_get_updates_from=shared_flashcard_creator,
+                # Update existing flashcards
+                flashcard, _ = local_flashcard.update(
+                    flashcard_to_get_updates_from=shared_flashcard,
                 )
-                creators_to_update.append(creator)
-                creators_not_to_delete.append(creator.pk)
+                flashcards_to_update.append(flashcard)
+                flashcard_ids_not_to_delete.append(flashcard.pk)
 
         # Create all flashcard review instances
-        FlashCardCreator.objects.bulk_create(creators_to_create)
         FlashCard.objects.bulk_create(flashcards_to_create)
-        FlashCardCreator.objects.bulk_update(
-            creators_to_update,
+        ReviewInstance.objects.bulk_create(review_instances_to_create)
+        FlashCard.objects.bulk_update(
+            flashcards_to_update,
             ['tags', 'flashcard_num'],
         )
 
         # Delete all flashcards that weren't updated
-        not_updated = local_flashcard_creators.filter(~Q(pk__in=creators_not_to_delete))
+        not_updated = local_flashcards.filter(~Q(pk__in=flashcard_ids_not_to_delete))
         not_updated.delete()
 
         # Bump version number and return
@@ -204,12 +212,12 @@ class Deck(models.Model):
 
         return self
 
-    def calc_percent_complete(self, flashcards: QuerySet[FlashCard] = None) -> float:
+    def calc_percent_complete(self, flashcards: QuerySet[ReviewInstance] = None) -> float:
         # TODO: Cache this
         if flashcards is None:
-            flashcards = FlashCard.objects.filter(creator__deck=self)
+            flashcards = ReviewInstance.objects.filter(flashcard__deck=self)
         else:
-            flashcards = flashcards.filter(creator__deck=self)
+            flashcards = flashcards.filter(flashcard__deck=self)
         total_flashcard_num = flashcards.count()
         unseen_flashcard_num = flashcards.filter(learning_status='UNSEEN').count()
 
@@ -252,12 +260,12 @@ class SharedDeckRelation(models.Model):
         return f'{self.shared_deck.title} ==> {self.deck.title}'
 
 
-class FlashCardCreatorManager(models.Manager):
+class FlashCardManager(models.Manager):
     def get_queryset(self) -> QuerySet:
         return super().get_queryset().prefetch_related('deck')
 
 
-class FlashCardCreator(models.Model):
+class FlashCard(models.Model):
     # === BASIC INFO ===
     deck = models.ForeignKey(
         Deck,
@@ -279,7 +287,7 @@ class FlashCardCreator(models.Model):
         null=True,
         related_name='shared_mirror',
     )
-    # This is used when cloning decks, to remember where the cloned creator came from
+    # This is used when cloning decks, to remember where the cloned flashcard came from
     copied_from_deck = models.ForeignKey(
         Deck,
         on_delete=models.SET_NULL,
@@ -291,18 +299,18 @@ class FlashCardCreator(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name='flashcards_copied_from',
-    )  # type: FlashCardCreator
+    )  # type: FlashCard
 
     # === OTHER ===
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    objects = FlashCardCreatorManager()
+    objects = FlashCardManager()
 
     class Meta:
         ordering = ['flashcard_num']
 
     def __str__(self) -> str:
-        return f'Flashcard Creator in {self.deck.title} by @{self.deck.user.username}'
+        return f'Flashcard in {self.deck.title} by @{self.deck.user.username}'
 
     def has_tag(self, tag: str) -> bool:
         return tag in [tag.strip() for tag in self.tags.split(',')]
@@ -344,10 +352,10 @@ class FlashCardCreator(models.Model):
         return self.tags
 
     @staticmethod
-    def get_max_creator_num(deck: Deck) -> int:
-        # Returns -1 if there are no flashcard creator in the deck
-        creators = FlashCardCreator.objects.filter(deck=deck)
-        max_fc_num_obj = creators.order_by('-flashcard_num').first()
+    def get_max_flashcard_num(deck: Deck) -> int:
+        # Returns -1 if there are no flashcards in the deck
+        flashcards = FlashCard.objects.filter(deck=deck)
+        max_fc_num_obj = flashcards.order_by('-flashcard_num').first()
 
         return max_fc_num_obj.flashcard_num if max_fc_num_obj else -1
 
@@ -357,20 +365,20 @@ class FlashCardCreator(models.Model):
         tags: str,
         flashcard_type: FlashCardTypes,
         fields: List[list],
-    ) -> List[FlashCard]:
-        creator = FlashCardCreator.objects.create(
+    ) -> List[ReviewInstance]:
+        flashcard = FlashCard.objects.create(
             deck=deck,
             flashcard_type=flashcard_type,
-            flashcard_num=FlashCardCreator.get_max_creator_num(deck) + 1,
+            flashcard_num=FlashCard.get_max_flashcard_num(deck) + 1,
             fields=fields,
             tags=tags,
         )
 
-        flashcards = FlashCard.create_review_instance(
+        flashcards = ReviewInstance.create_review_instance(
             flashcard_type,
-            creator,
+            flashcard,
         )
-        FlashCard.objects.bulk_create(flashcards)
+        ReviewInstance.objects.bulk_create(flashcards)
 
         return flashcards
 
@@ -379,12 +387,12 @@ class FlashCardCreator(models.Model):
         new_deck: Deck = None,
         origin_or_copied: Literal['COPIED', 'ORIGIN'] = 'COPIED',
         skip_creating_review_instances: bool = False,
-    ) -> Tuple[FlashCardCreator, List[FlashCard]]:
+    ) -> Tuple[FlashCard, List[ReviewInstance]]:
         """
-        Clones and saves a full copy of a flashcard creator
-        (returns--but does not create--the creator's review instances)
+        Clones and saves a full copy of a flashcard
+        (returns--but does not create--the flashcard's review instances)
         """
-        new_flashcard_creator = FlashCardCreator(
+        new_flashcard = FlashCard(
             deck=new_deck or self.deck,
             flashcard_num=self.flashcard_num,
             flashcard_type=self.flashcard_type,
@@ -395,37 +403,37 @@ class FlashCardCreator(models.Model):
         )
 
         if origin_or_copied == 'COPIED':
-            new_flashcard_creator.origin_creator = None
-            new_flashcard_creator.copied_from_creator = self
-            new_flashcard_creator.copied_from_deck = self.deck
+            new_flashcard.origin_creator = None
+            new_flashcard.copied_from_creator = self
+            new_flashcard.copied_from_deck = self.deck
         elif origin_or_copied == 'ORIGIN':
-            new_flashcard_creator.origin_creator = self
-            new_flashcard_creator.copied_from_creator = None
+            new_flashcard.origin_creator = self
+            new_flashcard.copied_from_creator = None
         else:
             raise ValueError('Invlaid value for `origin_or_copied`')
 
-        # Derive the flashcards review instances from the creator
+        # Derive the review instances from the flashcard
         if not skip_creating_review_instances:
-            new_flashcards = FlashCard.create_review_instance(
-                new_flashcard_creator.flashcard_type,
-                new_flashcard_creator,
+            new_review_instances = ReviewInstance.create_review_instance(
+                new_flashcard.flashcard_type,
+                new_flashcard,
             )
         else:
-            new_flashcards = None
+            new_review_instances = None
 
-        return new_flashcard_creator, new_flashcards
+        return new_flashcard, new_review_instances
 
     def update(
         self,
-        creator_to_get_updates_from: FlashCardCreator,
+        flashcard_to_get_updates_from: FlashCard,
         check_diff_only: bool = False,
-    ) -> Tuple[FlashCardCreator, bool]:
+    ) -> Tuple[FlashCard, bool]:
         # FIXME: this function does not work for cloze, when the number of RIs changes
         attrs_to_update = ['fields', 'tags', 'flashcard_num']
         actual_difference = False
 
         for attr in attrs_to_update:
-            updated_attr = getattr(creator_to_get_updates_from, attr)
+            updated_attr = getattr(flashcard_to_get_updates_from, attr)
             if getattr(self, attr) != updated_attr:
                 actual_difference = True
                 if not check_diff_only:
@@ -450,9 +458,9 @@ class FlashCardCreator(models.Model):
             above_flashcard.flashcard_num += 1
             self.flashcard_num -= 1
 
-            FlashCardCreator.objects.bulk_update([self, above_flashcard], ['flashcard_num'])
+            FlashCard.objects.bulk_update([self, above_flashcard], ['flashcard_num'])
         elif rearrange_type == 'DOWN':
-            if self.flashcard_num == FlashCardCreator.get_max_creator_num(self.deck):
+            if self.flashcard_num == FlashCard.get_max_flashcard_num(self.deck):
                 return 'Flashcard already at bottom'
 
             below_flashcard = self.deck.flashcards.get(
@@ -461,7 +469,7 @@ class FlashCardCreator(models.Model):
             below_flashcard.flashcard_num -= 1
             self.flashcard_num += 1
 
-            FlashCardCreator.objects.bulk_update([self, below_flashcard], ['flashcard_num'])
+            FlashCard.objects.bulk_update([self, below_flashcard], ['flashcard_num'])
         else:
             return 'Invalid `rearrange_type`'
 
@@ -483,12 +491,12 @@ CONTENT_INDICIES_DICT = {
 }
 
 
-class FlashCard(models.Model):
-    creator = models.ForeignKey(
-        FlashCardCreator,
+class ReviewInstance(models.Model):
+    flashcard = models.ForeignKey(
+        FlashCard,
         on_delete=models.CASCADE,
         related_name='review_instances',
-    )  # type: FlashCardCreator
+    )  # type: FlashCard
     content_indicies = ArrayField(models.PositiveSmallIntegerField())
 
     # `name` can be used for many purposes
@@ -519,35 +527,35 @@ class FlashCard(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     class Meta:
-        ordering = ['creator__flashcard_num']
+        ordering = ['flashcard__flashcard_num']
 
     def __str__(self) -> str:
-        return str(self.creator.fields)
+        return str(self.flashcard.fields)
 
     def is_leech(self) -> bool:
-        return self.creator.has_tag('leech')
+        return self.flashcard.has_tag('leech')
 
     def set_is_leech(self, is_leech: bool, save: bool = True) -> str:
-        creator = self.creator
+        flashcard = self.flashcard
         if is_leech:
-            creator.add_tag('leech', save)
+            flashcard.add_tag('leech', save)
         else:
-            creator.remove_tag('leech', save)
+            flashcard.remove_tag('leech', save)
 
-        return creator.tags
+        return flashcard.tags
 
     @staticmethod
     def create_review_instance(
         flashcard_type: FlashCardTypes,
-        creator: FlashCardCreator,
-    ) -> List[FlashCard]:
+        flashcard: FlashCard,
+    ) -> List[ReviewInstance]:
         """
         Function for creating flashcard review instances, given a flashcard
-            type, creator, and text for cloze
+            type, flashcard, and text for cloze
 
         `flashcard_type`: Type of the flashcard to create
             (e.g., 'cloze', 'basic', 'reversed')
-        `creator`: FlashCardCreator object that will house this flashcard
+        `flashcard`: FlashCard object that will house this flashcard
             review instance
         `field`: Only needed for cloze flashcards, provides the text to parse
             with regex to get cloze instances
@@ -569,8 +577,8 @@ class FlashCard(models.Model):
                 cloze_id = int(match.group().split(":")[0][3:])
                 cloze_ids.append(cloze_id)
 
-                return FlashCard(
-                    creator=creator,
+                return ReviewInstance(
+                    flashcard=flashcard,
                     next_review=this_morning,
                     content_indicies=[0],
                     name=f'cloze-{cloze_id}'
@@ -579,14 +587,14 @@ class FlashCard(models.Model):
             return [
                 cloze_flashcard(match)
                 for match in re.finditer(
-                    r"{{c\d*::.*?}}", json.dumps(creator.fields[0]), re.MULTILINE
+                    r"{{c\d*::.*?}}", json.dumps(flashcard.fields[0]), re.MULTILINE
                 ) if int(match.group().split("::")[0][3:]) not in cloze_ids
             ]
         else:
             # Create a flashcard for each field
             return [
-                FlashCard(
-                    creator=creator,
+                ReviewInstance(
+                    flashcard=flashcard,
                     next_review=this_morning,
                     content_indicies=all_content_indicies[i],
                 )
@@ -605,11 +613,15 @@ class FlashCard(models.Model):
                 continue
 
             previous_operator = separated_tags[i - 1] if i > 0 else None
-            contains_query = Q(creator__tags__icontains=separated_tags[i])
+            contains_query = Q(flashcard__tags__icontains=separated_tags[i])
 
             # Invert the query if it starts with NOT
             if separated_tags[i].startswith('NOT '):
-                contains_query = ~Q(creator__tags__icontains=separated_tags[i].replace('NOT ', ''))
+                contains_query = ~Q(
+                    flashcard__tags__icontains=separated_tags[i].replace(
+                        'NOT ', ''
+                    )
+                )
 
             # Decide how to merge the query, based on the previous value being AND or OR
             if previous_operator == 'AND' or previous_operator is None:
@@ -637,34 +649,34 @@ class FlashCard(models.Model):
         due_before: timezone.datetime.date = None,
         custom_query: Q = None,
         return_query_only: bool = False,
-    ) -> Union[Q, QuerySet[FlashCard]]:
+    ) -> Union[Q, QuerySet[ReviewInstance]]:
         # Search flashcards
         # We will be ANDing (&=) a bunch more queries to this
         # and using it as a filter in the end.
-        flashcard_query = Q(creator__deck__user__pk=user.pk)
+        flashcard_query = Q(flashcard__deck__user__pk=user.pk)
 
         # Filter by deck Id
         if deck_ids:
-            flashcard_query &= Q(creator__deck__pk__in=deck_ids.split(','))
+            flashcard_query &= Q(flashcard__deck__pk__in=deck_ids.split(','))
 
         # Filter by tags (and leech)
         # Note: using __icontains is not perfect, since it would have "car" appear in "carpet"
         if tags or leech is not None:
             tag_query = Q()
             if tags:
-                tag_query &= FlashCard.search_tags(tags)
+                tag_query &= ReviewInstance.search_tags(tags)
 
             # Also filter by leech, since it's a tag
             if str(leech).lower() == 'true' or (isinstance(leech, bool) and leech):
-                tag_query &= Q(creator__tags__icontains='leech')
+                tag_query &= Q(flashcard__tags__icontains='leech')
             elif str(leech).lower() == 'false' or (isinstance(leech, bool) and not leech):
-                tag_query &= ~Q(creator__tags__icontains='leech')
+                tag_query &= ~Q(flashcard__tags__icontains='leech')
 
             flashcard_query &= tag_query
 
         # Filter by contains
         if contains:
-            flashcard_query &= Q(creator__fields__text__icontains=contains)
+            flashcard_query &= Q(flashcard__fields__text__icontains=contains)
 
         # Filter by suspended and learning status
         if suspended is not None:
@@ -694,9 +706,9 @@ class FlashCard(models.Model):
         if return_query_only:
             return flashcard_query
         else:
-            return FlashCard.objects \
+            return ReviewInstance.objects \
                 .filter(flashcard_query) \
-                .prefetch_related('creator') \
+                .prefetch_related('flashcard') \
                 .distinct()
 
 
@@ -756,10 +768,10 @@ class StudySessionManager(models.Model):
 
     def get_reviews(
         self,
-        seen_flashcards: QuerySet[FlashCard],
-        unseen_flashcards: QuerySet[FlashCard],
+        seen_flashcards: QuerySet[ReviewInstance],
+        unseen_flashcards: QuerySet[ReviewInstance],
         from_overflow_bucket: bool = False,
-    ) -> QuerySet[FlashCard]:
+    ) -> QuerySet[ReviewInstance]:
         # Split the seen flashcards into recently due flashcards,
         # and old flashcards for the Overflow Bucket
         # TODO: 1 query
@@ -819,11 +831,11 @@ class DeckStudySessionManager(StudySessionManager):
     def __str__(self) -> str:
         return f'SSM for "{self.deck.title}" by @{self.deck.user.username}'
 
-    def get_flashcards(self) -> Tuple[QuerySet[FlashCard], QuerySet[FlashCard]]:
+    def get_flashcards(self) -> Tuple[QuerySet[ReviewInstance], QuerySet[ReviewInstance]]:
         review_cutoff = self.calc_review_cutoff()
 
-        ssm_flashcards = FlashCard.objects.filter(
-            creator__deck__pk=self.deck.pk
+        ssm_flashcards = ReviewInstance.objects.filter(
+            flashcard__deck__pk=self.deck.pk
         )
         seen_flashcards = ssm_flashcards.filter(
             Q(next_review__lt=review_cutoff) &
@@ -854,7 +866,7 @@ class CustomStudySessionManager(StudySessionManager):
         return f'CSSM: "{self.title}" by @{self.user}'
 
     def generate_query(self, review_cutoff: dt.date = None) -> Q:
-        return FlashCard.search_flashcards(
+        return ReviewInstance.search_flashcards(
             self.user,
             self.deck_ids,
             self.tags,
@@ -868,9 +880,9 @@ class CustomStudySessionManager(StudySessionManager):
             return_query_only=True,
         )
 
-    def get_flashcards(self) -> Tuple[QuerySet[FlashCard], QuerySet[FlashCard]]:
+    def get_flashcards(self) -> Tuple[QuerySet[ReviewInstance], QuerySet[ReviewInstance]]:
         review_cutoff = self.calc_review_cutoff()
-        searched_flashcards = FlashCard.objects.filter(self.generate_query(review_cutoff))
+        searched_flashcards = ReviewInstance.objects.filter(self.generate_query(review_cutoff))
 
         seen_flashcards = searched_flashcards.filter(~Q(learning_status__iexact='UNSEEN'))
         unseen_flashcards = searched_flashcards.filter(learning_status__iexact='UNSEEN')
@@ -934,17 +946,17 @@ class SharedDeck(Deck):
             profile=user.profile,
         )
 
-        shared_flashcard_creators = self.flashcards.all()
+        shared_flashcards = self.flashcards.all()
 
-        creators = []
         flashcards = []
-        for shared_flashcard_creator in shared_flashcard_creators:
-            new_creator, new_flashcards = shared_flashcard_creator.clone(deck)
-            creators.append(new_creator)
-            flashcards += new_flashcards
+        review_instances = []
+        for shared_flashcard in shared_flashcards:
+            new_flashcards, new_review_instances = shared_flashcard.clone(deck)
+            flashcards.append(new_flashcards)
+            review_instances += new_review_instances
 
-        FlashCardCreator.objects.bulk_create(creators)
         FlashCard.objects.bulk_create(flashcards)
+        ReviewInstance.objects.bulk_create(review_instances)
 
         return deck
 
@@ -955,54 +967,53 @@ class SharedDeck(Deck):
     ):
         diff = {'created': 0, 'modified': 0, 'deleted': 0}
 
-        # Update the shared deck's flashcard creators
-        origin_flashcard_creators = origin_deck.flashcards.prefetch_related(
+        # Update the shared deck's flashcards
+        origin_flashcards = origin_deck.flashcards.prefetch_related(
             'shared_mirror',
-        )  # type: List[FlashCardCreator]
-        shared_creators_to_update = []  # type: List[FlashCardCreator]
-        new_creators_to_create = []  # type: List[FlashCardCreator]
-        creators_not_to_delete = []  # type: List[str]
+        )  # type: List[FlashCard]
+        shared_flashcards_to_update = []  # type: List[FlashCard]
+        new_flashcards_to_create = []  # type: List[FlashCard]
+        flashcard_ids_not_to_delete = []  # type: List[str]
 
-        for origin_flashcard_creator in origin_flashcard_creators:
+        for origin_flashcard in origin_flashcards:
             try:
-                shared_mirror = origin_flashcard_creator.\
-                    shared_mirror  # type: FlashCardCreator
-            except FlashCardCreator.DoesNotExist:
+                shared_mirror = origin_flashcard.shared_mirror
+            except FlashCard.DoesNotExist:
                 shared_mirror = None
 
             if shared_mirror is None:
                 if not check_diff_only:
-                    new_creator, _ = origin_flashcard_creator.clone(
+                    new_flashcard, _ = origin_flashcard.clone(
                         self,
                         origin_or_copied='ORIGIN',
                         skip_creating_review_instances=True,
                     )
-                    new_creators_to_create.append(new_creator)
-                    creators_not_to_delete.append(new_creator.pk)
+                    new_flashcards_to_create.append(new_flashcard)
+                    flashcard_ids_not_to_delete.append(new_flashcard.pk)
 
                 diff['created'] += 1
             else:
-                creator, actual_difference = shared_mirror.update(
-                    creator_to_get_updates_from=origin_flashcard_creator,
+                flashcard, actual_difference = shared_mirror.update(
+                    flashcard_to_get_updates_from=origin_flashcard,
                     check_diff_only=check_diff_only,
                 )
-                creators_not_to_delete.append(creator.pk)
+                flashcard_ids_not_to_delete.append(flashcard.pk)
 
                 if actual_difference:
                     diff['modified'] += 1
-                    shared_creators_to_update.append(creator)
+                    shared_flashcards_to_update.append(flashcard)
 
         # Bulk create and update
         if not check_diff_only:
-            FlashCardCreator.objects.bulk_create(new_creators_to_create)
-            FlashCardCreator.objects.bulk_update(
-                shared_creators_to_update,
+            FlashCard.objects.bulk_create(new_flashcards_to_create)
+            FlashCard.objects.bulk_update(
+                shared_flashcards_to_update,
                 ['fields', 'tags', 'flashcard_num'],
             )
 
         # Delete all flashcards that weren't updated
-        shared_mirrors = FlashCardCreator.objects.filter(deck=self)
-        not_updated = shared_mirrors.filter(~Q(pk__in=creators_not_to_delete))
+        shared_mirrors = FlashCard.objects.filter(deck=self)
+        not_updated = shared_mirrors.filter(~Q(pk__in=flashcard_ids_not_to_delete))
         diff['deleted'] += not_updated.count()
         if not check_diff_only:
             not_updated.delete()

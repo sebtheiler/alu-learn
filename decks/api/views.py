@@ -21,11 +21,11 @@ from utils import get_paginated_queryset_response, weighted_sample
 from utils.utils import create_slate_element, get_morning
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
-                      DeckThank, FlashCard, FlashCardCreator,
+                      DeckThank, ReviewInstance, FlashCard,
                       SharedDeck, StudySessionManager, SharedDeckRelation)
 from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
-                           DeckThankSerializer, FlashCardCreatorSerializer,
-                           FlashCardSerializer, SharedDeckSerializer,
+                           DeckThankSerializer, FlashCardSerializer,
+                           ReviewInstanceSerializer, SharedDeckSerializer,
                            StudySessionManagerSerializer)
 
 
@@ -94,7 +94,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     flashcard_type = request.data.get('flashcard_type', 'basic')
     tags = request.data.get('tags', '')
     if fields is not None:
-        flashcards = FlashCardCreator.create_flashcard(
+        flashcards = FlashCard.create_flashcard(
             deck,
             tags,
             flashcard_type,
@@ -102,7 +102,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
         )
 
         return Response(
-            FlashCardSerializer(instance=flashcards, many=True).data,
+            ReviewInstanceSerializer(instance=flashcards, many=True).data,
             201,
         )
     else:
@@ -117,7 +117,7 @@ def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
 
     Required information:
         `deck_id`: (URL) ID of the deck in which we are editing the flashcard (unused)
-        `flashcard_id`: (URL) ID of the flashcard creator we are editing
+        `flashcard_id`: (URL) ID of the flashcard we are editing
         `fields`: (Data) List of the fields for the flashcard
         `tags`: (Data) Raw string of tags, separated by commas
 
@@ -126,12 +126,12 @@ def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
     """
     # Get the flashcard
     try:
-        flashcard = FlashCardCreator.objects.get(
+        flashcard = FlashCard.objects.get(
             flashcard_num=flashcard_num,
             deck__pk=deck_id,
             deck__user=request.user,
         )
-    except FlashCardCreator.DoesNotExist:
+    except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
     # Edit the tags
@@ -161,13 +161,13 @@ def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
                         flashcards_to_delete.remove(ri.id)
                     except ValueError:
                         pass
-                except FlashCard.DoesNotExist:
+                except ReviewInstance.DoesNotExist:
                     # If the flashcard does not exist, create it
                     if cloze_num not in created_flashcard_cloze_nums:
                         created_flashcard_cloze_nums.append(cloze_num)
                         flashcards_to_create.append(
-                            FlashCard(
-                                creator=flashcard,
+                            ReviewInstance(
+                                flashcard=flashcard,
                                 next_review=this_morning,
                                 content_indicies=[0],
                                 name=f'cloze-{cloze_num}'
@@ -175,11 +175,11 @@ def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
                         )
 
             # Apply delete and create operations
-            FlashCard.objects.bulk_create(flashcards_to_create)
+            ReviewInstance.objects.bulk_create(flashcards_to_create)
             review_instances.filter(id__in=flashcards_to_delete).delete()
 
     flashcard.save()
-    return Response(FlashCardCreatorSerializer(instance=flashcard).data, 200)
+    return Response(FlashCardSerializer(instance=flashcard).data, 200)
 
 
 @api_view(['POST'])
@@ -190,7 +190,7 @@ def flashcard_delete_view(request, deck_id, flashcard_num, *args, **kwargs):
 
     Required information:
         `deck_id`: (URL) The ID of the deck in which the flashcard is located
-        `flashcard_id`: (URL) The ID of the flashcard creator to delete
+        `flashcard_id`: (URL) The ID of the flashcard to delete
 
     Returns:
         `message`: Flashcard deleted successfully
@@ -198,19 +198,19 @@ def flashcard_delete_view(request, deck_id, flashcard_num, *args, **kwargs):
     """
     # Get the flashcard
     try:
-        flashcard = FlashCardCreator.objects.get(
+        flashcard = FlashCard.objects.get(
             flashcard_num=flashcard_num,
             deck__pk=deck_id,
             deck__user=request.user,
         )
-    except FlashCardCreator.DoesNotExist:
+    except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
     # Delete the flashcard
     flashcard.delete()
 
     # Rearrange all flashcards to fill in the missing gap
-    FlashCardCreator.objects.filter(
+    FlashCard.objects.filter(
         deck__pk=deck_id,
         flashcard_num__gt=flashcard.flashcard_num,
     ).update(flashcard_num=F('flashcard_num') - 1)
@@ -222,18 +222,18 @@ def flashcard_delete_view(request, deck_id, flashcard_num, *args, **kwargs):
 @permission_classes([IsAuthenticated])
 def flashcard_detail_view(request, deck_id, flashcard_num, *args, **kwargs):
     try:
-        flashcard = FlashCardCreator.objects.get(
+        flashcard = FlashCard.objects.get(
             flashcard_num=flashcard_num,
             deck__pk=deck_id,
             deck__user=request.user,
         )
-    except FlashCardCreator.DoesNotExist:
+    except FlashCard.DoesNotExist:
         return Response(
             {'message': 'Flashcard not found / you are unauthorized'},
             status=404,
         )
 
-    return Response(FlashCardCreatorSerializer(flashcard).data)
+    return Response(FlashCardSerializer(flashcard).data)
 
 
 @api_view(['GET'])
@@ -410,7 +410,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
     limit = request.GET.get('limit')
     if limit:
         # Return set number of flashcards (not paginated)
-        serializer = FlashCardCreatorSerializer(
+        serializer = FlashCardSerializer(
             deck.flashcards.all()[:int(limit)],
             context={'request': request},
             many=True,
@@ -426,7 +426,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
         return get_paginated_queryset_response(
             deck.flashcards.order_by('flashcard_num' if not reverse else '-flashcard_num'),
             request,
-            FlashCardCreatorSerializer,
+            FlashCardSerializer,
             page_size=250
         )
 
@@ -544,19 +544,22 @@ def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs
 
     # Get flashcard
     try:
-        flashcard = FlashCard.objects.get(pk=flashcard_id, creator__deck__user=request.user)
-    except FlashCard.DoesNotExist:
+        review_instance = ReviewInstance.objects.get(
+            pk=flashcard_id,
+            flashcard__deck__user=request.user,
+        )
+    except ReviewInstance.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=404)
 
     # Set flashcard as (un)suspended/leeched
     action = request.data.get('action')
     if action in ('suspend', 'unsuspend'):
-        flashcard.is_suspended = (action == 'suspend')
+        review_instance.is_suspended = (action == 'suspend')
     elif action in ('leech', 'unleech'):
-        flashcard.set_is_leech(action == 'leech')
-    flashcard.save()
+        review_instance.set_is_leech(action == 'leech')
+    review_instance.save()
 
-    return Response(FlashCardSerializer(flashcard).data, status=200)
+    return Response(ReviewInstanceSerializer(review_instance).data, status=200)
 
 
 @api_view(['GET'])
@@ -578,7 +581,7 @@ def flashcard_search_view(request, *args, **kwargs):
     Returns:
         A list of flashcards (FlashcardSerializer)
     """
-    flashcard_qs = FlashCard.search_flashcards(
+    flashcard_qs = ReviewInstance.search_flashcards(
         request.user,
         request.GET.get('deckIds'),
         request.GET.get('tags'),
@@ -590,7 +593,7 @@ def flashcard_search_view(request, *args, **kwargs):
         request.GET.get('maxEase'),
     )
 
-    return Response(FlashCardSerializer(flashcard_qs, many=True).data, status=200)
+    return Response(ReviewInstanceSerializer(flashcard_qs, many=True).data, status=200)
 
 
 @api_view(['GET'])
@@ -670,9 +673,9 @@ def txt_file_upload(request, *args, **kwargs):
         )
 
     # Create flashcards
-    max_flashcard_num = FlashCardCreator.get_max_creator_num(deck)
-    creators = FlashCardCreator.objects.bulk_create([
-        FlashCardCreator(
+    max_flashcard_num = FlashCard.get_max_flashcard_num(deck)
+    flashcards = FlashCard.objects.bulk_create([
+        FlashCard(
             deck=deck,
             flashcard_type='basic',
             flashcard_num=max_flashcard_num + i + 1,
@@ -685,13 +688,13 @@ def txt_file_upload(request, *args, **kwargs):
     ])
 
     this_morning = get_morning()
-    FlashCard.objects.bulk_create([
-        FlashCard(
-            creator=creator,
+    ReviewInstance.objects.bulk_create([
+        ReviewInstance(
+            flashcard=flashcard,
             next_review=this_morning,
             content_indicies=[0, 1],
         )
-        for creator in creators
+        for flashcard in flashcards
     ])
 
     return Response(DeckSerializer(deck).data, status=201)
@@ -727,7 +730,7 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
     )
 
     return Response({
-        'flashcards': FlashCardSerializer(reviews['flashcards'], many=True).data,
+        'flashcards': ReviewInstanceSerializer(reviews['flashcards'], many=True).data,
         'num_overflow': reviews['num_overflow'],
     }, status=200)
 
@@ -784,25 +787,28 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
 
     # Get the flashcard
     try:
-        flashcard = FlashCard.objects.get(pk=flashcard_id, creator__deck__user=request.user)
-    except FlashCard.DoesNotExist:
+        review_instance = ReviewInstance.objects.get(
+            pk=flashcard_id,
+            flashcard__deck__user=request.user,
+        )
+    except ReviewInstance.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
     # Edit the flashcard
-    flashcard.next_review = request.data.get('next_review', flashcard.next_review)
-    flashcard.learning_status = request.data.get(
+    review_instance.next_review = request.data.get('next_review', review_instance.next_review)
+    review_instance.learning_status = request.data.get(
         'learning_status',
-        flashcard.learning_status,
+        review_instance.learning_status,
     ).upper()
-    flashcard.interval = request.data.get('interval', flashcard.interval)
-    flashcard.ease = request.data.get('ease', flashcard.ease)
-    flashcard.steps_index = request.data.get('steps_index', flashcard.steps_index)
+    review_instance.interval = request.data.get('interval', review_instance.interval)
+    review_instance.ease = request.data.get('ease', review_instance.ease)
+    review_instance.steps_index = request.data.get('steps_index', review_instance.steps_index)
     # flashcard.leech_index = request.data.get('leech_index', flashcard.leech_index)
     # flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
-    flashcard.save()
+    review_instance.save()
 
     # Increment the number of cards that the profile and SSM are registed as doing today
-    flashcard.creator.deck.user.profile.increment_work_done_today(
+    review_instance.flashcard.deck.user.profile.increment_work_done_today(
         1,
         request.data.get('utc_timezone_offset'),
         request.data.get('time_taken'),
@@ -814,7 +820,7 @@ def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
         ssm.seen_cards_done_today += 1
     ssm.save()
 
-    return Response(FlashCardSerializer(instance=flashcard).data, 200)
+    return Response(ReviewInstanceSerializer(instance=review_instance).data, 200)
 
 
 @api_view(['POST'])
@@ -1117,9 +1123,9 @@ def game_flashcards_view(request, *args, **kwargs):
     if None in (method_type, deck_id, amount):
         return Response({'message': 'You must specify type, deck_id, and amount'}, status=400)
 
-    query = Q(creator__deck__user=request.user)
+    query = Q(flashcard__deck__user=request.user)
     if not request.data.get('options').get('include_cloze'):
-        query &= ~Q(creator__flashcard_type='cloze')
+        query &= ~Q(flashcard__flashcard_type='cloze')
 
     # See if the "deck" is actually a CSSM
     try:
@@ -1130,7 +1136,7 @@ def game_flashcards_view(request, *args, **kwargs):
     if cssm:
         query &= cssm.generate_query()
     else:
-        query &= Q(creator__deck__id=deck_id)
+        query &= Q(flashcard__deck__id=deck_id)
 
     # Get the list of all possible flashcards, based on the method type
     if method_type == 'SEEN' or method_type == 'PERSONAL':
@@ -1138,7 +1144,7 @@ def game_flashcards_view(request, *args, **kwargs):
     elif method_type == 'UNSEEN':
         query &= Q(learning_status='UNSEEN')
     elif method_type == 'TAG':
-        query &= FlashCard.search_tags(
+        query &= ReviewInstance.search_tags(
             request.data.get('options').get('tag'),
         )
     elif method_type == 'ALL':
@@ -1146,7 +1152,7 @@ def game_flashcards_view(request, *args, **kwargs):
     else:
         return Response({'message': 'Unrecognized method for getting flashcards'}, status=400)
 
-    flashcards = FlashCard.objects.filter(query)
+    flashcards = ReviewInstance.objects.filter(query)
 
     # Get `amount` random flashcards from the list
     if method_type == 'PERSONAL':
@@ -1156,11 +1162,11 @@ def game_flashcards_view(request, *args, **kwargs):
     elif request.data.get('random_order'):
         flashcard_ids = flashcards.values_list('id', flat=True)
         random_flashcard_ids = random.sample(list(flashcard_ids), min(flashcards.count(), amount))
-        flashcards = FlashCard.objects.filter(pk__in=random_flashcard_ids)
+        flashcards = ReviewInstance.objects.filter(pk__in=random_flashcard_ids)
     else:
         flashcards = flashcards[:amount]
 
-    return Response(FlashCardSerializer(flashcards, many=True).data, status=200)
+    return Response(ReviewInstanceSerializer(flashcards, many=True).data, status=200)
 
 
 @api_view(['POST'])
@@ -1170,26 +1176,26 @@ def rearrange_flashcard_view(request, deck_id, flashcard_num, *args, **kwargs):
     Rearranges flashcards - POST
 
     Required information:
-        `flashcard_id`: Id of the FlashCardCreator to rearrange
+        `flashcard_id`: Id of the FlashCard to rearrange
         `rearrange_type`: Way to rearrange the flashcard
             'UP': Decrease the flashcard's number
             'DOWN': Increase the flashcard's number
     """
     try:
-        flashcard = FlashCardCreator.objects.get(
+        flashcard = FlashCard.objects.get(
             flashcard_num=flashcard_num,
             deck__pk=deck_id,
             deck__user=request.user,
         )
-    except FlashCardCreator.DoesNotExist:
-        return Response({'message': 'Flashcard creator not found'}, status=404)
+    except FlashCard.DoesNotExist:
+        return Response({'message': 'Flashcard not found'}, status=404)
 
     rearrange_type = request.data.get('rearrange_type')
     msg = flashcard.rearrange(rearrange_type)
     if msg is not None:
         return Response({'message': msg}, status=400)
 
-    return Response(FlashCardCreatorSerializer(flashcard).data, status=200)
+    return Response(FlashCardSerializer(flashcard).data, status=200)
 
 
 @api_view(['POST'])
@@ -1213,7 +1219,7 @@ def edit_tags_bulk_view(request, *args, **kwargs):
     elif not isinstance(tag, str):
         return Response({'message': 'You must specify a tag to add/remove'}, status=400)
 
-    flashcards = FlashCardCreator.objects.filter(
+    flashcards = FlashCard.objects.filter(
         deck__user=request.user,
         pk__in=flashcard_ids,
     )
@@ -1233,7 +1239,7 @@ def edit_tags_bulk_view(request, *args, **kwargs):
         for flashcard in flashcards:
             flashcard.rename_tag(tag, rename_to, False)
 
-    FlashCardCreator.objects.bulk_update(flashcards, ['tags'])
+    FlashCard.objects.bulk_update(flashcards, ['tags'])
     return Response({'message': 'Updated tags'}, status=200)
 
 
@@ -1252,8 +1258,8 @@ def flashcard_review_instance_bulk_update_view(request, *args, **kwargs):
     if len(flashcard_ids) == 0:
         return Response({'message': 'Must specify at least one flashcard Id'}, status=400)
 
-    flashcards = FlashCard.objects.filter(
-        creator__deck__user=request.user,
+    flashcards = ReviewInstance.objects.filter(
+        flashcard__deck__user=request.user,
         pk__in=flashcard_ids,
     )
     if flashcards.count() != len(flashcard_ids):
@@ -1264,9 +1270,8 @@ def flashcard_review_instance_bulk_update_view(request, *args, **kwargs):
     elif action == 'UNSUSPEND':
         flashcards.update(is_suspended=False)
     elif action == 'DELETE':
-        # Delete creators (and review instances, by cascade) (never just delete review instances)
-        creators = FlashCardCreator.objects.filter(review_instances__in=flashcards)
-        creators.delete()
+        flashcards = FlashCard.objects.filter(review_instances__in=flashcards)
+        flashcards.delete()
     else:
         return Response({'message': 'Invalid action'}, status=400)
 
@@ -1313,8 +1318,8 @@ def deck_quick_list_view(request, *args, **kwargs):
         decks_query
     ).order_by('title')  # type: List[Deck]
 
-    flashcards = FlashCard.objects.filter(
-        creator__deck__in=decks,
+    flashcards = ReviewInstance.objects.filter(
+        flashcard__deck__in=decks,
     )
 
     calc = request.GET.get('calc_percent_complete', False)
@@ -1408,10 +1413,10 @@ def deck_json_import_view(request, *args, **kwargs):
     )
 
     # Create flashcards
-    creators_to_create = []
+    flashcards_to_create = []
     review_instances_to_create = []
     for i, json_flashcard in enumerate(json_flashcards):
-        creator = FlashCardCreator(
+        flashcard = FlashCard(
             deck=deck,
             flashcard_type=json_flashcard.get('flashcard_type', 'basic'),
             flashcard_num=json_flashcard.get('flashcard_num', i),
@@ -1419,19 +1424,19 @@ def deck_json_import_view(request, *args, **kwargs):
             fields=json_flashcard.get('fields', []),
             tags=json_flashcard.get('tags', ''),
         )
-        creators_to_create.append(creator)
+        flashcards_to_create.append(flashcard)
 
         if json_flashcard.get('review_instances') is None:
-            review_instances_to_create += FlashCard.create_review_instance(
+            review_instances_to_create += ReviewInstance.create_review_instance(
                 json_flashcard.get('flashcard_type', 'basic'),
-                creator,
+                flashcard,
             )
 
             continue
 
         review_instances_to_create += [
-            FlashCard(
-                creator=creator,
+            ReviewInstance(
+                flashcard=flashcard,
                 content_indicies=json_review_instance.get('content_indicies', []),
                 name=json_review_instance.get('name', ''),
                 learning_status=json_review_instance.get('learning_status', 'UNSEEN'),
@@ -1445,7 +1450,7 @@ def deck_json_import_view(request, *args, **kwargs):
             for json_review_instance in json_flashcard.get('review_instances')
         ]
 
-    FlashCardCreator.objects.bulk_create(creators_to_create)
-    FlashCard.objects.bulk_create(review_instances_to_create)
+    FlashCard.objects.bulk_create(flashcards_to_create)
+    ReviewInstance.objects.bulk_create(review_instances_to_create)
 
     return Response(DeckSerializer(deck).data, status=201)

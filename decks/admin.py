@@ -2,11 +2,11 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import (CustomStudySessionManager, Deck, DeckClone,
-                     DeckStudySessionManager, DeckThank, FlashCard,
-                     FlashCardCreator, SharedDeck, SharedDeckRelation)
+                     DeckStudySessionManager, DeckThank, ReviewInstance,
+                     FlashCard, SharedDeck, SharedDeckRelation)
 
 
-class FlashCardCreatorAdmin(admin.ModelAdmin):
+class FlashCardAdmin(admin.ModelAdmin):
     search_fields = ['tags']
     fields = [
         'deck',
@@ -15,15 +15,15 @@ class FlashCardCreatorAdmin(admin.ModelAdmin):
         'fields',
         'tags',
     ]
-    model = FlashCardCreator
+    model = FlashCard
 
 
-class FlashCardAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'creator']
-    search_fields = ['creator__deck__title']
+class ReviewInstanceAdmin(admin.ModelAdmin):
+    list_display = ['__str__', 'flashcard']
+    search_fields = ['flashcard__deck__title']
 
     class Meta:
-        model = FlashCard
+        model = ReviewInstance
 
 
 class DeckAdmin(admin.ModelAdmin):
@@ -52,8 +52,8 @@ class SharedDeckAdmin(admin.ModelAdmin):
 admin.site.register(Deck, DeckAdmin)
 admin.site.register(SharedDeck, SharedDeckAdmin)
 admin.site.register(SharedDeckRelation)
-admin.site.register(FlashCardCreator, FlashCardCreatorAdmin)
 admin.site.register(FlashCard, FlashCardAdmin)
+admin.site.register(ReviewInstance, ReviewInstanceAdmin)
 admin.site.register(DeckThank)
 admin.site.register(DeckClone)
 admin.site.register(DeckStudySessionManager)

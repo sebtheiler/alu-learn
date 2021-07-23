@@ -1,7 +1,7 @@
 import datetime as dt
 
-from decks.models import (Deck, DeckStudySessionManager, FlashCard,
-                          FlashCardCreator, SharedDeck)
+from decks.models import (Deck, DeckStudySessionManager, ReviewInstance,
+                          FlashCard, SharedDeck)
 from django.contrib.auth import get_user_model
 from django.db.models.query_utils import Q
 from rest_framework.test import APIRequestFactory
@@ -84,7 +84,7 @@ class TeacherTestCase(ImprovedTestCase):
 
         for i in range(num_flashcards):
             tags = f'{i}, {i + 1}, {i + 2}'
-            FlashCardCreator.create_flashcard(
+            FlashCard.create_flashcard(
                 deck,
                 tags,
                 'basic',
@@ -578,8 +578,8 @@ class TeacherTestCase(ImprovedTestCase):
             student,
             'Copy of "Classroom #2 Deck"',
         )
-        c1_flashcards = FlashCard.objects.filter(creator__deck=cloned_classroom1_deck)
-        c2_flashcards = FlashCard.objects.filter(creator__deck=cloned_classroom2_deck)
+        c1_flashcards = ReviewInstance.objects.filter(flashcard__deck=cloned_classroom1_deck)
+        c2_flashcards = ReviewInstance.objects.filter(flashcard__deck=cloned_classroom2_deck)
 
         # Study and check progress
         flashcard_ids1 = [f.pk for f in c1_flashcards]
@@ -594,7 +594,7 @@ class TeacherTestCase(ImprovedTestCase):
             self.assertEqual(percent_complete2, None)
 
         # Update to have proper tags and study again
-        FlashCardCreator.objects.filter(
+        FlashCard.objects.filter(
             Q(deck__pk=shared_classroom1_deck.pk) |
             Q(deck__pk=shared_classroom2_deck.pk) |
             Q(deck__user=student)
@@ -617,9 +617,9 @@ class TeacherTestCase(ImprovedTestCase):
             self.assertEqual(response.data[0]['percent_complete'], i/10)
 
             # Student study decks
-            flashcard1 = FlashCard.objects.get(pk=flashcard_ids1[i])
+            flashcard1 = ReviewInstance.objects.get(pk=flashcard_ids1[i])
             flashcard1.learning_status = 'LEARNED'
-            flashcard2 = FlashCard.objects.get(pk=flashcard_ids2[i])
+            flashcard2 = ReviewInstance.objects.get(pk=flashcard_ids2[i])
             flashcard2.learning_status = 'LEARNED'
 
             flashcard1.save()
@@ -725,11 +725,11 @@ class TeacherTestCase(ImprovedTestCase):
             )
             deck = Deck.objects.filter(user=student).first()
             self.assertEqual(
-                FlashCardCreator.objects.filter(deck=deck).count(),
+                FlashCard.objects.filter(deck=deck).count(),
                 30,
             )
             self.assertEqual(
-                FlashCard.objects.filter(creator__deck=deck).count(),
+                ReviewInstance.objects.filter(flashcard__deck=deck).count(),
                 30,
             )
 
@@ -775,7 +775,7 @@ class TeacherTestCase(ImprovedTestCase):
         check_deck_assignment_created()
 
         # Update to have proper tags
-        FlashCardCreator.objects.filter(
+        FlashCard.objects.filter(
             Q(deck__pk=classroom_origin_deck.pk) |
             Q(deck__user=student)
         ).update(tags=assignment.tag_query)
@@ -823,38 +823,40 @@ class TeacherTestCase(ImprovedTestCase):
 
         # === TESTING AUTOUPDATE ===
         # Update the original deck
-        creator_num = FlashCardCreator.objects.filter(deck=classroom_origin_deck).count()
-        flashcard_num = FlashCard.objects.filter(creator__deck=classroom_origin_deck).count()
-        FlashCardCreator.objects.filter(deck=classroom_origin_deck).first().delete()
+        creator_num = FlashCard.objects.filter(deck=classroom_origin_deck).count()
+        flashcard_num = ReviewInstance.objects.filter(
+            flashcard__deck=classroom_origin_deck,
+        ).count()
+        FlashCard.objects.filter(deck=classroom_origin_deck).first().delete()
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
+            FlashCard.objects.filter(deck=classroom_origin_deck).count(),
             creator_num - 1,
         )
         self.assertEqual(
-            FlashCard.objects.filter(creator__deck=classroom_origin_deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=classroom_origin_deck).count(),
             flashcard_num - 1,
         )
 
         # Update the classroom deck
         self.assertNotEqual(
-            FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
-            FlashCardCreator.objects.filter(deck=classroom_shared_deck).count(),
+            FlashCard.objects.filter(deck=classroom_origin_deck).count(),
+            FlashCard.objects.filter(deck=classroom_shared_deck).count(),
         )
         classroom_shared_deck.push_updates(classroom_origin_deck)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
-            FlashCardCreator.objects.filter(deck=classroom_shared_deck).count(),
+            FlashCard.objects.filter(deck=classroom_origin_deck).count(),
+            FlashCard.objects.filter(deck=classroom_shared_deck).count(),
         )
 
         # Study the assignment and make sure the student-copied deck gets updated
         student_deck = Deck.objects.get(user=student)
         self.assertNotEqual(
-            FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
-            FlashCardCreator.objects.filter(deck=student_deck).count(),
+            FlashCard.objects.filter(deck=classroom_origin_deck).count(),
+            FlashCard.objects.filter(deck=student_deck).count(),
         )
         self.assertNotEqual(
-            FlashCard.objects.filter(creator__deck=classroom_origin_deck).count(),
-            FlashCard.objects.filter(creator__deck=student_deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=classroom_origin_deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=student_deck).count(),
         )
         response = self.get_response(api_path, api_view, user=student, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
@@ -862,12 +864,12 @@ class TeacherTestCase(ImprovedTestCase):
         self.assertEqual(len(response.data['flashcards']), 20)
         self.assertEqual(response.data['num_overflow'], 0)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=classroom_origin_deck).count(),
-            FlashCardCreator.objects.filter(deck=student_deck).count(),
+            FlashCard.objects.filter(deck=classroom_origin_deck).count(),
+            FlashCard.objects.filter(deck=student_deck).count(),
         )
         self.assertEqual(
-            FlashCard.objects.filter(creator__deck=classroom_origin_deck).count(),
-            FlashCard.objects.filter(creator__deck=student_deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=classroom_origin_deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=student_deck).count(),
         )
 
     def test_assignment_detail_api(self):
@@ -1131,7 +1133,7 @@ class TeacherBrowserTestCase(SeleniumTestCase):
 
         num_flashcards = 10
         for i in range(num_flashcards):
-            FlashCardCreator.create_flashcard(
+            FlashCard.create_flashcard(
                 deck,
                 '1, 2, 3',
                 'basic',
@@ -1227,7 +1229,7 @@ class TeacherBrowserTestCase(SeleniumTestCase):
         self.assertTextExists('Congratulations!')
 
         # Update flashcards to match assignment tag query
-        FlashCardCreator.objects.filter(
+        FlashCard.objects.filter(
             (
                 Q(deck__pk=classroom.deck.pk) |
                 Q(deck__user=self.users[2])

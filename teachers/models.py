@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
-from decks.models import Deck, FlashCard, SharedDeck, StudySessionManager
+from decks.models import Deck, ReviewInstance, SharedDeck, StudySessionManager
 from profiles.models import Profile
 from django.utils.crypto import get_random_string
 
@@ -91,12 +91,12 @@ class Assignment(models.Model):
         return self.title
 
     def calc_percent_complete(self, user: User) -> float:
-        flashcards = FlashCard.objects.filter(
+        flashcards = ReviewInstance.objects.filter(
             Q(
-                creator__deck__student_attached_to=self.classroom,
-                creator__deck__user=user,
+                flashcard__deck__student_attached_to=self.classroom,
+                flashcard__deck__user=user,
             ) &
-            FlashCard.search_tags(self.tag_query)
+            ReviewInstance.search_tags(self.tag_query)
         )
         total_flashcard_num = flashcards.count()
         unseen_flashcard_num = flashcards.filter(learning_status='UNSEEN').count()
@@ -144,7 +144,7 @@ class AssignmentStudySessionManager(StudySessionManager):
         except Deck.DoesNotExist:
             return None
 
-    def get_flashcards(self) -> Tuple[QuerySet[FlashCard], QuerySet[FlashCard]]:
+    def get_flashcards(self) -> Tuple[QuerySet[ReviewInstance], QuerySet[ReviewInstance]]:
         review_cutoff = self.calc_review_cutoff()
 
         deck = self.get_attached_deck()
@@ -154,9 +154,9 @@ class AssignmentStudySessionManager(StudySessionManager):
             )
 
         # Get flashcards from deck
-        ssm_flashcards = FlashCard.objects.filter(
-            Q(creator__deck__pk=deck.pk) &
-            FlashCard.search_tags(self.assignment.tag_query)
+        ssm_flashcards = ReviewInstance.objects.filter(
+            Q(flashcard__deck__pk=deck.pk) &
+            ReviewInstance.search_tags(self.assignment.tag_query)
         )
         seen_flashcards = ssm_flashcards.filter(
             Q(next_review__lt=review_cutoff) &

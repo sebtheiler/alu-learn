@@ -2,8 +2,8 @@ from profiles.serializers import (MinifiedProfileSerializer,
                                   PublicProfileSerializer)
 from rest_framework import serializers
 
-from .models import (CustomStudySessionManager, Deck, DeckThank, FlashCard,
-                     FlashCardCreator, SharedDeck, StudySessionManager)
+from .models import (CustomStudySessionManager, Deck, DeckThank, ReviewInstance,
+                     FlashCard, SharedDeck, StudySessionManager)
 
 
 class DeckThankSerializer(serializers.ModelSerializer):
@@ -25,11 +25,11 @@ class DeckThankSerializer(serializers.ModelSerializer):
         return obj.profile.user.username
 
 
-class FlashCardCreatorSerializer(serializers.ModelSerializer):
+class FlashCardSerializer(serializers.ModelSerializer):
     parent_deck_id = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = FlashCardCreator
+        model = FlashCard
         fields = [
             'fields',
             'tags',
@@ -43,17 +43,17 @@ class FlashCardCreatorSerializer(serializers.ModelSerializer):
         return obj.deck.id
 
 
-class FlashCardSerializer(serializers.ModelSerializer):
+class ReviewInstanceSerializer(serializers.ModelSerializer):
     parent_deck_id = serializers.SerializerMethodField(read_only=True)
     parent_deck_title = serializers.SerializerMethodField(read_only=True)
     tags = serializers.SerializerMethodField(read_only=True)
     is_leech = serializers.SerializerMethodField(read_only=True)
     flashcard_type = serializers.SerializerMethodField(read_only=True)
-    creator_id = serializers.SerializerMethodField(read_only=True)
+    flashcard_id = serializers.SerializerMethodField(read_only=True)
     flashcard_num = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = FlashCard
+        model = ReviewInstance
         fields = [
             'tags',
             'next_review',
@@ -66,7 +66,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'leech_index',
             'parent_deck_id',
             'parent_deck_title',
-            'creator_id',
+            'flashcard_id',
             'flashcard_type',
             'name',
             'flashcard_num',
@@ -74,25 +74,25 @@ class FlashCardSerializer(serializers.ModelSerializer):
         ]
 
     def get_parent_deck_id(self, obj):
-        return obj.creator.deck.id
+        return obj.flashcard.deck.id
 
     def get_parent_deck_title(self, obj):
-        return obj.creator.deck.title
+        return obj.flashcard.deck.title
 
     def get_is_leech(self, obj):
         return obj.is_leech()
 
     def get_tags(self, obj):
-        return obj.creator.tags
+        return obj.flashcard.tags
 
     def get_flashcard_type(self, obj):
-        return obj.creator.flashcard_type
+        return obj.flashcard.flashcard_type
 
-    def get_creator_id(self, obj):
-        return obj.creator.id
+    def get_flashcard_id(self, obj):
+        return obj.flashcard.id
 
     def get_flashcard_num(self, obj):
-        return obj.creator.flashcard_num
+        return obj.flashcard.flashcard_num
 
 
 class DeckSerializer(serializers.ModelSerializer):

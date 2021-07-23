@@ -8,7 +8,7 @@ import { createFullEditor, EditorButtons, FullEditor } from '../../notes/editor-
 import { emptyValue } from '../../notes/autonote/autonote';
 import { Slate, ReactEditor } from 'slate-react';
 import { Node, Transforms } from 'slate';
-import { FlashCardCreator, FlashCardTypes } from '../types';
+import { FlashCard, FlashCardTypes } from '../types';
 
 function FreezeOverlay(props) {
   return (
@@ -47,7 +47,7 @@ export function FlashCardCreate(props: FlashCardCreateProps) {
   const [btnLabel, setBtnLabel] = useState((flashcardNum && flashcardNum !== 'None') ? 'Save' : 'Create');
   const [flashcardType, setFlashCardType] = useState<FlashCardTypes>('basic');
   const [gotFlashcardDetail, setGotFlashcardDetail] = useState(false);
-  const [createdFlashcards, setCreatedFlashcards] = useState<FlashCardCreator[]>([]);
+  const [createdFlashcards, setCreatedFlashcards] = useState<FlashCard[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const tagsRef = useRef<HTMLInputElement>(document.createElement('input'));
 
@@ -88,7 +88,7 @@ export function FlashCardCreate(props: FlashCardCreateProps) {
   });
 
   // Called after the request is sent to the backend to create or edit a flashcard
-  const handleBackendUpdate = (response: FlashCardCreator, status: number) => {
+  const handleBackendUpdate = (response: FlashCard, status: number) => {
     setBtnLabel(flashcardNum ? 'Save' : 'Create');
     if (status === 201 || status === 200) {
       // If the user should be redirected, redirect them

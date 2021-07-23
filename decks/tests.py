@@ -12,7 +12,7 @@ from utils.utils import create_slate_element, get_morning
 
 from .api import views as api_views
 from .models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
-                     FlashCard, FlashCardCreator, FlashCardTypes, SharedDeck)
+                     ReviewInstance, FlashCard, FlashCardTypes, SharedDeck)
 
 User = get_user_model()
 
@@ -41,7 +41,7 @@ class DeckTestCase(ImprovedTestCase):
                     tags = f'{characters[i]}, {characters[i + 1]}, {characters[i + 2]}'
                 else:
                     tags = f'{i}, {i + 1}, {i + 2}'
-                FlashCardCreator.create_flashcard(
+                FlashCard.create_flashcard(
                     deck,
                     tags,
                     'basic',
@@ -64,7 +64,7 @@ class DeckTestCase(ImprovedTestCase):
                 {deck1_flashcards.count()} vs {deck2_flashcards.count()}'
 
         for deck1_flashcard, deck2_flashcard in zip(deck2_flashcards, deck1_flashcards):
-            # Assert FlashCardCreators are equal
+            # Assert flash cards are equal
             if deck1_flashcard.flashcard_num != deck2_flashcard.flashcard_num:
                 return False, f'`flashcard_num`s differ:\
                     {deck1_flashcard.flashcard_num} vs {deck2_flashcard.flashcard_num}'
@@ -213,123 +213,20 @@ class DeckTestCase(ImprovedTestCase):
             expected_content_indicies=[[0], [0], [0]],
         )
 
-    # def test_flashcard_create_api(self):
-    #     deck = self.create_deck('Test')
-    #     api_path = f'/api/decks/{deck.pk}/flashcards/create/'
-    #     api_view = api_views.flashcard_create_view
-    #     self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 0)
-
-    #     def create_flashcard(
-    #         tags: str,
-    #         fields: List[dict],
-    #         flashcard_type: str,
-    #         num_expected_instances: int,
-    #     ) -> Tuple[List[FlashCard], FlashCardCreator]:
-    #         num_creators = FlashCardCreator.objects.filter(deck=deck).count()
-    #         num_flashcards = FlashCard.objects.filter(
-    #             creator__deck=deck
-    #         ).count()
-
-    #         response = self.post_response(api_path, api_view, {
-    #             'fields': fields,
-    #             'tags': tags,
-    #             'flashcard_type': flashcard_type,
-    #         }, kwargs={'deck_id': deck.pk})
-    #         self.assertEqual(response.status_code, 201)
-    #         self.assertEqual(
-    #             FlashCardCreator.objects.filter(deck=deck).count(),
-    #             num_creators + 1,
-    #             msg='Unexpected number of flashcard creators created',
-    #         )
-    #         self.assertEqual(
-    #             FlashCard.objects.filter(creator__deck=deck).count(),
-    #             num_flashcards + num_expected_instances,
-    #             msg='Unexpected number of review instances created',
-    #         )
-    #         self.assertIsInstance(response.data, list)
-    #         self.assertGreaterEqual(len(response.data), 1)
-    #         self.assertIsInstance(response.data[0], dict)
-
-    #         flashcards = response.data
-    #         creator = FlashCardCreator.objects.get(
-    #             pk=flashcards[0]['creator_id']
-    #         )
-
-    #         self.assertEqual(creator.tags, tags)
-    #         self.assertEqual(creator.flashcard_type, flashcard_type)
-
-    #         flashcard = FlashCard.objects.get(pk=flashcards[0]['id'])
-    #         self.assertEqual(flashcard.ease, 250)
-
-    #         return flashcards, creator
-
-    #     # Test basic flashcard
-    #     tags = 'technology, programming, python, django'
-    #     fields = [create_slate_element('front'), create_slate_element('back')]
-
-    #     flashcards, _ = create_flashcard(
-    #         tags, fields, 'basic', 1
-    #     )
-    #     review_instance = FlashCard.objects.get(pk=flashcards[0]['id'])
-    #     self.assertEqual(review_instance.content_indicies, [0, 1])
-    #     self.assertEqual(review_instance.creator.fields, fields)
-
-    #     # Test reverse flashcard
-    #     tags = 'technology, programming, python, django'
-    #     fields = [create_slate_element('front'), create_slate_element('back')]
-
-    #     flashcards, _ = create_flashcard(
-    #         tags, fields, 'reversed', 2
-    #     )
-    #     review_instance = FlashCard.objects.get(pk=flashcards[0]['id'])
-    #     self.assertEqual(review_instance.content_indicies, [0, 1])
-    #     self.assertEqual(
-    #         review_instance.creator.fields,
-    #         [fields[0], fields[1]]
-    #     )
-
-    #     review_instance = FlashCard.objects.get(pk=flashcards[1]['id'])
-    #     self.assertEqual(review_instance.content_indicies, [1, 0])
-    #     self.assertEqual(
-    #         review_instance.creator.fields,
-    #         [fields[1], fields[0]]
-    #     )
-
-    #     # Test cloze flashcard
-    #     tags = 'technology, programming, python, django'
-    #     fields = [create_slate_element(
-    #         """
-    #         {{c1::cloze}} {{c2::flashcards}} {{c3::can}} hide {{c1::text}}
-    #         """,
-    #     )]
-
-    #     flashcards, _ = create_flashcard(
-    #         tags, fields, 'cloze', 3
-    #     )
-
-    #     for i in range(3):
-    #         review_instance = FlashCard.objects.get(pk=flashcards[i]['id'])
-    #         self.assertEqual(review_instance.content_indicies, [0])
-    #         self.assertEqual(review_instance.name, f'cloze-{i+1}')
-    #         self.assertEqual(
-    #             review_instance.creator.fields,
-    #             [fields[0]]
-    #         )
-
     def test_flashcard_create_func(self):
         deck = self.create_deck('Test')
-        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 0)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 0)
-        flashcard = FlashCardCreator.create_flashcard(
+        self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 0)
+        self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 0)
+        flashcard = FlashCard.create_flashcard(
             deck,
             'a, b, c',
             'basic',
             [create_slate_element('a'), create_slate_element('b')],
         )[0]
-        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 1)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 1)
+        self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 1)
+        self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 1)
         self.assertEqual(flashcard.ease, 250)
-        self.assertEqual(flashcard.creator.flashcard_num, 0)
+        self.assertEqual(flashcard.flashcard.flashcard_num, 0)
 
     def test_flashcard_edit_api(self):
         api_view = api_views.flashcard_edit_view
@@ -342,40 +239,48 @@ class DeckTestCase(ImprovedTestCase):
             expected_reviews_finish: int,
         ):
             deck = self.create_deck(f'Edit test - {flashcard_type}')
-            review_instance = FlashCardCreator.create_flashcard(
+            review_instance = FlashCard.create_flashcard(
                 deck,
                 'a, b, c',
                 flashcard_type,
                 fields,
             )[0]
-            api_path = f'/api/decks/{deck.pk}/flashcards/{review_instance.creator.id}/edit/'
-            self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 1)
+            api_path = f'/api/decks/{deck.pk}/flashcards/{review_instance.flashcard.id}/edit/'
+            self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 1)
             self.assertEqual(
-                FlashCard.objects.filter(creator__deck=deck).count(),
+                ReviewInstance.objects.filter(flashcard__deck=deck).count(),
                 expected_reviews_initial,
             )
-            self.assertEqual(review_instance.creator.tags, 'a, b, c')
-            self.assertEqual(review_instance.creator.flashcard_type, flashcard_type)
-            self.assertEqual(review_instance.creator.fields, fields)
+            self.assertEqual(review_instance.flashcard.tags, 'a, b, c')
+            self.assertEqual(review_instance.flashcard.flashcard_type, flashcard_type)
+            self.assertEqual(review_instance.flashcard.fields, fields)
 
-            response = self.post_response(api_path, api_view, {
-                'fields': fields_edited,
-                'tags': '1, 2, 3',
-            }, kwargs={'deck_id': deck.id, 'flashcard_num': review_instance.creator.flashcard_num})
-            review_instance = FlashCard.objects.get(pk=review_instance.pk)
+            response = self.post_response(
+                api_path,
+                api_view,
+                data={
+                    'fields': fields_edited,
+                    'tags': '1, 2, 3',
+                },
+                kwargs={
+                    'deck_id': deck.id,
+                    'flashcard_num': review_instance.flashcard.flashcard_num
+                },
+            )
+            review_instance = ReviewInstance.objects.get(pk=review_instance.pk)
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 1)
+            self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 1)
             self.assertEqual(
-                FlashCard.objects.filter(creator__deck=deck).count(),
+                ReviewInstance.objects.filter(flashcard__deck=deck).count(),
                 expected_reviews_finish,
             )
-            self.assertEqual(review_instance.creator.tags, '1, 2, 3')
-            self.assertEqual(review_instance.creator.flashcard_type, flashcard_type)
+            self.assertEqual(review_instance.flashcard.tags, '1, 2, 3')
+            self.assertEqual(review_instance.flashcard.flashcard_type, flashcard_type)
             self.assertEqual(
-                review_instance.creator.fields,
+                review_instance.flashcard.fields,
                 fields_edited,
             )
-            review_instance.creator.delete()
+            review_instance.flashcard.delete()
 
         # Edit basic flashcard
         edit_flashcard(
@@ -408,9 +313,9 @@ class DeckTestCase(ImprovedTestCase):
     def test_flashcard_delete_api(self):
         # Create deck and flashcard
         deck = self.create_deck('Test')
-        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 0)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 0)
-        flashcards = [FlashCardCreator.create_flashcard(
+        self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 0)
+        self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 0)
+        flashcards = [FlashCard.create_flashcard(
             deck,
             'a, b, c',
             'cloze',
@@ -419,40 +324,40 @@ class DeckTestCase(ImprovedTestCase):
             )],
         )[0] for _ in range(10)]
         flashcard = flashcards[0]
-        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 10)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 30)
-        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.creator.flashcard_num}/delete/'
+        self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 10)
+        self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 30)
+        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.flashcard.flashcard_num}/delete/'
         api_view = api_views.flashcard_delete_view
-        kwargs = {'deck_id': deck.id, 'flashcard_num': flashcard.creator.flashcard_num}
+        kwargs = {'deck_id': deck.id, 'flashcard_num': flashcard.flashcard.flashcard_num}
 
         def check_flashcard_number_correct_order(deck):
-            for i, flashcard_creator in enumerate(deck.flashcards.all()):
-                self.assertEqual(flashcard_creator.flashcard_num, i)
+            for i, flashcard in enumerate(deck.flashcards.all()):
+                self.assertEqual(flashcard.flashcard_num, i)
         check_flashcard_number_correct_order(deck)
 
         # Attempt to delete as non-owner
         response = self.post_response(api_path, api_view, kwargs=kwargs, user=self.users[1])
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 10)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 30)
+        self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 10)
+        self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 30)
         check_flashcard_number_correct_order(deck)
 
         # Delete flashcard
         response = self.post_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(FlashCardCreator.objects.filter(deck=deck).count(), 9)
-        self.assertEqual(FlashCard.objects.filter(creator__deck=deck).count(), 27)
+        self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 9)
+        self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 27)
         check_flashcard_number_correct_order(deck)
 
     def test_flashcard_detail_api(self):
         deck = self.create_deck('Detail Test')
-        flashcard = FlashCardCreator.create_flashcard(
+        flashcard = FlashCard.create_flashcard(
             deck,
             'a, b, c',
             'basic',
             [create_slate_element('a'), create_slate_element('b')],
         )[0]
-        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.creator.flashcard_num}/'
+        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.flashcard.flashcard_num}/'
         api_view = api_views.flashcard_detail_view
 
         # Attempt to get non-existant flashcard
@@ -467,7 +372,7 @@ class DeckTestCase(ImprovedTestCase):
         response = self.get_response(
             api_path,
             api_view,
-            kwargs={'flashcard_num': flashcard.creator.flashcard_num, 'deck_id': deck.id},
+            kwargs={'flashcard_num': flashcard.flashcard.flashcard_num, 'deck_id': deck.id},
             user=self.users[1],
         )
         self.assertEqual(response.status_code, 404)
@@ -476,10 +381,10 @@ class DeckTestCase(ImprovedTestCase):
         response = self.get_response(
             api_path,
             api_view,
-            kwargs={'flashcard_num': flashcard.creator.flashcard_num, 'deck_id': deck.id},
+            kwargs={'flashcard_num': flashcard.flashcard.flashcard_num, 'deck_id': deck.id},
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['id'], str(flashcard.creator.pk))
+        self.assertEqual(response.data['id'], str(flashcard.flashcard.pk))
         self.assertEqual(response.data['parent_deck_id'], deck.pk)
         self.assertEqual(response.data['tags'], 'a, b, c')
         self.assertIsInstance(response.data['fields'], list)
@@ -689,94 +594,94 @@ class DeckTestCase(ImprovedTestCase):
 
     def test_flashcard_suspend_leech_api(self):
         deck = self.create_deck('Deck to edit', num_flashcards=1)
-        flashcard = FlashCard.objects.filter(creator__deck=deck).first()  # type: FlashCard
+        review_instance = ReviewInstance.objects.filter(flashcard__deck=deck).first()
         api_view = api_views.flashcard_suspend_leech_view
-        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.pk}/suspend_or_leech/'
-        kwargs = {'deck_id': deck.pk, 'flashcard_id': flashcard.pk}
+        api_path = f'/api/decks/{deck.pk}/flashcards/{review_instance.pk}/suspend_or_leech/'
+        kwargs = {'deck_id': deck.pk, 'flashcard_id': review_instance.pk}
 
         # Baseline
-        self.assertEqual(flashcard.is_suspended, False)
-        self.assertEqual(flashcard.is_leech(), False)
+        self.assertEqual(review_instance.is_suspended, False)
+        self.assertEqual(review_instance.is_leech(), False)
 
         # Suspend
         self.post_response(api_path, api_view, {'action': 'suspend'}, kwargs=kwargs)
-        flashcard = FlashCard.objects.get(pk=flashcard.pk)
-        self.assertEqual(flashcard.is_suspended, True)
-        self.assertEqual(flashcard.is_leech(), False)
+        review_instance = ReviewInstance.objects.get(pk=review_instance.pk)
+        self.assertEqual(review_instance.is_suspended, True)
+        self.assertEqual(review_instance.is_leech(), False)
 
         # Unsuspend
         self.post_response(api_path, api_view, {'action': 'unsuspend'}, kwargs=kwargs)
-        flashcard = FlashCard.objects.get(pk=flashcard.pk)
-        self.assertEqual(flashcard.is_suspended, False)
-        self.assertEqual(flashcard.is_leech(), False)
+        review_instance = ReviewInstance.objects.get(pk=review_instance.pk)
+        self.assertEqual(review_instance.is_suspended, False)
+        self.assertEqual(review_instance.is_leech(), False)
 
         # Leech
         self.post_response(api_path, api_view, {'action': 'leech'}, kwargs=kwargs)
-        flashcard = FlashCard.objects.get(pk=flashcard.pk)
-        self.assertEqual(flashcard.is_suspended, False)
-        self.assertEqual(flashcard.is_leech(), True)
+        review_instance = ReviewInstance.objects.get(pk=review_instance.pk)
+        self.assertEqual(review_instance.is_suspended, False)
+        self.assertEqual(review_instance.is_leech(), True)
 
         # Unleech
         self.post_response(api_path, api_view, {'action': 'unleech'}, kwargs=kwargs)
-        flashcard = FlashCard.objects.get(pk=flashcard.pk)
-        self.assertEqual(flashcard.is_suspended, False)
-        self.assertEqual(flashcard.is_leech(), False)
+        review_instance = ReviewInstance.objects.get(pk=review_instance.pk)
+        self.assertEqual(review_instance.is_suspended, False)
+        self.assertEqual(review_instance.is_leech(), False)
 
     def test_flashcard_search(self):
-        num_flashcards = FlashCard.objects.filter(creator__deck__user=self.user).count()
+        num_flashcards = ReviewInstance.objects.filter(flashcard__deck__user=self.user).count()
         deck_1 = self.create_deck('Deck to search', num_flashcards=27, str_tags=True)
         deck_2 = self.create_deck('Another deck to search', num_flashcards=5, str_tags=True)
-        flashcard = deck_1.flashcards.first().review_instances.first()  # type: FlashCard
+        flashcard = deck_1.flashcards.first().review_instances.first()  # type: ReviewInstance
 
         # Test no params
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
         )
         self.assertEqual(flashcards.count(), num_flashcards + 32)
 
         # Test deck ID
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk},{deck_2.pk}',
         )
         self.assertEqual(flashcards.count(), 32)
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
         )
         self.assertEqual(flashcards.count(), 27)
 
         # Test tags
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk},{deck_2.pk}',
             tags='b',
         )
         self.assertEqual(flashcards.count(), 4)  # 2 in each deck
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk},{deck_2.pk}',
             tags='a AND b',
         )
         self.assertEqual(flashcards.count(), 2)
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk},{deck_2.pk}',
             tags='a OR d',
         )
         self.assertEqual(flashcards.count(), 8)
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk},{deck_2.pk}',
             tags='d AND NOT c',
         )
         self.assertEqual(flashcards.count(), 2)
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk},{deck_2.pk}',
             tags='a AND NOT c AND e',
@@ -793,14 +698,14 @@ class DeckTestCase(ImprovedTestCase):
         # self.assertEqual(flashcards.count(), 0)
 
         # Test suspended
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             suspended=True,
         )
         self.assertEqual(flashcards.count(), 0)
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             suspended=False,
@@ -810,7 +715,7 @@ class DeckTestCase(ImprovedTestCase):
         flashcard.is_suspended = True
         flashcard.save()
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             suspended=True,
@@ -818,14 +723,14 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(flashcards.count(), 1)
 
         # Test leech
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             leech=True,
         )
         self.assertEqual(flashcards.count(), 0)
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             leech=False,
@@ -834,7 +739,7 @@ class DeckTestCase(ImprovedTestCase):
 
         flashcard.set_is_leech(True)
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             leech=True,
@@ -842,14 +747,14 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(flashcards.count(), 1)
 
         # Test learning status
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             learning_status='UNSEEN',
         )
         self.assertEqual(flashcards.count(), 27)
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             learning_status='LEARNING',
@@ -859,7 +764,7 @@ class DeckTestCase(ImprovedTestCase):
         flashcard.learning_status = 'LEARNING'
         flashcard.save()
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             learning_status='LEARNING',
@@ -867,14 +772,14 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(flashcards.count(), 1)
 
         # Test min ease
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             min_ease='240',
         )
         self.assertEqual(flashcards.count(), 27)
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             min_ease='260',
@@ -884,7 +789,7 @@ class DeckTestCase(ImprovedTestCase):
         flashcard.ease = 270
         flashcard.save()
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             min_ease='260',
@@ -892,14 +797,14 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(flashcards.count(), 1)
 
         # Test max ease
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             max_ease='280',
         )
         self.assertEqual(flashcards.count(), 27)
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             max_ease='220',
@@ -909,7 +814,7 @@ class DeckTestCase(ImprovedTestCase):
         flashcard.ease = 210
         flashcard.save()
 
-        flashcards = FlashCard.search_flashcards(
+        flashcards = ReviewInstance.search_flashcards(
             self.user,
             deck_ids=f'{deck_1.pk}',
             max_ease='220',
@@ -963,8 +868,8 @@ class DeckTestCase(ImprovedTestCase):
             abc\tdef
         """.replace(' ', '')
 
-        initial_creators = FlashCardCreator.objects.count()
-        initial_instances = FlashCard.objects.count()
+        initial_flashcards = FlashCard.objects.count()
+        initial_review_instances = ReviewInstance.objects.count()
         response = self.post_response(api_path, api_view, {
             'deck_title': 'Uploaded txt',
             'uploaded_file': example_txt,
@@ -976,17 +881,21 @@ class DeckTestCase(ImprovedTestCase):
             Deck.objects.get(pk=response.data['id']).study_session_manager
         except Deck.study_session_manager.RelatedObjectDoesNotExist:
             self.fail('Deck study session manager not created during import')
-        self.assertEqual(FlashCardCreator.objects.count(), initial_creators + 2)
-        self.assertEqual(FlashCard.objects.count(), initial_instances + 2)
+        self.assertEqual(FlashCard.objects.count(), initial_flashcards + 2)
+        self.assertEqual(ReviewInstance.objects.count(), initial_review_instances + 2)
 
-        review_instance = FlashCard.objects.filter(creator__deck__pk=response.data['id']).first()
+        review_instance = ReviewInstance.objects.filter(
+            flashcard__deck__pk=response.data['id']
+        ).first()
         self.assertEqual(
-            review_instance.creator.fields,
+            review_instance.flashcard.fields,
             [create_slate_element('123'), create_slate_element('456')],
         )
-        review_instance = FlashCard.objects.filter(creator__deck__pk=response.data['id']).last()
+        review_instance = ReviewInstance.objects.filter(
+            flashcard__deck__pk=response.data['id']
+        ).last()
         self.assertEqual(
-            review_instance.creator.fields,
+            review_instance.flashcard.fields,
             [create_slate_element('abc'), create_slate_element('def')],
         )
 
@@ -1012,8 +921,8 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.data['num_overflow'], 0)
         self.assertEqual(
             [flashcard['id'] for flashcard in response.data['flashcards']],
-            [str(f.pk) for f in FlashCard.objects.filter(
-                creator__deck=deck
+            [str(f.pk) for f in ReviewInstance.objects.filter(
+                flashcard__deck=deck
             ).all()[:ssm.daily_new_card_limit]]
         )
 
@@ -1027,8 +936,8 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.data['num_overflow'], 0)
         self.assertNotEqual(
             [flashcard['id'] for flashcard in response.data['flashcards']],
-            [f.pk for f in FlashCard.objects.filter(
-                creator__deck=deck
+            [f.pk for f in ReviewInstance.objects.filter(
+                flashcard__deck=deck
             ).all()[:ssm.daily_new_card_limit]]
         )
         ssm.shuffle_unseen_cards = False
@@ -1044,8 +953,8 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.data['num_overflow'], 0)
         self.assertEqual(
             [flashcard['id'] for flashcard in response.data['flashcards']],
-            [str(f.pk) for f in FlashCard.objects.filter(
-                creator__deck=deck
+            [str(f.pk) for f in ReviewInstance.objects.filter(
+                flashcard__deck=deck
             ).all()[:ssm.daily_new_card_limit]]
         )
         ssm.daily_new_card_limit = 20
@@ -1064,8 +973,8 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.data['num_overflow'], 0)
         self.assertEqual(
             [flashcard['id'] for flashcard in response.data['flashcards']],
-            [str(f.pk) for f in FlashCard.objects.filter(
-                creator__deck=deck
+            [str(f.pk) for f in ReviewInstance.objects.filter(
+                flashcard__deck=deck
             ).all()[:ssm.daily_new_card_limit - ssm.new_cards_done_today]]
         )
         ssm.new_cards_done_today = 0
@@ -1073,10 +982,10 @@ class DeckTestCase(ImprovedTestCase):
 
         # Mark some flashcards as needing to be reviewed
         num_reviews = 7
-        flashcards = FlashCard.objects.filter(
-            creator__deck=deck
+        flashcards = ReviewInstance.objects.filter(
+            flashcard__deck=deck
         ).reverse().values('pk')[:num_reviews]
-        flashcards = FlashCard.objects.filter(pk__in=flashcards)
+        flashcards = ReviewInstance.objects.filter(pk__in=flashcards)
         flashcards.update(
             next_review=dt.datetime.now(tz=dt.timezone.utc) - dt.timedelta(seconds=5),
             learning_status='LEARNING',
@@ -1089,7 +998,7 @@ class DeckTestCase(ImprovedTestCase):
             ssm.daily_new_card_limit + num_reviews,
         )
         self.assertEqual(response.data['num_overflow'], 0)
-        all_flashcards = FlashCard.objects.filter(creator__deck=deck)
+        all_flashcards = ReviewInstance.objects.filter(flashcard__deck=deck)
         self.assertEqual(
             len([f for f in all_flashcards if f.learning_status == 'UNSEEN']),
             all_flashcards.count() - num_reviews,
@@ -1255,14 +1164,14 @@ class DeckTestCase(ImprovedTestCase):
     def test_ssm_flashcard_update_api(self):
         deck = self.create_deck('Deck to update flashcards', num_flashcards=3)
         ssm = deck.study_session_manager  # type: DeckStudySessionManager
-        flashcard = FlashCard.objects.filter(creator__deck=deck).first()  # type: FlashCard
-        api_path = f'/api/decks/ssm/{ssm.pk}/flashcards/{flashcard.pk}/update/'
+        review_instance = ReviewInstance.objects.filter(flashcard__deck=deck).first()
+        api_path = f'/api/decks/ssm/{ssm.pk}/flashcards/{review_instance.pk}/update/'
         api_view = api_views.ssm_flashcard_update_view
-        kwargs = {'ssm_id': ssm.pk, 'flashcard_id': flashcard.pk}
+        kwargs = {'ssm_id': ssm.pk, 'flashcard_id': review_instance.pk}
 
         # Helper func
         def check_flashcard_update(
-            flashcard: FlashCard,
+            flashcard: ReviewInstance,
             num_hist: int,
             target_new_done: int,
             target_seen_done: int,
@@ -1324,7 +1233,7 @@ class DeckTestCase(ImprovedTestCase):
 
         # Update unseen flashcard
         check_flashcard_update(
-            flashcard=flashcard,
+            flashcard=review_instance,
             num_hist=0,
             target_new_done=1,
             target_seen_done=0,
@@ -1333,12 +1242,12 @@ class DeckTestCase(ImprovedTestCase):
         )
 
         # Update seen flashcard
-        flashcard = FlashCard.objects.filter(creator__deck=deck).last()  # type: FlashCard
-        api_path = f'/api/decks/ssm/{ssm.pk}/flashcards/{flashcard.pk}/update/'
+        review_instance = ReviewInstance.objects.filter(flashcard__deck=deck).last()
+        api_path = f'/api/decks/ssm/{ssm.pk}/flashcards/{review_instance.pk}/update/'
         api_view = api_views.ssm_flashcard_update_view
-        kwargs = {'ssm_id': ssm.pk, 'flashcard_id': flashcard.pk}
+        kwargs = {'ssm_id': ssm.pk, 'flashcard_id': review_instance.pk}
         check_flashcard_update(
-            flashcard=flashcard,
+            flashcard=review_instance,
             num_hist=1,
             target_new_done=1,
             target_seen_done=1,
@@ -1535,8 +1444,8 @@ class DeckTestCase(ImprovedTestCase):
         # Test with flashcards
         deck = self.create_deck('Deck to share with flashcards', num_flashcards=53)
         num_shared_decks = SharedDeck.objects.count()
-        num_review_instances = FlashCard.objects.count()
-        num_creators = FlashCardCreator.objects.count()
+        num_review_instances = ReviewInstance.objects.count()
+        num_creators = FlashCard.objects.count()
         response = self.post_response(api_path, api_view, {
             'origin_deck_id': deck.pk,
             'title': 'Shared deck with flashcards',
@@ -1557,60 +1466,60 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(deck.shared_deck, shared_deck)
 
         self.assertEqual(SharedDeck.objects.count(), num_shared_decks + 1)
-        self.assertEqual(FlashCardCreator.objects.count(), num_creators + 53)
+        self.assertEqual(FlashCard.objects.count(), num_creators + 53)
         # Review instances aren't created for share decks
-        self.assertEqual(FlashCard.objects.count(), num_review_instances)
+        self.assertEqual(ReviewInstance.objects.count(), num_review_instances)
 
         shared_flashcards = shared_deck.flashcards.all().order_by('flashcard_num')
         origin_flashcards = deck.flashcards.all().order_by('flashcard_num')
-        for creator, origin in zip(shared_flashcards, origin_flashcards):
-            self.assertEqual(creator.flashcard_num, origin.flashcard_num)
-            self.assertEqual(creator.flashcard_type, origin.flashcard_type)
-            self.assertEqual(creator.fields, origin.fields)
+        for flashcard, origin in zip(shared_flashcards, origin_flashcards):
+            self.assertEqual(flashcard.flashcard_num, origin.flashcard_num)
+            self.assertEqual(flashcard.flashcard_type, origin.flashcard_type)
+            self.assertEqual(flashcard.fields, origin.fields)
 
-            self.assertEqual(creator.deck.pk, shared_deck.pk)
+            self.assertEqual(flashcard.deck.pk, shared_deck.pk)
+            self.assertEqual(flashcard.origin_creator.pk, origin.pk)
+            self.assertIsNone(flashcard.copied_from_creator)
             self.assertEqual(origin.deck.pk, deck.pk)
-            self.assertEqual(creator.origin_creator.pk, origin.pk)
-            self.assertIsNone(creator.copied_from_creator)
 
-    def test_clone_flashcard_creator(self):
+    def test_clone_flashcard(self):
         deck = self.create_deck('Deck with a flashcard', num_flashcards=2)
         deck_to_clone_into = self.create_deck('Deck to clone into')
 
         def test_flashcard_amounts(
-            num_creators=None,
             num_flashcards=None,
+            num_review_instances=None,
             deck=deck,
         ):
             deck.refresh_from_db()
-            if num_creators is not None:
-                self.assertEqual(deck.flashcards.count(), num_creators)
-
             if num_flashcards is not None:
+                self.assertEqual(deck.flashcards.count(), num_flashcards)
+
+            if num_review_instances is not None:
                 self.assertEqual(
-                    FlashCard.objects.filter(creator__deck=deck).count(),
-                    num_flashcards,
+                    ReviewInstance.objects.filter(flashcard__deck=deck).count(),
+                    num_review_instances,
                 )
 
         test_flashcard_amounts(2, 2)
         test_flashcard_amounts(0, 0, deck_to_clone_into)
 
-        creator = deck.flashcards.first()  # type: FlashCardCreator
-        cloned_creator, cloned_review_instances = creator.clone(
+        flashcard = deck.flashcards.first()  # type: FlashCard
+        cloned_flashcard, cloned_review_instances = flashcard.clone(
             deck_to_clone_into,
             origin_or_copied='COPIED',
             skip_creating_review_instances=False,
         )
-        cloned_creator.save()
-        FlashCard.objects.bulk_create(cloned_review_instances)
+        cloned_flashcard.save()
+        ReviewInstance.objects.bulk_create(cloned_review_instances)
 
         test_flashcard_amounts(2, 2)
         test_flashcard_amounts(1, 1, deck_to_clone_into)
 
-        cloned_creator = deck_to_clone_into.flashcards.first()
+        cloned_flashcard = deck_to_clone_into.flashcards.first()
         attrs = ['tags', 'fields', 'flashcard_num', 'flashcard_type']
-        self.assertEqualAttrs(cloned_creator, creator, attrs)
-        self.assertEqual(cloned_creator.deck.pk, deck_to_clone_into.pk)
+        self.assertEqualAttrs(cloned_flashcard, flashcard, attrs)
+        self.assertEqual(cloned_flashcard.deck.pk, deck_to_clone_into.pk)
 
     def test_shared_deck_clone_api(self):
         api_view = api_views.shared_deck_clone_view
@@ -1639,8 +1548,8 @@ class DeckTestCase(ImprovedTestCase):
         api_path = f'/api/decks/shared/clone/{shared_deck.pk}/'
         kwargs = {'shared_deck_id': shared_deck.pk}
 
-        num_review_instances = FlashCard.objects.count()
-        num_creators = FlashCardCreator.objects.count()
+        num_review_instances = ReviewInstance.objects.count()
+        num_flashcards = FlashCard.objects.count()
 
         num_decks = Deck.objects.filter(user=self.user).count()
         self.assertEqual(deck.shared_deck.pk, shared_deck.pk)
@@ -1655,23 +1564,23 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(cloned_deck.shared_deck_relations.count(), 1)
 
         self.assertEqual(Deck.objects.filter(user=self.user).count(), num_decks + 1)
-        self.assertEqual(FlashCard.objects.count(), num_review_instances + 43)
-        self.assertEqual(FlashCardCreator.objects.count(), num_creators + 43)
+        self.assertEqual(ReviewInstance.objects.count(), num_review_instances + 43)
+        self.assertEqual(FlashCard.objects.count(), num_flashcards + 43)
 
         shared_flashcards = shared_deck.flashcards.all().order_by('flashcard_num')
         cloned_flashcards = cloned_deck.flashcards.all().order_by('flashcard_num')
-        for clone, creator in zip(cloned_flashcards, shared_flashcards):
-            self.assertEqual(clone.fields, creator.fields)
-            self.assertEqual(clone.tags, creator.tags)
-            self.assertEqual(clone.flashcard_num, creator.flashcard_num)
-            self.assertEqual(clone.flashcard_type, creator.flashcard_type)
+        for cloned_flashcard, shared_flashcard in zip(cloned_flashcards, shared_flashcards):
+            self.assertEqual(cloned_flashcard.fields, shared_flashcard.fields)
+            self.assertEqual(cloned_flashcard.tags, shared_flashcard.tags)
+            self.assertEqual(cloned_flashcard.flashcard_num, shared_flashcard.flashcard_num)
+            self.assertEqual(cloned_flashcard.flashcard_type, shared_flashcard.flashcard_type)
 
-            self.assertEqual(clone.deck.pk, cloned_deck.pk)
-            self.assertEqual(creator.deck.pk, shared_deck.pk)
-            self.assertEqual(clone.copied_from_creator.pk, creator.pk)
-            self.assertIsNone(clone.origin_creator)
+            self.assertEqual(cloned_flashcard.deck.pk, cloned_deck.pk)
+            self.assertEqual(shared_flashcard.deck.pk, shared_deck.pk)
+            self.assertEqual(cloned_flashcard.copied_from_creator.pk, shared_flashcard.pk)
+            self.assertIsNone(cloned_flashcard.origin_creator)
 
-            cloned_review_instances = FlashCard.objects.filter(creator=clone)
+            cloned_review_instances = ReviewInstance.objects.filter(flashcard=cloned_flashcard)
             for review_instance in cloned_review_instances:
                 self.assertEqual(review_instance.content_indicies, [0, 1])
                 self.assertEqual(review_instance.name, None)
@@ -1751,7 +1660,7 @@ class DeckTestCase(ImprovedTestCase):
 
     def test_shared_deck_update_api_add_cards(self):
         def add_cards(deck: Deck):
-            FlashCardCreator.create_flashcard(
+            FlashCard.create_flashcard(
                 deck,
                 '',
                 'cloze',
@@ -1821,9 +1730,9 @@ class DeckTestCase(ImprovedTestCase):
         kwargs = {'deck_id': cloned_deck.pk}
 
         # Set some flashcards to having been reviewed
-        FlashCard.objects.filter(
-            creator__deck=cloned_deck,
-            creator__flashcard_num__lte=5,
+        ReviewInstance.objects.filter(
+            flashcard__deck=cloned_deck,
+            flashcard__flashcard_num__lte=5,
         ).update(learning_status='LEARNING')
 
         # Helper functions
@@ -1833,36 +1742,36 @@ class DeckTestCase(ImprovedTestCase):
             self.assertEqual(response.status_code, 200)
             self.assertIsInstance(response.data, dict)
             self.assertEqual(response.data['id'], cloned_deck.pk)
-            cloned_creators = FlashCardCreator.objects.filter(deck=cloned_deck)
-            shared_creators = FlashCardCreator.objects.filter(deck=shared_deck)
+            cloned_flashcards = FlashCard.objects.filter(deck=cloned_deck)
+            shared_flashcards = FlashCard.objects.filter(deck=shared_deck)
             self.assertEqual(
-                cloned_creators.count(),
-                shared_creators.count(),
+                cloned_flashcards.count(),
+                shared_flashcards.count(),
             )
 
-            for cloned_creator, shared_creator in zip(cloned_creators, shared_creators):
+            for cloned_flashcard, shared_flashcard in zip(cloned_flashcards, shared_flashcards):
                 attrs = ['fields', 'tags', 'flashcard_num', 'flashcard_type']
-                self.assertEqualAttrs(shared_creator, cloned_creator, attrs)
-                self.assertEqual(cloned_creator.copied_from_creator, shared_creator)
+                self.assertEqualAttrs(shared_flashcard, cloned_flashcard, attrs)
+                self.assertEqual(cloned_flashcard.copied_from_creator, shared_flashcard)
 
         # Test adding flashcards
-        num_shared_creators = FlashCardCreator.objects.filter(deck=shared_deck).count()
-        FlashCardCreator.create_flashcard(
+        num_shared_flashcards = FlashCard.objects.filter(deck=shared_deck).count()
+        FlashCard.create_flashcard(
             deck,
             'tags',
             'basic',
             [create_slate_element('front'), create_slate_element('back')],
-        )[0].creator
+        )[0].flashcard
         shared_deck.push_updates(deck)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=shared_deck).count(),
-            num_shared_creators + 1,
+            FlashCard.objects.filter(deck=shared_deck).count(),
+            num_shared_flashcards + 1,
         )
 
-        num_cloned_creators = FlashCardCreator.objects.filter(deck=cloned_deck).count()
-        num_cloned_reviews = FlashCard.objects.filter(creator__deck=cloned_deck).count()
-        num_learning = FlashCard.objects.filter(
-            creator__deck=cloned_deck,
+        num_cloned_flashcards = FlashCard.objects.filter(deck=cloned_deck).count()
+        num_cloned_ris = ReviewInstance.objects.filter(flashcard__deck=cloned_deck).count()
+        num_learning = ReviewInstance.objects.filter(
+            flashcard__deck=cloned_deck,
             learning_status='LEARNING',
         ).count()
         response = self.post_response(api_path, api_view, {
@@ -1870,16 +1779,16 @@ class DeckTestCase(ImprovedTestCase):
         }, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=cloned_deck).count(),
-            num_cloned_creators + 1,
+            FlashCard.objects.filter(deck=cloned_deck).count(),
+            num_cloned_flashcards + 1,
         )
         self.assertEqual(
-            FlashCard.objects.filter(creator__deck=cloned_deck).count(),
-            num_cloned_reviews + 1,
+            ReviewInstance.objects.filter(flashcard__deck=cloned_deck).count(),
+            num_cloned_ris + 1,
         )
         self.assertEqual(
-            FlashCard.objects.filter(
-                creator__deck=cloned_deck,
+            ReviewInstance.objects.filter(
+                flashcard__deck=cloned_deck,
                 learning_status='LEARNING',
             ).count(),
             num_learning,
@@ -1888,8 +1797,8 @@ class DeckTestCase(ImprovedTestCase):
         check_equal(cloned_deck, shared_deck, response)
 
         # Test adding cloze flashcard
-        num_shared_creators = FlashCardCreator.objects.filter(deck=shared_deck).count()
-        FlashCardCreator.create_flashcard(
+        num_shared_flashcards = FlashCard.objects.filter(deck=shared_deck).count()
+        FlashCard.create_flashcard(
             deck,
             'tags',
             'cloze',
@@ -1897,14 +1806,14 @@ class DeckTestCase(ImprovedTestCase):
         )
         shared_deck.push_updates(deck)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=shared_deck).count(),
-            num_shared_creators + 1,
+            FlashCard.objects.filter(deck=shared_deck).count(),
+            num_shared_flashcards + 1,
         )
 
-        num_cloned_creators = FlashCardCreator.objects.filter(deck=cloned_deck).count()
-        num_cloned_reviews = FlashCard.objects.filter(creator__deck=cloned_deck).count()
-        num_learning = FlashCard.objects.filter(
-            creator__deck=cloned_deck,
+        num_cloned_flashcards = FlashCard.objects.filter(deck=cloned_deck).count()
+        num_cloned_ris = ReviewInstance.objects.filter(flashcard__deck=cloned_deck).count()
+        num_learning = ReviewInstance.objects.filter(
+            flashcard__deck=cloned_deck,
             learning_status='LEARNING',
         ).count()
         response = self.post_response(api_path, api_view, {
@@ -1912,16 +1821,16 @@ class DeckTestCase(ImprovedTestCase):
         }, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=cloned_deck).count(),
-            num_cloned_creators + 1,
+            FlashCard.objects.filter(deck=cloned_deck).count(),
+            num_cloned_flashcards + 1,
         )
         self.assertEqual(
-            FlashCard.objects.filter(creator__deck=cloned_deck).count(),
-            num_cloned_reviews + 4,
+            ReviewInstance.objects.filter(flashcard__deck=cloned_deck).count(),
+            num_cloned_ris + 4,
         )
         self.assertEqual(
-            FlashCard.objects.filter(
-                creator__deck=cloned_deck,
+            ReviewInstance.objects.filter(
+                flashcard__deck=cloned_deck,
                 learning_status='LEARNING',
             ).count(),
             num_learning,
@@ -1930,25 +1839,25 @@ class DeckTestCase(ImprovedTestCase):
         check_equal(cloned_deck, shared_deck, response)
 
         # Test modifying flashcard
-        creators = FlashCardCreator.objects.filter(deck=shared_deck)
-        num_shared_creators = creators.count()
+        flashcards = FlashCard.objects.filter(deck=shared_deck)
+        num_shared_flashcards = flashcards.count()
 
-        creator = creators.order_by('-flashcard_num')[1]
-        creator.fields = [
+        flashcard = flashcards.order_by('-flashcard_num')[1]
+        flashcard.fields = [
             create_slate_element('edited front'),
             create_slate_element('edited back'),
         ]
 
         shared_deck.push_updates(deck)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=shared_deck).count(),
-            num_shared_creators,
+            FlashCard.objects.filter(deck=shared_deck).count(),
+            num_shared_flashcards,
         )
 
-        num_cloned_creators = FlashCardCreator.objects.filter(deck=cloned_deck).count()
-        num_cloned_reviews = FlashCard.objects.filter(creator__deck=cloned_deck).count()
-        num_learning = FlashCard.objects.filter(
-            creator__deck=cloned_deck,
+        num_cloned_flashcards = FlashCard.objects.filter(deck=cloned_deck).count()
+        num_cloned_ris = ReviewInstance.objects.filter(flashcard__deck=cloned_deck).count()
+        num_learning = ReviewInstance.objects.filter(
+            flashcard__deck=cloned_deck,
             learning_status='LEARNING',
         ).count()
         response = self.post_response(api_path, api_view, {
@@ -1956,16 +1865,16 @@ class DeckTestCase(ImprovedTestCase):
         }, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=cloned_deck).count(),
-            num_cloned_creators,
+            FlashCard.objects.filter(deck=cloned_deck).count(),
+            num_cloned_flashcards,
         )
         self.assertEqual(
-            FlashCard.objects.filter(creator__deck=cloned_deck).count(),
-            num_cloned_reviews,
+            ReviewInstance.objects.filter(flashcard__deck=cloned_deck).count(),
+            num_cloned_ris,
         )
         self.assertEqual(
-            FlashCard.objects.filter(
-                creator__deck=cloned_deck,
+            ReviewInstance.objects.filter(
+                flashcard__deck=cloned_deck,
                 learning_status='LEARNING',
             ).count(),
             num_learning,
@@ -1974,22 +1883,22 @@ class DeckTestCase(ImprovedTestCase):
         check_equal(cloned_deck, shared_deck, response)
 
         # Test modifying cloze flashcard
-        num_shared_creators = FlashCardCreator.objects.filter(deck=shared_deck).count()
+        num_shared_flashcards = FlashCard.objects.filter(deck=shared_deck).count()
 
-        creator = FlashCardCreator.objects.filter(deck=deck).last()  # type:  FlashCardCreator
-        creator.fields = [
+        flashcard = FlashCard.objects.filter(deck=deck).last()  # type:  FlashCard
+        flashcard.fields = [
             '{{c1::123}} {{c2::456}} {{c3::789}} {{c4::abc}} {{c5::abc}}'
         ]
 
         shared_deck.push_updates(deck)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=shared_deck).count(),
-            num_shared_creators,
+            FlashCard.objects.filter(deck=shared_deck).count(),
+            num_shared_flashcards,
         )
 
         # FIXME: fix cloze flashcard pulling (not creating new reviews)
         # num_cloned_creators = FlashCardCreator.objects.filter(deck=cloned_deck).count()
-        # num_cloned_reviews = FlashCard.objects.filter(creator__deck=cloned_deck).count()
+        # num_cloned_reviews = FlashCard.objects.filter(flashcard__deck=cloned_deck).count()
         # response = self.post_response(api_path, api_view, {
         #     'to_pull_from': shared_deck.pk,
         # }, kwargs=kwargs)
@@ -1999,43 +1908,43 @@ class DeckTestCase(ImprovedTestCase):
         #     num_cloned_creators,
         # )
         # self.assertEqual(
-        #     FlashCard.objects.filter(creator__deck=cloned_deck).count(),
+        #     FlashCard.objects.filter(flashcard__deck=cloned_deck).count(),
         #     num_cloned_reviews + 2,
         # )
 
         # check_equal(cloned_deck, shared_deck, response)
 
         # Test deleting flashcard
-        num_shared_creators = FlashCardCreator.objects.filter(deck=shared_deck).count()
+        num_shared_flashcards = FlashCard.objects.filter(deck=shared_deck).count()
 
-        creator = FlashCardCreator.objects.filter(deck=deck).last()
-        creator.delete()
+        flashcard = FlashCard.objects.filter(deck=deck).last()
+        flashcard.delete()
 
         shared_deck.push_updates(deck)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=shared_deck).count(),
-            num_shared_creators - 1,
+            FlashCard.objects.filter(deck=shared_deck).count(),
+            num_shared_flashcards - 1,
         )
 
-        num_cloned_creators = FlashCardCreator.objects.filter(deck=cloned_deck).count()
-        num_cloned_reviews = FlashCard.objects.filter(creator__deck=cloned_deck).count()
+        num_cloned_flashcards = FlashCard.objects.filter(deck=cloned_deck).count()
+        num_cloned_ris = ReviewInstance.objects.filter(flashcard__deck=cloned_deck).count()
         response = self.post_response(api_path, api_view, {
             'to_pull_from': shared_deck.pk,
         }, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=cloned_deck).count(),
-            FlashCardCreator.objects.filter(deck=deck).count(),
+            FlashCard.objects.filter(deck=cloned_deck).count(),
+            FlashCard.objects.filter(deck=deck).count(),
         )
         self.assertEqual(
-            FlashCard.objects.filter(creator__deck=cloned_deck).count(),
-            FlashCard.objects.filter(creator__deck=deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=cloned_deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=deck).count(),
         )
         check_equal(cloned_deck, shared_deck, response)
 
         # Test rearranging flashcard
-        creator = deck.flashcards.all()[3]
-        creator.rearrange('UP')
+        flashcard = deck.flashcards.all()[3]
+        flashcard.rearrange('UP')
         shared_deck.push_updates(deck)
         response = self.post_response(api_path, api_view, {
             'to_pull_from': shared_deck.pk,
@@ -2061,9 +1970,9 @@ class DeckTestCase(ImprovedTestCase):
 
         # Test seen
         test_game('SEEN', 0)
-        flashcards = FlashCard.objects.filter(
-            creator__deck=deck,
-            creator__flashcard_num__lte=4,
+        flashcards = ReviewInstance.objects.filter(
+            flashcard__deck=deck,
+            flashcard__flashcard_num__lte=4,
         )
         flashcards.update(learning_status='LEARNING')
         test_game('SEEN', 5)
@@ -2084,13 +1993,13 @@ class DeckTestCase(ImprovedTestCase):
     def test_rearrange_flashcard_api(self):
         api_view = api_views.rearrange_flashcard_view
         deck = self.create_deck('Deck with flashcards to rearrange', num_flashcards=5)
-        creator = deck.flashcards.all()[2]
+        flashcard = deck.flashcards.all()[2]
 
         # Helper func
-        def move_flashcard(direction, expected_flashcard_num, creator_pk, should_fail=False):
-            creator = FlashCardCreator.objects.get(pk=creator_pk)
-            kwargs = {'deck_id': deck.pk, 'flashcard_num': creator.flashcard_num}
-            api_path = f'/api/decks/{deck.pk}/flashcards/{creator.pk}/rearrange/'
+        def move_flashcard(direction, expected_flashcard_num, flashcard_pk, should_fail=False):
+            flashcard = FlashCard.objects.get(pk=flashcard_pk)
+            kwargs = {'deck_id': deck.pk, 'flashcard_num': flashcard.flashcard_num}
+            api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.pk}/rearrange/'
 
             response = self.post_response(api_path, api_view, {
                 'rearrange_type': direction,
@@ -2098,81 +2007,81 @@ class DeckTestCase(ImprovedTestCase):
             self.assertEqual(response.status_code, 400 if should_fail else 200)
             self.assertIsInstance(response.data, dict)
 
-            creator = FlashCardCreator.objects.get(pk=creator_pk)
-            self.assertEqual(creator.flashcard_num, expected_flashcard_num)
+            flashcard = FlashCard.objects.get(pk=flashcard_pk)
+            self.assertEqual(flashcard.flashcard_num, expected_flashcard_num)
             if not should_fail:
-                self.assertEqual(response.data['id'], str(creator.pk))
+                self.assertEqual(response.data['id'], str(flashcard.pk))
                 self.assertEqual(response.data['flashcard_num'], expected_flashcard_num)
 
         # Move to the top
-        flashcard_num = creator.flashcard_num
-        move_flashcard('DOWN', flashcard_num + 1, creator.pk)
-        move_flashcard('DOWN', flashcard_num + 2, creator.pk)
-        move_flashcard('DOWN', flashcard_num + 2, creator.pk, should_fail=True)
+        flashcard_num = flashcard.flashcard_num
+        move_flashcard('DOWN', flashcard_num + 1, flashcard.pk)
+        move_flashcard('DOWN', flashcard_num + 2, flashcard.pk)
+        move_flashcard('DOWN', flashcard_num + 2, flashcard.pk, should_fail=True)
 
         # Then bring down to the bottom
-        move_flashcard('UP', flashcard_num + 1, creator.pk)
-        move_flashcard('UP', flashcard_num, creator.pk)
-        move_flashcard('UP', flashcard_num - 1, creator.pk)
-        move_flashcard('UP', flashcard_num - 2, creator.pk)
-        move_flashcard('UP', flashcard_num - 2, creator.pk, should_fail=True)
+        move_flashcard('UP', flashcard_num + 1, flashcard.pk)
+        move_flashcard('UP', flashcard_num, flashcard.pk)
+        move_flashcard('UP', flashcard_num - 1, flashcard.pk)
+        move_flashcard('UP', flashcard_num - 2, flashcard.pk)
+        move_flashcard('UP', flashcard_num - 2, flashcard.pk, should_fail=True)
 
     def test_edit_tags_bulk_api(self):
         api_view = api_views.edit_tags_bulk_view
         api_path = '/api/decks/edit-tags/'
         deck = self.create_deck('Deck to bulk edit tags', num_flashcards=5, str_tags=True)
-        creators = deck.flashcards.all()
-        creator_pks = [creator.pk for creator in creators]
-        for creator in creators:
-            self.assertFalse(creator.has_tag('wasd'))
+        flashcards = deck.flashcards.all()
+        flashcard_pks = [flashcard.pk for flashcard in flashcards]
+        for flashcard in flashcards:
+            self.assertFalse(flashcard.has_tag('wasd'))
 
         # Test add tag
         response = self.post_response(api_path, api_view, {
-            'flashcard_ids': creator_pks,
+            'flashcard_ids': flashcard_pks,
             'action': 'ADD',
             'tag': 'wasd',
         })
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, dict)
-        creators = FlashCardCreator.objects.filter(pk__in=creator_pks)
-        for creator in creators:
-            self.assertTrue(creator.has_tag('wasd'))
+        flashcards = FlashCard.objects.filter(pk__in=flashcard_pks)
+        for flashcard in flashcards:
+            self.assertTrue(flashcard.has_tag('wasd'))
 
         # Test rename tag
         response = self.post_response(api_path, api_view, {
-            'flashcard_ids': creator_pks,
+            'flashcard_ids': flashcard_pks,
             'action': 'RENAME',
             'tag': 'wasd',
             'rename_to': 'dsaw',
         })
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, dict)
-        creators = FlashCardCreator.objects.filter(pk__in=creator_pks)
-        for creator in creators:
-            self.assertFalse(creator.has_tag('wasd'))
-            self.assertTrue(creator.has_tag('dsaw'))
+        flashcards = FlashCard.objects.filter(pk__in=flashcard_pks)
+        for flashcard in flashcards:
+            self.assertFalse(flashcard.has_tag('wasd'))
+            self.assertTrue(flashcard.has_tag('dsaw'))
 
         # Test remove tag
         response = self.post_response(api_path, api_view, {
-            'flashcard_ids': creator_pks,
+            'flashcard_ids': flashcard_pks,
             'action': 'REMOVE',
             'tag': 'dsaw',
         })
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.data, dict)
-        creators = FlashCardCreator.objects.filter(pk__in=creator_pks)
-        for creator in creators:
-            self.assertFalse(creator.has_tag('dsaw'))
+        flashcards = FlashCard.objects.filter(pk__in=flashcard_pks)
+        for flashcard in flashcards:
+            self.assertFalse(flashcard.has_tag('dsaw'))
 
     def test_review_instance_bulk_update_api(self):
         api_view = api_views.flashcard_review_instance_bulk_update_view
         api_path = '/api/decks/edit-review-instances/'
         deck = self.create_deck('Deck to bulk edit tags', num_flashcards=5)
-        review_instances = FlashCard.objects.filter(creator__deck=deck)
+        review_instances = ReviewInstance.objects.filter(flashcard__deck=deck)
         review_instances_pks = [ri.pk for ri in review_instances]
         self.assertEqual(
-            FlashCard.objects.filter(is_suspended=False, creator__deck=deck).count(),
-            FlashCard.objects.filter(creator__deck=deck).count(),
+            ReviewInstance.objects.filter(is_suspended=False, flashcard__deck=deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=deck).count(),
         )
 
         # Helper func
@@ -2186,21 +2095,21 @@ class DeckTestCase(ImprovedTestCase):
         # Suspend
         bulk_update('SUSPEND')
         self.assertEqual(
-            FlashCard.objects.filter(is_suspended=True, creator__deck=deck).count(),
-            FlashCard.objects.filter(creator__deck=deck).count(),
+            ReviewInstance.objects.filter(is_suspended=True, flashcard__deck=deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=deck).count(),
         )
 
         # Unsuspend
         bulk_update('UNSUSPEND')
         self.assertEqual(
-            FlashCard.objects.filter(is_suspended=False, creator__deck=deck).count(),
-            FlashCard.objects.filter(creator__deck=deck).count(),
+            ReviewInstance.objects.filter(is_suspended=False, flashcard__deck=deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=deck).count(),
         )
 
         # Delete
         bulk_update('DELETE')
         self.assertEqual(
-            FlashCard.objects.filter(creator__deck=deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=deck).count(),
             0,
         )
 
@@ -2224,11 +2133,11 @@ class DeckTestCase(ImprovedTestCase):
         })
 
         # Test with changes
-        flashcards = FlashCard.objects.filter(creator__deck=deck)
+        flashcards = ReviewInstance.objects.filter(flashcard__deck=deck)
 
-        def get_flashcard_slice(start=None, stop=None) -> QuerySet[FlashCard]:
+        def get_flashcard_slice(start=None, stop=None) -> QuerySet[ReviewInstance]:
             # NOTE: this function is required since you can't update a sliced queryset
-            return FlashCard.objects.filter(pk__in=[f.pk for f in flashcards[start:stop]])
+            return ReviewInstance.objects.filter(pk__in=[f.pk for f in flashcards[start:stop]])
 
         get_flashcard_slice(0, 30).update(learning_status='UNSEEN')
         get_flashcard_slice(30, 45).update(learning_status='LEARNING')
@@ -2285,17 +2194,17 @@ class DeckTestCase(ImprovedTestCase):
         test_percent(0.0)
 
         # Study decks and check percent complete
-        flashcard_ids1 = [f.pk for f in FlashCard.objects.filter(creator__deck=deck1)]
-        flashcard_ids2 = [f.pk for f in FlashCard.objects.filter(creator__deck=deck2)]
+        flashcard_ids1 = [f.pk for f in ReviewInstance.objects.filter(flashcard__deck=deck1)]
+        flashcard_ids2 = [f.pk for f in ReviewInstance.objects.filter(flashcard__deck=deck2)]
 
         for i in range(len(flashcard_ids1)):
             # Check percent complete
             test_percent(i/10)
 
             # Study decks
-            flashcard1 = FlashCard.objects.get(pk=flashcard_ids1[i])
+            flashcard1 = ReviewInstance.objects.get(pk=flashcard_ids1[i])
             flashcard1.learning_status = 'LEARNED'
-            flashcard2 = FlashCard.objects.get(pk=flashcard_ids2[i])
+            flashcard2 = ReviewInstance.objects.get(pk=flashcard_ids2[i])
             flashcard2.learning_status = 'LEARNED'
 
             flashcard1.save()
@@ -2474,23 +2383,23 @@ class DeckBrowserTestCase(SeleniumTestCase):
         def create_flashcards():
             self.driver.find_element_by_class_name('add-cards-btn').click()
 
-            original_creator_num = FlashCardCreator.objects.count()
-            original_card_num = FlashCard.objects.count()
+            original_flashcard_num = FlashCard.objects.count()
+            original_review_instance_num = ReviewInstance.objects.count()
             self.driver.find_element_by_id('frontText').send_keys('front')
             self.driver.find_element_by_id('backText').send_keys('back')
             self.driver.find_element_by_id('tags').send_keys('tags')
             self.driver.find_element_by_id('create').click()
             self.sleep(3)
-            self.assertEqual(FlashCardCreator.objects.count(), original_creator_num + 1)
-            self.assertEqual(FlashCard.objects.count(), original_card_num + 1)
+            self.assertEqual(FlashCard.objects.count(), original_flashcard_num + 1)
+            self.assertEqual(ReviewInstance.objects.count(), original_review_instance_num + 1)
 
             self.click_option('reversed')
             self.driver.find_element_by_id('frontText').send_keys('reversed front')
             self.driver.find_element_by_id('backText').send_keys('reversed back')
             self.driver.find_element_by_id('create').click()
             self.sleep(3)
-            self.assertEqual(FlashCardCreator.objects.count(), original_creator_num + 2)
-            self.assertEqual(FlashCard.objects.count(), original_card_num + 3)
+            self.assertEqual(FlashCard.objects.count(), original_flashcard_num + 2)
+            self.assertEqual(ReviewInstance.objects.count(), original_review_instance_num + 3)
 
             self.click_option('cloze')
             self.driver.find_element_by_id('frontText').send_keys(
@@ -2500,8 +2409,8 @@ class DeckBrowserTestCase(SeleniumTestCase):
 
             def test_cloze_created():
                 return (
-                    FlashCardCreator.objects.count() == original_creator_num + 3 and
-                    FlashCard.objects.count() == original_card_num + 6
+                    FlashCard.objects.count() == original_flashcard_num + 3 and
+                    ReviewInstance.objects.count() == original_review_instance_num + 6
                 )
 
             self.assert_for_n_seconds(test_cloze_created)
@@ -2532,13 +2441,13 @@ class DeckBrowserTestCase(SeleniumTestCase):
                 '6 flashcards remaining',
             )
 
-            num_learned = FlashCard.objects.filter(
+            num_learned = ReviewInstance.objects.filter(
                 learning_status='LEARNED',
-                creator__deck=deck,
+                flashcard__deck=deck,
             ).count()
-            num_learning = FlashCard.objects.filter(
+            num_learning = ReviewInstance.objects.filter(
                 learning_status='LEARNING',
-                creator__deck=deck,
+                flashcard__deck=deck,
             ).count()
 
             for i in range(6):
@@ -2552,9 +2461,9 @@ class DeckBrowserTestCase(SeleniumTestCase):
                 def test_flashcard_studied(study_type, i):
                     def func():
                         return (
-                            FlashCard.objects.filter(
+                            ReviewInstance.objects.filter(
                                 learning_status=study_type,
-                                creator__deck=deck,
+                                flashcard__deck=deck,
                             ).count()
                             ==
                             i + 1 + (num_learned if study_type == 'LEARNED' else num_learning),
@@ -2573,9 +2482,9 @@ class DeckBrowserTestCase(SeleniumTestCase):
 
                 flashcards_remaining = 6 - i - 1
                 self.assert_for_n_seconds(
-                    lambda: FlashCard.objects.filter(
+                    lambda: ReviewInstance.objects.filter(
                         learning_status='UNSEEN',
-                        creator__deck=deck,
+                        flashcard__deck=deck,
                     ).count()
                     ==
                     flashcards_remaining,
@@ -2674,11 +2583,11 @@ class DeckBrowserTestCase(SeleniumTestCase):
             0,
         )
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck__user=self.user).count(),
+            FlashCard.objects.filter(deck__user=self.user).count(),
             0,
         )
         self.assertEqual(
-            FlashCard.objects.filter(creator__deck__user=self.user).count(),
+            ReviewInstance.objects.filter(flashcard__deck__user=self.user).count(),
             0,
         )
 
@@ -2690,8 +2599,8 @@ class DeckBrowserTestCase(SeleniumTestCase):
         self.assert_for_n_seconds(
             lambda:
             Deck.objects.filter(user=self.user).count() == 1 and
-            FlashCardCreator.objects.filter(deck__user=self.user).count() == 3 and
-            FlashCard.objects.filter(creator__deck__user=self.user).count() == 6
+            FlashCard.objects.filter(deck__user=self.user).count() == 3 and
+            ReviewInstance.objects.filter(flashcard__deck__user=self.user).count() == 6
         )
         cloned_deck = Deck.objects.filter(user=self.user).first()
         self.driver.get(f'{self.live_server_url}/home/decks/')
@@ -2732,7 +2641,7 @@ class DeckBrowserTestCase(SeleniumTestCase):
         )
 
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=shared_deck).count(),
+            FlashCard.objects.filter(deck=shared_deck).count(),
             3,
         )
         self.assertEqual(shared_deck.version_number, 0)
@@ -2741,7 +2650,7 @@ class DeckBrowserTestCase(SeleniumTestCase):
         def test_updated_deck():
             shared_deck.refresh_from_db()
             return (
-                FlashCardCreator.objects.filter(deck=shared_deck).count() == 6 and
+                FlashCard.objects.filter(deck=shared_deck).count() == 6 and
                 shared_deck.version_number == 1
             )
         self.assert_for_n_seconds(test_updated_deck)
@@ -2762,11 +2671,11 @@ class DeckBrowserTestCase(SeleniumTestCase):
 
         self.assertTextExists('Shared selenium deck')
         self.assertEqual(
-            FlashCardCreator.objects.filter(deck=cloned_deck).count(),
+            FlashCard.objects.filter(deck=cloned_deck).count(),
             3,
         )
         self.assertEqual(
-            FlashCard.objects.filter(creator__deck=cloned_deck).count(),
+            ReviewInstance.objects.filter(flashcard__deck=cloned_deck).count(),
             6,
         )
         self.assertEqual(cloned_deck.shared_deck_relations.first().cloned_at_version, 0)
@@ -2776,8 +2685,8 @@ class DeckBrowserTestCase(SeleniumTestCase):
         def test_cloned_deck_updated():
             cloned_deck.refresh_from_db()
             return (
-                FlashCardCreator.objects.filter(deck=cloned_deck).count() == 6 and
-                FlashCard.objects.filter(creator__deck=cloned_deck).count() == 12 and
+                FlashCard.objects.filter(deck=cloned_deck).count() == 6 and
+                ReviewInstance.objects.filter(flashcard__deck=cloned_deck).count() == 12 and
                 cloned_deck.shared_deck_relations.first().cloned_at_version == 1
             )
         self.assert_for_n_seconds(test_cloned_deck_updated)
@@ -2788,15 +2697,15 @@ class DeckBrowserTestCase(SeleniumTestCase):
 
         cloned_deck = Deck.objects.get(pk=cloned_deck.pk)
         self.assertEqual(
-            FlashCard.objects.filter(
-                creator__deck=cloned_deck,
+            ReviewInstance.objects.filter(
+                flashcard__deck=cloned_deck,
                 learning_status='LEARNED',
             ).count(),
             6,
         )
         self.assertEqual(
-            FlashCard.objects.filter(
-                creator__deck=cloned_deck,
+            ReviewInstance.objects.filter(
+                flashcard__deck=cloned_deck,
                 learning_status='LEARNING',
             ).count(),
             6,

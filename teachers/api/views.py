@@ -1,8 +1,8 @@
 import re
 from datetime import timedelta
 
-from decks.models import Deck, FlashCard, SharedDeck, DeckStudySessionManager
-from decks.serializers import (DeckSerializer, FlashCardSerializer,
+from decks.models import Deck, ReviewInstance, SharedDeck, DeckStudySessionManager
+from decks.serializers import (DeckSerializer, ReviewInstanceSerializer,
                                SharedDeckSerializer,
                                StudySessionManagerSerializer)
 from django.db.models.query_utils import Q
@@ -334,9 +334,9 @@ def suspend_students_flashcards_view(request, classroom_id: int):
         return Response({'message': 'You must specify a tags query'}, status=400)
 
     # Get flashcards to suspend
-    query = Q(creator__deck__student_attached_to=classroom)
-    query &= FlashCard.search_tags(tags_query)
-    flashcards = FlashCard.objects.filter(query)
+    query = Q(flashcard__deck__student_attached_to=classroom)
+    query &= ReviewInstance.search_tags(tags_query)
+    flashcards = ReviewInstance.objects.filter(query)
 
     # Suspend flashcards
     flashcards.update(is_suspended=action == 'SUSPEND')
@@ -581,7 +581,7 @@ def study_assignment_view(request, classroom_id: int, assignment_id: int):
     )
 
     return Response({
-        'flashcards': FlashCardSerializer(reviews['flashcards'], many=True).data,
+        'flashcards': ReviewInstanceSerializer(reviews['flashcards'], many=True).data,
         'num_overflow': reviews['num_overflow'],
     }, status=200)
 

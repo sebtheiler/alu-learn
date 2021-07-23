@@ -5,11 +5,11 @@ import Col from 'react-bootstrap/Col';
 import { range } from '../../utils';
 import { RenderRichText, shuffle } from '../../utils';
 import './matching.css';
-import { FlashCard } from '../types';
+import { ReviewInstance } from '../types';
 
 interface MatchingProps {
   size: number;
-  flashcards: FlashCard[];
+  flashcards: ReviewInstance[];
 }
 export function MatchingGame(props: MatchingProps) {
   const {size, flashcards} = props;

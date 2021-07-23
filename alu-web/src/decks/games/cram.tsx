@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { FlashCard, LearningStatus, SSMInterface } from '../types';
+import { ReviewInstance, LearningStatus, SSMInterface } from '../types';
 import { StudyLogicComponent } from '../study/components';
 
 interface CramGameProps {
-  initialFlashcards: FlashCard[];
+  initialFlashcards: ReviewInstance[];
 }
 export function CramGame(props: CramGameProps) {
   // We need the useState so that it is compatable with `StudyLogicComponent`
@@ -13,7 +13,7 @@ export function CramGame(props: CramGameProps) {
       ...flashcard,
       learning_status: 'UNSEEN' as LearningStatus,
       steps_index: 0,
-    } as FlashCard))
+    } as ReviewInstance))
   );
   const SSM = {
     scheduling_algorithm: 'CRAM',

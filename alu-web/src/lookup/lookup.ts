@@ -1,7 +1,7 @@
 // TODO: Break this file up into a separate file for each "package"
 // Each file should contain the lookups for just that package
 import { Node } from 'slate';
-import { CSSM, Deck, DeckDifficulty, FlashCard, FlashCardCreator, FlashCardTypes, LearningStatus, SchedulingAlgorithm, SharedDeck, SSMInterface } from '../decks/types';
+import { CSSM, Deck, DeckDifficulty, ReviewInstance, FlashCard, FlashCardTypes, LearningStatus, SchedulingAlgorithm, SharedDeck, SSMInterface } from '../decks/types';
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
 import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
@@ -43,7 +43,7 @@ export function apiFlashCardCreate(
   fields: Node[][],
   tags: string,
   flashcardType: FlashCardTypes,
-  callback: (response: FlashCardCreator, status: number) => void,
+  callback: (response: FlashCard, status: number) => void,
 ) {
   backendLookup('POST', `decks/${deckId}/flashcards/create/`, callback, {
     fields: fields,
@@ -387,7 +387,7 @@ export function apiSSMFlashcards(
   studySessionmanagerId: number,
   reviewOverflowBucket: boolean,
   callback: (response: {
-    flashcards: FlashCard[],
+    flashcards: ReviewInstance[],
     num_overflow?: number,
   }, status: number) => void,
 ) {
@@ -410,7 +410,7 @@ export function apiSSMFlashcardUpdate(
   incrementNewCardsDoneToday: boolean,
   timezoneOffset: number,
   timeTaken: number,
-  callback: (response: FlashCard, status: number) => void,
+  callback: (response: ReviewInstance, status: number) => void,
 ) {
   backendLookup('POST', `decks/ssm/${studySessionmanagerId}/flashcards/${flashcardId}/update/`, callback, {
     next_review: nextReviewDate,
@@ -712,7 +712,7 @@ export function apiGameFlashcards(
   amount: number,
   randomOrder: boolean,
   options: { tag?: string | null },
-  callback: (response: FlashCard[], status: number) => void,
+  callback: (response: ReviewInstance[], status: number) => void,
 ) {
   backendLookup('POST', 'decks/games/flashcards/', callback, {
     deck_id: deckId,
@@ -734,7 +734,7 @@ export function apiRearrangeFlashcard(
   deckId: number,
   flashcardNum: number,
   rearrangeType: 'UP' | 'DOWN',
-  callback: (response: Message | FlashCardCreator, status: number) => void,
+  callback: (response: Message | FlashCard, status: number) => void,
 ) {
   backendLookup('POST', `decks/${deckId}/flashcards/${flashcardNum}/rearrange/`, callback, {
     rearrange_type: rearrangeType,
@@ -932,7 +932,7 @@ export function apiStudyAssignment(
   classroomId: number,
   assignmentId: number,
   reviewOverflowBucket: boolean,
-  callback: (response: FlashCard[], status: number) => void,
+  callback: (response: ReviewInstance[], status: number) => void,
 ) {
   let endpoint = `teachers/classroom/${classroomId}/assignments/${assignmentId}/study/`;
   if (reviewOverflowBucket) endpoint += '?from_overflow_bucket=true';

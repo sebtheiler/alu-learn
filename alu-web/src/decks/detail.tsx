@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Card from 'react-bootstrap/Card';
 import { ClassroomDefaultButtonGroup } from '../teachers/buttons';
-import { SharedDeck, FlashCardCreator, Deck, CSSM } from './types';
+import { SharedDeck, FlashCard, Deck, CSSM } from './types';
 import { Note } from '../notes/types';
 import { Classroom } from '../teachers/types';
 
@@ -90,7 +90,7 @@ export function VariousCard(props: VariousCardProps) {
 // This is used on pages displaying a single deck
 interface DeckDetailProps {
   deck: SharedDeck;
-  flashcards?: FlashCardCreator[];
+  flashcards?: FlashCard[];
   numFlashcards?: number;
   currentUsername?: string;
   hideExtras?: boolean;

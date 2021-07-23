@@ -63,7 +63,7 @@ export interface CSSM extends SSMInterface {
 }
 
 
-export interface FlashCardCreator {
+export interface FlashCard {
   fields: Node[][];
   tags: string;
   flashcard_type: FlashCardTypes;
@@ -73,7 +73,7 @@ export interface FlashCardCreator {
 }
 
 
-export interface FlashCard extends FlashCardCreator {
+export interface ReviewInstance extends FlashCard {
   tags: string;
   next_review: string; // ISO date string
   steps_index: number;
@@ -85,10 +85,10 @@ export interface FlashCard extends FlashCardCreator {
   leech_index: number;
   parent_deck_id: number;
   parent_deck_title: string;
-  creator_id: UUID;
+  flashcard_id: UUID;
   flashcard_type: FlashCardTypes;
   name: string;
   id: UUID;
 }
 
-export type AnyFlashCard = FlashCardCreator | FlashCard;
+export type AnyFlashCard = FlashCard | ReviewInstance;

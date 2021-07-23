@@ -6,7 +6,7 @@ import { DecksHomeList } from './home';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { errorHandler } from '../utils';
-import { SharedDeck, FlashCard } from './types';
+import { SharedDeck, ReviewInstance } from './types';
 
 
 // Component for the decks shown on the user's homepage
@@ -29,7 +29,7 @@ export function DecksHomeComponent(props) {
 export function DeckDetailComponent({ deckId, currentUsername }) {
   const [didLookup, setDidLookup] = useState(false);
   const [deck, setDeck] = useState<SharedDeck>();
-  const [flashcards, setFlashcards] = useState<FlashCard[]>();
+  const [flashcards, setFlashcards] = useState<ReviewInstance[]>();
   const [totalFlashcardNum, setTotalFlashcardNum] = useState<number>();
   const [isForbidden, setIsForbidden] = useState(false);
   const [notFound, setNotFound] = useState(false);

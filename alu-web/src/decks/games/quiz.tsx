@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import { RenderRichText, sample, shuffle } from '../../utils';
-import { FlashCard, UUID } from '../types';
+import { ReviewInstance, UUID } from '../types';
 import './quiz.css';
 
 export function QuizGame({ flashcards, numQuestions }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<FlashCard[]>([]);
+  const [answers, setAnswers] = useState<ReviewInstance[]>([]);
   const [answersDidSet, setAnswersDidSet] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [guessedAnswers, setGuessedAnswers] = useState<UUID[]>([]);
   const [finished, setFinished] = useState(false);
   const [numCorrect, setNumCorrect] = useState(0);
-  const [failedQuestions, setFailedQuestions] = useState<FlashCard[]>([]);
+  const [failedQuestions, setFailedQuestions] = useState<ReviewInstance[]>([]);
 
   useEffect(() => {
     if (!answersDidSet) {

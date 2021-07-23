@@ -6,11 +6,11 @@ import { apiFlashCardSuspendLeech, apiFlashCardDelete } from '../../lookup';
 import { createFullEditor, FullEditor } from '../../notes/editor-components';
 import { Slate } from 'slate-react';
 import './detail.css';
-import { FlashCard, FlashCardCreator } from '../types';
+import { ReviewInstance, FlashCard } from '../types';
 
 
 interface RenderFlashCardTextProps {
-  flashcard: FlashCardCreator;
+  flashcard: FlashCard;
   fixSlateLazy: boolean;
 };
 export function RenderFlashCardText(props: RenderFlashCardTextProps) {
@@ -126,7 +126,7 @@ export function RenderFlashCardText(props: RenderFlashCardTextProps) {
 
 // Display an individual flashcard
 interface FlashCardProps {
-  flashcard: FlashCard | FlashCardCreator;
+  flashcard: ReviewInstance | FlashCard;
   number: number;
   showParentDeckTitle?: boolean;
   suspendCallback(): void;

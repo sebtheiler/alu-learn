@@ -11,9 +11,9 @@ import { getAnkiInterval } from './algorithm'
 import Button from 'react-bootstrap/Button';
 import { errorHandler, QuestionBubble, updateURLParameter, useApiObjectHook } from '../../utils';
 import BrowserInteractionTime from 'browser-interaction-time';
-import { FlashCard, SSMInterface } from '../types';
+import { ReviewInstance, SSMInterface } from '../types';
 
-type SSMFlashcardsReturn = {flashcards: FlashCard[], num_overflow: number};
+type SSMFlashcardsReturn = {flashcards: ReviewInstance[], num_overflow: number};
 export function StudyComponent({ studySessionManagerId }) {
   // Params
   const reviewOverflowBucket = useMemo(() => {
@@ -25,7 +25,7 @@ export function StudyComponent({ studySessionManagerId }) {
   // States
   const [errorMsg, setErrorMsg] = useState('');
   const [numOverflow, setNumOverflow] = useState<number | undefined>(undefined);
-  const [flashcards, setFlashcards] = useApiObjectHook<FlashCard[]>(
+  const [flashcards, setFlashcards] = useApiObjectHook<ReviewInstance[]>(
     apiSSMFlashcards,
     [200, 400, 404], 5001,
     [studySessionManagerId, reviewOverflowBucket],
@@ -56,7 +56,7 @@ export function StudyComponent({ studySessionManagerId }) {
 
 interface StudyLogicComponentProps {
   SSM?: SSMInterface;
-  flashcards?: FlashCard[];
+  flashcards?: ReviewInstance[];
   setFlashcards?(newFlashcards: any): void;
   errorMsg?: string;
   isAssignment?: boolean;
@@ -78,9 +78,9 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
 
 
   // Keep track of what flashcard the user is seeing
-  const [currentCard, setCurrentCard] = useState<FlashCard>();
+  const [currentCard, setCurrentCard] = useState<ReviewInstance>();
   const [currentCardDidSet, setCurrentCardDidSet] = useState(false);
-  const [previousCard, setPreviousCard] = useState<FlashCard>();
+  const [previousCard, setPreviousCard] = useState<ReviewInstance>();
 
   // Other states
   const [showAnswer, setShowAnswer] = useState(false);
@@ -110,7 +110,7 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
       if (showUnseenCard) {
         // Get random, unseen, card that is not the previous card
         console.log('Looking for unseen card')
-        let card: FlashCard;
+        let card: ReviewInstance;
         do {
           card = unseenCards[Math.floor(Math.random() * unseenCards.length)];
         } while (previousCard ? (card.id === previousCard.id) : false);
@@ -118,8 +118,8 @@ export function StudyLogicComponent(props: StudyLogicComponentProps) {
       } else {
         console.log('Looking for seen card')
         // Get earliest card that has already been seen, and is not the previous card
-        let earliestFlashcard: FlashCard | undefined=undefined;
-        let flashcard: FlashCard;
+        let earliestFlashcard: ReviewInstance | undefined=undefined;
+        let flashcard: ReviewInstance;
         for (flashcard of flashcards) {
           if (!earliestFlashcard || (flashcard.next_review < earliestFlashcard.next_review &&
               flashcard.learning_status.toUpperCase() !== 'UNSEEN' &&

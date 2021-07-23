@@ -4,10 +4,10 @@ import { QuizGame } from './quiz';
 import { CramGame } from './cram';
 import { apiGameFlashcards, gameFlashcardTypes } from '../../lookup/lookup';
 import { errorHandler } from '../../utils';
-import { FlashCard } from '../types';
+import { ReviewInstance } from '../types';
 
 export function GameComponent({ deckId }) {
-  const [flashcards, setFlashcards] = useState<FlashCard[]>();
+  const [flashcards, setFlashcards] = useState<ReviewInstance[]>();
   const [flashcardsDidSet, setFlashcardsDidSet] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
