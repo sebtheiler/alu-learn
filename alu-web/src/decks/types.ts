@@ -12,8 +12,6 @@ export type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
 export interface Deck {
   author: Profile | MinifiedProfile;
   title: string;
-  num_thanks?: number;
-  you_have_thanked?: boolean;
   serializer_name: 'deck' | 'shared_deck' | 'cssm';
   scheduling_algorithm: SchedulingAlgorithm;
   shuffle_unseen_cards: boolean;

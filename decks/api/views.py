@@ -21,12 +21,11 @@ from utils import get_paginated_queryset_response, weighted_sample
 from utils.utils import create_slate_element, get_morning
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
-                      DeckThank, ReviewInstance, FlashCard,
-                      SharedDeck, StudySessionManager, SharedDeckRelation)
+                      FlashCard, ReviewInstance, SharedDeck,
+                      SharedDeckRelation, StudySessionManager)
 from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
-                           DeckThankSerializer, FlashCardSerializer,
-                           ReviewInstanceSerializer, SharedDeckSerializer,
-                           StudySessionManagerSerializer)
+                           FlashCardSerializer, ReviewInstanceSerializer,
+                           SharedDeckSerializer, StudySessionManagerSerializer)
 
 
 @api_view(['POST'])
@@ -494,41 +493,6 @@ def deck_edit_view(request, deck_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def deck_thank_view(request, deck_id, *args, **kwargs):
-    """
-    Create a thank object for a deck - POST
-
-    Required information:
-        `deck_id`: (URL) ID of the get to thank
-
-    Possible errors:
-        Invalid deck ID: 404, Deck not found
-        Attempt to thank self: 400, You cannot thank yourself
-        Already thanked: 400, You have already thanked this deck
-    """
-    # Get deck
-    try:
-        deck = Deck.objects.get(pk=deck_id)
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck not found'}, status=404)
-
-    # Check that the user is not thanking themselves
-    if deck.user == request.user:
-        return Response({'message': 'You cannot thank yourself'}, status=400)
-
-    # Create thank object
-    new_thank, created = DeckThank.objects.get_or_create(deck=deck, profile=request.user.profile)
-    if not created:
-        return Response({'message': 'You have already thanked this deck'}, status=400)
-
-    # Increment total thanks of the deck's author
-    deck.user.profile.increment_total_thanks_recieved()
-
-    return Response(DeckThankSerializer(new_thank).data, status=201)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs):
     """
     Set a flashcard as suspended or unsuspended - POST
@@ -631,7 +595,6 @@ def deck_search_view(request, *args, **kwargs):
                 + fuzz.token_set_ratio(query, deck.description) * 1.0
                 + fuzz.token_set_ratio(query, deck.title) * 2.0
                 + fuzz.token_set_ratio(query, deck.user.username) * 0.8
-                + (deck.thanks.count() + 1) * 0.005
             )
 
         # Sort based on function

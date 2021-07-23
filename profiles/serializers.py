@@ -51,7 +51,6 @@ class PublicProfileSerializer(serializers.ModelSerializer):
             'you_are_pending',
             'settings',
             'badges',
-            'total_thanks_recieved',
             'longest_streak',
             'current_streak',
         ]

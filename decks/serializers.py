@@ -2,27 +2,8 @@ from profiles.serializers import (MinifiedProfileSerializer,
                                   PublicProfileSerializer)
 from rest_framework import serializers
 
-from .models import (CustomStudySessionManager, Deck, DeckThank, ReviewInstance,
-                     FlashCard, SharedDeck, StudySessionManager)
-
-
-class DeckThankSerializer(serializers.ModelSerializer):
-    deck_id = serializers.SerializerMethodField(read_only=True)
-    username = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = DeckThank
-        fields = [
-            'deck_id',
-            'username',
-            'timestamp',
-        ]
-
-    def get_deck_id(self, obj):
-        return obj.deck.id
-
-    def get_username(self, obj):
-        return obj.profile.user.username
+from .models import (CustomStudySessionManager, Deck, FlashCard,
+                     ReviewInstance, SharedDeck, StudySessionManager)
 
 
 class FlashCardSerializer(serializers.ModelSerializer):
@@ -97,8 +78,6 @@ class ReviewInstanceSerializer(serializers.ModelSerializer):
 
 class DeckSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField(read_only=True)
-    num_thanks = serializers.SerializerMethodField(read_only=True)
-    you_have_thanked = serializers.SerializerMethodField(read_only=True)
     scheduling_algorithm = serializers.SerializerMethodField(read_only=True)
     shuffle_unseen_cards = serializers.SerializerMethodField(read_only=True)
     new_cards_done_today = serializers.SerializerMethodField(read_only=True)
@@ -113,8 +92,6 @@ class DeckSerializer(serializers.ModelSerializer):
         fields = [
             'author',
             'title',
-            'num_thanks',
-            'you_have_thanked',
             'serializer_name',
             'scheduling_algorithm',
             'shuffle_unseen_cards',
@@ -134,20 +111,6 @@ class DeckSerializer(serializers.ModelSerializer):
             return PublicProfileSerializer(obj.user.profile).data
         else:
             return MinifiedProfileSerializer(obj.user.profile).data
-
-    def get_you_have_thanked(self, obj):
-        request = self.context.get('request')
-        if request is None or not request.user.is_authenticated:
-            return None
-        if request.user.is_anonymous:
-            return False
-
-        thank_profiles_list = [thank.profile for thank in obj.thanks.all()]
-        has_thanked = request.user.profile in thank_profiles_list
-        return has_thanked
-
-    def get_num_thanks(self, obj):
-        return obj.thanks.count()
 
     def get_scheduling_algorithm(self, obj):
         return obj.study_session_manager.scheduling_algorithm
@@ -176,9 +139,7 @@ class DeckSerializer(serializers.ModelSerializer):
 
 class SharedDeckSerializer(serializers.ModelSerializer):
     author = serializers.SerializerMethodField(read_only=True)
-    num_thanks = serializers.SerializerMethodField(read_only=True)
     num_clones = serializers.SerializerMethodField(read_only=True)
-    you_have_thanked = serializers.SerializerMethodField(read_only=True)
     serializer_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -188,9 +149,7 @@ class SharedDeckSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'sharing_setting',
-            'num_thanks',
             'num_clones',
-            'you_have_thanked',
             'serializer_name',
             'deck_type',
             'creators',
@@ -203,20 +162,6 @@ class SharedDeckSerializer(serializers.ModelSerializer):
             return PublicProfileSerializer(obj.user.profile).data
         else:
             return MinifiedProfileSerializer(obj.user.profile).data
-
-    def get_you_have_thanked(self, obj):
-        request = self.context.get('request')
-        if request is None or not request.user.is_authenticated:
-            return None
-        if request.user.is_anonymous:
-            return False
-
-        thank_profiles_list = [thank.profile for thank in obj.thanks.all()]
-        has_thanked = request.user.profile in thank_profiles_list
-        return has_thanked
-
-    def get_num_thanks(self, obj):
-        return obj.thanks.count()
 
     def get_num_clones(self, obj):
         return obj.clones.count()

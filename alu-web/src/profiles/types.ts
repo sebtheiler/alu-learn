@@ -13,7 +13,6 @@ export interface Profile extends MinifiedProfile {
   you_are_pending: boolean;
   settings: Settings;
   badges: Badge[];
-  total_thanks_received: number;
   longest_streak: number;
   current_streak: number;
   id: number;

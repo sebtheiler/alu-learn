@@ -2,8 +2,8 @@ from django.contrib import admin
 
 # Register your models here.
 from .models import (CustomStudySessionManager, Deck, DeckClone,
-                     DeckStudySessionManager, DeckThank, ReviewInstance,
-                     FlashCard, SharedDeck, SharedDeckRelation)
+                     DeckStudySessionManager, FlashCard, ReviewInstance,
+                     SharedDeck, SharedDeckRelation)
 
 
 class FlashCardAdmin(admin.ModelAdmin):
@@ -54,7 +54,6 @@ admin.site.register(SharedDeck, SharedDeckAdmin)
 admin.site.register(SharedDeckRelation)
 admin.site.register(FlashCard, FlashCardAdmin)
 admin.site.register(ReviewInstance, ReviewInstanceAdmin)
-admin.site.register(DeckThank)
 admin.site.register(DeckClone)
 admin.site.register(DeckStudySessionManager)
 admin.site.register(CustomStudySessionManager)

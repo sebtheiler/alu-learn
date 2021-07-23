@@ -99,31 +99,6 @@ interface DeckDetailProps {
 }
 export function DeckDetail(props: DeckDetailProps) {
   const { deck, flashcards, numFlashcards, currentUsername, hideExtras, titleLink, textAlign } = props;
-  // const [browsingState, setBrowsingState] = useState('FLASHCARDS');
-  // const [thankBtnLabel, setThankBtnLabel] = useState(deck.you_have_thanked ? 'Thanked' : 'Thank');
-
-  // const handleBrowseSwitch = (event) => {
-  //   event.preventDefault();
-  //   setBrowsingState(browsingState === 'FLASHCARDS' ? 'COMMENTS' : 'FLASHCARDS');
-  // }
-
-  // const handleThankDeck = (event) => {
-  //   event.preventDefault();
-  //   if (deck.you_have_thanked !== true) {
-  //     setThankBtnLabel('Loading...');
-  //     apiDeckThank(deck.id, (response, status) => {
-  //       if (status === 201) {
-  //         deck.you_have_thanked = true;
-  //         deck.num_thanks++;
-  //         setThankBtnLabel('Thanked');
-  //       } else {
-  //         // Error thanking deck
-  //         setThankBtnLabel('Thank');
-  //         errorHandler(response, status, 1005);
-  //       }
-  //     });
-  //   }
-  // }
 
   return (
     <div className={`text-${textAlign}`}>
@@ -133,28 +108,12 @@ export function DeckDetail(props: DeckDetailProps) {
         </a>
         <UserLink user={deck.author} />
         <p className='text-secondary mb-3'>
-          {/* <DisplayCountChar>{deck.num_thanks}</DisplayCountChar> {'thank' + (deck.num_thanks !== 1 ? 's' : '')}
-          {' --- '} */}
           <DisplayCountChar>{deck.num_clones}</DisplayCountChar> {deck.num_clones !== 1 ? 'copies' : 'copy'}
         </p>
         <MarkdownRender source={deck.description} />
-        {/* <div className={'mb-1' + (hideExtras ? ' d-none' : '')}>
-          <ButtonGroup>
-            <Button onClick={handleBrowseSwitch}>
-              {browsingState === 'FLASHCARDS' ? 'Display Comments' : 'Display Flashcards'}
-            </Button>
-          </ButtonGroup>
-        </div> */}
       </div>
       {hideExtras ? null : <div>
-        {/* <div className={browsingState !== 'COMMENTS' ? 'd-none' : ''}>
-            <hr />
-            <div>
-              <h2>Comments</h2>
-              <p>Comments are currently not implemented.  We hope to add this funcitonality soon.</p>
-            </div>
-        </div> */}
-        <div>{/* className={browsingState !== 'FLASHCARDS' ? 'd-none' : ''}> */}
+        <div>
           <hr />
           <div className='text-center'>
             <h2>Example Flashcards</h2>
@@ -163,7 +122,7 @@ export function DeckDetail(props: DeckDetailProps) {
               {currentUsername === deck.author.username ?
                 <DefaultSharedDeckButtons deck={deck} />
               :
-                <DeckForeignUserButtonGroup deck={deck} /* handleThankDeck={handleThankDeck} thankBtnLabel={thankBtnLabel} */ />
+                <DeckForeignUserButtonGroup deck={deck} />
               }
               <div>
                 <FlashCardsList flashcardList={flashcards.slice(0, 10)} foreignUser={true} />

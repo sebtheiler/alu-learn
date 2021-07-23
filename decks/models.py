@@ -1046,16 +1046,6 @@ class SharedDeck(Deck):
         )
 
 
-# Used to like/thank a person for making a deck
-class DeckThank(models.Model):
-    deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name='thanks')
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='thanks')
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self) -> str:
-        return f'Thank from @{self.profile.user.username} for Deck #{self.deck.id}'
-
-
 class DeckClone(models.Model):
     deck = models.ForeignKey(SharedDeck, on_delete=models.CASCADE, related_name='clones')
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='clones')

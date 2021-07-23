@@ -48,7 +48,7 @@ int(hexadecimal_string, 16)
 1002: Error copying deck through apiDeckCopy in alu-web/src/decks/button.js
 1003: Error getting deck detail through apiDeckDetail in alu-web/src/decks/components.js
 1004: Error creating deck through apiDeckCreate in alu-web/src/decks/create.js
-1005: Error thanking deck through apiDeckThank in alu-web/src/decks/detail.js
+1005:
 1006: Error getting deck through apiDeckHome in alu-web/src/decks/home.js
 1007: Error handling next set of decks (pagination, decks home page) through apiDeckHome in alu-web/src/decks/home.js
 1008: Error getting shared decks through apiDeckSharedList in alu-web/src/decks/list.js

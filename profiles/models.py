@@ -22,7 +22,6 @@ class Profile(models.Model):
         blank=True,
         related_name='users_who_requested',
     )
-    total_thanks_recieved = models.IntegerField(default=0)
 
     longest_streak = models.PositiveSmallIntegerField(default=0)
     current_streak = models.PositiveSmallIntegerField(default=0)
@@ -33,14 +32,6 @@ class Profile(models.Model):
             return f'{self.user.first_name} {self.user.last_name} - @{self.user.username}'
         else:
             return f'@{self.user.username}'
-
-    def increment_total_thanks_recieved(self) -> int:
-        # Do not use this method if you need to make other changes to the profile obj
-        # Only use this method if the `total_thanks_recieved` is the only attr that
-        # needs to be changed
-        self.total_thanks_recieved += 1
-        self.save()
-        return self.total_thanks_recieved
 
     def increment_work_done_today(
         self,

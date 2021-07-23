@@ -173,11 +173,6 @@ export function apiDeckCopy(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/copy/`, callback);
 }
 
-// Creates a thank for a deck
-export function apiDeckThank(deckId, callback) {
-  backendLookup('POST', `decks/${deckId}/thank/`, callback);
-}
-
 // Searches for decks based on a query
 export function apiDeckSearch(query, callback, nextUrl='') {
   let endpoint = `decks/search/?q=${query}`;
