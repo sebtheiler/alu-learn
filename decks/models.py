@@ -106,7 +106,7 @@ class Deck(models.Model):
                 flashcard_num=flashcard_creator.flashcard_num,
                 origin_creator=flashcard_creator,
                 # Text info
-                field=flashcard_creator.fields,
+                fields=flashcard_creator.fields,
                 tags=flashcard_creator.tags,
             )
             creators_to_create.append(shared_flashcard_creator)
@@ -154,8 +154,7 @@ class Deck(models.Model):
             deck=self,
             copied_from_deck=shared_deck,
         )  # type: List[FlashCardCreator]
-        shared_flashcard_creators = shared_deck.flashcards.all() \
-            .prefetch_related('fields')  # type: List[FlashCardCreator]
+        shared_flashcard_creators = shared_deck.flashcards.all()
 
         creators_to_create = []  # type: List[FlashCardCreator]
         flashcards_to_create = []  # type: List[FlashCard]
@@ -468,11 +467,6 @@ class FlashCardCreator(models.Model):
             return 'Invalid `rearrange_type`'
 
 
-class FlashCardManager(models.Manager):
-    def get_queryset(self) -> QuerySet:
-        return super().get_queryset().prefetch_related('creator__fields')
-
-
 CONTENT_INDICIES_DICT = {
     'BASIC': [
         # Front to back
@@ -524,8 +518,6 @@ class FlashCard(models.Model):
     leech_index = models.PositiveSmallIntegerField(default=0)
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    objects = FlashCardManager()
 
     class Meta:
         ordering = ['creator__flashcard_num']
@@ -943,9 +935,7 @@ class SharedDeck(Deck):
             profile=user.profile,
         )
 
-        shared_flashcard_creators = self.flashcards.all().prefetch_related(
-            'fields',
-        )  # type: List[FlashCardCreator]
+        shared_flashcard_creators = self.flashcards.all()
 
         creators = []
         flashcards = []
@@ -968,7 +958,6 @@ class SharedDeck(Deck):
 
         # Update the shared deck's flashcard creators
         origin_flashcard_creators = origin_deck.flashcards.prefetch_related(
-            'fields',
             'shared_mirror',
         )  # type: List[FlashCardCreator]
         shared_creators_to_update = []  # type: List[FlashCardCreator]
