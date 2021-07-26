@@ -18,7 +18,7 @@ from rest_framework.decorators import (api_view, authentication_classes,
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from utils import get_paginated_queryset_response, weighted_sample
-from utils.utils import create_slate_element, get_morning
+from utils import create_slate_element, get_morning
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
                       FlashCard, ReviewInstance, SharedDeck,

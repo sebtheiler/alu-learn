@@ -7,8 +7,7 @@ from django.core.cache import cache
 from django.db.models.query import QuerySet
 from profiles.models import ProfileHistorySegment
 from selenium.common.exceptions import NoSuchElementException
-from utils.test_utils import ImprovedTestCase, SeleniumTestCase
-from utils.utils import create_slate_element, get_morning
+from utils import ImprovedTestCase, SeleniumTestCase, create_slate_element, get_morning
 
 from .api import views as api_views
 from .models import (CustomStudySessionManager, Deck, DeckStudySessionManager,

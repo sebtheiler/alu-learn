@@ -76,14 +76,13 @@ def profile_redirect_view(request, *args, **kwargs):
     return redirect(f'/profiles/u/{request.user.username}')
 
 
-
 @cache_page(timeout=60*15)
 def login_view(request, *args, **kwars):
     if request.user.is_authenticated:
         if not request.user.is_confirmed:
             return redirect('/confirm-email/')
         return redirect('/home/')
-    
+
     return render(request, 'profiles/login.html')
 
 

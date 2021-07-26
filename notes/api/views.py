@@ -1,5 +1,5 @@
 import json
-from utils.utils import BLANK_SLATE_ELEMENT, create_slate_element
+from utils import BLANK_SLATE_ELEMENT, create_slate_element
 
 from django.db.models.expressions import F
 from rest_framework.decorators import api_view, permission_classes

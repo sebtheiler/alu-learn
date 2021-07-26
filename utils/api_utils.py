@@ -1,0 +1,97 @@
+from typing import Union
+
+from django.core.handlers.wsgi import WSGIRequest
+from django.http import Http404
+from django.shortcuts import redirect, render
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+
+
+def permissions(
+    is_authenticated: bool = True,
+    is_confirmed: bool = True,
+    is_staff: bool = False,
+):
+    """
+    Ensures the user has the specified permissions, or otherwise redirects them
+    """
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            request = args[0]
+
+            if is_authenticated and not request.user.is_authenticated:
+                return redirect('/')
+            elif is_confirmed and not request.user.is_confirmed:
+                return redirect('/confirm-email/')
+            elif is_staff and not request.user.is_staff:
+                raise Http404('Permission denied')
+
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def render_basic_view(
+    html_location: str,
+    is_authenticated: bool = True,
+    is_confirmed: bool = True,
+    is_staff: bool = False,
+    context_kwargs: bool = True
+):
+    """
+    Renders a view that has an HTML file, given some permissions
+
+    If specified `context_kwargs` is replaces the default kwargs as context to the rendered view
+    """
+    @permissions(is_authenticated, is_confirmed, is_staff)
+    def render_view(request, *args, **kwargs):
+        return render(request, html_location, context=kwargs if context_kwargs else {})
+
+    return render_view
+
+
+# Helper function for pagination
+def get_paginated_queryset_response(
+    qs,
+    request,
+    Serializer,
+    page_size: int = 50,
+    other_information: dict = {},
+) -> Response:
+    """
+    Paginates a response
+
+    qs: QuerySet to paginate
+    request: Request to paginate with
+    Serializer: Serializer object to serialize the results with
+        If passed as a dict ({type1: Serializer1, type2: Serializer2})
+        uses each Serializer for different types  TODO: remove this option
+    page_size: Maximum number of objects in a page
+    other_information: TODO: probably remove
+    """
+    paginator = PageNumberPagination()
+    paginator.page_size = page_size
+    paginated_qs = paginator.paginate_queryset(qs, request)
+    if isinstance(Serializer, dict):
+        serialized = [Serializer[type(instance)](instance).data for instance in paginated_qs]
+    else:
+        serialized = Serializer(paginated_qs, many=True).data
+
+    paginated_resp = paginator.get_paginated_response(serialized)
+    return Response({**paginated_resp.data, **other_information}, status=200)
+
+
+def assert_request_data_type(request: WSGIRequest, attr_types: dict) -> Union[Response, None]:
+    """
+    Asserts that each specified item in `request` is of the type sepcified by `attr_types`
+
+    `attr_types` maps string attributes to types ({'options': dict, 'obj_id': (int, str)})
+    """
+    for attr, expected_type in attr_types.items():
+        request_value = request.data.get(attr)
+        if not isinstance(request_value, expected_type):
+            return Response({
+                'message': f'`{attr}` must be of type {expected_type}, not {type(request_value)}'
+            }, status=400)
+
+    return None

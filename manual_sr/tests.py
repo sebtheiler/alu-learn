@@ -2,7 +2,7 @@ import datetime as dt
 
 from django.contrib.auth import get_user_model
 from utils import BLANK_SLATE_ELEMENT
-from utils.test_utils import ImprovedTestCase
+from utils import ImprovedTestCase
 
 from .api import views as api_views
 from .models import ManualSRTask

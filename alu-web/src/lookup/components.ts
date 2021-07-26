@@ -25,7 +25,7 @@ export const baseUrl = `${window.location.protocol}//${host}`; // http://127.0.0
 // changed unless there is a very good reason.
 export function backendLookup<T>(
   method: 'GET' | 'POST' | 'DELETE' | 'PUT',
-  endpoint: String,
+  endpoint: string,
   callback: (response: any, status: number) => void,
   data={}
 ) {

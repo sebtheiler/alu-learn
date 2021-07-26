@@ -5,8 +5,7 @@ from decks.models import (Deck, DeckStudySessionManager, ReviewInstance,
 from django.contrib.auth import get_user_model
 from django.db.models.query_utils import Q
 from rest_framework.test import APIRequestFactory
-from utils.test_utils import ImprovedTestCase, SeleniumTestCase
-from utils.utils import create_slate_element
+from utils import ImprovedTestCase, SeleniumTestCase, create_slate_element
 
 from .api import views as api_views
 from .models import Assignment, AssignmentStudySessionManager, Classroom

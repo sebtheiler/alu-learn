@@ -3,7 +3,7 @@ import datetime as dt
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.core.handlers.wsgi import WSGIRequest
-from utils.test_utils import ImprovedTestCase, SeleniumTestCase
+from utils import ImprovedTestCase, SeleniumTestCase
 
 from .api import views as api_views
 from .models import Notification, Profile, ProfileHistorySegment, ProfileSettings

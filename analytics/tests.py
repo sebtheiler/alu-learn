@@ -1,7 +1,7 @@
 import datetime as dt
 
 from profiles.models import ProfileHistorySegment
-from utils.test_utils import ImprovedTestCase
+from utils import ImprovedTestCase
 
 from .api import views as api_views
 from .models import QuickFeedback, QuickFeedbackResponse

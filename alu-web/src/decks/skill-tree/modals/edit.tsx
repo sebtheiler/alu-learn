@@ -3,9 +3,12 @@ import { Deck } from '../../types';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import './modals.css';
+import { apiObjectEdit } from '../../../lookup/lookup';  // TODO: improve imports
 
 
+interface EditOptions {
+  title?: string;
+}
 interface EditModalProps {
   deck: Deck;
   modalIsOpen: boolean;
@@ -14,8 +17,8 @@ interface EditModalProps {
 export default function EditModal(props: EditModalProps) {
   const { deck, modalIsOpen, closeModal } = props;
 
-  const editDeck = event => {
-    event.preventDefault();
+  const editDeck = (options: EditOptions) => {
+    apiObjectEdit('decks', 'deck', deck.id, options);
   }
 
   return (
@@ -23,45 +26,28 @@ export default function EditModal(props: EditModalProps) {
       <Modal.Header>
         <Modal.Title>Editing "{deck.title}"</Modal.Title>
       </Modal.Header>
-      <Form onSubmit={editDeck}>
+      <Form onSubmit={e => {e.preventDefault(); closeModal();}}>
         <Modal.Body>
-          {/* <Form.Group>
-            <Form.Label>Type of Game</Form.Label>
+          <Form.Group>
+            <Form.Label>Deck Title</Form.Label>
             <Form.Control
-              as='select'
-              name='gameType'
-              custom
-            >
-              <option value='MATCHING'>Matching</option>
-              <option value='QUIZ'>Quiz</option>
-              <option value='CRAM'>Cram</option>
-            </Form.Control>
-          </Form.Group> */}
-          {/* <div className="g-input">
-            <input type="text" placeholder=" " />
-            <label>Username</label>
-          </div>
-          <div className="g-input">
-            <input type="password" placeholder=" " />
-            <label>Password</label>
-          </div>
-
-          <div className="g-input fill">
-            <input type="text" placeholder=" " />
-            <label>Username</label>
-          </div>
-          <div className="g-input fill">
-            <input type="password" placeholder=" " />
-            <label>Password</label>
-          </div>
-
-          <div className="g-input fill">
-            <textarea placeholder=" " />
-            <label>Text area</label>
-          </div> */}
+              type='text'
+              name='deckTitle'
+              onBlur={e => editDeck({ title: e.target.value })}
+            />
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button type='submit' block>Play!</Button>
+          <Button
+            type='submit'
+            variant='secondary'
+            block
+          >
+            Close
+          </Button>
+          <small className='text-secondary mx-auto'>
+            Changes are auto-saved
+          </small>
         </Modal.Footer>
       </Form>
     </Modal>

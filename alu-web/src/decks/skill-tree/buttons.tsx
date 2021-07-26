@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Deck } from '../types';
 import { ExportModal, GameModal } from '../buttons';
-import { apiDeckEdit, apiSSMEdit, apiDeckDelete, apiSSMDelete } from '../../lookup';
-import { errorHandler, has } from '../../utils';
+import { apiDeckDelete, apiSSMDelete } from '../../lookup';
+import { errorHandler } from '../../utils';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
 import EditModal from './modals/edit';
@@ -41,77 +41,6 @@ export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
     gameOptions += `&random=${form.elements.randomOrder?.checked}`;
 
     window.location.href = `/decks/${deck.id}/game/?${gameOptions}`;
-  }
-
-  const editSaveHandler = event => {
-    event.preventDefault();
-    const form = event.target;
-
-    // If nothing has changed, prevent the user from saving
-    if (
-        deck.serializer_name === 'deck' &&
-        form.elements.title.value === deck.title &&
-        (form.elements.schedulingAlgo?.value ?? deck.scheduling_algorithm) === deck.scheduling_algorithm &&
-        (form.elements.shuffleUnseenCards?.checked ?? deck.shuffle_unseen_cards) === deck.shuffle_unseen_cards &&
-        parseInt(form.elements.dailyNewCardLimit.value) === deck.daily_new_card_limit &&
-        parseInt(form.elements.dailySeenCardLimit.value) === deck.daily_seen_card_limit &&
-        (parseInt(form.reviewAheadMinutes?.value ?? deck.review_ahead_minutes)) === deck.review_ahead_minutes &&
-        form.elements.deckDifficulty.value === deck.difficulty
-    ) {
-      return;
-    }
-
-    // Tell the API to update the deck/CSSM
-    if (deck.serializer_name === 'deck') {
-      apiDeckEdit(
-        deck.id,
-        form.elements.title.value,
-        form.elements.schedulingAlgo?.value,
-        form.elements.shuffleUnseenCards?.checked,
-        parseInt(form.elements.dailyNewCardLimit.value),
-        parseInt(form.elements.dailySeenCardLimit.value),
-        parseInt(form.elements.reviewAheadMinutes?.value),
-        form.elements.deckDifficulty.value,
-        (response, status) => {
-          if (status === 200) {
-            window.location.reload();
-          } else {
-            // Error updating deck
-            errorHandler(response, status, 1000);
-          }
-      });
-    } else if (deck.serializer_name === 'cssm' && has(deck, 'deck_ids')) {
-      const deckSelectElement = form.elements.deckSelect;
-      const selectedDecks = deckSelectElement ? Array.from(
-        deckSelectElement.querySelectorAll("option:checked"),
-        e => parseInt((e as HTMLOptionElement).value),
-      ) : undefined;
-
-      apiSSMEdit(
-        deck.id,
-        form.elements.title.value,
-        form.elements.schedulingAlgo?.value,
-        form.elements.shuffleUnseenCards?.checked,
-        parseInt(form.dailyNewCardLimit.value),
-        parseInt(form.dailySeenCardLimit.value),
-        parseInt(form.reviewAheadMinutes?.value),
-        selectedDecks,
-        form.elements.tags?.value,
-        form.elements.contains?.value,
-        form.elements.isLeech?.value !== 'ANY' ? form.elements.isLeech?.value === 'LEECH' : null,
-        form.elements.learningStatus?.value !== 'ANY' ? form.elements.learningStatus?.value : null,
-        parseInt(form.elements.minEase?.value),
-        parseInt(form.elements.maxEase?.value),
-        (response, status) => {
-          if (status === 200) {
-            window.location.reload();
-          } else {
-            // Error updating CSSM
-            errorHandler(response, status, 5003);
-          }
-        },
-      );
-    }
   }
 
   const editDeleteHandler = () => {

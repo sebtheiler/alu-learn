@@ -9,7 +9,7 @@ import json
 from typing import Dict, List, Literal, Tuple, Union
 
 from django.utils import timezone
-from utils.utils import get_morning
+from utils import get_morning
 import uuid
 
 from django.conf import settings

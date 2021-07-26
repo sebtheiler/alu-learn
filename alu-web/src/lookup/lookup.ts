@@ -5,6 +5,7 @@ import { CSSM, Deck, DeckDifficulty, ReviewInstance, FlashCard, FlashCardTypes, 
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
 import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
+import { getCookie } from '../utils';
 import { backendLookup, baseUrl } from './components';
 
 type Message = { 'message': string };
@@ -14,6 +15,36 @@ type PaginatedResponse = {
   previous: string;
   results: any[];
 }
+
+const csrfToken = getCookie('csrftoken');
+async function backendFetch<T>(
+  method: 'GET' | 'POST' | 'DELETE' | 'PUT',
+  endpoint: string,
+  data: Object = {},
+): Promise<T> {
+  return fetch(endpoint, {
+    method: method,
+    headers: {
+      'content-type': 'application/json',
+      'X-CSRFTOKEN': csrfToken ?? '',
+    },
+    body: JSON.stringify(data),
+  }).then(res => res.json());
+}
+
+export async function apiObjectEdit<T>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
+  options: Object,
+): Promise<T> {
+  return backendFetch<T>(
+    'POST',
+    `${baseUrl}/api/${appName}/${modelName}/${objectId}/edit/`,
+    { edited_values: options },
+  );
+}
+
 
 // Creates a new deck
 export function apiDeckCreate(
@@ -127,29 +158,6 @@ export function apiDeckFlashcards(deckId, options, callback, nextUrl='') {
 export function apiDeckDelete(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/delete/`, callback);
 }
-
-export function apiDeckEdit(
-  deckId: number,
-  newTitle: string,
-  schedulingAlgo: SchedulingAlgorithm,
-  shuffleUnseenCards: boolean,
-  dailyNewCardLimit: number,
-  dailySeenCardLimit: number,
-  reviewAheadMinutes: number,
-  deckDifficulty: DeckDifficulty,
-  callback: (response: Deck, status: number) => void,
-) {
-  backendLookup('POST', `decks/${deckId}/edit/`, callback, {
-    new_title: newTitle,
-    scheduling_algorithm: schedulingAlgo,
-    shuffle_unseen_cards: shuffleUnseenCards,
-    daily_new_card_limit: dailyNewCardLimit,
-    daily_seen_card_limit: dailySeenCardLimit,
-    review_ahead_minutes: reviewAheadMinutes,
-    difficulty: deckDifficulty,
-  });
-}
-
 
 // Gets a list of decks owned by a user with username `username` that are shared with the given user
 export function apiDeckSharedList(username, callback) {

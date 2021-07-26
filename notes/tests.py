@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
-from utils.test_utils import ImprovedTestCase
-from utils.utils import create_slate_element
+from utils import ImprovedTestCase, create_slate_element
 
 from .api import views as api_views
 from .models import (CornellNotePage, CornellNotePageSection, FreeformNotePage,
@@ -126,7 +125,7 @@ class NoteTestCase(ImprovedTestCase):
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {
-            'content': create_slate_element(f'Content - 0'),
+            'content': create_slate_element('Content - 0'),
             'title': 'Page - 0',
             'page_number': 1,
             'note_page_type': 'STND',
@@ -139,7 +138,7 @@ class NoteTestCase(ImprovedTestCase):
 
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['summary'], create_slate_element(f'Summary - 1'))
+        self.assertEqual(response.data['summary'], create_slate_element('Summary - 1'))
         self.assertEqual(response.data['title'], 'Page - 1')
         self.assertEqual(response.data['page_number'], 2)
         self.assertEqual(response.data['note_page_type'], 'CORN')

@@ -1,7 +1,6 @@
-from django.http.response import Http404
+from django.http import Http404
 from django.shortcuts import render, redirect
 from .models import Note
-from django.http import Http404
 from utils import permissions
 
 

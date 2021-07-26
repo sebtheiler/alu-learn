@@ -43,7 +43,7 @@ Python:
 int(hexadecimal_string, 16)
 
 === Deck related errors ===
-1000: Error updating deck through apiDeckEdit in alu-web/src/decks/button.js
+1000:
 1001: Error deleting deck through apiDeckDelete in alu-web/src/decks/button.js
 1002: Error copying deck through apiDeckCopy in alu-web/src/decks/button.js
 1003: Error getting deck detail through apiDeckDetail in alu-web/src/decks/components.js
