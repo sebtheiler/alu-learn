@@ -39,6 +39,7 @@ def get_object_view(
 def list_object_view(
     Serializer: serializers.ModelSerializer,
     owner_path: Union[str, None],
+    # TODO: add way to sort
 ):
     """
     Creates an API view for getting a list of the given model type

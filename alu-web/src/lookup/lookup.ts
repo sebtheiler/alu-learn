@@ -35,7 +35,7 @@ async function backendFetch<T>(
 
 export function useObjectGet<ObjType, Event extends {
   action: any,
-  payload: ObjType | undefined,
+  payload?: any,
 }>(
   appName: string,
   modelName: string,
@@ -47,7 +47,7 @@ export function useObjectGet<ObjType, Event extends {
 ): [ObjType | undefined, Dispatch<Event>] {
   const [obj, dispatch] = useReducer((state: ObjType | undefined, event: Event) => {
     if (event.action === 'INITIAL_SET')
-      return event.payload;
+      return event.payload as ObjType;
     return reducer(state, event)
   }, undefined);
 
@@ -65,7 +65,7 @@ export function useObjectGet<ObjType, Event extends {
 
 export function useObjectList<ObjType, Event extends {
   action: any,
-  payload: ObjType[] | undefined,
+  payload?: any,
 }>(
   appName: string,
   modelName: string,
@@ -76,7 +76,7 @@ export function useObjectList<ObjType, Event extends {
 ): [ObjType[] | undefined, Dispatch<Event>] {
   const [obj, dispatch] = useReducer((state: ObjType[] | undefined, event: Event) => {
     if (event.action === 'INITIAL_SET')
-      return event.payload;
+      return event.payload as ObjType[];
     return reducer(state, event);
   }, undefined);
 

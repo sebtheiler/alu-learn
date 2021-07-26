@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Deck } from '../../types';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { apiObjectEdit } from '../../../lookup/lookup';  // TODO: improve imports
+import { DeckDispatch } from '../context';
 
 
 interface EditOptions {
@@ -16,10 +17,12 @@ interface EditModalProps {
 }
 export default function EditModal(props: EditModalProps) {
   const { deck, modalIsOpen, closeModal } = props;
+  const deckDispatch = useContext(DeckDispatch);
 
   const editDeck = (options: EditOptions) => {
-    // setDecks
     apiObjectEdit('decks', 'deck', deck.id, options);
+    if (deckDispatch)
+      deckDispatch({ action: 'EDIT', payload: { id: deck.id, ...options } });
   }
 
   return (
@@ -35,6 +38,7 @@ export default function EditModal(props: EditModalProps) {
               type='text'
               name='deckTitle'
               onBlur={e => editDeck({ title: e.target.value })}
+              defaultValue={deck.title}
             />
           </Form.Group>
         </Modal.Body>
