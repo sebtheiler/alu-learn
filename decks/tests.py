@@ -28,10 +28,6 @@ class DeckTestCase(ImprovedTestCase):
             user=user or self.user,
             title=title,
         )
-        DeckStudySessionManager.objects.create(
-            user=user.profile if user else self.user.profile,
-            deck=deck,
-        )
 
         characters = 'abcdefhijklmnopqrstuvwxyz~!@#$%^&*()_+-=[]|/?.>,<'
         if num_flashcards:

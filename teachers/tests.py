@@ -76,10 +76,6 @@ class TeacherTestCase(ImprovedTestCase):
             user=user or self.user,
             title=title,
         )
-        DeckStudySessionManager.objects.create(
-            user=user.profile if user else self.user.profile,
-            deck=deck,
-        )
 
         for i in range(num_flashcards):
             tags = f'{i}, {i + 1}, {i + 2}'
@@ -363,7 +359,6 @@ class TeacherTestCase(ImprovedTestCase):
         classroom = self.create_classroom('Statistics Class', 1)
         student = classroom.students.first()
         deck = Deck.objects.create(user=student.user, title='Attached deck')
-        DeckStudySessionManager.objects.create(deck=deck)
         deck.student_attached_to = classroom
         deck.save()
         url_path = f'/api/teachers/classroom/{classroom.pk}/student/{student.pk}/attached-deck/'
@@ -1125,9 +1120,6 @@ class TeacherBrowserTestCase(SeleniumTestCase):
         deck = Deck.objects.create(
             user=self.user,
             title='Deck for selenium class',
-        )
-        DeckStudySessionManager.objects.create(
-            deck=deck,
         )
 
         num_flashcards = 10

@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import DeckSelection from './deck-selection';
 import SkillTree from './skill-tree';
 import { DeckDispatch, deckReducer } from './context';
+import { CreateDeckButton } from './buttons/create-deck';
 import { useObjectList } from '../../lookup/lookup';  // TODO: clean up imports
 import './home.css';
 
@@ -32,6 +33,8 @@ export function SkillTreeHome() {
                 key={i}
               />
             ) : <p>Loading decks...</p>}
+            {decks && decks.length > 0 ? <hr /> : null}
+            <CreateDeckButton />
           </Col>
           <Col md={6} sm={12}>
             {selectedDeck === null || !decks ? <>

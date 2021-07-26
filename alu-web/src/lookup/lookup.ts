@@ -33,6 +33,18 @@ async function backendFetch<T>(
   }).then(res => res.json());
 }
 
+export function apiObjectCreate<T>(
+  appName: string,
+  modelName: string,
+  options: Object,
+): Promise<T> {
+  return backendFetch<T>(
+    'POST',
+    `${baseUrl}/api/${appName}/${modelName}/create/`,
+    { create_values: options },
+  );
+}
+
 export function useObjectGet<ObjType, Event extends {
   action: any,
   payload?: any,

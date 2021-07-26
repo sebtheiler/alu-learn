@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Deck } from '../types';
 import './deck-selection.css';
-import DeckSelectionButtons from './buttons';
+import DeckSelectionButtons from './buttons/deck-selection';
 
 interface DeckSelectionProps {
   deck: Deck;

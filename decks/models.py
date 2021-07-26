@@ -1,16 +1,13 @@
 from __future__ import \
     annotations  # TODO: remove this when we upgrade to python 3.10
+
 import datetime as dt
-from itertools import chain
-import random
-
-import re
 import json
-from typing import Dict, List, Literal, Tuple, Union
-
-from django.utils import timezone
-from utils import get_morning
+import random
+import re
 import uuid
+from itertools import chain
+from typing import Dict, List, Literal, Tuple, Union
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
@@ -18,7 +15,10 @@ from django.db import models
 from django.db.models.aggregates import Avg
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
+from django.db.models.signals import post_save
+from django.utils import timezone
 from profiles.models import Profile
+from utils import get_morning
 
 User = settings.AUTH_USER_MODEL
 FlashCardTypes = Literal['cloze', 'basic', 'reversed']
@@ -983,15 +983,6 @@ class SharedDeck(Deck):
             student_attached_to=attached_to_classroom,
         )
 
-        if created:
-            DeckStudySessionManager.objects.create(
-                deck=deck,
-                user=user.profile,
-                scheduling_algorithm=options.get('scheduling_algorithm', 'ANKING'),
-                shuffle_unseen_cards=options.get('shuffle_unseen_cards', False),
-                daily_new_card_limit=options.get('daily_new_card_limit', 20),
-            )
-
         # Add the deck into the destination decks list of shared decks
         SharedDeckRelation.objects.create(
             deck=deck,
@@ -1111,3 +1102,15 @@ class DeckClone(models.Model):
 
     def __str__(self) -> str:
         return f'Clone from @{self.profile.user.username} for Deck #{self.deck.id}'
+
+
+# When a deck is created, create it's DSSM
+def deck_did_save(sender, instance, created, *args, **kwargs):
+    if created:
+        DeckStudySessionManager.objects.create(
+            deck=instance,
+            user=instance.user.profile,
+        )
+
+
+post_save.connect(deck_did_save, sender=Deck)

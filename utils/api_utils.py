@@ -7,6 +7,8 @@ from django.shortcuts import redirect, render
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
+from .utils import assert_dict_data_type
+
 
 def permissions(
     is_authenticated: bool = True,
@@ -88,12 +90,8 @@ def assert_request_data_type(request: WSGIRequest, attr_types: dict) -> Union[Re
 
     `attr_types` maps string attributes to types ({'options': dict, 'obj_id': (int, str)})
     """
-    for attr, expected_type in attr_types.items():
-        request_value = request.data.get(attr)
-        if not isinstance(request_value, expected_type):
-            return Response({
-                'message': f'`{attr}` must be of type {expected_type}, not {type(request_value)}'
-            }, status=400)
+    if msg := assert_dict_data_type(request.data, attr_types):
+        return Response({'message': msg}, status=400)
 
     return None
 

@@ -20,8 +20,8 @@ urlpatterns = [
     *generate_base_api(
         'decks', 'deck',
         DeckSerializer,
-        ('title',),
-        'user',
+        {'title': str},
+        'user', 'USER',
         exclude_app_name=True,
     ),
     path('<int:deck_id>/flashcards/', views.deck_flashcards_view),

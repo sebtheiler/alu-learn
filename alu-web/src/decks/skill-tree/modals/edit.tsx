@@ -7,40 +7,35 @@ import { apiObjectEdit } from '../../../lookup/lookup';  // TODO: improve import
 import { DeckDispatch } from '../context';
 
 
-interface EditOptions {
+export interface DeckEditableAttrs {
   title?: string;
 }
 interface EditModalProps {
   deck: Deck;
-  modalIsOpen: boolean;
-  closeModal(): void;
+  show: boolean;
+  close(): void;
 }
 export default function EditModal(props: EditModalProps) {
-  const { deck, modalIsOpen, closeModal } = props;
+  const { deck, show, close } = props;
   const deckDispatch = useContext(DeckDispatch);
 
-  const editDeck = (options: EditOptions) => {
+  const editDeck = (options: DeckEditableAttrs) => {
     apiObjectEdit('decks', 'deck', deck.id, options);
     if (deckDispatch)
       deckDispatch({ action: 'EDIT', payload: { id: deck.id, ...options } });
   }
 
   return (
-    <Modal show={modalIsOpen} onHide={closeModal}>
+    <Modal show={show} onHide={close}>
       <Modal.Header>
         <Modal.Title>Editing "{deck.title}"</Modal.Title>
       </Modal.Header>
-      <Form onSubmit={e => {e.preventDefault(); closeModal();}}>
+      <Form onSubmit={e => {e.preventDefault(); close();}}>
         <Modal.Body>
-          <Form.Group>
-            <Form.Label>Deck Title</Form.Label>
-            <Form.Control
-              type='text'
-              name='deckTitle'
-              onBlur={e => editDeck({ title: e.target.value })}
-              defaultValue={deck.title}
-            />
-          </Form.Group>
+          <DeckForm
+            deck={deck}
+            editDeck={editDeck}
+          />
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -56,5 +51,26 @@ export default function EditModal(props: EditModalProps) {
         </Modal.Footer>
       </Form>
     </Modal>
-  )
+  );
+}
+
+interface DeckFormProps {
+  deck?: Deck;
+  editDeck?(options: DeckEditableAttrs): void;
+}
+export function DeckForm(props: DeckFormProps) {
+  const { deck, editDeck } = props;
+
+  return (
+    <Form.Group>
+      <Form.Label>Deck Title</Form.Label>
+      <Form.Control
+        type='text'
+        name='title'
+        onBlur={editDeck ? e => editDeck({ title: e.target.value }) : undefined}
+        defaultValue={deck?.title}
+        required
+      />
+    </Form.Group>
+  );
 }

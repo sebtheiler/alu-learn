@@ -54,18 +54,6 @@ def deck_create_view(request, *args, **kwargs):
         title=title,
     )
 
-    # Create deck study session manager
-    DeckStudySessionManager.objects.create(
-        deck=new_deck,
-        user=request.user.profile,
-        scheduling_algorithm=request.data.get('scheduling_algorithm', 'ANKING'),
-        shuffle_unseen_cards=request.data.get('shuffle_unseen_cards', False),
-        daily_new_card_limit=request.data.get('daily_new_card_limit', 20),
-        daily_seen_card_limit=request.data.get('daily_seen_card_limit', 200),
-        difficulty=request.data.get('difficulty', 'HARD'),
-        review_ahead_minutes=request.data.get('review_ahead_minutes', 120),
-    )
-
     return Response(DeckSerializer(new_deck).data, status=201)
 
 
@@ -630,11 +618,6 @@ def txt_file_upload(request, *args, **kwargs):
 
     # Get/create deck with given title
     deck, created = Deck.objects.get_or_create(user=request.user, title=deck_title)
-    if created:
-        DeckStudySessionManager.objects.create(
-            deck=deck,
-            user=request.user.profile,
-        )
 
     # Create flashcards
     max_flashcard_num = FlashCard.get_max_flashcard_num(deck)
@@ -1369,11 +1352,6 @@ def deck_json_import_view(request, *args, **kwargs):
     deck = Deck.objects.create(
         user=request.user,
         title=title,
-    )
-
-    DeckStudySessionManager.objects.create(
-        deck=deck,
-        user=request.user.profile,
     )
 
     # Create flashcards

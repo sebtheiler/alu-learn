@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Deck } from '../types';
-import { ExportModal, GameModal } from '../buttons';
-import { apiDeckDelete, apiSSMDelete } from '../../lookup';
-import { errorHandler } from '../../utils';
+import { Deck } from '../../types';
+import { ExportModal, GameModal } from '../../buttons';
+import { apiDeckDelete, apiSSMDelete } from '../../../lookup';
+import { errorHandler } from '../../../utils';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
-import EditModal from './modals/edit';
+import EditModal from '../modals/edit';
 
 interface DeckSelectionButtonsProps {
   deck: Deck;
@@ -81,8 +81,8 @@ If you wish to continue, please type "DELETE", without the quotes.
         <Button onClick={() => setEditModalOpen(true)} block>Edit</Button>
         <EditModal
           deck={deck}
-          modalIsOpen={editModalOpen}
-          closeModal={() => setEditModalOpen(false)}
+          show={editModalOpen}
+          close={() => setEditModalOpen(false)}
         />
         <Button href={`/decks/${deck.id}/flashcards/`} block>Browse</Button>
         <hr />
