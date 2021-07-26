@@ -8,9 +8,31 @@ import { useApiObjectHook } from '../../utils';
 import { apiDeckPrivateList } from '../../lookup';
 import { Deck } from '../types';
 import './home.css';
+import { useObjectList } from '../../lookup/lookup';  // TODO: clean up imports
 
+type DeckAction = 'CREATE' | 'EDIT' | 'DELETE';
+const deckReducer = (
+  state: Deck[] | undefined,
+  event: { action: DeckAction, payload: Deck[] | undefined },
+): Deck[] | undefined => {
+  if (!state) return undefined;
+  switch (event.action) {
+    case 'CREATE':
+      return [...state, (event.payload as Deck[])[0]];
+    case 'EDIT':
+      return state; // TODO
+    case 'DELETE':
+      return state; // TODO
+    default:
+      return state;
+  }
+}
 export function SkillTreeHome() {
-  const [decks] = useApiObjectHook<Deck[]>(apiDeckPrivateList, 200, 1006);
+  const [decks, decksDispatch] = useObjectList(
+    'decks', 'deck',
+    deckReducer,
+  );
+  console.log(decks)
   const [selectedDeck, setSelectedDeck] = useState<number | null>(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const selectedDeckUrl = urlParams.get('selected');

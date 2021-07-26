@@ -7,8 +7,7 @@ import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { getCookie } from '../utils';
 import { backendLookup, baseUrl } from './components';
-import { useState, Dispatch, SetStateAction } from 'react';
-import { useEffect } from 'react';
+import { useReducer, useEffect, Dispatch } from 'react';
 
 type Message = { 'message': string };
 type PaginatedResponse = {
@@ -30,47 +29,67 @@ async function backendFetch<T>(
       'content-type': 'application/json',
       'X-CSRFTOKEN': csrfToken ?? '',
     },
-    body: JSON.stringify(data),
+    body: method === 'GET' ? undefined : JSON.stringify(data),
   }).then(res => res.json());
 }
 
-export function useObjectGet<T>(
+export function useObjectGet<ObjType, Event extends {
+  action: any,
+  payload: ObjType | undefined,
+}>(
   appName: string,
   modelName: string,
   objectId: number | string,
-): [T | undefined, Dispatch<SetStateAction<T | undefined>>] {
-  const [obj, setObj] = useState<T | undefined>(undefined);
+  reducer: (
+    state: ObjType | undefined,
+    event: Event,
+  ) => ObjType | undefined,
+): [ObjType | undefined, Dispatch<Event>] {
+  const [obj, dispatch] = useReducer((state: ObjType | undefined, event: Event) => {
+    if (event.action === 'INITIAL_SET')
+      return event.payload;
+    return reducer(state, event)
+  }, undefined);
+
   useEffect(() => {
-    const lookup = async () => backendFetch(
+    (async () => backendFetch(
       'GET',
       `${baseUrl}/api/${appName}/${modelName}/${objectId}/`,
     ).then(
-      res => setObj(res as T)
-    );
-
-    lookup();
+      res => dispatch({ action: 'INITIAL_SET', payload: res } as Event)
+    ))();
   }, [appName, modelName, objectId]);
 
-  return [obj, setObj];
+  return [obj, dispatch];
 }
 
-export function useObjectList<T>(
+export function useObjectList<ObjType, Event extends {
+  action: any,
+  payload: ObjType[] | undefined,
+}>(
   appName: string,
   modelName: string,
-): [T[] | undefined, Dispatch<SetStateAction<T[] | undefined>>] {
-  const [obj, setObj] = useState<T[] | undefined>(undefined);
+  reducer: (
+    state: ObjType[] | undefined,
+    action: Event,
+  ) => ObjType[] | undefined,
+): [ObjType[] | undefined, Dispatch<Event>] {
+  const [obj, dispatch] = useReducer((state: ObjType[] | undefined, event: Event) => {
+    if (event.action === 'INITIAL_SET')
+      return event.payload;
+    return reducer(state, event);
+  }, undefined);
+
   useEffect(() => {
-    const lookup = async () => backendFetch(
+    (async () => backendFetch(
       'GET',
       `${baseUrl}/api/${appName}/${modelName}/`,
     ).then(
-      res => setObj(res as T[])
-    );
-
-    lookup();
+      res => dispatch({ action: 'INITIAL_SET', payload: res } as Event)
+    ))();
   }, [appName, modelName]);
 
-  return [obj, setObj];
+  return [obj, dispatch];
 }
 
 export async function apiObjectEdit<T>(
