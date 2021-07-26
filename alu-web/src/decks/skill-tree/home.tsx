@@ -9,16 +9,16 @@ import { apiDeckPrivateList } from '../../lookup';
 import { Deck } from '../types';
 import './home.css';
 
-const urlParams = new URLSearchParams(window.location.search);
-const selectedDeckUrl = urlParams.get('selected');
-let selectedDeckDefault: number | null;
-if (selectedDeckUrl !== null)
-  selectedDeckDefault = parseInt(selectedDeckUrl);
-else
-  selectedDeckDefault = null;
 export function SkillTreeHome() {
   const [decks] = useApiObjectHook<Deck[]>(apiDeckPrivateList, 200, 1006);
-  const [selectedDeck, setSelectedDeck] = useState<number | null>(selectedDeckDefault);
+  const [selectedDeck, setSelectedDeck] = useState<number | null>(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedDeckUrl = urlParams.get('selected');
+    if (selectedDeckUrl !== null)
+      return parseInt(selectedDeckUrl);
+    else
+      return null;
+  });
 
   return (
     <Container className='text-center mt-3' fluid>

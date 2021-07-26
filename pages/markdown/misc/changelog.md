@@ -5,7 +5,9 @@
   * Easier to update
   * Faster loading speeds
 * Changed importing/exporting
-  * Not backwards compatible
+  * Not backward compatible
+* Revamped deck editing
+  * Removed all the arbitrary options from deck editing
 
 -----
 ## To-dos & Revamped Tutorial (DEVELOPMENT) - Jul 13 - 0.7.3b

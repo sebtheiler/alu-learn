@@ -18,6 +18,7 @@ export default function EditModal(props: EditModalProps) {
   const { deck, modalIsOpen, closeModal } = props;
 
   const editDeck = (options: EditOptions) => {
+    // setDecks
     apiObjectEdit('decks', 'deck', deck.id, options);
   }
 

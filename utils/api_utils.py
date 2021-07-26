@@ -1,6 +1,7 @@
-from typing import Union
+from typing import Union, Tuple
 
 from django.core.handlers.wsgi import WSGIRequest
+from django.db import models
 from django.http import Http404
 from django.shortcuts import redirect, render
 from rest_framework.pagination import PageNumberPagination
@@ -95,3 +96,32 @@ def assert_request_data_type(request: WSGIRequest, attr_types: dict) -> Union[Re
             }, status=400)
 
     return None
+
+
+def get_obj_or_404(
+    Model: models.Model,
+    obj_id: Union[int, str],
+    user: Union[models.Model, None],
+    owner_path: Union[str, None],
+) -> Tuple[Union[models.Model, Response], bool]:
+    """
+    Either gets a model or returns a 404 response
+
+    Model: model type of the object to get
+    obj_id: ID of the object to get
+    user: If specified, the owner of the object
+    `owner_path`: Path/attribute to get the objects `user`
+        ('user', 'profile.user', 'deck__user')
+
+    Returns the model OR 404 response, AND whether or not the model was returned
+    """
+    try:
+        return Model.objects.get(
+            pk=obj_id,
+            **({owner_path: user} if owner_path else {}),
+        ), True
+    except Model.DoesNotExist:
+        return Response(
+            {'message': f'{type(Model)} not found'},
+            status=404,
+        ), False

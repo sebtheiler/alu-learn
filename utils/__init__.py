@@ -20,7 +20,10 @@ from .test_utils import (
 )
 
 from .api_gen import (
+    get_object_view,
+    list_object_view,
     edit_object_view,
+    generate_base_api,
 )
 
 __all__ = [
@@ -33,5 +36,8 @@ __all__ = [
     'permissions',
     'ImprovedTestCase',
     'SeleniumTestCase',
+    'get_object_view',
+    'list_object_view',
     'edit_object_view',
+    'generate_base_api',
 ]

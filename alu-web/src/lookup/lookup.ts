@@ -7,6 +7,8 @@ import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { getCookie } from '../utils';
 import { backendLookup, baseUrl } from './components';
+import { useState, Dispatch, SetStateAction } from 'react';
+import { useEffect } from 'react';
 
 type Message = { 'message': string };
 type PaginatedResponse = {
@@ -32,16 +34,55 @@ async function backendFetch<T>(
   }).then(res => res.json());
 }
 
+export function useObjectGet<T>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
+): [T | undefined, Dispatch<SetStateAction<T | undefined>>] {
+  const [obj, setObj] = useState<T | undefined>(undefined);
+  useEffect(() => {
+    const lookup = async () => backendFetch(
+      'GET',
+      `${baseUrl}/api/${appName}/${modelName}/${objectId}/`,
+    ).then(
+      res => setObj(res as T)
+    );
+
+    lookup();
+  }, [appName, modelName, objectId]);
+
+  return [obj, setObj];
+}
+
+export function useObjectList<T>(
+  appName: string,
+  modelName: string,
+): [T[] | undefined, Dispatch<SetStateAction<T[] | undefined>>] {
+  const [obj, setObj] = useState<T[] | undefined>(undefined);
+  useEffect(() => {
+    const lookup = async () => backendFetch(
+      'GET',
+      `${baseUrl}/api/${appName}/${modelName}/`,
+    ).then(
+      res => setObj(res as T[])
+    );
+
+    lookup();
+  }, [appName, modelName]);
+
+  return [obj, setObj];
+}
+
 export async function apiObjectEdit<T>(
   appName: string,
   modelName: string,
   objectId: number | string,
-  options: Object,
+  edited_values: Object,
 ): Promise<T> {
   return backendFetch<T>(
-    'POST',
+    'PUT',
     `${baseUrl}/api/${appName}/${modelName}/${objectId}/edit/`,
-    { edited_values: options },
+    { edited_values: edited_values },
   );
 }
 
