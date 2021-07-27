@@ -23,7 +23,8 @@ export const deckReducer = (
 
       return [...newState];  // React is very stupid so you need to clone the array to force re-render
     case 'DELETE':
-      return state; // TODO
+      // `payload`: Id of the deck to delete
+      return state.filter(deck => deck.id !== event.payload);
     default:
       return state;
   }

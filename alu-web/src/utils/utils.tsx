@@ -641,3 +641,11 @@ export function capitalize(str: string, all: boolean = false) {
     return str.split(' ').map(s => capitalize(s)).join(' ');
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+export function confirmDelete(name: string) {
+  return window.prompt(`
+Are you sure you want to delete this ${name}?  This action is instant and irreversible.
+For your own safety, please type "DELETE" (all caps, without the quotes) to confirm
+that you want to delete this deck.
+  `) === 'DELETE';
+}

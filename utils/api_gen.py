@@ -42,7 +42,7 @@ def create_object_view(
             **request.data['create_values'],
         )
 
-        return Response(Serializer(model).data, status=200)
+        return Response(Serializer(model).data, status=201)
 
     return view
 
@@ -138,6 +138,33 @@ def edit_object_view(
     return view
 
 
+def delete_object_view(
+    Serializer: serializers.ModelSerializer,
+    owner_path: str,
+):
+    """
+    Creates an API view for deleting a given model
+
+    `Serializer`: Model's serializer (also gives information on the Model)
+    `owner_path`: Path/attribute to get the objects owner
+        ('user', 'profile.user', 'deck__user')
+    """
+    Model = Serializer.Meta.model  # type: models.Model
+
+    @api_view(['DELETE'])
+    @permission_classes([IsAuthenticated])
+    def view(request: WSGIRequest, obj_id: int):
+        model, got = get_obj_or_404(Model, obj_id, request.user, owner_path)
+        if not got:
+            return model
+
+        model.delete()
+
+        return Response({'message': 'Object deleted'}, status=200)
+
+    return view
+
+
 def generate_base_api(
     app_name: str,
     model_name: str,
@@ -162,12 +189,14 @@ def generate_base_api(
     """
     base_name = f'{app_name}/{model_name}' if not exclude_app_name else f'{model_name}'
     return [
+        # Create
         path(f'{base_name}/create/', create_object_view(
             Serializer=Serializer,
             editable_attr_types=editable_attr_types,
             owner_path=owner_path,
             owner_type=owner_type,
         )),
+        # Read
         path(f'{base_name}/<int:obj_id>/', get_object_view(
             Serializer=Serializer,
             owner_path=owner_path,
@@ -176,9 +205,15 @@ def generate_base_api(
             Serializer=Serializer,
             owner_path=owner_path,
         )),
+        # Update
         path(f'{base_name}/<int:obj_id>/edit/', edit_object_view(
             Serializer=Serializer,
             editable_attrs=editable_attr_types.keys(),
+            owner_path=owner_path,
+        )),
+        # Delete
+        path(f'{base_name}/<int:obj_id>/delete/', delete_object_view(
+            Serializer=Serializer,
             owner_path=owner_path,
         )),
     ]

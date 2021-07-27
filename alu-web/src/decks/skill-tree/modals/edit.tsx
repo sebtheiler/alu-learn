@@ -1,10 +1,12 @@
 import React, { useContext } from 'react';
 import { Deck } from '../../types';
+import { apiObjectDelete, apiObjectEdit } from '../../../lookup/lookup';  // TODO: improve imports
+import { confirmDelete } from '../../../utils/utils';
+import { DeckDispatch } from '../context';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import { apiObjectEdit } from '../../../lookup/lookup';  // TODO: improve imports
-import { DeckDispatch } from '../context';
+import LoadingButton from '../buttons/LoadingButton';
 
 
 export interface DeckEditableAttrs {
@@ -25,10 +27,28 @@ export default function EditModal(props: EditModalProps) {
       deckDispatch({ action: 'EDIT', payload: { id: deck.id, ...options } });
   }
 
+  const deleteDeck = async () => {
+    if (!confirmDelete('deck')) return;
+    await apiObjectDelete('decks', 'deck', deck.id);
+
+    if (deckDispatch)
+      deckDispatch({ action: 'DELETE', payload: deck.id});
+    close()
+  }
+
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header>
-        <Modal.Title>Editing "{deck.title}"</Modal.Title>
+        <Modal.Title>
+          Editing "{deck.title}"
+        </Modal.Title>
+        <LoadingButton
+          className='float-right'
+          variant='danger'
+          clickFunc={deleteDeck}
+        >
+          Delete
+        </LoadingButton>
       </Modal.Header>
       <Form onSubmit={e => {e.preventDefault(); close();}}>
         <Modal.Body>

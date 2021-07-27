@@ -117,6 +117,18 @@ export async function apiObjectEdit<T>(
   );
 }
 
+export async function apiObjectDelete<T>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
+): Promise<T> {
+  return backendFetch<T>(
+    'DELETE',
+    `${baseUrl}/api/${appName}/${modelName}/${objectId}/delete/`,
+  );
+}
+
+
 
 // Creates a new deck
 export function apiDeckCreate(
