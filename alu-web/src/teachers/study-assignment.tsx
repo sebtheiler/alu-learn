@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { StudyLogicComponent } from '../decks/study/components';
 import { ReviewInstance, SSMInterface } from '../decks/types';
-import { apiAssignmentDetail, apiSSMDetail, apiStudyAssignment } from '../lookup';
+import { apiAssignmentDetail, apiStudyAssignment } from '../lookup';
 import { useApiObjectHook } from '../utils';
 import { Assignment } from './types';
 
@@ -33,27 +32,28 @@ export function StudyAssignment({ classroomId, assignmentId }) {
     null,
     !!flashcards,
   );
-  const [SSM] = useApiObjectHook<SSMInterface>(
-    apiSSMDetail,
-    [200, 400, 404], 8021,
-    [assignment?.study_session_manager],
-    (response: any, status: number) => setErrorMsg(status !== 200 ? response.message : ''),
-    null,
-    !!assignment,
-  );
+  // const [SSM] = useApiObjectHook<SSMInterface>(
+  //   apiSSMDetail,
+  //   [200, 400, 404], 8021,
+  //   [assignment?.study_session_manager],
+  //   (response: any, status: number) => setErrorMsg(status !== 200 ? response.message : ''),
+  //   null,
+  //   !!assignment,
+  // );
 
   return (<>
     <h2 className='text-center mt-3'>
       Studying
     </h2>
     <div className='horizontal-rule mt-2 mb-4' />
-    <StudyLogicComponent
+    {/* TODO: completely redo assignment studying */}
+    {/* <StudyLogicComponent
       SSM={SSM}
       flashcards={flashcards}
       setFlashcards={setFlashcards}
       errorMsg={errorMsg}
       numOverflow={numOverflow}
       isAssignment
-    />
+    /> */}
   </>);
 }

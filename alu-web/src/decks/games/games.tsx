@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { MatchingGame } from './matching';
 import { QuizGame } from './quiz';
-import { CramGame } from './cram';
 import { apiGameFlashcards, gameFlashcardTypes } from '../../lookup/lookup';
 import { errorHandler } from '../../utils';
 import { ReviewInstance } from '../types';
@@ -100,7 +99,9 @@ Failed to calculate required number of flashcards.  You may need "?size=N" or "?
       case 'QUIZ':
         return <QuizGame flashcards={flashcards} numQuestions={num} />
       case 'CRAM':
-        return <CramGame initialFlashcards={flashcards} />
+        // return <CramGame initialFlashcards={flashcards} />
+        // TODO: delete Cram after creating new study system
+        return <p>This game is temporarily disabled</p>
       default:
         return <p>Unrecognized Game</p>
     }

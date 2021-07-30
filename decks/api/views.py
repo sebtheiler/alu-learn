@@ -4,7 +4,7 @@ import re
 from typing import List
 
 from django.core.cache import cache
-from django.db.models import F, Q
+from django.db.models import Q
 from django.views.decorators.cache import cache_control
 from django.views.decorators.vary import vary_on_cookie
 # For calculating advanced string similarities (used in searching)
@@ -12,51 +12,21 @@ from django.views.decorators.vary import vary_on_cookie
 # pip install fuzzywuzzy[speedup]
 from fuzzywuzzy import fuzz
 from profiles.models import Profile
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.decorators import (api_view, authentication_classes,
-                                       permission_classes)
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from utils import get_paginated_queryset_response, weighted_sample
-from utils import create_slate_element, get_morning
+from utils import (create_slate_element, get_morning,
+                   get_paginated_queryset_response, weighted_sample)
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
                       FlashCard, ReviewInstance, SharedDeck,
-                      SharedDeckRelation, StudySessionManager)
+                      SharedDeckRelation)
 from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
                            FlashCardSerializer, ReviewInstanceSerializer,
-                           SharedDeckSerializer, StudySessionManagerSerializer)
+                           SharedDeckSerializer)
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def deck_create_view(request, *args, **kwargs):
-    """
-    Create a deck - POST
-
-    Params:
-        `title` (Data)
-        `shuffle_unseen_cards` (Data)
-        `daily_new_card_limit` (Data)
-        `daily_seen_card_limit` (Data)
-        `scheduling_algorithm` (Data)
-        `difficulty` (Data)
-        `review_ahead_minutes` (Data)
-    """
-    # Get deck title
-    title = request.data.get('title')
-    if title is None:
-        return Response({'message': 'You must specify a title'}, status=400)
-
-    # Create deck
-    new_deck = Deck.objects.create(
-        user=request.user,
-        title=title,
-    )
-
-    return Response(DeckSerializer(new_deck).data, status=201)
-
-
+# TODO: rewrite to use save signals
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_create_view(request, deck_id, *args, **kwargs):
@@ -96,6 +66,8 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
         return Response({'message': 'Content must not be None'}, status=400)
 
 
+# TODO: rewrite to be model function (fat models, skinny views)
+# TODO: change URL to be consistent
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
@@ -169,60 +141,7 @@ def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
     return Response(FlashCardSerializer(instance=flashcard).data, 200)
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def flashcard_delete_view(request, deck_id, flashcard_num, *args, **kwargs):
-    """
-    Deletes a flashcard - POST
-
-    Required information:
-        `deck_id`: (URL) The ID of the deck in which the flashcard is located
-        `flashcard_id`: (URL) The ID of the flashcard to delete
-
-    Returns:
-        `message`: Flashcard deleted successfully
-        `status`: 200
-    """
-    # Get the flashcard
-    try:
-        flashcard = FlashCard.objects.get(
-            flashcard_num=flashcard_num,
-            deck__pk=deck_id,
-            deck__user=request.user,
-        )
-    except FlashCard.DoesNotExist:
-        return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
-
-    # Delete the flashcard
-    flashcard.delete()
-
-    # Rearrange all flashcards to fill in the missing gap
-    FlashCard.objects.filter(
-        deck__pk=deck_id,
-        flashcard_num__gt=flashcard.flashcard_num,
-    ).update(flashcard_num=F('flashcard_num') - 1)
-
-    return Response({'message': 'Flashcard deleted succesfully'}, status=200)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def flashcard_detail_view(request, deck_id, flashcard_num, *args, **kwargs):
-    try:
-        flashcard = FlashCard.objects.get(
-            flashcard_num=flashcard_num,
-            deck__pk=deck_id,
-            deck__user=request.user,
-        )
-    except FlashCard.DoesNotExist:
-        return Response(
-            {'message': 'Flashcard not found / you are unauthorized'},
-            status=404,
-        )
-
-    return Response(FlashCardSerializer(flashcard).data)
-
-
+# TODO: delete
 @api_view(['GET'])
 @vary_on_cookie
 @cache_control(private=True)
@@ -259,7 +178,7 @@ def deck_shared_view(request, username, *args, **kwargs):
 @cache_control(private=True)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-# TODO: merge this function with quick, public, and others
+# TODO: merge this function with quick, public, shared, and others
 def deck_private_list(request, *args, **kwargs):
     """
     Gets a list of the current user's private decks - GET
@@ -290,40 +209,7 @@ def deck_private_list(request, *args, **kwargs):
     )
 
 
-@api_view(['GET'])
-def deck_detail_view(request, deck_id, *args, **kwargs):
-    """
-    Get specific information about a deck - GET
-
-    Required information:
-        `deck_id`: (URL) The ID of the deck
-
-    Returns:
-        Author of the deck (PublicProfileSerializer): 'author'
-        Title of the deck: 'title'
-        ID of the deck: 'id'
-
-    Possible errors:
-        Invalid deck: 404, Deck not found
-        Deck is not shared with user: 403, You are unauthorized to view this deck
-    """
-    # Get deck
-    try:
-        deck = SharedDeck.objects.get(pk=deck_id)
-    except SharedDeck.DoesNotExist:
-        try:
-            deck = Deck.objects.get(pk=deck_id)
-        except Deck.DoesNotExist:
-            return Response({'message': 'Deck not found'}, status=404)
-
-    # Make sure the user is authorized
-    if not deck.user_has_access(request.user):
-        return Response({'message': 'You are unauthorized to view this deck'}, status=403)
-
-    Serializer = SharedDeckSerializer if isinstance(deck, SharedDeck) else DeckSerializer
-    return Response(Serializer(deck, context={'request': request}).data, status=200)
-
-
+# TODO: delete and use `custom_..._func`
 @api_view(['GET'])
 def shared_deck_detail_view(request, shared_deck_id, *args, **kwargs):
     """
@@ -419,102 +305,6 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
         )
 
 
-@api_view(['DELETE', 'POST'])
-@authentication_classes([SessionAuthentication])
-@permission_classes([IsAuthenticated])
-def deck_delete_view(request, deck_id, *args, **kwargs):
-    """
-    Deletes a deck - DELETE/POST
-
-    Required information:
-        `deck_id`: (URL) The ID of the deck to be deleted
-    """
-    # Get deck
-    try:
-        deck = Deck.objects.get(pk=deck_id, user=request.user)
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck not found / you are unauthorized'}, status=400)
-
-    # Delete
-    deck.delete()
-    return Response({'message': 'Deck deleted succesfully'}, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def deck_edit_view(request, deck_id, *args, **kwargs):
-    """
-    Edit a flashcard - POST
-
-    Required information:
-        `deck_id`: (URL) ID of the deck in which we are editing the flashcard
-        `new_title`: (Data) New title of the deck
-        `scheduling_algorithm`: (Data) Which scheduling algorithm to use, ANKI or ANKING
-        `shufle_unseen_cards`: (Data) Whether or not to shuffle unseen cards
-        `difficulty`: (Data) New difficulty of the deck, HARD, NORM, or EASY
-        `daily_new_card_limit`: (Data) New value for the # of unseen flashcards to show
-        `daily_seen_card_limit`: (Data) New value for the # of seen flashcards to show
-    """
-    # Get deck
-    try:
-        deck = Deck.objects.get(pk=deck_id, user=request.user)
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck not found / you are unauthorized'}, status=400)
-
-    # Edit the deck and its SSM
-    def update_ssm_attribute(attribute_name: str):
-        request_attribute = request.data.get(attribute_name)
-        if request_attribute is not None:
-            setattr(deck.study_session_manager, attribute_name, request_attribute)
-
-    deck.title = request.data.get('new_title') or deck.title
-    update_ssm_attribute('scheduling_algorithm')
-    update_ssm_attribute('shuffle_unseen_cards')
-    update_ssm_attribute('daily_new_card_limit')
-    update_ssm_attribute('daily_seen_card_limit')
-    update_ssm_attribute('review_ahead_minutes')
-    update_ssm_attribute('difficulty')
-
-    deck.save()
-    deck.study_session_manager.save()
-    return Response(DeckSerializer(instance=deck).data, 200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def flashcard_suspend_leech_view(request, deck_id, flashcard_id, *args, **kwargs):
-    """
-    Set a flashcard as suspended or unsuspended - POST
-
-    Required information:
-        `deck_id`: (URL) ID of the deck in which the card is located
-        `flashcard_id`: (URL) ID of the flashcard to (un)suspend/leech
-        `action`: (Data) Either 'suspend', 'unsuspend', 'leech', or 'unleech'
-    """
-    # Check action is specified
-    if not request.data.get('action'):
-        return Response({'message': 'Please specify an action'}, status=400)
-
-    # Get flashcard
-    try:
-        review_instance = ReviewInstance.objects.get(
-            pk=flashcard_id,
-            flashcard__deck__user=request.user,
-        )
-    except ReviewInstance.DoesNotExist:
-        return Response({'message': 'Flashcard not found / you are unauthorized'}, status=404)
-
-    # Set flashcard as (un)suspended/leeched
-    action = request.data.get('action')
-    if action in ('suspend', 'unsuspend'):
-        review_instance.is_suspended = (action == 'suspend')
-    elif action in ('leech', 'unleech'):
-        review_instance.set_is_leech(action == 'leech')
-    review_instance.save()
-
-    return Response(ReviewInstanceSerializer(review_instance).data, status=200)
-
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def flashcard_search_view(request, *args, **kwargs):
@@ -549,6 +339,7 @@ def flashcard_search_view(request, *args, **kwargs):
     return Response(ReviewInstanceSerializer(flashcard_qs, many=True).data, status=200)
 
 
+# TODO: Rewrite function
 @api_view(['GET'])
 def deck_search_view(request, *args, **kwargs):
     """
@@ -598,6 +389,7 @@ def deck_search_view(request, *args, **kwargs):
     return get_paginated_queryset_response(sorted_qs, request, SharedDeckSerializer, 5)
 
 
+# TODO: Combine with JSON import/export views
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def txt_file_upload(request, *args, **kwargs):
@@ -647,6 +439,7 @@ def txt_file_upload(request, *args, **kwargs):
     return Response(DeckSerializer(deck).data, status=201)
 
 
+# TODO: Rewrite function
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
@@ -682,186 +475,7 @@ def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
     }, status=200)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def ssm_detail_view(request, ssm_id, *args, **kwargs):
-    """
-    Gets information about a study session manager - GET
-    Required information:
-        `ssm_id`: (URL) ID of the study session manager
-
-    Possible errors:
-        SSM does not exist: 404, SSM does not exist
-    """
-    try:
-        ssm = StudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
-    except StudySessionManager.DoesNotExist:
-        return Response({'message': 'SSM does not exist'}, status=404)
-
-    return Response(StudySessionManagerSerializer(ssm).data, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def ssm_flashcard_update_view(request, ssm_id, flashcard_id, *args, **kwargs):
-    """
-    Update a flashcard's review information - POST
-
-    Required information:
-        `ssm_id`: (URL) ID of the study session manager
-        `flashcard_id`: (URL) ID of the flashcard we are editing
-        `next_review`: (Data) ISO string date for next review
-        `learning_status`: (Data) Learning status of the card
-        `ease`: (Data) Ease of card
-        `interval`: (Data) The new interval for the flashcard
-        `increment_new_cards_done_today`: (Data) Whether or not to
-            increment the SSM's `new_cards_done_today` attribute
-            If False, will increment `seen_cards_done_today` instead
-        `utc_timezone_offset`: (Data) (Optional) UTC timezone offset used to mark date
-            for completing flashcard
-        `time_taken`: (Data) (Optional) Time in ms required to answer the flashcard
-
-    Possible errors:
-        SSM does not exist: 404, SSM not found
-        Current user does not own SSM: 401, You are not authorized to edit this SSM
-        Flashcard does not exist: 404, Flashcard not found
-    """
-    # Get the SSM
-    try:
-        ssm = StudySessionManager.objects.get(pk=ssm_id)
-    except StudySessionManager.DoesNotExist:
-        return Response({'message': 'SSM not found / you are unauthorized'}, status=400)
-
-    # Get the flashcard
-    try:
-        review_instance = ReviewInstance.objects.get(
-            pk=flashcard_id,
-            flashcard__deck__user=request.user,
-        )
-    except ReviewInstance.DoesNotExist:
-        return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
-
-    # Edit the flashcard
-    review_instance.next_review = request.data.get('next_review', review_instance.next_review)
-    review_instance.learning_status = request.data.get(
-        'learning_status',
-        review_instance.learning_status,
-    ).upper()
-    review_instance.interval = request.data.get('interval', review_instance.interval)
-    review_instance.ease = request.data.get('ease', review_instance.ease)
-    review_instance.steps_index = request.data.get('steps_index', review_instance.steps_index)
-    # flashcard.leech_index = request.data.get('leech_index', flashcard.leech_index)
-    # flashcard.set_is_leech(request.data.get('is_leech', flashcard.is_leech), save=False)
-    review_instance.save()
-
-    # Increment the number of cards that the profile and SSM are registed as doing today
-    review_instance.flashcard.deck.user.profile.increment_work_done_today(
-        1,
-        request.data.get('utc_timezone_offset'),
-        request.data.get('time_taken'),
-    )
-
-    if request.data.get('increment_new_cards_done_today'):
-        ssm.new_cards_done_today += 1
-    else:
-        ssm.seen_cards_done_today += 1
-    ssm.save()
-
-    return Response(ReviewInstanceSerializer(instance=review_instance).data, 200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def ssm_edit_view(request, ssm_id, *args, **kwargs):
-    """
-    Edit a study session manager - POST
-
-    Params:
-        `ssm_id`: (URL) ID of the SSM to edit
-        `title`
-        `scheduling_algorithm`
-        `shuffle_unseen_cards`
-        `daily_new_card_limit`
-        All other CSSM information
-    """
-    try:
-        ssm = DeckStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
-    except DeckStudySessionManager.DoesNotExist:
-        try:
-            ssm = CustomStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
-        except CustomStudySessionManager.DoesNotExist:
-            return Response(
-                {'message': f'SSM #{ssm_id} does not exist for {request.user.username}'},
-                status=404,
-            )
-
-    if isinstance(ssm, CustomStudySessionManager):
-        # For CSSMs
-        ssm.title = request.data.get('title', ssm.title)
-        ssm.deck_ids = str(request.data.get(
-            'deck_ids',
-            ssm.deck_ids,
-        )).replace('[', '').replace(']', '').replace(' ', '')
-        ssm.tags = request.data.get('tags', ssm.tags)
-        ssm.contains = request.data.get('contains', ssm.contains)
-        ssm.leech = request.data.get('leech', ssm.leech)
-        ssm.learning_status = request.data.get('learning_status', ssm.learning_status)
-        ssm.min_ease = request.data.get('min_ease', ssm.min_ease)
-        ssm.max_ease = request.data.get('max_ease', ssm.max_ease)
-
-    # For all SSMs
-    ssm.scheduling_algorithm = request.data.get('scheduling_algorithm') or ssm.scheduling_algorithm
-    ssm.shuffle_unseen_cards = request.data.get('shuffle_unseen_cards') or ssm.shuffle_unseen_cards
-    ssm.daily_new_card_limit = request.data.get('daily_new_card_limit') or ssm.daily_new_card_limit
-    ssm.daily_seen_card_limit = request.data.get('daily_seen_card_limit') or \
-        ssm.daily_seen_card_limit
-    ssm.review_ahead_minutes = request.data.get('review_ahead_minutes') or ssm.review_ahead_minutes
-    ssm.save()
-
-    return Response(StudySessionManagerSerializer(ssm).data, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def ssm_delete_view(request, ssm_id, *args, **kwargs):
-    """
-    Delete a study session manager - POST
-
-    Required information:
-        `ssm_id`: (URL) ID of the SSM to edit
-
-    Possible errors:
-        SSM does not exist, 400: SSM does not exist / you are unauthorized
-    """
-    try:
-        ssm = StudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
-        ssm.delete()
-        return Response({'message': 'SSM deleted'}, status=200)
-    except StudySessionManager.DoesNotExist:
-        return Response({'message': 'SSM does not exist'}, status=404)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def ssm_create_view(request, *args, **kwargs):
-    """
-    Creates a (custom) study session manager - POST
-    """
-    ssm = CustomStudySessionManager.objects.create(
-        user=request.user.profile,
-        title=request.data.get('title', f'New Custom Study - {random.randint(0, 1000)}'),
-        deck_ids=','.join(map(str, request.data.get('deck_ids', []))),
-        tags=request.data.get('tags', ''),
-        contains=request.data.get('contains', ''),
-        leech=request.data.get('leech', ''),
-        learning_status=request.data.get('learning_status', ''),
-        min_ease=request.data.get('min_ease', 130),
-        max_ease=request.data.get('max_ease', 350),
-    )
-
-    return Response(CustomStudySessionManagerSerializer(ssm).data, status=201)
-
-
+# TODO: Rewrite view, along with other function-views, to be simpler
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def shared_deck_create_view(request, *args, **kwargs):
@@ -932,35 +546,6 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def shared_deck_edit_view(request, shared_deck_id, *args, **kwargs):
-    """
-    Edits the metadata of a shared deck - POST
-
-    Required information:
-        `new_title`: New title of the deck
-        `new_description`: New description of the deck
-        `new_sharing_setting`: New sharing setting of the deck
-    """
-    # Get shared deck
-    try:
-        shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
-    except SharedDeck.DoesNotExist:
-        return Response({'message': 'Could not find the specified shared deck'}, status=404)
-
-    # Update shared deck
-    shared_deck.title = request.data.get('new_title', shared_deck.title)
-    shared_deck.description = request.data.get('new_description', shared_deck.description)
-    shared_deck.sharing_setting = request.data.get(
-        'new_sharing_setting',
-        shared_deck.sharing_setting,
-    )
-    shared_deck.save()
-
-    return Response(SharedDeckSerializer(shared_deck).data, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def shared_deck_update_view(request, *args, **kwargs):
     """
     Allows the author of a shared deck to push flashcard changes - POST
@@ -998,6 +583,7 @@ def shared_deck_update_view(request, *args, **kwargs):
     return Response(data, status=200)
 
 
+# TODO: Combine with `deck_pull_updates_view`
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def deck_get_updates_view(request, deck_id, *args, **kwargs):
@@ -1116,6 +702,7 @@ def game_flashcards_view(request, *args, **kwargs):
     return Response(ReviewInstanceSerializer(flashcards, many=True).data, status=200)
 
 
+# TODO: make function on `api_gen`
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def rearrange_flashcard_view(request, deck_id, flashcard_num, *args, **kwargs):
@@ -1145,6 +732,7 @@ def rearrange_flashcard_view(request, deck_id, flashcard_num, *args, **kwargs):
     return Response(FlashCardSerializer(flashcard).data, status=200)
 
 
+# TODO: Combine with flashcard_review_instance_bulk_update_view
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def edit_tags_bulk_view(request, *args, **kwargs):
@@ -1225,6 +813,8 @@ def flashcard_review_instance_bulk_update_view(request, *args, **kwargs):
     return Response({'message': 'Edited flashcard review instances'}, status=200)
 
 
+# TODO: do something to make functions easily accessable
+# and combine with skill_tree gen et al
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def deck_statistics_view(request, deck_id, *args, **kwargs):
@@ -1243,6 +833,7 @@ def deck_statistics_view(request, deck_id, *args, **kwargs):
     return Response(deck.get_statistics(), status=200)
 
 
+# TODO: DELETE
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def deck_quick_list_view(request, *args, **kwargs):
@@ -1282,6 +873,7 @@ def deck_quick_list_view(request, *args, **kwargs):
     return Response(data, status=200)
 
 
+# TODO: Combine with import view
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def deck_json_export_view(request, deck_id, *args, **kwargs):

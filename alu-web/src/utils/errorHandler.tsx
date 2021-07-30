@@ -46,7 +46,7 @@ int(hexadecimal_string, 16)
 1000:
 1001: Error deleting deck through apiDeckDelete in alu-web/src/decks/button.js
 1002: Error copying deck through apiDeckCopy in alu-web/src/decks/button.js
-1003: Error getting deck detail through apiDeckDetail in alu-web/src/decks/components.js
+1003: Error getting deck detail through apiSharedDeckDetail in alu-web/src/decks/components.js
 1004: Error creating deck through apiDeckCreate in alu-web/src/decks/create.js
 1005:
 1006: Error getting deck through apiDeckHome in alu-web/src/decks/home.js
@@ -58,15 +58,15 @@ int(hexadecimal_string, 16)
 1012: Error handling next set of decks (pagination, decks search) through apiDeckSearch in alu-web/src/explore/search.js
 1013: Error importing deck from .txt file through apiDeckTextImport in alu-web/src/decks/import.js
 1014: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/components.js
-1015: Error looking up deck through apiDeckDetail in alu-web/src/decks/flashcards/list.js
+1015:
 1016: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
-1017: Error getting deck detail for sharing through apiDeckDetail in alu-web/src/decks/share.js
+1017:
 1018: Error handling next set of deck's flashcards (pagination) through apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
 1019: Error creating shared deck through apiCreateShareddeck in alu-web/src/decks/share.js
 1020: Error checking diff between shared and origin deck through apiSharedPushChanges in alu-web/src/decks/push.js
-1021: Error getting deck detail for sharing through apiDeckDetail in alu-web/src/decks/push.js
+1021:
 1022: Error pushing changes to new deck through apiSharedPushChanges in alu-web/src/decks/push.js
-1023: Error getting deck detail for updating through apiDeckDetail in alu-web/src/decks/update.js
+1023:
 1024: Error getting deck updates through apiDeckGetUpdates in alu-web/src/decks/update.js
 1024: Error pulling deck updates through apiDeckPullUpdates in alu-web/src/decks/update.js
 1025: Error getting list of private decks for searching through apiDeckPrivateList in alu-web/src/flashcards/search.js
@@ -82,7 +82,7 @@ int(hexadecimal_string, 16)
 2001: Error creating or editing flashcard through apiFlashCardEdit or apiFlashCardCreate in alu-web/src/decks/flashcards/create.js
 2002: Error marking flashcard as leech or suspending while studying through apiFlashCardSuspendLeech in alu-web/src/decks/study/components.js
 2003: Error suspending/leeching flashcard through apiFlashCardSuspendLeech in alu-web/src/decks/flashcards/list.js
-2004: Error deleting flashcard through apiFlashCardDelete in alu-web/src/decks/flashcards/detail.js
+2004:
 2005: Error searching for flashcards through apiFlashCardSearch in alu-web/src/decks/flashcards/search.js
 2006: Error updating flashcard tags in bulk
 2007: Error searching for flashcards in custom study through apiFlashCardSearch in alu-web/src/decks/study/components.js

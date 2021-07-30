@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { DeckCreate } from './create';
 import { DeckDetail } from './detail';
 import { apiSharedDeckDetail, apiDeckFlashcards } from '../lookup';
 import { DecksHomeList } from './home';
@@ -16,7 +15,6 @@ export function DecksHomeComponent(props) {
       <div className='text-center my-3'>
         <ButtonGroup>
           <Button href='/flashcards/search/'>Search for Flashcards</Button>
-          <DeckCreate className='ml-1' />
           <Button className='ml-1' href='/decks/import/'>Import Deck</Button>
         </ButtonGroup>
       </div>

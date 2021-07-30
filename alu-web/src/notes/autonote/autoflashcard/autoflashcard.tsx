@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { AutoReader } from '../reader';
 import { parseText } from '../autonote';
-import { FlashCardCreate } from '../../../decks/flashcards';
 import { apiDeckHome, apiNotePageDetail } from '../../../lookup';
 import { useApiObjectHook } from '../../../utils';
 import Form from 'react-bootstrap/Form';
@@ -50,7 +49,6 @@ export function AutoFlashCard({ noteId, pageNum }) {
       compiledNotesButton={false}
     >
       <br />
-      <FlashCardCreate deckId={selectedDeckId} />
       <div id='contentProgress' className='mt-1 mb-5'>
         <div id='contentProgressBar'>{percentComplete}%</div>
       </div>

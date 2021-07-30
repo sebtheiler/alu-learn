@@ -1,7 +1,6 @@
 // TODO: Break this file up into a separate file for each "package"
 // Each file should contain the lookups for just that package
-import { Node } from 'slate';
-import { CSSM, Deck, DeckDifficulty, ReviewInstance, FlashCard, FlashCardTypes, LearningStatus, SchedulingAlgorithm, SharedDeck, SSMInterface } from '../decks/types';
+import { CSSM, Deck, ReviewInstance, FlashCard, SchedulingAlgorithm, SSMInterface, FlashCardTypes } from '../decks/types';
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
 import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
@@ -45,29 +44,47 @@ export function apiObjectCreate<T>(
   );
 }
 
-export function useObjectGet<ObjType, Event extends {
-  action: any,
-  payload?: any,
-}>(
+export async function apiObjectGet<T>(
   appName: string,
   modelName: string,
   objectId: number | string,
-  reducer: (
+) {
+  return backendFetch<T>(
+    'GET',
+    `${baseUrl}/api/${appName}/${modelName}/${objectId}/`,
+  );
+}
+
+export async function apiObjectList<T>(
+  appName: string,
+  modelName: string,
+) {
+  return backendFetch<T>(
+    'GET',
+    `${baseUrl}/api/${appName}/${modelName}/`,
+  );
+}
+
+export function useObjectGet<ObjType, Event extends {
+  action: any,
+  payload?: any,
+} = never>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
+  reducer?: (
     state: ObjType | undefined,
     event: Event,
   ) => ObjType | undefined,
 ): [ObjType | undefined, Dispatch<Event>] {
   const [obj, dispatch] = useReducer((state: ObjType | undefined, event: Event) => {
-    if (event.action === 'INITIAL_SET')
+    if (event && event.action === 'INITIAL_SET')
       return event.payload as ObjType;
-    return reducer(state, event)
+    return reducer ? reducer(state, event) : undefined;
   }, undefined);
 
   useEffect(() => {
-    (async () => backendFetch(
-      'GET',
-      `${baseUrl}/api/${appName}/${modelName}/${objectId}/`,
-    ).then(
+    (async () => apiObjectGet(appName, modelName, objectId).then(
       res => dispatch({ action: 'INITIAL_SET', payload: res } as Event)
     ))();
   }, [appName, modelName, objectId]);
@@ -93,10 +110,7 @@ export function useObjectList<ObjType, Event extends {
   }, undefined);
 
   useEffect(() => {
-    (async () => backendFetch(
-      'GET',
-      `${baseUrl}/api/${appName}/${modelName}/`,
-    ).then(
+    (async () => apiObjectList(appName, modelName).then(
       res => dispatch({ action: 'INITIAL_SET', payload: res } as Event)
     ))();
   }, [appName, modelName]);
@@ -129,29 +143,6 @@ export async function apiObjectDelete<T>(
 }
 
 
-
-// Creates a new deck
-export function apiDeckCreate(
-  title: string,
-  shuffleUnseenCards: boolean,
-  dailyNewCardLimit: number,
-  dailySeenCardLimit: number,
-  schedulingAlgo: SchedulingAlgorithm,
-  deckDifficulty: DeckDifficulty,
-  reviewAheadMinutes: number,
-  callback: (response: Deck, status: number) => void,
-) {
-  backendLookup('POST', 'decks/create/', callback, {
-    title: title,
-    shuffle_unseen_cards: shuffleUnseenCards,
-    daily_new_card_limit: dailyNewCardLimit,
-    daily_seen_card_limit: dailySeenCardLimit,
-    scheduling_algorithm: schedulingAlgo,
-    difficulty: deckDifficulty,
-    review_ahead_minutes: reviewAheadMinutes,
-  });
-}
-
 // Creates a flashcard in a deck
 export function apiFlashCardCreate(
   deckId: number,
@@ -167,31 +158,12 @@ export function apiFlashCardCreate(
   });
 }
 
-// Deletes a flashcard in a deck
-export function apiFlashCardDelete(
-  deckId: number,
-  flashcardNum: number,
-  callback: (response: Message, status: number) => void,
-) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardNum}/delete/`, callback);
-}
-
 // Edit a flashcard
 export function apiFlashCardEdit(deckId, flashcardId, fields, tags, callback) {
   backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {
     fields: fields,
     tags: tags,
   });
-}
-
-// Gets specific information about a flashcard
-export function apiFlashCardDetail(deckId, flashcardId, callback) {
-  backendLookup('GET', `decks/${deckId}/flashcards/${flashcardId}/`, callback);
-}
-
-// Marks a flashcard as suspended or as a leech
-export function apiFlashCardSuspendLeech(deckId, flashcardId, action, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/suspend_or_leech/`, callback, {action: action});
 }
 
 // Search for flashcards
@@ -210,20 +182,6 @@ export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, le
   backendLookup('GET', endpoint, callback);
 }
 
-// Gets detail information on a deck with ID `deckId`
-export function apiDeckDetail(
-  deckId: number,
-  options: { getFullDetail?: boolean },
-  callback: (response: Deck | SharedDeck, status: number) => void,
-) {
-  const {getFullDetail} = options;
-  let endpoint = `decks/${deckId}/`;
-  if (getFullDetail) {
-    endpoint += '?fullDetail=true';
-  }
-  backendLookup('GET', endpoint, callback);
-}
-
 // Gets a deck's flashcards
 export function apiDeckFlashcards(deckId, options, callback, nextUrl='') {
   const {limit, reverse} = options;
@@ -236,11 +194,6 @@ export function apiDeckFlashcards(deckId, options, callback, nextUrl='') {
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   }
   backendLookup('GET', endpoint, callback);
-}
-
-// Deletes a deck
-export function apiDeckDelete(deckId, callback) {
-  backendLookup('POST', `decks/${deckId}/delete/`, callback);
 }
 
 // Gets a list of decks owned by a user with username `username` that are shared with the given user
@@ -461,14 +414,6 @@ export function apiFeedbackSubmit(
   });
 }
 
-// Gets metadata about an SSM
-export function apiSSMDetail(
-  studySessionmanagerId: number,
-  callback: (response: SSMInterface, status: number) => void,
-) {
-  backendLookup('GET', `decks/ssm/${studySessionmanagerId}/`, callback);
-}
-
 // Gets flashcards to review now from an SSM
 export function apiSSMFlashcards(
   studySessionmanagerId: number,
@@ -481,113 +426,6 @@ export function apiSSMFlashcards(
   let endpoint = `decks/ssm/${studySessionmanagerId}/flashcards/`;
   if (reviewOverflowBucket) endpoint += '?from_overflow_bucket=true';
   backendLookup('GET', endpoint, callback);
-}
-
-// Updates a flashcard in an SSM's database
-export function apiSSMFlashcardUpdate(
-  studySessionmanagerId: number,
-  flashcardId: string, /** UUID of the flashcard to update */
-  nextReviewDate: string | Date,
-  interval: number,
-  easeFactor: number,
-  learningStatus: LearningStatus,
-  stepsIndex: number,
-  leechIndex: number,
-  isLeech: boolean,
-  incrementNewCardsDoneToday: boolean,
-  timezoneOffset: number,
-  timeTaken: number,
-  callback: (response: ReviewInstance, status: number) => void,
-) {
-  backendLookup('POST', `decks/ssm/${studySessionmanagerId}/flashcards/${flashcardId}/update/`, callback, {
-    next_review: nextReviewDate,
-    interval: interval,
-    ease: easeFactor,
-    learning_status: learningStatus,
-    steps_index: stepsIndex,
-    leech_index: leechIndex,
-    is_leech: isLeech,
-    increment_new_cards_done_today: incrementNewCardsDoneToday,
-    utc_timezone_offset: timezoneOffset,
-    time_taken: timeTaken,
-  });
-}
-
-// Updates a study session manager
-export function apiSSMEdit(
-  studySessionmanagerId: number,
-  title?: string,
-  schedulingAlgo?: SchedulingAlgorithm,
-  shuffleUnseenCards?: boolean,
-  dailyNewCardLimit?: number,
-  dailySeenCardLimit?: number,
-  reviewAheadMinutes?: number,
-  deckIds?: number[],
-  tags?: string,
-  contains?: string,
-  leech?: boolean | null,
-  learningStatus?: LearningStatus,
-  minEase?: number,
-  maxEase?: number,
-  callback?: (reponse: SSMInterface, status: number) => void,
-) {
-  if (!callback) {
-    console.error('Must provide `callback`');
-    return;
-  }
-
-  backendLookup('POST', `decks/ssm/${studySessionmanagerId}/edit/`, callback, {
-    title: title,
-    scheduling_algorithm: schedulingAlgo,
-    shuffle_unseen_cards: shuffleUnseenCards,
-    daily_new_card_limit: dailyNewCardLimit,
-    daily_seen_card_limit: dailySeenCardLimit,
-    review_ahead_minutes: reviewAheadMinutes,
-    deck_ids: deckIds,
-    tags: tags,
-    contains: contains,
-    leech: leech,
-    learning_status: learningStatus,
-    min_ease: minEase,
-    max_ease: maxEase,
-  });
-}
-
-// Deletes a study session manager
-export function apiSSMDelete(
-  studySessionmanagerId: number,
-  callback: (reponse: Message, status: number) => void,
-) {
-  backendLookup('POST', `decks/ssm/${studySessionmanagerId}/delete/`, callback);
-}
-
-// Creates a study session manager
-export function apiSSMCreate(
-  title: string,
-  deckIds?: number[],
-  tags?: string,
-  contains?: string,
-  leech?: boolean,
-  learningStatus?: LearningStatus,
-  minEase?: number,
-  maxEase?: number,
-  callback?: (reponse: CSSM, status: number) => void,
-) {
-  if (!callback) {
-    console.error('Must provide `callback`');
-    return;
-  }
-
-  backendLookup('POST', `decks/ssm/create/`, callback, {
-    title: title,
-    deck_ids: deckIds,
-    tags: tags,
-    contains: contains,
-    leech: leech,
-    learning_status: learningStatus,
-    min_ease: minEase,
-    max_ease: maxEase,
-  });
 }
 
 // Creates a note
@@ -743,15 +581,6 @@ export function apiCreateSharedDeck(originDeckId, title, description, sharingSet
 export function apiSharedDeckClone(sharedDeckId, destinationDeckTitle, callback) {
   backendLookup('POST', `decks/shared/clone/${sharedDeckId}/`, callback, {
     destination_deck_title: destinationDeckTitle,
-  });
-}
-
-// Edits a shared deck's metadata
-export function apiSharedDeckEdit(sharedDeckId, newTitle, newDescription, newSharingSetting, callback) {
-  backendLookup('POST', `decks/shared/edit/${sharedDeckId}/`, callback, {
-    new_title: newTitle,
-    new_description: newDescription,
-    new_sharing_setting: newSharingSetting,
   });
 }
 

@@ -577,6 +577,8 @@ class ReviewInstance(models.Model):
     steps_index = models.PositiveSmallIntegerField(default=0)
     ease = models.PositiveSmallIntegerField(default=250)
     next_review = models.DateTimeField()
+
+    # TODO: remove this and replace it with last review (also remove editable_attr)
     interval = models.PositiveSmallIntegerField(default=0)  # in days
 
     is_suspended = models.BooleanField(default=False)
@@ -594,6 +596,7 @@ class ReviewInstance(models.Model):
         return self.flashcard.has_tag('leech')
 
     def set_is_leech(self, is_leech: bool, save: bool = True) -> str:
+        # TODO: turn leech into a bool attr instead of tag
         flashcard = self.flashcard
         if is_leech:
             flashcard.add_tag('leech', save)

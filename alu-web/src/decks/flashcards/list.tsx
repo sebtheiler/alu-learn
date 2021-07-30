@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { apiDeckDetail, apiDeckFlashcards, apiRearrangeFlashcard } from '../../lookup';
+import { apiDeckFlashcards, apiRearrangeFlashcard } from '../../lookup';
 import { RenderFlashCard } from './detail';
 import { errorHandler, updateURLParameter } from '../../utils';
 import { SelectFlashcardsButtonGroup } from '../buttons';
 import Button from 'react-bootstrap/Button';
 import { Deck, SharedDeck, ReviewInstance, FlashCard } from '../types';
+import { apiObjectGet } from '../../lookup/lookup';
 
 // TODO: break this component into multiple components
 interface FlashCardsListProps {
@@ -51,17 +52,7 @@ export function FlashCardsList(props: FlashCardsListProps) {
     if (flashcardsDidSet === false) {
       if (!flashcardList && deckId) {
         // API lookup if given deck ID
-        apiDeckDetail(deckId, {}, (response, status) => {
-          // Get deck metadata
-          if (status === 200) {
-            setDeck(response);
-          } else if (status === 403) {
-            window.location.href = `/decks/${deckId}`;
-          } else {
-            // Error looking up deck
-            errorHandler(response, status, 1015);
-          }
-        });
+        apiObjectGet<Deck>('decks', 'deck', deckId).then(deck => setDeck(deck));
         apiDeckFlashcards(deckId, { reverse: reverseOrder }, (response, status) => {
           // Get flashcards
           if (status === 200) {

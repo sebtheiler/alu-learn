@@ -5,8 +5,8 @@ import './index.css';
 
 import { ProfileInformationComponent, LoginComponent, StaffForceLogin } from './profiles';
 import { DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, ShareDeck, PushSharedDeck, UpdateDeck, StatisticsPage } from './decks';
-import { FlashCardCreate, FlashCardsList, FlashCardSearchComponent } from './decks/flashcards';
-import { StudyComponent } from './decks/study';
+import { FlashCardsList, FlashCardSearchComponent } from './decks/flashcards';
+// import { StudyComponent } from './decks/study';
 import { NotificationComponent } from './profiles/notifications';
 import { ExploreComponent, DeckSearchComponent } from './explore';
 import { LandingComponent } from './landing';
@@ -42,9 +42,9 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [DeckDetailComponent, 'deck-detail', true],
   [ProfileInformationComponent, 'profile-info', true],
   [DecksHomeComponent, 'decks-home'],
-  [FlashCardCreate, 'create-flashcard'],
+  // [FlashCardCreate, 'create-flashcard'],
   [FlashCardsList, 'flashcard-list', true],
-  [StudyComponent, 'study-component'],
+  // [StudyComponent, 'study-component'],
   [NotificationComponent, 'notification-component', true],
   [ExploreComponent, 'explore-component'],
   [FlashCardSearchComponent, 'flashcard-search-component'],

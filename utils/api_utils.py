@@ -1,5 +1,6 @@
-from typing import Union, Tuple
+from typing import Tuple, Union
 
+from accounts.models import User
 from django.core.handlers.wsgi import WSGIRequest
 from django.db import models
 from django.http import Http404
@@ -99,7 +100,7 @@ def assert_request_data_type(request: WSGIRequest, attr_types: dict) -> Union[Re
 def get_obj_or_404(
     Model: models.Model,
     obj_id: Union[int, str],
-    user: Union[models.Model, None],
+    user: Union[User, None],
     owner_path: Union[str, None],
 ) -> Tuple[Union[models.Model, Response], bool]:
     """

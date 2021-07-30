@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Deck } from '../../types';
 import { ExportModal, GameModal } from '../../buttons';
-import { apiDeckDelete, apiSSMDelete } from '../../../lookup';
-import { errorHandler } from '../../../utils';
 import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
 import EditModal from '../modals/edit';
@@ -41,33 +39,6 @@ export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
     gameOptions += `&random=${form.elements.randomOrder?.checked}`;
 
     window.location.href = `/decks/${deck.id}/game/?${gameOptions}`;
-  }
-
-  const editDeleteHandler = () => {
-    if (deck.serializer_name === 'deck') {
-      if (window.prompt(`
-Are you sure you want to delete this deck?  This action is instant and irreversible.
-If you wish to continue, please type "DELETE", without the quotes.
-      `) === 'DELETE') {
-        apiDeckDelete(deck.id, (response, status) => {
-          if (status === 200) {
-            window.location.href = '/home/decks/';
-          } else {
-            // Error deleting deck
-            errorHandler(response, status, 1001);
-          }
-        });
-      }
-    } else {
-      apiSSMDelete(deck.id, (response, status) => {
-        if (status === 200) {
-          window.location.href = '/home/decks/';
-        } else {
-          // Error deleting SSM
-          errorHandler(response, status, 5004);
-        }
-      });
-    }
   }
 
   return (

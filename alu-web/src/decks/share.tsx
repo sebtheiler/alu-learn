@@ -1,36 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
-import { apiCreateSharedDeck, apiDeckDetail, apiSharedDeckEdit } from '../lookup';
+import { apiCreateSharedDeck } from '../lookup';
+import { apiObjectEdit, useObjectGet } from '../lookup/lookup';
 import { errorHandler } from '../utils';
 import { SharedDeck } from './types';
 
 
 export function ShareDeck(props) {
   const deckId = parseInt(props.deckId);
-  const [deckDidSet, setDeckDidSet] = useState(false);
-  const [deck, setDeck] = useState<SharedDeck>();
   const [makingPublic, setMakingPublic] = useState(false);
-
-  useEffect(() => {
-    if (deckDidSet === false) {
-      setDeckDidSet(true);
-      apiDeckDetail(deckId, {}, (_response, status) => {
-        const response = _response as SharedDeck;
-        if (status === 200) {
-          try {
-            // If this is the page of a shared deck, go to the sharing page of its creator
-            window.location.href = `/decks/${response.creators[0]}/share/`;
-          } catch (e) {}
-          setDeck(response);
-        } else {
-          // Error getting deck detail for sharing deck
-          errorHandler(response, status, 1017);
-        }
-      });
-    }
-  }, [deckDidSet, deckId]);
+  const [deck] = useObjectGet<SharedDeck>('decks', 'deck', deckId);
 
   const submitHandler = (event) => {
     event.preventDefault();
@@ -39,14 +20,11 @@ export function ShareDeck(props) {
     if (makingPublic === false && deck) {
       setMakingPublic(true);
       if (deck.shared_deck) { 
-        apiSharedDeckEdit(deck.shared_deck, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
-          if (status === 200) {
-            window.location.href = `/decks/${response.id}/`;
-          } else {
-            // Error editing shared deck metadata
-            errorHandler(response, status, 1020);
-          }
-        });
+        apiObjectEdit<SharedDeck>('decks', 'deck', deck.shared_deck, {
+          title: form.elements.title.value,
+          description: form.elements.description.value,
+          sharingSetting: form.elements.sharingSetting.value,
+        }).then(deck => window.location.href = `/decks/${deck.id}/`);
       } else {
         apiCreateSharedDeck(deckId, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
           if (status === 201) {

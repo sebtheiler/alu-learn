@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import { QuestionBubble, errorHandler, FormCheckbox, has } from '../../utils';
-import { apiFlashCardSuspendLeech, apiFlashCardDelete } from '../../lookup';
+import { QuestionBubble, FormCheckbox, has } from '../../utils';
 import { createFullEditor, FullEditor } from '../../notes/editor-components';
 import { Slate } from 'slate-react';
 import './detail.css';
 import { ReviewInstance, FlashCard } from '../types';
+import { apiObjectDelete, apiObjectEdit } from '../../lookup/lookup';
 
 
 interface RenderFlashCardTextProps {
@@ -150,17 +150,12 @@ export function RenderFlashCard(props: FlashCardProps) {
 
     if (suspendIsLoading === false && has(flashcard, 'is_suspended')) {
       setSuspendIsLoading(true);
-
-      const action = flashcard.is_suspended ? 'unsuspend' : 'suspend';
-      apiFlashCardSuspendLeech(flashcard.parent_deck_id, flashcard.id, action, (response, status) => {
-        if (status === 200) {
-          flashcard.is_suspended = action === 'suspend';
-          suspendCallback();
-          setSuspendIsLoading(false);
-        } else {
-          // Error suspending/leeching flashcard
-          errorHandler(response, status, 2003);
-        }
+      apiObjectEdit('decks', 'reviewinstance', flashcard.id, {
+        is_suspended: !flashcard.is_suspended
+      }).then(() => {
+        flashcard.is_suspended = !flashcard.is_suspended;
+        suspendCallback();
+        setSuspendIsLoading(false);
       });
     }
   }
@@ -170,26 +165,12 @@ export function RenderFlashCard(props: FlashCardProps) {
 
     if (deleteIsLoading === false) {
       setDeleteIsLoading(true);
-
-      apiFlashCardDelete(
-        flashcard.parent_deck_id,
-        flashcard.flashcard_num,
-        (response, status) => {
-          if (status === 200) {
-            deleteCallback();
-            setDeleteIsLoading(false);
-          } else if (status === 400) {
-            // Act like its been deleted even if it hasn't
-            // might be bad practice, but it works for when you delete a single creator that deletes multiple flashcards
-            deleteCallback();
-            setDeleteIsLoading(false);
-          } else {
-            // Error deleting flashcard
-            errorHandler(response, status, 2004);
-          }
-      });
+      apiObjectDelete('decks', 'flashcard', flashcard.id)
+        .then(() => {
+          deleteCallback();
+          setDeleteIsLoading(false);
+        });
     }
-
   }
 
   const flashcardSuspendedLeechClassName = () => {

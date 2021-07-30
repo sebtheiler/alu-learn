@@ -72,6 +72,7 @@ export interface FlashCard {
 }
 
 
+// TODO: This should NOT extend FlashCard
 export interface ReviewInstance extends FlashCard {
   tags: string;
   next_review: string; // ISO date string
