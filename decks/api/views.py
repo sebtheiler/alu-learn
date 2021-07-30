@@ -25,7 +25,6 @@ from ..serializers import (DeckSerializer, FlashCardSerializer,
                            ReviewInstanceSerializer, SharedDeckSerializer)
 
 
-# TODO: rewrite to use save signals
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_create_view(request, deck_id, *args, **kwargs):
@@ -49,50 +48,42 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     fields = request.data.get('fields')
     flashcard_type = request.data.get('flashcard_type', 'basic')
     tags = request.data.get('tags', '')
-    if fields is not None:
-        flashcards = FlashCard.create_flashcard(
-            deck,
-            tags,
-            flashcard_type,
-            fields,
-        )
+    if fields is None:
+        return Response({'message': '`fields` must not be None'}, status=400)
 
-        return Response(
-            ReviewInstanceSerializer(instance=flashcards, many=True).data,
-            201,
-        )
-    else:
-        return Response({'message': 'Content must not be None'}, status=400)
+    flashcards = FlashCard.create_flashcard(
+        deck,
+        tags,
+        flashcard_type,
+        fields,
+    )
+
+    return Response(
+        ReviewInstanceSerializer(instance=flashcards, many=True).data,
+        201,
+    )
 
 
-# TODO: rewrite to be model function (fat models, skinny views)
-# TODO: change URL and data to be consistent
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
+def flashcard_edit_view(request, flashcard_num, *args, **kwargs):
     """
     Edit a flashcard - POST
 
-    Required information:
-        `deck_id`: (URL) ID of the deck in which we are editing the flashcard (unused)
+    Params:
         `flashcard_id`: (URL) ID of the flashcard we are editing
         `fields`: (Data) List of the fields for the flashcard
         `tags`: (Data) Raw string of tags, separated by commas
-
-    Possible errors:
-        Flashcard does not exist or unauthorized: 400, Flashcard not found / you are unauthorized
     """
     # Get the flashcard
     try:
         flashcard = FlashCard.objects.get(
             flashcard_num=flashcard_num,
-            deck__pk=deck_id,
             deck__user=request.user,
         )
     except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
-    # Edit the tags
     flashcard.tags = request.data.get('tags', flashcard.tags)
 
     new_fields = request.data.get('fields')
@@ -735,7 +726,7 @@ def rearrange_flashcard_view(request, deck_id, flashcard_num, *args, **kwargs):
     return Response(FlashCardSerializer(flashcard).data, status=200)
 
 
-# TODO: Combine with flashcard_review_instance_bulk_update_view
+# TODO: Combine with function views
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def edit_tags_bulk_view(request, *args, **kwargs):

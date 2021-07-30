@@ -47,18 +47,22 @@ def get_morning() -> dt.datetime:
     return this_morning
 
 
-def assert_dict_data_type(dict_to_check: dict, attr_types: dict) -> Union[str, None]:
+def assert_dict_data_type(
+    dict_to_check: dict,
+    expected_attr_types: dict,
+    enforce_all_keys_equal: bool = True,
+) -> Union[str, None]:
     """
     Asserts that each specified item in `dict_to_check` is of the type sepcified by `attr_types`
 
-    `attr_types` maps string attributes to types ({'options': dict, 'obj_id': (int, str)})
+    `expected_attr_types` maps string attributes to types ({'options': dict, 'obj_id': (int, str)})
     """
-    if dict_to_check.keys() != attr_types.keys():
+    if enforce_all_keys_equal and dict_to_check.keys() != expected_attr_types.keys():
         return 'Mismatch between supplied keys and editable keys'
 
-    for attr, expected_type in attr_types.items():
-        request_value = dict_to_check.get(attr)
-        if not isinstance(request_value, expected_type):
-            return f'`{attr}` must be of type {expected_type}, not {type(request_value)}'
+    for given_attr, given_type in dict_to_check.items():
+        expected_type = expected_attr_types.get(given_attr)
+        if not isinstance(given_attr, expected_type):
+            return f'`{given_attr}` must be of type {given_type}, not {type(expected_type)}'
 
     return None

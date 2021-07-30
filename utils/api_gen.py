@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .api_utils import assert_request_data_type, get_obj_or_404
+from .api_utils import get_obj_or_404
 from .utils import assert_dict_data_type
 
 
@@ -32,14 +32,12 @@ def create_object_view(
     @api_view(['POST'])
     @permission_classes([IsAuthenticated])
     def view(request: WSGIRequest):
-        if resp := assert_request_data_type(request, {'create_values': dict}):
-            return resp
-        if msg := assert_dict_data_type(request.data['create_values'], editable_attrs):
+        if msg := assert_dict_data_type(request.data, editable_attrs):
             return Response({'message': msg}, status=400)
 
         model = Model.objects.create(
             **{owner_path: request.user if owner_type == 'USER' else request.user.profile},
-            **request.data['create_values'],
+            **request.data,
         )
 
         return Response(Serializer(model).data, status=201)
@@ -122,20 +120,17 @@ def edit_object_view(
     @api_view(['PUT'])
     @permission_classes([IsAuthenticated])
     def view(request: WSGIRequest, obj_id: int):
-        if resp := assert_request_data_type(request, {'edited_values': dict}):
-            return resp
-
         model, got = get_obj_or_404(Model, obj_id, request.user, owner_path)
         if not got:
             return model
 
-        for attr, value in request.data['edited_values'].items():
+        for attr, value in request.data.items():
             if (
                 attr not in editable_attrs.keys() or
                 not isinstance(attr, editable_attrs[attr])
             ):
                 return Response(
-                    {'message': f'Cannot edit attribute `{attr}`'},
+                    {'message': f'Cannot edit attribute `{attr}` as {type(attr)}'},
                     status=400,
                 )
 

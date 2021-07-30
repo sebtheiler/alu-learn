@@ -11,6 +11,7 @@ urlpatterns = [
     path('textupload/', views.txt_file_upload),
     path('upload/json/', views.deck_json_import_view),
     path('<int:deck_id>/export/json/', views.deck_json_export_view),
+    # Decks
     *generate_base_api(
         'decks', 'deck',
         DeckSerializer,
@@ -20,6 +21,7 @@ urlpatterns = [
     ),
     path('deck/list/user/<str:username>/', views.deck_shared_list),
     path('deck/list/quick/', views.deck_quick_list_view),
+    # Flashcards
     *generate_base_api(
         'decks', 'flashcard',
         FlashCardSerializer,
@@ -29,6 +31,9 @@ urlpatterns = [
         exclude_create=True,  # TODO: rewrite to use save signals
         exclude_edit=True,
     ),
+    path('flashcard/create/', views.flashcard_create_view),
+    path('flashcard/<int:flashcard_num>/edit/', views.flashcard_edit_view),
+    # Review instances
     *generate_base_api(
         'decks', 'reviewinstance',
         ReviewInstanceSerializer,
@@ -50,8 +55,6 @@ urlpatterns = [
     ),
     path('<int:deck_id>/flashcards/', views.deck_flashcards_view),
     path('<int:deck_id>/gen-skill-tree/', views.deck_generate_skill_tree_view),
-    path('<int:deck_id>/flashcards/create/', views.flashcard_create_view),
-    path('<int:deck_id>/flashcards/<int:flashcard_num>/edit/', views.flashcard_edit_view),
     path('<int:deck_id>/flashcards/<int:flashcard_num>/rearrange/', views.rearrange_flashcard_view),
     path('<int:deck_id>/statistics/', views.deck_statistics_view),
     path('ssm/<int:ssm_id>/flashcards/', views.ssm_flashcards_view),

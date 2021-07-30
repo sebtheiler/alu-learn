@@ -40,7 +40,7 @@ export function apiObjectCreate<T>(
   return backendFetch<T>(
     'POST',
     `${baseUrl}/api/${appName}/${modelName}/create/`,
-    { create_values: options },
+    options,
   );
 }
 
@@ -140,30 +140,6 @@ export async function apiObjectDelete<T>(
     'DELETE',
     `${baseUrl}/api/${appName}/${modelName}/${objectId}/delete/`,
   );
-}
-
-
-// Creates a flashcard in a deck
-export function apiFlashCardCreate(
-  deckId: number,
-  fields: Node[][],
-  tags: string,
-  flashcardType: FlashCardTypes,
-  callback: (response: FlashCard, status: number) => void,
-) {
-  backendLookup('POST', `decks/${deckId}/flashcards/create/`, callback, {
-    fields: fields,
-    tags: tags,
-    flashcard_type: flashcardType,
-  });
-}
-
-// Edit a flashcard
-export function apiFlashCardEdit(deckId, flashcardId, fields, tags, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {
-    fields: fields,
-    tags: tags,
-  });
 }
 
 // Search for flashcards

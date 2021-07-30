@@ -1,6 +1,4 @@
 import {
-  apiFlashCardCreate,
-  apiFlashCardEdit,
   apiFlashCardSearch,
   apiDeckFlashcards,
   apiDeckSharedList,
@@ -102,8 +100,6 @@ import {
 } from './lookup';
 
 export {
-  apiFlashCardCreate,
-  apiFlashCardEdit,
   apiFlashCardSearch,
   apiDeckFlashcards,
   apiDeckSharedList,
