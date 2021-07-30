@@ -1,360 +1,359 @@
-import React, { ReactNode, ReactNodeArray, useState } from 'react';
-import { apiSharedDeckClone, apiDeckPrivateList, apiFlashcardEditTags, apiClassroomGetSSM, apiClassroomEditSSM, apiDeckJSONExport } from '../lookup';
-import { errorHandler, FormCheckbox, has, LoadingButton, QuestionBubble, useApiObjectHook } from '../utils';
-import { SearchForm } from './flashcards/search';
+import React, { useState } from 'react';
+import { apiSharedDeckClone, apiFlashcardEditTags, apiDeckJSONExport } from '../lookup';
+import { errorHandler, FormCheckbox, LoadingButton, QuestionBubble } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Deck, SharedDeck, CSSM, SSMInterface } from './types';
+import { Deck, SharedDeck, CSSM } from './types';
 
 
 // Modal pop-up for when the 'Edit' button is pressed
-interface DeckEditCreateModalProps {
-  deck?: Deck | CSSM;
-  modalIsOpen: boolean;
-  submitHandler(event): void;
-  deleteHandler?(event): void;
-  closeModal(): void;
-}
-export function DeckEditCreateModal(props: DeckEditCreateModalProps) {
-  const { deck, modalIsOpen, closeModal, submitHandler, deleteHandler } = props;
+// interface DeckEditCreateModalProps {
+//   deck?: Deck | CSSM;
+//   modalIsOpen: boolean;
+//   submitHandler(event): void;
+//   deleteHandler?(event): void;
+//   closeModal(): void;
+// }
+// export function DeckEditCreateModal(props: DeckEditCreateModalProps) {
+//   const { deck, modalIsOpen, closeModal, submitHandler, deleteHandler } = props;
 
-  return (
-    <Modal show={modalIsOpen} onHide={closeModal}>
-      <Modal.Header>
-        <Modal.Title>
-          {!!deck ?
-            <>Edit "{deck.title}"</>
-            :
-            <>Creating deck</>
-          }
-        </Modal.Title>
-      </Modal.Header>
-      {!deck &&
-        <DeckEditCreateForm
-          mode='create'
-          submitHandler={submitHandler}
-          closeModal={closeModal}
-        />
-      }
-      {deck?.serializer_name === 'deck' &&
-        <DeckEditCreateForm
-          deck={deck}
-          mode='edit'
-          submitHandler={submitHandler}
-          deleteHandler={deleteHandler}
-          closeModal={closeModal}
-        />
-      }
-      {deck?.serializer_name === 'cssm' &&
-        <CSSMEditForm
-          cssm={deck as CSSM}
-          submitHandler={submitHandler}
-          deleteHandler={deleteHandler}
-          closeModal={closeModal}
-        />
-      }
-    </Modal>
-  );
-}
-
-
-interface DeckLikeEditCreateFormProps {
-  deckLike?: Deck | CSSM | SSMInterface;
-  mode: 'edit' | 'create';
-  submitHandler(event): void;
-  deleteHandler?(event): void;
-  closeModal(): void;
-  children?: ReactNode | ReactNodeArray;
-  options?: { disableTitle?: boolean };
-}
-function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
-  const { deckLike, mode, submitHandler, deleteHandler, closeModal } = props;
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
-
-  return (
-    <Form onSubmit={submitHandler}>
-      <Modal.Body>
-        {((deckLike && has(deckLike, 'title')) || !deckLike) && <Form.Group>
-          <Form.Label htmlFor='title'>Title</Form.Label>
-          <Form.Control
-            type='text'
-            placeholder='My deck'
-            name='title'
-            defaultValue={deckLike?.title}
-            required
-          />
-        </Form.Group>}
-        {props.children}
-        <Form.Group>
-          <Form.Label htmlFor='deckDifficulty'>
-            Difficulty{' '}
-            <QuestionBubble>
-              This option controls how spread apart reviews will be.
-              Simpler difficulties will give you longer intervals between flashcard reviews, giving you less work.
-              Please be aware that although simpler difficulties are easier, they will also result in worse memories.
-            </QuestionBubble>
-          </Form.Label>
-          <Form.Control
-            as='select'
-            name='deckDifficulty'
-            defaultValue={deckLike?.difficulty}
-            custom
-          >
-            <option value='HARD'>Memorize Everything (Recommended)</option>
-            <option value='NORM'>Memorize Most Things</option>
-            <option value='EASY'>Get the Overview</option>
-          </Form.Control>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label htmlFor='dailyNewCardLimit'>
-            New Cards Per Day{' '}
-            <QuestionBubble>
-              This is the number of NEW flashcards you will see every day.
-              If you are being overwhelmed you might want to consider decreasing it.
-            </QuestionBubble>
-          </Form.Label>
-          <Form.Control
-            type='number'
-            name='dailyNewCardLimit'
-            defaultValue={deckLike?.daily_new_card_limit ?? 20}
-            min='0'
-            max='9999'
-            required
-          />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label htmlFor='dailySeenCardLimit'>
-            Max Seen Cards Per Day{' '}
-            <QuestionBubble>
-              This is maximum number of OLD reviews you will see every day.
-              If you are being overwhelmed you might want to consider decreasing it.
-            </QuestionBubble>
-          </Form.Label>
-          <Form.Control
-            type='number'
-            name='dailySeenCardLimit'
-            defaultValue={deckLike?.daily_seen_card_limit ?? 200}
-            min='0'
-            max='9999'
-            required
-          />
-        </Form.Group>
-        <div className='text-center d-flex'>
-          <hr className='flex-grow-1' />
-          <span className='px-2 align-self-center'>
-            <Button
-              className='mb-3'
-              onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
-              id='toggle-advanced-options'
-            >
-              {showAdvancedOptions ? 'Hide' : 'Show'} Advanced Options
-            </Button>
-          </span>
-          <hr className='flex-grow-1' />
-        </div>
-        {showAdvancedOptions && <>
-          <Form.Group>
-            <FormCheckbox
-              name='shuffleUnseenCards'
-              defaultChecked={deckLike?.shuffle_unseen_cards}
-            >
-              Shuffle Unseen Cards{' '}
-              <QuestionBubble>
-                If checked, this will make it so that the order flashcards are displayed to you in this deck is random, rather than being from the beginning of the deck and slowly to the end.
-                You don't want this enabled for most unit-based decks, but if your deck is alphabetically ordered you should definitely enable it.
-              </QuestionBubble>
-            </FormCheckbox>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label htmlFor='reviewAheadMinutes'>
-              Review Ahead Minutes{' '}
-              <QuestionBubble>
-                Alu shows you flashcards within this value of minutes right now instead of making you wait a couple minutes.  This is relevant when the flashcard interval is in minutes, so that you don't have to wait multiple minutes to review flashcards.
-              </QuestionBubble>
-            </Form.Label>
-            <Form.Control
-              type='number'
-              name='reviewAheadMinutes'
-              defaultValue={deckLike?.review_ahead_minutes ? deckLike?.review_ahead_minutes : 120}
-              min='0'
-              max='5000000'
-              required
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label htmlFor='schedulingAlgo'>
-              Scheduling Algorithm{' '}
-              <QuestionBubble>
-                Alu uses a certain algorithm to determine when you should next see flashcards.  You can change that specific algorithm here.
-              </QuestionBubble>
-            </Form.Label>
-            <Form.Control
-              as='select'
-              name='schedulingAlgo'
-              defaultValue={deckLike?.scheduling_algorithm}
-              custom
-            >
-              <option value='ANKING'>Optimized Anki Settings</option>
-              <option value='ANKI'>Default Anki Settings</option>
-            </Form.Control>
-          </Form.Group>
-        </>}
-      </Modal.Body>
-      <Modal.Footer>
-        {deckLike && has(deckLike, 'serializer_name') &&
-          <Button
-            onClick={deleteHandler}
-            variant='danger'
-            className='text-left mr-auto'
-          >
-            Delete {deckLike.serializer_name === 'deck' ? 'Deck' : 'Custom Study'}
-          </Button>
-        }
-        <Button onClick={closeModal} variant='secondary'>
-          Cancel
-        </Button>
-        <Button type='submit' id='edit-create-deck'>
-          {mode === 'edit' ? 'Save' : 'Create'}
-        </Button>
-      </Modal.Footer>
-    </Form>
-  );
-}
+//   return (
+//     <Modal show={modalIsOpen} onHide={closeModal}>
+//       <Modal.Header>
+//         <Modal.Title>
+//           {!!deck ?
+//             <>Edit "{deck.title}"</>
+//             :
+//             <>Creating deck</>
+//           }
+//         </Modal.Title>
+//       </Modal.Header>
+//       {!deck &&
+//         <DeckEditCreateForm
+//           mode='create'
+//           submitHandler={submitHandler}
+//           closeModal={closeModal}
+//         />
+//       }
+//       {deck?.serializer_name === 'deck' &&
+//         <DeckEditCreateForm
+//           deck={deck}
+//           mode='edit'
+//           submitHandler={submitHandler}
+//           deleteHandler={deleteHandler}
+//           closeModal={closeModal}
+//         />
+//       }
+//       {deck?.serializer_name === 'cssm' &&
+//         <CSSMEditForm
+//           cssm={deck as CSSM}
+//           submitHandler={submitHandler}
+//           deleteHandler={deleteHandler}
+//           closeModal={closeModal}
+//         />
+//       }
+//     </Modal>
+//   );
+// }
 
 
-interface DeckEditCreateFormProps {
-  deck?: Deck;
-  mode: 'edit' | 'create';
-  submitHandler(event): void;
-  deleteHandler?(event): void;
-  closeModal(): void;
-}
-export function DeckEditCreateForm(props: DeckEditCreateFormProps) {
-  const { deck, mode, submitHandler, deleteHandler, closeModal } = props;
+// interface DeckLikeEditCreateFormProps {
+//   deckLike?: Deck | CSSM | SSMInterface;
+//   mode: 'edit' | 'create';
+//   submitHandler(event): void;
+//   deleteHandler?(event): void;
+//   closeModal(): void;
+//   children?: ReactNode | ReactNodeArray;
+//   options?: { disableTitle?: boolean };
+// }
+// function DeckishEditCreateForm(props: DeckLikeEditCreateFormProps) {
+//   const { deckLike, mode, submitHandler, deleteHandler, closeModal } = props;
+//   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
 
-  return (
-    <DeckishEditCreateForm
-      deckLike={deck}
-      mode={mode}
-      submitHandler={submitHandler}
-      deleteHandler={deleteHandler}
-      closeModal={closeModal}
-    >
-      {!!deck &&
-        <ButtonGroup className='w-100 mb-2'>
-          <Button href={`/decks/${deck.id}/get-updates/`} className='float-right update-btn'>
-            Check for Updates
-          </Button>
-          <span className='mx-1' />
-          <Button href={`/decks/${deck.id}/share/`} className='float-left make-public-btn'>
-            Make Deck Public
-          </Button>
-        </ButtonGroup>
-      }
-    </DeckishEditCreateForm>
-  );
-}
+//   return (
+//     <Form onSubmit={submitHandler}>
+//       <Modal.Body>
+//         {((deckLike && has(deckLike, 'title')) || !deckLike) && <Form.Group>
+//           <Form.Label htmlFor='title'>Title</Form.Label>
+//           <Form.Control
+//             type='text'
+//             placeholder='My deck'
+//             name='title'
+//             defaultValue={deckLike?.title}
+//             required
+//           />
+//         </Form.Group>}
+//         {props.children}
+//         <Form.Group>
+//           <Form.Label htmlFor='deckDifficulty'>
+//             Difficulty{' '}
+//             <QuestionBubble>
+//               This option controls how spread apart reviews will be.
+//               Simpler difficulties will give you longer intervals between flashcard reviews, giving you less work.
+//               Please be aware that although simpler difficulties are easier, they will also result in worse memories.
+//             </QuestionBubble>
+//           </Form.Label>
+//           <Form.Control
+//             as='select'
+//             name='deckDifficulty'
+//             defaultValue={deckLike?.difficulty}
+//             custom
+//           >
+//             <option value='HARD'>Memorize Everything (Recommended)</option>
+//             <option value='NORM'>Memorize Most Things</option>
+//             <option value='EASY'>Get the Overview</option>
+//           </Form.Control>
+//         </Form.Group>
+//         <Form.Group>
+//           <Form.Label htmlFor='dailyNewCardLimit'>
+//             New Cards Per Day{' '}
+//             <QuestionBubble>
+//               This is the number of NEW flashcards you will see every day.
+//               If you are being overwhelmed you might want to consider decreasing it.
+//             </QuestionBubble>
+//           </Form.Label>
+//           <Form.Control
+//             type='number'
+//             name='dailyNewCardLimit'
+//             defaultValue={deckLike?.daily_new_card_limit ?? 20}
+//             min='0'
+//             max='9999'
+//             required
+//           />
+//         </Form.Group>
+//         <Form.Group>
+//           <Form.Label htmlFor='dailySeenCardLimit'>
+//             Max Seen Cards Per Day{' '}
+//             <QuestionBubble>
+//               This is maximum number of OLD reviews you will see every day.
+//               If you are being overwhelmed you might want to consider decreasing it.
+//             </QuestionBubble>
+//           </Form.Label>
+//           <Form.Control
+//             type='number'
+//             name='dailySeenCardLimit'
+//             defaultValue={deckLike?.daily_seen_card_limit ?? 200}
+//             min='0'
+//             max='9999'
+//             required
+//           />
+//         </Form.Group>
+//         <div className='text-center d-flex'>
+//           <hr className='flex-grow-1' />
+//           <span className='px-2 align-self-center'>
+//             <Button
+//               className='mb-3'
+//               onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+//               id='toggle-advanced-options'
+//             >
+//               {showAdvancedOptions ? 'Hide' : 'Show'} Advanced Options
+//             </Button>
+//           </span>
+//           <hr className='flex-grow-1' />
+//         </div>
+//         {showAdvancedOptions && <>
+//           <Form.Group>
+//             <FormCheckbox
+//               name='shuffleUnseenCards'
+//               defaultChecked={deckLike?.shuffle_unseen_cards}
+//             >
+//               Shuffle Unseen Cards{' '}
+//               <QuestionBubble>
+//                 If checked, this will make it so that the order flashcards are displayed to you in this deck is random, rather than being from the beginning of the deck and slowly to the end.
+//                 You don't want this enabled for most unit-based decks, but if your deck is alphabetically ordered you should definitely enable it.
+//               </QuestionBubble>
+//             </FormCheckbox>
+//           </Form.Group>
+//           <Form.Group>
+//             <Form.Label htmlFor='reviewAheadMinutes'>
+//               Review Ahead Minutes{' '}
+//               <QuestionBubble>
+//                 Alu shows you flashcards within this value of minutes right now instead of making you wait a couple minutes.  This is relevant when the flashcard interval is in minutes, so that you don't have to wait multiple minutes to review flashcards.
+//               </QuestionBubble>
+//             </Form.Label>
+//             <Form.Control
+//               type='number'
+//               name='reviewAheadMinutes'
+//               defaultValue={deckLike?.review_ahead_minutes ? deckLike?.review_ahead_minutes : 120}
+//               min='0'
+//               max='5000000'
+//               required
+//             />
+//           </Form.Group>
+//           <Form.Group>
+//             <Form.Label htmlFor='schedulingAlgo'>
+//               Scheduling Algorithm{' '}
+//               <QuestionBubble>
+//                 Alu uses a certain algorithm to determine when you should next see flashcards.  You can change that specific algorithm here.
+//               </QuestionBubble>
+//             </Form.Label>
+//             <Form.Control
+//               as='select'
+//               name='schedulingAlgo'
+//               defaultValue={deckLike?.scheduling_algorithm}
+//               custom
+//             >
+//               <option value='ANKING'>Optimized Anki Settings</option>
+//               <option value='ANKI'>Default Anki Settings</option>
+//             </Form.Control>
+//           </Form.Group>
+//         </>}
+//       </Modal.Body>
+//       <Modal.Footer>
+//         {deckLike && has(deckLike, 'serializer_name') &&
+//           <Button
+//             onClick={deleteHandler}
+//             variant='danger'
+//             className='text-left mr-auto'
+//           >
+//             Delete {deckLike.serializer_name === 'deck' ? 'Deck' : 'Custom Study'}
+//           </Button>
+//         }
+//         <Button onClick={closeModal} variant='secondary'>
+//           Cancel
+//         </Button>
+//         <Button type='submit' id='edit-create-deck'>
+//           {mode === 'edit' ? 'Save' : 'Create'}
+//         </Button>
+//       </Modal.Footer>
+//     </Form>
+//   );
+// }
 
-interface CSSMEditFormProps {
-  cssm: CSSM;
-  submitHandler(event): void;
-  deleteHandler?(event): void;
-  closeModal(): void;
-}
-export function CSSMEditForm(props: CSSMEditFormProps) {
-  const { cssm, submitHandler, deleteHandler, closeModal } = props;
-  const [showSearchSettings, setShowSearchSettings] = useState(false);
-  const [decks] = useApiObjectHook<Deck[]>(
-    apiDeckPrivateList,
-    200,
-    1026,
-    [], null, null,
-    showSearchSettings,
-  );
 
-  return (
-    <DeckishEditCreateForm
-      deckLike={cssm}
-      mode='edit'
-      submitHandler={submitHandler}
-      deleteHandler={deleteHandler}
-      closeModal={closeModal}
-    >
-      <Button
-        onClick={() => setShowSearchSettings(!showSearchSettings)}
-        className='mb-3 w-100'
-      >
-        {`${showSearchSettings ? 'Hide' : 'Show'} Search Settings`}
-      </Button>
-      {showSearchSettings && decks &&
-        <SearchForm
-          decks={decks}
-          defaultContains={cssm.contains}
-          defaultTags={cssm.tags}
-          defaultLeech={cssm.leech === true ? 'LEECH' : (cssm.leech === false ? 'NOTLEECH' : undefined)}
-          defaultLearningStatus={cssm.learning_status}
-          defaultMinEase={cssm.min_ease}
-          defaultMaxEase={cssm.max_ease}
-          defaultSelectedDecks={cssm?.deck_ids?.split(',')}
-          hideSuspend
-        />
-      }
-    </DeckishEditCreateForm>
-  );
-}
+// interface DeckEditCreateFormProps {
+//   deck?: Deck;
+//   mode: 'edit' | 'create';
+//   submitHandler(event): void;
+//   deleteHandler?(event): void;
+//   closeModal(): void;
+// }
+// export function DeckEditCreateForm(props: DeckEditCreateFormProps) {
+//   const { deck, mode, submitHandler, deleteHandler, closeModal } = props;
+
+//   return (
+//     <DeckishEditCreateForm
+//       deckLike={deck}
+//       mode={mode}
+//       submitHandler={submitHandler}
+//       deleteHandler={deleteHandler}
+//       closeModal={closeModal}
+//     >
+//       {!!deck &&
+//         <ButtonGroup className='w-100 mb-2'>
+//           <Button href={`/decks/${deck.id}/get-updates/`} className='float-right update-btn'>
+//             Check for Updates
+//           </Button>
+//           <span className='mx-1' />
+//           <Button href={`/decks/${deck.id}/share/`} className='float-left make-public-btn'>
+//             Make Deck Public
+//           </Button>
+//         </ButtonGroup>
+//       }
+//     </DeckishEditCreateForm>
+//   );
+// }
+
+// interface CSSMEditFormProps {
+//   cssm: CSSM;
+//   submitHandler(event): void;
+//   deleteHandler?(event): void;
+//   closeModal(): void;
+// }
+// export function CSSMEditForm(props: CSSMEditFormProps) {
+//   const { cssm, submitHandler, deleteHandler, closeModal } = props;
+//   const [showSearchSettings, setShowSearchSettings] = useState(false);
+//   const [decks] = useApiObjectHook<Deck[]>(
+//     apiDeckPrivateList,
+//     200,
+//     1026,
+//     [], null, null,
+//     showSearchSettings,
+//   );
+
+//   return (
+//     <DeckishEditCreateForm
+//       deckLike={cssm}
+//       mode='edit'
+//       submitHandler={submitHandler}
+//       deleteHandler={deleteHandler}
+//       closeModal={closeModal}
+//     >
+//       <Button
+//         onClick={() => setShowSearchSettings(!showSearchSettings)}
+//         className='mb-3 w-100'
+//       >
+//         {`${showSearchSettings ? 'Hide' : 'Show'} Search Settings`}
+//       </Button>
+//       {showSearchSettings && decks &&
+//         <SearchForm
+//           decks={decks}
+//           defaultContains={cssm.contains}
+//           defaultTags={cssm.tags}
+//           defaultLeech={cssm.leech === true ? 'LEECH' : (cssm.leech === false ? 'NOTLEECH' : undefined)}
+//           defaultLearningStatus={cssm.learning_status}
+//           defaultMinEase={cssm.min_ease}
+//           defaultMaxEase={cssm.max_ease}
+//           defaultSelectedDecks={cssm?.deck_ids?.split(',')}
+//           hideSuspend
+//         />
+//       }
+//     </DeckishEditCreateForm>
+//   );
+// }
 
 
-interface ClassroomSSMEditFormProps {
-  classroomId: number;
-  closeModal(): void;
-}
-export function ClassroomSSMEditForm(props: ClassroomSSMEditFormProps) {
-  const { classroomId, closeModal } = props;
-  const [SSM] = useApiObjectHook<SSMInterface>(
-    apiClassroomGetSSM,
-    200,
-    8022,
-    [classroomId],
-    null, null,
-    !!classroomId,
-  );
-  if (!SSM) return <p>Loading...</p>
+// interface ClassroomSSMEditFormProps {
+//   classroomId: number;
+//   closeModal(): void;
+// }
+// export function ClassroomSSMEditForm(props: ClassroomSSMEditFormProps) {
+//   const { classroomId, closeModal } = props;
+//   const [SSM] = useApiObjectHook<SSMInterface>(
+//     apiClassroomGetSSM,
+//     200,
+//     8022,
+//     [classroomId],
+//     null, null,
+//     !!classroomId,
+//   );
+//   if (!SSM) return <p>Loading...</p>
 
-  const editClassroomSSM = event => {
-    // Edits the classroom deck's SSM, as well as
-    // all of the ASSMs for the various assignments in that class
-    event.preventDefault();
-    const form = event.target;
+//   const editClassroomSSM = event => {
+//     // Edits the classroom deck's SSM, as well as
+//     // all of the ASSMs for the various assignments in that class
+//     event.preventDefault();
+//     const form = event.target;
 
-    apiClassroomEditSSM(
-      classroomId,
-      form.elements.schedulingAlgo?.value,
-      form.elements.shuffleUnseenCards?.checked,
-      form.elements.dailyNewCardLimit.value,
-      form.elements.dailySeenCardLimit.value,
-      form.elements.reviewAheadMinutes?.value,
-      (response, status) => {
-        if (status === 200) {
-          window.location.reload();
-        } else {
-          errorHandler(response, status, 8023);
-        }
-      },
-    );
-  }
+//     apiClassroomEditSSM(
+//       classroomId,
+//       form.elements.schedulingAlgo?.value,
+//       form.elements.shuffleUnseenCards?.checked,
+//       form.elements.dailyNewCardLimit.value,
+//       form.elements.dailySeenCardLimit.value,
+//       form.elements.reviewAheadMinutes?.value,
+//       (response, status) => {
+//         if (status === 200) {
+//           window.location.reload();
+//         } else {
+//           errorHandler(response, status, 8023);
+//         }
+//       },
+//     );
+//   }
 
-  return (
-    <DeckishEditCreateForm
-      deckLike={SSM}
-      mode='edit'
-      submitHandler={editClassroomSSM}
-      closeModal={closeModal}
-    />
-  );
-}
+//   return (
+//     <DeckishEditCreateForm
+//       deckLike={SSM}
+//       mode='edit'
+//       submitHandler={editClassroomSSM}
+//       closeModal={closeModal}
+//     />
+//   );
+// }
 
 // Buttons displayed when a user that does not own the deck views a deck
 export function DeckForeignUserButtonGroup({ deck, hideCopy=false }) {

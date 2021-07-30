@@ -15,13 +15,13 @@ export function MatchingGame(props: MatchingProps) {
   const {size, flashcards} = props;
   const randomizedFlashcards = useMemo(() => {
     let randomOrder = [] as any;
-    for (const [i, flashcard] of flashcards.entries()) {
-      randomOrder.push([flashcard.fields[0], i]);
-      randomOrder.push([flashcard.fields[1], i]);
-    }
+    // for (const [i, flashcard] of flashcards.entries()) {
+    //   randomOrder.push([flashcard.fields[0], i]);
+    //   randomOrder.push([flashcard.fields[1], i]);
+    // }
     randomOrder = shuffle(randomOrder);
     return randomOrder;
-  }, [flashcards]);
+  }, []);
   const [numMissed, setNumMissed] = useState<number>(0);
   const [correctlyGuessed, setCorrectlyGuessed] = useState([] as any);
   const [selectedBox, setSelectedBox] = useState<number[]>([-1, -1]);

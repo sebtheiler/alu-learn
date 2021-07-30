@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { DeckForeignUserButtonGroup, DefaultSharedDeckButtons } from './buttons';
 import { NoteDefaultButtonGroup } from '../notes/buttons';
-import { FlashCardsList } from './flashcards';
+// import { FlashCardsList } from './flashcards';
 import { DisplayCountChar, has, MarkdownRender } from '../utils';
 import { UserLink } from '../profiles';
 import Button from 'react-bootstrap/Button';
@@ -57,7 +57,7 @@ export function VariousCard(props: VariousCardProps) {
       case 'classroom':
         return <ClassroomDefaultButtonGroup classroom={card} />
       case 'deck':
-        if (has(card, 'author') && currentUsername === card.author.username) {
+        if (has(card, 'user') && currentUsername === card.user.username) {
           // return <DeckDefaultButtonGroup deck={card as Deck} />
           return <p>No</p>
         } else {
@@ -107,7 +107,7 @@ export function DeckDetail(props: DeckDetailProps) {
         <a href={titleLink ? `/decks/${deck.id}/` : undefined}>
           <h1 className='mb-0 text-dark'>{deck.title}</h1>
         </a>
-        <UserLink user={deck.author} />
+        <UserLink user={deck.user} />
         <p className='text-secondary mb-3'>
           <DisplayCountChar>{deck.num_clones}</DisplayCountChar> {deck.num_clones !== 1 ? 'copies' : 'copy'}
         </p>
@@ -120,13 +120,13 @@ export function DeckDetail(props: DeckDetailProps) {
             <h2>Example Flashcards</h2>
             {flashcards && <>
               {numFlashcards && <h5>{`(${numFlashcards} in total, ${Math.min(numFlashcards, 10)} displayed)`}</h5>}
-              {currentUsername === deck.author.username ?
+              {currentUsername === deck.user.username ?
                 <DefaultSharedDeckButtons deck={deck} />
               :
                 <DeckForeignUserButtonGroup deck={deck} />
               }
               <div>
-                <FlashCardsList flashcardList={flashcards.slice(0, 10)} foreignUser={true} />
+                {/* <FlashCardsList flashcardList={flashcards.slice(0, 10)} foreignUser={true} /> */}
               </div>
             </>}
           </div>

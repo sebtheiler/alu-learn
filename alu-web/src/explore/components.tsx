@@ -66,7 +66,7 @@ export function DeckSlider(props: DeckSliderProps) {
                   {deck.title}
                 </h4>
               </a>
-              <UserLink user={deck.author} small />
+              <UserLink user={deck.user} small />
               <a href={`/decks/${deck.id}/`}>
                 <div className='deck-description mt-2 w-75' style={{outline: 'none', color: 'black'}}>
                   <MarkdownRender

@@ -5,7 +5,7 @@ import './index.css';
 
 import { ProfileInformationComponent, LoginComponent, StaffForceLogin } from './profiles';
 import { DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, ShareDeck, PushSharedDeck, UpdateDeck, StatisticsPage } from './decks';
-import { FlashCardsList, FlashCardSearchComponent } from './decks/flashcards';
+// import { FlashCardsList, FlashCardSearchComponent } from './decks/flashcards';
 // import { StudyComponent } from './decks/study';
 import { NotificationComponent } from './profiles/notifications';
 import { ExploreComponent, DeckSearchComponent } from './explore';
@@ -43,11 +43,11 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [ProfileInformationComponent, 'profile-info', true],
   [DecksHomeComponent, 'decks-home'],
   // [FlashCardCreate, 'create-flashcard'],
-  [FlashCardsList, 'flashcard-list', true],
+  // [FlashCardsList, 'flashcard-list', true],
   // [StudyComponent, 'study-component'],
   [NotificationComponent, 'notification-component', true],
   [ExploreComponent, 'explore-component'],
-  [FlashCardSearchComponent, 'flashcard-search-component'],
+  // [FlashCardSearchComponent, 'flashcard-search-component'],
   [DeckSearchComponent, 'deck-search-component'],
   [LandingComponent, 'landing-component', true],
   [HomeComponent, 'home-component'],

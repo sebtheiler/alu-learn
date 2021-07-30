@@ -1,5 +1,5 @@
 import { Node } from 'slate';
-import { MinifiedProfile, Profile } from '../profiles/types';
+import { MinifiedProfile } from '../profiles/types';
 
 export type UUID = string;  // Just a more clear representation
 
@@ -10,18 +10,10 @@ export type FlashCardTypes = 'basic' | 'reversed' | 'cloze';
 export type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
 
 export interface Deck {
-  author: Profile | MinifiedProfile;
+  user: MinifiedProfile;
   title: string;
-  serializer_name: 'deck' | 'shared_deck' | 'cssm';
-  scheduling_algorithm: SchedulingAlgorithm;
-  shuffle_unseen_cards: boolean;
-  new_cards_done_today: number;
-  daily_new_card_limit: number;
-  daily_seen_card_limit: number;
-  review_ahead_minutes: number;
   shared_deck: number;
   deck_type: 'standard' | 'shared';
-  difficulty: DeckDifficulty;
   skill_tree?: Object;
   id: number;
 }
@@ -72,21 +64,14 @@ export interface FlashCard {
 }
 
 
-// TODO: This should NOT extend FlashCard
-export interface ReviewInstance extends FlashCard {
-  tags: string;
+export interface ReviewInstance {
   next_review: string; // ISO date string
   steps_index: number;
   learning_status: LearningStatus;
   ease: number;
   interval: number;
-  is_suspended: boolean;
   is_leech: boolean;
   leech_index: number;
-  parent_deck_id: number;
-  parent_deck_title: string;
-  flashcard_id: UUID;
-  flashcard_type: FlashCardTypes;
   name: string;
   id: UUID;
 }

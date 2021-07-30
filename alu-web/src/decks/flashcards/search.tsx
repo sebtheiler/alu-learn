@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { apiFlashCardSearch, apiDeckPrivateList, apiFlashcardReviewInstanceEdit } from '../../lookup';
-import { FlashCardsList } from '.';
+// import { FlashCardsList } from '.';
 import { errorHandler, useApiObjectHook } from '../../utils';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -319,7 +319,8 @@ If you wish to continue, please type "DELETE", without the quotes.
         }
         {didSearch && searchedFlashcards && (
           searchedFlashcards.length > 0 ?
-            <FlashCardsList flashcardList={searchedFlashcards} showParentDeckTitle={true} artificialPaginationNumFlashcards={250} fixSlateLazy={true} /> 
+            // <FlashCardsList flashcardList={searchedFlashcards} showParentDeckTitle={true} artificialPaginationNumFlashcards={250} fixSlateLazy={true} /> 
+            <p>Disabled for now</p>
           : <h5>No results! Maybe try a less specific search, or check your parameters?</h5>
         )}
       </div>

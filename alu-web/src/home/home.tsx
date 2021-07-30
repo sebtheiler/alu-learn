@@ -17,7 +17,6 @@ import './home.css';
 import { MinifiedProfile, Profile, ProfileHistory } from '../profiles/types';
 import { Classroom, ClassroomAssignments } from '../teachers/types';
 import { ClassroomDefaultButtonGroup, ClassroomEditCreateButton } from '../teachers/buttons';
-import { ClassroomSSMEditForm } from '../decks/buttons';
 import Likert from 'react-likert-scale';
 
 export function HomeComponent({ username }) {
@@ -509,10 +508,10 @@ function RenderClassroom(props: RenderClassroomProps) {
           Editing Flashcard Settings for {classroom.title}
         </Modal.Title>
       </Modal.Header>
-      <ClassroomSSMEditForm
+      {/* <ClassroomSSMEditForm
         classroomId={classroom.id}
         closeModal={() => setEditModalIsOpen(false)}
-      />
+      /> */}
     </Modal>
   </>);
 }

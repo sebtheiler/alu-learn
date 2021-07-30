@@ -65,14 +65,12 @@ export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
           submitHandler={gameSubmitHandler}
         />
         <Button href={`/decks/${deck.id}/stats/`} block>Statistics</Button>
-        {deck.serializer_name === 'deck' && <>
-          <Button onClick={() => setExportModalOpen(true)} block>Export</Button>
-          <ExportModal
-            deck={deck}
-            modalIsOpen={exportModalOpen}
-            closeModal={() => setExportModalOpen(false)}
-          />
-        </>}
+        <Button onClick={() => setExportModalOpen(true)} block>Export</Button>
+        <ExportModal
+          deck={deck}
+          modalIsOpen={exportModalOpen}
+          closeModal={() => setExportModalOpen(false)}
+        />
       </div>
     </Collapse>
   );
