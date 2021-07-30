@@ -856,7 +856,7 @@ class DeckTestCase(ImprovedTestCase):
 
     def test_txt_file_upload_api(self):
         api_path = '/api/decks/textupload/'
-        api_view = api_views.txt_file_upload
+        api_view = api_views.deck_txt_import_view
 
         example_txt = """
             123\t456
@@ -1632,7 +1632,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertDecksNotEqual(deck, shared_deck, test_review_instances_exists=False)
 
         # Check diff
-        response = self.post_response('', api_views.shared_deck_update_view, {
+        response = self.post_response('', api_views.shared_deck_push_updates_view, {
             'shared_deck_id': shared_deck.pk,
             'origin_deck_id': deck.pk,
             'check_diff_only': True,
@@ -1644,7 +1644,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertDecksNotEqual(deck, shared_deck, test_review_instances_exists=False)
 
         # Update shared deck
-        response = self.post_response('', api_views.shared_deck_update_view, {
+        response = self.post_response('', api_views.shared_deck_push_updates_view, {
             'shared_deck_id': shared_deck.pk,
             'origin_deck_id': deck.pk,
         })
@@ -1986,7 +1986,7 @@ class DeckTestCase(ImprovedTestCase):
         test_game('SEEN', 1, deck_id=cssm.pk)
 
     def test_rearrange_flashcard_api(self):
-        api_view = api_views.rearrange_flashcard_view
+        api_view = api_views.flashcard_rearrange_view
         deck = self.create_deck('Deck with flashcards to rearrange', num_flashcards=5)
         flashcard = deck.flashcards.all()[2]
 
@@ -2022,7 +2022,7 @@ class DeckTestCase(ImprovedTestCase):
         move_flashcard('UP', flashcard_num - 2, flashcard.pk, should_fail=True)
 
     def test_edit_tags_bulk_api(self):
-        api_view = api_views.edit_tags_bulk_view
+        api_view = api_views.flashcard_edit_tags_bulk_view
         api_path = '/api/decks/edit-tags/'
         deck = self.create_deck('Deck to bulk edit tags', num_flashcards=5, str_tags=True)
         flashcards = deck.flashcards.all()

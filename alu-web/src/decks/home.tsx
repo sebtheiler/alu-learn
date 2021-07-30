@@ -1,16 +1,13 @@
 import React from 'react';
-import { apiDeckHome } from '../lookup';
 import { HomePageCards } from './detail';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { useApiObjectHook } from '../utils';
-import { Deck, CSSM } from './types';
 
 
 // Paginated function for decks that should appear
 // in the user's home page
 export function DecksHomeList({ username }) {
-  const [decks] = useApiObjectHook<(Deck | CSSM)[]>(apiDeckHome, 200, 1006);
+  const decks = [];
 
   if (decks === undefined)
     return <p className='text-center'>Loading...</p>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AutoReader } from '../reader';
 import { parseText } from '../autonote';
-import { apiDeckHome, apiNotePageDetail } from '../../../lookup';
+import { apiNotePageDetail } from '../../../lookup';
 import { useApiObjectHook } from '../../../utils';
 import Form from 'react-bootstrap/Form';
 import '../reader.css';
@@ -16,14 +16,7 @@ export function AutoFlashCard({ noteId, pageNum }) {
     null,
     response => parseText(response.content, 'json'),
   );
-  const [decks] = useApiObjectHook<Deck[]>(
-    apiDeckHome,
-    200, 1009,
-    [], null,
-    response => response.results.filter(
-      deck => deck.serializer_name === 'deck'
-    ).sort(deck => deck.title),
-  );
+  const decks = [];
   const [selectedDeckId, setSelectedDeckId] = useState(0);
   const [percentComplete, setPercentComplete] = useState(0);
 

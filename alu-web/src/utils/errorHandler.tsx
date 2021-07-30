@@ -49,10 +49,10 @@ int(hexadecimal_string, 16)
 1003: Error getting deck detail through apiSharedDeckDetail in alu-web/src/decks/components.js
 1004: Error creating deck through apiDeckCreate in alu-web/src/decks/create.js
 1005:
-1006: Error getting deck through apiDeckHome in alu-web/src/decks/home.js
-1007: Error handling next set of decks (pagination, decks home page) through apiDeckHome in alu-web/src/decks/home.js
+1006:
+1007:
 1008: Error getting shared decks through apiDeckSharedList in alu-web/src/decks/list.js
-1009: Error getting a profile's list of decks for autoflashcard through apiDeckHome in alu-web/src/notes/autonote/autoflashcard/autoflashcard.js
+1009:
 1010: Error getting explore deck lists through apiExploreLists in alu-web/src/explore/base.js
 1011: Error performing deck search through apiDeckSearch in alu-web/src/explore/search.js
 1012: Error handling next set of decks (pagination, decks search) through apiDeckSearch in alu-web/src/explore/search.js
@@ -73,7 +73,7 @@ int(hexadecimal_string, 16)
 1026:
 1027: Error getting flashcards for games through apiGameFlashcards
 1028: Error getting deck's statistics through apiDeckStatistics
-1029: Error getting decks list for homepage of student through apiDeckQuickList
+1029: Error getting decks list for homepage of student through apiQuickDeckList
 1030: Error exporting deck to JSON through apiDeckJSONExport
 1031: Error generating skill tree for deck through apiDeckGenerateSkillTree
 
@@ -159,7 +159,7 @@ int(hexadecimal_string, 16)
 8005: Error getting list of classes a student has joined through apiClassroomsStudentJoined
 8006: Error getting class detail through apiClassroomDetail
 8007: Error getting list of students in a class through apiClassroomStudentsList
-8008: Error getting list of decks for attaching to classroom through apiDeckHome
+8008: Error getting list of decks for attaching to classroom through apiDeckQuickList
 8009: Error attaching deck to classroom through apiClassroomAttachDeck
 8010: Error getting class detail for students through apiClassroomDetail
 8011: Error getting student attached deck through apiClassroomGetStudentDeck

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { apiSharedDeckClone, apiFlashcardEditTags, apiDeckJSONExport } from '../lookup';
-import { errorHandler, FormCheckbox, LoadingButton, QuestionBubble } from '../utils';
+import { errorHandler, FormCheckbox, LoadingButton, QuestionBubble, has } from '../utils';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
@@ -367,9 +367,9 @@ export function DeckForeignUserButtonGroup({ deck, hideCopy=false }) {
     if (copyLoading === false) {
       setCopyLoading(true);
       apiSharedDeckClone(deck.id, form.elements.destinationTitle.value, (response, status) => {
-        if (status === 200) {
+        if (status === 200 && has(response, 'id')) {
           window.location.href = `/decks/${response.id}/flashcards/`;
-        } else if (response.message === 'You have already cloned this deck') {
+        } else if (has(response, 'message') && response.message === 'You have already cloned this deck') {
           const errorMsg = document.getElementById('clone-error');
           if (errorMsg)
             errorMsg.innerHTML = "You have already cloned this deck.  Please check your <a href='/home/decks/'>decks homepage</a> to see it.";

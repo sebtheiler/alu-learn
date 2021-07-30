@@ -1,6 +1,6 @@
 // TODO: Break this file up into a separate file for each "package"
 // Each file should contain the lookups for just that package
-import { CSSM, Deck, ReviewInstance, FlashCard, SchedulingAlgorithm, SSMInterface, FlashCardTypes, SharedDeck } from '../decks/types';
+import { Deck, ReviewInstance, FlashCard, SchedulingAlgorithm, SSMInterface, SharedDeck, SharingSetting } from '../decks/types';
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
 import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
@@ -144,7 +144,7 @@ export async function apiObjectDelete<T>(
 
 // Search for flashcards
 export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, learningStatus, minEase, maxEase, callback) {
-  let endpoint = 'decks/flashcards/search/?';
+  let endpoint = 'decks/flashcard/search/?';
   if (deckIds !== null && deckIds !== undefined) {endpoint += `&deckIds=${deckIds}`}
   if (tags !== null && tags !== undefined) {endpoint += `&tags=${tags}`}
   if (contains !== null && contains !== undefined) {endpoint += `&contains=${contains}`}
@@ -159,9 +159,14 @@ export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, le
 }
 
 // Gets a deck's flashcards
-export function apiDeckFlashcards(deckId, options, callback, nextUrl='') {
-  const {limit, reverse} = options;
-  let endpoint = `decks/${deckId}/flashcards/?`;
+export function apiDeckFlashcards(
+  deckId: number,
+  options: { limit: number, reverse: boolean },
+  callback: (response, status: number) => void,
+  nextUrl?: string,
+) {
+  const { limit, reverse } = options;
+  let endpoint = `decks/deck/${deckId}/flashcards/?`;
 
   if (limit) endpoint += `&limit=${limit}`;
   if (reverse) endpoint += '&reverse=true';
@@ -191,13 +196,6 @@ export function apiDeckQuickList(
   backendLookup('GET', endpoint, callback);
 }
 
-// Gets a page of decks from the API
-export function apiDeckHome(
-  callback: (response: (Deck | CSSM)[], status: number) => void,
-) {
-  backendLookup('GET', 'decks/list/?include_cssms=true', callback);
-}
-
 // Copies a deck
 export function apiDeckCopy(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/copy/`, callback);
@@ -219,7 +217,7 @@ export function apiDeckTextImport(
   convertFormatting: boolean,
   callback: (response: Deck, status: number) => void,
 ) {
-  backendLookup('POST', 'decks/textupload/', callback, {
+  backendLookup('POST', 'decks/deck/import/txt/', callback, {
     deck_title: title,
     uploaded_file: fileContents,
     convert_formatting: convertFormatting,
@@ -232,7 +230,7 @@ export function apiDeckJSONExport(
   exportReviewInstances: boolean,
   callback: (response: Object, status: number) => void,
 ) {
-  backendLookup('GET', `decks/${deckId}/export/json/?export_review_instances=${exportReviewInstances}`, callback);
+  backendLookup('GET', `decks/deck/${deckId}/export/json/?export_review_instances=${exportReviewInstances}`, callback);
 }
 
 // Imports a deck from an exported JSON file
@@ -240,7 +238,7 @@ export function apiDeckJSONImport(
   jsonDeck: Object,
   callback: (response: Deck, status: number) => void,
 ) {
-  backendLookup('POST', `decks/upload/json/`, callback, jsonDeck);
+  backendLookup('POST', `decks/deck/import/json/`, callback, jsonDeck);
 }
 
 // Gets detail information about a profile, such as bio, name, username, etc.
@@ -548,13 +546,22 @@ export function apiManualSRTaskEdit(id, newTitle, newDescription, callback) {
 }
 
 // Gets detail information for a shared deck
-export function apiSharedDeckDetail(id, callback) {
-  backendLookup('GET', `decks/shared/detail/${id}/`, callback);
+export function apiSharedDeckDetail(
+  sharedDeckId: number,
+  callback: (reseponse: SharedDeck, status: number) => void,
+) {
+  backendLookup('GET', `decks/deck/shared/${sharedDeckId}/detail/`, callback);
 }
 
 // Creates a shared deck
-export function apiCreateSharedDeck(originDeckId, title, description, sharingSetting, callback) {
-  backendLookup('POST', 'decks/shared/create/', callback, {
+export function apiCreateSharedDeck(
+  originDeckId: number,
+  title: string,
+  description: string,
+  sharingSetting: SharingSetting,
+  callback: (response: SharedDeck, status: number) => void,
+) {
+  backendLookup('POST', 'decks/deck/shared/create/', callback, {
     origin_deck_id: originDeckId,
     title: title,
     description: description,
@@ -563,8 +570,12 @@ export function apiCreateSharedDeck(originDeckId, title, description, sharingSet
 }
 
 // Clones a shared deck
-export function apiSharedDeckClone(sharedDeckId, destinationDeckTitle, callback) {
-  backendLookup('POST', `decks/shared/clone/${sharedDeckId}/`, callback, {
+export function apiSharedDeckClone(
+  sharedDeckId: number,
+  destinationDeckTitle: string,
+  callback: (response: SharedDeck | Message, status: number) => void,
+) {
+  backendLookup('POST', `decks/shared/${sharedDeckId}/clone/`, callback, {
     destination_deck_title: destinationDeckTitle,
   });
 }
@@ -576,9 +587,8 @@ export function apiSharedPushChanges(
   checkDiffOnly: boolean,
   callback: (response: any, status: number) => void,
 ) {
-  backendLookup('POST', `decks/shared/update/`, callback, {
+  backendLookup('POST', `decks/deck/shared/${sharedDeckId}/push-updates/`, callback, {
     origin_deck_id: originDeckId,
-    shared_deck_id: sharedDeckId,
     check_diff_only: checkDiffOnly,
   });
 }
@@ -588,7 +598,7 @@ export function apiDeckGetUpdates(
   deckId: number,
   callback: (response: { needs_updating: { title: string, id: number }[] }, status: number) => void,
 ) {
-  backendLookup('GET', `decks/get-updates/${deckId}/`, callback);
+  backendLookup('GET', `decks/deck/${deckId}/get-updates/`, callback);
 }
 
 // Pulls specified updates for a deck
@@ -597,7 +607,7 @@ export function apiDeckPullUpdates(
   toPullFrom: number,
   callback: (response: Deck, status: number) => void,
 ) {
-  backendLookup('POST', `decks/pull-updates/${deckId}/`, callback, {to_pull_from: toPullFrom});
+  backendLookup('POST', `decks/deck/${deckId}/pull-updates/`, callback, { to_pull_from: toPullFrom });
 }
 
 // Marks the changelog popup as read
@@ -632,12 +642,11 @@ export function apiStaffForceLogin(username, callback) {
 
 // Rearranges a flashcard
 export function apiRearrangeFlashcard(
-  deckId: number,
-  flashcardNum: number,
+  flashcardId: number,
   rearrangeType: 'UP' | 'DOWN',
   callback: (response: Message | FlashCard, status: number) => void,
 ) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardNum}/rearrange/`, callback, {
+  backendLookup('POST', `decks/flashcard/${flashcardId}/rearrange/`, callback, {
     rearrange_type: rearrangeType,
   });
 }
@@ -650,7 +659,7 @@ export function apiFlashcardEditTags(
   renameTo: string | null,
   callback: (response: Message, status: number) => void,
 ) {
-  backendLookup('POST', `decks/edit-tags/`, callback, {
+  backendLookup('POST', `decks/flashcard/edit-tags/`, callback, {
     flashcard_ids: flashcardIds,
     action: action,
     tag: tag,
@@ -660,7 +669,7 @@ export function apiFlashcardEditTags(
 
 // Edits multiple review instances at once (e.g., suspend/unsuspend/delete)
 export function apiFlashcardReviewInstanceEdit(flashcardIds, action, callback) {
-  backendLookup('POST', `decks/edit-review-instances/`, callback, {
+  backendLookup('POST', `decks/flashcard/edit-review-instances/`, callback, {
     flashcard_ids: flashcardIds,
     action: action,
   });
@@ -679,7 +688,7 @@ export function apiDeckStatistics(
   deckId: number,
   callback: (response: Statistics, status: number) => void,
 ) {
-  backendLookup<Statistics>('GET', `decks/${deckId}/statistics/`, callback);
+  backendLookup('GET', `decks/deck/${deckId}/statistics/`, callback);
 }
 
 // Gets a teacher's classes for the homepage
@@ -1046,7 +1055,7 @@ export function apiDeckGenerateSkillTree(
   removeEssential: boolean,
   callback: (response: Message, status: number) => void,
 ) {
-  backendLookup('POST', `decks/${deckId}/gen-skill-tree/`, callback, {
+  backendLookup('POST', `decks/deck/${deckId}/gen-skill-tree/`, callback, {
     sort: sort,
     remove_essential: removeEssential,
   });
