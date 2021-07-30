@@ -1,26 +1,26 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Button from 'react-bootstrap/Button';
 import { apiDeckGenerateSkillTree } from '../../lookup';
-import { errorHandler, LoadingButton } from '../../utils';
+import LoadingButton from './buttons/LoadingButton';
 import { Deck } from '../types';
+import { DeckDispatch } from './context';
 import MainSection from './main-section';
 
 interface SkillTreeProps {
   deck: Deck;
-  selectedDeck: number;
 }
 export default function SkillTree(props: SkillTreeProps) {
-  const { deck, selectedDeck } = props;
+  const { deck } = props;
+  const deckDispatch = useContext(DeckDispatch);
 
-  const generateSkillTree = event => {
+  const generateSkillTree = async event => {
     event.preventDefault();
-    apiDeckGenerateSkillTree(deck.id, false, true, (response, status) => {
-      if (status === 200) {
-        window.location.href = `${window.location.href}?selected=${selectedDeck}`
-      } else {
-        errorHandler(response, status, 1031);
-      }
-    });
+    return apiDeckGenerateSkillTree(deck.id, false, true).then(
+      skillTree => deckDispatch && deckDispatch({
+        action: 'EDIT',
+        payload: { id: deck.id, skill_tree: skillTree }
+      }),
+    );
   }
 
   return (<>
@@ -39,11 +39,7 @@ export default function SkillTree(props: SkillTreeProps) {
       <p>This deck doesn't have a "skill tree yet"</p>
       <p>Generate one to have access to specific parts of your deck</p>
     </>}
-    <LoadingButton
-      callback={generateSkillTree}
-      loadingMessage='Generating...'
-      className='mb-3'
-    >
+    <LoadingButton clickFunc={generateSkillTree} className='mb-3'>
       {deck.skill_tree ? 'Regenerate' : 'Generate'} Skill Tree
     </LoadingButton>
   </>)

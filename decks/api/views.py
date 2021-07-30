@@ -551,7 +551,7 @@ def deck_generate_skill_tree_view(request, deck_id, *args, **kwargs):
     )
     deck.save()
 
-    return Response({'message': 'Generated skill tree'}, status=200)
+    return Response(deck.skill_tree, status=200)
 
 
 # TODO: do something to make functions easily accessable

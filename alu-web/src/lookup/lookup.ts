@@ -22,7 +22,7 @@ async function backendFetch<T>(
   endpoint: string,
   data: Object = {},
 ): Promise<T> {
-  return fetch(endpoint, {
+  return fetch(`${baseUrl}/api/${endpoint}`, {
     method: method,
     headers: {
       'content-type': 'application/json',
@@ -39,7 +39,7 @@ export function apiObjectCreate<T>(
 ): Promise<T> {
   return backendFetch<T>(
     'POST',
-    `${baseUrl}/api/${appName}/${modelName}/create/`,
+    `${appName}/${modelName}/create/`,
     options,
   );
 }
@@ -51,7 +51,7 @@ export async function apiObjectGet<T>(
 ) {
   return backendFetch<T>(
     'GET',
-    `${baseUrl}/api/${appName}/${modelName}/${objectId}/`,
+    `${appName}/${modelName}/${objectId}/`,
   );
 }
 
@@ -61,7 +61,7 @@ export async function apiObjectList<T>(
 ) {
   return backendFetch<T>(
     'GET',
-    `${baseUrl}/api/${appName}/${modelName}/list/`,
+    `${appName}/${modelName}/list/`,
   );
 }
 
@@ -126,7 +126,7 @@ export async function apiObjectEdit<T>(
 ): Promise<T> {
   return backendFetch<T>(
     'PUT',
-    `${baseUrl}/api/${appName}/${modelName}/${objectId}/edit/`,
+    `${appName}/${modelName}/${objectId}/edit/`,
     { edited_values: edited_values },
   );
 }
@@ -138,7 +138,7 @@ export async function apiObjectDelete<T>(
 ): Promise<T> {
   return backendFetch<T>(
     'DELETE',
-    `${baseUrl}/api/${appName}/${modelName}/${objectId}/delete/`,
+    `${appName}/${modelName}/${objectId}/delete/`,
   );
 }
 
@@ -1049,13 +1049,12 @@ export function apiTodoComplete(
 }
 
 // Generates (or re-generates) a skill tree for a deck
-export function apiDeckGenerateSkillTree(
+export async function apiDeckGenerateSkillTree(
   deckId: number,
   sort: boolean,
   removeEssential: boolean,
-  callback: (response: Message, status: number) => void,
-) {
-  backendLookup('POST', `decks/deck/${deckId}/gen-skill-tree/`, callback, {
+): Promise<Object> {
+  return backendFetch('POST', `decks/deck/${deckId}/gen-skill-tree/`, {
     sort: sort,
     remove_essential: removeEssential,
   });

@@ -43,10 +43,7 @@ export function SkillTreeHome() {
               <br />
               <p>daily goal and stats?</p>
             </> :
-              <SkillTree
-                deck={decks[selectedDeck]}
-                selectedDeck={selectedDeck}
-              />
+              <SkillTree deck={decks[selectedDeck]} />
             }
           </Col>
           <Col md={3} sm={12}>
