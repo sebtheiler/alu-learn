@@ -26,11 +26,8 @@ LearningStatusType = Literal['UNSEEN', 'LEARNING', 'LEARNED', 'RELEARNING']
 
 
 class DeckManager(models.Manager):
-    def get_or_new(self, **kwargs) -> Tuple[Deck, bool]:
-        try:
-            return self.get(**kwargs), False
-        except self.model.DoesNotExist:
-            return self.model(**kwargs), True
+    def get_queryset(self) -> QuerySet:
+        return super().get_queryset().prefetch_related('user')
 
 
 class Deck(models.Model):
@@ -114,6 +111,7 @@ class Deck(models.Model):
         return shared_deck
 
     def user_has_access(self, user: User) -> bool:
+        # For redundancy with `SharedDeck`
         return self.user == user
 
     def get_statistics(self) -> Dict:

@@ -7,7 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Alert from 'react-bootstrap/Alert';
-import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiQuickDeckList, apiFeedbackGetQuestion, apiFeedbackRespondQuestion } from '../lookup';
+import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiDeckQuickList, apiFeedbackGetQuestion, apiFeedbackRespondQuestion } from '../lookup';
 import { errorHandler, shiftDate, range, timezoneToISOString, useApiObjectHook, stringDate } from '../utils';
 import { randomTip } from './randomtips';
 import CalendarHeatmap from 'react-calendar-heatmap';
@@ -376,7 +376,7 @@ function AssignmentsComponent({ setJoinClassModalIsOpen }) {
     8018,
   );
   const [decks] = useApiObjectHook<QuickDeck[]>(
-    apiQuickDeckList,
+    apiDeckQuickList,
     200,
     1029,
     [true, true],

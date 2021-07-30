@@ -9,7 +9,7 @@ import DataTable from 'react-data-table-component';
 import { DefaultSharedDeckButtons } from '../decks/buttons';
 import { FlashcardTypesPiechart, HistoryLineChart, parseStats } from '../decks/statistics/statistics';
 import { Deck } from '../decks/types';
-import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiQuickDeckList, apiStudentPercentCompleteList, apiTeacherAssignmentsList } from '../lookup';
+import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiDeckQuickList, apiStudentPercentCompleteList, apiTeacherAssignmentsList } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
 import { Assignment, Classroom, ParsedStats, Student } from './types';
 import { CreateEditAssignmentModal } from './buttons';
@@ -241,7 +241,7 @@ function RenderAssignment(props: { assignment: Assignment }) {
 
 function ClassroomDeckComponent({ classroomId, deck }) {
   const [decks] = useApiObjectHook<Deck[]>(
-    apiQuickDeckList,
+    apiDeckQuickList,
     200,
     8008,
     [false, false],

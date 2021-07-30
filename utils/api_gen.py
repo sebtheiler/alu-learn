@@ -225,7 +225,7 @@ def generate_base_api(
 
     if not exclude_list:
         views.append(
-            path(f'{base_name}/', list_object_view(
+            path(f'{base_name}/list/', list_object_view(
                 Serializer=Serializer,
                 owner_path=owner_path,
             ))

@@ -4,13 +4,14 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { apiFlashCardSearch, apiDeckPrivateList, apiFlashcardReviewInstanceEdit } from '../../lookup';
+import { apiFlashCardSearch, apiFlashcardReviewInstanceEdit } from '../../lookup';
 // import { FlashCardsList } from '.';
-import { errorHandler, useApiObjectHook } from '../../utils';
+import { errorHandler } from '../../utils';
 import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import { Deck, ReviewInstance } from '../types';
+import { useObjectList } from '../../lookup/lookup';
 
 // Does some magic with SlateJS that prevents weird errors
 // DO NOT REMOVE
@@ -163,7 +164,7 @@ export function SearchForm(props: SearchFormProps) {
 
 // Renders the form for searching for flashcards
 export function FlashCardSearchComponent(props) {
-  const [decks] = useApiObjectHook<Deck[]>(apiDeckPrivateList, 200, 1025);
+  const [decks] = useObjectList<Deck[]>('decks', 'deck');
   const [searchedFlashcards, setSearchedFlashcards] = useState<ReviewInstance[]>();
   const [didSearch, setDidSearch] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);

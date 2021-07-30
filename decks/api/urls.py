@@ -11,9 +11,6 @@ urlpatterns = [
     path('textupload/', views.txt_file_upload),
     path('upload/json/', views.deck_json_import_view),
     path('<int:deck_id>/export/json/', views.deck_json_export_view),
-    path('list/', views.deck_private_list),
-    path('quick/', views.deck_quick_list_view),
-    path('detail/<str:username>/', views.deck_shared_view),
     *generate_base_api(
         'decks', 'deck',
         DeckSerializer,
@@ -21,6 +18,8 @@ urlpatterns = [
         'user', 'USER',
         exclude_app_name=True,
     ),
+    path('deck/list/user/<str:username>/', views.deck_shared_list),
+    path('deck/list/quick/', views.deck_quick_list_view),
     *generate_base_api(
         'decks', 'flashcard',
         FlashCardSerializer,

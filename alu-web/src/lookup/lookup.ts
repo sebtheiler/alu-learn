@@ -1,6 +1,6 @@
 // TODO: Break this file up into a separate file for each "package"
 // Each file should contain the lookups for just that package
-import { CSSM, Deck, ReviewInstance, FlashCard, SchedulingAlgorithm, SSMInterface, FlashCardTypes } from '../decks/types';
+import { CSSM, Deck, ReviewInstance, FlashCard, SchedulingAlgorithm, SSMInterface, FlashCardTypes, SharedDeck } from '../decks/types';
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
 import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
@@ -61,7 +61,7 @@ export async function apiObjectList<T>(
 ) {
   return backendFetch<T>(
     'GET',
-    `${baseUrl}/api/${appName}/${modelName}/`,
+    `${baseUrl}/api/${appName}/${modelName}/list/`,
   );
 }
 
@@ -95,10 +95,10 @@ export function useObjectGet<ObjType, Event extends {
 export function useObjectList<ObjType, Event extends {
   action: any,
   payload?: any,
-}>(
+} = never>(
   appName: string,
   modelName: string,
-  reducer: (
+  reducer?: (
     state: ObjType[] | undefined,
     action: Event,
   ) => ObjType[] | undefined,
@@ -106,7 +106,7 @@ export function useObjectList<ObjType, Event extends {
   const [obj, dispatch] = useReducer((state: ObjType[] | undefined, event: Event) => {
     if (event.action === 'INITIAL_SET')
       return event.payload as ObjType[];
-    return reducer(state, event);
+    return reducer ? reducer(state, event) : undefined;
   }, undefined);
 
   useEffect(() => {
@@ -197,13 +197,22 @@ export function apiDeckFlashcards(deckId, options, callback, nextUrl='') {
 }
 
 // Gets a list of decks owned by a user with username `username` that are shared with the given user
-export function apiDeckSharedList(username, callback) {
-  backendLookup('GET', `decks/detail/${username.toLowerCase()}/`, callback);
+export function apiDeckSharedList(
+  username: string,
+  callback: (response: SharedDeck[], status: number) => void,
+) {
+  backendLookup('GET', `decks/deck/list/user/${username.toLowerCase()}/`, callback);
 }
 
-// Gets a list of the current user's decks
-export function apiDeckPrivateList(callback: (response: Deck[], status: number) => void) {
-  backendLookup('GET', 'decks/list/', callback);
+export function apiDeckQuickList(
+  calcPercentComplete: boolean,
+  includeHasSharedDeck: boolean,
+  callback: (response: Deck[], status: number) => void,
+) {
+  let endpoint = 'decks/deck/list/quick/?';
+  if (calcPercentComplete) endpoint += 'calc_percent_complete=true&';
+  if (includeHasSharedDeck) endpoint += 'include_has_shared_deck=true';
+  backendLookup('GET', endpoint, callback);
 }
 
 // Gets a page of decks from the API
@@ -831,17 +840,6 @@ export function apiStudentPercentCompleteList(
   callback: (response: { name: string, percent_complete: number }[], status: number) => void,
 ) {
   backendLookup('GET', `teachers/classroom/${classroomId}/assignments/${assignmentId}/progress/`, callback);
-}
-
-export function apiQuickDeckList(
-  calcPercentComplete: boolean,
-  includeHasSharedDeck: boolean,
-  callback: (response: Deck[], status: number) => void,
-) {
-  let endpoint = 'decks/quick/?';
-  if (calcPercentComplete) endpoint += 'calc_percent_complete=true&';
-  if (includeHasSharedDeck) endpoint += 'include_has_shared_deck=true';
-  backendLookup('GET', endpoint, callback);
 }
 
 export function apiStudyAssignment(

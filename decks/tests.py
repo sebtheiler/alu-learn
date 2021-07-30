@@ -396,7 +396,7 @@ class DeckTestCase(ImprovedTestCase):
 
     def test_deck_shared_list_api(self):
         api_path = f'/api/decks/detail/{self.user.username}'
-        api_view = api_views.deck_shared_view
+        api_view = api_views.deck_shared_list
         kwargs = {'username': self.user.username}
 
         # Test with no decks
@@ -2366,7 +2366,7 @@ class DeckTestCase(ImprovedTestCase):
         flashcards[9].tags = 'g, g.l, g.l.m'
         flashcards[10].tags = 'g, g.l, g.l.m, g.l.m.<none>'
         flashcards[11].tags = 'g, g.l, g.l.n'
-        FlashCardCreator.objects.bulk_update(flashcards, ['tags'])
+        FlashCard.objects.bulk_update(flashcards, ['tags'])
 
         self.assertEqual(deck.generate_skill_tree(), target_skill_tree)
 

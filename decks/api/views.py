@@ -21,9 +21,8 @@ from utils import (create_slate_element, get_morning,
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
                       FlashCard, ReviewInstance, SharedDeck,
                       SharedDeckRelation)
-from ..serializers import (CustomStudySessionManagerSerializer, DeckSerializer,
-                           FlashCardSerializer, ReviewInstanceSerializer,
-                           SharedDeckSerializer)
+from ..serializers import (DeckSerializer, FlashCardSerializer,
+                           ReviewInstanceSerializer, SharedDeckSerializer)
 
 
 # TODO: rewrite to use save signals
@@ -67,7 +66,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
 
 
 # TODO: rewrite to be model function (fat models, skinny views)
-# TODO: change URL to be consistent
+# TODO: change URL and data to be consistent
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
@@ -141,19 +140,15 @@ def flashcard_edit_view(request, deck_id, flashcard_num, *args, **kwargs):
     return Response(FlashCardSerializer(instance=flashcard).data, 200)
 
 
-# TODO: delete
 @api_view(['GET'])
 @vary_on_cookie
 @cache_control(private=True)
-def deck_shared_view(request, username, *args, **kwargs):
+def deck_shared_list(request, username: str, *args, **kwargs) -> List[SharedDeck]:
     """
     Gets decks from a user that are either shared with the requester or public - GET
 
     Required information:
         `username`: (URL) Username of the user to get decks from
-
-    Returns:
-        A list of decks (DeckSerializer)
     """
     # Get user
     try:
@@ -165,48 +160,56 @@ def deck_shared_view(request, username, *args, **kwargs):
     is_friend = request.user in profile.friends.all()
     if is_friend or profile.user.id == request.user.id:
         decks_qs = SharedDeck.objects.filter(
-            Q(user=profile.user) &
+            Q(user__username=username) &
             (Q(sharing_setting='PUBLIC') | Q(sharing_setting='FRIENDS'))
         )
     else:
-        decks_qs = SharedDeck.objects.filter(user=profile.user, sharing_setting='PUBLIC')
+        decks_qs = SharedDeck.objects.filter(
+            user__username=username,
+            sharing_setting='PUBLIC',
+        )
 
     return Response(SharedDeckSerializer(decks_qs, many=True).data, status=200)
 
 
-@vary_on_cookie
-@cache_control(private=True)
+# TODO: Rename and revamp
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-# TODO: merge this function with quick, public, shared, and others
-def deck_private_list(request, *args, **kwargs):
+def deck_quick_list_view(request, *args, **kwargs):
     """
-    Gets a list of the current user's private decks - GET
+    Gets a minified list of decks and their progress for use on the main homepage - GET
 
     Parameters:
-        `include_cssms`: (GET) Whether or not to include CSSMs
+        calc_percent_complete=False: (GET) Calc the percent complete for each deck
+        include_has_shared_deck=False: (GET) Include decks that have been shared
     """
-    include_cssms = request.GET.get('include_cssms')
-
-    decks = Deck.objects.filter(
+    decks_query = Q(
         user=request.user,
         deck_type='standard',
-    ).order_by('title')
-    deck_data = DeckSerializer(decks, many=True).data
-
-    if include_cssms and include_cssms.lower() == 'true':
-        cssms = CustomStudySessionManager.objects.filter(
-            user=request.user.profile
-        )
-        cssm_data = CustomStudySessionManagerSerializer(cssms, many=True).data
-        data = deck_data + cssm_data
-    else:
-        data = deck_data
-
-    return Response(
-        data,
-        status=200,
+        student_attached_to=None,
     )
+    if not request.GET.get('include_has_shared_deck', False):
+        decks_query &= Q(shared_deck=None)
+
+    decks = Deck.objects.filter(
+        decks_query
+    ).order_by('title')  # type: List[Deck]
+
+    flashcards = ReviewInstance.objects.filter(
+        flashcard__deck__in=decks,
+    )
+
+    calc = request.GET.get('calc_percent_complete', False)
+    data = [
+        {
+            'title': deck.title,
+            'id': deck.pk,
+            'percent_complete': deck.calc_percent_complete(flashcards) if calc else None,
+        }
+        for deck in decks
+    ]
+
+    return Response(data, status=200)
 
 
 # TODO: delete and use `custom_..._func`
@@ -831,46 +834,6 @@ def deck_statistics_view(request, deck_id, *args, **kwargs):
         return Response({'message': 'Deck not found'}, status=404)
 
     return Response(deck.get_statistics(), status=200)
-
-
-# TODO: DELETE
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def deck_quick_list_view(request, *args, **kwargs):
-    """
-    Gets a minified list of decks and their progress for use on the main homepage - GET
-
-    Parameters:
-        calc_percent_complete=False: (GET) Calc the percent complete for each deck
-        include_has_shared_deck=False: (GET) Include decks that have been shared
-    """
-    decks_query = Q(
-        user=request.user,
-        deck_type='standard',
-        student_attached_to=None,
-    )
-    if not request.GET.get('include_has_shared_deck', False):
-        decks_query &= Q(shared_deck=None)
-
-    decks = Deck.objects.filter(
-        decks_query
-    ).order_by('title')  # type: List[Deck]
-
-    flashcards = ReviewInstance.objects.filter(
-        flashcard__deck__in=decks,
-    )
-
-    calc = request.GET.get('calc_percent_complete', False)
-    data = [
-        {
-            'title': deck.title,
-            'id': deck.pk,
-            'percent_complete': deck.calc_percent_complete(flashcards) if calc else None,
-        }
-        for deck in decks
-    ]
-
-    return Response(data, status=200)
 
 
 # TODO: Combine with import view
