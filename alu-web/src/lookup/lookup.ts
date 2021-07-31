@@ -6,7 +6,7 @@ import { Profile } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { getCookie } from '../utils';
 import { backendLookup, baseUrl } from './components';
-import { useReducer, useEffect, Dispatch } from 'react';
+import { useReducer, useEffect, useState, Dispatch } from 'react';
 
 type Message = { 'message': string };
 type PaginatedResponse = {
@@ -82,12 +82,17 @@ export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
       return event.payload as ObjType;
     return reducer ? reducer(state, event) : undefined;
   }, undefined);
+  const [objDidFetch, setObjDidFetch] = useState(false);
 
   useEffect(() => {
+    if (objDidFetch) return;
+    setObjDidFetch(true);
     (async () => func(...args).then(
-      (res: ObjType) => dispatch({ action: 'INITIAL_SET', payload: res } as Event)
+      (res: ObjType) => {
+        dispatch({ action: 'INITIAL_SET', payload: res } as Event);
+      }
     ))();
-  }, [func, args]);
+  }, [func, args, objDidFetch]);
 
   return [obj, dispatch];
 }

@@ -73,6 +73,7 @@ export interface ReviewInstance {
   is_leech: boolean;
   leech_index: number;
   name: string;
+  flashcard_fields?: Node[][];
   id: UUID;
 }
 

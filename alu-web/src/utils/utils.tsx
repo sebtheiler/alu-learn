@@ -330,7 +330,7 @@ interface RenderRichTextProps {
   fixSlateLazy?: boolean;
 }
 export function RenderRichText(props: RenderRichTextProps) {
-  const {text, fixSlateLazy} = props;
+  const { text, fixSlateLazy } = props;
 
   const [value, setValue] = useState(text);
   const editor = useMemo(
@@ -362,8 +362,8 @@ export function RenderRichText(props: RenderRichTextProps) {
     >
       <FullEditor
         editor={editor}
-        readOnly={true}
         styleOptions={{ minHeight: '0' }}
+        readOnly
       />
     </Slate>
   );
