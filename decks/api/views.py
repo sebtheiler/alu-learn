@@ -976,3 +976,50 @@ def game_flashcards_view(request, *args, **kwargs):
         flashcards = flashcards[:amount]
 
     return Response(ReviewInstanceSerializer(flashcards, many=True).data, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]:
+    """
+    Get review instances to study - POST
+
+    `deck_id` (Data)?: Id of the deck to get flashcards from
+    `tag_query` (Data)?: Tag query to search flashcards
+    """
+    # Build base query
+    review_instance_query = Q()
+
+    if (deck_id := request.data.get('deck_id')) and isinstance(deck_id, int):
+        review_instance_query &= Q(
+            flashcard__deck__pk=deck_id,
+            flashcard__deck__user=request.user,
+        )
+
+    if (tag_query := request.data.get('tag_query')) and isinstance(tag_query, str):
+        review_instance_query &= ReviewInstance.search_tags(tag_query)
+
+    # Find review instances that are due
+    NUM_FLASHCARDS_PER_LESSON = 25
+
+    due_for_review = ReviewInstance.objects.filter(
+        # TODO: adapt for timezones
+        review_instance_query & Q(next_review__lte=get_morning())
+    ).order_by('next_review')[:NUM_FLASHCARDS_PER_LESSON]
+
+    # If the number of due review instances doesn't meet `NUM_FLASHCARDDS_PER_LESSON`,
+    # also send unseen review instances
+    num_new_review_instances = NUM_FLASHCARDS_PER_LESSON - due_for_review.count()
+    if num_new_review_instances > 0:
+        due_for_review |= ReviewInstance.objects.filter(
+            review_instance_query & Q(learning_status='UNSEEN')
+        )[:num_new_review_instances]
+
+    return Response(
+        ReviewInstanceSerializer(
+            due_for_review,
+            many=True,
+            context={'get_flashcard_fields': True},
+        ).data,
+        status=200,
+    )

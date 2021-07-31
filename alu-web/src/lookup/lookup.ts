@@ -65,13 +65,13 @@ export async function apiObjectList<T>(
   );
 }
 
-export function useObjectGet<ObjType, Event extends {
+interface DefaultEvent {
   action: any,
   payload?: any,
-} = never>(
-  appName: string,
-  modelName: string,
-  objectId: number | string,
+}
+export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
+  func: Function,
+  args: any[],
   reducer?: (
     state: ObjType | undefined,
     event: Event,
@@ -84,18 +84,31 @@ export function useObjectGet<ObjType, Event extends {
   }, undefined);
 
   useEffect(() => {
-    (async () => apiObjectGet(appName, modelName, objectId).then(
-      res => dispatch({ action: 'INITIAL_SET', payload: res } as Event)
+    (async () => func(...args).then(
+      (res: ObjType) => dispatch({ action: 'INITIAL_SET', payload: res } as Event)
     ))();
-  }, [appName, modelName, objectId]);
+  }, [func, args]);
 
   return [obj, dispatch];
 }
 
-export function useObjectList<ObjType, Event extends {
-  action: any,
-  payload?: any,
-} = never>(
+export function useObjectGet<ObjType, Event extends DefaultEvent = never>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
+  reducer?: (
+    state: ObjType | undefined,
+    event: Event,
+  ) => ObjType | undefined,
+): [ObjType | undefined, Dispatch<Event>] {
+  return useAsyncDispatch<ObjType, Event>(
+    apiObjectGet,
+    [appName, modelName, objectId],
+    reducer,
+  );
+}
+
+export function useObjectList<ObjType, Event extends DefaultEvent = never>(
   appName: string,
   modelName: string,
   reducer?: (
@@ -103,19 +116,11 @@ export function useObjectList<ObjType, Event extends {
     action: Event,
   ) => ObjType[] | undefined,
 ): [ObjType[] | undefined, Dispatch<Event>] {
-  const [obj, dispatch] = useReducer((state: ObjType[] | undefined, event: Event) => {
-    if (event.action === 'INITIAL_SET')
-      return event.payload as ObjType[];
-    return reducer ? reducer(state, event) : undefined;
-  }, undefined);
-
-  useEffect(() => {
-    (async () => apiObjectList(appName, modelName).then(
-      res => dispatch({ action: 'INITIAL_SET', payload: res } as Event)
-    ))();
-  }, [appName, modelName]);
-
-  return [obj, dispatch];
+  return useAsyncDispatch<ObjType[], Event>(
+    apiObjectList,
+    [appName, modelName],
+    reducer,
+  );
 }
 
 export async function apiObjectEdit<T>(
@@ -1003,5 +1008,16 @@ export async function apiDeckGenerateSkillTree(
   return backendFetch('POST', `decks/deck/${deckId}/gen-skill-tree/`, {
     sort: sort,
     remove_essential: removeEssential,
+  });
+}
+
+// Get review instances to study
+export async function apiReviewInstanceStudy(
+  deckId: number,
+  tagQuery: string,
+): Promise<ReviewInstance[]> {
+  return backendFetch<ReviewInstance[]>('POST', `decks/flashcard/study/`, {
+    deck_id: deckId,
+    tag_query: tagQuery,
   });
 }

@@ -24,6 +24,8 @@ class FlashCardSerializer(serializers.ModelSerializer):
 
 
 class ReviewInstanceSerializer(serializers.ModelSerializer):
+    flashcard_fields = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = ReviewInstance
         fields = [
@@ -35,8 +37,17 @@ class ReviewInstanceSerializer(serializers.ModelSerializer):
             'is_suspended',
             'leech_index',
             'name',
+            'flashcard_fields',
             'id',
         ]
+
+    def get_flashcard_fields(self, obj):
+        # If getting a queryset, remember to use .prefetch_related('flashcard')
+        get_fields = self.context.get('get_flashcard_fields')
+        if not get_fields:
+            return None
+
+        return obj.flashcard.fields
 
 
 class DeckSerializer(serializers.ModelSerializer):

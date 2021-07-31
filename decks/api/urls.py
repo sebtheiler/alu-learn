@@ -72,6 +72,7 @@ urlpatterns = [
     path('flashcard/edit-tags/', views.flashcard_edit_tags_bulk_view),
     path('flashcard/edit-review-instances/', views.flashcard_review_instance_bulk_update_view),
     # ===== Flashcard Study =====
+    path('flashcard/study/', views.review_instance_study_view),
     path('ssm/<int:ssm_id>/flashcards/', views.ssm_flashcards_view),
     path('games/flashcards/', views.game_flashcards_view),
 ]

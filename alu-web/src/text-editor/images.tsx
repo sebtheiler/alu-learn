@@ -47,7 +47,8 @@ export const ImageElement = ({ attributes, children, element }) => {
     <div {...attributes}>
       <div contentEditable={false}>
         <img
-          src={element.url}
+          // TODO: re-enable with CDN: `element.url`
+          src='https://upload.wikimedia.org/wikipedia/en/thumb/8/80/Wikipedia-logo-v2.svg/263px-Wikipedia-logo-v2.svg.png'
           style={{
             display: 'block',
             maxWidth: '100%',
