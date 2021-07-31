@@ -1,4 +1,3 @@
-import { ManualSRTask } from '../../manual-sr/types';
 import { errorHandler } from '../../utils';
 import { ReviewInstance, SchedulingAlgorithm, DeckDifficulty } from '../types';
 
@@ -125,7 +124,7 @@ interface Interval {
   isLeech: boolean;
 }
 export function getAnkiInterval(
-  card: ReviewInstance | ManualSRTask,
+  card: ReviewInstance,
   grade: 1 | 2 | 3 | 4,
   settingsAlgorithm: SchedulingAlgorithm = 'ANKING',
   deckDifficulty: ('NONE' | DeckDifficulty) = 'NONE',

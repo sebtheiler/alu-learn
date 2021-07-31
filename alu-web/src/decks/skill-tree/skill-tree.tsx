@@ -42,5 +42,5 @@ export default function SkillTree(props: SkillTreeProps) {
     <LoadingButton clickFunc={generateSkillTree} className='mb-3'>
       {deck.skill_tree ? 'Regenerate' : 'Generate'} Skill Tree
     </LoadingButton>
-  </>)
+  </>);
 }

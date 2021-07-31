@@ -57,22 +57,6 @@ export function HomeComponent({ username }) {
               </a>
             </h4>
           </li>}
-          <li>
-            <h4>
-              <a href='/home/notes/' id='notes-link'>
-                <i className='fas fa-edit'></i>{' '}
-                Notes
-              </a>
-            </h4>
-          </li>
-          <li>
-            <h4>
-              <a href='/home/manual-sr/' id='tasks-link'>
-                <i className='fas fa-clock'></i>{' '}
-                Tasks
-              </a>
-            </h4>
-          </li>
           <hr />
           <li>
             <FriendsComponent />

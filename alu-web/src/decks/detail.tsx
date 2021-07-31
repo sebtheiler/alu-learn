@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { DeckForeignUserButtonGroup, DefaultSharedDeckButtons } from './buttons';
-import { NoteDefaultButtonGroup } from '../notes/buttons';
 // import { FlashCardsList } from './flashcards';
 import { DisplayCountChar, has, MarkdownRender } from '../utils';
 import { UserLink } from '../profiles';
@@ -9,13 +8,12 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Card from 'react-bootstrap/Card';
 import { ClassroomDefaultButtonGroup } from '../teachers/buttons';
 import { SharedDeck, FlashCard, Deck, CSSM } from './types';
-import { Note } from '../notes/types';
 import { Classroom } from '../teachers/types';
 
 // Used for displaying any sort of homepage
 interface HomePageCardsProps {
-  items: (Deck | Note | Classroom | SharedDeck | CSSM)[];
-  type: 'deck' | 'note' | 'classroom';
+  items: (Deck | Classroom | SharedDeck | CSSM)[];
+  type: 'deck' | 'classroom';
   currentUsername: string;
 }
 export function HomePageCards(props: HomePageCardsProps) {
@@ -39,9 +37,9 @@ export function HomePageCards(props: HomePageCardsProps) {
 // Display an individual portion of a homepage
 // Used on homepages, as well as the shared deck list
 interface VariousCardProps {
-  card: Deck | SharedDeck | Note | Classroom | CSSM;
+  card: Deck | SharedDeck | Classroom | CSSM;
   currentUsername: string;
-  type: 'note' | 'classroom' | 'deck';
+  type: 'classroom' | 'deck';
   noButtons?: boolean;
   className?: string;
 }
@@ -52,8 +50,6 @@ export function VariousCard(props: VariousCardProps) {
   const buttons = useMemo(() => {
     if (noButtons) return;
     switch (type) {
-      case 'note':
-        return <NoteDefaultButtonGroup note={card} />
       case 'classroom':
         return <ClassroomDefaultButtonGroup classroom={card} />
       case 'deck':

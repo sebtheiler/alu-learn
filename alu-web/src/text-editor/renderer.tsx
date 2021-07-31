@@ -32,9 +32,8 @@ export const Element = (props) => {
     case 'image':
       return <ImageElement {...props} />
     case 'math-block':
-      if (readOnly) {
+      if (readOnly)
         return <BlockMath {...attributes}>{Node.string(props.element)}</BlockMath>
-      }
       return <p className='math-block' {...attributes}>{children}</p>
     default:
       return <p {...attributes}>{children}</p>
@@ -42,21 +41,17 @@ export const Element = (props) => {
 }
 
 export const Leaf = ({ attributes, children, leaf, readOnly }) => {
-  if (leaf.bold) {
+  if (leaf.bold)
     children = <strong>{children}</strong>
-  }
 
-  if (leaf.code) {
+  if (leaf.code)
     children = <code>{children}</code>
-  }
 
-  if (leaf.italic) {
+  if (leaf.italic)
     children = <em>{children}</em>
-  }
 
-  if (leaf.underline) {
+  if (leaf.underline)
     children = <u>{children}</u>
-  }
 
   if (leaf.math_inline) {
     if (readOnly) {

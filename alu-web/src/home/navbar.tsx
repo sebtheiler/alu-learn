@@ -158,15 +158,6 @@ export function NavbarComponent(props) {
                   <i className='fas fa-seedling'></i>{' '}
                   Habits
                 </NavDropdown.Item>
-                <NavDropdown.Item href='/home/notes/' id='notes-option'>
-                  <i className='fas fa-edit'></i>{' '}
-                  Notes
-                </NavDropdown.Item>
-                <NavDropdown.Item href='/home/manual-sr/' id='tasks-option'>
-                  <i className='fas fa-clock'></i>{' '}
-                  Tasks
-                </NavDropdown.Item>
-
                 <NavDropdown.Divider />
 
                 <NavDropdown.Item href='/settings/' id='settings-option'>

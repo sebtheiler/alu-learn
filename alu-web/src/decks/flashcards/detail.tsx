@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { QuestionBubble, FormCheckbox, has } from '../../utils';
-import { createFullEditor, FullEditor } from '../../notes/editor-components';
+import { createFullEditor, FullEditor } from '../../text-editor';
 import { Slate } from 'slate-react';
 import './detail.css';
 import { ReviewInstance, FlashCard } from '../types';

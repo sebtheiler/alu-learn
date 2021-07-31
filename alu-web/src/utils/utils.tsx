@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown/with-html';
 import RemarkMathPlugin from 'remark-math';
 import { Tooltip, OverlayTrigger, Button, Form } from 'react-bootstrap';
 import { BlockMath, InlineMath } from 'react-katex';
-import { FullEditor, createFullEditor  } from '../notes/editor-components';
+import { FullEditor, createFullEditor  } from '../text-editor';
 import { Slate } from 'slate-react';
 import 'katex/dist/katex.min.css';
 import { errorHandler } from './errorHandler';

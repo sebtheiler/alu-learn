@@ -11,9 +11,6 @@ import { NotificationComponent } from './profiles/notifications';
 import { ExploreComponent, DeckSearchComponent } from './explore';
 import { LandingComponent } from './landing';
 import { HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization } from './home';
-import { NoteEditor, NotesHomeList } from './notes';
-import { AutoNote, AutoFlashCard } from './notes/autonote';
-import { ManualSRHome } from './manual-sr';
 import { GameComponent, MatchingGame } from './decks/games';
 import { ClassroomDetail, ClassroomStudentDetail, StudyAssignment } from './teachers';
 import { Habits } from './habits';
@@ -55,15 +52,10 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [LoginComponent, 'login-component'],
   [DeckImportComponent, 'deck-importer'],
   [ContactUs, 'contact-us'],
-  [NoteEditor, 'note-editor'],
-  [NotesHomeList, 'notes-home'],
   [SettingsPage, 'settings-page'],
   [ChangePasswordEmail, 'update-password-email'],
   [ConfirmEmail, 'confirm-email'],
   [SendPasswordReset, 'send-password-reset'],
-  [AutoNote, 'auto-note'],
-  [AutoFlashCard, 'auto-flashcard'],
-  [ManualSRHome, 'manual-sr-home'],
   [ShareDeck, 'share-deck'],
   [PushSharedDeck, 'push-deck'],
   [UpdateDeck, 'update-deck'],

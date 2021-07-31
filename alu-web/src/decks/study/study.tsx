@@ -4,9 +4,8 @@ import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
 import Alert from 'react-bootstrap/Alert';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import { createFullEditor, FullEditor } from '../../notes/editor-components';
+import { createFullEditor, FullEditor } from '../../text-editor';
 import { Slate } from 'slate-react';
-import { emptyValue } from '../../notes/autonote/autonote';
 import { Transforms } from 'slate';
 import { DeckDifficulty, ReviewInstance, FlashCard, SchedulingAlgorithm } from '../types';
 
@@ -53,7 +52,7 @@ const processFront = (flashcard, showAnswer) => {
 
       return showAnswer ? answerRevealedText : answerHiddenText;
     default:
-      return emptyValue;
+      return null;
   }
 }
 

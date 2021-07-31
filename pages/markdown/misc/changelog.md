@@ -8,6 +8,7 @@
   * Not backward compatible
 * Revamped deck editing
   * Removed all the arbitrary options from deck editing
+* Removed Notes and Tasks
 
 -----
 ## To-dos & Revamped Tutorial (DEVELOPMENT) - Jul 13 - 0.7.3b

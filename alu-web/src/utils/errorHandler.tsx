@@ -131,24 +131,9 @@ int(hexadecimal_string, 16)
 5004: Error deleting SSM through apiSSMDelete in alu-web/src/decks/buttons.js
 5005: Error creating SSM through apiSSMCreate in alu-web/src/decks/flashcards/search.js
 
-=== Note related errors ===
-6000: Error getting note detail through apiNoteDetail in alu-web/src/notes/standard/editor.js
-6001: Error updating note through apiNoteUpdate in alu-web/src/notes/standard/editor.js
-6002: Error getting notes home through apiNoteHome in alu-web/src/notes/home.js
-6003: Error getting note detail through apiNoteDetail in alu-web/src/notes/autonote/autoflashcard/autoflashcard.js
-6004: Error creating note through apiNoteCreate in alu-web/src/notes/buttons.js
-6005: Error deleting note through apiNoteDelete in alu-web/src/notes/buttons.js
-6006: Error creating new page through apiCreateNewNotePage in alu-web/src/notes/editor.js
-6007: Error deleting note page through apiDeleteNotePage in alu-web/src/notes/editor.js
-6008: Error getting note page detail through apiNotePageDetail in alu-web/src/notes/editor.js
+=== Unused ===
 
-=== Manual SR Task related errors ===
-7000: Error getting list of manual sr tasks through apiManualSRTaskList in alu-web/src/manual-sr/home.js
-7001: Error getting next set of tasks (pagination) through apiManualSRTaskList in alu-web/src/manual-sr/home.js
-7002: Error creating manual SR task through apiManualSRTaskCreate in alu-web/src/manual-sr/home.js
-7003: Error updating manual SR task's review information through apiManualSRTaskUpdate in alu-web/src/manual-sr/task.js
-7004: Error deleting manual SR task through apiManualSRTaskDelete in alu-web/src/manual-sr/task.js
-7005: Error editing manual SR task through apiManualSRTaskEdit in alu-web/src/manual-sr/task.js
+=== Unused ===
 
 === Teacher related errors ===
 8000: Error getting classroom homepage through apiClassroomsHomepage

@@ -411,60 +411,6 @@ export function apiSSMFlashcards(
   backendLookup('GET', endpoint, callback);
 }
 
-// Creates a note
-export function apiNoteCreate(title, callback) {
-  backendLookup('POST', 'notes/create/', callback, {title: title});
-}
-
-// Gets info about a note
-export function apiNoteDetail(noteId, getPages, callback) {
-  let backend = `notes/detail/${noteId}/`;
-  if (getPages) {
-    backend += '?getPages=true';
-  }
-  backendLookup('GET', backend, callback);
-}
-
-// Gets a note page's content
-export function apiNotePageDetail(noteId, pageNumber, callback) {
-  backendLookup('GET', `notes/page-detail/${noteId}/${pageNumber}/`, callback);
-}
-
-// Updates a note's metadata
-export function apiNoteUpdate(noteId, newTitle, callback) {
-  backendLookup('POST', `notes/update/${noteId}/`, callback, { new_title: newTitle });
-}
-
-// Updates the content of a single note page
-export function apiNotePageUpdate(noteId, pageId, newContent, callback) {
-  backendLookup('POST', `notes/page-update/${noteId}/${pageId}/`, callback, { new_content: newContent });
-}
-
-// Deletes a note
-export function apiNoteDelete(noteId, callback) {
-  backendLookup('POST', `notes/delete/${noteId}/`, callback);
-}
-
-// Gets all of the user's notes
-export function apiNoteHome(callback) {
-  backendLookup('GET', 'notes/list/', callback);
-}
-
-// Creates a new page in a note
-export function apiCreateNewNotePage(pageTitle, noteId, version, pagePosition, callback) {
-  backendLookup('POST', 'notes/create-page/', callback, {
-    note_id: noteId,
-    title: pageTitle,
-    version: version,
-    page_position: pagePosition,
-  });
-}
-
-// Deletes a page in a note
-export function apiDeleteNotePage(noteId, pageId, callback) {
-  backendLookup('POST', `notes/delete-page/${noteId}/${pageId}/`, callback);
-}
-
 // Changes a user's password
 export function apiPasswordChange(oldPassword, newPassword, callback) {
   backendLookup('POST', 'profiles/changepassword/', callback, {
