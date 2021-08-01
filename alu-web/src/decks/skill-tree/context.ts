@@ -1,10 +1,13 @@
 import { createContext, Dispatch } from 'react';
 import { Deck } from '../types';
 
-type DeckAction = 'CREATE' | 'EDIT' | 'DELETE';
+type DeckEvent =
+  | { action: 'CREATE', payload: Deck }
+  | { action: 'EDIT', payload: any }
+  | { action: 'DELETE', payload: number }
 export const deckReducer = (
   state: Deck[] | undefined,
-  event: { action: DeckAction, payload?: any },
+  event: DeckEvent,
 ): Deck[] | undefined => {
   if (!state) return undefined;
   switch (event.action) {
@@ -30,7 +33,4 @@ export const deckReducer = (
   }
 }
 
-export const DeckDispatch = createContext<Dispatch<{
-  action: DeckAction,
-  payload?: any,
-}> | undefined>(undefined);
+export const DeckDispatch = createContext<Dispatch<DeckEvent> | undefined>(undefined);

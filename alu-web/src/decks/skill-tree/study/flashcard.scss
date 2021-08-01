@@ -3,7 +3,7 @@
   >.front, >.back {
     display: block;
     transition-timing-function: ease-in-out;
-    transition-duration: .25s;
+    transition-duration: 0.25s;
     transition-property: transform, opacity;
   }
   >.front {
@@ -53,5 +53,17 @@
   &:hover {
     cursor: pointer;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+}
+
+.answer-choices {
+  margin-top: 200px;
+  width: 100%;
+  transition: 0.1s;
+  opacity: 0;
+
+  &.is-flipped {
+    opacity: 1;
+    transition: 1s;
   }
 }

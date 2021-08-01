@@ -4,9 +4,9 @@ import { ReviewInstanceStudy } from './flashcard';
 
 export function StudyReviewInstances(props: { reviewInstances: ReviewInstance[] }) {
   const { reviewInstances } = props;
-  const selectedCard = 0;
+  const selectedCard = 1;
 
-  return (<>
+  return (
     <ReviewInstanceStudy reviewInstance={reviewInstances[selectedCard]} />
-  </>);
+  );
 }

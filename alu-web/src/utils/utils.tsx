@@ -177,7 +177,7 @@ export function shiftDate(date, numDays) {
 
 // Equivalent of Python's range
 // Taken from https://dev.to/ycmjason/how-to-create-range-in-javascript-539i#:~:text=range%20is%20a%20function%20that,integers%20from%20start%20to%20end.
-export function range(start, end) {
+export function range(start: number, end: number) {
   const length = end - start;
   return Array.from({ length }, (_, i) => start + i);
 }

@@ -988,7 +988,8 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     `tag_query` (Data)?: Tag query to search flashcards
     """
     # Build base query
-    review_instance_query = Q()
+    # TODO: re-add cloze flashcards
+    review_instance_query = ~Q(flashcard__flashcard_type='cloze')
 
     if (deck_id := request.data.get('deck_id')) and isinstance(deck_id, int):
         review_instance_query &= Q(

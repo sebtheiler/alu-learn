@@ -112,16 +112,16 @@ function generateConfig(
 
 
 // Adapted from https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
-interface Interval {
-  message: string;
-  nextReviewDate: Date;
-  easeFactor: number;
+export interface Interval {
+  next_review_date: Date;
+  ease_factor: number;
   interval: number;
-  isMinute: boolean;
-  learningStatus: 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
-  stepsIndex: number;
-  leechIndex: number;
-  isLeech: boolean;
+  learning_status: 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
+  steps_index: number;
+  leech_index: number;
+  // is_leech: boolean;
+  message: string;
+  is_minute: boolean;
 }
 export function getAnkiInterval(
   card: ReviewInstance,
@@ -130,9 +130,7 @@ export function getAnkiInterval(
   deckDifficulty: ('NONE' | DeckDifficulty) = 'NONE',
 ) {
   const config = generateConfig(settingsAlgorithm, deckDifficulty);
-  if (!config) {
-    console.error(config);
-  }
+  if (!config) console.error(config);
 
   // eslint-disable-next-line
   const {NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, EASY_BONUS, INTERVAL_MODIFIER, MAXIMUM_INTERVAL, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL, LEECH_THRESHOLD}
@@ -149,7 +147,7 @@ export function getAnkiInterval(
     // leech_index: leechIndex,
   } = card;
   // TODO: fix leeches for everything
-  let isLeech = false;
+  // let isLeech = false;
   let leechIndex = 0;
 
   if (!learningStatus) {
@@ -271,14 +269,14 @@ export function getAnkiInterval(
   }
 
   return {
-    nextReviewDate: nextReviewDate,
-    easeFactor: easeFactor,
+    next_review_date: nextReviewDate,
+    ease_factor: easeFactor,
+    learning_status: learningStatus,
+    steps_index: stepsIndex,
+    leech_index: leechIndex,
     interval: Math.floor(interval),
-    isMinute: isMinute,
-    learningStatus: learningStatus,
-    stepsIndex: stepsIndex,
-    leechIndex: leechIndex,
-    isLeech: isLeech,
+    // isLeech: isLeech,
     message: 'SUCCESS',
+    is_minute: isMinute,
   } as Interval;
 }
