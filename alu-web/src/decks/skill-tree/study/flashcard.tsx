@@ -42,6 +42,7 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
           setIsFlipped(!isFlipped);
           break;
         case '1': case '2': case '3': case '4':
+          if (!isFlipped) return;
           // Convert the `rawGrade` into an actual number, because
           // sometimes buttons are missing as their grade is invalid,
           // but the user still enters that number

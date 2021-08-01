@@ -15,3 +15,14 @@
     transition: 0.5s cubic-bezier(.21, .59, .56, 1.29);
   }
 }
+
+.hard-exercise-text {
+  color: #a51100;
+  text-align: center;
+  font-weight: bold;
+  opacity: 0;
+
+  &.show {
+    opacity: 1;
+  }
+}
