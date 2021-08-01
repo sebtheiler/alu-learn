@@ -11,7 +11,6 @@ export function StudyReviewInstances(props: { reviewInstances: ReviewInstance[] 
     // eslint-disable-next-line
     [],
   );
-  const selectedCard = 1;
 
   return (
     <Container>
@@ -21,7 +20,7 @@ export function StudyReviewInstances(props: { reviewInstances: ReviewInstance[] 
           style={{ width: `${Math.floor((1 - reviewInstances.length/originalNumReviewInstances) * 100)}%` }}
         />
       </div>
-      <ReviewInstanceStudy reviewInstance={reviewInstances[selectedCard]} />
+      <ReviewInstanceStudy reviewInstance={reviewInstances[0]} />
     </Container>
   );
 }

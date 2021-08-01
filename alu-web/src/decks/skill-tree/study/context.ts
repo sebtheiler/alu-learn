@@ -23,7 +23,6 @@ export const studyAnswerReducer = (
       // apiObjectEdit('decks', 'reviewinstance', event.id, interval);
 
       // If the interval is greater than review ahead minutes, remove the review instance from rotation
-      console.log(event.interval.interval, event.interval.is_minute)
       if (
         (event.interval.is_minute ?
           event.interval.interval : event.interval.interval*60*24
@@ -36,6 +35,15 @@ export const studyAnswerReducer = (
       for (const [attr, val] of Object.entries(event.interval))
         if (!['message', 'is_minute'].includes(attr))
           newState[index][attr] = val;
+      
+      // Sort flashcards by next review, earliest first
+      newState = newState.sort((a, b) =>
+        new Date(a.next_review).getTime() - new Date(b.next_review).getTime()
+      );
+
+      // Don't show same card twice in a row
+      if (newState[0].id === event.id && newState.length > 1)
+        newState = [newState[1], newState[0], ...newState.slice(2)];
 
       return [...newState];  // React is very stupid so you need to clone the array to force re-render
     default:

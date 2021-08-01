@@ -37,11 +37,11 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
 
   useEffect(() => {
     const keyUp = event => {
-      switch (event.code) {
-        case 'Space':
+      switch (event.key) {
+        case ' ':
           setIsFlipped(!isFlipped);
           break;
-        case 'Digit1': case 'Digit2': case 'Digit3': case 'Digit4':
+        case '1': case '2': case '3': case '4':
           // Convert the `rawGrade` into an actual number, because
           // sometimes buttons are missing as their grade is invalid,
           // but the user still enters that number
@@ -53,6 +53,8 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
           ).map(
             interval_i => interval_i.i
           )[rawGrade - 1] + 1) as 1 | 2 | 3 | 4;
+          if (!grade) return;
+
           studyFlashcard(grade)();
           break;
         default:
