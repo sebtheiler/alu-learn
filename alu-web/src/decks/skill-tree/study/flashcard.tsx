@@ -1,7 +1,6 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Container from 'react-bootstrap/Container';
 import { range, RenderRichText } from '../../../utils';
 import { getAnkiInterval } from '../../study/algorithm';
 import { ReviewInstance } from '../../types';
@@ -65,7 +64,7 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
   }, [isFlipped, studyFlashcard, intervals]);
 
   return (
-    <Container>
+    <div>
       <div
         className={'flip' + (isFlipped ? ' is-flipped' : '')}
         onClick={() => setIsFlipped(!isFlipped)}
@@ -106,6 +105,6 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
           </small>
         </div>
       </div>
-    </Container>
+    </div>
   );
 }
