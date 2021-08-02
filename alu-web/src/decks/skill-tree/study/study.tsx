@@ -5,13 +5,12 @@ import { StudyReviewInstances } from './review-instances';
 import { StudyAnswerDispatch, StudyAnswerEvent, studyAnswerReducer } from './context';
 
 
-export function StudySkillTree(props: { deckId: string }) {
-  const { deckId } = props;
+export function StudySkillTree({ deckId, tags='' }: { deckId: string, tags: string }) {
   const [reviewInstances, dispatchReviewInstances] = useAsyncDispatch<
     ReviewInstance[], StudyAnswerEvent
   >(
     apiReviewInstanceStudy,
-    [parseInt(deckId), null],
+    [parseInt(deckId), tags.replace('-', ' ').replace('__', ' AND ')],
     studyAnswerReducer,
   );
 
@@ -22,6 +21,7 @@ export function StudySkillTree(props: { deckId: string }) {
     <StudyAnswerDispatch.Provider value={dispatchReviewInstances}>
       <StudyReviewInstances
         reviewInstances={reviewInstances}
+        deckId={parseInt(deckId)}
       />
     </StudyAnswerDispatch.Provider>
   );

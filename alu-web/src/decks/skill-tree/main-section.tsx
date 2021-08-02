@@ -6,9 +6,10 @@ import SubSection from './sub-section';
 interface MainSectionProps {
   title: string;
   section: Object[];
+  deckId: number;
 }
 export default function MainSection(props: MainSectionProps) {
-  const { title, section } = props;
+  const { title, section, deckId } = props;
 
   return (<div className='main-section'>
     <Container>
@@ -31,6 +32,8 @@ export default function MainSection(props: MainSectionProps) {
           {Object.keys(section).map((subSectionTitle, i) =>
             <SubSection
               title={subSectionTitle}
+              mainSectionTitle={title}
+              deckId={deckId}
               key={i}
             />
           )}

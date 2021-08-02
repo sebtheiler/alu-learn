@@ -12,12 +12,10 @@ interface OutroSlidesProps {
     numTotal: number;
     numNew: number;
   };
+  deckId: number;
 }
-export function OutroSlides(props: OutroSlidesProps) {
-  const { originalInfo } = props;
-  // const reviewInfo = { streak: 21, cards_done: 50, target_cards_done: 75 };
+export function OutroSlides({ originalInfo, deckId }: OutroSlidesProps) {
   const [reviewInfo] = useAsyncDispatch<StreakInfo>(apiStreakReviewInfo);
-  console.log(reviewInfo)
   const [outroSlideNum, setOutroSlideNum] = useState(0);
 
   const outroSlides = reviewInfo ? [
@@ -115,7 +113,7 @@ export function OutroSlides(props: OutroSlidesProps) {
           Study Again
         </Button>
         <Button
-          href='TODO: deck page'
+          href={`/decks/${deckId}/`}
           variant='secondary'
           className='w-50'
         >

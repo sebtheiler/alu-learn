@@ -7,9 +7,11 @@ import { capitalize } from '../../utils';
 
 interface SubSectionProps {
   title: string;
+  mainSectionTitle: string;
+  deckId: number;
 }
-export default function SubSection(props: SubSectionProps) {
-  const { title } = props;
+export default function SubSection({ title, mainSectionTitle, deckId }: SubSectionProps) {
+  const cleanTitle = (title: string) => title.replace(' ', '-');
 
   return (
     <Col
@@ -27,7 +29,7 @@ export default function SubSection(props: SubSectionProps) {
             </Popover.Title>
             <Popover.Content>
               <Button
-                href='/study/TODO:/'
+                href={`decks/${deckId}/study/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
                 block
               >
                 Study

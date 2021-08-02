@@ -1,16 +1,16 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { ReviewInstance } from '../../types';
 import { ReviewInstanceStudy } from './flashcard';
 import { OutroSlides } from './outro-slides';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
+// import useWindowSize from 'react-use/lib/useWindowSize';
+import Confetti from 'react-confetti';
 import './review-instances.scss';
 
 const EASE_FOR_HARD_EXERCISE = 210;  // TODO: update with real data
-export function StudyReviewInstances(props: { reviewInstances: ReviewInstance[] }) {
-  // const { reviewInstances } = props;
-  const reviewInstances: ReviewInstance[] =[];
+export function StudyReviewInstances({ reviewInstances, deckId }: { reviewInstances: ReviewInstance[], deckId: number }) {
   const originalInfo = useMemo(
     () => ({
       numTotal: reviewInstances.length,
@@ -22,30 +22,37 @@ export function StudyReviewInstances(props: { reviewInstances: ReviewInstance[] 
 
   return (
     <Container>
-      {reviewInstances.length > 0 && <div>
-        <div>
-          <div className='study-progress mt-3'>
-            <div
-              className='study-progress-bar'
-              style={{ width: `${Math.floor(
-                (1 - reviewInstances.length/originalInfo.numTotal) * 100
-              )}%` }}
-            />
-          </div>
-          <p className={
-            'hard-exercise-text my-2' +
-            (reviewInstances[0].ease <= EASE_FOR_HARD_EXERCISE ? ' show' : '')
-          }>
-            This flashcard is tough!  Good luck!
-          </p>
+      <div>
+        <div className='study-progress mt-3'>
+          <div
+            className='study-progress-bar'
+            style={{ width: `${Math.floor(
+              (1 - reviewInstances.length/originalInfo.numTotal) * 100
+            )}%` }}
+          />
         </div>
+        <p className={
+          'hard-exercise-text my-2' +
+          (reviewInstances[0]?.ease <= EASE_FOR_HARD_EXERCISE ? ' show' : '')
+        }>
+          This flashcard is tough!  Good luck!
+        </p>
+      </div>
+      {reviewInstances.length > 0 && <div>
         <ReviewInstanceStudy reviewInstance={reviewInstances[0]} />
       </div>}
       {reviewInstances.length === 0 && <div className='text-center'>
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={300}
+          tweenDuration={20000}
+        />
         <h1>Congratulations!</h1>
         <Row>
           <Col md={6} xs={12} className='finished-col left'>
-            <OutroSlides originalInfo={originalInfo} />
+            <OutroSlides originalInfo={originalInfo} deckId={deckId} />
           </Col>
           <Col md={6} xs={12} className='finished-col right'>
             {originalInfo.numNew > 0 && <p className='text-success'>

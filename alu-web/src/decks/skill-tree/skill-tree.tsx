@@ -28,6 +28,7 @@ export default function SkillTree(props: SkillTreeProps) {
     {deck.skill_tree ? Object.keys(deck.skill_tree).map((mainSectionTitle, i) =>
       <MainSection
         title={mainSectionTitle}
+        deckId={deck.id}
         // @ts-ignore
         section={deck.skill_tree[mainSectionTitle]}
         key={i}
