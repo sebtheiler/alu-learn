@@ -17,6 +17,7 @@ from .views import (
     password_reset_email_api_view,
     read_changelog_popup_api_view,
     staff_force_login,
+    streak_review_info,
 )
 
 # Base endpoint = /api/profiles/
@@ -38,4 +39,5 @@ urlpatterns = [
     path('confirmemail/<str:username>/', confirm_email_api_view),
     path('read-popup/', read_changelog_popup_api_view),
     path('staff-force-login/', staff_force_login),
+    path('streak-review-info/', streak_review_info),
 ]

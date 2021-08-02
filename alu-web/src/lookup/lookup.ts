@@ -71,7 +71,7 @@ interface DefaultEvent {
 }
 export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
   func: Function,
-  args: any[],
+  args: any[] = [],
   reducer?: (
     state: ObjType | undefined,
     event: Event,
@@ -1025,4 +1025,19 @@ export async function apiReviewInstanceStudy(
     deck_id: deckId,
     tag_query: tagQuery,
   });
+}
+
+// Gets basic info about the user's streak and reviews
+export interface StreakInfo {
+  streak: number;
+  cards_done: number;
+  target_cards_done: number;
+}
+export async function apiStreakReviewInfo(
+): Promise<StreakInfo> {
+  const utcTimezoneOffset = new Date().getTimezoneOffset();
+  return backendFetch<StreakInfo>(
+    'GET',
+    `profiles/streak-review-info?utc_timezone_offset=${utcTimezoneOffset}`,
+  );
 }

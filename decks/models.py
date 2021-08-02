@@ -1,5 +1,5 @@
 from __future__ import \
-    annotations  # TODO: remove this when we upgrade to python 3.10
+    annotations  # TODO: remove this when we upgrade to python 3.10 (and Union and others)
 
 import datetime as dt
 import json

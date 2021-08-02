@@ -1,10 +1,11 @@
-from typing import Literal
+from __future__ import annotations
+import datetime
+from typing import Literal, Tuple, Union
+
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
-
-import datetime
 
 User = settings.AUTH_USER_MODEL
 
@@ -41,13 +42,7 @@ class Profile(models.Model):
         habits_done: int = 0,
     ) -> int:
         # Get or create history for today
-        date = datetime.datetime.now()
-        if utc_timezone_offset is not None:
-            date -= datetime.timedelta(minutes=utc_timezone_offset)
-
-        history_obj, created = self.history.get_or_create(
-            date=date.date()
-        )
+        history_obj, created = self.get_create_history(utc_timezone_offset=utc_timezone_offset)
 
         # Increment the current streak if this is the first card done today
         if created:
@@ -64,6 +59,25 @@ class Profile(models.Model):
             time_taken,
             habits_done,
         )
+
+    def get_create_history(
+        self,
+        create: bool = True,
+        utc_timezone_offset: int = None,  # in mins
+    ) -> Tuple[Union[ProfileHistorySegment, None], bool]:
+        date = datetime.datetime.now()
+        if utc_timezone_offset is not None:
+            date -= datetime.timedelta(minutes=min(int(utc_timezone_offset), 1440))
+
+        date = date.date()
+
+        if create:
+            return self.history.get_or_create(date)
+        else:
+            try:
+                return self.history.get(date=date), False
+            except ProfileHistorySegment.DoesNotExist:
+                return None, False
 
     def toggle_friend(
         self,
