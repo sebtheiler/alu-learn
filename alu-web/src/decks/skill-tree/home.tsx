@@ -28,21 +28,18 @@ export function SkillTreeHome({ username }: { username: string }) {
         <Row>
           <Col md={3} sm={12}>
             <h1 className='invisible'>.</h1>
-            <div
-              className='deck-selection-item'
-              role='button'
-              onClick={() => setSelectedDeck(null)}
-            >
+            <div className='deck-selection-item mb-4'>
               <div
                 className={'deck-selection-main mb-0' + (selectedDeck === null ? ' selected' : '')}
+                role='button'
+                onClick={() => setSelectedDeck(null)}
               >
-                <span className='mb-0'>Home</span>
-                <span>
-                  <i className='fas fa-home fa-2x float-left mt-2 ml-2' />
-                </span>
+                <p>
+                  <span className='title-text'>Home</span>
+                  <span><i className='fas fa-home fa-2x float-left mt-2 ml-2' /></span>
+                </p>
               </div>
             </div>
-            <hr />
             {decks ? decks.map((deck, i) =>
               <DeckSelection
                 deck={deck}
@@ -51,11 +48,12 @@ export function SkillTreeHome({ username }: { username: string }) {
                 key={i}
               />
             ) : <p>Loading decks...</p>}
-            {decks && decks.length > 0 ? <hr /> : null}
             <CreateDeckButton />
           </Col>
           <Col md={6} sm={12} className='px-4'>
-            {selectedDeck === null || !decks ? <HomeComponent username={username} /> :
+            {selectedDeck === null || !decks ?
+              <HomeComponent username={username} />
+              :
               <SkillTree deck={decks[selectedDeck]} />
             }
           </Col>

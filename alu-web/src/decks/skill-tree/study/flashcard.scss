@@ -44,8 +44,8 @@
   border-radius: 20px;
 
   // Colors
-  border: $gray-border;
-  background: $light-background;
+  border: $grayBorder;
+  background: $lightBackground;
 
   // Center
   display: flex !important;
@@ -54,7 +54,7 @@
 
   &:hover {
     cursor: pointer;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    box-shadow: $cardShadow;
   }
 }
 

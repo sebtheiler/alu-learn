@@ -4,9 +4,9 @@
   padding: 10px;
   margin-bottom: 20px;
 
-  border-radius: 20px;
-  background: $light-background;
-  border: $gray-border;
+  border-radius: $cardBorderRadius;
+  background: $lightBackground;
+  border: $grayBorder;
 
   >.main-section-body {
     display: flex;

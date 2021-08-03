@@ -5,7 +5,7 @@
   height: 30px;
   padding: 0;
 
-  border: $gray-border;
+  border: $grayBorder;
   border-radius: 15px;
   background: #fafafa;
 
@@ -34,7 +34,7 @@
 
   @media (min-width:767px) {
     &.left {
-      border-right: $gray-border;
+      border-right: $grayBorder;
     }
   }
 }

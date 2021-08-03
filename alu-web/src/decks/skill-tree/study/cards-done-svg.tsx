@@ -90,7 +90,6 @@ export default function CardsDoneSVG(props: CardsDoneSVGProps) {
           DAILY GOAL
         </text>
       </svg>
-      <p className='my-2'>{cardsDone}/{targetCardsDone}</p>
     </div>
   );
 }
