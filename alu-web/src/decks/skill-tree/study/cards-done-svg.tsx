@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface CardsDoneSVGProps {
   targetCardsDone: number;
@@ -29,13 +29,8 @@ export default function CardsDoneSVG(props: CardsDoneSVGProps) {
   }));
 
   return (
-    <div className='cards-done mt-3 mb-4' style={{ height: DIV_HEIGHT, width: DIV_WIDTH }}>
-      <svg
-        version="1.1"
-        baseProfile="full"
-        width="100%" height="100%"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+    <div className='cards-done mt-3 mb-4' style={{ height: DIV_HEIGHT, maxWidth: DIV_WIDTH }}>
+      <svg width='100%' height='100%'>
         {/* Chart y-axis and bars */}
         {lineTickYVals.map(lineTickYVal => {
           return (<React.Fragment key={lineTickYVal.val}>

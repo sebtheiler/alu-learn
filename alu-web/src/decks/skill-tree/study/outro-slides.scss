@@ -1,6 +1,4 @@
-@import './review-instances';
-$unlitBackground: #e5e5e5;
-$litBackground: #fd9626;
+@import '../shared';
 
 @keyframes fadeIn {
   0% {

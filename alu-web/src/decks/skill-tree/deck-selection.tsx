@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Deck } from '../types';
 import DeckSelectionButtons from './buttons/deck-selection';
-import './deck-selection.css';
+import './deck-selection.scss';
 
 interface DeckSelectionProps {
   deck: Deck;
@@ -19,7 +19,7 @@ export default function DeckSelection(props: DeckSelectionProps) {
       onClick={() => selected ? setDropdownExpanded(!dropdownExpanded) : onClick()}
     >
       <div
-        className={'deck-selection-main mb-0' + (selected ? ' deck-selection-main-selected' : '')}
+        className={'deck-selection-main mb-0' + (selected ? ' selected' : '')}
       >
         <span className='mb-0'>{deck.title}</span>
         <span

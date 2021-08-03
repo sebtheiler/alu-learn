@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import CreateModal from '../modals/create';
 
-export function CreateDeckButton() {
+export default function CreateDeckButton() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   return (<>
     <div
-      className='deck-selection-item'
+      className='deck-selection-item mb-5'
       role='button'
       onClick={() => setShowCreateModal(true)}
     >

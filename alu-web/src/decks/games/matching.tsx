@@ -63,9 +63,9 @@ export function MatchingGame(props: MatchingProps) {
 
   const getBoxClassName = (i: number, j: number) => {
     if (i === selectedBox[0] && j === selectedBox[1]) {
-      return ' selected';
+      return ' matching-box-selected';
     } else if (correctlyGuessed.includes(randomizedFlashcards[i*size + j][1])) {
-      return ' correct';
+      return ' matching-box-correct';
     } else {
       return '';
     }
@@ -81,7 +81,7 @@ export function MatchingGame(props: MatchingProps) {
             <Col
               key={j}
               className={'matching-col' + getBoxClassName(i, j)}
-              onClick={getBoxClassName(i, j) === ' correct' ? undefined: handleBoxClick(i, j)}
+              onClick={getBoxClassName(i, j) === ' matching-box-correct' ? undefined: handleBoxClick(i, j)}
             >
               <RenderRichText
                 text={randomizedFlashcards[i*size + j][0]}

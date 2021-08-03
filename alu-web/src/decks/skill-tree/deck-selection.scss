@@ -1,0 +1,38 @@
+@import './shared';
+
+.deck-selection-main {
+  height: 50px;
+  line-height: 50px;
+  margin-bottom: 10px;
+  border-radius: 0 25px 25px 0;
+
+  background: $deckSelectionColor;
+  color: white;
+
+  &:hover, &.selected {
+    transform: scale(1.05, 1);
+    transform-origin: left;
+    transition-duration: .3s;
+    background: darken($deckSelectionColor, 10%);
+  }
+  @media (min-width:767px) {
+    max-width: 350px;
+  }
+  @media (max-width:767px) {
+    max-width: 95%;
+  }
+}
+
+.deck-selection-expand {
+  padding: 10px;
+  margin-left: 10px;
+  margin-right: 25px;
+
+  border-radius: 0 0 10px 10px;
+
+  background: darken($deckSelectionColor, 15%);
+  color: white;
+  text-align: left;
+
+  cursor: default;
+}

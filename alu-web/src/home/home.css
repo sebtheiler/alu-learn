@@ -17,11 +17,6 @@ a.card:hover {
   border-right: 1px solid black;
 }
 
-#home-stats {
-  /* background: cornflowerblue; */
-  border-top: 1px solid black;
-}
-
 .no-bullets {
   list-style-type: none;
 }

@@ -29,7 +29,7 @@ export default function SubSection({ title, mainSectionTitle, deckId }: SubSecti
             </Popover.Title>
             <Popover.Content>
               <Button
-                href={`decks/${deckId}/study/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
+                href={`/decks/${deckId}/study/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
                 block
               >
                 Study

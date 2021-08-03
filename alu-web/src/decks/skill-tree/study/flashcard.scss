@@ -1,3 +1,5 @@
+@import '../shared';
+
 .flip {
   position: relative;
   >.front, >.back {
@@ -42,8 +44,8 @@
   border-radius: 20px;
 
   // Colors
-  border: 4px solid #E2E2E2;
-  background: #fafafa;
+  border: $gray-border;
+  background: $light-background;
 
   // Center
   display: flex !important;
