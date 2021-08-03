@@ -76,7 +76,7 @@ export function HomeComponent({ username }) {
     </Row>
     {profile?.settings.user_type !== 'TEACHER' && <Row>
       <Col className='px-0'>
-        <StatsComponent profile={profile} username={username} />
+        <StatsComponent />
       </Col>
     </Row>}
   </Container>);
@@ -278,7 +278,7 @@ function AssignmentsComponent({ setJoinClassModalIsOpen }) {
           </thead>
           <tbody>
             {decks.map((deck, i) => {
-              const studyUrl = `/decks/${deck.id}/study/`;
+              const studyUrl = `/deck/${deck.id}/study/`;
 
               return (
                 <tr onClick={() => {window.location.href = studyUrl}} key={i}>

@@ -113,7 +113,7 @@ export function OutroSlides({ originalInfo, deckId }: OutroSlidesProps) {
           Study Again
         </Button>
         <Button
-          href={`/decks/${deckId}/`}
+          onClick={() => window.location.href = `/deck/${deckId}/`}
           variant='secondary'
           className='w-50'
         >

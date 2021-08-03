@@ -43,8 +43,8 @@ export interface Notification {
 }
 
 export interface ProfileHistory {
-  date: Date;
-  cardsDone: number;
-  timeSpent: number;
-  habitsDone: number;
+  date: string;
+  cards_done: number;
+  time_spent: number;
+  habits_done: number;
 }

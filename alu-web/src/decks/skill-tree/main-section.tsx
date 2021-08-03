@@ -17,7 +17,7 @@ export default function MainSection(props: MainSectionProps) {
         <div className='d-flex mx-auto'>
           <hr className='flex-grow-1' />
           <h2 className='px-2 align-self-center mb-0'>
-            <a href='/study/TODO:/' >
+            <a href={`decks/${deckId}/study/${title}/`} >
               {title.toUpperCase()}
             </a>
           </h2>

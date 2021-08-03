@@ -2,29 +2,24 @@ import React, { useState, useEffect } from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import Container from 'react-bootstrap/Container';
 import ReactTooltip from 'react-tooltip';
-import { errorHandler, shiftDate, range, timezoneToISOString, stringDate } from '../../utils';
+import { shiftDate, range, timezoneToISOString, stringDate } from '../../utils';
 import { randomTip } from '../../home/randomtips';
-import { Profile, ProfileHistory } from '../../profiles/types';
+import { ProfileHistory } from '../../profiles/types';
 import { apiProfileHistory } from '../../lookup';
 
 
 const today = new Date();
 const blankValues = range(0, 366).map(i => {
   return {
-    date: shiftDate(today, -i),
-    cardsDone: 0,
-    timeSpent: 0,
-    habitsDone: 0,
+    date: shiftDate(today, -i).toISOString(),
+    cards_done: 0,
+    time_spent: 0,
+    habits_done: 0,
+    id: -1,
   } as ProfileHistory;
 });
-const calcWorkDone = hist => {
-  if (hist.cards_done !== undefined) {
-    return hist.cards_done + hist.habits_done * 10;
-  } else {
-    return hist.cardsDone + hist.habitsDone * 10;
-  }
-}
-export default function StatsComponent({ profile, username }: { profile?: Profile, username: string }) {
+const calcWorkDone = (hist: ProfileHistory) => hist.cards_done + hist.habits_done * 10;
+export default function StatsComponent() {
   const [userHistory, setUserHistory] = useState<ProfileHistory[]>(blankValues);
   const [gotHistory, setGotHistory] = useState(false);
   const [maxWorkDone, setMaxWorkDone] = useState(0);
@@ -33,70 +28,62 @@ export default function StatsComponent({ profile, username }: { profile?: Profil
   useEffect(() => {
     if (!gotHistory) {
       setGotHistory(true);
-      // TODO: make async, don't user `username`
-      apiProfileHistory(username, (response, status) => {
-        if (status === 200) {
-          setMaxWorkDone(Math.max(...response.map(
-            hist => calcWorkDone(hist),
-          )));
-          const gottenDates = response.map(hist => hist.date);
-          const historyValues = userHistory.map(hist => {
-            // Check if we have that date in history
-            if (gottenDates.includes(timezoneToISOString(hist.date).slice(0, 10))) {
-              // Get the date that matches
-              const date = response.filter(subHist => subHist.date === timezoneToISOString(hist.date).slice(0, 10))[0];
-              return {
-                ...hist,
-                cardsDone: date.cards_done,
-                timeSpent: date.time_spent,
-                habitsDone: date.habits_done,
-              };
-            } else {
-              // Return the standard/blank value
-              return hist;
-            }
-          });
-          setUserHistory(historyValues);
-        } else {
-          // Error getting user history
-          errorHandler(response, status, 3013);
-        }
+      apiProfileHistory().then(history => {
+        setMaxWorkDone(Math.max(...history.map(hist => calcWorkDone(hist))));
+        const gottenDates = history.map(hist => hist.date);
+        const historyValues = userHistory.map(hist => {
+          // Check if we have that date in history
+          if (gottenDates.includes(timezoneToISOString(new Date(hist.date)).slice(0, 10))) {
+            // Get the date that matches
+            const date = history.filter(
+              subHist => subHist.date === timezoneToISOString(new Date(hist.date)
+            ).slice(0, 10))[0];
+            return {
+              ...hist,
+              cards_done: date.cards_done,
+              time_spent: date.time_spent,
+              habits_done: date.habits_done,
+            };
+          } else {
+            // Return the standard/blank value
+            return hist;
+          }
+        });
+        setUserHistory(historyValues);
       });
     }
-  }, [profile, gotHistory, setGotHistory, userHistory, setUserHistory, username]);
+  }, [gotHistory, setGotHistory, userHistory, setUserHistory]);
 
   return (
     <div className='text-center mb-3'>
-      <h4>{profile?.first_name} {profile?.last_name}</h4>
-      <h5 className='text-secondary'>@{profile?.username}</h5>
       <Container className='mx-auto mb-3'>
         <CalendarHeatmap
           startDate={shiftDate(today, -366)}
           endDate={today}
-          values={userHistory}
+          values={userHistory.map(history => ({ ...history, date: new Date(history.date)}))}
           tooltipDataAttrs={(value: ProfileHistory) => {
             if (!value || !value.date)
               return {'data-tip': 'Error, please report this'};
 
             let dataTip = '';
-            if (value.cardsDone) {
-              dataTip += `You reviewed ${value.cardsDone} flashcard`;
-              if (value.cardsDone > 1)
+            if (value.cards_done) {
+              dataTip += `You reviewed ${value.cards_done} flashcard`;
+              if (value.cards_done > 1)
                 dataTip += 's';
             }
-            if (value.habitsDone) {
+            if (value.habits_done) {
               if (dataTip === '')
-                dataTip += `You did ${value.habitsDone} habit`;
+                dataTip += `You did ${value.habits_done} habit`;
               else
-                dataTip += ` and did ${value.habitsDone} habit`;
+                dataTip += ` and did ${value.habits_done} habit`;
               
-                if (value.habitsDone > 1)
+                if (value.habits_done > 1)
                   dataTip += 's';
             }
             if (dataTip !== '')
               dataTip += ` on ${stringDate()}`
-            if (value.timeSpent)
-              dataTip += ` in ${Math.round(value.timeSpent/1000/60)} minutes`;
+            if (value.time_spent)
+              dataTip += ` in ${Math.round(value.time_spent/1000/60)} minutes`;
 
             return { 'data-tip': dataTip };
           }}
@@ -120,10 +107,8 @@ export default function StatsComponent({ profile, username }: { profile?: Profil
           }}
         />
         <ReactTooltip />
-        Reviews today: {userHistory.sort(hist => hist.date.getTime())[0].cardsDone} |{' '}
-        Time studying today: {Math.round(userHistory.sort(hist => hist.date.getTime())[0].timeSpent/1000/60)}m |{' '}
-        Longest streak: {profile?.longest_streak} |{' '}
-        Current streak: {profile?.current_streak}
+        Reviews today: {userHistory.sort(hist => new Date(hist.date).getTime())[0].cards_done} |{' '}
+        Time studying today: {Math.round(userHistory.sort(hist => new Date(hist.date).getTime())[0].time_spent/1000/60)}m
         <div className='text-center mx-auto alert alert-info my-3'>
           {randomTip}
         </div>

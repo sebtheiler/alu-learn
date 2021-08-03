@@ -11,7 +11,7 @@ interface SubSectionProps {
   deckId: number;
 }
 export default function SubSection({ title, mainSectionTitle, deckId }: SubSectionProps) {
-  const cleanTitle = (title: string) => title.replace(' ', '-');
+  const cleanTitle = (title: string) => title.replaceAll(' ', '-');
 
   return (
     <Col
@@ -29,7 +29,7 @@ export default function SubSection({ title, mainSectionTitle, deckId }: SubSecti
             </Popover.Title>
             <Popover.Content>
               <Button
-                href={`/decks/${deckId}/study/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
+                href={`/deck/${deckId}/study/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
                 block
               >
                 Study

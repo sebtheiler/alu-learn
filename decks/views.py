@@ -66,15 +66,18 @@ def flashcard_list_view(request, deck_id, *args, **kwargs):
     except Deck.DoesNotExist:
         return redirect('/home/')
 
-    return render(request, 'flashcards/list.html', context={'deck_id': deck_id, 'is_foreign_user': is_foreign_user})
+    return render(request, 'flashcards/list.html', context={
+        'deck_id': deck_id,
+        'is_foreign_user': is_foreign_user,
+    })
 
 
 # Renders when studying an individual deck
-@permissions()
-def deck_study_view(request, deck_id, *args, **kwargs):
-    try:
-        deck = Deck.objects.get(pk=deck_id, user=request.user)
-    except Deck.DoesNotExist:
-        raise Http404()
+# @permissions()
+# def deck_study_view(request, deck_id, *args, **kwargs):
+#     try:
+#         deck = Deck.objects.get(pk=deck_id, user=request.user)
+#     except Deck.DoesNotExist:
+#         raise Http404()
 
-    return render(request, 'decks/study.html', context={'ssm_id': deck.study_session_manager.id, 'deck_title': deck.title})
+#     return render(request, 'decks/study.html', context={'ssm_id': deck.study_session_manager.id, 'deck_title': deck.title})

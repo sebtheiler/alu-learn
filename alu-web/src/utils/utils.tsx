@@ -407,7 +407,7 @@ export function updateURLParameter(url: string, param: string, paramVal: any){
 }
 
 // Converts a date to an ISOString, but doesn't convert it to UTC
-export function timezoneToISOString(date) {
+export function timezoneToISOString(date: Date) {
   return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
 }
 

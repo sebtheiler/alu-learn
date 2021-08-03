@@ -7,7 +7,7 @@ import { apiProfileLogout } from '../lookup';
 import { errorHandler } from '../utils';
 import { NotificationComponent } from '../profiles/notifications';
 import { NavbarPopup } from './navbar-popup';
-import './navbar.css';
+import './navbar.scss';
 
 export function NavbarComponent(props) {
   const firstName = props.firstName ? props.firstName : '';
@@ -89,7 +89,7 @@ export function NavbarComponent(props) {
   })();
 
   return (
-    <Navbar bg='primary' variant='dark' expand='md' collapseOnSelect>
+    <Navbar bg='dark' variant='dark' expand='md' collapseOnSelect>
       <NavbarPopup showUpdateModal={showUpdateModal} firstName={firstName} />
       <Navbar.Brand href='/home/'>
         <img src='/static/logo.svg' alt="Alu's Logo" width='30' height='auto' style={{transform: 'translateY(-3px)'}} />{' '}
@@ -113,7 +113,7 @@ export function NavbarComponent(props) {
         </Nav>
         <Nav className='ml-auto'>
           {username && <Nav.Link className='mr-2' style={{ width: '57px', height: '57px', cursor: 'default' }}>
-            <NotificationComponent username={username} isPopup={true} />
+            <NotificationComponent username={username} isPopup />
           </Nav.Link>}
           {username ?
             <>

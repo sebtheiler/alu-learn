@@ -2,7 +2,7 @@
 // Each file should contain the lookups for just that package
 import { Deck, ReviewInstance, FlashCard, SchedulingAlgorithm, SSMInterface, SharedDeck, SharingSetting } from '../decks/types';
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
-import { Profile } from '../profiles/types';
+import { Profile, ProfileHistory } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { getCookie } from '../utils';
 import { backendLookup, baseUrl } from './components';
@@ -320,12 +320,12 @@ export function apiProfileLogout(callback) {
 
 // Gets a list of a user's friends
 export function apiProfileFriends(callback) {
-  backendLookup('GET', `profiles/friends/`, callback);
+  backendLookup('GET', 'profiles/friends/', callback);
 }
 
 // Get's a profile's history
-export function apiProfileHistory(username, callback) {
-  backendLookup('GET', `profiles/${username.toLowerCase()}/history/`, callback);
+export async function apiProfileHistory(): Promise<ProfileHistory[]> {
+  return backendFetch('GET', 'profiles/history/');
 }
 
 // Update's a profiles settings
@@ -1038,6 +1038,6 @@ export async function apiStreakReviewInfo(
   const utcTimezoneOffset = new Date().getTimezoneOffset();
   return backendFetch<StreakInfo>(
     'GET',
-    `profiles/streak-review-info?utc_timezone_offset=${utcTimezoneOffset}`,
+    `profiles/streak-review-info/?utc_timezone_offset=${utcTimezoneOffset}`,
   );
 }

@@ -12,8 +12,8 @@ from simple_email_confirmation.models import EmailAddress
 from utils import get_paginated_queryset_response
 
 from ..models import Notification, Profile
-from ..serializers import (HistorySerializer, MinifiedProfileSerializer,
-                           NotificationSerializer, PublicProfileSerializer)
+from ..serializers import (MinifiedProfileSerializer, NotificationSerializer,
+                           PublicProfileSerializer)
 
 User = get_user_model()
 
@@ -500,22 +500,6 @@ def get_user_friends_api_view(request, *args, **kwargs):
     )
 
 
-@api_view(['GET'])
-def profile_history_view(request, username, *args, **kwargs):
-    """
-    Gets a user's history - GET
-
-    Possible errors:
-        Invalid username: 404, User not found
-    """
-    try:
-        profile = Profile.objects.get(user__username=username.lower())
-    except Profile.DoesNotExist:
-        return Response({'message': 'User not found'}, status=404)
-
-    return Response(HistorySerializer(profile.history, many=True).data, status=200)
-
-
 @api_view(['POST'])
 def confirm_email_api_view(request, username, *args, **kwargs):
     """
@@ -593,7 +577,6 @@ def streak_review_info(request, *args, **kwargs):
 
     `utc_timezone_offset`? (GET): UTC timezone offset in minutes
     """
-    print(request.GET.get('utc_timezone_offset'))
     return Response({
         'streak': request.user.profile.current_streak,
         'cards_done': request.user.profile.get_create_history(

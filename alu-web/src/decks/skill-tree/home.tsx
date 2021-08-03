@@ -11,16 +11,11 @@ import CreateDeckButton from './buttons/create-deck';
 import { useObjectList } from '../../lookup/lookup';  // TODO: clean up imports
 import './home.scss';
 
-export function SkillTreeHome({ username }: { username: string }) {
+export function SkillTreeHome({ defaultSelected }: { defaultSelected?: string }) {
   const [decks, decksDispatch] = useObjectList('decks', 'deck', deckReducer);
-  const [selectedDeck, setSelectedDeck] = useState<number | null>(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const selectedDeckUrl = urlParams.get('selected');
-    if (selectedDeckUrl !== null)
-      return parseInt(selectedDeckUrl);
-    else
-      return null;
-  });
+  const [selectedDeck, setSelectedDeck] = useState<number | null>(
+    defaultSelected ? parseInt(defaultSelected) : null
+  );
 
   return (
     <DeckDispatch.Provider value={decksDispatch}>
@@ -32,7 +27,10 @@ export function SkillTreeHome({ username }: { username: string }) {
               <div
                 className={'deck-selection-main mb-0' + (selectedDeck === null ? ' selected' : '')}
                 role='button'
-                onClick={() => setSelectedDeck(null)}
+                onClick={() => {
+                  setSelectedDeck(null);
+                  window.history.pushState(`alu/home/`, 'Home', `/home/`);
+                }}
               >
                 <p>
                   <span className='title-text'>Home</span>
@@ -40,21 +38,27 @@ export function SkillTreeHome({ username }: { username: string }) {
                 </p>
               </div>
             </div>
-            {decks ? decks.map((deck, i) =>
+            {decks ? decks.map(deck =>
               <DeckSelection
                 deck={deck}
-                onClick={() => setSelectedDeck(i)}
-                selected={selectedDeck === i}
-                key={i}
+                onClick={() => {
+                  setSelectedDeck(deck.id);
+                  window.history.pushState(`alu/deck/${deck.id}/`, deck.title, `/deck/${deck.id}/`);
+                }}
+                selected={selectedDeck === deck.id}
+                key={deck.id}
               />
             ) : <p>Loading decks...</p>}
             <CreateDeckButton />
           </Col>
           <Col md={6} sm={12} className='px-4'>
-            {selectedDeck === null || !decks ?
-              <HomeComponent username={username} />
-              :
-              <SkillTree deck={decks[selectedDeck]} />
+            {selectedDeck === null && !defaultSelected ?
+              <HomeComponent />
+              : (decks ?
+                <SkillTree deck={decks.filter(deck => deck.id === selectedDeck)[0]} />
+                :
+                <p>Loading...</p>
+              )
             }
           </Col>
           <Col md={3} sm={12}>

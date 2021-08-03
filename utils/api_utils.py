@@ -45,7 +45,7 @@ def render_basic_view(
     """
     Renders a view that has an HTML file, given some permissions
 
-    If specified `context_kwargs` is replaces the default kwargs as context to the rendered view
+    If specified `context_kwargs` replaces the default kwargs as context to the rendered view
     """
     @permissions(is_authenticated, is_confirmed, is_staff)
     def render_view(request, *args, **kwargs):

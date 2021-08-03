@@ -230,7 +230,7 @@ def generate_base_api(
         views.append(
             path(f'{base_name}/<int:obj_id>/edit/', edit_object_view(
                 Serializer=Serializer,
-                editable_attrs=editable_attrs.keys(),
+                editable_attrs=editable_attrs,
                 owner_path=owner_path,
             ))
         )

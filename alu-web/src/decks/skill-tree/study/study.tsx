@@ -5,12 +5,12 @@ import { StudyReviewInstances } from './review-instances';
 import { StudyAnswerDispatch, StudyAnswerEvent, studyAnswerReducer } from './context';
 
 
-export function StudySkillTree({ deckId, tags='' }: { deckId: string, tags: string }) {
+export function StudySkillTree({ deckId, tagQuery='' }: { deckId: string, tagQuery: string }) {
   const [reviewInstances, dispatchReviewInstances] = useAsyncDispatch<
     ReviewInstance[], StudyAnswerEvent
   >(
     apiReviewInstanceStudy,
-    [parseInt(deckId), tags.replace('-', ' ').replace('__', ' AND ')],
+    [parseInt(deckId), tagQuery.replaceAll('-', ' ').replaceAll('__', ' AND ')],
     studyAnswerReducer,
   );
 

@@ -20,6 +20,7 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
     if (!studyAnswerDispatch) return () => {};
 
     return async () => {
+      if (!isFlipped) return;
       // Flip back to front and wait until the back of the card
       // is no longer shown (half of transition = 0.25s)
       setIsFlipped(false);
@@ -32,7 +33,7 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
       });
       (document.activeElement as HTMLElement).blur();
     }
-  }, [reviewInstance.id, studyAnswerDispatch, intervals]);
+  }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped]);
 
 
   useEffect(() => {
@@ -85,7 +86,7 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
           />
         </div>
       </div>
-      <div className='text-secondary text-center mb-5'>
+      <div className='text-secondary text-center mb-1'>
         <small>Tap the card or press space to reveal the other side</small>
       </div>
       <div className={'answer-choices' + (isFlipped ? ' is-flipped' : '')}>
