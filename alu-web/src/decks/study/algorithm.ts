@@ -135,7 +135,6 @@ export function getAnkiInterval(
     ease,
   } = card;
   let minutesInterval = daysToMinutes(dateDiff(new Date(last_review), new Date()));
-  console.log(minutesInterval)
 
   // Algorithm
   if (learningStatus === 'LEARNING' || learningStatus === 'UNSEEN') {

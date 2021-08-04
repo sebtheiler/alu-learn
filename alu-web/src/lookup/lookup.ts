@@ -1047,6 +1047,7 @@ export async function apiStreakReviewInfo(
 export async function apiReviewInstanceUpdate(
   reviewInstanceId: string,
   timeTaken: number,
+  gradeResponse: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
   editedValues: Interval,
 ): Promise<Message> {
   const utcTimezoneOffset = new Date().getTimezoneOffset();
@@ -1056,6 +1057,7 @@ export async function apiReviewInstanceUpdate(
     {
       time_taken: Math.floor(timeTaken),
       utc_timezone_offset: utcTimezoneOffset,
+      grade_response: gradeResponse,
       edited_values: editedValues,
     },
   );

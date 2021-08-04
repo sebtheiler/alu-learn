@@ -2,6 +2,7 @@ import json
 import random
 import re
 from typing import List
+from utils.api_utils import get_obj_or_404
 from utils.utils import assert_dict_data_type
 
 from django.core.cache import cache
@@ -20,7 +21,7 @@ from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
-                      FlashCard, ReviewInstance, SharedDeck,
+                      FlashCard, ReviewInstance, ReviewInstanceHistory, SharedDeck,
                       SharedDeckRelation)
 from ..serializers import (DeckSerializer, FlashCardSerializer,
                            ReviewInstanceSerializer, SharedDeckSerializer)
@@ -1050,14 +1051,35 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
     if msg := assert_dict_data_type(edited_values, RI_EDITABLE_ATTRS, False):
         return msg
 
-    ReviewInstance.objects.filter(pk=review_instance_id).update(
-        **edited_values,
+    review_instance, error = get_obj_or_404(
+        ReviewInstance,
+        review_instance_id,
+        request.user,
+        'flashcard__deck__user',
     )
+    if error:
+        return error
+
+    time_taken = request.data.get('time_taken')
+    ReviewInstanceHistory.objects.create(
+        review_instance=review_instance,
+        grade_response=request.data.get('grade_response'),
+        time_taken=time_taken,
+        ease=review_instance.ease,
+        learning_status=review_instance.learning_status,
+        steps_index=review_instance.steps_index,
+        next_review=review_instance.next_review,
+        last_review=review_instance.last_review,
+    )
+
+    for attr, value in edited_values.items():
+        setattr(review_instance, attr, value)
+    review_instance.save()
 
     request.user.profile.increment_work_done_today(
         cards_done=1,
         utc_timezone_offset=request.data.get('utc_timezone_offset'),
-        time_taken=request.data.get('time_taken'),
+        time_taken=time_taken,
     )
 
     return Response({'message': 'Updated review instance'}, status=200)

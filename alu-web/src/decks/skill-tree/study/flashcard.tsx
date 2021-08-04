@@ -40,6 +40,7 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
       apiReviewInstanceUpdate(
         reviewInstance.id,
         browserInteractionTime.getTimeInMilliseconds(),
+        ['AGAIN', 'HARD', 'GOOD', 'EASY'][grade - 1] as 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
         interval,
       );
 

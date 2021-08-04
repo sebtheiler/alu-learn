@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .models import (CustomStudySessionManager, Deck, DeckClone,
                      DeckStudySessionManager, FlashCard, ReviewInstance,
-                     SharedDeck, SharedDeckRelation)
+                     ReviewInstanceHistory, SharedDeck, SharedDeckRelation)
 
 
 class FlashCardAdmin(admin.ModelAdmin):
@@ -24,6 +24,34 @@ class ReviewInstanceAdmin(admin.ModelAdmin):
 
     class Meta:
         model = ReviewInstance
+
+
+class ReviewInstanceHistoryAdmin(admin.ModelAdmin):
+    model = ReviewInstanceHistory
+    list_display = (
+        'get_user',
+        'get_deck',
+        'grade_response',
+        'time_taken',
+        'next_review',
+        'last_review',
+        'timestamp',
+    )
+    list_filter = ('timestamp',)
+    ordering = ('-timestamp',)
+
+    def get_queryset(self, request):
+        queryset = super(ReviewInstanceHistoryAdmin, self).get_queryset(request)
+        queryset = queryset.prefetch_related('review_instance__flashcard__deck__user')
+        return queryset
+
+    def get_user(self, obj):
+        return self.get_deck(obj).user
+    get_user.short_description = 'User'
+
+    def get_deck(self, obj):
+        return obj.review_instance.flashcard.deck
+    get_deck.short_description = 'Deck'
 
 
 class DeckAdmin(admin.ModelAdmin):
@@ -54,6 +82,7 @@ admin.site.register(SharedDeck, SharedDeckAdmin)
 admin.site.register(SharedDeckRelation)
 admin.site.register(FlashCard, FlashCardAdmin)
 admin.site.register(ReviewInstance, ReviewInstanceAdmin)
+admin.site.register(ReviewInstanceHistory, ReviewInstanceHistoryAdmin)
 admin.site.register(DeckClone)
 admin.site.register(DeckStudySessionManager)
 admin.site.register(CustomStudySessionManager)

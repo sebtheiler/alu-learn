@@ -15,7 +15,7 @@ from django.db import models
 from django.db.models.aggregates import Avg
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.utils import timezone
 from profiles.models import Profile
 from utils import get_morning
@@ -1104,13 +1104,67 @@ class DeckClone(models.Model):
         return f'Clone from @{self.profile.user.username} for Deck #{self.deck.id}'
 
 
+class ReviewInstanceHistory(models.Model):
+    review_instance = models.ForeignKey(
+        ReviewInstance,
+        on_delete=models.SET_NULL,
+        related_name='history',
+        null=True,
+        blank=True,
+    )
+
+    # If the review instance foreign key is deleted, this stores a backup
+    # of its ID to link together all similar history objects
+    review_instance_backup_id = models.UUIDField(
+        null=True,
+        blank=True,
+        default=None,
+    )
+
+    # Study information
+    RESPONSE_CHOICES = [
+        ('AGAIN', 'Again'),
+        ('HARD', 'Hard'),
+        ('GOOD', 'Good'),
+        ('EASY', 'Easy'),
+    ]
+    grade_response = models.CharField(
+        max_length=8,
+        choices=RESPONSE_CHOICES,
+    )
+    time_taken = models.PositiveIntegerField()
+    ease = models.PositiveSmallIntegerField()
+    learning_status = models.CharField(
+        max_length=10,
+        choices=ReviewInstance.LEARNING_STATUS_CHOICES,
+    )
+    steps_index = models.PositiveSmallIntegerField(default=0)
+    next_review = models.DateTimeField()
+    last_review = models.DateTimeField()
+
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = 'Review instance histories'
+
+
 # When a deck is created, create it's DSSM
-def deck_did_save(sender, instance, created, *args, **kwargs):
+def deck_saved(sender, instance, created, _, using, *args, **kwargs):
     if created:
-        DeckStudySessionManager.objects.create(
+        DeckStudySessionManager.objects.using(using).create(
             deck=instance,
             user=instance.user.profile,
         )
 
 
-post_save.connect(deck_did_save, sender=Deck)
+# When a review instance is deleted, backup its ID in its history objs
+def review_instance_deleted(sender, instance, using, **kwargs):
+    ReviewInstanceHistory.objects.using(using).filter(
+        review_instance=instance,
+    ).update(
+        review_instance_backup_id=instance.pk,
+    )
+
+
+post_save.connect(deck_saved, sender=Deck)
+pre_delete.connect(review_instance_deleted, sender=ReviewInstance)

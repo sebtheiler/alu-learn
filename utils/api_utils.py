@@ -106,7 +106,7 @@ def get_obj_or_404(
     obj_id: Union[int, str],
     user: Union[User, None],
     owner_path: Union[str, None],
-) -> Tuple[Union[models.Model, Response], bool]:
+) -> Tuple[Union[models.Model, None], Union[Response, None]]:
     """
     Either gets a model or returns a 404 response
 
@@ -122,9 +122,9 @@ def get_obj_or_404(
         return Model.objects.get(
             pk=obj_id,
             **({owner_path: user} if owner_path else {}),
-        ), True
+        ), None
     except Model.DoesNotExist:
-        return Response(
+        return None, Response(
             {'message': f'{type(Model)} not found'},
             status=404,
-        ), False
+        )

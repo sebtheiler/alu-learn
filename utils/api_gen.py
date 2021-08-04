@@ -61,14 +61,14 @@ def get_object_view(
     @api_view(['GET'])
     @permission_classes([IsAuthenticated] if owner_path else [])
     def view(request: WSGIRequest, obj_id: int):
-        model, got = get_obj_or_404(
+        model, error = get_obj_or_404(
             Model=Model,
             obj_id=obj_id,
             user=request.user,
             owner_path=owner_path,
         )
-        if not got:
-            return model
+        if error:
+            return error
 
         return Response(Serializer(model).data, status=200)
 
@@ -120,9 +120,9 @@ def edit_object_view(
     @api_view(['PUT'])
     @permission_classes([IsAuthenticated])
     def view(request: WSGIRequest, obj_id: int):
-        model, got = get_obj_or_404(Model, obj_id, request.user, owner_path)
-        if not got:
-            return model
+        model, error = get_obj_or_404(Model, obj_id, request.user, owner_path)
+        if error:
+            return error
 
         for attr, value in request.data.items():
             if (
@@ -158,9 +158,9 @@ def delete_object_view(
     @api_view(['DELETE'])
     @permission_classes([IsAuthenticated])
     def view(request: WSGIRequest, obj_id: int):
-        model, got = get_obj_or_404(Model, obj_id, request.user, owner_path)
-        if not got:
-            return model
+        model, error = get_obj_or_404(Model, obj_id, request.user, owner_path)
+        if not error:
+            return error
 
         model.delete()
 
