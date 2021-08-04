@@ -482,11 +482,15 @@ export function stripTime(date: Date) {
 
 // Gets distance between two dates
 // Adapted from https://stackoverflow.com/a/3224854/13042142
-export function dateDiff(date1: Date, date2: Date) {
+export function dateDiff(
+  date1: Date,
+  date2: Date,
+  timeUnit: number = 1000 * 60 * 60 * 24,
+): number {
   const diffTime = Math.abs(date2.getTime() - date1.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+  const diff = Math.ceil(diffTime / timeUnit); 
 
-  return diffDays;
+  return diff;
 }
 
 

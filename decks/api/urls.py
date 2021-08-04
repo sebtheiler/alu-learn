@@ -52,7 +52,7 @@ urlpatterns = [
             'steps_index': int,
             'ease': int,
             'next_review': str,  # ISO-date
-            'interval': int,
+            'last_review': str,  # ISO-date
             'is_suspended': bool,
             'leech_index': int,
         },

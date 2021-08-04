@@ -396,7 +396,7 @@ def deck_json_export_view(request, deck_id, *args, **kwargs):
                         'steps_index': review_instance.steps_index,
                         'ease': review_instance.ease,
                         'next_review': review_instance.next_review,
-                        'interval': review_instance.interval,
+                        'last_review': review_instance.last_review,
                         'is_suspended': review_instance.is_suspended,
                         'leech_index': review_instance.leech_index,
                     }
@@ -465,7 +465,7 @@ def deck_json_import_view(request, *args, **kwargs):
                 steps_index=json_review_instance.get('steps_index', 0),
                 ease=json_review_instance.get('ease', 250),
                 next_review=json_review_instance.get('next_review', get_morning()),
-                interval=json_review_instance.get('interval', 0),
+                last_review=json_review_instance.get('last_review', get_morning()),
                 is_suspended=json_review_instance.get('is_suspended', False),
                 leech_index=json_review_instance.get('leech_index', 0),
             )
@@ -1032,7 +1032,7 @@ RI_EDITABLE_ATTRS = {
     'steps_index': int,
     'ease': int,
     'next_review': str,
-    'interval': int,
+    'last_review': str,
 }
 
 

@@ -1,4 +1,5 @@
 import { createContext, Dispatch } from 'react';
+import { dateDiff } from '../../../utils';
 import { Interval } from '../../study/algorithm';
 import { ReviewInstance } from '../../types';
 
@@ -18,11 +19,11 @@ export const studyAnswerReducer = (
       const index = state.map(ri => ri.id).indexOf(event.id);
 
       // If the interval is greater than review ahead minutes, remove the review instance from rotation
-      if (
-        (event.interval.is_minute ?
-          event.interval.interval : event.interval.interval*60*24
-        ) > REVIEW_AHEAD_MINUTES
-      )
+      if (dateDiff(
+        event.interval.next_review,
+        event.interval.last_review,
+        1000*60,
+      ) > REVIEW_AHEAD_MINUTES)
         return state.filter(ri => ri.id !== event.id);
 
       // Make updates to the local review instance

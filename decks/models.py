@@ -574,10 +574,9 @@ class ReviewInstance(models.Model):
     )  # type: str
     steps_index = models.PositiveSmallIntegerField(default=0)
     ease = models.PositiveSmallIntegerField(default=250)
-    next_review = models.DateTimeField()
 
-    # TODO: remove this and replace it with last review (also remove editable_attr)
-    interval = models.PositiveSmallIntegerField(default=0)  # in days
+    next_review = models.DateTimeField()
+    last_review = models.DateTimeField()
 
     is_suspended = models.BooleanField(default=False)
     leech_index = models.PositiveSmallIntegerField(default=0)

@@ -1,9 +1,8 @@
-import { errorHandler } from '../../utils';
+import { dateDiff, errorHandler } from '../../utils';
 import { ReviewInstance, SchedulingAlgorithm, DeckDifficulty } from '../types';
 
-function minutesToDays(minutes: number) {
-  return minutes / (60*24);
-}
+const minutesToDays = (minutes: number) => minutes / (60*24);
+const daysToMinutes = (days: number) => days * 60*24;
 
 interface Config {
   NEW_STEPS: number[];
@@ -11,7 +10,6 @@ interface Config {
   EASY_INTERVAL: number;
   EASY_BONUS: number;
   INTERVAL_MODIFIER: number;
-  MAXIMUM_INTERVAL: number;
   LAPSES_STEPS: number[];
   NEW_INTERVAL: number;
   MINIMUM_INTERVAL: number;
@@ -44,7 +42,6 @@ function generateConfig(
         // "Reviews" tab
         EASY_BONUS: 130, // in percent
         INTERVAL_MODIFIER: INTERVAL_MODIFIER, // in percent
-        MAXIMUM_INTERVAL: 36500, // in days
         // "Lapses" tab
         LAPSES_STEPS: [10], // in minutes
         NEW_INTERVAL: 70, // in percent
@@ -61,7 +58,6 @@ function generateConfig(
         // "Reviews" tab
         EASY_BONUS: 150, // in percent
         INTERVAL_MODIFIER: INTERVAL_MODIFIER, // in percent
-        MAXIMUM_INTERVAL: 180, // in days
         // "Lapses" tab
         LAPSES_STEPS: [30, 1440], // in minutes
         NEW_INTERVAL: 20, // in percent
@@ -78,7 +74,6 @@ function generateConfig(
         // "Reviews" tab
         EASY_BONUS: 150, // in percent
         INTERVAL_MODIFIER: 200, // in percent
-        MAXIMUM_INTERVAL: 730, // in days
         // "Lapses" tab
         LAPSES_STEPS: [1440, 4320], // in minutes
         NEW_INTERVAL: 40, // in percent
@@ -96,7 +91,6 @@ function generateConfig(
         // "Reviews" tab
         EASY_BONUS: 130, // in percent
         INTERVAL_MODIFIER: INTERVAL_MODIFIER, // in percent
-        MAXIMUM_INTERVAL: 1, // in days
         // "Lapses" tab
         LAPSES_STEPS: [10], // in minutes
         NEW_INTERVAL: 70, // in percent
@@ -114,12 +108,11 @@ function generateConfig(
 // Adapted from https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
 export interface Interval {
   next_review: Date;
+  last_review: Date;
   ease: number;
-  interval: number;
   learning_status: 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
   steps_index: number;
   leech_index: number;
-  is_minute?: boolean;
 }
 export function getAnkiInterval(
   card: ReviewInstance,
@@ -131,27 +124,18 @@ export function getAnkiInterval(
   if (!config) console.error(config);
 
   // eslint-disable-next-line
-  const {NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, EASY_BONUS, INTERVAL_MODIFIER, MAXIMUM_INTERVAL, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL, LEECH_THRESHOLD}
+  const {NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, EASY_BONUS, INTERVAL_MODIFIER, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL, LEECH_THRESHOLD}
     = config as Config;
 
   // Get variables we will be editing and returning
-  let isMinute = false; // specifies that the interval is in minutes, not days
   let {
+    last_review,
     learning_status: learningStatus,
     steps_index: stepsIndex,
     ease,
-    interval,
-    // is_leech: isLeech,
-    // leech_index: leechIndex,
   } = card;
-  // TODO: fix leeches for everything
-  // let isLeech = false;
-  // let leechIndex = 0;
-
-  if (!learningStatus) {
-    // This has only happened once in production (to my knowledge) and I can't figure out why
-    console.error(card);
-  }
+  let minutesInterval = daysToMinutes(dateDiff(new Date(last_review), new Date()));
+  console.log(minutesInterval)
 
   // Algorithm
   if (learningStatus === 'LEARNING' || learningStatus === 'UNSEEN') {
@@ -159,25 +143,23 @@ export function getAnkiInterval(
     if (grade === 1) {
       // Again
       stepsIndex = 0;
-      interval = NEW_STEPS[0];
-      isMinute = true;
+      minutesInterval = NEW_STEPS[0];
     } else if (grade === 2) {
-      interval = -1;
+      minutesInterval = -1;
     } else if (grade === 3) {
       // Good
       stepsIndex++;
       if (stepsIndex < NEW_STEPS.length) {
-        interval = NEW_STEPS[stepsIndex];
-        isMinute = true;
+        minutesInterval = NEW_STEPS[stepsIndex];
       } else {
         // We have graduated!
         learningStatus = 'LEARNED';
-        interval = GRADUATING_INTERVAL;
+        minutesInterval = daysToMinutes(GRADUATING_INTERVAL);
       }
     } else if (grade === 4) {
       // Easy
       learningStatus = 'LEARNED';
-      interval = EASY_INTERVAL;
+      minutesInterval = daysToMinutes(EASY_INTERVAL);
     }
     if (learningStatus === 'UNSEEN') {
       learningStatus = 'LEARNING';
@@ -196,84 +178,71 @@ export function getAnkiInterval(
       // if (leechIndex >= LEECH_THRESHOLD) {
       //   isLeech = true;
       // }
-      interval = LAPSES_STEPS[0];
-      isMinute = true;
+      minutesInterval = LAPSES_STEPS[0];
     } else if (grade === 2) {
       // Hard
       ease = Math.max(130, ease - 15);
-      interval = interval * 1.2 * INTERVAL_MODIFIER/100;
-      interval = Math.min(MAXIMUM_INTERVAL, interval);
+      minutesInterval = daysToMinutes(minutesToDays(minutesInterval) * 1.2 * INTERVAL_MODIFIER/100);
     } else if (grade === 3) {
       // Good
-      interval = interval * ease/100 * INTERVAL_MODIFIER/100;
-      interval = Math.min(MAXIMUM_INTERVAL, interval);
+      minutesInterval = daysToMinutes(minutesToDays(minutesInterval) * ease/100 * INTERVAL_MODIFIER/100);
     } else if (grade === 4) {
       // Easy
       ease = Math.min(350, ease + 15);
-      interval = interval * ease/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100;
-      interval = Math.min(MAXIMUM_INTERVAL, interval);
+      minutesInterval = daysToMinutes(minutesToDays(minutesInterval) * ease/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100);
     }
   } else if (learningStatus === 'RELEARNING') {
     // "Hard" and "Easy" are not allowed (if this is changed `handleKeyDown` also needs to be changed in components.js)
     if (grade === 1) {
       // Again
       stepsIndex = 0;
-      interval = LAPSES_STEPS[0];
-      isMinute = true;
+      minutesInterval = LAPSES_STEPS[0];
     } else if (grade === 2) {
-      interval = -1;
+      minutesInterval = -1;
     } else if (grade === 3) {
       // Good
       stepsIndex++;
       if (stepsIndex < LAPSES_STEPS.length) {
-        interval = LAPSES_STEPS[stepsIndex];
-        isMinute = true;
+        minutesInterval = LAPSES_STEPS[stepsIndex];
       } else {
         // We have re-graduated!
         learningStatus = 'LEARNED';
-        interval = Math.max(MINIMUM_INTERVAL, interval * NEW_INTERVAL/100);
+        minutesInterval = daysToMinutes(Math.max(MINIMUM_INTERVAL, minutesToDays(minutesInterval) * NEW_INTERVAL/100));
       }
     } else if (grade === 4) {
-      interval = -1;
+      minutesInterval = -1;
     }
   } else {
     console.error('Invalid learning status', learningStatus);
   }
 
   // If the minutes setting is like days, use that
-  if (isMinute && interval >= 1440) {
-    interval = minutesToDays(interval);
+  let isMinute = true;
+  if (minutesInterval >= 1440) {
+    minutesInterval = minutesToDays(minutesInterval);
     isMinute = false;
   }
 
   // Put next review date into numbers
   let now = new Date();
-  let nextReview = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-    now.getHours(),
-    now.getMinutes(),
-  );
+  let nextReview = new Date(now.getTime());
   if (isMinute) {
     // In a couple minutes
-    nextReview.setMinutes(nextReview.getMinutes() + interval);
-    nextReview.setSeconds(now.getSeconds());
+    nextReview.setMinutes(nextReview.getMinutes() + minutesInterval);
   } else {
     // Exact start of next day
-    nextReview.setDate(nextReview.getDate() + interval);
+    nextReview.setDate(nextReview.getDate() + minutesInterval);
     nextReview.setHours(0);
     nextReview.setMinutes(0);
+    nextReview.setSeconds(0);
+    nextReview.setMilliseconds(0);
   }
 
   return {
     next_review: nextReview,
+    last_review: new Date(),
     ease: ease,
     learning_status: learningStatus,
     steps_index: stepsIndex,
-    // leech_index: leechIndex,
-    interval: Math.floor(interval),
-    // isLeech: isLeech,
-    is_minute: isMinute,
   } as Interval;
 }

@@ -30,10 +30,10 @@ class ReviewInstanceSerializer(serializers.ModelSerializer):
         model = ReviewInstance
         fields = [
             'next_review',
+            'last_review',
             'steps_index',
             'learning_status',
             'ease',
-            'interval',
             'is_suspended',
             'leech_index',
             'name',

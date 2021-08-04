@@ -8,6 +8,7 @@ import { getAnkiInterval } from '../../study/algorithm';
 import { ReviewInstance } from '../../types';
 import { StudyAnswerDispatch } from './context';
 import './flashcard.scss';
+import { getMinNum } from './utils';
 
 export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
   const { reviewInstance } = props;
@@ -33,7 +34,6 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
     return async () => {
       if (!isFlipped) return;
       let interval = intervals[grade - 1];
-      delete interval.is_minute;
 
       // Flip back to front and update server review instance
       setIsFlipped(false);
@@ -72,7 +72,7 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
           const grade = (intervals.map(
             (interval, i) => ({ i: i, interval: interval})
           ).filter(
-            interval_i => interval_i.interval.interval > 0
+            interval_i => getMinNum(interval_i.interval) > 0
           ).map(
             interval_i => interval_i.i
           )[rawGrade - 1] + 1) as 1 | 2 | 3 | 4;
@@ -115,18 +115,22 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
           {['Again', 'Hard', 'Good', 'Easy'].map((difficulty, i) =>
             <Button
               onClick={studyFlashcard((i + 1) as 1 | 2 | 3 | 4)}
-              className={'mr-1' + (intervals[i].interval < 0 ? ' d-none': '')}
+              className={'mr-1' + (getMinNum(intervals[i]) < 0 ? ' d-none': '')}
               variant={['danger', 'warning', 'success', 'primary'][i]}
               style={isFlipped ? {} : { cursor: 'default' }}
               key={i}
             >
-              {difficulty} {intervals[i].interval.toString() + (intervals[i].is_minute ? 'm' : 'd')}
+              {difficulty} {
+                getMinNum(intervals[i]) > 1440 ? `${Math.floor(getMinNum(intervals[i])/1440)}d`
+                :
+                `${Math.floor(getMinNum(intervals[i]))}m`
+              }
             </Button>
           )}
         </ButtonGroup>
         <div className='text-secondary text-center mb-5'>
           <small>
-            Tap a button or use the number keys 1-{intervals.filter(timing => timing.interval > 0).length}
+            Tap a button or use the number keys 1-{intervals.filter(timing => getMinNum(timing) > 0).length}
             {' '}to rate how well you remembered the flashcard
           </small>
         </div>

@@ -66,10 +66,10 @@ export interface FlashCard {
 
 export interface ReviewInstance {
   next_review: string; // ISO date string
+  last_review: string; // ISO date string
   steps_index: number;
   learning_status: LearningStatus;
   ease: number;
-  interval: number;
   is_leech: boolean;
   leech_index: number;
   name: string;
