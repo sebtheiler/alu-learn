@@ -113,15 +113,13 @@ function generateConfig(
 
 // Adapted from https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
 export interface Interval {
-  next_review_date: Date;
-  ease_factor: number;
+  next_review: Date;
+  ease: number;
   interval: number;
   learning_status: 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
   steps_index: number;
   leech_index: number;
-  // is_leech: boolean;
-  message: string;
-  is_minute: boolean;
+  is_minute?: boolean;
 }
 export function getAnkiInterval(
   card: ReviewInstance,
@@ -141,14 +139,14 @@ export function getAnkiInterval(
   let {
     learning_status: learningStatus,
     steps_index: stepsIndex,
-    ease: easeFactor,
+    ease,
     interval,
     // is_leech: isLeech,
     // leech_index: leechIndex,
   } = card;
   // TODO: fix leeches for everything
   // let isLeech = false;
-  let leechIndex = 0;
+  // let leechIndex = 0;
 
   if (!learningStatus) {
     // This has only happened once in production (to my knowledge) and I can't figure out why
@@ -189,7 +187,7 @@ export function getAnkiInterval(
       // Again
       learningStatus = 'RELEARNING';
       stepsIndex = 0;
-      easeFactor = Math.max(130, easeFactor - 20);
+      ease = Math.max(130, ease - 20);
 
       // The reason we don't need to check that if the card has already
       // been done that day, is because this automatically sets it to
@@ -202,17 +200,17 @@ export function getAnkiInterval(
       isMinute = true;
     } else if (grade === 2) {
       // Hard
-      easeFactor = Math.max(130, easeFactor - 15);
+      ease = Math.max(130, ease - 15);
       interval = interval * 1.2 * INTERVAL_MODIFIER/100;
       interval = Math.min(MAXIMUM_INTERVAL, interval);
     } else if (grade === 3) {
       // Good
-      interval = interval * easeFactor/100 * INTERVAL_MODIFIER/100;
+      interval = interval * ease/100 * INTERVAL_MODIFIER/100;
       interval = Math.min(MAXIMUM_INTERVAL, interval);
     } else if (grade === 4) {
       // Easy
-      easeFactor = Math.min(350, easeFactor + 15);
-      interval = interval * easeFactor/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100;
+      ease = Math.min(350, ease + 15);
+      interval = interval * ease/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100;
       interval = Math.min(MAXIMUM_INTERVAL, interval);
     }
   } else if (learningStatus === 'RELEARNING') {
@@ -250,7 +248,7 @@ export function getAnkiInterval(
 
   // Put next review date into numbers
   let now = new Date();
-  let nextReviewDate = new Date(
+  let nextReview = new Date(
     now.getFullYear(),
     now.getMonth(),
     now.getDate(),
@@ -259,24 +257,23 @@ export function getAnkiInterval(
   );
   if (isMinute) {
     // In a couple minutes
-    nextReviewDate.setMinutes(nextReviewDate.getMinutes() + interval);
-    nextReviewDate.setSeconds(now.getSeconds());
+    nextReview.setMinutes(nextReview.getMinutes() + interval);
+    nextReview.setSeconds(now.getSeconds());
   } else {
     // Exact start of next day
-    nextReviewDate.setDate(nextReviewDate.getDate() + interval);
-    nextReviewDate.setHours(0);
-    nextReviewDate.setMinutes(0);
+    nextReview.setDate(nextReview.getDate() + interval);
+    nextReview.setHours(0);
+    nextReview.setMinutes(0);
   }
 
   return {
-    next_review_date: nextReviewDate,
-    ease_factor: easeFactor,
+    next_review: nextReview,
+    ease: ease,
     learning_status: learningStatus,
     steps_index: stepsIndex,
-    leech_index: leechIndex,
+    // leech_index: leechIndex,
     interval: Math.floor(interval),
     // isLeech: isLeech,
-    message: 'SUCCESS',
     is_minute: isMinute,
   } as Interval;
 }

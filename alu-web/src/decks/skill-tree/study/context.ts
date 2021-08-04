@@ -1,5 +1,4 @@
 import { createContext, Dispatch } from 'react';
-// import { apiObjectEdit } from '../../../lookup/lookup';
 import { Interval } from '../../study/algorithm';
 import { ReviewInstance } from '../../types';
 
@@ -17,10 +16,6 @@ export const studyAnswerReducer = (
       // `payload`: {id: ID of review instance, grade: Number 1-4 representing the response Again-Easy}
       // Get index of reviewed review instance
       const index = state.map(ri => ri.id).indexOf(event.id);
-
-      // Update review instance on server
-      // TODO: re-enable this after finishing testing
-      // apiObjectEdit('decks', 'reviewinstance', event.id, interval);
 
       // If the interval is greater than review ahead minutes, remove the review instance from rotation
       if (

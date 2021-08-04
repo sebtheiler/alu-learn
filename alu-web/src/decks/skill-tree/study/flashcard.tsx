@@ -1,6 +1,8 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import BrowserInteractionTime from 'browser-interaction-time';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import { apiReviewInstanceUpdate } from '../../../lookup/lookup';
 import { range, RenderRichText } from '../../../utils';
 import { getAnkiInterval } from '../../study/algorithm';
 import { ReviewInstance } from '../../types';
@@ -10,31 +12,50 @@ import './flashcard.scss';
 export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
   const { reviewInstance } = props;
   const [isFlipped, setIsFlipped] = useState(false);
+  const studyAnswerDispatch = useContext(StudyAnswerDispatch);
   const intervals = useMemo(
     () => range(0, 4).map(i => getAnkiInterval(reviewInstance, (i + 1) as 1 | 2 | 3 | 4)),
     [reviewInstance],
   );
-  const studyAnswerDispatch = useContext(StudyAnswerDispatch);
+  const browserInteractionTime = useMemo(() => {
+    const timer = new BrowserInteractionTime({
+      idleTimeoutMs: 30000,
+    });
+    timer.startTimer();
+
+    return timer;
+  }, []);
+
 
   const studyFlashcard = useCallback((grade: 1 | 2 | 3 | 4) => {
     if (!studyAnswerDispatch) return () => {};
 
     return async () => {
       if (!isFlipped) return;
-      // Flip back to front and wait until the back of the card
-      // is no longer shown (half of transition = 0.25s)
-      setIsFlipped(false);
-      await new Promise(r => setTimeout(r, 125));
+      let interval = intervals[grade - 1];
+      delete interval.is_minute;
 
+      // Flip back to front and update server review instance
+      setIsFlipped(false);
+      apiReviewInstanceUpdate(
+        reviewInstance.id,
+        browserInteractionTime.getTimeInMilliseconds(),
+        interval,
+      );
+
+      // Wait until the back of the card is no longer shown (half of transition = 0.25s)<
+      // then show the next card
+      await new Promise(r => setTimeout(r, 125));
       studyAnswerDispatch({
         action: 'STUDY_REVIEW_INSTANCE',
-        interval: intervals[grade - 1],
+        interval: interval,
         id: reviewInstance.id,
       });
       (document.activeElement as HTMLElement).blur();
+      browserInteractionTime.reset();
+      browserInteractionTime.startTimer();
     }
-  }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped]);
-
+  }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped, browserInteractionTime]);
 
   useEffect(() => {
     const keyUp = event => {
@@ -96,6 +117,7 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
               onClick={studyFlashcard((i + 1) as 1 | 2 | 3 | 4)}
               className={'mr-1' + (intervals[i].interval < 0 ? ' d-none': '')}
               variant={['danger', 'warning', 'success', 'primary'][i]}
+              style={isFlipped ? {} : { cursor: 'default' }}
               key={i}
             >
               {difficulty} {intervals[i].interval.toString() + (intervals[i].is_minute ? 'm' : 'd')}

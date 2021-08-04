@@ -2,6 +2,7 @@ import json
 import random
 import re
 from typing import List
+from utils.utils import assert_dict_data_type
 
 from django.core.cache import cache
 from django.db.models import Q
@@ -1024,3 +1025,39 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
         ).data,
         status=200,
     )
+
+
+RI_EDITABLE_ATTRS = {
+    'learning_status': str,
+    'steps_index': int,
+    'ease': int,
+    'next_review': str,
+    'interval': int,
+}
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def review_instance_update_view(request, review_instance_id, *args, **kwargs) -> dict:
+    """
+    Updates a review instance after studying it - PUT
+
+    `edited_values`: All editable args
+    `utc_timezone_offset` (Data): Num minutes
+    `time_taken` (Data): Num milliseconds
+    """
+    edited_values = request.data.get('edited_values')
+    if msg := assert_dict_data_type(edited_values, RI_EDITABLE_ATTRS, False):
+        return msg
+
+    ReviewInstance.objects.filter(pk=review_instance_id).update(
+        **edited_values,
+    )
+
+    request.user.profile.increment_work_done_today(
+        cards_done=1,
+        utc_timezone_offset=request.data.get('utc_timezone_offset'),
+        time_taken=request.data.get('time_taken'),
+    )
+
+    return Response({'message': 'Updated review instance'}, status=200)

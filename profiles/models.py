@@ -67,12 +67,12 @@ class Profile(models.Model):
     ) -> Tuple[Union[ProfileHistorySegment, None], bool]:
         date = datetime.datetime.now()
         if utc_timezone_offset is not None:
-            date -= datetime.timedelta(minutes=min(int(utc_timezone_offset), 1440))
+            date -= datetime.timedelta(minutes=max(min(int(utc_timezone_offset), 1440), 0))
 
         date = date.date()
 
         if create:
-            return self.history.get_or_create(date)
+            return self.history.get_or_create(date=date)
         else:
             try:
                 return self.history.get(date=date), False

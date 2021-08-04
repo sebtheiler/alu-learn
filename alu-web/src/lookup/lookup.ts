@@ -7,6 +7,7 @@ import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { getCookie } from '../utils';
 import { backendLookup, baseUrl } from './components';
 import { useReducer, useEffect, useState, Dispatch } from 'react';
+import { Interval } from '../decks/study/algorithm';
 
 type Message = { 'message': string };
 type PaginatedResponse = {
@@ -1021,7 +1022,7 @@ export async function apiReviewInstanceStudy(
   deckId: number,
   tagQuery: string,
 ): Promise<ReviewInstance[]> {
-  return backendFetch<ReviewInstance[]>('POST', `decks/flashcard/study/`, {
+  return backendFetch<ReviewInstance[]>('POST', `decks/reviewinstance/study/`, {
     deck_id: deckId,
     tag_query: tagQuery,
   });
@@ -1039,5 +1040,23 @@ export async function apiStreakReviewInfo(
   return backendFetch<StreakInfo>(
     'GET',
     `profiles/streak-review-info/?utc_timezone_offset=${utcTimezoneOffset}`,
+  );
+}
+
+// Studies a review instance, updating it with new info and increasing streak etc.
+export async function apiReviewInstanceUpdate(
+  reviewInstanceId: string,
+  timeTaken: number,
+  editedValues: Interval,
+): Promise<Message> {
+  const utcTimezoneOffset = new Date().getTimezoneOffset();
+  return backendFetch<Message>(
+    'PUT',
+    `decks/reviewinstance/study/${reviewInstanceId}/`,
+    {
+      time_taken: Math.floor(timeTaken),
+      utc_timezone_offset: utcTimezoneOffset,
+      edited_values: editedValues,
+    },
   );
 }

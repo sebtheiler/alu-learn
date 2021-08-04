@@ -577,11 +577,13 @@ def streak_review_info(request, *args, **kwargs):
 
     `utc_timezone_offset`? (GET): UTC timezone offset in minutes
     """
+    history_segment = request.user.profile.get_create_history(
+        create=False,
+        utc_timezone_offset=request.GET.get('utc_timezone_offset'),
+    )[0]
+
     return Response({
         'streak': request.user.profile.current_streak,
-        'cards_done': request.user.profile.get_create_history(
-            create=False,
-            utc_timezone_offset=request.GET.get('utc_timezone_offset'),
-        )[0] or 0,
+        'cards_done': history_segment.cards_done if history_segment else 0,
         'target_cards_done': 100,  # TODO: make this customizable
     }, status=200)

@@ -85,13 +85,17 @@ def get_paginated_queryset_response(
     return Response({**paginated_resp.data, **other_information}, status=200)
 
 
-def assert_request_data_type(request: WSGIRequest, attr_types: dict) -> Union[Response, None]:
+def assert_request_data_type(
+    request: WSGIRequest,
+    attr_types: dict,
+    enforce_all_keys_equal: bool = True,
+) -> Union[Response, None]:
     """
     Asserts that each specified item in `request` is of the type sepcified by `attr_types`
 
     `attr_types` maps string attributes to types ({'options': dict, 'obj_id': (int, str)})
     """
-    if msg := assert_dict_data_type(request.data, attr_types):
+    if msg := assert_dict_data_type(request.data, attr_types, enforce_all_keys_equal):
         return Response({'message': msg}, status=400)
 
     return None

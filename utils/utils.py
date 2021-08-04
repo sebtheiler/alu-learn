@@ -60,9 +60,9 @@ def assert_dict_data_type(
     if enforce_all_keys_equal and dict_to_check.keys() != expected_attr_types.keys():
         return 'Mismatch between supplied keys and editable keys'
 
-    for given_attr, given_type in dict_to_check.items():
+    for given_attr, given_val in dict_to_check.items():
         expected_type = expected_attr_types.get(given_attr)
-        if not isinstance(given_attr, expected_type):
-            return f'`{given_attr}` must be of type {given_type}, not {type(expected_type)}'
+        if expected_type is None or not isinstance(given_val, expected_type):
+            return f'`{given_attr}` must be of type {expected_type}, not {type(given_attr)}'
 
     return None
