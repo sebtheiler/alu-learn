@@ -5,14 +5,14 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import { capitalize } from '../../utils';
 
+export const cleanTitle = (title: string) => title.replaceAll(' ', '-');
+
 interface SubSectionProps {
   title: string;
   mainSectionTitle: string;
   deckId: number;
 }
 export default function SubSection({ title, mainSectionTitle, deckId }: SubSectionProps) {
-  const cleanTitle = (title: string) => title.replaceAll(' ', '-');
-
   return (
     <Col
       xl={3}

@@ -12,6 +12,10 @@ urlpatterns = [
         'decks/study.html',
         context_kwargs=True,
     )),
+    path('deck/<int:deck_id>/study/', render_basic_view(
+        'decks/study.html',
+        context_kwargs=True,
+    )),
     path('deck/<int:deck_id>/study/<str:tags>/', render_basic_view(
         'decks/study.html',
         context_kwargs=True,

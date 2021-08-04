@@ -1,7 +1,7 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import SubSection from './sub-section';
+import SubSection, { cleanTitle } from './sub-section';
 
 interface MainSectionProps {
   title: string;
@@ -17,7 +17,7 @@ export default function MainSection(props: MainSectionProps) {
         <div className='d-flex mx-auto'>
           <hr className='flex-grow-1' />
           <h2 className='px-2 align-self-center mb-0'>
-            <a href={`decks/${deckId}/study/${title}/`} >
+            <a href={`/deck/${deckId}/study/${cleanTitle(title)}/`}>
               {title.toUpperCase()}
             </a>
           </h2>
