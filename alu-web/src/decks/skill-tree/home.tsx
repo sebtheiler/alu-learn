@@ -11,7 +11,7 @@ import CreateDeckButton from './buttons/create-deck';
 import { useObjectList } from '../../lookup/lookup';  // TODO: clean up imports
 import './home.scss';
 
-export function SkillTreeHome({ defaultSelected }: { defaultSelected?: string }) {
+export default function SkillTreeHome({ defaultSelected }: { defaultSelected?: string }) {
   const [decks, decksDispatch] = useObjectList('decks', 'deck', deckReducer);
   const [selectedDeck, setSelectedDeck] = useState<number | null>(
     defaultSelected ? parseInt(defaultSelected) : null

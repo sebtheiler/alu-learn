@@ -1,0 +1,52 @@
+@import './shared';
+
+.flashcard-view {
+  border: $grayBorder;
+  border-radius: $cardBorderRadius;
+  margin-bottom: 10px;
+  background: $lightBackground;
+
+  &:hover {
+    box-shadow: $cardShadow;
+    cursor: pointer;
+    transform: scale(1.01);
+    transition-duration: 0.05s;
+  }
+
+  >.flashcard-head {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    // text-align: center;
+    border-bottom: $grayBorder;
+    border-radius: $cardBorderRadius $cardBorderRadius 0 0;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    background: darken($lightBackground, 3%);
+  }
+
+  >.flashcard-body {
+    >div {
+      &.flashcard-field {
+        >.text {
+          align-items: center;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
+  
+      &.divider {
+        border-right: $grayBorder;
+      }
+    
+      &.rich-text-editor {
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+  }
+}

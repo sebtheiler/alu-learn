@@ -55,7 +55,9 @@ export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
           show={editModalOpen}
           close={() => setEditModalOpen(false)}
         />
-        <Button href={`/decks/${deck.id}/flashcards/`} block>Browse</Button>
+        <Button href={`/deck/${deck.id}/flashcards/`} block>
+          View
+        </Button>
         <hr />
         <Button onClick={() => setGameModalOpen(true)} block>Games</Button>
         <GameModal

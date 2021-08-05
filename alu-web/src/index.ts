@@ -14,7 +14,7 @@ import { HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePassword
 import { GameComponent, MatchingGame } from './decks/games';
 import { ClassroomDetail, ClassroomStudentDetail, StudyAssignment } from './teachers';
 import { Habits } from './habits';
-import { SkillTreeHome, StudySkillTree } from './decks/skill-tree';  // TODO: remove this
+import { SkillTreeHome, StudySkillTree, ViewFlashcards } from './decks/skill-tree';  // TODO: remove this
 
 const e = React.createElement;
 
@@ -70,6 +70,7 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [Habits, 'habits-component'],
   [SkillTreeHome, 'skill-tree'],
   [StudySkillTree, 'study-skill-tree'],
+  [ViewFlashcards, 'view-flashcards'],
 ] as ElementRow[]).map(el => renderElement(...el));
 
 // If you want your app to work offline and load faster, you can change

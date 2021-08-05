@@ -336,7 +336,7 @@ def suspend_students_flashcards_view(request, classroom_id: int):
     # Get flashcards to suspend
     query = Q(flashcard__deck__student_attached_to=classroom)
     query &= ReviewInstance.search_tags(tags_query)
-    flashcards = ReviewInstance.objects.filter(query)
+    flashcards = ReviewInstance.objects.filter(query).prefetch_related('flashcard')
 
     # Suspend flashcards
     flashcards.update(is_suspended=action == 'SUSPEND')

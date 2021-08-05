@@ -92,16 +92,16 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
   return (
     <div>
       <div
-        className={'flip' + (isFlipped ? ' is-flipped' : '')}
+        className={'flashcard-flip' + (isFlipped ? ' is-flipped' : '')}
         onClick={() => setIsFlipped(!isFlipped)}
       >
-        <div className='card front'>
+        <div className='flashcard front'>
           <RenderRichText
             text={reviewInstance.flashcard_fields ? reviewInstance.flashcard_fields[0] : []}
             fixSlateLazy
           />
         </div>
-        <div className='card back'>
+        <div className='flashcard back'>
           <RenderRichText
             text={reviewInstance.flashcard_fields ? reviewInstance.flashcard_fields[1] : []}
             fixSlateLazy

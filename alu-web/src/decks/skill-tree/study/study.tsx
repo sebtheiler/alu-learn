@@ -3,14 +3,15 @@ import { apiReviewInstanceStudy, useAsyncDispatch } from '../../../lookup/lookup
 import { ReviewInstance } from '../../types';
 import { StudyReviewInstances } from './review-instances';
 import { StudyAnswerDispatch, StudyAnswerEvent, studyAnswerReducer } from './context';
+import { uncleanTitle } from '../sub-section';
 
 
-export function StudySkillTree({ deckId, tagQuery='' }: { deckId: string, tagQuery: string }) {
+export default function StudySkillTree({ deckId, tagQuery='' }: { deckId: string, tagQuery: string }) {
   const [reviewInstances, dispatchReviewInstances] = useAsyncDispatch<
     ReviewInstance[], StudyAnswerEvent
   >(
     apiReviewInstanceStudy,
-    [parseInt(deckId), tagQuery.replaceAll('-', ' ').replaceAll('__', ' AND ')],
+    [parseInt(deckId), uncleanTitle(tagQuery)],
     studyAnswerReducer,
   );
 

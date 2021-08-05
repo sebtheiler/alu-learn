@@ -42,29 +42,31 @@ urlpatterns = [
         'deck__user', 'USER',
         exclude_app_name=True,
         exclude_create=True,
+        exclude_list=True,
         exclude_edit=True,
     ),
-    *generate_base_api(
-        'decks', 'reviewinstance',
-        ReviewInstanceSerializer,
-        {
-            'learning_status': str,
-            'steps_index': int,
-            'ease': int,
-            'next_review': str,  # ISO-date
-            'last_review': str,  # ISO-date
-            'is_suspended': bool,
-            'leech_index': int,
-        },
-        'flashcard__deck__user', 'USER',
-        exclude_app_name=True,
-        exclude_create=True,
-        exclude_get=True,
-        exclude_list=True,
-        exclude_delete=True,
-    ),
+    # *generate_base_api(
+    #     'decks', 'reviewinstance',
+    #     ReviewInstanceSerializer,
+    #     {
+    #         'learning_status': str,
+    #         'steps_index': int,
+    #         'ease': int,
+    #         'next_review': str,  # ISO-date
+    #         'last_review': str,  # ISO-date
+    #         'is_suspended': bool,
+    #         'leech_index': int,
+    #     },
+    #     'flashcard__deck__user', 'USER',
+    #     exclude_app_name=True,
+    #     exclude_create=True,
+    #     exclude_get=True,
+    #     exclude_list=True,
+    #     exclude_delete=True,
+    # ),
     # ===== Flashcard Operations =====
     path('flashcard/create/', views.flashcard_create_view),
+    path('flashcard/list/', views.flashcard_list_view),
     path('flashcard/<int:flashcard_id>/edit/', views.flashcard_edit_view),
     path('flashcard/<int:flashcard_id>/rearrange/', views.flashcard_rearrange_view),
     path('flashcard/search/', views.flashcard_search_view),

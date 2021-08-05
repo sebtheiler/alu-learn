@@ -97,7 +97,7 @@ class Assignment(models.Model):
                 flashcard__deck__user=user,
             ) &
             ReviewInstance.search_tags(self.tag_query)
-        )
+        ).prefetch_related('flashcard')
         total_flashcard_num = flashcards.count()
         unseen_flashcard_num = flashcards.filter(learning_status='UNSEEN').count()
 
@@ -157,7 +157,7 @@ class AssignmentStudySessionManager(StudySessionManager):
         ssm_flashcards = ReviewInstance.objects.filter(
             Q(flashcard__deck__pk=deck.pk) &
             ReviewInstance.search_tags(self.assignment.tag_query)
-        )
+        ).prefetch_related('flashcard')
         seen_flashcards = ssm_flashcards.filter(
             Q(next_review__lt=review_cutoff) &
             ~Q(learning_status__iexact='UNSEEN') &

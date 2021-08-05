@@ -6,6 +6,7 @@ import Popover from 'react-bootstrap/Popover';
 import { capitalize } from '../../utils';
 
 export const cleanTitle = (title: string) => title.replaceAll(' ', '-');
+export const uncleanTitle = (tags: string) => tags.replaceAll('-', ' ').replaceAll('__', ' AND ')
 
 interface SubSectionProps {
   title: string;
@@ -24,16 +25,32 @@ export default function SubSection({ title, mainSectionTitle, deckId }: SubSecti
       <OverlayTrigger
         overlay={
           <Popover id='study-section-popover'>
-            <Popover.Title as='h3'>
-              Study "{capitalize(title, true)}"
+            <Popover.Title as='h3' className='text-center'>
+              {capitalize(title, true)}
             </Popover.Title>
             <Popover.Content>
-              <Button
-                href={`/deck/${deckId}/study/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
-                block
-              >
-                Study
-              </Button>
+              <p>Description</p>
+              <div>
+                <Button
+                  href={`/deck/${deckId}/study/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
+                  block
+                >
+                  Study
+                </Button>
+                <Button
+                  href={`/deck/${deckId}/flashcards/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
+                  variant='secondary'
+                  block
+                >
+                  View
+                </Button>
+                <Button
+                  variant='secondary'
+                  block
+                >
+                  Learning Resources
+                </Button>
+              </div>
             </Popover.Content>
           </Popover>
         }

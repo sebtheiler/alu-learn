@@ -1,5 +1,3 @@
-import { StudySkillTree } from './study';
+import StudySkillTree from './study';
 
-export {
-  StudySkillTree,
-}
+export default StudySkillTree;

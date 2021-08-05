@@ -1,6 +1,6 @@
 @import '../shared';
 
-.flip {
+.flashcard-flip {
   position: relative;
   >.front, >.back {
     display: block;
@@ -37,7 +37,7 @@
   }
 }
 
-.card {
+.flashcard {
   // Sizes
   padding: 10px;
   min-height: 400px;

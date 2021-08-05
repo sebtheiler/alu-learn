@@ -798,6 +798,35 @@ def flashcard_search_view(request, *args, **kwargs):
     return Response(ReviewInstanceSerializer(flashcard_qs, many=True).data, status=200)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def flashcard_list_view(request, *args, **kwargs):
+    """
+    List flashcards in a deck and/or by tag - GET
+
+    `deck_id`? (GET): Id of the deck to get flashcards from
+    `tags`? (GET): Tags to search
+    """
+    flashcard_query = Q()
+
+    if deck_id := request.GET.get('deck_id'):
+        flashcard_query &= Q(
+            deck__pk=deck_id,
+            deck__user=request.user,
+        )
+
+    if tags := request.GET.get('tags'):
+        flashcard_query &= FlashCard.search_tags(tags)
+
+    flashcards = FlashCard.objects.filter(flashcard_query)
+    return get_paginated_queryset_response(
+        flashcards,
+        request,
+        FlashCardSerializer,
+        page_size=250,
+    )
+
+
 # ==== Flashcard Bulk Update ====
 # TODO: Combine with function views
 @api_view(['POST'])
@@ -881,7 +910,7 @@ def flashcard_review_instance_bulk_update_view(request, *args, **kwargs):
 
 
 # ===== Flashcard Study =====
-# TODO: Rewrite function
+# TODO: Delete
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
@@ -963,7 +992,7 @@ def game_flashcards_view(request, *args, **kwargs):
     else:
         return Response({'message': 'Unrecognized method for getting flashcards'}, status=400)
 
-    flashcards = ReviewInstance.objects.filter(query)
+    flashcards = ReviewInstance.objects.filter(query).prefetch_related('flashcard')
 
     # Get `amount` random flashcards from the list
     if method_type == 'PERSONAL':
@@ -1008,7 +1037,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     due_for_review = ReviewInstance.objects.filter(
         # TODO: adapt for timezones
         review_instance_query & Q(next_review__lte=get_morning())
-    ).order_by('next_review')[:NUM_FLASHCARDS_PER_LESSON]
+    ).prefetch_related('flashcard').order_by('next_review')[:NUM_FLASHCARDS_PER_LESSON]
 
     # If the number of due review instances doesn't meet `NUM_FLASHCARDDS_PER_LESSON`,
     # also send unseen review instances
@@ -1016,7 +1045,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     if num_new_review_instances > 0:
         due_for_review |= ReviewInstance.objects.filter(
             review_instance_query & Q(learning_status='UNSEEN')
-        )[:num_new_review_instances]
+        ).prefetch_related('flashcard')[:num_new_review_instances]
 
     return Response(
         ReviewInstanceSerializer(

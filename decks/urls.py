@@ -20,7 +20,15 @@ urlpatterns = [
         'decks/study.html',
         context_kwargs=True,
     )),
-    path('decks/<int:deck_id>/flashcards/', flashcard_list_view),
+    path('deck/<int:deck_id>/flashcards/', render_basic_view(
+        'flashcards/list.html',
+        context_kwargs=True,
+    )),
+    path('deck/<int:deck_id>/flashcards/<str:tags>/', render_basic_view(
+        'flashcards/list.html',
+        context_kwargs=True,
+    )),
+    # path('decks/<int:deck_id>/flashcards/', flashcard_list_view),
     path('decks/<int:deck_id>/flashcards/create/', flashcard_create_view),
     path('decks/<int:deck_id>/flashcards/<int:flashcard_num>/edit/', flashcard_edit_view),
     path('decks/<int:deck_id>/share/', render_basic_view('decks/shared/share.html')),

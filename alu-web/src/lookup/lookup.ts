@@ -23,7 +23,15 @@ async function backendFetch<T>(
   endpoint: string,
   data: Object = {},
 ): Promise<T> {
-  return fetch(`${baseUrl}/api/${endpoint}`, {
+  let url = `${baseUrl}/api/${endpoint}`;
+  if (method === 'GET' && !!data) {
+    if (!url.includes('?')) url += '?';
+    for (const [attr, val] of Object.entries(data)) {
+      url += `&${attr}=${val}`;
+    }
+  }
+
+  return fetch(url, {
     method: method,
     headers: {
       'content-type': 'application/json',
@@ -59,10 +67,19 @@ export async function apiObjectGet<T>(
 export async function apiObjectList<T>(
   appName: string,
   modelName: string,
-) {
+  nextUrl?: string,
+  data?: Object,
+): Promise<T> {
+  let endpoint = `${appName}/${modelName}/list/`;
+  if (nextUrl) {
+    const page = nextUrl.match(/page=\d*/);
+    if (page) endpoint += `?${page[0]}`;
+  }
+
   return backendFetch<T>(
     'GET',
-    `${appName}/${modelName}/list/`,
+    endpoint,
+    data,
   );
 }
 
@@ -88,11 +105,9 @@ export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
   useEffect(() => {
     if (objDidFetch) return;
     setObjDidFetch(true);
-    (async () => func(...args).then(
-      (res: ObjType) => {
-        dispatch({ action: 'INITIAL_SET', payload: res } as Event);
-      }
-    ))();
+    func(...args).then(
+      (res: ObjType) => dispatch({ action: 'INITIAL_SET', payload: res } as Event)
+    );
   }, [func, args, objDidFetch]);
 
   return [obj, dispatch];
@@ -127,6 +142,55 @@ export function useObjectList<ObjType, Event extends DefaultEvent = never>(
     [appName, modelName],
     reducer,
   );
+}
+
+export function useObjectPaginatedList<ObjType, Event extends DefaultEvent = never>(
+  appName: string,
+  modelName: string,
+  reducer?: (
+    state: ObjType[] | undefined,
+    action: Event,
+  ) => ObjType[] | undefined,
+  data?: Object,
+): [
+  ObjType[] | undefined,
+  Dispatch<Event>,
+  (() => void) | undefined,
+  number | undefined,
+] {
+  type PaginatedObj = { next?: string, previous?: string, count: number, results: ObjType[] };
+  const [objs, dispatch] = useReducer((state: ObjType[] | undefined, event: Event) => {
+    if (event && event.action === 'INITIAL_SET')
+      return event.payload as ObjType[];
+    return reducer ? reducer(state, event) : undefined;
+  }, undefined);
+  const [objsDidFetch, setObjsDidFetch] = useState(false);
+  const [count, setCount] = useState<number | undefined>(undefined);
+  const [nextUrl, setNextUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (objsDidFetch) return;
+    setObjsDidFetch(true);
+    apiObjectList<PaginatedObj>(appName, modelName, undefined, data).then(
+      (res: PaginatedObj) => {
+        dispatch({ action: 'INITIAL_SET', payload: res.results } as Event);
+        setCount(res.count);
+        setNextUrl(res.next);
+      }
+    );
+  }, [appName, modelName, data, objsDidFetch]);
+
+  const fetchNext = (nextUrl && objs) ? () => {
+    apiObjectList<PaginatedObj>(appName, modelName, nextUrl, data).then(
+      (res: PaginatedObj) => {
+        dispatch({ action: 'INITIAL_SET', payload: [...objs, ...res.results] } as Event);
+        setCount(res.count);
+        setNextUrl(res.next);
+      }
+    );
+  } : undefined;
+
+  return [objs, dispatch, fetchNext, count];
 }
 
 export async function apiObjectEdit<T>(

@@ -408,6 +408,40 @@ class FlashCard(models.Model):
         return self.tags
 
     @staticmethod
+    def search_tags(tags: str) -> Q:
+        query = Q()
+
+        separated_tags = [el.strip() for el in re.split('(AND)|(OR)', tags) if el is not None]
+        i = 0
+        while i < len(separated_tags):
+            if separated_tags[i] in ('AND', 'OR'):
+                i += 1
+                continue
+
+            contains_query = Q(tags__icontains=separated_tags[i])
+
+            # Invert the query if it starts with NOT
+            if separated_tags[i].startswith('NOT '):
+                contains_query = ~Q(
+                    tags__icontains=separated_tags[i].replace(
+                        'NOT ', ''
+                    )
+                )
+
+            # Decide how to merge the query, based on the previous value being AND or OR
+            previous_operator = separated_tags[i - 1] if i > 0 else None
+            if previous_operator == 'AND' or previous_operator is None:
+                query &= contains_query
+            elif previous_operator == 'OR':
+                query |= contains_query
+            else:
+                raise ValueError('Invalid tags query')
+
+            i += 1
+
+        return query
+
+    @staticmethod
     def get_max_flashcard_num(deck: Deck) -> int:
         # Returns -1 if there are no flashcards in the deck
         flashcards = FlashCard.objects.filter(deck=deck)
@@ -659,39 +693,12 @@ class ReviewInstance(models.Model):
                 for i in range(len(all_content_indicies))
             ]
 
+    # TODO: cache this function
     @staticmethod
     def search_tags(tags: str) -> Q:
-        query = Q()
-
-        separated_tags = [el.strip() for el in re.split('(AND)|(OR)', tags) if el is not None]
-        i = 0
-        while i < len(separated_tags):
-            if separated_tags[i] in ('AND', 'OR'):
-                i += 1
-                continue
-
-            previous_operator = separated_tags[i - 1] if i > 0 else None
-            contains_query = Q(flashcard__tags__icontains=separated_tags[i])
-
-            # Invert the query if it starts with NOT
-            if separated_tags[i].startswith('NOT '):
-                contains_query = ~Q(
-                    flashcard__tags__icontains=separated_tags[i].replace(
-                        'NOT ', ''
-                    )
-                )
-
-            # Decide how to merge the query, based on the previous value being AND or OR
-            if previous_operator == 'AND' or previous_operator is None:
-                query &= contains_query
-            elif previous_operator == 'OR':
-                query |= contains_query
-            else:
-                raise ValueError('Invalid tags query')
-
-            i += 1
-
-        return query
+        return Q(
+            flashcard__in=FlashCard.objects.filter(FlashCard.search_tags(tags)),
+        )
 
     @staticmethod
     def search_flashcards(
