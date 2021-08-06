@@ -183,6 +183,7 @@ def generate_base_api(
     exclude_list: bool = False,
     exclude_edit: bool = False,
     exclude_delete: bool = False,
+    uuid_id: bool = False,
 ):
     """
     Generate a list of API paths for a model
@@ -199,6 +200,7 @@ def generate_base_api(
     """
     base_name = f'{app_name}/{model_name}' if not exclude_app_name else f'{model_name}'
     views = []
+    id_type = 'uuid' if uuid_id else 'int'
 
     if not exclude_create:
         views.append(
@@ -212,7 +214,7 @@ def generate_base_api(
 
     if not exclude_get:
         views.append(
-            path(f'{base_name}/<int:obj_id>/', get_object_view(
+            path(f'{base_name}/<{id_type}:obj_id>/', get_object_view(
                 Serializer=Serializer,
                 owner_path=owner_path,
             ))
@@ -228,7 +230,7 @@ def generate_base_api(
 
     if not exclude_edit:
         views.append(
-            path(f'{base_name}/<int:obj_id>/edit/', edit_object_view(
+            path(f'{base_name}/<{id_type}:obj_id>/edit/', edit_object_view(
                 Serializer=Serializer,
                 editable_attrs=editable_attrs,
                 owner_path=owner_path,
@@ -239,7 +241,7 @@ def generate_base_api(
 
     if not exclude_delete:
         views.append(
-            path(f'{base_name}/<int:obj_id>/delete/', delete_object_view(
+            path(f'{base_name}/<{id_type}:obj_id>/delete/', delete_object_view(
                 Serializer=Serializer,
                 owner_path=owner_path,
             ))

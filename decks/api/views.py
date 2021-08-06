@@ -667,7 +667,7 @@ def flashcard_create_view(request, *args, **kwargs):
     )
 
 
-@api_view(['POST'])
+@api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
     """
@@ -687,9 +687,10 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
     except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
-    flashcard.tags = request.data.get('tags', flashcard.tags)
+    edited_values = request.data.get('edited_values')
+    flashcard.tags = edited_values.get('tags', flashcard.tags)
+    new_fields = edited_values.get('fields')
 
-    new_fields = request.data.get('fields')
     if new_fields is not None:
         flashcard.fields = new_fields
 

@@ -94,6 +94,8 @@ export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
     state: ObjType | undefined,
     event: Event,
   ) => ObjType | undefined,
+  callback?: (response: ObjType) => void,
+  requirement?: boolean,
 ): [ObjType | undefined, Dispatch<Event>] {
   const [obj, dispatch] = useReducer((state: ObjType | undefined, event: Event) => {
     if (event && event.action === 'INITIAL_SET')
@@ -103,12 +105,13 @@ export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
   const [objDidFetch, setObjDidFetch] = useState(false);
 
   useEffect(() => {
-    if (objDidFetch) return;
+    if (objDidFetch || !requirement) return;
     setObjDidFetch(true);
-    func(...args).then(
-      (res: ObjType) => dispatch({ action: 'INITIAL_SET', payload: res } as Event)
-    );
-  }, [func, args, objDidFetch]);
+    func(...args).then((res: ObjType) => {
+      dispatch({ action: 'INITIAL_SET', payload: res } as Event)
+      if (callback) callback(res);
+    });
+  }, [func, args, callback, objDidFetch, requirement]);
 
   return [obj, dispatch];
 }
@@ -121,11 +124,15 @@ export function useObjectGet<ObjType, Event extends DefaultEvent = never>(
     state: ObjType | undefined,
     event: Event,
   ) => ObjType | undefined,
+  callback?: (response: ObjType) => void,
+  requirement?: boolean,
 ): [ObjType | undefined, Dispatch<Event>] {
   return useAsyncDispatch<ObjType, Event>(
     apiObjectGet,
     [appName, modelName, objectId],
     reducer,
+    callback,
+    requirement,
   );
 }
 

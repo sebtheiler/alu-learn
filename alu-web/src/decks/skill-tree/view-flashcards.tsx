@@ -41,29 +41,34 @@ export default function ViewFlashcards({ deckId, tags='', }: { deckId?: number, 
     </div>
     {flashcards.map(flashcard =>
       <div
-        className='flashcard-view'
-        key={flashcard.id}
         role='button'
+        onClick={() => window.open(`/deck/${deckId}/flashcards/${flashcard.id}/edit/`)}
+        key={flashcard.id}
       >
-        <Row className='flashcard-head'>
-          <Col>
-            <span>Flashcard #{flashcard.flashcard_num + 1}: {capitalize(flashcard.flashcard_type)}</span>
-            <span className='float-right'>{flashcard.tags}</span>
-          </Col>
-        </Row>
-        <Row className='flashcard-body'>
-          {flashcard.fields.map((field, i) =>
-            <Col
-              md={12/flashcard.fields.length}
-              className={'flashcard-field' + (i !== flashcard.fields.length - 1 ? ' divider' : '')}
-              key={i}
-            >
-              <div className='text'>
-                <RenderRichText text={field} />
-              </div>
+        <div
+          className='flashcard-view'
+          key={flashcard.id}
+        >
+          <Row className='flashcard-head'>
+            <Col>
+              <span>Flashcard #{flashcard.flashcard_num + 1}: {capitalize(flashcard.flashcard_type)}</span>
+              <span className='float-right'>{flashcard.tags}</span>
             </Col>
-          )}
-        </Row>
+          </Row>
+          <Row className='flashcard-body'>
+            {flashcard.fields.map((field, i) =>
+              <Col
+                md={12/flashcard.fields.length}
+                className={'flashcard-field' + (i !== flashcard.fields.length - 1 ? ' divider' : '')}
+                key={i}
+              >
+                <div className='text'>
+                  <RenderRichText text={field} />
+                </div>
+              </Col>
+            )}
+          </Row>
+        </div>
       </div>
     )}
     {flashcards.length === 0 && <p className='text-center'>
