@@ -455,7 +455,7 @@ class FlashCard(models.Model):
         tags: str,
         flashcard_type: FlashCardTypes,
         fields: List[list],
-    ) -> List[ReviewInstance]:
+    ) -> Tuple[FlashCard, List[ReviewInstance]]:
         flashcard = FlashCard.objects.create(
             deck=deck,
             flashcard_type=flashcard_type,
@@ -464,13 +464,13 @@ class FlashCard(models.Model):
             tags=tags,
         )
 
-        flashcards = ReviewInstance.create_review_instance(
+        review_instances = ReviewInstance.create_review_instance(
             flashcard_type,
             flashcard,
         )
-        ReviewInstance.objects.bulk_create(flashcards)
+        ReviewInstance.objects.bulk_create(review_instances)
 
-        return flashcards
+        return flashcard, review_instances
 
     def clone(
         self,
@@ -610,7 +610,7 @@ class ReviewInstance(models.Model):
     ease = models.PositiveSmallIntegerField(default=250)
 
     next_review = models.DateTimeField()
-    last_review = models.DateTimeField()
+    last_review = models.DateTimeField(null=True, blank=True)
 
     is_suspended = models.BooleanField(default=False)
     leech_index = models.PositiveSmallIntegerField(default=0)
@@ -1156,7 +1156,7 @@ class ReviewInstanceHistory(models.Model):
 
 
 # When a deck is created, create it's DSSM
-def deck_saved(sender, instance, created, _, using, *args, **kwargs):
+def deck_saved(sender, instance, created, using, *args, **kwargs):
     if created:
         DeckStudySessionManager.objects.using(using).create(
             deck=instance,

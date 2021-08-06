@@ -52,7 +52,11 @@ export default function SkillTreeHome({ defaultSelected }: { defaultSelected?: s
             <CreateDeckButton />
           </Col>
           <Col md={6} sm={12} className='px-4'>
-            {selectedDeck === null && !defaultSelected ?
+            {(
+              selectedDeck === null && !defaultSelected
+            ) || (
+              decks && decks.filter(deck => deck.id === selectedDeck).length === 0
+            ) ?
               <HomeComponent />
               : (decks ?
                 <SkillTree deck={decks.filter(deck => deck.id === selectedDeck)[0]} />

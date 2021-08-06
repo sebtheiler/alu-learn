@@ -159,7 +159,7 @@ def delete_object_view(
     @permission_classes([IsAuthenticated])
     def view(request: WSGIRequest, obj_id: int):
         model, error = get_obj_or_404(Model, obj_id, request.user, owner_path)
-        if not error:
+        if error:
             return error
 
         model.delete()

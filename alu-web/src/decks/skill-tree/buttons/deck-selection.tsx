@@ -48,7 +48,7 @@ export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
         className='deck-selection-expand mb-1'
         onClick={e => e.stopPropagation()}
       >
-        <Button href={`/decks/${deck.id}/flashcards/create/`} block>Add Cards</Button>
+        <Button href={`/deck/${deck.id}/flashcards/create/`} block>Add Cards</Button>
         <Button onClick={() => setEditModalOpen(true)} block>Edit</Button>
         <EditModal
           deck={deck}

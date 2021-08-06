@@ -90,6 +90,10 @@ export function ImageButton({ editor, untabbable }) {
         if (!url) return;
         insertImage(editor, url);
       }}
+      style={{
+        background: 'rgba(0, 0, 0, 0)',
+        border: 'none',
+      }}
       tabIndex={untabbable && '-1'}
     >
       <i className='fas fa-image' />

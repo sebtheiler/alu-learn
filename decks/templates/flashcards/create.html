@@ -1,22 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}
-    {% if flashcard_num != None %}
-        Editing flashcard at
-    {% else %}
-        Creating a new flashcard at
-    {% endif %}
-{% endblock title %}
+{% block title %}Creating a new flashcard at{% endblock title %}
 
 
 {% block content %}
-<h2 class='text-center mt-3'>{{ desc }}</h2>
-<p class='text-secondary text-center mb-0'>{{ sub_desc }}</p>
 <div
-    id='create-flashcard'
-    data-deck-id='{{ deck_id }}'
-    data-flashcard-num='{{ flashcard_num }}'
-    data-return-to-previous-page='{{ return_to_previous_page }}'
-    data-class-name='mx-auto'>
-</div>
+  id='create-flashcard'
+  data-deck-id='{{ deck_id }}'
+></div>
 {% endblock content %}

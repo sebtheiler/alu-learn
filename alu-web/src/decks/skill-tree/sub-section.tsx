@@ -38,7 +38,7 @@ export default function SubSection({ title, mainSectionTitle, deckId }: SubSecti
                   Study
                 </Button>
                 <Button
-                  href={`/deck/${deckId}/flashcards/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
+                  href={`/deck/${deckId}/flashcards/tags/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
                   variant='secondary'
                   block
                 >

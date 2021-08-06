@@ -1,7 +1,7 @@
 from django.urls import path
 from utils import generate_base_api
 
-from ..serializers import DeckSerializer, FlashCardSerializer, ReviewInstanceSerializer
+from ..serializers import DeckSerializer, FlashCardSerializer
 from . import views
 
 # Base endpoint = /api/decks/

@@ -212,16 +212,16 @@ class DeckTestCase(ImprovedTestCase):
         deck = self.create_deck('Test')
         self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 0)
         self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 0)
-        flashcard = FlashCard.create_flashcard(
+        flashcard, review_instances = FlashCard.create_flashcard(
             deck,
             'a, b, c',
             'basic',
             [create_slate_element('a'), create_slate_element('b')],
-        )[0]
+        )
         self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 1)
         self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 1)
-        self.assertEqual(flashcard.ease, 250)
-        self.assertEqual(flashcard.flashcard.flashcard_num, 0)
+        self.assertEqual(review_instances[0].ease, 250)
+        self.assertEqual(flashcard.flashcard_num, 0)
 
     def test_flashcard_edit_api(self):
         api_view = api_views.flashcard_edit_view
@@ -239,7 +239,7 @@ class DeckTestCase(ImprovedTestCase):
                 'a, b, c',
                 flashcard_type,
                 fields,
-            )[0]
+            )[1][0]
             api_path = f'/api/decks/{deck.pk}/flashcards/{review_instance.flashcard.id}/edit/'
             self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 1)
             self.assertEqual(
@@ -318,12 +318,12 @@ class DeckTestCase(ImprovedTestCase):
                 '{{c1::abc}} {{c2::def}} {{c3::ghi}}'
             )],
         )[0] for _ in range(10)]
-        flashcard = flashcards[0]
+        flashcard = flashcards[0][0]
         self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 10)
         self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 30)
-        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.flashcard.flashcard_num}/delete/'
+        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.flashcard_num}/delete/'
         api_view = api_views.flashcard_delete_view
-        kwargs = {'deck_id': deck.id, 'flashcard_num': flashcard.flashcard.flashcard_num}
+        kwargs = {'deck_id': deck.id, 'flashcard_num': flashcard.flashcard_num}
 
         def check_flashcard_number_correct_order(deck):
             for i, flashcard in enumerate(deck.flashcards.all()):
@@ -346,13 +346,13 @@ class DeckTestCase(ImprovedTestCase):
 
     def test_flashcard_detail_api(self):
         deck = self.create_deck('Detail Test')
-        flashcard = FlashCard.create_flashcard(
+        flashcard, _ = FlashCard.create_flashcard(
             deck,
             'a, b, c',
             'basic',
             [create_slate_element('a'), create_slate_element('b')],
-        )[0]
-        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.flashcard.flashcard_num}/'
+        )
+        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.flashcard_num}/'
         api_view = api_views.flashcard_detail_view
 
         # Attempt to get non-existant flashcard
@@ -1660,7 +1660,7 @@ class DeckTestCase(ImprovedTestCase):
                 '',
                 'cloze',
                 [create_slate_element('{{c1::abc}} {{c2::def}} {{c3::ghi}}')],
-            )[0]  # type: FlashCard
+            )
 
         self._shared_deck_test_wrapper(add_cards, {'created': 1, 'modified': 0, 'deleted': 0})
 
@@ -1756,7 +1756,7 @@ class DeckTestCase(ImprovedTestCase):
             'tags',
             'basic',
             [create_slate_element('front'), create_slate_element('back')],
-        )[0].flashcard
+        )
         shared_deck.push_updates(deck)
         self.assertEqual(
             FlashCard.objects.filter(deck=shared_deck).count(),

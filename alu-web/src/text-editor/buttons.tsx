@@ -71,7 +71,8 @@ function MarkButton({ format, icon, editor, untabbable }) {
         toggleMark(editor, format);
       }}
       style={{
-        background: isMarkActive(editor, format) ? '#e8f0fe' : undefined,
+        background: isMarkActive(editor, format) ? '#e1e6ed' : 'rgba(0, 0, 0, 0)',
+        border: 'none',
       }}
       tabIndex={untabbable && '-1'}
     >
@@ -89,7 +90,8 @@ function BlockButton({ format, icon, editor, untabbable }) {
         toggleBlock(editor, format);
       }}
       style={{
-        background: isBlockActive(editor, format) ? '#e8f0fe' : undefined,
+        background: isBlockActive(editor, format) ? '#e1e6ed' : 'rgba(0, 0, 0, 0)',
+        border: 'none',
       }}
       tabIndex={untabbable && '-1'}
     >

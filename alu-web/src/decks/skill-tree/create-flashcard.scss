@@ -1,0 +1,14 @@
+@import './shared';
+
+.flashcard-create {
+  border: $grayBorder;
+  border-radius: $cardBorderRadius;
+  background: $lightBackground;
+
+  >div.editor-head {
+    border-bottom: $grayBorder;
+    padding-left: 20px;
+    background: darken($lightBackground, 3%);
+    border-radius: $cardBorderRadius $cardBorderRadius 0 0;
+  }
+}

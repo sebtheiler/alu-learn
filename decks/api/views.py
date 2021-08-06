@@ -630,18 +630,18 @@ def deck_search_view(request, *args, **kwargs):
 # ===== Flashcard Operations =====
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def flashcard_create_view(request, deck_id, *args, **kwargs):
+def flashcard_create_view(request, *args, **kwargs):
     """
     Create a flashcard to a deck - GET/POST
 
     Required information:
-        `deck_id`: (URL) ID of the deck to create a flashcard in
+        `deck_id`: (Data) ID of the deck to create a flashcard in
         `fields`: (Data) List of the fields and their data for the flashcard
         `tags`: (Data) Raw string of tags, separated by commas
         `flashcard_type`: (Data) Type of flashcard
     """
     try:
-        deck = Deck.objects.get(pk=deck_id, user=request.user)
+        deck = Deck.objects.get(pk=request.data.get('deck_id'), user=request.user)
     except Deck.DoesNotExist:
         return Response(
             {'message': 'Deck not found / unauthorized'},
@@ -654,7 +654,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     if fields is None:
         return Response({'message': '`fields` must not be None'}, status=400)
 
-    flashcards = FlashCard.create_flashcard(
+    flashcard, _ = FlashCard.create_flashcard(
         deck,
         tags,
         flashcard_type,
@@ -662,7 +662,7 @@ def flashcard_create_view(request, deck_id, *args, **kwargs):
     )
 
     return Response(
-        ReviewInstanceSerializer(instance=flashcards, many=True).data,
+        FlashCardSerializer(instance=flashcard).data,
         201,
     )
 

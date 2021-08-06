@@ -99,6 +99,10 @@ export function LinkButton({ editor, untabbable }) {
         if (!url) return;
         insertLink(editor, url);
       }}
+      style={{
+        background: 'rgba(0, 0, 0, 0)',
+        border: 'none',
+      }}
       tabIndex={untabbable && '-1'}
     >
       <i className='fas fa-link' />

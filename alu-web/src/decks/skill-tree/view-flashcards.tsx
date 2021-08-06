@@ -32,7 +32,7 @@ export default function ViewFlashcards({ deckId, tags='', }: { deckId?: number, 
           Study
         </Button>
         <Button
-          href={`/deck/${deckId}/create/` + (tags.length > 0 ? `?tags=${tags}` : '')}
+          href={`/deck/${deckId}/flashcards/create/` + (tags.length > 0 ? `?tags=${tags}` : '')}
           style={{ width: '200px' }}
         >
           Create Flashcards
