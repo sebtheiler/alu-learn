@@ -4,7 +4,6 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { isMarkActive, toggleMark, isBlockActive, toggleBlock } from './editor';
-import { ImageButton } from './images';
 import { LinkButton } from './links';
 import { ReactEditor } from 'slate-react';
 
@@ -23,11 +22,7 @@ export function EditorButtons(props: EditorButtonProps) {
       <MarkButton format='underline' icon='underline' editor={editor} untabbable={untabbable} />
       <MarkButton format='code' icon='code' editor={editor} untabbable={untabbable} />
       <MarkButton format='math_inline' icon='divide' editor={editor} untabbable={untabbable} />
-
-      <span className='mx-2' />
-
       <LinkButton editor={editor} untabbable={untabbable} />
-      <ImageButton editor={editor} untabbable={untabbable} />
 
       <span className='mx-2' />
 

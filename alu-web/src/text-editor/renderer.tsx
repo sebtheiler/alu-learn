@@ -1,6 +1,5 @@
 import React from 'react';
 import { LinkElement } from './links';
-import { ImageElement } from './images';
 import { BlockMath, InlineMath } from 'react-katex';
 import { Node } from 'slate';
 import './renderer.css';
@@ -30,7 +29,10 @@ export const Element = (props) => {
     case 'link':
       return <LinkElement {...props} />
     case 'image':
-      return <ImageElement {...props} />
+      return <p>
+        The image choice is now deprecated.
+        Please change <a target='_blank' rel='noreferrer' href={element.url}>{element.url}</a> to use the new image uploading system.
+      </p>
     case 'math-block':
       if (readOnly)
         return <BlockMath {...attributes}>{Node.string(props.element)}</BlockMath>
