@@ -60,6 +60,8 @@ export interface FlashCard {
   flashcard_type: FlashCardTypes;
   flashcard_num: number;
   parent_deck_id: number;
+  front_image?: string;
+  back_image?: string;
   id: UUID;
 }
 
@@ -74,6 +76,8 @@ export interface ReviewInstance {
   leech_index: number;
   name: string;
   flashcard_fields?: Node[][];
+  flashcard_front_image?: string;
+  flashcard_back_image?: string;
   id: UUID;
 }
 

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Deck } from '../../types';
 import { DeckDispatch } from '../context';
 import { DeckForm, DeckEditableAttrs } from './edit';

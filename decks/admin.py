@@ -7,14 +7,13 @@ from .models import (CustomStudySessionManager, Deck, DeckClone,
 
 
 class FlashCardAdmin(admin.ModelAdmin):
-    search_fields = ['tags']
-    fields = [
+    search_fields = ('tags', 'deck__title', 'deck__user__username', 'fields')
+    list_display = (
         'deck',
         'flashcard_type',
         'flashcard_num',
         'fields',
-        'tags',
-    ]
+    )
     model = FlashCard
 
 

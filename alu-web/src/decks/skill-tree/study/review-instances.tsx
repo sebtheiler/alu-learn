@@ -21,7 +21,7 @@ export function StudyReviewInstances({ reviewInstances, deckId }: { reviewInstan
   );
 
   return (
-    <Container>
+    <Container style={{ maxHeight: '70vh' }}>
       <div>
         <div className='study-progress mt-3'>
           <div
@@ -38,7 +38,7 @@ export function StudyReviewInstances({ reviewInstances, deckId }: { reviewInstan
           This flashcard is tough!  Good luck!
         </p>
       </div>
-      {reviewInstances.length > 0 && <div>
+      {reviewInstances.length > 0 && <div style={{ maxHeight: '70vh' }}>
         <ReviewInstanceStudy reviewInstance={reviewInstances[0]} />
       </div>}
       {reviewInstances.length === 0 && <div className='text-center'>

@@ -7,8 +7,9 @@ import { range, RenderRichText } from '../../../utils';
 import { getAnkiInterval } from '../../study/algorithm';
 import { ReviewInstance } from '../../types';
 import { StudyAnswerDispatch } from './context';
-import './flashcard.scss';
 import { getMinNum } from './utils';
+import { flattenNodes } from '../../../text-editor';
+import './flashcard.scss';
 
 export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
   const { reviewInstance } = props;
@@ -58,6 +59,7 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
     }
   }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped, browserInteractionTime]);
 
+  // Events on keypresses (flipping with space, grading with 1-4)
   useEffect(() => {
     const keyUp = event => {
       switch (event.key) {
@@ -89,47 +91,92 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
     return () => document.removeEventListener('keyup', keyUp);
   }, [isFlipped, studyFlashcard, intervals]);
 
+  // Position stuff to act like `position: absolute`
+  useEffect(() => {
+    const frontSide = document.querySelector('div.flashcard.front') as HTMLElement;
+    const backSide = document.querySelector('div.flashcard.back') as HTMLElement;
+    const frontSideHeight = window.getComputedStyle(frontSide).height;
+    const backSideHeight = window.getComputedStyle(backSide).height;
+
+    // Move back of the flashcard to be the same height as the front
+    if (isFlipped)
+      backSide.style.transform = `rotateY(0deg) translateY(-${frontSideHeight})`;
+    else
+      backSide.style.transform = `rotateY(-180deg) translateY(-${frontSideHeight})`;
+    
+    // Make sure the surrounding div has the correct height
+    const flashcardFlip = document.querySelector('.flashcard-flip') as HTMLElement;
+    flashcardFlip.style.height = `${Math.max(parseInt(frontSideHeight), parseInt(backSideHeight))}px`;
+  });
+
   return (
-    <div>
+    <div style={{ maxHeight: '70vh' }}>
       <div
         className={'flashcard-flip' + (isFlipped ? ' is-flipped' : '')}
         onClick={() => setIsFlipped(!isFlipped)}
+        style={{ maxHeight: '70vh' }}
       >
         <div className='flashcard front'>
-          <RenderRichText
-            text={reviewInstance.flashcard_fields ? reviewInstance.flashcard_fields[0] : []}
-            fixSlateLazy
-          />
+          {
+            reviewInstance.flashcard_fields &&
+            flattenNodes(reviewInstance.flashcard_fields[0]).length > 0 &&
+            <div className='text'>
+              <RenderRichText
+                text={reviewInstance.flashcard_fields ? reviewInstance.flashcard_fields[0] : []}
+                fixSlateLazy
+              />
+            </div>
+          }
+          {reviewInstance.flashcard_front_image && <div className='image'>
+            <img
+              src={`/${reviewInstance.flashcard_front_image}`}
+              alt='Flashcard attached front'
+              className='flashcard-image'
+            />
+          </div>}
         </div>
         <div className='flashcard back'>
-          <RenderRichText
-            text={reviewInstance.flashcard_fields ? reviewInstance.flashcard_fields[1] : []}
-            fixSlateLazy
-          />
+          {
+            reviewInstance.flashcard_fields &&
+            flattenNodes(reviewInstance.flashcard_fields[1]).length > 0 &&
+            <div className='text'>
+              <RenderRichText
+                text={reviewInstance.flashcard_fields ? reviewInstance.flashcard_fields[1] : []}
+                fixSlateLazy
+              />
+            </div>
+          }
+          {reviewInstance.flashcard_back_image && <div className='image'>
+            <img
+              src={`/${reviewInstance.flashcard_back_image}`}
+              alt='Flashcard attached back'
+              className='flashcard-image'
+            />
+          </div>}
         </div>
       </div>
-      <div className='text-secondary text-center mb-1'>
+      <div className='other-study-els text-secondary text-center mb-1' id='study-flip-text'>
         <small>Tap the card or press space to reveal the other side</small>
       </div>
-      <div className={'answer-choices' + (isFlipped ? ' is-flipped' : '')}>
+      <div className={'other-study-els answer-choices' + (isFlipped ? ' is-flipped' : '')}>
         <ButtonGroup className='w-100'>
           {['Again', 'Hard', 'Good', 'Easy'].map((difficulty, i) =>
             <Button
               onClick={studyFlashcard((i + 1) as 1 | 2 | 3 | 4)}
-              className={'mr-1' + (getMinNum(intervals[i]) < 0 ? ' d-none': '')}
+              className={'other-study-els mr-1 mt-5' + (getMinNum(intervals[i]) < 0 ? ' d-none': '')}
               variant={['danger', 'warning', 'success', 'primary'][i]}
               style={isFlipped ? {} : { cursor: 'default' }}
               key={i}
             >
               {difficulty} {
-                getMinNum(intervals[i]) > 1440 ? `${Math.floor(getMinNum(intervals[i])/1440)}d`
-                :
-                `${Math.floor(getMinNum(intervals[i]))}m`
+                getMinNum(intervals[i]) >= 1440
+                  ? `${Math.floor(getMinNum(intervals[i])/1440)}d`
+                  : `${Math.floor(getMinNum(intervals[i]))}m`
               }
             </Button>
           )}
         </ButtonGroup>
-        <div className='text-secondary text-center mb-5'>
+        <div className='other-study-els text-secondary text-center'>
           <small>
             Tap a button or use the number keys 1-{intervals.filter(timing => getMinNum(timing) > 0).length}
             {' '}to rate how well you remembered the flashcard

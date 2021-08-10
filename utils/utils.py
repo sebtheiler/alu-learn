@@ -1,7 +1,9 @@
+import base64
 import datetime as dt
 import random
 from typing import List, Union
 
+from django.core.files.base import ContentFile
 from django.utils import timezone
 
 
@@ -66,3 +68,11 @@ def assert_dict_data_type(
             return f'`{given_attr}` must be of type {expected_type}, not {type(given_attr)}'
 
     return None
+
+
+def base64_to_file(base64_str: str, title: str) -> ContentFile:
+    image_format, imgstr = base64_str.split(';base64,')
+    ext = image_format.split('/')[-1]
+    image = ContentFile(base64.b64decode(imgstr), name=f'{title}.{ext}')
+
+    return image

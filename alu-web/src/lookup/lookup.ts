@@ -95,7 +95,7 @@ export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
     event: Event,
   ) => ObjType | undefined,
   callback?: (response: ObjType) => void,
-  requirement?: boolean,
+  requirement: boolean = true,
 ): [ObjType | undefined, Dispatch<Event>] {
   const [obj, dispatch] = useReducer((state: ObjType | undefined, event: Event) => {
     if (event && event.action === 'INITIAL_SET')
@@ -431,7 +431,6 @@ export function apiNotificationList(
 ) {
   let endpoint = `profiles/notifications/`;
   if (nextUrl) {
-    console.log(nextUrl);
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   }
   backendLookup('GET', endpoint, callback);

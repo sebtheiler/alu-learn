@@ -1,7 +1,6 @@
 # --- Django ---
 __pycache__/
 */migrations/
-db.sqlite3
 
 static/*
 !static/favicon.ico
@@ -10,6 +9,8 @@ static/*
 static-root/
 decks/templates/react.html
 decks/templates/react/
+
+uploads/
 
 mysite.log
 # --- React ---

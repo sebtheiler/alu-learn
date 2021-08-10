@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import LoadingButton from './buttons/LoadingButton';
+import AddImageButton from './buttons/add-image';
 import { FlashCard, FlashCardTypes } from '../types';
 import { Slate, ReactEditor } from 'slate-react';
 import { Node } from 'slate';
@@ -17,7 +18,9 @@ import './create-flashcard.scss';
 const ONE_SIDED_CARDS = ['cloze'];
 export default function CreateFlashcard({ deckId, flashcardId }: { deckId: string, flashcardId?: string }) {
   const [frontValue, setFrontValue] = useState<Node[]>(blankSlateElement)
+  const [frontSelectedImageUrl, setFrontSelectedImageUrl] = useState('');
   const [backValue, setBackValue] = useState<Node[]>(blankSlateElement)
+  const [backSelectedImageUrl, setBackSelectedImageUrl] = useState('');
   const [flashcardType, setFlashcardType] = useState<FlashCardTypes>('basic');
   const [errorMessage, setErrorMessage] = useState('');
   const [history, setHistory] = useState<FlashCard[]>([]);
@@ -40,7 +43,10 @@ export default function CreateFlashcard({ deckId, flashcardId }: { deckId: strin
     // Check if the flashcard is valid
     switch (flashcardType) {
       case 'basic': case 'reversed':
-        if (frontValue === blankSlateElement || backValue === blankSlateElement) {
+        if (
+          (frontValue === blankSlateElement && frontSelectedImageUrl.length === 0) ||
+          (backValue === blankSlateElement && backSelectedImageUrl.length === 0)
+        ) {
           setErrorMessage('The front and back of flashcards must not be empty');
           return;
         }
@@ -58,8 +64,23 @@ export default function CreateFlashcard({ deckId, flashcardId }: { deckId: strin
     }
     setErrorMessage('');
 
+    let frontImage = frontSelectedImageUrl ? await fetch(frontSelectedImageUrl).then(r => r.blob()) : null;
+    let backImage = backSelectedImageUrl ? await fetch(backSelectedImageUrl).then(r => r.blob()) : null;
+    const blob2base64 = async (blob: Blob) => {
+      return new Promise<string | ArrayBuffer | null>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob); 
+        reader.onloadend = () => {
+          const base64data = reader.result;                
+          resolve(base64data);
+        }
+      });
+    }
+
     const flashcardInfo = {
       fields: ONE_SIDED_CARDS.includes(flashcardType) ? [frontValue] : [frontValue, backValue],
+      front_image: frontImage ? await blob2base64(frontImage) : undefined,
+      back_image: backImage ? await blob2base64(backImage) : undefined,
       tags: (document.getElementsByName('tags')[0] as HTMLFormElement)?.value ?? '',
     }
     if (flashcardId) {
@@ -74,6 +95,8 @@ export default function CreateFlashcard({ deckId, flashcardId }: { deckId: strin
       }).then(flashcard => {
         setFrontValue(blankSlateElement);
         setBackValue(blankSlateElement);
+        setFrontSelectedImageUrl('');
+        setBackSelectedImageUrl('');
         setHistory([flashcard, ...history]);
   
         const flashcardTypeEl = document.getElementById('flashcardType');
@@ -114,15 +137,35 @@ export default function CreateFlashcard({ deckId, flashcardId }: { deckId: strin
           </Form.Control>
         </Form.Group>}
         <Form.Group>
-          <div className='flashcard-create'>
-            <RenderEditor value={frontValue} setValue={setFrontValue} />
-          </div>
+          <Row>
+            <Col md={10}>
+              <div className='flashcard-create'>
+                <RenderEditor value={frontValue} setValue={setFrontValue} />
+              </div>
+            </Col>
+            <Col md={2}>
+              <AddImageButton
+                selectedImageUrl={frontSelectedImageUrl}
+                setSelectedImageUrl={setFrontSelectedImageUrl}
+              />
+            </Col>
+          </Row>
         </Form.Group>
         {!ONE_SIDED_CARDS.includes(flashcardType) &&
           <Form.Group>
-            <div className='flashcard-create'>
-              <RenderEditor value={backValue} setValue={setBackValue} />
-            </div>
+            <Row>
+            <Col md={10}>
+              <div className='flashcard-create'>
+                <RenderEditor value={backValue} setValue={setBackValue} />
+              </div>
+            </Col>
+              <Col md={2}>
+                <AddImageButton
+                  selectedImageUrl={backSelectedImageUrl}
+                  setSelectedImageUrl={setBackSelectedImageUrl}
+                />
+              </Col>
+            </Row>
           </Form.Group>
         }
         <Form.Group>

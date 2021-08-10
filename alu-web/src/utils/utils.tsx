@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useMemo, Dispatch, SetStateAction, 
 import numeral from 'numeral';
 import ReactMarkdown from 'react-markdown/with-html';
 import RemarkMathPlugin from 'remark-math';
-import { Tooltip, OverlayTrigger, Button, Form } from 'react-bootstrap';
+import { Tooltip, OverlayTrigger, Button, Form, FormControlProps } from 'react-bootstrap';
 import { BlockMath, InlineMath } from 'react-katex';
 import { FullEditor, createFullEditor  } from '../text-editor';
 import { Slate } from 'slate-react';
@@ -487,7 +487,7 @@ export function dateDiff(
   date2: Date,
   timeUnit: number = 1000 * 60 * 60 * 24,
 ): number {
-  const diffTime = Math.abs(date2.getTime() - date1.getTime());
+  const diffTime = date2.getTime() - date1.getTime();
   const diff = Math.ceil(diffTime / timeUnit); 
 
   return diff;
@@ -567,12 +567,18 @@ Load file contents with
 file.text().then((fileContents) => {
   // ...
 });
+
+TODO: move to special file in new skill tree with other components
 */
-interface FancyFormFileUploadProps {
-  accept: string; /** Type of file to accept (.txt, .json, etc.) */
+interface FancyFormFileUploadProps extends FormControlProps {
+  accept?: string; /** Type of file to accept (.txt, .json, etc.) */
+  changeCallback?(event): void;
 }
 export function FancyFormFileUpload(props: FancyFormFileUploadProps) {
-  const { accept } = props;
+  const { accept, changeCallback } = props;
+  let defaultProps = {...props as any};
+  if (defaultProps.accept) delete defaultProps.accept;
+  if (defaultProps.changeCallback) delete defaultProps.changeCallback;
   const fileRef = React.createRef<HTMLInputElement>();
 
   return (
@@ -592,13 +598,16 @@ export function FancyFormFileUpload(props: FancyFormFileUploadProps) {
         ref={fileRef}
 
         // Update the label to the name of the uploaded file
-        onChange={() => {
+        onChange={event => {
           const txtFileLabel = document.getElementById('txt-file-label');
           if (txtFileLabel && fileRef) {
             txtFileLabel.innerHTML =
               fileRef!.current!.value.replace('C:\\fakepath\\', '');
           }
+          if (changeCallback) changeCallback(event);
         }}
+
+        {...defaultProps}
       />
     </Form.Group>
   );

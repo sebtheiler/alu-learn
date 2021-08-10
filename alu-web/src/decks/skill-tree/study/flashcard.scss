@@ -13,8 +13,10 @@
     z-index: 1;
     opacity: 1;
   }
+
   >.back {
-    position: absolute;
+    // `position: absolute` screws a bunch of stuff up,
+    // so we avoid it and use JS for positioning instead
     opacity: 0;
     z-index: -1;
     top: 0px;
@@ -23,6 +25,7 @@
     height: 100%;
     transform: rotateY(-180deg);
   }
+
   &.is-flipped {
     >.front {
       transform: rotateY(180deg);
@@ -40,17 +43,30 @@
 .flashcard {
   // Sizes
   padding: 10px;
-  min-height: 400px;
   border-radius: 20px;
 
   // Colors
   border: $grayBorder;
   background: $lightBackground;
 
-  // Center
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
+  // Center text
+  >.text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  >.image >img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-bottom: 20px;
+    // max-width: 80%;
+    max-width: 100% !important;
+    height: auto;
+    width: auto;
+    max-height: 300px;
+  }
 
   &:hover {
     cursor: pointer;

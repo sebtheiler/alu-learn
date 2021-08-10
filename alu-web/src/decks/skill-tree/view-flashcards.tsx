@@ -65,6 +65,16 @@ export default function ViewFlashcards({ deckId, tags='', }: { deckId?: number, 
                 <div className='text'>
                   <RenderRichText text={field} />
                 </div>
+                <div className='images'>
+                  {i === 0 && flashcard.front_image && <img
+                    src={flashcard.front_image}
+                    alt='Flashcard attached front'
+                  />}
+                  {i === 1 && flashcard.back_image && <img
+                    src={flashcard.back_image}
+                    alt='Flashcard attached back'
+                  />}
+                </div>
               </Col>
             )}
           </Row>

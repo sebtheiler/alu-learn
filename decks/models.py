@@ -11,6 +11,7 @@ from typing import Dict, List, Literal, Tuple, Union
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
+from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.aggregates import Avg
 from django.db.models.query import QuerySet
@@ -334,26 +335,28 @@ class FlashCard(models.Model):
     # === TEXT INFO ===
     fields = models.JSONField()  # list of two lists of Slate Nodes
     tags = models.CharField(default='', max_length=1024, blank=True)
+    front_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
+    back_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
 
     # === SHARING INFO ===
     # Used when creating a shared deck
     origin_creator = models.OneToOneField(
         'self',
         on_delete=models.SET_NULL,
-        null=True,
+        null=True, blank=True,
         related_name='shared_mirror',
     )
     # This is used when cloning decks, to remember where the cloned flashcard came from
     copied_from_deck = models.ForeignKey(
         Deck,
         on_delete=models.SET_NULL,
-        null=True,
+        null=True, blank=True,
         related_name='flashcards_copied_from',
     )  # type: Deck
     copied_from_creator = models.ForeignKey(
         'self',
         on_delete=models.SET_NULL,
-        null=True,
+        null=True, blank=True,
         related_name='flashcards_copied_from',
     )  # type: FlashCard
 
@@ -455,6 +458,9 @@ class FlashCard(models.Model):
         tags: str,
         flashcard_type: FlashCardTypes,
         fields: List[list],
+        front_image: ContentFile = None,
+        back_image: ContentFile = None,
+        flashcard_uuid: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         flashcard = FlashCard.objects.create(
             deck=deck,
@@ -462,6 +468,9 @@ class FlashCard(models.Model):
             flashcard_num=FlashCard.get_max_flashcard_num(deck) + 1,
             fields=fields,
             tags=tags,
+            front_image=front_image,
+            back_image=back_image,
+            pk=flashcard_uuid,
         )
 
         review_instances = ReviewInstance.create_review_instance(
@@ -1147,7 +1156,7 @@ class ReviewInstanceHistory(models.Model):
     )
     steps_index = models.PositiveSmallIntegerField(default=0)
     next_review = models.DateTimeField()
-    last_review = models.DateTimeField()
+    last_review = models.DateTimeField(null=True, blank=True)
 
     timestamp = models.DateTimeField(auto_now_add=True)
 

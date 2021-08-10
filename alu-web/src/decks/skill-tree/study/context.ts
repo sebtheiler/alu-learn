@@ -3,7 +3,7 @@ import { dateDiff } from '../../../utils';
 import { Interval } from '../../study/algorithm';
 import { ReviewInstance } from '../../types';
 
-const REVIEW_AHEAD_MINUTES = 120;
+export const REVIEW_AHEAD_MINUTES = 120;
 
 export type StudyAnswerEvent =
   | { action: 'STUDY_REVIEW_INSTANCE'; id: string, interval: Interval }

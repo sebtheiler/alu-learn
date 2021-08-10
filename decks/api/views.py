@@ -2,8 +2,7 @@ import json
 import random
 import re
 from typing import List
-from utils.api_utils import get_obj_or_404
-from utils.utils import assert_dict_data_type
+import uuid
 
 from django.core.cache import cache
 from django.db.models import Q
@@ -19,10 +18,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
+from utils.api_utils import get_obj_or_404
+from utils.utils import assert_dict_data_type, base64_to_file
 
 from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
-                      FlashCard, ReviewInstance, ReviewInstanceHistory, SharedDeck,
-                      SharedDeckRelation)
+                      FlashCard, ReviewInstance, ReviewInstanceHistory,
+                      SharedDeck, SharedDeckRelation)
 from ..serializers import (DeckSerializer, FlashCardSerializer,
                            ReviewInstanceSerializer, SharedDeckSerializer)
 
@@ -654,11 +655,30 @@ def flashcard_create_view(request, *args, **kwargs):
     if fields is None:
         return Response({'message': '`fields` must not be None'}, status=400)
 
+    flashcard_uuid = uuid.uuid4()
+
+    if front_image_base64 := request.data.get('front_image'):
+        front_image = base64_to_file(front_image_base64, f'{flashcard_uuid}-front')
+        if front_image.size > 1024_000:
+            return Response({'message': 'Front image too large'}, status=400)
+    else:
+        front_image = None
+
+    if back_image_base64 := request.data.get('back_image'):
+        back_image = base64_to_file(back_image_base64, f'{flashcard_uuid}-back')
+        if back_image.size > 1024_000:
+            return Response({'message': 'Back image too large'}, status=400)
+    else:
+        back_image = None
+
     flashcard, _ = FlashCard.create_flashcard(
-        deck,
-        tags,
-        flashcard_type,
-        fields,
+        deck=deck,
+        tags=tags,
+        flashcard_type=flashcard_type,
+        fields=fields,
+        front_image=front_image,
+        back_image=back_image,
+        flashcard_uuid=flashcard_uuid,
     )
 
     return Response(
