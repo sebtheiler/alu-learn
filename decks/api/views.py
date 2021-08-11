@@ -546,15 +546,10 @@ def deck_generate_skill_tree_view(request, deck_id, *args, **kwargs):
     except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
 
-    sort = request.data.get('sort')
-    remove_essential = request.data.get('remove_essential')
-    deck.skill_tree = deck.generate_skill_tree(
-        sort=sort,
-        remove_essential=remove_essential,
-    )
+    deck.generate_skill_tree()
     deck.save()
 
-    return Response(deck.skill_tree, status=200)
+    return Response(DeckSerializer(deck).data, status=200)
 
 
 # TODO: do something to make functions easily accessable

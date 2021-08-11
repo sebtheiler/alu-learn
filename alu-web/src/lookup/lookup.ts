@@ -1076,15 +1076,8 @@ export function apiTodoComplete(
 }
 
 // Generates (or re-generates) a skill tree for a deck
-export async function apiDeckGenerateSkillTree(
-  deckId: number,
-  sort: boolean,
-  removeEssential: boolean,
-): Promise<Object> {
-  return backendFetch('POST', `decks/deck/${deckId}/gen-skill-tree/`, {
-    sort: sort,
-    remove_essential: removeEssential,
-  });
+export async function apiDeckGenerateSkillTree(deckId: number): Promise<Object> {
+  return backendFetch('POST', `decks/deck/${deckId}/gen-skill-tree/`);
 }
 
 // Get review instances to study

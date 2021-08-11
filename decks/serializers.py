@@ -74,7 +74,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'title',
             'shared_deck',
             'deck_type',
-            'skill_tree',
+            # 'skill_tree',  # TODO: update with model
             'id',
         ]
 

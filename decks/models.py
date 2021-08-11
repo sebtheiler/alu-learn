@@ -6,6 +6,7 @@ import json
 import random
 import re
 import uuid
+from collections import defaultdict
 from itertools import chain
 from typing import Dict, List, Literal, Tuple, Union
 
@@ -19,6 +20,7 @@ from django.db.models.query_utils import Q
 from django.db.models.signals import post_save, pre_delete
 from django.utils import timezone
 from profiles.models import Profile
+from skill_tree.models import MainSection, SubSection
 from utils import get_morning
 
 User = settings.AUTH_USER_MODEL
@@ -35,7 +37,6 @@ class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
     deck_type = models.CharField(default='standard', max_length=12)
-    skill_tree = models.JSONField(null=True, default=None)
 
     # Note that although this allows for multiple creators, it is currently only using one
     # Also note that this specifies the shared deck this deck creates, not the one it
@@ -244,58 +245,51 @@ class Deck(models.Model):
 
     def generate_skill_tree(
         self,
-        max_depth: int = 3,  # how many layers deep to go (1-5)
-        sort: bool = False,  # whether or not to sort the final tree alphabetically
-        # TODO: fix `remove_essential`
-        remove_essential: bool = False  # whether or not to remove the `essential` tag
+        blacklisted_tags: tuple = ('', 'essential'),  # don't include these tags
     ) -> dict:
-        if max_depth < 1 or max_depth > 5:
-            raise ValueError('`max_depth` must be between 1 and 5')
-
-        skill_tree = {}
+        skill_tree = defaultdict(set)
         flashcards = self.flashcards.all()
 
-        # Make dictionary of top tags, each mapping to an empty dict
-        for creator in flashcards:
-            creator_tags = creator.tags.split(', ')
-            if len(creator_tags) == 0:
+        # NOTE: Doing a double pass, and using dict/set, ensures that we don't
+        # have to check whether or not a tag is already in the skill tree
+
+        # Make dictionary of skill tree
+        for flashcard in flashcards:
+            tags = flashcard.tags.split(', ')
+            if tags[0] in blacklisted_tags:
                 continue
 
-            tag = creator_tags[0]
-            if tag != 'essential' or not remove_essential:
-                skill_tree[tag] = {}
+            tag = tags[0]
+            same_tag_flashcards = flashcards.filter(tags__startswith=tag)
 
-        def recursive_layer(skill_tree_branch, depth=0):
-            if depth >= max_depth - 1:
-                return
+            for same_tag_flashcard in same_tag_flashcards:
+                sub_tags = same_tag_flashcard.tags.split(', ')
+                if len(sub_tags) == 1 or sub_tags[1] in blacklisted_tags:
+                    continue
 
-            for tag in skill_tree_branch.keys():
-                # Find cards with the same top level tag
-                had_tags = False
-                # TODO: this also triggers if the tag is lower down
-                # same_tag_cards = flashcards.filter(tags__icontains=tag)
-                same_tag_cards = flashcards.filter(tags__icontains=tag)
-                for same_tag_card in same_tag_cards:
-                    same_tag_card_tags = same_tag_card.tags.split(', ')[depth + 1:]
-                    if len(same_tag_card_tags) == 0:
-                        continue
+                sub_tag = sub_tags[1]
+                skill_tree[tag].add(sub_tag)
 
-                    same_tag_card_tag = same_tag_card_tags[0]
-                    if same_tag_card_tag != 'essential' or not remove_essential:
-                        skill_tree_branch[tag][same_tag_card_tag] = {}
-                    had_tags = True
+        # Turn dictionary object into MainSection and SubSection
+        main_sections = []
+        sub_sections = []
+        for tag, sub_tags in skill_tree.items():
+            main_section = MainSection(
+                title=tag,
+                tag=tag,
+                deck=self,
+            )
+            main_sections.append(main_section)
+            for sub_tag in sub_tags:
+                sub_sections.append(SubSection(
+                    title=sub_tag,
+                    tag=sub_tag,
+                    parent=main_section,
+                ))
 
-                if had_tags:
-                    recursive_layer(skill_tree_branch[tag], depth + 1)
-
-        recursive_layer(skill_tree)
-
-        if sort:
-            skill_tree = dict(sorted(
-                skill_tree.items(),
-                key=lambda x: x[0],
-                reverse=True,
-            ))
+        # Bulk create
+        MainSection.objects.bulk_create(main_sections)
+        SubSection.objects.bulk_create(sub_sections)
 
         return skill_tree
 

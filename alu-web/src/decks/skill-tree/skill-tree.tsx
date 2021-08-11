@@ -11,7 +11,7 @@ export default function SkillTree({ deck }: { deck: Deck }) {
 
   const generateSkillTree = async event => {
     event.preventDefault();
-    return apiDeckGenerateSkillTree(deck.id, false, true).then(
+    return apiDeckGenerateSkillTree(deck.id).then(
       skillTree => deckDispatch && deckDispatch({
         action: 'EDIT',
         payload: { id: deck.id, skill_tree: skillTree }
