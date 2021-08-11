@@ -1,5 +1,6 @@
 import { Node } from 'slate';
 import { MinifiedProfile } from '../profiles/types';
+import { MainSection } from './skill-tree/types';
 
 export type UUID = string;  // Just a more clear representation
 
@@ -14,7 +15,7 @@ export interface Deck {
   title: string;
   shared_deck: number;
   deck_type: 'standard' | 'shared';
-  skill_tree?: Object;
+  skill_tree_sections: MainSection[];
   id: number;
 }
 

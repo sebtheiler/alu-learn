@@ -1,3 +1,4 @@
+from skill_tree.serializers import MainSectionSerializer
 from profiles.serializers import MinifiedProfileSerializer
 from rest_framework import serializers
 
@@ -66,6 +67,7 @@ class ReviewInstanceSerializer(serializers.ModelSerializer):
 
 class DeckSerializer(serializers.ModelSerializer):
     user = MinifiedProfileSerializer('user')
+    skill_tree_sections = MainSectionSerializer('skill_tree_sections', many=True)
 
     class Meta:
         model = Deck
@@ -74,7 +76,7 @@ class DeckSerializer(serializers.ModelSerializer):
             'title',
             'shared_deck',
             'deck_type',
-            # 'skill_tree',  # TODO: update with model
+            'skill_tree_sections',
             'id',
         ]
 

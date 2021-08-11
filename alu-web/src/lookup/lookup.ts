@@ -1076,7 +1076,7 @@ export function apiTodoComplete(
 }
 
 // Generates (or re-generates) a skill tree for a deck
-export async function apiDeckGenerateSkillTree(deckId: number): Promise<Object> {
+export async function apiDeckGenerateSkillTree(deckId: number): Promise<Deck> {
   return backendFetch('POST', `decks/deck/${deckId}/gen-skill-tree/`);
 }
 

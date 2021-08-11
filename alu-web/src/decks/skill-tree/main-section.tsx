@@ -1,24 +1,21 @@
 import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import SubSection, { cleanTitle } from './sub-section';
+import RenderSubSection, { cleanTag } from './sub-section';
+import { MainSection } from './types';
 
 interface MainSectionProps {
-  title: string;
-  section: Object[];
-  deckId: number;
+  mainSection: MainSection;
 }
-export default function MainSection(props: MainSectionProps) {
-  const { title, section, deckId } = props;
-
+export default function RenderMainSection({ mainSection }: MainSectionProps) {
   return (<div className='main-section'>
     <Container>
       <div className='main-section-header'>
         <div className='d-flex mx-auto'>
           <hr className='flex-grow-1' />
           <h2 className='px-2 align-self-center mb-0'>
-            <a href={`/deck/${deckId}/study/${cleanTitle(title)}/`}>
-              {title.toUpperCase()}
+            <a href={`/deck/${mainSection.deck}/study/${cleanTag(mainSection.tag)}/`}>
+              {mainSection.title?.toUpperCase() ?? mainSection.tag.toUpperCase()}
             </a>
           </h2>
           <hr className='flex-grow-1' />
@@ -29,12 +26,11 @@ export default function MainSection(props: MainSectionProps) {
       </div>
       <div className='mt-2'>
         <Row className='main-section-body'>
-          {Object.keys(section).map((subSectionTitle, i) =>
-            <SubSection
-              title={subSectionTitle}
-              mainSectionTitle={title}
-              deckId={deckId}
-              key={i}
+          {mainSection.children.map(subSection =>
+            <RenderSubSection
+              subSection={subSection}
+              mainSection={mainSection}
+              key={subSection.id}
             />
           )}
         </Row>

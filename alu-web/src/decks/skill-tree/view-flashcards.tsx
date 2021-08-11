@@ -8,12 +8,12 @@ import { useObjectPaginatedList } from '../../lookup/lookup';
 import { capitalize, RenderRichText } from '../../utils';
 import { FlashCard } from '../types';
 import './view-flashcards.scss';
-import { uncleanTitle } from './sub-section';
+import { uncleanTag } from './sub-section';
 
 export default function ViewFlashcards({ deckId, tags='', }: { deckId?: number, tags?: string }) {
   const [flashcards, , fetchNext] = useObjectPaginatedList<FlashCard>('decks', 'flashcard', undefined, {
     deck_id: deckId,
-    tags: uncleanTitle(tags),
+    tags: uncleanTag(tags),
   });
 
   if (!flashcards) return <p className='text-center'>Loading…</p>

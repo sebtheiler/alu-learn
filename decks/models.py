@@ -275,14 +275,14 @@ class Deck(models.Model):
         sub_sections = []
         for tag, sub_tags in skill_tree.items():
             main_section = MainSection(
-                title=tag,
+                title=tag.capitalize(),
                 tag=tag,
                 deck=self,
             )
             main_sections.append(main_section)
             for sub_tag in sub_tags:
                 sub_sections.append(SubSection(
-                    title=sub_tag,
+                    title=sub_tag.capitalize(),
                     tag=sub_tag,
                     parent=main_section,
                 ))

@@ -3,17 +3,16 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-import { capitalize } from '../../utils';
+import { MainSection, SubSection } from './types';
 
-export const cleanTitle = (title: string) => title.replaceAll(' ', '-');
-export const uncleanTitle = (tags: string) => tags.replaceAll('-', ' ').replaceAll('__', ' AND ')
+export const cleanTag = (title: string) => title.replaceAll(' ', '-');
+export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll('__', ' AND ')
 
 interface SubSectionProps {
-  title: string;
-  mainSectionTitle: string;
-  deckId: number;
+  subSection: SubSection;
+  mainSection: MainSection;
 }
-export default function SubSection({ title, mainSectionTitle, deckId }: SubSectionProps) {
+export default function RenderSubSection({ subSection, mainSection }: SubSectionProps) {
   return (
     <Col
       xl={3}
@@ -26,19 +25,19 @@ export default function SubSection({ title, mainSectionTitle, deckId }: SubSecti
         overlay={
           <Popover id='study-section-popover'>
             <Popover.Title as='h3' className='text-center'>
-              {capitalize(title, true)}
+              {subSection.title ?? subSection.tag}
             </Popover.Title>
             <Popover.Content>
-              <p>Description</p>
+              <p>Description {/* TODO: subSection.description */}</p>
               <div>
                 <Button
-                  href={`/deck/${deckId}/study/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
+                  href={`/deck/${mainSection.deck}/study/${cleanTag(mainSection.tag)}__${cleanTag(subSection.tag)}/`}
                   block
                 >
                   Study
                 </Button>
                 <Button
-                  href={`/deck/${deckId}/flashcards/tags/${cleanTitle(mainSectionTitle)}__${cleanTitle(title)}/`}
+                  href={`/deck/${mainSection.deck}/flashcards/tags/${cleanTag(mainSection.tag)}__${cleanTag(subSection.tag)}/`}
                   variant='secondary'
                   block
                 >
@@ -59,7 +58,7 @@ export default function SubSection({ title, mainSectionTitle, deckId }: SubSecti
         rootClose
       >
         <div className='sub-section' role='button'>
-          <p className='sub-section-text'>{capitalize(title, true)}</p>
+          <p className='sub-section-text'>{subSection.title ?? subSection.tag}</p>
         </div>
       </OverlayTrigger>
     </Col>

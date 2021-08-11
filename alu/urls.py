@@ -14,6 +14,7 @@ urlpatterns = [
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     re_path(r'^favicon\.ico$', favicon_view),
     path('', include('decks.urls')), path('api/decks/', include('decks.api.urls')),
+    path('api/skill_tree/', include('skill_tree.api.urls')),
     path('', include('pages.urls')), path('api/pages/', include('pages.api.urls')),
     path('', include('teachers.urls')), path('api/teachers/', include('teachers.api.urls')),
     path('profiles/', include('profiles.urls')), path('api/profiles/', include('profiles.api.urls')),

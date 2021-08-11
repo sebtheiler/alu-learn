@@ -4,7 +4,7 @@ import { apiDeckGenerateSkillTree } from '../../lookup';
 import LoadingButton from './buttons/LoadingButton';
 import { Deck } from '../types';
 import { DeckDispatch } from './context';
-import MainSection from './main-section';
+import RenderMainSection from './main-section';
 
 export default function SkillTree({ deck }: { deck: Deck }) {
   const deckDispatch = useContext(DeckDispatch);
@@ -12,9 +12,9 @@ export default function SkillTree({ deck }: { deck: Deck }) {
   const generateSkillTree = async event => {
     event.preventDefault();
     return apiDeckGenerateSkillTree(deck.id).then(
-      skillTree => deckDispatch && deckDispatch({
+      newDeck => deckDispatch && deckDispatch({
         action: 'EDIT',
-        payload: { id: deck.id, skill_tree: skillTree }
+        payload: newDeck,
       }),
     );
   }
@@ -25,14 +25,8 @@ export default function SkillTree({ deck }: { deck: Deck }) {
         {deck.title}
       </a>
     </h1>
-    {deck.skill_tree ? Object.keys(deck.skill_tree).map((mainSectionTitle, i) =>
-      <MainSection
-        title={mainSectionTitle}
-        deckId={deck.id}
-        // @ts-ignore
-        section={deck.skill_tree[mainSectionTitle]}
-        key={i}
-      />
+    {deck.skill_tree_sections.length > 0 ? deck.skill_tree_sections.map(mainSection =>
+      <RenderMainSection mainSection={mainSection} key={mainSection.id} />
     )
     : <>
       <Button href={`/deck/${deck.id}/study/`}>Study</Button>
@@ -41,7 +35,7 @@ export default function SkillTree({ deck }: { deck: Deck }) {
       <p>Generate one to have access to specific parts of your deck</p>
     </>}
     <LoadingButton clickFunc={generateSkillTree} className='mb-3'>
-      {deck.skill_tree ? 'Regenerate' : 'Generate'} Skill Tree
+      {deck.skill_tree_sections.length > 0 ? 'Regenerate' : 'Generate'} Skill Tree
     </LoadingButton>
   </>);
 }

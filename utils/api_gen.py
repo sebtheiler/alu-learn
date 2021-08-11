@@ -78,6 +78,7 @@ def get_object_view(
 def list_object_view(
     Serializer: serializers.ModelSerializer,
     owner_path: Union[str, None],
+    prefetch_list: tuple = tuple(),
     # TODO: add way to sort
 ):
     """
@@ -86,6 +87,7 @@ def list_object_view(
     `Serializer`: Model's serializer (also gives information on the Model)
     `owner_path`: Path/attribute to get the objects owner
         ('user', 'profile.user', 'deck__user')
+    `prefetch_list`: Attributes to prefetch when getting a list
     """
     Model = Serializer.Meta.model  # type: models.Model
 
@@ -94,7 +96,7 @@ def list_object_view(
     def view(request: WSGIRequest):
         models = Model.objects.filter(
             **({owner_path: request.user} if owner_path else {}),
-        )
+        ).prefetch_related(*prefetch_list)
 
         return Response(Serializer(models, many=True).data, status=200)
 
@@ -177,13 +179,14 @@ def generate_base_api(
     owner_path: Union[str, None],
     owner_type: Literal['USER', 'PROFILE'],
     /,
-    exclude_app_name: bool = False,
+    exclude_app_name: bool = True,
     exclude_create: bool = False,
     exclude_get: bool = False,
     exclude_list: bool = False,
     exclude_edit: bool = False,
     exclude_delete: bool = False,
     uuid_id: bool = False,
+    prefetch_list: tuple() = tuple(),
 ):
     """
     Generate a list of API paths for a model
@@ -197,6 +200,8 @@ def generate_base_api(
         ('user', 'profile.user', 'deck__user')
     `exclude_app_name`: Exclude the app name from the generated URLs
     `exclude_create ... exclude_delete`: Don't add a view for that function
+    `uuid_id`: If True, the ID type in URLs will be <uuid:> instead of <int:>
+    `prefetch_list`: Attributes to prefetch when getting a list
     """
     base_name = f'{app_name}/{model_name}' if not exclude_app_name else f'{model_name}'
     views = []
@@ -225,6 +230,7 @@ def generate_base_api(
             path(f'{base_name}/list/', list_object_view(
                 Serializer=Serializer,
                 owner_path=owner_path,
+                prefetch_list=prefetch_list,
             ))
         )
 

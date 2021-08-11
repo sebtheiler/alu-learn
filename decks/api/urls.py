@@ -14,7 +14,7 @@ urlpatterns = [
         DeckSerializer,
         {'title': str},
         'user', 'USER',
-        exclude_app_name=True,
+        prefetch_list=('user', 'skill_tree_sections__children'),
     ),
     # ===== Deck Lists =====
     path('deck/list/user/<str:username>/', views.deck_shared_list),
@@ -40,7 +40,6 @@ urlpatterns = [
         FlashCardSerializer,
         {'fields': list, 'tags': str},
         'deck__user', 'USER',
-        exclude_app_name=True,
         exclude_create=True,
         exclude_list=True,
         exclude_edit=True,
