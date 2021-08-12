@@ -4,14 +4,20 @@ from .models import AbstractSection, MainSection, SubSection
 
 
 class AbstractSectionSerializer(serializers.ModelSerializer):
+    percent_complete = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = AbstractSection
         fields = (
             'title',
             'tag',
+            'percent_complete',
             'id',
         )
         read_only_fields = fields
+
+    def get_percent_complete(self, obj):
+        return obj.get_percent_complete()
 
 
 class SubSectionSerializer(AbstractSectionSerializer):

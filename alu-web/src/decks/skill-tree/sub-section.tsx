@@ -57,8 +57,14 @@ export default function RenderSubSection({ subSection, mainSection }: SubSection
         trigger='click'
         rootClose
       >
-        <div className='sub-section' role='button'>
-          <p className='sub-section-text'>{subSection.title ?? subSection.tag}</p>
+        <div
+          className='sub-section'
+          role='button'
+          style={{ background: `conic-gradient(rgba(42, 157, 244, 1) ${subSection.percent_complete*100}%, transparent 0%)` }}
+        >
+          <div className='sub-section-inner'>
+            <p className='sub-section-text'>{subSection.title ?? subSection.tag}</p>
+          </div>
         </div>
       </OverlayTrigger>
     </Col>

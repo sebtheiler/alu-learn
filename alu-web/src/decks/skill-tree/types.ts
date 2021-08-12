@@ -2,6 +2,7 @@ interface AbstractSection {
   title?: string;
   tag: string;
   id: number;
+  percent_complete: number;
 }
 
 export interface MainSection extends AbstractSection {

@@ -23,33 +23,42 @@
 
   width: $subSectionSize;
   height: $subSectionSize;
-  line-height: $subSectionSize;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   border-radius: 50%;
+  border: $grayBorder;
   margin-top: 10px;
   margin-bottom: 10px;
   padding-left: 2px;
   padding-right: 2px;
 
-  background: $subSectionColor;
-  border: 2px dashed $subSectionBorderColor;
-  color: white;
-
   &:hover {
-    background: darken($subSectionColor, 5%);
-    border: 2px solid $subSectionBorderColor;
     transform: scale(1.1);
     box-shadow: $cardShadow;
     transition-duration: 0.2s;
     cursor: pointer;
   }
 
-  >.sub-section-text {
-    text-transform: capitalize;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-    user-select: none;
+  >.sub-section-inner {
+    width: 90%;
+    height: 90%;
+    border-radius: 50%;
+    padding: 5px;
+    border: $grayBorder;
+    background: darken($lightBackground, 2%);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    >.sub-section-text {
+      hyphens: auto;
+      user-select: none;
+      margin-bottom: 0;
+    }
   }
 }
 
