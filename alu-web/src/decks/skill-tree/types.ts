@@ -2,7 +2,10 @@ interface AbstractSection {
   title?: string;
   tag: string;
   id: number;
-  percent_complete: number;
+
+  // This property isn't serialized directly, but rather from `getDeckSectionsPercentComplete`,
+  // and is then combined with the Section
+  percent_complete?: number;
 }
 
 export interface MainSection extends AbstractSection {

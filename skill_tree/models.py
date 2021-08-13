@@ -1,6 +1,7 @@
 from django.apps import apps
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 from utils import get_morning
 
 
@@ -13,7 +14,10 @@ class AbstractSection(models.Model):
     )  # defaults to `tags`, but can be used as an alias
     tag = models.CharField(max_length=128)
 
-    # cached_percent_complete = models.FloatField(null=True, blank=True)
+    # Calculating percent complete is expensive, so we cache it
+    # Cache is cleared when a flashcard is completed or when fetching and a day has passed
+    cached_percent_complete = models.FloatField(null=True, blank=True)
+    cached_percent_complete_time = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -22,8 +26,15 @@ class AbstractSection(models.Model):
         return self.title or self.tag
 
     def get_percent_complete(self) -> float:
-        # if self.cached_percent_complete:
-        #     return self.cached_percent_complete
+        if (
+            self.cached_percent_complete is not None and
+            # And the day hasn't changed
+            (
+                self.cached_percent_complete == 0 or  # can't go below 0
+                self.cached_percent_complete_time.day == timezone.now().day
+            )
+        ):
+            return self.cached_percent_complete
 
         # Need this because of circular-import
         ReviewInstance = apps.get_model('decks', 'ReviewInstance')
@@ -38,8 +49,8 @@ class AbstractSection(models.Model):
         completed_num = ReviewInstance.objects.filter(tag_query).count()
 
         percent_complete = round(completed_num / total_num, 2)
-        # self.cached_percent_complete = percent_complete
-        # self.save()
+        self.cached_percent_complete = percent_complete
+        self.cached_percent_complete_time = timezone.now()
 
         return percent_complete
 

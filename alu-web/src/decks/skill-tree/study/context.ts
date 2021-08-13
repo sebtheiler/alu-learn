@@ -20,8 +20,8 @@ export const studyAnswerReducer = (
 
       // If the interval is greater than review ahead minutes, remove the review instance from rotation
       if (dateDiff(
-        event.interval.next_review,
         event.interval.last_review,
+        event.interval.next_review,
         1000*60,
       ) > REVIEW_AHEAD_MINUTES)
         return state.filter(ri => ri.id !== event.id);

@@ -1,4 +1,6 @@
+from django.urls import path
 from utils import generate_base_api
+from . import views
 
 from ..serializers import MainSectionSerializer, SubSectionSerializer
 
@@ -21,4 +23,5 @@ urlpatterns = [
         exclude_create=True,
         exclude_delete=True,
     ),
+    path('mainsection/<int:deck_id>/percent-complete/', views.get_deck_sections_percent_complete)
 ]

@@ -10,7 +10,12 @@ import Confetti from 'react-confetti';
 import './review-instances.scss';
 
 const EASE_FOR_HARD_EXERCISE = 210;  // TODO: update with real data
-export function StudyReviewInstances({ reviewInstances, deckId }: { reviewInstances: ReviewInstance[], deckId: number }) {
+interface StudyReviewInstancesProps {
+  reviewInstances: ReviewInstance[];
+  deckId: number;
+  tagQuery: string;
+}
+export function StudyReviewInstances({ reviewInstances, deckId, tagQuery }: StudyReviewInstancesProps) {
   const originalInfo = useMemo(
     () => ({
       numTotal: reviewInstances.length,
@@ -29,7 +34,8 @@ export function StudyReviewInstances({ reviewInstances, deckId }: { reviewInstan
             style={{ width: `${Math.floor(
               (1 - reviewInstances.length/originalInfo.numTotal) * 100
             )}%` }}
-          />
+          >
+          </div>
         </div>
         <p className={
           'hard-exercise-text my-2' +
@@ -39,7 +45,11 @@ export function StudyReviewInstances({ reviewInstances, deckId }: { reviewInstan
         </p>
       </div>
       {reviewInstances.length > 0 && <div style={{ maxHeight: '70vh' }}>
-        <ReviewInstanceStudy reviewInstance={reviewInstances[0]} />
+        <ReviewInstanceStudy
+          reviewInstance={reviewInstances[0]}
+          deckId={deckId}
+          tagQuery={tagQuery}
+        />
       </div>}
       {reviewInstances.length === 0 && <div className='text-center'>
         <Confetti

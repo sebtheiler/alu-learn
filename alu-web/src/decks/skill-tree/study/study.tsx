@@ -23,6 +23,7 @@ export default function StudySkillTree({ deckId, tagQuery='' }: { deckId: string
       <StudyReviewInstances
         reviewInstances={reviewInstances}
         deckId={parseInt(deckId)}
+        tagQuery={tagQuery}
       />
     </StudyAnswerDispatch.Provider>
   );

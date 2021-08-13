@@ -1108,10 +1108,12 @@ export async function apiStreakReviewInfo(
 
 // Studies a review instance, updating it with new info and increasing streak etc.
 export async function apiReviewInstanceUpdate(
+  deckId: number,
   reviewInstanceId: string,
   timeTaken: number,
   gradeResponse: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
   editedValues: Interval,
+  tagQuery: string,
 ): Promise<Message> {
   const utcTimezoneOffset = new Date().getTimezoneOffset();
   return backendFetch<Message>(
@@ -1122,6 +1124,22 @@ export async function apiReviewInstanceUpdate(
       utc_timezone_offset: utcTimezoneOffset,
       grade_response: gradeResponse,
       edited_values: editedValues,
+      deck_id: deckId,
+      tag_query: tagQuery,
     },
   );
+}
+
+export interface PercentComplete {
+  id: number;
+  percent_complete: number;
+  children: {
+    id: number;
+    percent_complete: number;
+  }[];
+}
+export async function getDeckSectionsPercentComplete(
+  deckId: number,
+): Promise<PercentComplete[]> {
+  return backendFetch('GET', `skill_tree/mainsection/${deckId}/percent-complete/`);
 }

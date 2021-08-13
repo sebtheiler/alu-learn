@@ -1,6 +1,7 @@
 import json
 import random
 import re
+from skill_tree.models import MainSection, SubSection
 from typing import List
 import uuid
 
@@ -1088,9 +1089,11 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
     """
     Updates a review instance after studying it - PUT
 
-    `edited_values`: All editable args
-    `utc_timezone_offset` (Data): Num minutes
-    `time_taken` (Data): Num milliseconds
+    Data:
+    * `edited_values`: All editable args
+    * `utc_timezone_offset`: Num minutes
+    * `time_taken`: Num milliseconds
+    * `tag`
     """
     edited_values = request.data.get('edited_values')
     if msg := assert_dict_data_type(edited_values, RI_EDITABLE_ATTRS, False):
@@ -1126,5 +1129,40 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
         utc_timezone_offset=request.data.get('utc_timezone_offset'),
         time_taken=time_taken,
     )
+
+
+    tag_query = request.data.get('tag_query')
+    deck_id = request.data.get('deck_id')
+    if tag_query is not None and deck_id is not None:
+        cache_name = f'{deck_id}__{tag_query.replace(" ", "-")}'
+        if pk__is_main := cache.get(cache_name):
+            pk, is_main = pk__is_main
+            if is_main:
+                section = MainSection.objects.get(pk=pk)
+            else:
+                section = SubSection.objects.get(pk=pk)
+        else:
+            tag_query = tag_query.split(' AND ')
+            if len(tag_query) == 1:
+                section = MainSection.objects.get(
+                    tag=tag_query[0],
+                    deck=deck_id,
+                )
+                is_main = True
+                cache.set(cache_name, (section.pk, is_main), 60*60*24)
+            else:
+                section = SubSection.objects.get(
+                    parent__tag=tag_query[0],
+                    parent__deck=deck_id,
+                    tag=tag_query[1],
+                )
+                is_main = False
+                cache.set(cache_name, (section.pk, is_main), 60*60*24)
+
+        section.cached_percent_complete = None
+        section.save()
+        if not is_main:
+            section.parent.cached_percent_complete = None
+            section.parent.save()
 
     return Response({'message': 'Updated review instance'}, status=200)

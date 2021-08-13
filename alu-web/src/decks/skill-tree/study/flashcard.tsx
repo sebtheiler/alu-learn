@@ -9,10 +9,15 @@ import { ReviewInstance } from '../../types';
 import { StudyAnswerDispatch } from './context';
 import { getMinNum } from './utils';
 import { flattenNodes } from '../../../text-editor';
+import { uncleanTag } from '../sub-section';
 import './flashcard.scss';
 
-export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
-  const { reviewInstance } = props;
+interface ReviewInstanceStudyProps {
+  reviewInstance: ReviewInstance;
+  deckId: number;
+  tagQuery: string;
+}
+export function ReviewInstanceStudy({ reviewInstance, deckId, tagQuery }: ReviewInstanceStudyProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const studyAnswerDispatch = useContext(StudyAnswerDispatch);
   const intervals = useMemo(
@@ -39,10 +44,12 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
       // Flip back to front and update server review instance
       setIsFlipped(false);
       apiReviewInstanceUpdate(
+        deckId,
         reviewInstance.id,
         browserInteractionTime.getTimeInMilliseconds(),
         ['AGAIN', 'HARD', 'GOOD', 'EASY'][grade - 1] as 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
         interval,
+        uncleanTag(tagQuery),
       );
 
       // Wait until the back of the card is no longer shown (half of transition = 0.25s)<
@@ -57,7 +64,7 @@ export function ReviewInstanceStudy(props: { reviewInstance: ReviewInstance }) {
       browserInteractionTime.reset();
       browserInteractionTime.startTimer();
     }
-  }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped, browserInteractionTime]);
+  }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped, browserInteractionTime, deckId, tagQuery]);
 
   // Events on keypresses (flipping with space, grading with 1-4)
   useEffect(() => {
