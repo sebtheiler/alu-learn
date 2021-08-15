@@ -1093,7 +1093,8 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
     * `edited_values`: All editable args
     * `utc_timezone_offset`: Num minutes
     * `time_taken`: Num milliseconds
-    * `tag`
+    * `tag_query`: The tag query when studying the flashcard
+    * `deck_id`: The id of the deck the review instance is in
     """
     edited_values = request.data.get('edited_values')
     if msg := assert_dict_data_type(edited_values, RI_EDITABLE_ATTRS, False):
@@ -1129,7 +1130,6 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
         utc_timezone_offset=request.data.get('utc_timezone_offset'),
         time_taken=time_taken,
     )
-
 
     tag_query = request.data.get('tag_query')
     deck_id = request.data.get('deck_id')

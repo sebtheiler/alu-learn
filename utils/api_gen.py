@@ -126,7 +126,7 @@ def edit_object_view(
         if error:
             return error
 
-        for attr, value in request.data.items():
+        for attr, value in request.data.get('edited_values').items():
             if (
                 attr not in editable_attrs.keys() or
                 not isinstance(attr, editable_attrs[attr])
