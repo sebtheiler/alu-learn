@@ -28,6 +28,7 @@ FlashCardTypes = Literal['cloze', 'basic', 'reversed']
 LearningStatusType = Literal['UNSEEN', 'LEARNING', 'LEARNED', 'RELEARNING']
 
 
+# TODO: delete
 class DeckManager(models.Manager):
     def get_queryset(self) -> QuerySet:
         return super().get_queryset().prefetch_related('user')
@@ -291,6 +292,7 @@ class Deck(models.Model):
         return skill_tree
 
 
+# TODO: delete
 class SharedDeckRelation(models.Model):
     deck = models.ForeignKey(
         Deck,
@@ -308,6 +310,7 @@ class SharedDeckRelation(models.Model):
         return f'{self.shared_deck.title} ==> {self.deck.title}'
 
 
+# TODO: delete
 class FlashCardManager(models.Manager):
     def get_queryset(self) -> QuerySet:
         return super().get_queryset().prefetch_related('deck')
@@ -324,37 +327,15 @@ class FlashCard(models.Model):
     flashcard_type = models.CharField(default='basic', max_length=16)
     flashcard_num = models.PositiveSmallIntegerField()  # zero-indexed
 
-    # === TEXT INFO ===
+    # === CONTENT INFO ===
     fields = models.JSONField()  # list of two lists of Slate Nodes
     tags = models.CharField(default='', max_length=1024, blank=True)
     front_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
     back_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
 
-    # === SHARING INFO ===
-    # Used when creating a shared deck
-    origin_creator = models.OneToOneField(
-        'self',
-        on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name='shared_mirror',
-    )
-    # This is used when cloning decks, to remember where the cloned flashcard came from
-    copied_from_deck = models.ForeignKey(
-        Deck,
-        on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name='flashcards_copied_from',
-    )  # type: Deck
-    copied_from_creator = models.ForeignKey(
-        'self',
-        on_delete=models.SET_NULL,
-        null=True, blank=True,
-        related_name='flashcards_copied_from',
-    )  # type: FlashCard
-
     # === OTHER ===
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    universal_flashcard_id = models.UUIDField(null=True, blank=True)  # for sharing
     objects = FlashCardManager()
 
     class Meta:
@@ -450,19 +431,22 @@ class FlashCard(models.Model):
         tags: str,
         flashcard_type: FlashCardTypes,
         fields: List[list],
+        flashcard_num: int = None,
         front_image: ContentFile = None,
         back_image: ContentFile = None,
         flashcard_uuid: uuid.uuid4 = None,
+        universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         flashcard = FlashCard.objects.create(
             deck=deck,
             flashcard_type=flashcard_type,
-            flashcard_num=FlashCard.get_max_flashcard_num(deck) + 1,
+            flashcard_num=flashcard_num or FlashCard.get_max_flashcard_num(deck) + 1,
             fields=fields,
             tags=tags,
             front_image=front_image,
             back_image=back_image,
             pk=flashcard_uuid,
+            universal_flashcard_id=universal_flashcard_id,
         )
 
         review_instances = ReviewInstance.create_review_instance(
@@ -778,6 +762,7 @@ class ReviewInstance(models.Model):
                 .distinct()
 
 
+# TODO: delete
 class StudySessionManager(models.Model):
     user = models.ForeignKey(
         Profile,
@@ -880,11 +865,13 @@ class StudySessionManager(models.Model):
         }
 
 
+# TODO: delete
 class DeckStudySessionManagerModelManager(models.Manager):
     def get_queryset(self) -> QuerySet:
         return super().get_queryset().prefetch_related('deck', 'deck__user')
 
 
+# TODO: delete
 class DeckStudySessionManager(StudySessionManager):
     deck = models.OneToOneField(
         Deck,
@@ -916,6 +903,7 @@ class DeckStudySessionManager(StudySessionManager):
         return seen_flashcards, unseen_flashcards
 
 
+# TODO: delete
 class CustomStudySessionManager(StudySessionManager):
     title = models.CharField(max_length=128)
 
@@ -956,6 +944,7 @@ class CustomStudySessionManager(StudySessionManager):
         return seen_flashcards, unseen_flashcards
 
 
+# TODO: delete
 class SharedDeck(Deck):
     description = models.TextField(default='', blank=True, null=True)
     version_number = models.IntegerField(default=0)
@@ -1103,6 +1092,8 @@ class SharedDeck(Deck):
         )
 
 
+# TODO: delete
+# Replace with `Deck.objects.filter(equivalent_to_snapshot__shared_deck=...).count()`
 class DeckClone(models.Model):
     deck = models.ForeignKey(SharedDeck, on_delete=models.CASCADE, related_name='clones')
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='clones')
@@ -1156,6 +1147,7 @@ class ReviewInstanceHistory(models.Model):
         verbose_name_plural = 'Review instance histories'
 
 
+# TODO: delete
 # When a deck is created, create it's DSSM
 def deck_saved(sender, instance, created, using, *args, **kwargs):
     if created:
