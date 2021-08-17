@@ -72,15 +72,17 @@ class Deck(models.Model):
     def create_shared_deck(
         self,
         title: str,
-        description: str = '',
-        sharing_setting: str = 'PUBLIC',
+        description: str,
+        view_access: str,
+        edit_access: str,
+        owners: str,
         include_copied_flashcards: bool = False,
     ) -> SharedDeck:
         shared_deck = SharedDeck.objects.create(
             user=self.user,
             title=title,
             description=description,
-            sharing_setting=sharing_setting,
+            sharing_setting=view_access,
             deck_type='shared',
         )  # type: SharedDeck
 

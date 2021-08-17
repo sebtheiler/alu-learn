@@ -6,7 +6,8 @@ export type UUID = string;  // Just a more clear representation
 
 export type SchedulingAlgorithm = 'ANKI' | 'ANKING' | 'MANUAL-SR' | 'CRAM';
 export type DeckDifficulty = 'HARD' | 'NORM' | 'EASY';
-export type SharingSetting = 'PUBLIC' | 'FRIENDS' | 'STUDENT' | 'PRIVATE';
+export type ViewAccess = 'PUBLIC' | 'FRIENDS' | 'STUDENT';
+export type EditAccess = 'PERSONAL' | 'FRIENDS' | 'EVERYBODY' | 'STUDENTS';
 export type FlashCardTypes = 'basic' | 'reversed' | 'cloze';
 export type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
 
@@ -22,7 +23,7 @@ export interface Deck {
 
 export interface SharedDeck extends Deck {
   description: string;
-  sharing_setting: SharingSetting;
+  sharing_setting: ViewAccess;
   num_clones: number;
   creators: Deck[];
 }

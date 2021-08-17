@@ -411,7 +411,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(len(response.data), 0)
 
         # Create shared deck
-        public_shared_deck = deck.create_shared_deck('Public', '', sharing_setting='PUBLIC')
+        public_shared_deck = deck.create_shared_deck('Public', '', view_access='PUBLIC')
         response = self.get_response(api_path, api_view, kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
@@ -419,7 +419,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(response.data[0]['id'], public_shared_deck.pk)
 
         # Create friend only deck
-        friend_shared_deck = deck.create_shared_deck('Friend', '', sharing_setting='FRIENDS')
+        friend_shared_deck = deck.create_shared_deck('Friend', '', view_access='FRIENDS')
         response = self.get_response(api_path, api_view, user=self.users[1], kwargs=kwargs)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)

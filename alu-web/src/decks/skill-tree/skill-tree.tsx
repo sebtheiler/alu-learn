@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Button from 'react-bootstrap/Button';
-import { apiDeckGenerateSkillTree, useAsyncDispatch, getDeckSectionsPercentComplete, PercentComplete } from '../../lookup/lookup';
 import LoadingButton from './buttons/LoadingButton';
+import { apiDeckGenerateSkillTree, useAsyncDispatch, getDeckSectionsPercentComplete, PercentComplete } from '../../lookup/lookup';
 import { Deck } from '../types';
 import { DeckDispatch } from './context';
 import RenderMainSection from './main-section';
@@ -63,8 +64,13 @@ export default function SkillTree({ deck }: { deck: Deck }) {
       <p>This deck doesn't have a "skill tree yet"</p>
       <p>Generate one to have access to specific parts of your deck</p>
     </>}
-    <LoadingButton clickFunc={generateSkillTree} className='mb-3'>
-      {deck.skill_tree_sections.length > 0 ? 'Regenerate' : 'Generate'} Skill Tree
-    </LoadingButton>
+    <ButtonGroup className='mb-3'>
+      <LoadingButton clickFunc={generateSkillTree} style={{ width: '180px' }}>
+        {deck.skill_tree_sections.length > 0 ? 'Regenerate' : 'Generate'} Skill Tree
+      </LoadingButton>
+      <Button className='ml-1' style={{ width: '180px' }} href={`/deck/${deck.id}/share/`}>
+        Share Deck
+      </Button>
+    </ButtonGroup>
   </>);
 }

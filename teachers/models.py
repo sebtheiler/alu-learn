@@ -33,7 +33,7 @@ class Classroom(models.Model):
         shared_deck = deck.create_shared_deck(
             deck.title,
             f'Deck for "{self.title}."  Students can copy and study this deck.',
-            sharing_setting='STUDENT',
+            view_access='STUDENT',
             include_copied_flashcards=True,
         )
 

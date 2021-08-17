@@ -213,24 +213,32 @@ def shared_deck_create_view(request, *args, **kwargs):
         `description`: (Data) Description of the public deck to create
         `sharing_setting`: (Data) 'FRIENDS' or 'PUBLIC'
     """
+    assert_dict_data_type(request.data, {
+        'origin_deck_id': int,
+        'title': str,
+        'description': str,
+        'view_access': str,
+        'edit_access': str,
+        'owners': str,
+    })
+
     # Get deck to originate from
-    try:
-        origin_deck = Deck.objects.get(
-            pk=request.data.get('origin_deck_id'),
-            user=request.user,
-        )  # type: Deck
-    except Deck.DoesNotExist:
-        return Response({'message': 'This deck does not exist / you are unauthorized'}, status=400)
+    origin_deck, resp = get_obj_or_404(
+        Deck,
+        request.data.get('origin_deck_id'),
+        request.user,
+        'user',
+    )
+    if resp:
+        return resp
 
     # Create shared deck object
-    title = request.data.get('title')
-    if title is None:
-        return Response({'message': 'Title must not be None'}, status=400)
-
     shared_deck = origin_deck.create_shared_deck(
-        title,
-        request.data.get('description', ''),
-        request.data.get('sharing_setting', 'PUBLIC'),
+        request.data.get('title'),
+        request.data.get('description'),
+        request.data.get('view_access'),
+        request.data.get('edit_access'),
+        request.data.get('owners'),
     )
 
     return Response(SharedDeckSerializer(shared_deck).data, status=201)

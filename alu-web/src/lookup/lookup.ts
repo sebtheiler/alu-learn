@@ -1,6 +1,6 @@
 // TODO: Break this file up into a separate file for each "package"
 // Each file should contain the lookups for just that package
-import { Deck, ReviewInstance, FlashCard, SchedulingAlgorithm, SSMInterface, SharedDeck, SharingSetting } from '../decks/types';
+import { Deck, ReviewInstance, FlashCard, SchedulingAlgorithm, SSMInterface, SharedDeck, ViewAccess, EditAccess } from '../decks/types';
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
 import { Profile, ProfileHistory } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
@@ -581,18 +581,21 @@ export function apiSharedDeckDetail(
 }
 
 // Creates a shared deck
-export function apiCreateSharedDeck(
+export async function apiCreateSharedDeck(
   originDeckId: number,
   title: string,
   description: string,
-  sharingSetting: SharingSetting,
-  callback: (response: SharedDeck, status: number) => void,
-) {
-  backendLookup('POST', 'decks/deck/shared/create/', callback, {
+  viewAccess: ViewAccess,
+  editAccess: EditAccess,
+  owners: string,
+): Promise<SharedDeck> {
+  return backendFetch('POST', 'decks/deck/shared/create/', {
     origin_deck_id: originDeckId,
     title: title,
     description: description,
-    sharing_setting: sharingSetting,
+    view_access: viewAccess,
+    edit_access: editAccess,
+    owners: owners,
   });
 }
 
