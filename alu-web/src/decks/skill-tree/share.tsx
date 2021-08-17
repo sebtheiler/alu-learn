@@ -72,7 +72,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
           >
             <option value='PERSONAL'>Only you can submit edits</option>
             <option value='FRIENDS'>Only friends can submit edits</option>
-            <option value='EVERYBODY'>Everybody can submit edits</option>
+            <option value='PUBLIC'>Everybody can submit edits</option>
           </Form.Control>
         </Form.Group>
         <Form.Group>

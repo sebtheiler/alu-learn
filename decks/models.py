@@ -36,16 +36,11 @@ class DeckManager(models.Manager):
 class Deck(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
-    deck_type = models.CharField(default='standard', max_length=12)
 
-    # Note that although this allows for multiple creators, it is currently only using one
-    # Also note that this specifies the shared deck this deck creates, not the one it
-    # is cloned from
-    shared_deck = models.ForeignKey(
-        'SharedDeck',
+    equivalent_to_snapshot = models.ForeignKey(
+        'community.SnapShot',
         on_delete=models.SET_NULL,
-        null=True,
-        related_name='creators'
+        related_name='decks_equivalent_to',
     )
 
     # Specifies which classroom a student has attatched this deck to (if any)
@@ -324,6 +319,7 @@ class FlashCard(models.Model):
         Deck,
         on_delete=models.CASCADE,
         related_name='flashcards',
+        null=True, blank=True,  # ONLY shared for snapshots
     )  # type: Deck
     flashcard_type = models.CharField(default='basic', max_length=16)
     flashcard_num = models.PositiveSmallIntegerField()  # zero-indexed
