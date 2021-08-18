@@ -191,6 +191,82 @@ class SharedDeck(models.Model):
 
         return snapshot
 
+    def pull(self, deck: Deck):
+        latest_snapshot = self.snapshots.order_by('timestamp').last()
+
+        # TODO: this results in lots of DB queries that could be solved recursively
+        deck_snapshot = deck.equivalent_to_snapshot
+        snapshot = latest_snapshot
+        snapshots_to_apply = []
+        while True:
+            if snapshot.parent is None:
+                raise ValueError('Unable to relate the deck\'s snapshot to the latest snapshot')
+            elif snapshot.parent == deck_snapshot:
+                break
+            else:
+                snapshots_to_apply.append(snapshot)
+                snapshot = snapshot.parent
+
+        # Clean up `snapshots_to_apply`
+        if len(snapshots_to_apply) == 0:
+            raise ValueError('No updates to apply')
+        elif len(snapshots_to_apply) > 2:
+            # Only makes sense to justify this operation with 3+ snapshots to apply
+            snapshots_to_apply = SnapShot.objects.filter(
+                pk__in=[snapshot.pk for snapshot in snapshots_to_apply],
+            ).prefetch_related(
+                'applied_flashcard_actions',
+                'applied_flashcard_actions__flashcard',
+            ).all()
+
+        # Apply the snapshots that need applying
+        flashcards_to_create = []
+        flashcards_to_edit = []
+        flashcard_uids_to_delete = []
+        for snapshot in snapshots_to_apply:
+            snapshot_flashcard_actions = snapshot.applied_flashcard_actions\
+                .all()\
+                .prefetch_related('flashcard')
+            for snapshot_flashcard_action in snapshot_flashcard_actions:
+                if snapshot_flashcard_action.action == 'CREATE':
+                    origin_flashcard = snapshot_flashcard_action.flashcard
+                    flashcards_to_create.append(FlashCard(
+                        deck=deck,
+                        flashcard_type=origin_flashcard.flashcard_type,
+                        flashcard_num=origin_flashcard.flashcard_num,
+                        fields=origin_flashcard.fields,
+                        tags=origin_flashcard.tags,
+                        front_image=origin_flashcard.front_image,
+                        back_image=origin_flashcard.back_image,
+
+                        # Inherits universal ID from ID of the flashcard it was created from
+                        universal_flashcard_id=origin_flashcard.pk,
+                    ))
+                elif snapshot_flashcard_action.action == 'EDIT':
+                    origin_flashcard = snapshot_flashcard_action.flashcard
+                    # TODO: make this work for cloze when the # of RI's changes
+                    flashcard_to_edit = FlashCard.objects.get(
+                        universal_flashcard_id=origin_flashcard.universal_flashcard_id,
+                    )
+                    for attr in FlashCard.EDITABLE_ATTRS:
+                        setattr(flashcard_to_edit, attr, getattr(origin_flashcard, attr))
+
+                    flashcards_to_edit.append(flashcard_to_edit)
+                else:
+                    flashcard_uids_to_delete.append(
+                        snapshot_flashcard_action.flashcard.universal_flashcard_id,
+                    )
+
+        FlashCard.objects.bulk_create(flashcards_to_create)
+        FlashCard.objects.bulk_update(flashcards_to_edit, FlashCard.EDITABLE_ATTRS)
+        FlashCard.objects.filter(
+            deck=deck, universal_flashcard_id__in=flashcard_uids_to_delete,
+        ).delete()
+        deck.equivalent_to_snapshot = latest_snapshot
+        deck.save()
+
+        return deck
+
 
 class SnapShot(models.Model):
     message = models.JSONField()
