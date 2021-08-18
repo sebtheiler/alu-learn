@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from django.db.models.expressions import F
-
 from accounts.models import User
 from decks.models import Deck, FlashCard, ReviewInstance
 from django.db import models
+from django.db.models.expressions import F, Q
 
 
 class SharedDeck(models.Model):
@@ -26,7 +25,7 @@ class SharedDeck(models.Model):
     owners = models.CharField(max_length=128)
 
     @classmethod
-    def create_from_deck(
+    def create(
         deck: Deck,
         title: str,
         description: str,
@@ -109,6 +108,88 @@ class SharedDeck(models.Model):
         ReviewInstance.objects.bulk_create(review_instances_to_create)
 
         return deck
+
+    def push(self, deck: Deck, message: str):
+        latest_snapshot = self.snapshots.order_by('timestamp').last()
+        if deck.equivalent_to_snapshot.pk != latest_snapshot.pk:
+            raise ValueError('Deck is not up to date')
+
+        # TODO: check ownership/edit-access
+
+        # Create new snapshot
+        snapshot = SnapShot.objects.create(
+            message=message,
+            shared_deck=self,
+            parent=latest_snapshot,
+        )
+
+        # Apply actions
+        flashcards_to_create = []
+        old_flashcards_to_not_include = []  # list of `universal_flashcard_id`s to remove
+        origin_flashcards_to_update_uid = []
+
+        deck_flashcard_actions = deck.flashcard_actions.all()\
+            .prefetch_related('flashcard')
+
+        for deck_flashcard_action in deck_flashcard_actions:
+            if deck_flashcard_action.action == 'CREATE':
+                # Sync origin flashcard with the to-be-created flashcard, using
+                # `universal_flashcard_id`
+                origin_flashcard = deck_flashcard_action.flashcard
+                origin_flashcard.universal_flashcard_id = origin_flashcard.pk
+                origin_flashcards_to_update_uid.append(origin_flashcard)
+
+                # Copy flashcard
+                flashcards_to_create.append(FlashCard(
+                    flashcard_type=origin_flashcard.flashcard_type,
+                    flashcard_num=origin_flashcard.flashcard_num,
+                    fields=origin_flashcard.fields,
+                    tags=origin_flashcard.tags,
+                    front_image=origin_flashcard.front_image,
+                    back_image=origin_flashcard.back_image,
+
+                    # Inherits universal ID from ID of the flashcard it was created from
+                    universal_flashcard_id=origin_flashcard.pk,
+                ))
+            elif deck_flashcard_action.action == 'EDIT':
+                origin_flashcard = deck_flashcard_action.flashcard
+
+                # Copy flashcard
+                snapshot.append(FlashCard(
+                    flashcard_type=origin_flashcard.flashcard_type,
+                    flashcard_num=origin_flashcard.flashcard_num,
+                    fields=origin_flashcard.fields,
+                    tags=origin_flashcard.tags,
+                    front_image=origin_flashcard.front_image,
+                    back_image=origin_flashcard.back_image,
+
+                    # Inherits universal ID from the ID of its "parent"
+                    universal_flashcard_id=origin_flashcard.universal_flashcard_id,
+                ))
+
+                # Remember not to include the old flashcard in the snapshot
+                old_flashcards_to_not_include.append(origin_flashcard.universal_flashcard_id)
+            else:
+                # Remember not to include the old flashcard in the snapshot
+                old_flashcards_to_not_include.append(
+                    deck_flashcard_action.flashcard.universal_flashcard_id,
+                )
+
+        # Add all flashcards from the old snapshot (unless they are marked not to be added)
+        snapshot.flashcards.add(latest_snapshot.flashcards.filter(
+            ~Q(universal_flashcard_id__in=old_flashcards_to_not_include)
+        ))
+
+        # Add the newly created flashcards
+        snapshot.flashcards.add(flashcards_to_create)
+
+        # Note that the origin flashcards for newly created flashcards are now universally synced
+        FlashCard.objects.bulk_update(origin_flashcards_to_update_uid, ('universal_flashcard_id',))
+
+        # Transfer actions from the deck to the new snapshot
+        deck_flashcard_actions.update(deck=None, snapshot=snapshot)
+
+        return snapshot
 
 
 class SnapShot(models.Model):
