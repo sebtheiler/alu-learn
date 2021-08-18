@@ -2,19 +2,18 @@ from datetime import timedelta
 from django.utils import timezone
 from profiles.models import Profile
 from rest_framework import serializers
-from decks.serializers import SharedDeckSerializer
 from .models import Assignment, Classroom
 
 
 class ClassroomSerializer(serializers.ModelSerializer):
-    deck = SharedDeckSerializer(read_only=True)
+    # deck = SharedDeckSerializer(read_only=True)
 
     class Meta:
         model = Classroom
         fields = [
             'title',
             'code',
-            'deck',
+            # 'deck',
             'id',
         ]
 
@@ -87,7 +86,7 @@ class AssignmentSerializer(serializers.ModelSerializer):
 
 
 class ClassroomAssignmentsSerializer(ClassroomSerializer):
-    deck = SharedDeckSerializer(read_only=True)
+    # deck = SharedDeckSerializer(read_only=True)
     assignments = AssignmentSerializer(read_only=True, many=True)
 
     class Meta:

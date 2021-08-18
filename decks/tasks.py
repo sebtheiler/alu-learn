@@ -1,15 +1,12 @@
-import json
-
 from celery import shared_task
 from celery.decorators import periodic_task
 from celery.schedules import crontab
 from django.core import mail
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.db.models import Count
 from profiles.models import Profile
 
-from decks.models import SharedDeck, StudySessionManager
+from decks.models import StudySessionManager
 
 
 @shared_task
@@ -26,12 +23,6 @@ def midnight_reset():
         new_cards_done_today=0,
         seen_cards_done_today=0,
     )
-
-    # Calculate top deck Ids
-    sorted_decks = SharedDeck.objects.annotate(num_clones=Count('clones')).order_by('-num_clones')
-    top_deck_ids = [deck.id for deck in sorted_decks[:5]]
-    with open('top_deck_ids.json', 'w+') as f:
-        f.write(json.dumps(top_deck_ids))
 
 
 @periodic_task(run_every=crontab(minute=0, hour=4))
@@ -63,7 +54,8 @@ Study at Alu today to make it {streak + 1}!  You got this!
 Best,
 Alu
 
-(you can unsubscribe/opt-out of these reminders at Alu's setting page: https://www.alulearn.com/settings/)
+(you can unsubscribe/opt-out of these reminders at Alu's setting page:\
+https://www.alulearn.com/settings/)
 (Sent by Alu Learn | NYC, New York)
         """
 

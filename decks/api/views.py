@@ -1,66 +1,58 @@
 import json
 import random
 import re
-from skill_tree.models import MainSection, SubSection
-from typing import List
 import uuid
+from typing import List
 
 from django.core.cache import cache
 from django.db.models import Q
-from django.views.decorators.cache import cache_control
-from django.views.decorators.vary import vary_on_cookie
-# For calculating advanced string similarities (used in searching)
-# pip install fuzzywuzzy
-# pip install fuzzywuzzy[speedup]
-from fuzzywuzzy import fuzz
-from profiles.models import Profile
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from skill_tree.models import MainSection, SubSection
 from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
 from utils.api_utils import get_obj_or_404
 from utils.utils import assert_dict_data_type, base64_to_file
 
-from ..models import (CustomStudySessionManager, Deck, DeckStudySessionManager,
-                      FlashCard, ReviewInstance, ReviewInstanceHistory,
-                      SharedDeck, SharedDeckRelation)
+from ..models import Deck, FlashCard, ReviewInstance, ReviewInstanceHistory
 from ..serializers import (DeckSerializer, FlashCardSerializer,
-                           ReviewInstanceSerializer, SharedDeckSerializer)
+                           ReviewInstanceSerializer)
 
 
 # ====== Decks ======
 # ===== Deck Lists =====
-@api_view(['GET'])
-@vary_on_cookie
-@cache_control(private=True)
-def deck_shared_list(request, username: str, *args, **kwargs) -> List[SharedDeck]:
-    """
-    Gets decks from a user that are either shared with the requester or public - GET
+# TODO: rewrite this as a `community` view
+# @api_view(['GET'])
+# @vary_on_cookie
+# @cache_control(private=True)
+# def deck_shared_list(request, username: str, *args, **kwargs) -> List[SharedDeck]:
+#     """
+#     Gets decks from a user that are either shared with the requester or public - GET
 
-    Required information:
-        `username`: (URL) Username of the user to get decks from
-    """
-    # Get user
-    try:
-        profile = Profile.objects.get(user__username=username)
-    except Profile.DoesNotExist:
-        return Response({'message': f'Invalid username "{username}"'}, status=404)
+#     Required information:
+#         `username`: (URL) Username of the user to get decks from
+#     """
+#     # Get user
+#     try:
+#         profile = Profile.objects.get(user__username=username)
+#     except Profile.DoesNotExist:
+#         return Response({'message': f'Invalid username "{username}"'}, status=404)
 
-    # Get user's decks that are either public or shared
-    is_friend = request.user in profile.friends.all()
-    if is_friend or profile.user.id == request.user.id:
-        decks_qs = SharedDeck.objects.filter(
-            Q(user__username=username) &
-            (Q(sharing_setting='PUBLIC') | Q(sharing_setting='FRIENDS'))
-        )
-    else:
-        decks_qs = SharedDeck.objects.filter(
-            user__username=username,
-            sharing_setting='PUBLIC',
-        )
+#     # Get user's decks that are either public or shared
+#     is_friend = request.user in profile.friends.all()
+#     if is_friend or profile.user.id == request.user.id:
+#         decks_qs = SharedDeck.objects.filter(
+#             Q(user__username=username) &
+#             (Q(sharing_setting='PUBLIC') | Q(sharing_setting='FRIENDS'))
+#         )
+#     else:
+#         decks_qs = SharedDeck.objects.filter(
+#             user__username=username,
+#             sharing_setting='PUBLIC',
+#         )
 
-    return Response(SharedDeckSerializer(decks_qs, many=True).data, status=200)
+#     return Response(SharedDeckSerializer(decks_qs, many=True).data, status=200)
 
 
 # TODO: Rename and revamp
@@ -127,12 +119,9 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
     """
     # Get deck
     try:
-        deck = SharedDeck.objects.get(pk=deck_id)
-    except SharedDeck.DoesNotExist:
-        try:
-            deck = Deck.objects.get(pk=deck_id)
-        except Deck.DoesNotExist:
-            return Response({'message': 'Deck not found'}, status=404)
+        deck = Deck.objects.get(pk=deck_id)
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
 
     # Make sure the user is authorized
     if not deck.user_has_access(request.user):
@@ -163,213 +152,218 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
 
 
 # ===== Shared Decks =====
+# TODO: rewrite in `community`
+
 # TODO: delete and use `custom_..._func`
-@api_view(['GET'])
-def shared_deck_detail_view(request, shared_deck_id, *args, **kwargs):
-    """
-    Get specific information about a deck - GET
+# @api_view(['GET'])
+# def shared_deck_detail_view(request, shared_deck_id, *args, **kwargs):
+#     """
+#     Get specific information about a deck - GET
 
-    Required information:
-        `deck_id`: (URL) The ID of the deck
+#     Required information:
+#         `deck_id`: (URL) The ID of the deck
 
-    Returns:
-        Author of the deck (PublicProfileSerializer): 'author'
-        Title of the deck: 'title'
-        ID of the deck: 'id'
+#     Returns:
+#         Author of the deck (PublicProfileSerializer): 'author'
+#         Title of the deck: 'title'
+#         ID of the deck: 'id'
 
-    Possible errors:
-        Invalid deck: 404, Deck not found
-        Deck is not shared with user: 403, You are unauthorized to view this deck
-    """
-    # Get deck
-    try:
-        shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
-    except SharedDeck.DoesNotExist:
-        return Response({'message': 'Deck not found'}, status=404)
+#     Possible errors:
+#         Invalid deck: 404, Deck not found
+#         Deck is not shared with user: 403, You are unauthorized to view this deck
+#     """
+#     # Get deck
+#     try:
+#         shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
+#     except SharedDeck.DoesNotExist:
+#         return Response({'message': 'Deck not found'}, status=404)
 
-    # Make sure the user is authorized
-    if not shared_deck.user_has_access(request.user):
-        return Response({'message': 'You are unauthorized to view this deck'}, status=403)
+#     # Make sure the user is authorized
+#     if not shared_deck.user_has_access(request.user):
+#         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
 
-    return Response(
-        SharedDeckSerializer(
-            shared_deck,
-            context={'request': request}
-        ).data,
-        status=200,
-    )
-
-
-# TODO: Rewrite view, along with other function-views, to be simpler
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def shared_deck_create_view(request, *args, **kwargs):
-    """
-    Creates a shared deck - POST
-
-    Required information:
-        `origin_deck_id`: (Data) Id of the deck that will be made shared
-        `title`: (Data) Title of the public deck to create
-        `description`: (Data) Description of the public deck to create
-        `sharing_setting`: (Data) 'FRIENDS' or 'PUBLIC'
-    """
-    assert_dict_data_type(request.data, {
-        'origin_deck_id': int,
-        'title': str,
-        'description': str,
-        'view_access': str,
-        'edit_access': str,
-        'owners': str,
-    })
-
-    # Get deck to originate from
-    origin_deck, resp = get_obj_or_404(
-        Deck,
-        request.data.get('origin_deck_id'),
-        request.user,
-        'user',
-    )
-    if resp:
-        return resp
-
-    # Create shared deck object
-    shared_deck = origin_deck.create_shared_deck(
-        request.data.get('title'),
-        request.data.get('description'),
-        request.data.get('view_access'),
-        request.data.get('edit_access'),
-        request.data.get('owners'),
-    )
-
-    return Response(SharedDeckSerializer(shared_deck).data, status=201)
+#     return Response(
+#         SharedDeckSerializer(
+#             shared_deck,
+#             context={'request': request}
+#         ).data,
+#         status=200,
+#     )
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
-    """
-    Clones a shared deck for a user that is not the author to use it - POST
+# # TODO: Rewrite view, along with other function-views, to be simpler
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def shared_deck_create_view(request, *args, **kwargs):
+#     """
+#     Creates a shared deck - POST
 
-    Required information:
-        `shared_deck_id`: (URL) Id of the shared deck
-        `destination_deck_title`: (Data) Title of the deck to clone into
-    """
-    try:
-        shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
-        if not shared_deck.user_has_access(request.user):
-            return Response({'message': 'You are unauthorized to clone this deck'}, status=403)
-    except SharedDeck.DoesNotExist:
-        return Response({'message': 'Shared deck not found'}, status=404)
+#     Required information:
+#         `origin_deck_id`: (Data) Id of the deck that will be made shared
+#         `title`: (Data) Title of the public deck to create
+#         `description`: (Data) Description of the public deck to create
+#         `sharing_setting`: (Data) 'FRIENDS' or 'PUBLIC'
+#     """
+#     assert_dict_data_type(request.data, {
+#         'origin_deck_id': int,
+#         'title': str,
+#         'description': str,
+#         'view_access': str,
+#         'edit_access': str,
+#         'owners': str,
+#     })
 
-    # Check if the user has already cloned this deck
-    if SharedDeckRelation.objects.filter(
-        deck__user=request.user,
-        shared_deck=shared_deck,
-    ).exists():
-        return Response({'message': 'You have already cloned this deck'}, status=400)
+#     # Get deck to originate from
+#     origin_deck, resp = get_obj_or_404(
+#         Deck,
+#         request.data.get('origin_deck_id'),
+#         request.user,
+#         'user',
+#     )
+#     if resp:
+#         return resp
 
-    deck = shared_deck.clone(
-        request.user,
-        request.data.get('destination_deck_title'),
-        request.data,
-    )
+#     # Create shared deck object
+#     shared_deck = origin_deck.create_shared_deck(
+#         request.data.get('title'),
+#         request.data.get('description'),
+#         request.data.get('view_access'),
+#         request.data.get('edit_access'),
+#         request.data.get('owners'),
+#     )
 
-    return Response(DeckSerializer(deck).data, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def shared_deck_push_updates_view(request, shared_deck_id, *args, **kwargs):
-    """
-    Allows the author of a shared deck to push flashcard changes - POST
-
-    Required information:
-        `shared_deck_id`: (Data) Id of the shared deck
-        `origin_deck_id`: (Data) Id of the deck to get new changes from
-        `check_diff_only`: (Data) If True, this will get the difference between the
-            shared deck and the origin deck, and not actually enact the changes
-    """
-    check_diff_only = request.data.get('check_diff_only', False)
-
-    # Get shared deck
-    try:
-        shared_deck = SharedDeck.objects.get(
-            pk=shared_deck_id,
-            user=request.user,
-        )
-    except SharedDeck.DoesNotExist:
-        return Response({'message': 'Could not find the specified shared deck'}, status=404)
-
-    # Get origin deck
-    try:
-        origin_deck = Deck.objects.get(
-            pk=request.data.get('origin_deck_id'),
-            user=request.user,
-        )
-    except Deck.DoesNotExist:
-        return Response({'message': 'This deck does not exist / you are unauthorized'}, status=400)
-
-    data = shared_deck.push_updates(origin_deck, check_diff_only)
-    if isinstance(data, SharedDeck):
-        data = SharedDeckSerializer(data).data
-
-    return Response(data, status=200)
+#     return Response(SharedDeckSerializer(shared_deck).data, status=201)
 
 
-# TODO: Combine with `deck_pull_updates_view`
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def deck_get_updates_view(request, deck_id, *args, **kwargs):
-    """
-    Gets the updates for a deck - GET
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
+#     """
+#     Clones a shared deck for a user that is not the author to use it - POST
 
-    Required information:
-        `deck_id`: (URL) Id of the deck to get updates for
-    """
-    # Get deck
-    try:
-        deck = Deck.objects.get(
-            pk=deck_id,
-            user=request.user,
-        )
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck does not exist / you are unauthorized'}, status=400)
+#     Required information:
+#         `shared_deck_id`: (URL) Id of the shared deck
+#         `destination_deck_title`: (Data) Title of the deck to clone into
+#     """
+#     try:
+#         shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
+#         if not shared_deck.user_has_access(request.user):
+#             return Response({'message': 'You are unauthorized to clone this deck'}, status=403)
+#     except SharedDeck.DoesNotExist:
+#         return Response({'message': 'Shared deck not found'}, status=404)
 
-    # Find decks that need updating
-    needs_updating = deck.list_available_updates()
+#     # Check if the user has already cloned this deck
+#     if SharedDeckRelation.objects.filter(
+#         deck__user=request.user,
+#         shared_deck=shared_deck,
+#     ).exists():
+#         return Response({'message': 'You have already cloned this deck'}, status=400)
 
-    return Response({'needs_updating': needs_updating}, status=200)
+#     deck = shared_deck.clone(
+#         request.user,
+#         request.data.get('destination_deck_title'),
+#         request.data,
+#     )
+
+#     return Response(DeckSerializer(deck).data, status=200)
 
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def deck_pull_updates_view(request, deck_id, *args, **kwargs):
-    """
-    Gets the updates for a deck - POST
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def shared_deck_push_updates_view(request, shared_deck_id, *args, **kwargs):
+#     """
+#     Allows the author of a shared deck to push flashcard changes - POST
 
-    Required information:
-        `deck_id`: (URL) Id of the deck to updates
-        `to_pull_from`: (Data) Id of the shared deck to pull changes from
-    """
-    # Get deck
-    try:
-        deck = Deck.objects.get(
-            pk=deck_id,
-            user=request.user,
-        )  # type: Deck
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck does not exist'}, status=400)
+#     Required information:
+#         `shared_deck_id`: (Data) Id of the shared deck
+#         `origin_deck_id`: (Data) Id of the deck to get new changes from
+#         `check_diff_only`: (Data) If True, this will get the difference between the
+#             shared deck and the origin deck, and not actually enact the changes
+#     """
+#     check_diff_only = request.data.get('check_diff_only', False)
 
-    # Get shared deck
-    to_pull_from = request.data.get('to_pull_from')
-    try:
-        shared_deck = SharedDeck.objects.get(pk=to_pull_from)
-    except SharedDeck.DoesNotExist:
-        return Response({'message': 'Shared deck does not exist'}, status=400)
+#     # Get shared deck
+#     try:
+#         shared_deck = SharedDeck.objects.get(
+#             pk=shared_deck_id,
+#             user=request.user,
+#         )
+#     except SharedDeck.DoesNotExist:
+#         return Response({'message': 'Could not find the specified shared deck'}, status=404)
 
-    deck = deck.pull_updates(shared_deck)
+#     # Get origin deck
+#     try:
+#         origin_deck = Deck.objects.get(
+#             pk=request.data.get('origin_deck_id'),
+#             user=request.user,
+#         )
+#    except Deck.DoesNotExist:
+#        return Response(
+#             {'message': 'This deck does not exist / you are unauthorized'},
+#             status=400,
+#         )
 
-    return Response(DeckSerializer(deck).data, status=200)
+#     data = shared_deck.push_updates(origin_deck, check_diff_only)
+#     if isinstance(data, SharedDeck):
+#         data = SharedDeckSerializer(data).data
+
+#     return Response(data, status=200)
+
+
+# # TODO: Combine with `deck_pull_updates_view`
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def deck_get_updates_view(request, deck_id, *args, **kwargs):
+#     """
+#     Gets the updates for a deck - GET
+
+#     Required information:
+#         `deck_id`: (URL) Id of the deck to get updates for
+#     """
+#     # Get deck
+#     try:
+#         deck = Deck.objects.get(
+#             pk=deck_id,
+#             user=request.user,
+#         )
+#     except Deck.DoesNotExist:
+#         return Response({'message': 'Deck does not exist / you are unauthorized'}, status=400)
+
+#     # Find decks that need updating
+#     needs_updating = deck.list_available_updates()
+
+#     return Response({'needs_updating': needs_updating}, status=200)
+
+
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def deck_pull_updates_view(request, deck_id, *args, **kwargs):
+#     """
+#     Gets the updates for a deck - POST
+
+#     Required information:
+#         `deck_id`: (URL) Id of the deck to updates
+#         `to_pull_from`: (Data) Id of the shared deck to pull changes from
+#     """
+#     # Get deck
+#     try:
+#         deck = Deck.objects.get(
+#             pk=deck_id,
+#             user=request.user,
+#         )  # type: Deck
+#     except Deck.DoesNotExist:
+#         return Response({'message': 'Deck does not exist'}, status=400)
+
+#     # Get shared deck
+#     to_pull_from = request.data.get('to_pull_from')
+#     try:
+#         shared_deck = SharedDeck.objects.get(pk=to_pull_from)
+#     except SharedDeck.DoesNotExist:
+#         return Response({'message': 'Shared deck does not exist'}, status=400)
+
+#     deck = deck.pull_updates(shared_deck)
+
+#     return Response(DeckSerializer(deck).data, status=200)
 
 
 # ===== Deck Import/Export =====
@@ -582,53 +576,53 @@ def deck_statistics_view(request, deck_id, *args, **kwargs):
 
 
 # TODO: Rewrite function
-@api_view(['GET'])
-def deck_search_view(request, *args, **kwargs):
-    """
-    Searches for decks based on a query - GET
+# @api_view(['GET'])
+# def deck_search_view(request, *args, **kwargs):
+#     """
+#     Searches for decks based on a query - GET
 
-    Required information:
-        `q`: (GET) Query for searching
+#     Required information:
+#         `q`: (GET) Query for searching
 
-    Possible errors:
-        No query: 400, Please specify a query
+#     Possible errors:
+#         No query: 400, Please specify a query
 
-    Returns:
-        A list of decks (DeckSerializer)
-    """
-    query = request.GET.get('q')
-    if query is None:
-        return Response({'message': 'Please specify a query'}, status=400)
+#     Returns:
+#         A list of decks (DeckSerializer)
+#     """
+#     query = request.GET.get('q')
+#     if query is None:
+#         return Response({'message': 'Please specify a query'}, status=400)
 
-    # Attempt to read cached value for query
-    # (spaces will break it, so we need to replace them)
-    CACHE_KEY = f'deck-search-q="{query.replace(" ", "<<SPACE_CHAR>>")}"'
-    sorted_qs = cache.get(CACHE_KEY)
+#     # Attempt to read cached value for query
+#     # (spaces will break it, so we need to replace them)
+#     CACHE_KEY = f'deck-search-q="{query.replace(" ", "<<SPACE_CHAR>>")}"'
+#     sorted_qs = cache.get(CACHE_KEY)
 
-    if sorted_qs is None:
-        # Get all public decks
-        deck_qs = SharedDeck.objects.filter(sharing_setting='PUBLIC')
+#     if sorted_qs is None:
+#         # Get all public decks
+#         deck_qs = SharedDeck.objects.filter(sharing_setting='PUBLIC')
 
-        # Function for calculating how "relevant" each search result is
-        THRESHOLD = 120
+#         # Function for calculating how "relevant" each search result is
+#         THRESHOLD = 120
 
-        def sorting_function(deck):
-            return -(
-                + fuzz.token_set_ratio(query, deck.description) * 1.0
-                + fuzz.token_set_ratio(query, deck.title) * 2.0
-                + fuzz.token_set_ratio(query, deck.user.username) * 0.8
-            )
+#         def sorting_function(deck):
+#             return -(
+#                 + fuzz.token_set_ratio(query, deck.description) * 1.0
+#                 + fuzz.token_set_ratio(query, deck.title) * 2.0
+#                 + fuzz.token_set_ratio(query, deck.user.username) * 0.8
+#             )
 
-        # Sort based on function
-        sorted_qs = sorted(
-            [deck for deck in deck_qs if sorting_function(deck) < -THRESHOLD],
-            key=sorting_function,
-        )
+#         # Sort based on function
+#         sorted_qs = sorted(
+#             [deck for deck in deck_qs if sorting_function(deck) < -THRESHOLD],
+#             key=sorting_function,
+#         )
 
-        # Cache result for 6 hours
-        cache.set(CACHE_KEY, sorted_qs, 60*60*6)
+#         # Cache result for 6 hours
+#         cache.set(CACHE_KEY, sorted_qs, 60*60*6)
 
-    return get_paginated_queryset_response(sorted_qs, request, SharedDeckSerializer, 5)
+#     return get_paginated_queryset_response(sorted_qs, request, SharedDeckSerializer, 5)
 
 
 # ====== Flashcards ======
@@ -935,42 +929,6 @@ def flashcard_review_instance_bulk_update_view(request, *args, **kwargs):
 
 
 # ===== Flashcard Study =====
-# TODO: Delete
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def ssm_flashcards_view(request, ssm_id, *args, **kwargs):
-    """
-    Gets the due flashcards from a SSM - GET
-
-    Required information:
-        `ssm_id`: (URL) ID of the study session manager
-        `from_overflow_bucket`=false: (GET) If True, load reviews from
-            the overflow bucket rather than from the reviews for this single day
-
-    Possible errors:
-        SSM does not exist: 404, SSM does not exist
-    """
-    try:
-        ssm = DeckStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
-    except DeckStudySessionManager.DoesNotExist:
-        try:
-            ssm = CustomStudySessionManager.objects.get(pk=ssm_id, user=request.user.profile)
-        except CustomStudySessionManager.DoesNotExist:
-            return Response({'message': 'SSM does not exist'}, status=404)
-
-    seen_flashcards, unseen_flashcards = ssm.get_flashcards()
-    reviews = ssm.get_reviews(
-        seen_flashcards,
-        unseen_flashcards,
-        request.GET.get('from_overflow_bucket') == 'true',
-    )
-
-    return Response({
-        'flashcards': ReviewInstanceSerializer(reviews['flashcards'], many=True).data,
-        'num_overflow': reviews['num_overflow'],
-    }, status=200)
-
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def game_flashcards_view(request, *args, **kwargs):
@@ -992,16 +950,16 @@ def game_flashcards_view(request, *args, **kwargs):
     if not request.data.get('options').get('include_cloze'):
         query &= ~Q(flashcard__flashcard_type='cloze')
 
-    # See if the "deck" is actually a CSSM
-    try:
-        cssm = CustomStudySessionManager.objects.get(pk=deck_id, user=request.user.profile)
-    except CustomStudySessionManager.DoesNotExist:
-        cssm = None
+    # # See if the "deck" is actually a CSSM
+    # try:
+    #     cssm = CustomStudySessionManager.objects.get(pk=deck_id, user=request.user.profile)
+    # except CustomStudySessionManager.DoesNotExist:
+    #     cssm = None
 
-    if cssm:
-        query &= cssm.generate_query()
-    else:
-        query &= Q(flashcard__deck__id=deck_id)
+    # if cssm:
+    #     query &= cssm.generate_query()
+    # else:
+    query &= Q(flashcard__deck__id=deck_id)
 
     # Get the list of all possible flashcards, based on the method type
     if method_type == 'SEEN' or method_type == 'PERSONAL':

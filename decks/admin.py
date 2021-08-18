@@ -1,9 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import (CustomStudySessionManager, Deck, DeckClone,
-                     DeckStudySessionManager, FlashCard, ReviewInstance,
-                     ReviewInstanceHistory, SharedDeck, SharedDeckRelation)
+from .models import Deck, FlashCard, ReviewInstance, ReviewInstanceHistory
 
 
 class FlashCardAdmin(admin.ModelAdmin):
@@ -67,21 +65,7 @@ class DeckAdmin(admin.ModelAdmin):
         model = Deck
 
 
-class SharedDeckAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'user']
-    search_fields = ['title', 'user__username', 'user__email']
-    exclude = ['inherits_flashcards_from', 'shared_deck']
-
-    class Meta:
-        model = SharedDeck
-
-
 admin.site.register(Deck, DeckAdmin)
-admin.site.register(SharedDeck, SharedDeckAdmin)
-admin.site.register(SharedDeckRelation)
 admin.site.register(FlashCard, FlashCardAdmin)
 admin.site.register(ReviewInstance, ReviewInstanceAdmin)
 admin.site.register(ReviewInstanceHistory, ReviewInstanceHistoryAdmin)
-admin.site.register(DeckClone)
-admin.site.register(DeckStudySessionManager)
-admin.site.register(CustomStudySessionManager)

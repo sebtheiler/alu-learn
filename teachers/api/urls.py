@@ -22,8 +22,8 @@ urlpatterns = [
     path('classroom/<int:classroom_id>/assignments/<int:assignment_id>/edit/', views.edit_assignment_view),
     path('classroom/<int:classroom_id>/assignments/<int:assignment_id>/delete/', views.delete_assignment_view),
     path('classroom/<int:classroom_id>/assignments/<int:assignment_id>/progress/', views.student_percent_complete_list),
-    path('classroom/<int:classroom_id>/assignments/<int:assignment_id>/study/', views.study_assignment_view),
+    # path('classroom/<int:classroom_id>/assignments/<int:assignment_id>/study/', views.study_assignment_view),
     path('classroom/<int:classroom_id>/assignments/<int:assignment_id>/', views.assignment_detail_view),
-    path('classroom/<int:classroom_id>/ssm/', views.classroom_get_ssm_view),
-    path('classroom/<int:classroom_id>/ssm/edit/', views.classroom_edit_ssm_view),
+    # path('classroom/<int:classroom_id>/ssm/', views.classroom_get_ssm_view),
+    # path('classroom/<int:classroom_id>/ssm/edit/', views.classroom_edit_ssm_view),
 ]

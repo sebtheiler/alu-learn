@@ -1,13 +1,10 @@
 from __future__ import \
     annotations  # TODO: remove this when we upgrade to python 3.10 (and Union and others)
 
-import datetime as dt
 import json
-import random
 import re
 import uuid
 from collections import defaultdict
-from itertools import chain
 from typing import Dict, List, Literal, Tuple, Union
 
 from django.conf import settings
@@ -17,9 +14,8 @@ from django.db import models
 from django.db.models.aggregates import Avg
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import pre_delete
 from django.utils import timezone
-from profiles.models import Profile
 from skill_tree.models import MainSection, SubSection
 from utils import get_morning
 
@@ -65,55 +61,6 @@ class Deck(models.Model):
     def __str__(self) -> str:
         return str(self.title)
 
-    def create_shared_deck(
-        self,
-        title: str,
-        description: str,
-        view_access: str,
-        edit_access: str,
-        owners: str,
-        include_copied_flashcards: bool = False,
-    ) -> SharedDeck:
-        shared_deck = SharedDeck.objects.create(
-            user=self.user,
-            title=title,
-            description=description,
-            sharing_setting=view_access,
-            deck_type='shared',
-        )  # type: SharedDeck
-
-        shared_deck.creators.add(self)
-
-        # Clone flashcards
-        flashcards = self.flashcards.prefetch_related('review_instances')
-        flashcards_to_create = []
-
-        for flashcard in flashcards:
-            if flashcard.copied_from_creator and not include_copied_flashcards:
-                # By default, this stops flashcards copied from another deck from
-                # being re-published
-                continue
-
-            # Clone flashcard
-            shared_flashcard = FlashCard(
-                deck=shared_deck,
-                flashcard_type=flashcard.flashcard_type,
-                flashcard_num=flashcard.flashcard_num,
-                origin_creator=flashcard,
-                # Text info
-                fields=flashcard.fields,
-                tags=flashcard.tags,
-            )
-            flashcards_to_create.append(shared_flashcard)
-
-        FlashCard.objects.bulk_create(flashcards_to_create)
-
-        return shared_deck
-
-    def user_has_access(self, user: User) -> bool:
-        # For redundancy with `SharedDeck`
-        return self.user == user
-
     def get_statistics(self) -> Dict:
         # Get various flashcard types (only counts are used)
         default = Q(is_suspended=False, flashcard__deck=self)
@@ -146,70 +93,6 @@ class Deck(models.Model):
             'num_suspended': suspended_flashcards.count(),
             'avg_ease': avg_ease,
         }
-
-    def pull_updates(self, shared_deck: SharedDeck) -> Deck:
-        # Since updating can take a few seconds, we have a lock
-        # here so that two updates can't be initiated at once
-        if self.is_updating:
-            raise ValueError('Deck is already updating')
-
-        self.is_updating = True
-        self.save()
-
-        local_flashcards = FlashCard.objects.filter(
-            deck=self,
-            copied_from_deck=shared_deck,
-        )  # type: List[FlashCard]
-        shared_flashcards = shared_deck.flashcards.all()
-
-        flashcards_to_create = []  # type: List[FlashCard]
-        flashcards_to_update = []  # type: List[FlashCard]
-        flashcard_ids_not_to_delete = []  # type: List[str]
-        review_instances_to_create = []  # type: List[ReviewInstance]
-        for shared_flashcard in shared_flashcards:
-            try:
-                local_flashcard = local_flashcards.get(
-                    copied_from_creator=shared_flashcard,
-                )  # type: FlashCard
-            except FlashCard.DoesNotExist:
-                local_flashcard = None
-
-            if local_flashcard is None:
-                new_flashcards, new_review_instances = shared_flashcard.clone(
-                    self,
-                )
-                flashcards_to_create.append(new_flashcards)
-                flashcard_ids_not_to_delete.append(new_flashcards.pk)
-                review_instances_to_create += new_review_instances
-            else:
-                # Update existing flashcards
-                flashcard, _ = local_flashcard.update(
-                    flashcard_to_get_updates_from=shared_flashcard,
-                )
-                flashcards_to_update.append(flashcard)
-                flashcard_ids_not_to_delete.append(flashcard.pk)
-
-        # Create all flashcard review instances
-        FlashCard.objects.bulk_create(flashcards_to_create)
-        ReviewInstance.objects.bulk_create(review_instances_to_create)
-        FlashCard.objects.bulk_update(
-            flashcards_to_update,
-            ['tags', 'flashcard_num'],
-        )
-
-        # Delete all flashcards that weren't updated
-        not_updated = local_flashcards.filter(~Q(pk__in=flashcard_ids_not_to_delete))
-        not_updated.delete()
-
-        # Bump version number and return
-        shared_deck_relation = self.shared_deck_relations.get(shared_deck=shared_deck)
-        shared_deck_relation.cloned_at_version = shared_deck.version_number
-        shared_deck_relation.save()
-
-        self.is_updating = False
-        self.save()
-
-        return self
 
     def calc_percent_complete(self, flashcards: QuerySet[ReviewInstance] = None) -> float:
         # TODO: Cache this
@@ -292,30 +175,6 @@ class Deck(models.Model):
         return skill_tree
 
 
-# TODO: delete
-class SharedDeckRelation(models.Model):
-    deck = models.ForeignKey(
-        Deck,
-        on_delete=models.CASCADE,
-        related_name='shared_deck_relations',
-    )
-    shared_deck = models.ForeignKey(
-        'SharedDeck',
-        on_delete=models.CASCADE,
-        related_name='children_decks',
-    )
-    cloned_at_version = models.IntegerField(default=0)
-
-    def __str__(self) -> str:
-        return f'{self.shared_deck.title} ==> {self.deck.title}'
-
-
-# TODO: delete
-class FlashCardManager(models.Manager):
-    def get_queryset(self) -> QuerySet:
-        return super().get_queryset().prefetch_related('deck')
-
-
 class FlashCard(models.Model):
     # === BASIC INFO ===
     deck = models.ForeignKey(
@@ -337,7 +196,6 @@ class FlashCard(models.Model):
     # === OTHER ===
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     universal_flashcard_id = models.UUIDField(null=True, blank=True)  # for sharing
-    objects = FlashCardManager()
 
     class Meta:
         ordering = ['flashcard_num']
@@ -612,16 +470,6 @@ class ReviewInstance(models.Model):
     def is_leech(self) -> bool:
         return self.flashcard.has_tag('leech')
 
-    def set_is_leech(self, is_leech: bool, save: bool = True) -> str:
-        # TODO: turn leech into a bool attr instead of tag
-        flashcard = self.flashcard
-        if is_leech:
-            flashcard.add_tag('leech', save)
-        else:
-            flashcard.remove_tag('leech', save)
-
-        return flashcard.tags
-
     @staticmethod
     def create_review_instance(
         flashcard_type: FlashCardTypes,
@@ -763,347 +611,6 @@ class ReviewInstance(models.Model):
                 .distinct()
 
 
-# TODO: delete
-class StudySessionManager(models.Model):
-    user = models.ForeignKey(
-        Profile,
-        null=True,
-        on_delete=models.CASCADE,
-        related_name='study_session_managers',
-    )
-
-    ALGORITHM_OPTIONS = [
-        ('ANKI', 'Default Anki Settings'),
-        ('ANKING', 'Optimized Anki Settings'),
-    ]
-    scheduling_algorithm = models.CharField(
-        max_length=10,
-        choices=ALGORITHM_OPTIONS,
-        default='ANKING',
-    )
-
-    shuffle_unseen_cards = models.BooleanField(default=False)
-    review_ahead_minutes = models.PositiveIntegerField(default=120)
-
-    daily_new_card_limit = models.PositiveSmallIntegerField(default=20)
-    new_cards_done_today = models.PositiveSmallIntegerField(default=0)
-
-    daily_seen_card_limit = models.PositiveSmallIntegerField(default=200)
-    seen_cards_done_today = models.PositiveSmallIntegerField(default=0)
-
-    DIFFICULTY_OPTIONS = [
-        ('HARD', 'Memorize Everything'),
-        ('NORM', 'Memorize Most Things'),
-        ('EASY', 'Get the Overview'),
-    ]
-    difficulty = models.CharField(
-        max_length=4,
-        choices=DIFFICULTY_OPTIONS,
-        default='HARD',
-    )
-
-    def calc_review_cutoff(self) -> dt.date:
-        # Calculate the review cutoff time using `review_ahead_minutes`
-
-        # TODO: despite the comment, this is definitely getting flashcards from tomorrow
-        now = timezone.now()
-        review_cutoff = min(  # if the user is studying late, don't get flashcards from tomorrow
-            now + dt.timedelta(minutes=self.review_ahead_minutes),
-            dt.datetime.combine(
-                dt.date.today() + dt.timedelta(days=1),
-                dt.datetime.min.time(),
-                tzinfo=dt.timezone.utc,
-            )  # .combine is needed to convert the date object to a datetime object
-        )
-
-        return review_cutoff
-
-    def get_reviews(
-        self,
-        seen_flashcards: QuerySet[ReviewInstance],
-        unseen_flashcards: QuerySet[ReviewInstance],
-        from_overflow_bucket: bool = False,
-    ) -> QuerySet[ReviewInstance]:
-        # Split the seen flashcards into recently due flashcards,
-        # and old flashcards for the Overflow Bucket
-        # TODO: 1 query
-        recent_cutoff = timezone.now() - dt.timedelta(days=1, hours=2)
-        overflow_bucket_cards = seen_flashcards.filter(
-            next_review__lt=recent_cutoff,
-        )
-        if from_overflow_bucket:
-            return {'flashcards': overflow_bucket_cards, 'num_overflow': None}
-
-        recently_due = seen_flashcards.filter(
-            next_review__gte=recent_cutoff,
-        )
-
-        # Get the earliest seen flashcards under the limit
-        seen_flashcard_count = max(self.daily_seen_card_limit - self.seen_cards_done_today, 0)
-        seen_flashcards = recently_due.order_by(
-            'next_review'
-        )[:seen_flashcard_count]
-
-        # Determine which unseen flashcards to show
-        unseen_flashcard_count = self.daily_new_card_limit - self.new_cards_done_today
-        if unseen_flashcard_count > 0:
-            if self.shuffle_unseen_cards:
-                unseen_flashcards = random.sample(
-                    list(unseen_flashcards),
-                    min(unseen_flashcard_count, unseen_flashcards.count()),
-                )
-            else:
-                unseen_flashcards = unseen_flashcards[:unseen_flashcard_count]
-        else:
-            unseen_flashcards = []
-
-        # Combine seen and unseen flashcards
-        flashcards = list(chain(seen_flashcards, unseen_flashcards))
-
-        return {
-            'flashcards': flashcards,
-            'num_overflow': overflow_bucket_cards.count() if not from_overflow_bucket else None,
-        }
-
-
-# TODO: delete
-class DeckStudySessionManagerModelManager(models.Manager):
-    def get_queryset(self) -> QuerySet:
-        return super().get_queryset().prefetch_related('deck', 'deck__user')
-
-
-# TODO: delete
-class DeckStudySessionManager(StudySessionManager):
-    deck = models.OneToOneField(
-        Deck,
-        on_delete=models.CASCADE,
-        related_name='study_session_manager',
-    )
-
-    objects = DeckStudySessionManagerModelManager()
-
-    def __str__(self) -> str:
-        return f'SSM for "{self.deck.title}" by @{self.deck.user.username}'
-
-    def get_flashcards(self) -> Tuple[QuerySet[ReviewInstance], QuerySet[ReviewInstance]]:
-        review_cutoff = self.calc_review_cutoff()
-
-        ssm_flashcards = ReviewInstance.objects.filter(
-            flashcard__deck__pk=self.deck.pk
-        )
-        seen_flashcards = ssm_flashcards.filter(
-            Q(next_review__lt=review_cutoff) &
-            ~Q(learning_status__iexact='UNSEEN') &
-            Q(is_suspended=False)
-        )
-        unseen_flashcards = ssm_flashcards.filter(
-            learning_status__iexact='UNSEEN',
-            is_suspended=False,
-        )
-
-        return seen_flashcards, unseen_flashcards
-
-
-# TODO: delete
-class CustomStudySessionManager(StudySessionManager):
-    title = models.CharField(max_length=128)
-
-    # Filter parameters
-    deck_ids = models.CharField(default='', blank=True, max_length=1024)
-    tags = models.CharField(default='', blank=True, max_length=1024)
-    contains = models.CharField(default='', blank=True, max_length=1024)
-    leech = models.BooleanField(null=True, blank=True)
-    learning_status = models.CharField(null=True, blank=True, max_length=10)
-    min_ease = models.PositiveSmallIntegerField(null=True, blank=True)
-    max_ease = models.PositiveSmallIntegerField(null=True, blank=True)
-
-    def __str__(self) -> str:
-        return f'CSSM: "{self.title}" by @{self.user}'
-
-    def generate_query(self, review_cutoff: dt.date = None) -> Q:
-        return ReviewInstance.search_flashcards(
-            self.user,
-            self.deck_ids,
-            self.tags,
-            self.contains,
-            False,  # suspended (can't study suspended cards)
-            self.leech,
-            self.learning_status,
-            self.min_ease,
-            self.max_ease,
-            review_cutoff,
-            return_query_only=True,
-        )
-
-    def get_flashcards(self) -> Tuple[QuerySet[ReviewInstance], QuerySet[ReviewInstance]]:
-        review_cutoff = self.calc_review_cutoff()
-        searched_flashcards = ReviewInstance.objects.filter(self.generate_query(review_cutoff))
-
-        seen_flashcards = searched_flashcards.filter(~Q(learning_status__iexact='UNSEEN'))
-        unseen_flashcards = searched_flashcards.filter(learning_status__iexact='UNSEEN')
-
-        return seen_flashcards, unseen_flashcards
-
-
-# TODO: delete
-class SharedDeck(Deck):
-    description = models.TextField(default='', blank=True, null=True)
-    version_number = models.IntegerField(default=0)
-
-    SHARING_OPTIONS = [
-        ('FRIENDS', 'Friends only'),
-        ('PUBLIC', 'Public'),
-        ('STUDENT', 'Students only (for teachers)'),
-    ]
-    sharing_setting = models.CharField(
-        max_length=7,
-        choices=SHARING_OPTIONS,
-        default='PRIVATE',
-    )
-
-    def clone(
-        self,
-        user: User,
-        destination_deck_title: str = None,
-        options: dict = {},
-    ) -> Deck:
-        # Get or create the deck that the shared deck will be cloned into
-        try:
-            # If the student is copying this deck from a teacher,
-            # this is the classroom the deck is attached to
-            attached_to_classroom = self.attached_to_classroom
-        except SharedDeck.attached_to_classroom.RelatedObjectDoesNotExist:
-            attached_to_classroom = None
-
-        deck, created = Deck.objects.get_or_create(
-            user=user,
-            title=destination_deck_title or self.title,
-            student_attached_to=attached_to_classroom,
-        )
-
-        # Add the deck into the destination decks list of shared decks
-        SharedDeckRelation.objects.create(
-            deck=deck,
-            shared_deck=self,
-            cloned_at_version=self.version_number,
-        )
-
-        DeckClone.objects.create(
-            deck=self,
-            profile=user.profile,
-        )
-
-        shared_flashcards = self.flashcards.all()
-
-        flashcards = []
-        review_instances = []
-        for shared_flashcard in shared_flashcards:
-            new_flashcards, new_review_instances = shared_flashcard.clone(deck)
-            flashcards.append(new_flashcards)
-            review_instances += new_review_instances
-
-        FlashCard.objects.bulk_create(flashcards)
-        ReviewInstance.objects.bulk_create(review_instances)
-
-        return deck
-
-    def push_updates(
-        self,
-        origin_deck: Deck,
-        check_diff_only: bool = False,
-    ):
-        diff = {'created': 0, 'modified': 0, 'deleted': 0}
-
-        # Update the shared deck's flashcards
-        origin_flashcards = origin_deck.flashcards.prefetch_related(
-            'shared_mirror',
-        )  # type: List[FlashCard]
-        shared_flashcards_to_update = []  # type: List[FlashCard]
-        new_flashcards_to_create = []  # type: List[FlashCard]
-        flashcard_ids_not_to_delete = []  # type: List[str]
-
-        for origin_flashcard in origin_flashcards:
-            try:
-                shared_mirror = origin_flashcard.shared_mirror
-            except FlashCard.DoesNotExist:
-                shared_mirror = None
-
-            if shared_mirror is None:
-                if not check_diff_only:
-                    new_flashcard, _ = origin_flashcard.clone(
-                        self,
-                        origin_or_copied='ORIGIN',
-                        skip_creating_review_instances=True,
-                    )
-                    new_flashcards_to_create.append(new_flashcard)
-                    flashcard_ids_not_to_delete.append(new_flashcard.pk)
-
-                diff['created'] += 1
-            else:
-                flashcard, actual_difference = shared_mirror.update(
-                    flashcard_to_get_updates_from=origin_flashcard,
-                    check_diff_only=check_diff_only,
-                )
-                flashcard_ids_not_to_delete.append(flashcard.pk)
-
-                if actual_difference:
-                    diff['modified'] += 1
-                    shared_flashcards_to_update.append(flashcard)
-
-        # Bulk create and update
-        if not check_diff_only:
-            FlashCard.objects.bulk_create(new_flashcards_to_create)
-            FlashCard.objects.bulk_update(
-                shared_flashcards_to_update,
-                ['fields', 'tags', 'flashcard_num'],
-            )
-
-        # Delete all flashcards that weren't updated
-        shared_mirrors = FlashCard.objects.filter(deck=self)
-        not_updated = shared_mirrors.filter(~Q(pk__in=flashcard_ids_not_to_delete))
-        diff['deleted'] += not_updated.count()
-        if not check_diff_only:
-            not_updated.delete()
-
-        if check_diff_only:
-            return diff
-        else:
-            # Increment version number
-            self.version_number += 1
-            self.save()
-
-            return self
-
-    def user_has_access(self, user: User) -> bool:
-        return (
-            user == self.user or
-            self.sharing_setting == 'PUBLIC' or
-            (not user.is_anonymous and (
-                (  # user is friend
-                    self.sharing_setting == 'FRIENDS' and
-                    user in self.user.profile.friends.all()
-                ) or
-                (  # user is student
-                    self.sharing_setting == 'STUDENT' and
-                    self.attached_to_classroom.students.filter(
-                        pk=user.profile.pk,
-                    ).exists()
-                )
-            ))
-        )
-
-
-# TODO: delete
-# Replace with `Deck.objects.filter(equivalent_to_snapshot__shared_deck=...).count()`
-class DeckClone(models.Model):
-    deck = models.ForeignKey(SharedDeck, on_delete=models.CASCADE, related_name='clones')
-    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='clones')
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self) -> str:
-        return f'Clone from @{self.profile.user.username} for Deck #{self.deck.id}'
-
-
 class ReviewInstanceHistory(models.Model):
     review_instance = models.ForeignKey(
         ReviewInstance,
@@ -1148,16 +655,6 @@ class ReviewInstanceHistory(models.Model):
         verbose_name_plural = 'Review instance histories'
 
 
-# TODO: delete
-# When a deck is created, create it's DSSM
-def deck_saved(sender, instance, created, using, *args, **kwargs):
-    if created:
-        DeckStudySessionManager.objects.using(using).create(
-            deck=instance,
-            user=instance.user.profile,
-        )
-
-
 # When a review instance is deleted, backup its ID in its history objs
 def review_instance_deleted(sender, instance, using, **kwargs):
     ReviewInstanceHistory.objects.using(using).filter(
@@ -1167,5 +664,4 @@ def review_instance_deleted(sender, instance, using, **kwargs):
     )
 
 
-post_save.connect(deck_saved, sender=Deck)
 pre_delete.connect(review_instance_deleted, sender=ReviewInstance)

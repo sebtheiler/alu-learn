@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import Tuple, Union
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
-from decks.models import Deck, ReviewInstance, SharedDeck, StudySessionManager
+from decks.models import Deck, ReviewInstance
+from community.models import SharedDeck
 from profiles.models import Profile
 from django.utils.crypto import get_random_string
 
@@ -23,18 +22,18 @@ class Classroom(models.Model):
         null=True,
         blank=True,
         related_name='attached_to_classroom',
-    )  # type: SharedDeck
+    )
 
     def __str__(self) -> str:
         return self.title
 
     def attach_deck(self, deck: Deck) -> SharedDeck:
         # Create shared deck
-        shared_deck = deck.create_shared_deck(
-            deck.title,
-            f'Deck for "{self.title}."  Students can copy and study this deck.',
+        shared_deck = SharedDeck.create(
+            deck=deck,
+            title=deck.title,
+            description=f'Deck for "{self.title}."  Students can copy and study this deck.',
             view_access='STUDENT',
-            include_copied_flashcards=True,
         )
 
         # Attach the deck
@@ -105,67 +104,3 @@ class Assignment(models.Model):
             return (total_flashcard_num - unseen_flashcard_num) / total_flashcard_num
         except ZeroDivisionError:
             return None
-
-    def get_study_session_manager(self, user: User) -> AssignmentStudySessionManager:
-        try:
-            assm = AssignmentStudySessionManager.objects.get(
-                assignment=self,
-                user=user.profile,
-            )
-
-            return assm.pk
-        except AssignmentStudySessionManager.DoesNotExist:
-            return None
-
-
-class ASSMManager(models.Manager):
-    def get_queryset(self) -> QuerySet:
-        return super().get_queryset().prefetch_related('assignment', 'user')
-
-
-class AssignmentStudySessionManager(StudySessionManager):
-    assignment = models.ForeignKey(
-        Assignment,
-        on_delete=models.CASCADE,
-        related_name='assignment_study_session_managers',
-    )  # type: Assignment
-
-    objects = ASSMManager()
-
-    def __str__(self) -> str:
-        return f'ASSM for {self.assignment.title} by {self.user}'
-
-    def get_attached_deck(self) -> Union[Deck, None]:
-        try:
-            return Deck.objects.get(
-                user=self.user.user,
-                student_attached_to=self.assignment.classroom,
-            )
-        except Deck.DoesNotExist:
-            return None
-
-    def get_flashcards(self) -> Tuple[QuerySet[ReviewInstance], QuerySet[ReviewInstance]]:
-        review_cutoff = self.calc_review_cutoff()
-
-        deck = self.get_attached_deck()
-        if deck is None:
-            deck = self.assignment.classroom.deck.clone(
-                self.user.user,
-            )
-
-        # Get flashcards from deck
-        ssm_flashcards = ReviewInstance.objects.filter(
-            Q(flashcard__deck__pk=deck.pk) &
-            ReviewInstance.search_tags(self.assignment.tag_query)
-        ).prefetch_related('flashcard')
-        seen_flashcards = ssm_flashcards.filter(
-            Q(next_review__lt=review_cutoff) &
-            ~Q(learning_status__iexact='UNSEEN') &
-            Q(is_suspended=False)
-        )
-        unseen_flashcards = ssm_flashcards.filter(
-            learning_status__iexact='UNSEEN',
-            is_suspended=False,
-        )
-
-        return seen_flashcards, unseen_flashcards

@@ -13,6 +13,7 @@ class SharedDeck(models.Model):
     VIEW_ACCESS_OPTIONS = (
         ('PUBLIC', 'Everybody can view this deck'),
         ('FRIENDS', 'Only friends can view this deck'),
+        ('STUDENT', 'Students can view this deck (for use in Classrooms only)')
     )
     EDIT_ACCESS_OPTIONS = (
         ('PERSONAL', 'Only you can submit edits'),

@@ -1,9 +1,8 @@
-from skill_tree.serializers import MainSectionSerializer
 from profiles.serializers import MinifiedProfileSerializer
 from rest_framework import serializers
+from skill_tree.serializers import MainSectionSerializer
 
-from .models import (CustomStudySessionManager, Deck, FlashCard,
-                     ReviewInstance, SharedDeck, StudySessionManager)
+from .models import Deck, FlashCard, ReviewInstance
 
 
 class FlashCardSerializer(serializers.ModelSerializer):
@@ -79,60 +78,3 @@ class DeckSerializer(serializers.ModelSerializer):
             'skill_tree_sections',
             'id',
         ]
-
-
-class SharedDeckSerializer(serializers.ModelSerializer):
-    user = MinifiedProfileSerializer('user')
-    num_clones = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = SharedDeck
-        fields = DeckSerializer.Meta.fields + [
-            'description',
-            'sharing_setting',
-            'num_clones',
-            'deck_type',
-            'creators',
-        ]
-
-    def get_num_clones(self, obj):
-        return obj.clones.count()
-
-
-class StudySessionManagerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StudySessionManager
-        fields = [
-            'scheduling_algorithm',
-            'shuffle_unseen_cards',
-            'daily_new_card_limit',
-            'daily_seen_card_limit',
-            'new_cards_done_today',
-            'review_ahead_minutes',
-            'difficulty',
-            'id',
-        ]
-
-
-class CustomStudySessionManagerSerializer(StudySessionManagerSerializer):
-    author = MinifiedProfileSerializer(source='user', read_only=True)
-    serializer_name = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = CustomStudySessionManager
-        fields = StudySessionManagerSerializer.Meta.fields + [
-            'author',
-            'title',
-            'serializer_name',
-            'deck_ids',
-            'tags',
-            'contains',
-            'leech',
-            'learning_status',
-            'min_ease',
-            'max_ease',
-        ]
-        read_only_fields = fields  # TODO: add `read_only_fields = fields` everywhere
-
-    def get_serializer_name(self, obj):
-        return 'cssm'
