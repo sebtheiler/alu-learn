@@ -61,6 +61,7 @@ class MainSection(AbstractSection):
         on_delete=models.CASCADE,
         related_name='skill_tree_sections',
     )
+    universal_mainsection_id = models.UUIDField(null=True, blank=True)
 
     def get_review_instance_query(self):
         ReviewInstance = apps.get_model('decks', 'ReviewInstance')
@@ -77,6 +78,7 @@ class SubSection(AbstractSection):
         on_delete=models.CASCADE,
         related_name='children',
     )
+    universal_subsection_id = models.UUIDField(null=True, blank=True)
 
     def get_review_instance_query(self):
         ReviewInstance = apps.get_model('decks', 'ReviewInstance')

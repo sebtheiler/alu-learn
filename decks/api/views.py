@@ -22,7 +22,7 @@ from ..serializers import (DeckSerializer, FlashCardSerializer,
 
 # ====== Decks ======
 # ===== Deck Lists =====
-# TODO: rewrite this as a `community` view
+# TODO: rewrite this as a `sharing_system` view
 # @api_view(['GET'])
 # @vary_on_cookie
 # @cache_control(private=True)
@@ -152,7 +152,7 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
 
 
 # ===== Shared Decks =====
-# TODO: rewrite in `community`
+# TODO: rewrite in `sharing_system`
 
 # TODO: delete and use `custom_..._func`
 # @api_view(['GET'])

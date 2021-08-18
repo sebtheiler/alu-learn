@@ -35,7 +35,7 @@ class Deck(models.Model):
     title = models.CharField(max_length=128)
 
     equivalent_to_snapshot = models.ForeignKey(
-        'community.SnapShot',
+        'sharing_system.SnapShot',
         on_delete=models.SET_NULL,
         related_name='decks_equivalent_to',
     )

@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.query_utils import Q
 from decks.models import Deck, ReviewInstance
-from community.models import SharedDeck
+from sharing_system.models import SharedDeck
 from profiles.models import Profile
 from django.utils.crypto import get_random_string
 
