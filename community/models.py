@@ -24,6 +24,9 @@ class SharedDeck(models.Model):
     edit_access = models.CharField(max_length=10, choices=EDIT_ACCESS_OPTIONS)
     owners = models.CharField(max_length=128)
 
+    def __str__(self) -> str:
+        return f'{self.title} by {self.owners}'
+
     @classmethod
     def create(
         deck: Deck,
@@ -109,7 +112,7 @@ class SharedDeck(models.Model):
 
         return deck
 
-    def push(self, deck: Deck, message: str):
+    def push(self, deck: Deck, message: str) -> SnapShot:
         latest_snapshot = self.snapshots.order_by('timestamp').last()
         if deck.equivalent_to_snapshot.pk != latest_snapshot.pk:
             raise ValueError('Deck is not up to date')
@@ -191,7 +194,13 @@ class SharedDeck(models.Model):
 
         return snapshot
 
-    def pull(self, deck: Deck):
+    def pull(self, deck: Deck) -> Deck:
+        if deck.is_updating:
+            raise ValueError('Deck is already updating')
+
+        deck.is_updating = True
+        deck.save()
+
         latest_snapshot = self.snapshots.order_by('timestamp').last()
 
         # TODO: this results in lots of DB queries that could be solved recursively
@@ -229,6 +238,7 @@ class SharedDeck(models.Model):
                 .prefetch_related('flashcard')
             for snapshot_flashcard_action in snapshot_flashcard_actions:
                 if snapshot_flashcard_action.action == 'CREATE':
+                    # TODO: also create review instances
                     origin_flashcard = snapshot_flashcard_action.flashcard
                     flashcards_to_create.append(FlashCard(
                         deck=deck,
@@ -262,7 +272,9 @@ class SharedDeck(models.Model):
         FlashCard.objects.filter(
             deck=deck, universal_flashcard_id__in=flashcard_uids_to_delete,
         ).delete()
+
         deck.equivalent_to_snapshot = latest_snapshot
+        deck.is_updating = False
         deck.save()
 
         return deck
@@ -287,6 +299,9 @@ class SnapShot(models.Model):
         FlashCard,
         related_name='shared_deck_snapshots',
     )
+
+    def __str__(self) -> str:
+        return f'Snapshot for {self.shared_deck}: {self.message}'
 
 
 class FlashCardAction(models.Model):
