@@ -13,7 +13,6 @@ class MainSectionAdmin(admin.ModelAdmin):
     inlines = (SubSectionInline,)
     list_display = (
         'title',
-        'tag',
         'get_user',
         'deck',
     )

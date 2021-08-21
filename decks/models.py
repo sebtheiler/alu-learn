@@ -7,6 +7,7 @@ import uuid
 from collections import defaultdict
 from typing import Dict, List, Literal, Tuple, Union
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.core.files.base import ContentFile
@@ -14,7 +15,7 @@ from django.db import models
 from django.db.models.aggregates import Avg
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
-from django.db.models.signals import pre_delete
+from django.db.models.signals import post_save, pre_delete
 from django.utils import timezone
 from skill_tree.models import MainSection, SubSection
 from utils import get_morning
@@ -664,4 +665,38 @@ def review_instance_deleted(sender, instance, using, **kwargs):
     )
 
 
+def deck_saved(sender, instance, created, **kwargs):
+    if created:
+        main_section = MainSection.objects.create(
+            deck=instance,
+            title='Default',
+            description='''
+Your flashcards are organized into different sections.
+This is the default "main section", which you can edit to be your first topic ("Unit 1").
+To create flashcards, click the "sub sections" below.
+            ''',
+        )
+        MainSectionAction = apps.get_model('sharing_system.MainSectionAction')
+        MainSectionAction.objects.create(
+            deck=instance,
+            main_section=main_section,
+            action='CREATE',
+        )
+        sub_section = SubSection.objects.create(
+            parent=main_section,
+            title='Default',
+            description='''
+Sub sections give you a fine level of control over how your deck is organized.
+Press "TK TK TODO: "
+            ''',
+        )
+        SubSectionAction = apps.get_model('sharing_system.SubSectionAction')
+        SubSectionAction.objects.create(
+            deck=instance,
+            sub_section=sub_section,
+            action='CREATE',
+        )
+
+
 pre_delete.connect(review_instance_deleted, sender=ReviewInstance)
+post_save.connect(deck_saved, sender=Deck)

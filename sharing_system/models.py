@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import uuid
-
 from accounts.models import User
 from decks.models import Deck, FlashCard, ReviewInstance
 from django.db import models
@@ -372,7 +370,7 @@ class MainSectionAction(AbstractAction):
         on_delete=models.SET_NULL,
         related_name='attached_action',
     )
-    universal_flashcard_id = models.UUIDField(null=True, blank=True)
+    universal_main_section_id = models.UUIDField(null=True, blank=True)
 
     @staticmethod
     def apply(actions: QuerySet[MainSectionAction], snapshot: SnapShot):
@@ -401,7 +399,7 @@ class SubSectionAction(AbstractAction):
         on_delete=models.SET_NULL,
         related_name='attached_action',
     )
-    universal_flashcard_id = models.UUIDField(null=True, blank=True)
+    universal_sub_section_id = models.UUIDField(null=True, blank=True)
 
     @staticmethod
     def apply(actions: QuerySet[SubSectionAction], snapshot: SnapShot):

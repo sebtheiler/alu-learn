@@ -73,8 +73,6 @@ class DeckSerializer(serializers.ModelSerializer):
         fields = [
             'user',
             'title',
-            'shared_deck',
-            'deck_type',
             'skill_tree_sections',
             'id',
         ]

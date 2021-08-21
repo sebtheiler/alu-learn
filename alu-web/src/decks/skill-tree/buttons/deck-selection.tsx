@@ -48,7 +48,6 @@ export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
         className='deck-selection-expand mb-1'
         onClick={e => e.stopPropagation()}
       >
-        <Button href={`/deck/${deck.id}/flashcards/create/`} block>Add Cards</Button>
         <Button onClick={() => setEditModalOpen(true)} block>Edit</Button>
         <EditModal
           deck={deck}
@@ -57,6 +56,9 @@ export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
         />
         <Button href={`/deck/${deck.id}/flashcards/`} block>
           View
+        </Button>
+        <Button href={`/deck/${deck.id}/share/`} block>
+          Share
         </Button>
         <hr />
         <Button onClick={() => setGameModalOpen(true)} block>Games</Button>

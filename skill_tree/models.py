@@ -10,12 +10,8 @@ from utils import get_morning
 # Abstract section that `MainSection` and `SubSection` inherit from
 class AbstractSection(models.Model):
     # === BASIC INFO ===
-    title = models.CharField(
-        max_length=128,
-        null=True,
-        blank=True,
-    )  # defaults to `tags`, but can be used as an alias
-    tag = models.CharField(max_length=128)
+    title = models.CharField(max_length=128)
+    description = models.TextField(max_length=4096)
 
     # === CACHES ===
     # Calculating percent complete is expensive, so we cache it
@@ -30,7 +26,7 @@ class AbstractSection(models.Model):
         abstract = True
 
     def __str__(self) -> str:
-        return self.title or self.tag
+        return self.title
 
     def get_percent_complete(self) -> float:
         if (
@@ -71,13 +67,13 @@ class MainSection(AbstractSection):
     )
     universal_mainsection_id = models.UUIDField(null=True, blank=True)
 
-    def get_review_instance_query(self):
-        ReviewInstance = apps.get_model('decks', 'ReviewInstance')
-        return (
-            ReviewInstance.search_tags(self.tag)
-            &
-            Q(flashcard__deck=self.deck)
-        )
+    # def get_review_instance_query(self):
+    #     ReviewInstance = apps.get_model('decks', 'ReviewInstance')
+    #     return (
+    #         ReviewInstance.search_tags(self.tag)
+    #         &
+    #         Q(flashcard__deck=self.deck)
+    #     )
 
 
 class SubSection(AbstractSection):
@@ -88,12 +84,12 @@ class SubSection(AbstractSection):
     )
     universal_subsection_id = models.UUIDField(null=True, blank=True)
 
-    def get_review_instance_query(self):
-        ReviewInstance = apps.get_model('decks', 'ReviewInstance')
-        return (
-            ReviewInstance.search_tags(
-                f'{self.parent.tag} AND {self.tag}'
-            )
-            &
-            Q(flashcard__deck=self.parent.deck)
-        )
+    # def get_review_instance_query(self):
+    #     ReviewInstance = apps.get_model('decks', 'ReviewInstance')
+    #     return (
+    #         ReviewInstance.search_tags(
+    #             f'{self.parent.tag} AND {self.tag}'
+    #         )
+    #         &
+    #         Q(flashcard__deck=self.parent.deck)
+    #     )

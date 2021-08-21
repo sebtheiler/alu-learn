@@ -5,7 +5,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import { MainSection, SubSection } from './types';
 
-export const cleanTag = (title: string) => title.replaceAll(' ', '-');
+export const cleanTitle = (title: string) => title.toLowerCase().replaceAll(' ', '-');
 export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll('__', ' AND ')
 
 interface SubSectionProps {
@@ -25,29 +25,29 @@ export default function RenderSubSection({ subSection, mainSection }: SubSection
         overlay={
           <Popover id='study-section-popover'>
             <Popover.Title as='h3' className='text-center'>
-              {subSection.title ?? subSection.tag}
+              {subSection.title}
             </Popover.Title>
             <Popover.Content>
-              <p>Description {/* TODO: subSection.description */}</p>
+              <p>{subSection.description}</p>
               <div>
                 <Button
-                  href={`/deck/${mainSection.deck}/study/${cleanTag(mainSection.tag)}__${cleanTag(subSection.tag)}/`}
+                  href={`/deck/${mainSection.deck}/study/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
                   block
                 >
                   Study
                 </Button>
                 <Button
-                  href={`/deck/${mainSection.deck}/flashcards/tags/${cleanTag(mainSection.tag)}__${cleanTag(subSection.tag)}/`}
+                  href={`/deck/${mainSection.deck}/flashcards/create/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
+                  block
+                >
+                  Add Flashcards
+                </Button>
+                <Button
+                  href={`/deck/${mainSection.deck}/flashcards/sections/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
                   variant='secondary'
                   block
                 >
                   View
-                </Button>
-                <Button
-                  variant='secondary'
-                  block
-                >
-                  Learning Resources
                 </Button>
               </div>
             </Popover.Content>
@@ -63,7 +63,7 @@ export default function RenderSubSection({ subSection, mainSection }: SubSection
           style={{ background: `conic-gradient(rgba(42, 157, 244, 1) ${(subSection.percent_complete ?? 0)*100}%, transparent 0%)` }}
         >
           <div className='sub-section-inner'>
-            <p className='sub-section-text'>{subSection.title ?? subSection.tag}</p>
+            <p className='sub-section-text'>{subSection.title}</p>
           </div>
         </div>
       </OverlayTrigger>

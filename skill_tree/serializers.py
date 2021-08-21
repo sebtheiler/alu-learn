@@ -8,7 +8,7 @@ class AbstractSectionSerializer(serializers.ModelSerializer):
         model = AbstractSection
         fields = (
             'title',
-            'tag',
+            'description',
             'id',
         )
         read_only_fields = fields

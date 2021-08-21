@@ -1,6 +1,7 @@
 import json
 import random
 import re
+from sharing_system.models import FlashCardAction
 import uuid
 from typing import List
 
@@ -677,6 +678,12 @@ def flashcard_create_view(request, *args, **kwargs):
         front_image=front_image,
         back_image=back_image,
         flashcard_uuid=flashcard_uuid,
+    )
+
+    FlashCardAction.objects.create(
+        deck=deck,
+        flashcard=flashcard,
+        action='CREATE',
     )
 
     return Response(
