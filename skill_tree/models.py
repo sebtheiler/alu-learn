@@ -1,3 +1,5 @@
+import uuid
+
 from django.apps import apps
 from django.db import models
 from django.db.models import Q
@@ -7,6 +9,7 @@ from utils import get_morning
 
 # Abstract section that `MainSection` and `SubSection` inherit from
 class AbstractSection(models.Model):
+    # === BASIC INFO ===
     title = models.CharField(
         max_length=128,
         null=True,
@@ -14,10 +17,14 @@ class AbstractSection(models.Model):
     )  # defaults to `tags`, but can be used as an alias
     tag = models.CharField(max_length=128)
 
+    # === CACHES ===
     # Calculating percent complete is expensive, so we cache it
     # Cache is cleared when a flashcard is completed or when fetching and a day has passed
     cached_percent_complete = models.FloatField(null=True, blank=True)
     cached_percent_complete_time = models.DateTimeField(null=True, blank=True)
+
+    # === OTHER ===
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     class Meta:
         abstract = True
@@ -60,6 +67,7 @@ class MainSection(AbstractSection):
         'decks.Deck',
         on_delete=models.CASCADE,
         related_name='skill_tree_sections',
+        null=True, blank=True,  # only when attached to a snapshot
     )
     universal_mainsection_id = models.UUIDField(null=True, blank=True)
 

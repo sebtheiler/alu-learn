@@ -26,14 +26,14 @@ export function ShareDeck(props) {
           sharingSetting: form.elements.sharingSetting.value,
         }).then(deck => window.location.href = `/decks/${deck.id}/`);
       } else {
-        apiCreateSharedDeck(deckId, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
-          if (status === 201) {
-            window.location.href = `/decks/${response.id}/`;
-          } else {
-            // Error creating shared deck
-            errorHandler(response, status, 1019);
-          }
-        });
+        // apiCreateSharedDeck(deckId, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
+        //   if (status === 201) {
+        //     window.location.href = `/decks/${response.id}/`;
+        //   } else {
+        //     // Error creating shared deck
+        //     errorHandler(response, status, 1019);
+        //   }
+        // });
       }
     }
   }

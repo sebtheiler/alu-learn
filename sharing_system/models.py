@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import uuid
+
 from accounts.models import User
 from decks.models import Deck, FlashCard, ReviewInstance
 from django.db import models
 from django.db.models.expressions import F, Q
+from django.db.models.query import QuerySet
+from skill_tree.models import MainSection, SubSection
 
 
 class SharedDeck(models.Model):
@@ -54,8 +58,14 @@ class SharedDeck(models.Model):
         deck.equivalent_to_snapshot = snapshot
         deck.save()
 
+        # Apply CREATE actions to clone sections
+        MainSectionAction.apply(
+            deck.mainsectionactions.filter(action='CREATE'),
+            snapshot,
+        )
+
         # Apply CREATE actions to clone FlashCards (not ReviewInstances)
-        deck_flashcard_actions = deck.flashcard_actions.filter(action='CREATE')
+        deck_flashcard_actions = deck.flashcardactions.filter(action='CREATE')
         flashcards = FlashCard.objects.filter(attached_action__in=deck_flashcard_actions)
 
         flashcards_to_create = [FlashCard(
@@ -132,7 +142,7 @@ class SharedDeck(models.Model):
         old_flashcards_to_not_include = []  # list of `universal_flashcard_id`s to remove
         origin_flashcards_to_update_uid = []
 
-        deck_flashcard_actions = deck.flashcard_actions.all()\
+        deck_flashcard_actions = deck.flashcardactions.all()\
             .prefetch_related('flashcard')
 
         for deck_flashcard_action in deck_flashcard_actions:
@@ -225,8 +235,8 @@ class SharedDeck(models.Model):
             snapshots_to_apply = SnapShot.objects.filter(
                 pk__in=[snapshot.pk for snapshot in snapshots_to_apply],
             ).prefetch_related(
-                'applied_flashcard_actions',
-                'applied_flashcard_actions__flashcard',
+                'applied_flashcardactions',
+                'applied_flashcardactions__flashcard',
             ).all()
 
         # Apply the snapshots that need applying
@@ -234,7 +244,7 @@ class SharedDeck(models.Model):
         flashcards_to_edit = []
         flashcard_uids_to_delete = []
         for snapshot in snapshots_to_apply:
-            snapshot_flashcard_actions = snapshot.applied_flashcard_actions\
+            snapshot_flashcard_actions = snapshot.applied_flashcardactions\
                 .all()\
                 .prefetch_related('flashcard')
             for snapshot_flashcard_action in snapshot_flashcard_actions:
@@ -296,8 +306,13 @@ class SnapShot(models.Model):
         on_delete=models.SET_NULL,
         related_name='children',
     )
+
     flashcards = models.ManyToManyField(
         FlashCard,
+        related_name='shared_deck_snapshots',
+    )
+    main_sections = models.ManyToManyField(
+        MainSection,
         related_name='shared_deck_snapshots',
     )
 
@@ -305,17 +320,7 @@ class SnapShot(models.Model):
         return f'Snapshot for {self.shared_deck}: {self.message}'
 
 
-class FlashCardAction(models.Model):
-    # Each action must either have a flashcard currently attached to it (edits
-    # or additions), or an abstract universal flashcard ID: XOR
-    flashcard = models.OneToOneField(
-        FlashCard,
-        null=True, blank=True,
-        on_delete=models.SET_NULL,
-        related_name='attached_action',
-    )
-    universal_flashcard_id = models.UUIDField(null=True, blank=True)
-
+class AbstractAction(models.Model):
     # Each action must either have a deck or a snapshot: XOR
     # Actions are initially attached to a Deck, but when that Deck is synced
     # with a SharedDeck, they are transfered to a SnapShot
@@ -323,13 +328,15 @@ class FlashCardAction(models.Model):
         Deck,
         null=True, blank=True,
         on_delete=models.CASCADE,
-        related_name='flashcard_actions',
+        related_name='%(class)s',
+        related_query_name='%(class)s',
     )
     snapshot = models.ForeignKey(
         SnapShot,
         null=True, blank=True,
         on_delete=models.CASCADE,
-        related_name='applied_flashcard_actions',
+        related_name='applied_%(class)s',
+        related_query_name='applied_%(class)s',
     )
 
     ACTION_OPTIONS = (
@@ -338,3 +345,79 @@ class FlashCardAction(models.Model):
         ('DELETE', 'Delete flashcard'),
     )
     action = models.CharField(max_length=8, choices=ACTION_OPTIONS)
+
+    class Meta:
+        abstract = True
+
+
+class FlashCardAction(AbstractAction):
+    # Each action must either have a flashcard currently attached to it (edits
+    # or additions), or an abstract universal flashcard ID: XOR
+    flashcard = models.OneToOneField(
+        FlashCard,
+        null=True, blank=True,
+        # TODO: only SET_NULL if not `universal_flashcard_id`, otherwise delete
+        on_delete=models.SET_NULL,
+        related_name='attached_action',
+    )
+    universal_flashcard_id = models.UUIDField(null=True, blank=True)
+
+
+class MainSectionAction(AbstractAction):
+    # Each action must either have a flashcard currently attached to it (edits
+    # or additions), or an abstract universal flashcard ID: XOR
+    main_section = models.OneToOneField(
+        MainSection,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='attached_action',
+    )
+    universal_flashcard_id = models.UUIDField(null=True, blank=True)
+
+    @staticmethod
+    def apply(actions: QuerySet[MainSectionAction], snapshot: SnapShot):
+        main_sections_to_create = []
+        for action in actions.prefetch_related('main_section'):
+            if action.action == 'CREATE':
+                ms_to_copy = action.main_section
+                main_sections_to_create.append(MainSection(
+                    title=ms_to_copy.title,
+                    tag=ms_to_copy.tag,
+                ))
+            elif action.action == 'EDIT':
+                ...  # TODO:
+            else:
+                ...  # TODO:
+
+        snapshot.main_sections.add(main_sections_to_create)
+
+
+class SubSectionAction(AbstractAction):
+    # Each action must either have a flashcard currently attached to it (edits
+    # or additions), or an abstract universal flashcard ID: XOR
+    sub_section = models.OneToOneField(
+        SubSection,
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='attached_action',
+    )
+    universal_flashcard_id = models.UUIDField(null=True, blank=True)
+
+    @staticmethod
+    def apply(actions: QuerySet[SubSectionAction], snapshot: SnapShot):
+        sub_sections_to_create = []
+        for action in actions.prefetch_related('sub_section__main_section'):
+            if action.action == 'CREATE':
+                ss_to_copy = action.sub_section
+                main_section = snapshot.main_sections.get(
+                    universal_flashcard_id=ss_to_copy,
+                )
+                sub_sections_to_create.append(SubSection(
+                    main_section=main_section,
+                    title=ss_to_copy.title,
+                    tag=ss_to_copy.tag,
+                ))
+            elif action.action == 'EDIT':
+                ...  # TODO:
+            else:
+                ...  # TODO:

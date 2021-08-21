@@ -38,6 +38,7 @@ class Deck(models.Model):
         'sharing_system.SnapShot',
         on_delete=models.SET_NULL,
         related_name='decks_equivalent_to',
+        null=True, blank=True,
     )
 
     # Specifies which classroom a student has attatched this deck to (if any)
@@ -95,7 +96,6 @@ class Deck(models.Model):
         }
 
     def calc_percent_complete(self, flashcards: QuerySet[ReviewInstance] = None) -> float:
-        # TODO: Cache this
         if flashcards is None:
             flashcards = ReviewInstance.objects.filter(flashcard__deck=self)
         else:
@@ -181,7 +181,7 @@ class FlashCard(models.Model):
         Deck,
         on_delete=models.CASCADE,
         related_name='flashcards',
-        null=True, blank=True,  # ONLY shared for snapshots
+        null=True, blank=True,  # ONLY null when shared for snapshots
     )  # type: Deck
     flashcard_type = models.CharField(default='basic', max_length=16)
     flashcard_num = models.PositiveSmallIntegerField()  # zero-indexed

@@ -33,6 +33,7 @@
     "react-tooltip": "^4.2.21",
     "rehype-katex": "^5.0.0",
     "remark-math": "^4.0.0",
+    "sass": "^1.38.0",
     "slate": "^0.59.0",
     "slate-history": "^0.59.0",
     "slate-hotkeys": "^0.2.11",
