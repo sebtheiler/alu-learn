@@ -178,13 +178,12 @@ class Deck(models.Model):
 
 class FlashCard(models.Model):
     # === BASIC INFO ===
-    deck = models.ForeignKey(
-        Deck,
+    subsection = models.ForeignKey(
+        SubSection,
         on_delete=models.CASCADE,
         related_name='flashcards',
-        null=True, blank=True,  # ONLY null when shared for snapshots
-    )  # type: Deck
-    flashcard_type = models.CharField(default='basic', max_length=16)
+    )  # type: SubSection
+    flashcard_type = models.CharField(default='basic', max_length=16)  # TODO: capitalize
     flashcard_num = models.PositiveSmallIntegerField()  # zero-indexed
 
     # === CONTENT INFO ===
@@ -280,7 +279,9 @@ class FlashCard(models.Model):
     @staticmethod
     def get_max_flashcard_num(deck: Deck) -> int:
         # Returns -1 if there are no flashcards in the deck
-        flashcards = FlashCard.objects.filter(deck=deck)
+        flashcards = FlashCard.objects.filter(
+            subsection__parent__deck=deck,
+        )
         max_fc_num_obj = flashcards.order_by('-flashcard_num').first()
 
         return max_fc_num_obj.flashcard_num if max_fc_num_obj else -1
@@ -288,6 +289,7 @@ class FlashCard(models.Model):
     @staticmethod
     def create_flashcard(
         deck: Deck,
+        subsection: SubSection,
         tags: str,
         flashcard_type: FlashCardTypes,
         fields: List[list],
@@ -298,9 +300,13 @@ class FlashCard(models.Model):
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         flashcard = FlashCard.objects.create(
-            deck=deck,
+            subsection=subsection,
             flashcard_type=flashcard_type,
-            flashcard_num=flashcard_num or FlashCard.get_max_flashcard_num(deck) + 1,
+            flashcard_num=(
+                flashcard_num
+                if flashcard_num is not None else
+                FlashCard.get_max_flashcard_num(deck) + 1
+            ),
             fields=fields,
             tags=tags,
             front_image=front_image,

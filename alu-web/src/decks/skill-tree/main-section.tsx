@@ -16,7 +16,7 @@ export default function RenderMainSection({ mainSection }: MainSectionProps) {
           <h2 className='px-2 align-self-center mb-0'>
             <a href={`/deck/${mainSection.deck}/study/${cleanTitle(mainSection.title)}/`}>
               {mainSection.title.toUpperCase()}
-              {mainSection.percent_complete && ` - ${mainSection.percent_complete*100}%`}
+              {!!mainSection.percent_complete && ` - ${mainSection.percent_complete*100}%`}
             </a>
           </h2>
           <hr className='flex-grow-1' />

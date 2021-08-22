@@ -13,9 +13,9 @@ const EASE_FOR_HARD_EXERCISE = 210;  // TODO: update with real data
 interface StudyReviewInstancesProps {
   reviewInstances: ReviewInstance[];
   deckId: number;
-  tagQuery: string;
+  section: string;
 }
-export function StudyReviewInstances({ reviewInstances, deckId, tagQuery }: StudyReviewInstancesProps) {
+export function StudyReviewInstances({ reviewInstances, deckId, section }: StudyReviewInstancesProps) {
   const originalInfo = useMemo(
     () => ({
       numTotal: reviewInstances.length,
@@ -48,7 +48,7 @@ export function StudyReviewInstances({ reviewInstances, deckId, tagQuery }: Stud
         <ReviewInstanceStudy
           reviewInstance={reviewInstances[0]}
           deckId={deckId}
-          tagQuery={tagQuery}
+          section={section}
         />
       </div>}
       {reviewInstances.length === 0 && <div className='text-center'>

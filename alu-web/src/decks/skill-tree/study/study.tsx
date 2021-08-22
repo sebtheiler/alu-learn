@@ -6,12 +6,12 @@ import { StudyAnswerDispatch, StudyAnswerEvent, studyAnswerReducer } from './con
 import { uncleanTag } from '../sub-section';
 
 
-export default function StudySkillTree({ deckId, tagQuery='' }: { deckId: string, tagQuery: string }) {
+export default function StudySkillTree({ deckId, section }: { deckId: string, section: string }) {
   const [reviewInstances, dispatchReviewInstances] = useAsyncDispatch<
     ReviewInstance[], StudyAnswerEvent
   >(
     apiReviewInstanceStudy,
-    [parseInt(deckId), uncleanTag(tagQuery)],
+    [parseInt(deckId), section],
     studyAnswerReducer,
   );
 
@@ -23,7 +23,7 @@ export default function StudySkillTree({ deckId, tagQuery='' }: { deckId: string
       <StudyReviewInstances
         reviewInstances={reviewInstances}
         deckId={parseInt(deckId)}
-        tagQuery={tagQuery}
+        section={section}
       />
     </StudyAnswerDispatch.Provider>
   );

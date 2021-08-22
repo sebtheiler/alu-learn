@@ -636,15 +636,27 @@ def flashcard_create_view(request, *args, **kwargs):
 
     Required information:
         `deck_id`: (Data) ID of the deck to create a flashcard in
+        `subsection`: (Data) Subsection to put the flashcard in (a__b)
         `fields`: (Data) List of the fields and their data for the flashcard
         `tags`: (Data) Raw string of tags, separated by commas
         `flashcard_type`: (Data) Type of flashcard
     """
+    # Get deck
+    deck, resp = get_obj_or_404(Deck, request.data.get('deck_id'), request.user, 'user')
+    if resp:
+        return resp
+
+    # Get subsection
     try:
-        deck = Deck.objects.get(pk=request.data.get('deck_id'), user=request.user)
-    except Deck.DoesNotExist:
+        mainsection_title, subsection_title = request.data.get('subsection').split('__')
+        subsection = SubSection.objects.get(
+            parent__deck=deck,
+            parent__title__iexact=mainsection_title,
+            title__iexact=subsection_title,
+        )
+    except SubSection.DoesNotExist:
         return Response(
-            {'message': 'Deck not found / unauthorized'},
+            {'message': 'Subsection not found'},
             status=400,
         )
 
@@ -654,6 +666,7 @@ def flashcard_create_view(request, *args, **kwargs):
     if fields is None:
         return Response({'message': '`fields` must not be None'}, status=400)
 
+    # Create images
     flashcard_uuid = uuid.uuid4()
 
     if front_image_base64 := request.data.get('front_image'):
@@ -670,8 +683,10 @@ def flashcard_create_view(request, *args, **kwargs):
     else:
         back_image = None
 
+    # Create flashcard
     flashcard, _ = FlashCard.create_flashcard(
         deck=deck,
+        subsection=subsection,
         tags=tags,
         flashcard_type=flashcard_type,
         fields=fields,
@@ -680,6 +695,7 @@ def flashcard_create_view(request, *args, **kwargs):
         flashcard_uuid=flashcard_uuid,
     )
 
+    # Log the flashcard as being created (for sharing system)
     FlashCardAction.objects.create(
         deck=deck,
         flashcard=flashcard,
@@ -719,6 +735,7 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
     if new_fields is not None:
         flashcard.fields = new_fields
 
+        # TODO: use this code in pushing/pulling updates with shared deck
         if flashcard.flashcard_type == 'cloze':
             # Create or delete new flashcards depending on how the cloze has changed
             review_instances = flashcard.review_instances.all()
@@ -828,21 +845,25 @@ def flashcard_search_view(request, *args, **kwargs):
 @permission_classes([IsAuthenticated])
 def flashcard_list_view(request, *args, **kwargs):
     """
-    List flashcards in a deck and/or by tag - GET
+    List flashcards in a deck and/or by subsection - GET
 
     `deck_id`? (GET): Id of the deck to get flashcards from
-    `tags`? (GET): Tags to search
+    `subsection`? (GET): Subsection to get flashcards from
     """
     flashcard_query = Q()
 
     if deck_id := request.GET.get('deck_id'):
         flashcard_query &= Q(
-            deck__pk=deck_id,
-            deck__user=request.user,
+            subsection__parent__deck__pk=deck_id,
+            subsection__parent__deck__user=request.user,
         )
 
-    if tags := request.GET.get('tags'):
-        flashcard_query &= FlashCard.search_tags(tags)
+    if subsection := request.GET.get('subsection'):
+        main_section_title, subsection_title = subsection.split('__')
+        flashcard_query &= Q(
+            parent__title__iexact=main_section_title,
+            title__iexact=subsection_title,
+        )
 
     flashcards = FlashCard.objects.filter(flashcard_query)
     return get_paginated_queryset_response(
@@ -1005,21 +1026,27 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     """
     Get review instances to study - POST
 
-    `deck_id` (Data)?: Id of the deck to get flashcards from
-    `tag_query` (Data)?: Tag query to search flashcards
+    `subsection` (Data)?: Subsection to get flashcards from (a__b)
     """
     # Build base query
     # TODO: re-add cloze flashcards
-    review_instance_query = ~Q(flashcard__flashcard_type='cloze')
+    review_instance_query = Q(
+        flashcard__subsection__parent__deck__user=request.user,
+    )
 
-    if (deck_id := request.data.get('deck_id')) and isinstance(deck_id, int):
-        review_instance_query &= Q(
-            flashcard__deck__pk=deck_id,
-            flashcard__deck__user=request.user,
-        )
-
-    if (tag_query := request.data.get('tag_query')) and isinstance(tag_query, str):
-        review_instance_query &= ReviewInstance.search_tags(tag_query)
+    section = request.data.get('section')
+    if section:
+        section = section.split('__')
+        if len(section) == 2:
+            review_instance_query &= Q(
+                flashcard__subsection__parent__title__iexact=section[0],
+                flashcard__subsection__title__iexact=section[1],
+            )
+        else:
+            section = section.split('__')
+            review_instance_query &= Q(
+                flashcard__subsection__parent__title__iexact=section[0],
+            )
 
     # Find review instances that are due
     NUM_FLASHCARDS_PER_LESSON = 25
@@ -1066,7 +1093,7 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
     * `edited_values`: All editable args
     * `utc_timezone_offset`: Num minutes
     * `time_taken`: Num milliseconds
-    * `tag_query`: The tag query when studying the flashcard
+    * `section`: The section that houses the flashcard
     * `deck_id`: The id of the deck the review instance is in
     """
     edited_values = request.data.get('edited_values')
@@ -1077,7 +1104,7 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
         ReviewInstance,
         review_instance_id,
         request.user,
-        'flashcard__deck__user',
+        'flashcard__subsection__parent__deck__user',
     )
     if error:
         return error
@@ -1104,33 +1131,33 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
         time_taken=time_taken,
     )
 
-    tag_query = request.data.get('tag_query')
+    section_titles = request.data.get('section')
     deck_id = request.data.get('deck_id')
-    if tag_query is not None and deck_id is not None:
-        cache_name = f'{deck_id}__{tag_query.replace(" ", "-")}'
+    if section_titles is not None and deck_id is not None:
+        cache_name = f'{deck_id}__{section_titles.replace(" ", "-")}'
         if pk__is_main := cache.get(cache_name):
             pk, is_main = pk__is_main
             if is_main:
-                section = MainSection.objects.get(pk=pk)
+                section_titles = MainSection.objects.get(pk=pk)
             else:
-                section = SubSection.objects.get(pk=pk)
+                section_titles = SubSection.objects.get(pk=pk)
         else:
-            tag_query = tag_query.split(' AND ')
-            if len(tag_query) == 1:
+            section_titles = section_titles.split('__')
+            if len(section_titles) == 1:
                 section = MainSection.objects.get(
-                    tag=tag_query[0],
+                    title__iexact=section_titles[0],
                     deck=deck_id,
                 )
                 is_main = True
-                cache.set(cache_name, (section.pk, is_main), 60*60*24)
+                cache.set(cache_name, (section_titles.pk, is_main), 60*60*24)
             else:
                 section = SubSection.objects.get(
-                    parent__tag=tag_query[0],
+                    parent__title__iexact=section_titles[0],
                     parent__deck=deck_id,
-                    tag=tag_query[1],
+                    title__iexact=section_titles[1],
                 )
                 is_main = False
-                cache.set(cache_name, (section.pk, is_main), 60*60*24)
+                cache.set(cache_name, (section_titles.pk, is_main), 60*60*24)
 
         section.cached_percent_complete = None
         section.save()

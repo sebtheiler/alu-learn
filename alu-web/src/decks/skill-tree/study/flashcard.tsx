@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import BrowserInteractionTime from 'browser-interaction-time';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -9,15 +9,14 @@ import { ReviewInstance } from '../../types';
 import { StudyAnswerDispatch } from './context';
 import { getMinNum } from './utils';
 import { flattenNodes } from '../../../text-editor';
-import { uncleanTag } from '../sub-section';
 import './flashcard.scss';
 
 interface ReviewInstanceStudyProps {
   reviewInstance: ReviewInstance;
   deckId: number;
-  tagQuery: string;
+  section: string;
 }
-export function ReviewInstanceStudy({ reviewInstance, deckId, tagQuery }: ReviewInstanceStudyProps) {
+export function ReviewInstanceStudy({ reviewInstance, deckId, section }: ReviewInstanceStudyProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const studyAnswerDispatch = useContext(StudyAnswerDispatch);
   const intervals = useMemo(
@@ -49,7 +48,7 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, tagQuery }: Review
         browserInteractionTime.getTimeInMilliseconds(),
         ['AGAIN', 'HARD', 'GOOD', 'EASY'][grade - 1] as 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
         interval,
-        uncleanTag(tagQuery),
+        section,
       );
 
       // Wait until the back of the card is no longer shown (half of transition = 0.25s)<
@@ -64,7 +63,7 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, tagQuery }: Review
       browserInteractionTime.reset();
       browserInteractionTime.startTimer();
     }
-  }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped, browserInteractionTime, deckId, tagQuery]);
+  }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped, browserInteractionTime, deckId, section]);
 
   // Events on keypresses (flipping with space, grading with 1-4)
   useEffect(() => {

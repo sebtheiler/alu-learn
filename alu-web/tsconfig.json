@@ -2,9 +2,9 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": [
+      "esnext",
       "dom",
-      "dom.iterable",
-      "esnext"
+      "dom.iterable"
     ],
     "allowJs": true,
     "skipLibCheck": true,

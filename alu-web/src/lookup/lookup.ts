@@ -1086,11 +1086,11 @@ export async function apiDeckGenerateSkillTree(deckId: number): Promise<Deck> {
 // Get review instances to study
 export async function apiReviewInstanceStudy(
   deckId: number,
-  tagQuery: string,
+  section: string,
 ): Promise<ReviewInstance[]> {
   return backendFetch<ReviewInstance[]>('POST', `decks/reviewinstance/study/`, {
     deck_id: deckId,
-    tag_query: tagQuery,
+    section: section,
   });
 }
 
@@ -1116,7 +1116,7 @@ export async function apiReviewInstanceUpdate(
   timeTaken: number,
   gradeResponse: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
   editedValues: Interval,
-  tagQuery: string,
+  section: string,
 ): Promise<Message> {
   const utcTimezoneOffset = new Date().getTimezoneOffset();
   return backendFetch<Message>(
@@ -1128,7 +1128,7 @@ export async function apiReviewInstanceUpdate(
       grade_response: gradeResponse,
       edited_values: editedValues,
       deck_id: deckId,
-      tag_query: tagQuery,
+      section: section,
     },
   );
 }

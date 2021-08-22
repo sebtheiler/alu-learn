@@ -42,16 +42,16 @@ class AbstractSection(models.Model):
         # Need this because of circular-import
         ReviewInstance = apps.get_model('decks', 'ReviewInstance')
 
-        tag_query = self.get_review_instance_query()
-        total_num = ReviewInstance.objects.filter(tag_query).count()
-        tag_query &= (
-            Q(learning_status='LEARNED')
+        query = self.get_review_instance_query()
+        total_num = ReviewInstance.objects.filter(query).count()
+        query &= (
+            ~Q(learning_status='UNSEEN')
             &
             Q(next_review__gt=get_morning())
         )  # learned flashcards that aren't due
-        completed_num = ReviewInstance.objects.filter(tag_query).count()
+        completed_num = ReviewInstance.objects.filter(query).count()
 
-        percent_complete = round(completed_num / total_num, 2)
+        percent_complete = round(completed_num / total_num, 2) if total_num else 0
         self.cached_percent_complete = percent_complete
         self.cached_percent_complete_time = timezone.now()
 
@@ -67,13 +67,8 @@ class MainSection(AbstractSection):
     )
     universal_mainsection_id = models.UUIDField(null=True, blank=True)
 
-    # def get_review_instance_query(self):
-    #     ReviewInstance = apps.get_model('decks', 'ReviewInstance')
-    #     return (
-    #         ReviewInstance.search_tags(self.tag)
-    #         &
-    #         Q(flashcard__deck=self.deck)
-    #     )
+    def get_review_instance_query(self):
+        return Q(flashcard__subsection__parent=self)
 
 
 class SubSection(AbstractSection):
@@ -84,12 +79,5 @@ class SubSection(AbstractSection):
     )
     universal_subsection_id = models.UUIDField(null=True, blank=True)
 
-    # def get_review_instance_query(self):
-    #     ReviewInstance = apps.get_model('decks', 'ReviewInstance')
-    #     return (
-    #         ReviewInstance.search_tags(
-    #             f'{self.parent.tag} AND {self.tag}'
-    #         )
-    #         &
-    #         Q(flashcard__deck=self.parent.deck)
-    #     )
+    def get_review_instance_query(self):
+        return Q(flashcard__subsection=self)

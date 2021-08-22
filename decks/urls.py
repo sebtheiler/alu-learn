@@ -12,15 +12,11 @@ urlpatterns = [
         'decks/study.html',
         context_kwargs=True,
     )),
-    path('deck/<int:deck_id>/study/', render_basic_view(
+    path('deck/<int:deck_id>/study/<str:section>/', render_basic_view(
         'decks/study.html',
         context_kwargs=True,
     )),
-    path('deck/<int:deck_id>/study/<str:tags>/', render_basic_view(
-        'decks/study.html',
-        context_kwargs=True,
-    )),
-    path('deck/<int:deck_id>/flashcards/create/', render_basic_view(
+    path('deck/<int:deck_id>/flashcards/create/<str:subsection>/', render_basic_view(
         'flashcards/create.html',
         context_kwargs=True,
     )),

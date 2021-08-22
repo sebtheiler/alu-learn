@@ -31,7 +31,7 @@ urlpatterns = [
         'decks', 'flashcard',
         FlashCardSerializer,
         {'fields': list, 'tags': str},
-        'deck__user', 'USER',
+        'subsection__parent__deck__user', 'USER',
         exclude_create=True,
         exclude_list=True,
         exclude_edit=True,

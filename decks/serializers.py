@@ -6,7 +6,7 @@ from .models import Deck, FlashCard, ReviewInstance
 
 
 class FlashCardSerializer(serializers.ModelSerializer):
-    parent_deck_id = serializers.SerializerMethodField(read_only=True)
+    # parent_deck_id = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FlashCard
@@ -15,14 +15,14 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'tags',
             'flashcard_type',
             'flashcard_num',
-            'parent_deck_id',
+            # 'parent_deck_id',
             'front_image',
             'back_image',
             'id',
         ]
 
-    def get_parent_deck_id(self, obj):
-        return obj.deck.id
+    # def get_parent_deck_id(self, obj):
+        # return obj.subsection.parent.deck.id
 
 
 class ReviewInstanceSerializer(serializers.ModelSerializer):

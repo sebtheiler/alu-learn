@@ -16,7 +16,12 @@ import { apiObjectCreate, apiObjectDelete, apiObjectEdit, useObjectGet } from '.
 import './create-flashcard.scss';
 
 const ONE_SIDED_CARDS = ['cloze'];
-export default function CreateFlashcard({ deckId, flashcardId }: { deckId: string, flashcardId?: string }) {
+interface CreateFlashcardProps {
+  deckId: string;
+  subsection: string;
+  flashcardId?: string;
+}
+export default function CreateFlashcard({ deckId, flashcardId, subsection }: CreateFlashcardProps) {
   const [frontValue, setFrontValue] = useState<Node[]>(blankSlateElement)
   const [frontSelectedImageUrl, setFrontSelectedImageUrl] = useState('');
   const [backValue, setBackValue] = useState<Node[]>(blankSlateElement)
@@ -90,6 +95,7 @@ export default function CreateFlashcard({ deckId, flashcardId }: { deckId: strin
       // Create flashcard
       await apiObjectCreate<FlashCard>('decks', 'flashcard', {
         deck_id: deckId,
+        subsection: subsection,
         flashcard_type: flashcardType,
         ...flashcardInfo,
       }).then(flashcard => {
