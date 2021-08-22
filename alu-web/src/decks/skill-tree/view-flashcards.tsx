@@ -10,10 +10,10 @@ import { FlashCard } from '../types';
 import './view-flashcards.scss';
 import { uncleanTag } from './sub-section';
 
-export default function ViewFlashcards({ deckId, tags='', }: { deckId?: number, tags?: string }) {
+export default function ViewFlashcards({ deckId, section='', }: { deckId?: number, section?: string }) {
   const [flashcards, , fetchNext] = useObjectPaginatedList<FlashCard>('decks', 'flashcard', undefined, {
     deck_id: deckId,
-    tags: uncleanTag(tags),
+    tags: uncleanTag(section),
   });
 
   if (!flashcards) return <p className='text-center'>Loading…</p>
@@ -21,18 +21,18 @@ export default function ViewFlashcards({ deckId, tags='', }: { deckId?: number, 
     <div className='mt-5 mb-3 text-center'>
       <h1>
         Viewing Flashcards
-        {tags.length > 0 && <>: {capitalize(tags.replaceAll('-', ' ').replaceAll('__', ' - '), true)}</>}
+        {section.length > 0 && <>: {capitalize(section.replaceAll('-', ' ').replaceAll('__', ' - '), true)}</>}
       </h1>
       <ButtonGroup>
         <Button
-          href={`/deck/${deckId}/study/` + (tags.length > 0 ? `${tags}/` : '')}
+          href={`/deck/${deckId}/study/` + (section.length > 0 ? `${section}/` : '')}
           className='mr-1'
           style={{ width: '200px' }}
         >
           Study
         </Button>
         <Button
-          href={`/deck/${deckId}/flashcards/create/` + (tags.length > 0 ? `?tags=${tags}` : '')}
+          href={`/deck/${deckId}/flashcards/create/${section}/`}
           style={{ width: '200px' }}
         >
           Create Flashcards

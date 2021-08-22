@@ -28,7 +28,7 @@ urlpatterns = [
         'flashcards/list.html',
         context_kwargs=True,
     )),
-    path('deck/<int:deck_id>/flashcards/sections/<str:title>/', render_basic_view(
+    path('deck/<int:deck_id>/flashcards/sections/<str:section>/', render_basic_view(
         'flashcards/list.html',
         context_kwargs=True,
     )),

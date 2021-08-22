@@ -695,6 +695,10 @@ def flashcard_create_view(request, *args, **kwargs):
         flashcard_uuid=flashcard_uuid,
     )
 
+    # Clear subsection %-complete cache
+    subsection.cached_percent_complete = None
+    subsection.save()
+
     # Log the flashcard as being created (for sharing system)
     FlashCardAction.objects.create(
         deck=deck,
@@ -723,7 +727,7 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
     try:
         flashcard = FlashCard.objects.get(
             pk=flashcard_id,
-            deck__user=request.user,
+            subsection__parent__deck__user=request.user,
         )
     except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
