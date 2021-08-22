@@ -338,9 +338,9 @@ class AbstractAction(models.Model):
     )
 
     ACTION_OPTIONS = (
-        ('CREATE', 'Create flashcard'),
-        ('EDIT', 'Edit flashcard'),
-        ('DELETE', 'Delete flashcard'),
+        ('CREATE', 'Create'),
+        ('EDIT', 'Edit'),
+        ('DELETE', 'Delete'),
     )
     action = models.CharField(max_length=8, choices=ACTION_OPTIONS)
 
@@ -353,9 +353,7 @@ class FlashCardAction(AbstractAction):
     # or additions), or an abstract universal flashcard ID: XOR
     flashcard = models.OneToOneField(
         FlashCard,
-        null=True, blank=True,
-        # TODO: only SET_NULL if not `universal_flashcard_id`, otherwise delete
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         related_name='attached_action',
     )
     universal_flashcard_id = models.UUIDField(null=True, blank=True)

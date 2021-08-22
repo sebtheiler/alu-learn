@@ -201,7 +201,7 @@ class FlashCard(models.Model):
         ordering = ['flashcard_num']
 
     def __str__(self) -> str:
-        return f'Flashcard in {self.deck.title} by @{self.deck.user.username}'
+        return f'Flashcard in {self.subsection.parent.deck.title}'
 
     def has_tag(self, tag: str) -> bool:
         return tag in [tag.strip() for tag in self.tags.split(',')]
@@ -662,7 +662,7 @@ class ReviewInstanceHistory(models.Model):
         verbose_name_plural = 'Review instance histories'
 
 
-# When a review instance is deleted, backup its ID in its history objs
+# When a ReviewInstance is deleted, backup its ID in its history objs
 def review_instance_deleted(sender, instance, using, **kwargs):
     ReviewInstanceHistory.objects.using(using).filter(
         review_instance=instance,
@@ -671,6 +671,7 @@ def review_instance_deleted(sender, instance, using, **kwargs):
     )
 
 
+# When a deck is created, create an example MainSection and SubSection
 def deck_saved(sender, instance, created, **kwargs):
     if created:
         main_section = MainSection.objects.create(
