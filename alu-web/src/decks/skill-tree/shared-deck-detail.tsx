@@ -1,3 +1,4 @@
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Container from 'react-bootstrap/Container';
@@ -13,8 +14,16 @@ import { DisplayProfileInline } from '../../profiles';
 import './shared-deck-detail.scss';
 import React from 'react';
 
-export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: string }) {
+export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedDeckId: string, snapshotId?: string}) {
   const [sharedDeck] = useObjectGet<SharedDeck>('sharing_system', 'shareddeck', sharedDeckId);
+  const snapshot = useMemo(() => {
+    if (!sharedDeck) return;
+    if (snapshotId)
+      // @ts-expect-error
+      return sharedDeck.snapshots.filter(snapshot => snapshot.id === parseInt(snapshotId))[0];
+    else
+      return sharedDeck.snapshots[sharedDeck.snapshots.length - 1];
+  }, [snapshotId, sharedDeck]);
   const [viewAccess, editAccess] = useMemo(() => {
     let viewAccess: string = '';
     let editAccess: string = '';
@@ -47,17 +56,24 @@ export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: strin
     return [viewAccess, editAccess];
   }, [sharedDeck])
   const [flashcards] = useObjectPaginatedList<FlashCard>('sharing_system', 'flashcard', undefined, {
-    snapshot_id: sharedDeck && sharedDeck.snapshots[sharedDeck.snapshots.length - 1].id,
+    snapshot_id: sharedDeck && snapshot?.id,
     page_size: 10,
-  }, !!sharedDeck);
+  }, !!(sharedDeck && snapshot));
 
-  if (!sharedDeck) return <p className='text-center mt-3'>Loading…</p>;
+  if (!sharedDeck || !snapshot) return <p className='text-center mt-3'>Loading…</p>;
   return (
     <Container>
       <Row className='mt-5'>
         <Col md={9}>
           <div>
             <h1>{sharedDeck.title}</h1>
+            {snapshotId && <Alert variant='warning'>
+              <strong>WARNING:</strong> You are viewing a historical version of this deck: "{snapshot.message}"
+              <br /><br />
+              <Button href={`/community/deck/${sharedDeck.id}/`}>
+                View Latest Version
+              </Button>
+            </Alert>}
             <p>{sharedDeck.description}</p>
             <ButtonGroup>
               <Button style={{ width: '150px', marginLeft: '2px' }}>Clone</Button>
@@ -68,7 +84,7 @@ export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: strin
           <hr />
           <div>
             <h3>Skill Tree</h3>
-            {sharedDeck.snapshots[sharedDeck.snapshots.length - 1].main_sections.map(mainSection =>
+            {snapshot.main_sections.map(mainSection =>
               <RenderMainSection mainSection={mainSection} key={mainSection.id} readOnly />
             )}
             <hr />
