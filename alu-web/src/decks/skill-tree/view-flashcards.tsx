@@ -9,11 +9,25 @@ import { FlashCard } from '../types';
 import './view-flashcards.scss';
 import { uncleanTag } from './sub-section';
 
-export default function ViewFlashcards({ deckId, section='', }: { deckId?: number, section?: string }) {
-  const [flashcards, , fetchNext] = useObjectPaginatedList<FlashCard>('decks', 'flashcard', undefined, {
-    deck_id: deckId,
-    tags: uncleanTag(section),
-  });
+interface ViewFlashcardsProps {
+  deckId?: number;
+  sharedDeckId?: number;
+  snapshotId?: number;
+  section?: string;
+}
+export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, section='', }: ViewFlashcardsProps) {
+  const [flashcards, , fetchNext] = useObjectPaginatedList<FlashCard>(
+    sharedDeckId ? 'sharing_system' : 'decks',
+    'flashcard',
+    undefined,
+    sharedDeckId ? {
+      snapshot_id: snapshotId,
+      shared_deck_id: sharedDeckId,
+    } : {
+      deck_id: deckId,
+      tags: uncleanTag(section),
+    },
+  );
 
   if (!flashcards) return <p className='text-center'>Loading…</p>
   return (<Container>
@@ -23,19 +37,28 @@ export default function ViewFlashcards({ deckId, section='', }: { deckId?: numbe
         {section.length > 0 && <>: {capitalize(section.replaceAll('-', ' ').replaceAll('__', ' - '), true)}</>}
       </h1>
       <ButtonGroup>
-        <Button
-          href={`/deck/${deckId}/study/` + (section.length > 0 ? `${section}/` : '')}
-          className='mr-1'
-          style={{ width: '200px' }}
-        >
-          Study
-        </Button>
-        <Button
-          href={`/deck/${deckId}/flashcards/create/${section}/`}
-          style={{ width: '200px' }}
-        >
-          Create Flashcards
-        </Button>
+        {sharedDeckId ? <>
+          <Button
+            href={`/community/deck/${sharedDeckId}/`}
+            style={{ width: '200px' }}
+          >
+            Shared Deck Page
+          </Button>
+        </> : <>
+          <Button
+            href={`/deck/${deckId}/study/` + (section.length > 0 ? `${section}/` : '')}
+            className='mr-1'
+            style={{ width: '200px' }}
+          >
+            Study
+          </Button>
+          <Button
+            href={`/deck/${deckId}/flashcards/create/${section}/`}
+            style={{ width: '200px' }}
+          >
+            Create Flashcards
+          </Button>
+        </>}
       </ButtonGroup>
     </div>
     {flashcards.map(flashcard =>

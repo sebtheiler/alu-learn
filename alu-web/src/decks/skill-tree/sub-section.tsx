@@ -44,7 +44,7 @@ export default function RenderSubSection({ subSection, mainSection, readOnly }: 
                   Add Flashcards
                 </Button>}
                 <Button
-                  href={`/deck/${mainSection.deck}/flashcards/sections/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
+                  href={`flashcards/sections/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
                   variant='secondary'
                   block
                 >

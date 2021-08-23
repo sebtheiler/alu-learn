@@ -159,7 +159,7 @@ export function useObjectPaginatedList<ObjType, Event extends DefaultEvent = nev
     action: Event,
   ) => ObjType[] | undefined,
   data?: Object,
-  requirement?: boolean,
+  requirement: boolean = true,
 ): [
   ObjType[] | undefined,
   Dispatch<Event>,

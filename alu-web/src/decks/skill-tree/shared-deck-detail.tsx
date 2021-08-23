@@ -77,7 +77,12 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
             <p>{sharedDeck.description}</p>
             <ButtonGroup>
               <Button style={{ width: '150px', marginLeft: '2px' }}>Clone</Button>
-              <Button style={{ width: '150px', marginLeft: '2px' }}>View Flashcards</Button>
+              <Button
+                href={`/community/deck/${sharedDeck.id}/flashcards/${snapshot.id}/`}
+                style={{ width: '150px', marginLeft: '2px' }}
+              >
+                View Flashcards
+              </Button>
               {/* <Button style={{ width: '150px', marginLeft: '2px' }}>View History</Button> */}
             </ButtonGroup>
           </div>

@@ -66,10 +66,20 @@ def shared_deck_create_view(request, *args, **kwargs):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def snapshot_flashcards_view(request, *args, **kwargs):
-    try:
-        snapshot = SnapShot.objects.get(id=request.GET.get('snapshot_id'))  # TODO: enforce view_access
-    except SnapShot.DoesNotExist:
-        return Response({'message': 'SnapShot not found'}, status=404)
+    snapshot_id = request.GET.get('snapshot_id')
+    if snapshot_id:
+        try:
+            snapshot = SnapShot.objects.get(id=snapshot_id)  # TODO: enforce view_access
+        except SnapShot.DoesNotExist:
+            return Response({'message': 'SnapShot not found'}, status=404)
+    else:
+        shared_deck_id = request.GET.get('shared_deck_id')
+        try:
+            shared_deck = SharedDeck.objects.get(id=shared_deck_id)
+        except SharedDeck.DoesNotExist:
+            return Response({'message': 'SharedDeck not found'}, status=404)
+
+        snapshot = shared_deck.get_latest_snapshot()
 
     return get_paginated_queryset_response(
         snapshot.flashcards.all(),

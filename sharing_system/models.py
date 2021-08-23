@@ -34,6 +34,9 @@ class SharedDeck(models.Model):
     def __str__(self) -> str:
         return f'{self.title} by {self.owners.all()}'
 
+    def get_latest_snapshot(self):
+        return self.snapshots.order_by('timestamp').last()
+
     @staticmethod
     def create(
         origin_deck: Deck,

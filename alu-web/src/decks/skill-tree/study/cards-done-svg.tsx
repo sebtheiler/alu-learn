@@ -29,7 +29,7 @@ export default function CardsDoneSVG(props: CardsDoneSVGProps) {
   }));
 
   return (
-    <div className='cards-done mt-3 mb-4' style={{ height: DIV_HEIGHT, maxWidth: DIV_WIDTH }}>
+    <div className='cards-done mb-4' style={{ height: DIV_HEIGHT, maxWidth: DIV_WIDTH }}>
       <svg width='100%' height='100%'>
         {/* Chart y-axis and bars */}
         {lineTickYVals.map(lineTickYVal => {
