@@ -30,7 +30,7 @@ class Classroom(models.Model):
     def attach_deck(self, deck: Deck) -> SharedDeck:
         # Create shared deck
         shared_deck = SharedDeck.create(
-            deck=deck,
+            origin_deck=deck,
             title=deck.title,
             description=f'Deck for "{self.title}."  Students can copy and study this deck.',
             view_access='STUDENT',

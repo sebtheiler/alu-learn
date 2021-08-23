@@ -28,7 +28,7 @@ class MainSectionAdmin(admin.ModelAdmin):
         return queryset
 
     def get_user(self, obj):
-        return obj.deck.user
+        return obj.deck.user if obj.deck else None
     get_user.short_description = 'User'
 
 

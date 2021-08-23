@@ -18,7 +18,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
       form.elements.viewAccess.value,
       form.elements.editAccess.value,
       form.elements.owners.value,
-    ).then(sharedDeck => window.location.href = `/community/decks/${sharedDeck.id}/`);
+    ).then(sharedDeck => window.location.href = `/community/deck/${sharedDeck.id}/`);
   }
 
   if (!deck) return <p className='text-center'>Loading</p>

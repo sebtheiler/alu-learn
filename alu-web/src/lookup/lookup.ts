@@ -589,7 +589,7 @@ export async function apiCreateSharedDeck(
   editAccess: EditAccess,
   owners: string,
 ): Promise<SharedDeck> {
-  return backendFetch('POST', 'decks/deck/shared/create/', {
+  return backendFetch('POST', 'sharing_system/deck/share/', {
     origin_deck_id: originDeckId,
     title: title,
     description: description,

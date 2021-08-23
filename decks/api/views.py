@@ -1,7 +1,6 @@
 import json
 import random
 import re
-from sharing_system.models import FlashCardAction
 import uuid
 from typing import List
 
@@ -10,6 +9,7 @@ from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from sharing_system.models import FlashCardAction
 from skill_tree.models import MainSection, SubSection
 from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
@@ -19,7 +19,6 @@ from utils.utils import assert_dict_data_type, base64_to_file
 from ..models import Deck, FlashCard, ReviewInstance, ReviewInstanceHistory
 from ..serializers import (DeckSerializer, FlashCardSerializer,
                            ReviewInstanceSerializer)
-
 
 # ====== Decks ======
 # ===== Deck Lists =====

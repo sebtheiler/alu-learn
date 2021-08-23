@@ -178,6 +178,19 @@ class Deck(models.Model):
 
 class FlashCard(models.Model):
     # === BASIC INFO ===
+    # deck = models.ForeignKey(
+    #     'decks.Deck',
+    #     on_delete=models.CASCADE,
+    #     related_name='flashcards',
+    #     null=True, blank=True,
+    # )  # TODO: update flashcards to use this
+    # snapshot = models.ForeignKey(
+    #     'sharing_system.SnapShot',
+    #     on_delete=models.CASCADE,
+    #     related_name='flashcards',
+    #     null=True, blank=True,
+    # )
+
     subsection = models.ForeignKey(
         SubSection,
         on_delete=models.CASCADE,
@@ -201,7 +214,7 @@ class FlashCard(models.Model):
         ordering = ['flashcard_num']
 
     def __str__(self) -> str:
-        return f'Flashcard in {self.subsection.parent.deck.title}'
+        return f'Flashcard: {str(self.fields)[:50]}...'
 
     def has_tag(self, tag: str) -> bool:
         return tag in [tag.strip() for tag in self.tags.split(',')]

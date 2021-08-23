@@ -59,13 +59,14 @@ class AbstractSection(models.Model):
 
 
 class MainSection(AbstractSection):
+    # Each main section is either attached to a deck or to a snapshot
     deck = models.ForeignKey(
         'decks.Deck',
         on_delete=models.CASCADE,
         related_name='skill_tree_sections',
         null=True, blank=True,  # only when attached to a snapshot
     )
-    universal_mainsection_id = models.UUIDField(null=True, blank=True)
+    universal_main_section_id = models.UUIDField(null=True, blank=True)
 
     def get_review_instance_query(self):
         return Q(flashcard__subsection__parent=self)
@@ -77,7 +78,7 @@ class SubSection(AbstractSection):
         on_delete=models.CASCADE,
         related_name='children',
     )
-    universal_subsection_id = models.UUIDField(null=True, blank=True)
+    universal_sub_section_id = models.UUIDField(null=True, blank=True)
 
     def get_review_instance_query(self):
         return Q(flashcard__subsection=self)

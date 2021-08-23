@@ -58,7 +58,7 @@ class DeckAdmin(admin.ModelAdmin):
         'user',
         'title',
         'student_attached_to',
-        'shared_deck',
+        'equivalent_to_snapshot',
     ]
 
     class Meta:
