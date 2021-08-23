@@ -1,4 +1,5 @@
 from decks.models import Deck
+from profiles.models import Profile
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -40,13 +41,22 @@ def shared_deck_create_view(request, *args, **kwargs):
     except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
 
+    try:
+        owners = [
+            Profile.objects.get(user__username=username)
+            for username in
+            request.data.get('owners').split(', ')
+        ]
+    except Profile.DoesNotExist:
+        return Response({'message': 'Profile not found for owners'}, status=404)
+
     shared_deck = SharedDeck.create(
         origin_deck=deck,
         title=request.data.get('title'),
         description=request.data.get('description'),
         view_access=request.data.get('view_access'),
         edit_access=request.data.get('edit_access'),
-        owners=request.data.get('owners'),
+        owners=owners,
     )
 
     return Response(SharedDeckSerializer(shared_deck).data, status=200)

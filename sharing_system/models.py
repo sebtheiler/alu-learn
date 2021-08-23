@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from typing import List
+
 from accounts.models import User
+from profiles.models import Profile
 from decks.models import Deck, FlashCard, ReviewInstance
 from django.db import models
 from django.db.models.expressions import Q
@@ -20,15 +23,16 @@ class SharedDeck(models.Model):
     EDIT_ACCESS_OPTIONS = (
         ('PERSONAL', 'Only you can submit edits'),
         ('FRIENDS', 'Only friends can submit edits'),
+        ('STUDENT', 'Only students can submit edits'),
         ('PUBLIC', 'Everybody can submit edits'),
     )
 
     view_access = models.CharField(max_length=10, choices=VIEW_ACCESS_OPTIONS)
     edit_access = models.CharField(max_length=10, choices=EDIT_ACCESS_OPTIONS)
-    owners = models.CharField(max_length=128)
+    owners = models.ManyToManyField(Profile, related_name='owned_shared_decks')
 
     def __str__(self) -> str:
-        return f'{self.title} by {self.owners}'
+        return f'{self.title} by {self.owners.all()}'
 
     @staticmethod
     def create(
@@ -37,7 +41,7 @@ class SharedDeck(models.Model):
         description: str,
         view_access: str,
         edit_access: str,
-        owners: str,
+        owners: List[Profile],
     ) -> SharedDeck:
         # Create SharedDeck and SnapShot
         shared_deck = SharedDeck.objects.create(
@@ -45,10 +49,11 @@ class SharedDeck(models.Model):
             description=description,
             view_access=view_access,
             edit_access=edit_access,
-            owners=owners,
         )
+        shared_deck.owners.set(owners)
 
         snapshot = SnapShot.objects.create(
+            author=origin_deck.user.profile,
             message='Initial snapshot',
             shared_deck=shared_deck,
             parent=None,
@@ -281,6 +286,12 @@ class SharedDeck(models.Model):
 
 
 class SnapShot(models.Model):
+    author = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='authored_snapshots',
+    )
+
     message = models.JSONField()
     timestamp = models.DateTimeField(auto_now_add=True)
 

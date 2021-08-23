@@ -1,3 +1,5 @@
+import { MinifiedProfile } from "../../profiles/types";
+
 interface AbstractSection {
   title: string;
   description: string;
@@ -15,4 +17,13 @@ export interface MainSection extends AbstractSection {
 
 export interface SubSection extends AbstractSection {
   parent: number;
+}
+
+export interface SharedDeck {
+  title: string;
+  description: string;
+  view_access: 'PUBLIC' | 'FRIENDS' | 'STUDENT';
+  edit_access: 'PERSONAL' | 'FRIENDS' | 'PUBLIC' | 'STUDENT';
+  owners: MinifiedProfile[];
+  id: number;
 }
