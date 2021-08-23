@@ -3,10 +3,12 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import RenderMainSection from './main-section';
 import { useObjectGet } from '../../lookup/lookup';
 import { SharedDeck } from './types';
 import { useMemo } from 'react';
 import { DisplayProfileInline } from '../../profiles';
+import './shared-deck-detail.scss';
 
 export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: string }) {
   const [sharedDeck] = useObjectGet<SharedDeck>('sharing_system', 'shareddeck', sharedDeckId);
@@ -41,7 +43,6 @@ export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: strin
 
     return [viewAccess, editAccess];
   }, [sharedDeck])
-  console.log(sharedDeck);
 
   if (!sharedDeck) return <p className='text-center mt-3'>Loading…</p>;
   return (
@@ -54,17 +55,20 @@ export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: strin
             <ButtonGroup>
               <Button style={{ width: '150px', marginLeft: '2px' }}>Clone</Button>
               <Button style={{ width: '150px', marginLeft: '2px' }}>View Flashcards</Button>
-              <Button style={{ width: '150px', marginLeft: '2px' }}>View History</Button>
+              {/* <Button style={{ width: '150px', marginLeft: '2px' }}>View History</Button> */}
             </ButtonGroup>
           </div>
           <hr />
           <div>
-            <p>render latest snapshot</p>
-            <p>skill tree</p>
-            <p>example flashcards</p>
+            <h3>Skill Tree</h3>
+            {sharedDeck.snapshots[sharedDeck.snapshots.length - 1].main_sections.map(mainSection =>
+              <RenderMainSection mainSection={mainSection} key={mainSection.id} readOnly />
+            )}
+            <hr />
+            <h3>Example Flashcards</h3>
           </div>
         </Col>
-        <Col md={3}>
+        <Col md={3} className='shared-deck-side-info'>
           <div>
             <h1>Info</h1>
             <p>View Access: {viewAccess}</p>
@@ -77,8 +81,13 @@ export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: strin
           <hr />
           <div>
             <h1>History</h1>
-            <p>list of snapshots</p>
-            <p>view any specific snapshot</p>
+            <ol>
+              {sharedDeck.snapshots.map(snapshot => <li key={snapshot.id}>
+                <a href={`/community/deck/${sharedDeck.id}/snapshots/${snapshot.id}`}>
+                  {snapshot.message}
+                </a> by <DisplayProfileInline profile={snapshot.author} />
+              </li>)}
+            </ol>
           </div>
         </Col>
       </Row>

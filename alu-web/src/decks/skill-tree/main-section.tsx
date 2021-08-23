@@ -1,4 +1,3 @@
-import React from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import RenderSubSection, { cleanTitle } from './sub-section';
@@ -6,18 +5,23 @@ import { MainSection } from './types';
 
 interface MainSectionProps {
   mainSection: MainSection;
+  readOnly?: boolean;
 }
-export default function RenderMainSection({ mainSection }: MainSectionProps) {
+export default function RenderMainSection({ mainSection, readOnly }: MainSectionProps) {
   return (<div className='main-section'>
     <Container>
-      <div className='main-section-header'>
+      <div className='main-section-header text-center'>
         <div className='d-flex mx-auto'>
           <hr className='flex-grow-1' />
           <h2 className='px-2 align-self-center mb-0'>
-            <a href={`/deck/${mainSection.deck}/study/${cleanTitle(mainSection.title)}/`}>
-              {mainSection.title.toUpperCase()}
-              {!!mainSection.percent_complete && ` - ${mainSection.percent_complete*100}%`}
-            </a>
+            {readOnly ?
+              mainSection.title.toUpperCase()
+              :
+              <a href={`/deck/${mainSection.deck}/study/${cleanTitle(mainSection.title)}/`}>
+                {mainSection.title.toUpperCase()}
+                {!!mainSection.percent_complete && ` - ${mainSection.percent_complete*100}%`}
+              </a>
+            }
           </h2>
           <hr className='flex-grow-1' />
         </div>
@@ -32,6 +36,7 @@ export default function RenderMainSection({ mainSection }: MainSectionProps) {
             <RenderSubSection
               subSection={subSection}
               mainSection={mainSection}
+              readOnly={readOnly}
               key={subSection.id}
             />
           )}

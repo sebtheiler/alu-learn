@@ -11,8 +11,9 @@ export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll
 interface SubSectionProps {
   subSection: SubSection;
   mainSection: MainSection;
+  readOnly?: boolean;
 }
-export default function RenderSubSection({ subSection, mainSection }: SubSectionProps) {
+export default function RenderSubSection({ subSection, mainSection, readOnly }: SubSectionProps) {
   return (
     <Col
       xl={3}
@@ -30,18 +31,18 @@ export default function RenderSubSection({ subSection, mainSection }: SubSection
             <Popover.Content>
               <p>{subSection.description}</p>
               <div>
-                <Button
+                {!readOnly && <Button
                   href={`/deck/${mainSection.deck}/study/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
                   block
                 >
                   Study
-                </Button>
-                <Button
+                </Button>}
+                {!readOnly && <Button
                   href={`/deck/${mainSection.deck}/flashcards/create/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
                   block
                 >
                   Add Flashcards
-                </Button>
+                </Button>}
                 <Button
                   href={`/deck/${mainSection.deck}/flashcards/sections/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
                   variant='secondary'

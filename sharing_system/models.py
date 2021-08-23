@@ -316,6 +316,8 @@ class SnapShot(models.Model):
         related_name='shared_deck_snapshots',
     )
 
+    # TODO: CHANGE ID TO UUID
+
     def __str__(self) -> str:
         return f'Snapshot for {self.shared_deck}: {self.message}'
 

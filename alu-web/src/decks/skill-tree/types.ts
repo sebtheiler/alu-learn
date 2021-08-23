@@ -1,4 +1,5 @@
 import { MinifiedProfile } from "../../profiles/types";
+import { UUID } from "../types";
 
 interface AbstractSection {
   title: string;
@@ -25,5 +26,15 @@ export interface SharedDeck {
   view_access: 'PUBLIC' | 'FRIENDS' | 'STUDENT';
   edit_access: 'PERSONAL' | 'FRIENDS' | 'PUBLIC' | 'STUDENT';
   owners: MinifiedProfile[];
+  snapshots: SnapShot[];
   id: number;
+}
+
+export interface SnapShot {
+  author: MinifiedProfile;
+  main_sections: MainSection[];
+  message: string;
+  timestamp: string;
+  parent: UUID;
+  id: UUID;
 }
