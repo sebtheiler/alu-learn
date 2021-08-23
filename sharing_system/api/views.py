@@ -1,11 +1,12 @@
 from decks.models import Deck
+from decks.serializers import FlashCardSerializer
 from profiles.models import Profile
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from utils.api_utils import assert_request_data_type
+from utils.api_utils import assert_request_data_type, get_paginated_queryset_response
 
-from ..models import SharedDeck
+from ..models import SharedDeck, SnapShot
 from ..serializers import SharedDeckSerializer
 
 
@@ -60,3 +61,19 @@ def shared_deck_create_view(request, *args, **kwargs):
     )
 
     return Response(SharedDeckSerializer(shared_deck).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def snapshot_flashcards_view(request, *args, **kwargs):
+    try:
+        snapshot = SnapShot.objects.get(id=request.GET.get('snapshot_id'))  # TODO: enforce view_access
+    except SnapShot.DoesNotExist:
+        return Response({'message': 'SnapShot not found'}, status=404)
+
+    return get_paginated_queryset_response(
+        snapshot.flashcards.all(),
+        request,
+        FlashCardSerializer,
+        page_size=min(int(request.GET.get('page_size', 250)), 250)
+    )

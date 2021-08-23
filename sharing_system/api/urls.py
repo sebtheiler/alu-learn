@@ -21,4 +21,5 @@ urlpatterns = [
         exclude_delete=True,
     ),
     path('deck/share/', views.shared_deck_create_view),
+    path('flashcard/list/', views.snapshot_flashcards_view),
 ]

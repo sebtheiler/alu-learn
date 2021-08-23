@@ -4,11 +4,14 @@ import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import RenderMainSection from './main-section';
-import { useObjectGet } from '../../lookup/lookup';
+import RenderFlashcard  from './render-flashcard';
+import { FlashCard } from '../types';
+import { useObjectGet, useObjectPaginatedList } from '../../lookup/lookup';
 import { SharedDeck } from './types';
 import { useMemo } from 'react';
 import { DisplayProfileInline } from '../../profiles';
 import './shared-deck-detail.scss';
+import React from 'react';
 
 export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: string }) {
   const [sharedDeck] = useObjectGet<SharedDeck>('sharing_system', 'shareddeck', sharedDeckId);
@@ -43,6 +46,10 @@ export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: strin
 
     return [viewAccess, editAccess];
   }, [sharedDeck])
+  const [flashcards] = useObjectPaginatedList<FlashCard>('sharing_system', 'flashcard', undefined, {
+    snapshot_id: sharedDeck && sharedDeck.snapshots[sharedDeck.snapshots.length - 1].id,
+    page_size: 10,
+  }, !!sharedDeck);
 
   if (!sharedDeck) return <p className='text-center mt-3'>Loading…</p>;
   return (
@@ -66,6 +73,9 @@ export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: strin
             )}
             <hr />
             <h3>Example Flashcards</h3>
+            {flashcards?.map(flashcard =>
+              <RenderFlashcard flashcard={flashcard} key={flashcard.id} />
+            )}
           </div>
         </Col>
         <Col md={3} className='shared-deck-side-info'>
@@ -73,10 +83,10 @@ export default function SharedDeckDetail({ sharedDeckId }: { sharedDeckId: strin
             <h1>Info</h1>
             <p>View Access: {viewAccess}</p>
             <p>Edit Access: {editAccess}</p>
-            <p>Owners: {sharedDeck.owners.map((owner, i) => <>
+            <p>Owners: {sharedDeck.owners.map((owner, i) => <React.Fragment key={i}>
               <DisplayProfileInline profile={owner} />
               {i !== sharedDeck.owners.length - 1 && ','}
-            </>)}</p>
+            </React.Fragment>)}</p>
           </div>
           <hr />
           <div>

@@ -159,6 +159,7 @@ export function useObjectPaginatedList<ObjType, Event extends DefaultEvent = nev
     action: Event,
   ) => ObjType[] | undefined,
   data?: Object,
+  requirement?: boolean,
 ): [
   ObjType[] | undefined,
   Dispatch<Event>,
@@ -176,7 +177,7 @@ export function useObjectPaginatedList<ObjType, Event extends DefaultEvent = nev
   const [nextUrl, setNextUrl] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (objsDidFetch) return;
+    if (objsDidFetch || !requirement) return;
     setObjsDidFetch(true);
     apiObjectList<PaginatedObj>(appName, modelName, undefined, data).then(
       (res: PaginatedObj) => {
@@ -185,7 +186,7 @@ export function useObjectPaginatedList<ObjType, Event extends DefaultEvent = nev
         setNextUrl(res.next);
       }
     );
-  }, [appName, modelName, data, objsDidFetch]);
+  }, [appName, modelName, data, objsDidFetch, requirement]);
 
   const fetchNext = (nextUrl && objs) ? () => {
     apiObjectList<PaginatedObj>(appName, modelName, nextUrl, data).then(
