@@ -18,7 +18,7 @@ type PaginatedResponse = {
 }
 
 const csrfToken = getCookie('csrftoken');
-async function backendFetch<T>(
+export async function backendFetch<T>(
   method: 'GET' | 'POST' | 'DELETE' | 'PUT',
   endpoint: string,
   data: Object = {},

@@ -63,6 +63,15 @@ def shared_deck_create_view(request, *args, **kwargs):
     return Response(SharedDeckSerializer(shared_deck).data, status=200)
 
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def shared_deck_clone_view(request, *args, **kwargs):
+    print(request.data)
+
+    return Response({'message': 'wasd'})
+    # return Response(DeckSerializer(deck).data, status=200)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def snapshot_flashcards_view(request, *args, **kwargs):

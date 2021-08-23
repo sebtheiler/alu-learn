@@ -21,5 +21,6 @@ urlpatterns = [
         exclude_delete=True,
     ),
     path('deck/share/', views.shared_deck_create_view),
+    path('shareddeck/<int:shared_deck_id>/clone/', views.shared_deck_clone_view),
     path('flashcard/list/', views.snapshot_flashcards_view),
 ]
