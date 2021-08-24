@@ -7,7 +7,7 @@ import { SharedDeck } from '../types';
 import { backendFetch } from '../../../lookup/lookup';
 import { Deck } from '../../types';
 
-export default function CloneButton({ sharedDeck }: { sharedDeck: SharedDeck }) {
+export default function CopySharedDeckButton({ sharedDeck }: { sharedDeck: SharedDeck }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const cloneDeck = async () => {
@@ -15,16 +15,16 @@ export default function CloneButton({ sharedDeck }: { sharedDeck: SharedDeck }) 
       title: (document.getElementsByName('title')[0] as HTMLFormElement).value,
     });
 
-    window.location.href = `/decks/${deck.id}/`;
+    window.location.href = `/deck/${deck.id}/`;
   }
 
   return (<>
     <Button style={{ width: '150px', marginLeft: '2px' }} onClick={() => setIsOpen(true)}>
-      Clone
+      Copy
     </Button>
     <Modal show={isOpen} onHide={() => setIsOpen(false)}>
       <Modal.Header>
-        <Modal.Title>Cloning "{sharedDeck.title}"</Modal.Title>
+        <Modal.Title>Copying "{sharedDeck.title}"</Modal.Title>
       </Modal.Header>
       <Form name='createDeckForm'>
         <Modal.Body>
@@ -44,7 +44,7 @@ export default function CloneButton({ sharedDeck }: { sharedDeck: SharedDeck }) 
             type='submit'
             block
           >
-            Create
+            Copy
           </LoadingButton>
         </Modal.Footer>
       </Form>

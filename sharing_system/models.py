@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import List
+import uuid
 
 from accounts.models import User
 from profiles.models import Profile
@@ -32,7 +33,7 @@ class SharedDeck(models.Model):
     owners = models.ManyToManyField(Profile, related_name='owned_shared_decks')
 
     def __str__(self) -> str:
-        return f'{self.title} by {self.owners.all()}'
+        return f'{self.title} by {", ".join([owner.user.username for owner in self.owners.all()])}'
 
     def get_latest_snapshot(self):
         return self.snapshots.order_by('timestamp').last()
@@ -84,37 +85,57 @@ class SharedDeck(models.Model):
 
         return shared_deck
 
-    def clone(self, user: User, destination_title: str = None) -> Deck:
-        latest_snapshot = self.snapshots.order_by('timestamp').last()
+    def copy(self, user: User, destination_title: str = None) -> Deck:
+        latest_snapshot = self.get_latest_snapshot()
         deck = Deck.objects.create(
             user=user,
             title=destination_title or latest_snapshot.shared_deck.title,
             equivalent_to_snapshot=latest_snapshot,
         )
 
-        # NOTE: this could be rewritten to use `FlashCardAction`, but it is
-        # pointless since they should all be CREATEs
-        flashcards = latest_snapshot.flashcards.all()
+        # NOTE: these could be rewritten to use `...Action`, but it is
+        # inefficient since it implies having to apply every snapshot since creation
+        # when we could just directly copy the latest snapshot
+
+        main_sections_to_create = []
+        sub_sections_to_create = []
+        flashcards_to_create = []
         review_instances_to_create = []
 
-        def create_flashcard(**kwargs):
-            flashcard, review_instances = FlashCard.create_flashcard(**kwargs)
-            review_instances_to_create.append(review_instances)
+        main_sections_to_copy = latest_snapshot.main_sections.all()\
+            .prefetch_related('children', 'children__flashcards')
+        for main_section_to_copy in main_sections_to_copy:
+            main_section = MainSection(
+                deck=deck,
+                title=main_section_to_copy.title,
+                description=main_section_to_copy.description,
+                universal_main_section_id=main_section_to_copy.universal_main_section_id,
+                id=uuid.uuid4(),
+            )
+            main_sections_to_create.append(main_section)
 
-            return flashcard
+            for sub_section_to_copy in main_section_to_copy.children.all():
+                subsection = SubSection(
+                    parent=main_section,
+                    title=sub_section_to_copy.title,
+                    description=sub_section_to_copy.description,
+                    universal_sub_section_id=sub_section_to_copy.universal_sub_section_id,
+                    id=uuid.uuid4(),
+                )
+                sub_sections_to_create.append(subsection)
 
-        flashcards_to_create = [create_flashcard(
-            universal_flashcard_id=flashcard.pk,
-            deck=deck,
-            tags=flashcard.tags,
-            flashcard_type=flashcard.flashcard_type,
-            flashcard_num=flashcard.flashcard_num,
-            fields=flashcard.fields,
-            # TODO: check that images are being cloned correctly, or rethink them
-            front_image=flashcard.front_image,
-            back_image=flashcard.back_image,
-        ) for flashcard in flashcards]
+                for flashcard_to_copy in sub_section_to_copy.flashcards.all():
+                    flashcard, review_instances = flashcard_to_copy.clone(
+                        deck=deck,
+                        subsection=subsection,
+                        universal_flashcard_id=flashcard_to_copy.universal_flashcard_id,
+                    )
 
+                    flashcards_to_create.append(flashcard)
+                    review_instances_to_create += review_instances
+
+        MainSection.objects.bulk_create(main_sections_to_create)
+        SubSection.objects.bulk_create(sub_sections_to_create)
         FlashCard.objects.bulk_create(flashcards_to_create)
         ReviewInstance.objects.bulk_create(review_instances_to_create)
 
@@ -476,16 +497,12 @@ class FlashCardAction(AbstractAction):
                         fc_to_copy.subsection.universal_sub_section_id
                     ),
                 )
-                flashcards_to_create.append(FlashCard(
+                flashcards_to_create.append(fc_to_copy.clone(
+                    deck=None,  # will be attached to snapshot
                     subsection=subsection,
-                    flashcard_type=fc_to_copy.flashcard_type,
-                    flashcard_num=fc_to_copy.flashcard_num,
-                    fields=fc_to_copy.fields,
-                    tags=fc_to_copy.tags,
-                    front_image=fc_to_copy.front_image,
-                    back_image=fc_to_copy.back_image,
+                    skip_creating_review_instances=True,
                     universal_flashcard_id=fc_to_copy.pk,
-                ))
+                )[0])
 
                 # Note that this flashcard is now universally synced
                 fc_to_copy.universal_flashcard_id = fc_to_copy.pk

@@ -1,10 +1,12 @@
+from skill_tree.models import MainSection, SubSection
 from decks.models import Deck
-from decks.serializers import FlashCardSerializer
+from decks.serializers import DeckSerializer, FlashCardSerializer
 from profiles.models import Profile
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from utils.api_utils import assert_request_data_type, get_paginated_queryset_response
+from utils.api_utils import (assert_request_data_type, get_obj_or_404,
+                             get_paginated_queryset_response)
 
 from ..models import SharedDeck, SnapShot
 from ..serializers import SharedDeckSerializer
@@ -65,11 +67,23 @@ def shared_deck_create_view(request, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def shared_deck_clone_view(request, *args, **kwargs):
-    print(request.data)
+def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
+    # TODO: Enforce view_access
+    shared_deck, resp = get_obj_or_404(
+        SharedDeck,
+        shared_deck_id,
+        request.user,
+        None,
+    )
+    if resp:
+        return resp
 
-    return Response({'message': 'wasd'})
-    # return Response(DeckSerializer(deck).data, status=200)
+    deck = shared_deck.copy(
+        request.user,
+        request.data.get('title', shared_deck.title),
+    )
+
+    return Response(DeckSerializer(deck).data, status=200)
 
 
 @api_view(['GET'])

@@ -43,11 +43,17 @@ class ReviewInstanceHistoryAdmin(admin.ModelAdmin):
         return queryset
 
     def get_user(self, obj):
-        return self.get_deck(obj).user
+        try:
+            return self.get_deck(obj).user
+        except AttributeError:
+            return None
     get_user.short_description = 'User'
 
     def get_deck(self, obj):
-        return obj.review_instance.flashcard.deck
+        try:
+            return obj.review_instance.flashcard.deck
+        except AttributeError:
+            return None
     get_deck.short_description = 'Deck'
 
 

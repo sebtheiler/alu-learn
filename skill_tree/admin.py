@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import MainSection, SubSection
+from sharing_system.models import SharedDeck
 
 
 class SubSectionInline(admin.TabularInline):
@@ -15,6 +16,7 @@ class MainSectionAdmin(admin.ModelAdmin):
         'title',
         'get_user',
         'deck',
+        'get_shared_deck',
     )
     search_fields = (
         'title',
@@ -30,6 +32,10 @@ class MainSectionAdmin(admin.ModelAdmin):
     def get_user(self, obj):
         return obj.deck.user if obj.deck else None
     get_user.short_description = 'User'
+
+    def get_shared_deck(self, obj):
+        return SharedDeck.objects.filter(snapshots__main_sections=obj).first()
+    get_shared_deck.short_description = 'Shared Deck'
 
 
 admin.site.register(MainSection, MainSectionAdmin)

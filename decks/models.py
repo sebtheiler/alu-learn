@@ -178,18 +178,14 @@ class Deck(models.Model):
 
 class FlashCard(models.Model):
     # === BASIC INFO ===
-    # deck = models.ForeignKey(
-    #     'decks.Deck',
-    #     on_delete=models.CASCADE,
-    #     related_name='flashcards',
-    #     null=True, blank=True,
-    # )  # TODO: update flashcards to use this
-    # snapshot = models.ForeignKey(
-    #     'sharing_system.SnapShot',
-    #     on_delete=models.CASCADE,
-    #     related_name='flashcards',
-    #     null=True, blank=True,
-    # )
+    # NOTE: although the deck is also accessible through `subsection__parent__deck`,
+    # this requires less queries
+    deck = models.ForeignKey(
+        'decks.Deck',
+        on_delete=models.CASCADE,
+        related_name='flashcards',
+        null=True, blank=True,  # only null when attached to a snapshot
+    )  # TODO: update flashcards to use this
 
     subsection = models.ForeignKey(
         SubSection,
@@ -313,6 +309,7 @@ class FlashCard(models.Model):
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         flashcard = FlashCard.objects.create(
+            deck=deck,
             subsection=subsection,
             flashcard_type=flashcard_type,
             flashcard_num=(
@@ -338,33 +335,26 @@ class FlashCard(models.Model):
 
     def clone(
         self,
-        new_deck: Deck = None,
-        origin_or_copied: Literal['COPIED', 'ORIGIN'] = 'COPIED',
+        deck: Deck = None,
+        subsection: SubSection = None,
         skip_creating_review_instances: bool = False,
+        universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         """
         Clones and saves a full copy of a flashcard
         (returns--but does not create--the flashcard's review instances)
         """
         new_flashcard = FlashCard(
-            deck=new_deck or self.deck,
+            deck=deck,
+            subsection=subsection,
             flashcard_num=self.flashcard_num,
             flashcard_type=self.flashcard_type,
+            universal_flashcard_id=universal_flashcard_id,
             id=uuid.uuid4(),
             # Text
             fields=self.fields,
             tags=self.tags,
         )
-
-        if origin_or_copied == 'COPIED':
-            new_flashcard.origin_creator = None
-            new_flashcard.copied_from_creator = self
-            new_flashcard.copied_from_deck = self.deck
-        elif origin_or_copied == 'ORIGIN':
-            new_flashcard.origin_creator = self
-            new_flashcard.copied_from_creator = None
-        else:
-            raise ValueError('Invlaid value for `origin_or_copied`')
 
         # Derive the review instances from the flashcard
         if not skip_creating_review_instances:
@@ -687,6 +677,9 @@ def review_instance_deleted(sender, instance, using, **kwargs):
 # When a deck is created, create an example MainSection and SubSection
 def deck_saved(sender, instance, created, **kwargs):
     if created:
+        if instance.equivalent_to_snapshot:
+            return
+
         main_section = MainSection.objects.create(
             deck=instance,
             title='Default',

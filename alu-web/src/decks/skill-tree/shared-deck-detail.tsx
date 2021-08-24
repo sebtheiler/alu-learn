@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import RenderMainSection from './main-section';
 import RenderFlashcard  from './render-flashcard';
-import CloneButton from './buttons/clone-button';
+import CopySharedDeckButton from './buttons/copy-shared-deck-button';
 import { FlashCard } from '../types';
 import { useObjectGet, useObjectPaginatedList } from '../../lookup/lookup';
 import { SharedDeck } from './types';
@@ -77,7 +77,7 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
             </Alert>}
             <p>{sharedDeck.description}</p>
             <ButtonGroup>
-              <CloneButton sharedDeck={sharedDeck} />
+              <CopySharedDeckButton sharedDeck={sharedDeck} />
               <Button
                 href={`/community/deck/${sharedDeck.id}/flashcards/${snapshot.id}/`}
                 style={{ width: '150px', marginLeft: '2px' }}
