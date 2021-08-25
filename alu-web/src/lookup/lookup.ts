@@ -10,11 +10,11 @@ import { useReducer, useEffect, useState, Dispatch } from 'react';
 import { Interval } from '../decks/study/algorithm';
 
 type Message = { 'message': string };
-type PaginatedResponse = {
+type PaginatedResponse<T = any> = {
   count: number;
   next: string;
   previous: string;
-  results: any[];
+  results: T[];
 }
 
 const csrfToken = getCookie('csrftoken');

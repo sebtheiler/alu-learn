@@ -17,6 +17,18 @@
   }
 }
 
+.main-section-buttons {
+  position: absolute;
+  right: 0;
+  transform: translate(-40px, -8px);
+}
+
+.sub-section-buttons {
+  position: absolute;
+  right: 0;
+  transform: translate(-8px, -15px);
+}
+
 .sub-section {
   margin-left: auto;
   margin-right: auto;

@@ -2,8 +2,10 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import Popover from 'react-bootstrap/Popover';
 import { MainSection, SubSection } from './types';
+import { SubSectionButtons } from './buttons/section-buttons';
 
 export const cleanTitle = (title: string) => title.toLowerCase().replaceAll(' ', '-');
 export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll('__', ' AND ')
@@ -27,6 +29,11 @@ export default function RenderSubSection({ subSection, mainSection, readOnly }: 
           <Popover id='study-section-popover'>
             <Popover.Title as='h3' className='text-center'>
               {subSection.title}
+              {!readOnly && <SubSectionButtons
+                subSection={subSection}
+                mainSectionId={mainSection.id}
+                deckId={mainSection.deck}
+              />}
             </Popover.Title>
             <Popover.Content>
               <p>{subSection.description}</p>
