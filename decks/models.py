@@ -286,18 +286,16 @@ class FlashCard(models.Model):
         return query
 
     @staticmethod
-    def get_max_flashcard_num(deck: Deck) -> int:
+    def get_max_flashcard_num(subsection: SubSection) -> int:
         # Returns -1 if there are no flashcards in the deck
-        flashcards = FlashCard.objects.filter(
-            subsection__parent__deck=deck,
-        )
+        flashcards = FlashCard.objects.filter(subsection=subsection)
         max_fc_num_obj = flashcards.order_by('-flashcard_num').first()
 
-        return max_fc_num_obj.flashcard_num if max_fc_num_obj else -1
+        return max_fc_num_obj.flashcard_num if max_fc_num_obj is not None else -1
 
     @staticmethod
     def create_flashcard(
-        deck: Deck,
+        deck_id: int,
         subsection: SubSection,
         tags: str,
         flashcard_type: FlashCardTypes,
@@ -309,13 +307,13 @@ class FlashCard(models.Model):
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         flashcard = FlashCard.objects.create(
-            deck=deck,
+            deck_id=deck_id,
             subsection=subsection,
             flashcard_type=flashcard_type,
             flashcard_num=(
                 flashcard_num
                 if flashcard_num is not None else
-                FlashCard.get_max_flashcard_num(deck) + 1
+                FlashCard.get_max_flashcard_num(subsection) + 1
             ),
             fields=fields,
             tags=tags,
@@ -404,7 +402,7 @@ class FlashCard(models.Model):
 
             FlashCard.objects.bulk_update([self, above_flashcard], ['flashcard_num'])
         elif rearrange_type == 'DOWN':
-            if self.flashcard_num == FlashCard.get_max_flashcard_num(self.deck):
+            if self.flashcard_num == FlashCard.get_max_flashcard_num(self.subsection):
                 return 'Flashcard already at bottom'
 
             below_flashcard = self.deck.flashcards.get(

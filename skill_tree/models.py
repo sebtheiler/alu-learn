@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import uuid
+from typing import Tuple, Union
 
 from django.apps import apps
 from django.db import models
@@ -57,6 +60,46 @@ class AbstractSection(models.Model):
 
         return percent_complete
 
+    @staticmethod
+    def clean(title: str):
+        return title.replace('-', ' ')
+
+    @staticmethod
+    def get_from_formatted_title(
+        section_titles: str,
+        deck_id: int,
+    ) -> Tuple[Union[MainSection, SubSection], bool]:
+        titles = section_titles.split('__')
+        if len(titles) == 1:
+            return MainSection.objects.get(
+                deck_id=deck_id,
+                title__iexact=AbstractSection.clean(titles[0]),
+            ), True
+        else:
+            return SubSection.objects.get(
+                parent__deck_id=deck_id,
+                parent__title__iexact=AbstractSection.clean(titles[0]),
+                title__iexact=AbstractSection.clean(titles[1]),
+            ), False
+
+    @staticmethod
+    def get_query_from_formatted_title(
+        section_titles: str,
+        deck_id: int,
+    ) -> Tuple[Q, bool]:
+        titles = section_titles.split('__')
+        if len(titles) == 1:
+            return Q(
+                subsection__parent__deck_id=deck_id,
+                subsection__parent__title__iexact=AbstractSection.clean(titles[0]),
+            ), True
+        else:
+            return Q(
+                subsection__parent__deck_id=deck_id,
+                subsection__parent__title__iexact=AbstractSection.clean(titles[0]),
+                subsection__title__iexact=AbstractSection.clean(titles[1]),
+            ), False
+
 
 class MainSection(AbstractSection):
     # Each main section is either attached to a deck or to a snapshot
@@ -82,23 +125,3 @@ class SubSection(AbstractSection):
 
     def get_review_instance_query(self):
         return Q(flashcard__subsection=self)
-
-    @staticmethod
-    def get_from_formatted_title(section_title: str, deck):
-        mainsection_title, subsection_title = section_title.split('__')
-        mainsection_title = mainsection_title.replace('-', ' ')
-        subsection_title = subsection_title.replace('-', ' ')
-
-        print('!!!!!!!!!!!!!!!!!!!!!!!', mainsection_title, subsection_title, deck)
-        print(subsections := SubSection.objects.filter(
-            parent__deck=deck,
-            parent__title__iexact=mainsection_title,
-            title__iexact=subsection_title,
-        ))
-        import pdb; pdb.set_trace()
-
-        return SubSection.objects.get(
-            parent__deck=deck,
-            parent__title__iexact=mainsection_title,
-            title__iexact=subsection_title,
-        )

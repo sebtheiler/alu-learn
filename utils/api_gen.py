@@ -178,10 +178,10 @@ def delete_object_view(
         if error:
             return error
 
-        model.delete()
-
         if ActionModel:
             ActionModel.create_action('DELETE', model)
+
+        model.delete()
 
         return Response({'message': 'Object deleted'}, status=200)
 

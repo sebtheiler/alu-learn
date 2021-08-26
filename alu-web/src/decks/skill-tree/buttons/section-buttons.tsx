@@ -145,7 +145,7 @@ export function SubSectionButtons({ subSection, mainSectionId, deckId }: SubSect
 
 function AbstractSectionCreateForm({ callback }: { callback(title: string, description: string): Promise<void> }) {
   return (
-    <Form>
+    <Form onSubmit={e => e.preventDefault()}>
       <Modal.Body>
         <Form.Group>
           <Form.Label>Title</Form.Label>

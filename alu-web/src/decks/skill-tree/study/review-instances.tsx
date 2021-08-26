@@ -68,11 +68,9 @@ export function StudyReviewInstances({ reviewInstances, deckId, section }: Study
             {originalInfo.numNew > 0 && <p className='text-success'>
               You learned <strong>{originalInfo.numNew}</strong> flashcards!
             </p>}
-            <p className='text-primary'>
-              You refreshed your knowledge of{' '}
-              <strong>{originalInfo.numTotal - originalInfo.numNew}</strong>
-              {' '}flashcards!
-            </p>
+            {originalInfo.numTotal > originalInfo.numNew && <p className='text-primary'>
+              You refreshed your knowledge of <strong>{originalInfo.numTotal - originalInfo.numNew}</strong> flashcards!
+            </p>}
             <p>TODO: AD</p>
           </Col>
         </Row>

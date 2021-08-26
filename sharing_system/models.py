@@ -400,11 +400,14 @@ class MainSectionAction(AbstractAction):
 
     @staticmethod
     def apply(actions: QuerySet[MainSectionAction], snapshot: SnapShot):
+        actions = actions.prefetch_related('main_section')
+
         main_sections_to_create = []
         origin_mainsections_to_update_uid = []
 
-        for action in actions.prefetch_related('main_section'):
+        for action in actions:
             ms_to_copy = action.main_section
+            print('1', action.deck, action.snapshot, action.main_section)
             if action.action == 'CREATE':
                 copied_ms = MainSection(
                     title=ms_to_copy.title,
@@ -418,13 +421,17 @@ class MainSectionAction(AbstractAction):
                 origin_mainsections_to_update_uid.append(ms_to_copy)
 
                 # Update the action
+                print('2', action.deck, action.snapshot, action.main_section)
                 action.deck = None
-                snapshot = snapshot
+                action.snapshot = snapshot
                 action.main_section = copied_ms
+                print('3', action.deck, action.snapshot, action.main_section)
             elif action.action == 'EDIT':
                 ...  # TODO:
             else:
                 ...  # TODO:
+
+            print('4', action.deck, action.snapshot, action.main_section)
 
         MainSection.objects.bulk_create(main_sections_to_create)
         snapshot.main_sections.add(*main_sections_to_create)
@@ -436,10 +443,12 @@ class MainSectionAction(AbstractAction):
         )
 
         # Transfer the actions from the deck to the snapshot
+        print([(action.deck, action.snapshot, action.main_section) for action in actions])
         MainSectionAction.objects.bulk_update(
             actions,
             ('deck', 'snapshot', 'main_section'),
         )
+        print([(action.deck, action.snapshot, action.main_section) for action in actions])
 
     @staticmethod
     def create_action(action: str, main_section: MainSection):
@@ -488,10 +497,12 @@ class SubSectionAction(AbstractAction):
 
     @staticmethod
     def apply(actions: QuerySet[SubSectionAction], snapshot: SnapShot):
+        actions = actions.prefetch_related('sub_section__parent')
+
         sub_sections_to_create = []
         origin_subsections_to_update_uid = []
 
-        for action in actions.prefetch_related('sub_section__parent'):
+        for action in actions:
             if action.action == 'CREATE':
                 ss_to_copy = action.sub_section
                 main_section = snapshot.main_sections.get(
@@ -513,7 +524,7 @@ class SubSectionAction(AbstractAction):
 
                 # Update the action
                 action.deck = None
-                snapshot = snapshot
+                action.snapshot = snapshot
                 action.sub_section = copied_ss
             elif action.action == 'EDIT':
                 ...  # TODO:
@@ -580,9 +591,12 @@ class FlashCardAction(AbstractAction):
         actions: QuerySet[FlashCardAction],
         snapshot: SnapShot,
     ):
+        actions = actions.prefetch_related('flashcard')
+
         flashcards_to_create = []
         origin_flashcards_to_update_uid = []
-        for action in actions.prefetch_related('flashcard'):
+
+        for action in actions:
             fc_to_copy = action.flashcard
             if action.action == 'CREATE':
                 subsection = SubSection.objects.get(
@@ -605,7 +619,7 @@ class FlashCardAction(AbstractAction):
 
                 # Update the action
                 action.deck = None
-                snapshot = snapshot
+                action.snapshot = snapshot
                 action.flashcard = copied_fc
             elif action.action == 'EDIT':
                 ...  # TODO:
@@ -638,7 +652,7 @@ class FlashCardAction(AbstractAction):
                 pass
 
             # Create a delete action
-            if flashcard.universal_sub_section_id:
+            if flashcard.universal_flashcard_id:
                 return FlashCardAction.objects.create(
                     deck_id=flashcard.deck_id,
                     action=action,

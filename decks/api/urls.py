@@ -1,3 +1,4 @@
+from sharing_system.models import FlashCardAction
 from django.urls import path
 from utils import generate_base_api
 
@@ -36,6 +37,7 @@ urlpatterns = [
         exclude_list=True,
         exclude_edit=True,
         uuid_id=True,
+        ActionModel=FlashCardAction,
     ),
     # ===== Flashcard Operations =====
     path('flashcard/create/', views.flashcard_create_view),

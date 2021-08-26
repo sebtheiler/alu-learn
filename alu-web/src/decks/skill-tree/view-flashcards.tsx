@@ -7,7 +7,6 @@ import { useObjectPaginatedList } from '../../lookup/lookup';
 import { capitalize } from '../../utils';
 import { FlashCard } from '../types';
 import './view-flashcards.scss';
-import { uncleanTag } from './sub-section';
 
 interface ViewFlashcardsProps {
   deckId?: number;
@@ -23,9 +22,10 @@ export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, secti
     sharedDeckId ? {
       snapshot_id: snapshotId,
       shared_deck_id: sharedDeckId,
+      section: section,
     } : {
       deck_id: deckId,
-      tags: uncleanTag(section),
+      section: section,
     },
   );
 
@@ -53,7 +53,7 @@ export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, secti
             Study
           </Button>
           <Button
-            href={`/deck/${deckId}/flashcards/create/${section}/`}
+            href={section ? `/deck/${deckId}/flashcards/create/${section}/` : `/deck/${deckId}/flashcards/create/`}
             style={{ width: '200px' }}
           >
             Create Flashcards
@@ -62,7 +62,11 @@ export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, secti
       </ButtonGroup>
     </div>
     {flashcards.map(flashcard =>
-      <RenderFlashcard flashcard={flashcard} key={flashcard.id} />
+      <RenderFlashcard
+        flashcard={flashcard}
+        deckId={deckId}
+        key={flashcard.id}
+      />
     )}
     {flashcards.length === 0 && <p className='text-center'>
       {deckId ? <>

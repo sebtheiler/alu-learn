@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sharing_system.models import FlashCardAction
-from skill_tree.models import MainSection, SubSection
+from skill_tree.models import AbstractSection, MainSection, SubSection
 from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
 from utils.api_utils import get_obj_or_404
@@ -645,11 +645,15 @@ def flashcard_create_view(request, *args, **kwargs):
     if resp:
         return resp
 
+    # TODO: we could save a query if we could remove this, but we still need to
+    # authenticate that the current user owns the deck
+    deck_id = deck.pk
+
     # Get subsection
     try:
-        subsection = SubSection.get_from_formatted_title(
+        subsection, _ = AbstractSection.get_from_formatted_title(
             request.data.get('subsection'),
-            deck,
+            deck_id=deck_id,
         )
     except SubSection.DoesNotExist:
         return Response(
@@ -682,7 +686,7 @@ def flashcard_create_view(request, *args, **kwargs):
 
     # Create flashcard
     flashcard, _ = FlashCard.create_flashcard(
-        deck=deck,
+        deck_id=deck_id,
         subsection=subsection,
         tags=tags,
         flashcard_type=flashcard_type,
@@ -698,7 +702,7 @@ def flashcard_create_view(request, *args, **kwargs):
 
     # Log the flashcard as being created (for sharing system)
     FlashCardAction.objects.create(
-        deck=deck,
+        deck_id=deck_id,
         flashcard=flashcard,
         action='CREATE',
     )
@@ -857,7 +861,7 @@ def flashcard_list_view(request, *args, **kwargs):
     List flashcards in a deck and/or by subsection - GET
 
     `deck_id`? (GET): Id of the deck to get flashcards from
-    `subsection`? (GET): Subsection to get flashcards from
+    `section`? (GET): Section to get flashcards from
     """
     flashcard_query = Q()
 
@@ -867,12 +871,12 @@ def flashcard_list_view(request, *args, **kwargs):
             subsection__parent__deck__user=request.user,
         )
 
-    if subsection := request.GET.get('subsection'):
-        main_section_title, subsection_title = subsection.split('__')
-        flashcard_query &= Q(
-            parent__title__iexact=main_section_title,
-            title__iexact=subsection_title,
+    if section := request.GET.get('section'):
+        section_query, _ = AbstractSection.get_query_from_formatted_title(
+            section,
+            deck_id,
         )
+        flashcard_query &= section_query
 
     flashcards = FlashCard.objects.filter(flashcard_query)
     return get_paginated_queryset_response(
@@ -1048,13 +1052,13 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
         section = section.split('__')
         if len(section) == 2:
             review_instance_query &= Q(
-                flashcard__subsection__parent__title__iexact=section[0],
-                flashcard__subsection__title__iexact=section[1],
+                flashcard__subsection__parent__title__iexact=AbstractSection.clean(section[0]),
+                flashcard__subsection__title__iexact=AbstractSection.clean(section[1]),
             )
         else:
             section = section.split('__')
             review_instance_query &= Q(
-                flashcard__subsection__parent__title__iexact=section[0],
+                flashcard__subsection__parent__title__iexact=AbstractSection.clean(section[0]),
             )
 
     # Find review instances that are due
@@ -1147,26 +1151,15 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
         if pk__is_main := cache.get(cache_name):
             pk, is_main = pk__is_main
             if is_main:
-                section_titles = MainSection.objects.get(pk=pk)
+                section = MainSection.objects.get(pk=pk)
             else:
-                section_titles = SubSection.objects.get(pk=pk)
+                section = SubSection.objects.get(pk=pk)
         else:
-            section_titles = section_titles.split('__')
-            if len(section_titles) == 1:
-                section = MainSection.objects.get(
-                    title__iexact=section_titles[0],
-                    deck=deck_id,
-                )
-                is_main = True
-                cache.set(cache_name, (section.pk, is_main), 60*60*24)
-            else:
-                section = SubSection.objects.get(
-                    parent__title__iexact=section_titles[0],
-                    parent__deck=deck_id,
-                    title__iexact=section_titles[1],
-                )
-                is_main = False
-                cache.set(cache_name, (section.pk, is_main), 60*60*24)
+            section, is_main = AbstractSection.get_from_formatted_title(
+                section_titles=section_titles,
+                deck_id=deck_id,
+            )
+            cache.set(cache_name, (section.pk, is_main), 60*60*24)
 
         section.cached_percent_complete = None
         section.save()
