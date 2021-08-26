@@ -184,8 +184,8 @@ export function CreateMainSectionButton({ deckId }: { deckId: number }) {
 
   const createMainSectionCallback = async (title: string, description: string) => {
     if (!deckDispatch) return;
-    await apiObjectCreate<MainSection>('skill_tree', 'subsection', {
-      deckId: deckId,
+    await apiObjectCreate<MainSection>('skill_tree', 'mainsection', {
+      deck_id: deckId,
       title: title,
       description: description,
     }).then(res =>
@@ -194,7 +194,7 @@ export function CreateMainSectionButton({ deckId }: { deckId: number }) {
         deckId: res.deck,
         mainSection: res,
       })
-    );
+    ).then(() => setIsCreateModalOpen(false));
   }
 
   return (
@@ -219,26 +219,24 @@ export function CreateMainSectionButton({ deckId }: { deckId: number }) {
   );
 }
 
-export function CreateSubSectionButton({ mainSectionId }: { mainSectionId: number }) {
+export function CreateSubSectionButton({ mainSection }: { mainSection: MainSection }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const deckDispatch = useContext(DeckDispatch);
 
   const createSubSectionCallback = async (title: string, description: string) => {
     if (!deckDispatch) return;
-    await apiObjectCreate<
-      { deckId: number, mainSectionId: number, subsection: SubSection }
-    >('skill_tree', 'subsection', {
-      main_section_id: mainSectionId,
+    await apiObjectCreate<SubSection>('skill_tree', 'subsection', {
+      parent_id: mainSection.id,
       title: title,
       description: description,
     }).then(res =>
       deckDispatch({
         action: 'CREATE_SUB_SECTION',
-        deckId: res.deckId,
-        mainSectionId: res.mainSectionId,
-        subSection: res.subsection,
+        deckId: mainSection.deck,
+        mainSectionId: mainSection.id,
+        subSection: res,
       })
-    );
+    ).then(() => setIsCreateModalOpen(false));
   }
 
   return (

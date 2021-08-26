@@ -123,11 +123,11 @@ class SharedDeckAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super(SharedDeckAdmin, self).get_queryset(request)
-        queryset = queryset.prefetch_related('owners')
+        queryset = queryset.prefetch_related('owners__user')
         return queryset
 
     def formatted_owners(self, obj):
-        return ','.join([owner.username for owner in obj.owners.all()])
+        return ','.join([owner.user.username for owner in obj.owners.all()])
 
 
 admin.site.register(SnapShot, SnapShotAdmin)

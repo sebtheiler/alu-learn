@@ -1,5 +1,6 @@
 from django.urls import path
 from utils import generate_base_api
+from sharing_system.models import MainSectionAction, SubSectionAction
 from . import views
 
 from ..serializers import MainSectionSerializer, SubSectionSerializer
@@ -9,19 +10,21 @@ urlpatterns = [
     *generate_base_api(
         'skill_tree', 'mainsection',
         MainSectionSerializer,
-        {'title': str},
+        {'title': str, 'description': str, 'deck_id': int},  # TODO: fix `deck_id` vulnerability
         'deck__user', 'USER',
         prefetch_list=('deck', 'children'),
-        exclude_create=True,
-        exclude_delete=True,
+        ActionModel=MainSectionAction,
+        uuid_id=True,
+        create_with_user=False,
     ),
     *generate_base_api(
         'skill_tree', 'subsection',
         SubSectionSerializer,
-        {'title': str},
+        {'title': str, 'description': str, 'parent_id': str},
         'parent__deck__user', 'USER',
-        exclude_create=True,
-        exclude_delete=True,
+        ActionModel=SubSectionAction,
+        uuid_id=True,
+        create_with_user=False,
     ),
     path('mainsection/<int:deck_id>/percent-complete/', views.get_deck_sections_percent_complete)
 ]

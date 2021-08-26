@@ -502,7 +502,7 @@ def deck_txt_import_view(request, *args, **kwargs):
     front_and_back = [line.split('\t') for line in split_lines if line]
 
     # Get/create deck with given title
-    deck, created = Deck.objects.get_or_create(user=request.user, title=deck_title)
+    deck, _ = Deck.objects.get_or_create(user=request.user, title=deck_title)
 
     # Create flashcards
     max_flashcard_num = FlashCard.get_max_flashcard_num(deck)
@@ -647,11 +647,9 @@ def flashcard_create_view(request, *args, **kwargs):
 
     # Get subsection
     try:
-        mainsection_title, subsection_title = request.data.get('subsection').split('__')
-        subsection = SubSection.objects.get(
-            parent__deck=deck,
-            parent__title__iexact=mainsection_title,
-            title__iexact=subsection_title,
+        subsection = SubSection.get_from_formatted_title(
+            request.data.get('subsection'),
+            deck,
         )
     except SubSection.DoesNotExist:
         return Response(
@@ -727,7 +725,7 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
         flashcard = FlashCard.objects.get(
             pk=flashcard_id,
             subsection__parent__deck__user=request.user,
-        )
+        )  # TODO: can we use `.selected_related('deck')`?
     except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
@@ -777,6 +775,14 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
             review_instances.filter(id__in=flashcards_to_delete).delete()
 
     flashcard.save()
+
+    # Log the flashcard as being edited (for sharing system)
+    FlashCardAction.objects.create(
+        deck=flashcard.deck,
+        flashcard=flashcard,
+        action='EDIT',
+    )
+
     return Response(FlashCardSerializer(instance=flashcard).data, 200)
 
 
@@ -1152,7 +1158,7 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
                     deck=deck_id,
                 )
                 is_main = True
-                cache.set(cache_name, (section_titles.pk, is_main), 60*60*24)
+                cache.set(cache_name, (section.pk, is_main), 60*60*24)
             else:
                 section = SubSection.objects.get(
                     parent__title__iexact=section_titles[0],
@@ -1160,7 +1166,7 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
                     title__iexact=section_titles[1],
                 )
                 is_main = False
-                cache.set(cache_name, (section_titles.pk, is_main), 60*60*24)
+                cache.set(cache_name, (section.pk, is_main), 60*60*24)
 
         section.cached_percent_complete = None
         section.save()

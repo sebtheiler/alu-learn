@@ -40,7 +40,8 @@ export const deckReducer = (
       return state.filter(deck => deck.id !== event.payload);
     case 'CREATE_MAIN_SECTION':
       index = state.map(deck => deck.id).indexOf(event.deckId);
-      newState[index].skill_tree_sections.push(event.mainSection);
+      if (!newState[index].skill_tree_sections.includes(event.mainSection))
+        newState[index].skill_tree_sections.push(event.mainSection);
 
       return [...newState];
     case 'EDIT_MAIN_SECTION':
@@ -67,7 +68,8 @@ export const deckReducer = (
       mainSectionIndex = state[index].skill_tree_sections.map(
         ms => ms.id
       ).indexOf(event.mainSectionId);
-      newState[index].skill_tree_sections[mainSectionIndex].children.push(event.subSection);
+      if (!newState[index].skill_tree_sections[mainSectionIndex].children.includes(event.subSection))
+        newState[index].skill_tree_sections[mainSectionIndex].children.push(event.subSection);
 
       return [...newState];
     case 'EDIT_SUB_SECTION':

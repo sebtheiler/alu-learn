@@ -9,6 +9,7 @@ from decks.models import Deck, FlashCard, ReviewInstance
 from django.db import models
 from django.db.models.expressions import Q
 from django.db.models.query import QuerySet
+from django.db.utils import IntegrityError
 from skill_tree.models import MainSection, SubSection
 
 
@@ -375,6 +376,15 @@ class AbstractAction(models.Model):
     class Meta:
         abstract = True
 
+    @staticmethod
+    def apply(*args, **kwargs):
+        raise NotImplementedError('Non-abstract instances must implement applying')
+
+    @staticmethod
+    def create_action(*args, **kwargs):
+        # TODO: unify these into one function
+        raise NotImplementedError('Non-abstract instances must implement creating actions')
+
 
 class MainSectionAction(AbstractAction):
     # Each action must either have a flashcard currently attached to it (edits
@@ -384,6 +394,7 @@ class MainSectionAction(AbstractAction):
         null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='attached_action',
+        unique=True,
     )
     universal_main_section_id = models.UUIDField(null=True, blank=True)
 
@@ -395,15 +406,21 @@ class MainSectionAction(AbstractAction):
         for action in actions.prefetch_related('main_section'):
             ms_to_copy = action.main_section
             if action.action == 'CREATE':
-                main_sections_to_create.append(MainSection(
+                copied_ms = MainSection(
                     title=ms_to_copy.title,
                     description=ms_to_copy.description,
                     universal_main_section_id=ms_to_copy.pk,
-                ))
+                )
+                main_sections_to_create.append(copied_ms)
 
                 # Note that the main section is now universally synced
                 ms_to_copy.universal_main_section_id = ms_to_copy.pk
                 origin_mainsections_to_update_uid.append(ms_to_copy)
+
+                # Update the action
+                action.deck = None
+                snapshot = snapshot
+                action.main_section = copied_ms
             elif action.action == 'EDIT':
                 ...  # TODO:
             else:
@@ -419,7 +436,42 @@ class MainSectionAction(AbstractAction):
         )
 
         # Transfer the actions from the deck to the snapshot
-        actions.update(deck=None, snapshot=snapshot)
+        MainSectionAction.objects.bulk_update(
+            actions,
+            ('deck', 'snapshot', 'main_section'),
+        )
+
+    @staticmethod
+    def create_action(action: str, main_section: MainSection):
+        if action == 'DELETE':
+            try:
+                # Try deleting any action that is currently attached to the sub section
+                # TODO: won't these be deleted by CASCADE?
+                attached_action = MainSectionAction.objects.get(main_section=main_section)
+                attached_action.delete()
+            except MainSectionAction.DoesNotExist:
+                pass
+
+            # Create a DELETE action
+            if main_section.universal_main_section_id:
+                return MainSectionAction.objects.create(
+                    deck_id=main_section.deck_id,
+                    action=action,
+                    universal_main_section_id=main_section.universal_main_section_id,
+                )
+            else:
+                return
+
+        try:
+            # Create a CREATE/EDIT action
+            return MainSectionAction.objects.create(
+                deck_id=main_section.deck_id,
+                action=action,
+                main_section=main_section,
+            )
+        except IntegrityError:
+            # If creating an EDIT action, and there is already a CREATE action, pass
+            pass
 
 
 class SubSectionAction(AbstractAction):
@@ -430,6 +482,7 @@ class SubSectionAction(AbstractAction):
         null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='attached_action',
+        unique=True,
     )
     universal_sub_section_id = models.UUIDField(null=True, blank=True)
 
@@ -446,16 +499,22 @@ class SubSectionAction(AbstractAction):
                         ss_to_copy.parent.universal_main_section_id
                     ),
                 )
-                sub_sections_to_create.append(SubSection(
+                copied_ss = SubSection(
                     parent=main_section,
                     title=ss_to_copy.title,
                     description=ss_to_copy.description,
                     universal_sub_section_id=ss_to_copy.pk,
-                ))
+                )
+                sub_sections_to_create.append(copied_ss)
 
                 # Note that the sub section is now universally synced
                 ss_to_copy.universal_sub_section_id = ss_to_copy.pk
                 origin_subsections_to_update_uid.append(ss_to_copy)
+
+                # Update the action
+                action.deck = None
+                snapshot = snapshot
+                action.sub_section = copied_ss
             elif action.action == 'EDIT':
                 ...  # TODO:
             else:
@@ -468,7 +527,41 @@ class SubSectionAction(AbstractAction):
         )
 
         # Transfer the actions from the deck to the snapshot
-        actions.update(deck=None, snapshot=snapshot)
+        SubSectionAction.objects.bulk_update(
+            actions,
+            ('deck', 'snapshot', 'sub_section'),
+        )
+
+    @staticmethod
+    def create_action(action: str, sub_section: SubSection, deck_id: int = None):
+        if action == 'DELETE':
+            try:
+                # Try deleting any action that is currently attached to the sub section
+                attached_action = SubSectionAction.objects.get(sub_section=sub_section)
+                attached_action.delete()
+            except SubSectionAction.DoesNotExist:
+                pass
+
+            # Create a DELETE action
+            if sub_section.universal_sub_section_id:
+                return SubSectionAction.objects.create(
+                    deck_id=deck_id or sub_section.parent.deck_id,
+                    action=action,
+                    universal_sub_section_id=sub_section.universal_sub_section_id,
+                )
+            else:
+                return
+
+        try:
+            # Create a CREATE/EDIT action
+            return SubSectionAction.objects.create(
+                deck_id=deck_id or sub_section.parent.deck_id,
+                action=action,
+                sub_section=sub_section,
+            )
+        except IntegrityError:
+            # If creating an EDIT action, and there is already a CREATE action, pass
+            pass
 
 
 class FlashCardAction(AbstractAction):
@@ -478,6 +571,7 @@ class FlashCardAction(AbstractAction):
         FlashCard,
         on_delete=models.CASCADE,
         related_name='attached_action',
+        unique=True,
     )
     universal_flashcard_id = models.UUIDField(null=True, blank=True)
 
@@ -497,16 +591,22 @@ class FlashCardAction(AbstractAction):
                         fc_to_copy.subsection.universal_sub_section_id
                     ),
                 )
-                flashcards_to_create.append(fc_to_copy.clone(
+                copied_fc, _ = fc_to_copy.clone(
                     deck=None,  # will be attached to snapshot
                     subsection=subsection,
                     skip_creating_review_instances=True,
                     universal_flashcard_id=fc_to_copy.pk,
-                )[0])
+                )
+                flashcards_to_create.append(copied_fc)
 
                 # Note that this flashcard is now universally synced
                 fc_to_copy.universal_flashcard_id = fc_to_copy.pk
                 origin_flashcards_to_update_uid.append(fc_to_copy)
+
+                # Update the action
+                action.deck = None
+                snapshot = snapshot
+                action.flashcard = copied_fc
             elif action.action == 'EDIT':
                 ...  # TODO:
             else:
@@ -522,4 +622,38 @@ class FlashCardAction(AbstractAction):
         )
 
         # Transfer the actions from the deck to the snapshot
-        actions.update(deck=None, snapshot=snapshot)
+        FlashCardAction.objects.bulk_update(
+            actions,
+            ('deck', 'snapshot', 'flashcard')
+        )
+
+    @staticmethod
+    def create_action(action: str, flashcard: FlashCard):
+        if action == 'DELETE':
+            try:
+                # Try deleting any action that is currently attached to the sub section
+                attached_action = FlashCardAction.objects.get(flashcard=flashcard)
+                attached_action.delete()
+            except FlashCardAction.DoesNotExist:
+                pass
+
+            # Create a delete action
+            if flashcard.universal_sub_section_id:
+                return FlashCardAction.objects.create(
+                    deck_id=flashcard.deck_id,
+                    action=action,
+                    universal_flashcard_id=flashcard.universal_flashcard_id,
+                )
+            else:
+                return
+
+        try:
+            # Create a CREATE/EDIT action
+            return FlashCardAction.objects.create(
+                deck_id=flashcard.deck_id,
+                action=action,
+                flashcard=flashcard,
+            )
+        except IntegrityError:
+            # If creating an EDIT action, and there is already a CREATE action, pass
+            pass

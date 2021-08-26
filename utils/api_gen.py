@@ -16,7 +16,9 @@ def create_object_view(
     Serializer: serializers.ModelSerializer,
     editable_attrs: List[str],
     owner_path: str,
-    owner_type: Literal['USER', 'PROFILE']
+    owner_type: Literal['USER', 'PROFILE'],
+    ActionModel: models.Model = None,
+    create_with_user: bool = True,
 ):
     """
     Creates an API view for creating a given model
@@ -36,9 +38,16 @@ def create_object_view(
             return Response({'message': msg}, status=400)
 
         model = Model.objects.create(
-            **{owner_path: request.user if owner_type == 'USER' else request.user.profile},
+            **(
+                {owner_path: request.user if owner_type == 'USER' else request.user.profile}
+                if create_with_user else
+                {}
+            ),
             **request.data,
         )
+
+        if ActionModel:
+            ActionModel.create_action('CREATE', model)
 
         return Response(Serializer(model).data, status=201)
 
@@ -107,6 +116,7 @@ def edit_object_view(
     Serializer: serializers.ModelSerializer,
     editable_attrs: dict,
     owner_path: Union[str, None],
+    ActionModel: models.Model = None,
 ):
     """
     Creates an API view for editing a given model
@@ -138,6 +148,9 @@ def edit_object_view(
 
             setattr(model, attr, value)
 
+        if ActionModel:
+            ActionModel.create_action('EDIT', model)
+
         model.save()
         return Response(Serializer(model).data, status=200)
 
@@ -147,6 +160,7 @@ def edit_object_view(
 def delete_object_view(
     Serializer: serializers.ModelSerializer,
     owner_path: str,
+    ActionModel: models.Model = None,
 ):
     """
     Creates an API view for deleting a given model
@@ -165,6 +179,9 @@ def delete_object_view(
             return error
 
         model.delete()
+
+        if ActionModel:
+            ActionModel.create_action('DELETE', model)
 
         return Response({'message': 'Object deleted'}, status=200)
 
@@ -187,6 +204,8 @@ def generate_base_api(
     exclude_delete: bool = False,
     uuid_id: bool = False,
     prefetch_list: tuple() = tuple(),
+    ActionModel: models.Model = None,
+    create_with_user: bool = True,
 ):
     """
     Generate a list of API paths for a model
@@ -214,6 +233,8 @@ def generate_base_api(
                 editable_attrs=editable_attrs,
                 owner_path=owner_path,
                 owner_type=owner_type,
+                ActionModel=ActionModel,
+                create_with_user=create_with_user,
             ))
         )
 
@@ -240,6 +261,7 @@ def generate_base_api(
                 Serializer=Serializer,
                 editable_attrs=editable_attrs,
                 owner_path=owner_path,
+                ActionModel=ActionModel,
             ))
         )
 
@@ -250,6 +272,7 @@ def generate_base_api(
             path(f'{base_name}/<{id_type}:obj_id>/delete/', delete_object_view(
                 Serializer=Serializer,
                 owner_path=owner_path,
+                ActionModel=ActionModel,
             ))
         )
     return views

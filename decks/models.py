@@ -674,7 +674,7 @@ def review_instance_deleted(sender, instance, using, **kwargs):
     )
 
 
-# When a deck is created, create an example MainSection and SubSection
+# When a deck is created, create an example MainSection
 def deck_saved(sender, instance, created, **kwargs):
     if created:
         if instance.equivalent_to_snapshot:
@@ -695,8 +695,13 @@ To create flashcards, click the "sub sections" below.
             main_section=main_section,
             action='CREATE',
         )
+
+
+# When a main section is created, create an example SubSection
+def main_section_saved(sender, instance, created, **kwargs):
+    if created:
         sub_section = SubSection.objects.create(
-            parent=main_section,
+            parent=instance,
             title='Default',
             description='''
 Sub sections give you a fine level of control over how your deck is organized.
@@ -705,7 +710,7 @@ Press "TK TK TODO: "
         )
         SubSectionAction = apps.get_model('sharing_system.SubSectionAction')
         SubSectionAction.objects.create(
-            deck=instance,
+            deck_id=instance.deck_id,
             sub_section=sub_section,
             action='CREATE',
         )
@@ -713,3 +718,4 @@ Press "TK TK TODO: "
 
 pre_delete.connect(review_instance_deleted, sender=ReviewInstance)
 post_save.connect(deck_saved, sender=Deck)
+post_save.connect(main_section_saved, sender=MainSection)

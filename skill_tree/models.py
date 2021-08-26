@@ -82,3 +82,23 @@ class SubSection(AbstractSection):
 
     def get_review_instance_query(self):
         return Q(flashcard__subsection=self)
+
+    @staticmethod
+    def get_from_formatted_title(section_title: str, deck):
+        mainsection_title, subsection_title = section_title.split('__')
+        mainsection_title = mainsection_title.replace('-', ' ')
+        subsection_title = subsection_title.replace('-', ' ')
+
+        print('!!!!!!!!!!!!!!!!!!!!!!!', mainsection_title, subsection_title, deck)
+        print(subsections := SubSection.objects.filter(
+            parent__deck=deck,
+            parent__title__iexact=mainsection_title,
+            title__iexact=subsection_title,
+        ))
+        import pdb; pdb.set_trace()
+
+        return SubSection.objects.get(
+            parent__deck=deck,
+            parent__title__iexact=mainsection_title,
+            title__iexact=subsection_title,
+        )

@@ -42,6 +42,6 @@ export default function RenderMainSection({ mainSection, readOnly }: MainSection
         )}
       </Row>
     </div>
-    <CreateSubSectionButton mainSectionId={mainSection.id} />
+    <CreateSubSectionButton mainSection={mainSection} />
   </div>);
 }
