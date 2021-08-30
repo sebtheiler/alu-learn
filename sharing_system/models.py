@@ -1,29 +1,31 @@
 from __future__ import annotations
 
-from typing import List
 import uuid
+from typing import List, Tuple, Union
 
 from accounts.models import User
-from profiles.models import Profile
 from decks.models import Deck, FlashCard, ReviewInstance
 from django.db import models
 from django.db.models.expressions import Q
 from django.db.models.query import QuerySet
 from django.db.utils import IntegrityError
+from profiles.models import Profile
 from skill_tree.models import MainSection, SubSection
 
 
 class SharedDeck(models.Model):
+    # === BASIC INFO ===
     title = models.CharField(max_length=128)
     description = models.JSONField()
 
+    # === ACCESS OPTIONS ===
     VIEW_ACCESS_OPTIONS = (
         ('PUBLIC', 'Everybody can view this deck'),
         ('FRIENDS', 'Only friends can view this deck'),
         ('STUDENT', 'Students can view this deck (for use in Classrooms only)')
     )
     EDIT_ACCESS_OPTIONS = (
-        ('PERSONAL', 'Only you can submit edits'),
+        ('PERSONAL', 'Only owners can submit edits'),
         ('FRIENDS', 'Only friends can submit edits'),
         ('STUDENT', 'Only students can submit edits'),
         ('PUBLIC', 'Everybody can submit edits'),
@@ -37,7 +39,28 @@ class SharedDeck(models.Model):
         return f'{self.title} by {", ".join([owner.user.username for owner in self.owners.all()])}'
 
     def get_latest_snapshot(self):
-        return self.snapshots.order_by('timestamp').last()
+        return self.snapshots\
+            .order_by('timestamp')\
+            .select_related(
+                'main_sections__sub_sections__flashcards',
+                'main_sections__attached_action',
+                'main_sections__sub_sections__attached_action',
+                'main_sections__sub_sections__flashcards__attached_action',
+            )\
+            .last()
+
+    def has_edit_access(self, author: Profile) -> bool:
+        if self.edit_access == 'PERSONAL':
+            return author in self.owners
+        elif self.edit_access == 'FRIENDS':
+            return Profile.objects.filter(
+                friends__in=self.owners,
+                pk=author.pk,
+            ).exists()
+        elif self.edit_access == 'STUDENT':
+            raise NotImplementedError('TODO: ')
+        else:
+            return True
 
     @staticmethod
     def create(
@@ -48,7 +71,7 @@ class SharedDeck(models.Model):
         edit_access: str,
         owners: List[Profile],
     ) -> SharedDeck:
-        # Create SharedDeck and SnapShot
+        # Create SharedDeck
         shared_deck = SharedDeck.objects.create(
             title=title,
             description=description,
@@ -57,31 +80,13 @@ class SharedDeck(models.Model):
         )
         shared_deck.owners.set(owners)
 
-        snapshot = SnapShot.objects.create(
+        # Push changes to shared_deck
+        # TODO: SELECT RELATED origin_deck.user.profile
+        SharedDeck.push(
+            origin_deck,
+            shared_deck,
             author=origin_deck.user.profile,
             message='Initial snapshot',
-            shared_deck=shared_deck,
-            parent=None,
-        )
-        origin_deck.equivalent_to_snapshot = snapshot
-        origin_deck.save()
-
-        # Apply actions to clone main sections, sub sections, and flashcards
-        # (not review instances)
-        MainSectionAction.apply(
-            origin_deck.mainsectionactions.all(),
-            snapshot,
-        )
-
-        SubSectionAction.apply(
-            origin_deck.subsectionactions.all(),
-            snapshot,
-        )
-
-        flashcard_actions = origin_deck.flashcardactions.all()
-        FlashCardAction.apply(
-            flashcard_actions,
-            snapshot,
         )
 
         return shared_deck
@@ -116,21 +121,21 @@ class SharedDeck(models.Model):
             main_sections_to_create.append(main_section)
 
             for sub_section_to_copy in main_section_to_copy.children.all():
-                subsection = SubSection(
+                sub_section = SubSection(
                     parent=main_section,
                     title=sub_section_to_copy.title,
                     description=sub_section_to_copy.description,
                     universal_sub_section_id=sub_section_to_copy.universal_sub_section_id,
                     id=uuid.uuid4(),
                 )
-                sub_sections_to_create.append(subsection)
+                sub_sections_to_create.append(sub_section)
 
                 for flashcard_to_copy in sub_section_to_copy.flashcards.all():
-                    flashcard, review_instances = flashcard_to_copy.clone(
+                    flashcard, review_instances = flashcard_to_copy.copy(
                         deck=deck,
-                        subsection=subsection,
                         universal_flashcard_id=flashcard_to_copy.universal_flashcard_id,
                     )
+                    sub_section.flashcards.add(flashcard)  # TODO: make this bulk
 
                     flashcards_to_create.append(flashcard)
                     review_instances_to_create += review_instances
@@ -142,85 +147,45 @@ class SharedDeck(models.Model):
 
         return deck
 
-    def push(self, deck: Deck, message: str) -> SnapShot:
-        latest_snapshot = self.snapshots.order_by('timestamp').last()
-        if deck.equivalent_to_snapshot.pk != latest_snapshot.pk:
+    @staticmethod
+    def push(
+        deck: Deck,
+        shared_deck: SharedDeck,
+        /,
+        author: Profile,
+        message: str,
+    ) -> SnapShot:
+        latest_snapshot = shared_deck.get_latest_snapshot()
+        if deck.equivalent_to_snapshot != latest_snapshot:
             raise ValueError('Deck is not up to date')
 
-        # TODO: check ownership/edit-access
+        # Check edit access
+        if not shared_deck.has_edit_access(author):
+            raise PermissionError('User does not have permission to edit')
 
         # Create new snapshot
-        snapshot = SnapShot.objects.create(
-            message=message,
-            shared_deck=self,
-            parent=latest_snapshot,
+        snapshot = SnapShot.create_child(
+            latest_snapshot,
+            author,
+            message,
+            shared_deck.pk,
         )
+        deck.equivalent_to_snapshot = snapshot
+        deck.save()
 
         # Apply actions
-        flashcards_to_create = []
-        old_flashcards_to_not_include = []  # list of `universal_flashcard_id`s to remove
-        origin_flashcards_to_update_uid = []
-
-        deck_flashcard_actions = deck.flashcardactions.all()\
-            .prefetch_related('flashcard')
-
-        for deck_flashcard_action in deck_flashcard_actions:
-            if deck_flashcard_action.action == 'CREATE':
-                # Sync origin flashcard with the to-be-created flashcard, using
-                # `universal_flashcard_id`
-                origin_flashcard = deck_flashcard_action.flashcard
-                origin_flashcard.universal_flashcard_id = origin_flashcard.pk
-                origin_flashcards_to_update_uid.append(origin_flashcard)
-
-                # Copy flashcard
-                flashcards_to_create.append(FlashCard(
-                    flashcard_type=origin_flashcard.flashcard_type,
-                    flashcard_num=origin_flashcard.flashcard_num,
-                    fields=origin_flashcard.fields,
-                    tags=origin_flashcard.tags,
-                    front_image=origin_flashcard.front_image,
-                    back_image=origin_flashcard.back_image,
-
-                    # Inherits universal ID from ID of the flashcard it was created from
-                    universal_flashcard_id=origin_flashcard.pk,
-                ))
-            elif deck_flashcard_action.action == 'EDIT':
-                origin_flashcard = deck_flashcard_action.flashcard
-
-                # Copy flashcard
-                snapshot.append(FlashCard(
-                    flashcard_type=origin_flashcard.flashcard_type,
-                    flashcard_num=origin_flashcard.flashcard_num,
-                    fields=origin_flashcard.fields,
-                    tags=origin_flashcard.tags,
-                    front_image=origin_flashcard.front_image,
-                    back_image=origin_flashcard.back_image,
-
-                    # Inherits universal ID from the ID of its "parent"
-                    universal_flashcard_id=origin_flashcard.universal_flashcard_id,
-                ))
-
-                # Remember not to include the old flashcard in the snapshot
-                old_flashcards_to_not_include.append(origin_flashcard.universal_flashcard_id)
-            else:
-                # Remember not to include the old flashcard in the snapshot
-                old_flashcards_to_not_include.append(
-                    deck_flashcard_action.flashcard.universal_flashcard_id,
-                )
-
-        # Add all flashcards from the old snapshot (unless they are marked not to be added)
-        snapshot.flashcards.add(latest_snapshot.flashcards.filter(
-            ~Q(universal_flashcard_id__in=old_flashcards_to_not_include)
-        ))
-
-        # Add the newly created flashcards
-        snapshot.flashcards.add(flashcards_to_create)
-
-        # Note that the origin flashcards for newly created flashcards are now universally synced
-        FlashCard.objects.bulk_update(origin_flashcards_to_update_uid, ('universal_flashcard_id',))
-
-        # Transfer actions from the deck to the new snapshot
-        deck_flashcard_actions.update(deck=None, snapshot=snapshot)
+        MainSectionAction.apply(
+            deck.mainsectionactions,
+            snapshot,
+        )
+        SubSectionAction.apply(
+            deck.subsectionactions,
+            snapshot,
+        )
+        FlashCardAction.apply(
+            deck.flashcardactions,
+            snapshot,
+        )
 
         return snapshot
 
@@ -311,6 +276,7 @@ class SharedDeck(models.Model):
 
 
 class SnapShot(models.Model):
+    # === BASIC INFO ===
     author = models.ForeignKey(
         Profile,
         on_delete=models.CASCADE,
@@ -320,6 +286,7 @@ class SnapShot(models.Model):
     message = models.JSONField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    # === SHARED DECK ===
     shared_deck = models.ForeignKey(
         SharedDeck,
         on_delete=models.CASCADE,
@@ -332,19 +299,51 @@ class SnapShot(models.Model):
         related_name='children',
     )
 
-    flashcards = models.ManyToManyField(
-        FlashCard,
-        related_name='shared_deck_snapshots',
-    )
-    main_sections = models.ManyToManyField(
-        MainSection,
-        related_name='shared_deck_snapshots',
-    )
-
-    # TODO: CHANGE ID TO UUID
+    # === OTHER ===
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     def __str__(self) -> str:
         return f'Snapshot for {self.shared_deck}: {self.message}'
+
+    @staticmethod
+    def create_child(
+        parent: Union[SnapShot, None],
+        author: Profile,
+        message: str,
+        shared_deck_id: int,
+    ) -> SnapShot:
+        child = SnapShot.objects.create(
+            message=message,
+            author=author,
+            shared_deck_id=shared_deck_id,
+            parent=parent,
+        )
+
+        main_sections = []
+        sub_sections = []
+        for ms_to_copy in parent.main_sections.all():
+            copied_ms = ms_to_copy.copy(
+                snapshot_id=child.pk,
+                shared_deck_id=shared_deck_id,
+                apply_action=True,
+            )
+            main_sections.append(copied_ms)
+
+            for ss_to_copy in ms_to_copy.sub_sections.all():
+                copied_ss = ss_to_copy.copy(
+                    snapshot_id=child.pk,
+                    main_section_id=copied_ms.pk,
+                    inherited_flashcards=ss_to_copy.flashcards,
+                )
+                sub_sections.append(copied_ss)
+
+                # NOTE: flashcards aren't directly copied, but rather set
+                # to re-use old flashcards when copying the SubSection
+        
+        MainSection.objects.bulk_create(main_sections)
+        SubSection.objects.bulk_create(sub_sections)
+
+        return child
 
 
 class AbstractAction(models.Model):
@@ -378,6 +377,7 @@ class AbstractAction(models.Model):
 
     @staticmethod
     def apply(*args, **kwargs):
+        # TODO: unify these into one function
         raise NotImplementedError('Non-abstract instances must implement applying')
 
     @staticmethod
@@ -400,55 +400,68 @@ class MainSectionAction(AbstractAction):
 
     @staticmethod
     def apply(actions: QuerySet[MainSectionAction], snapshot: SnapShot):
-        actions = actions.prefetch_related('main_section')
+        actions = actions.prefetch_related('main_section').all()
 
         main_sections_to_create = []
+        main_sections_to_edit = []
+        main_section_uids_to_delete = []
         origin_mainsections_to_update_uid = []
 
         for action in actions:
-            ms_to_copy = action.main_section
-            print('1', action.deck, action.snapshot, action.main_section)
+            ms_origin = action.main_section
+            ms_destination = None  # set in CREATE/EDIT; not DELETE
+
             if action.action == 'CREATE':
-                copied_ms = MainSection(
-                    title=ms_to_copy.title,
-                    description=ms_to_copy.description,
-                    universal_main_section_id=ms_to_copy.pk,
+                ms_destination = MainSection(
+                    title=ms_origin.title,
+                    description=ms_origin.description,
+                    universal_main_section_id=ms_origin.pk,
                 )
-                main_sections_to_create.append(copied_ms)
+                main_sections_to_create.append(ms_destination)
 
                 # Note that the main section is now universally synced
-                ms_to_copy.universal_main_section_id = ms_to_copy.pk
-                origin_mainsections_to_update_uid.append(ms_to_copy)
-
-                # Update the action
-                print('2', action.deck, action.snapshot, action.main_section)
-                action.deck = None
-                action.snapshot = snapshot
-                action.main_section = copied_ms
-                print('3', action.deck, action.snapshot, action.main_section)
+                ms_origin.universal_main_section_id = ms_origin.pk
+                origin_mainsections_to_update_uid.append(ms_origin)
             elif action.action == 'EDIT':
-                ...  # TODO:
-            else:
-                ...  # TODO:
+                ms_destination = MainSection.objects.get(
+                    universal_main_section_id=ms_origin.universal_main_section_id,
+                    snapshot=snapshot,
+                )  # TODO: find a way to prefetch this
 
-            print('4', action.deck, action.snapshot, action.main_section)
+                for attr in MainSection.EDITABLE_ATTRS:
+                    setattr(ms_destination, attr, getattr(ms_origin, attr))
+
+                main_sections_to_edit.append(ms_destination)
+            else:
+                main_section_uids_to_delete.append(ms_origin.universal_main_section_id)
+
+            # Update the action
+            action.deck = None
+            action.snapshot = snapshot
+            if ms_destination is not None:
+                action.main_section = ms_destination
 
         MainSection.objects.bulk_create(main_sections_to_create)
         snapshot.main_sections.add(*main_sections_to_create)
-        snapshot.save()  # TODO: try doing this at very end
+        snapshot.save()
 
+        MainSection.objects.bulk_update(main_sections_to_edit, MainSection.EDITABLE_ATTRS)
+        MainSection.objects.filter(
+            universal_main_section_id__in=main_section_uids_to_delete,
+            snapshot=snapshot,
+        )
+
+        # Note that the origin main sections are now universally synced
         MainSection.objects.bulk_update(
             origin_mainsections_to_update_uid,
             ('universal_main_section_id',),
         )
 
         # Transfer the actions from the deck to the snapshot
-        print([(action.deck, action.snapshot, action.main_section) for action in actions])
         MainSectionAction.objects.bulk_update(
             actions,
             ('deck', 'snapshot', 'main_section'),
         )
-        print([(action.deck, action.snapshot, action.main_section) for action in actions])
 
     @staticmethod
     def create_action(action: str, main_section: MainSection):
@@ -497,41 +510,62 @@ class SubSectionAction(AbstractAction):
 
     @staticmethod
     def apply(actions: QuerySet[SubSectionAction], snapshot: SnapShot):
-        actions = actions.prefetch_related('sub_section__parent')
+        actions = actions.prefetch_related('sub_section__parent').all()
 
         sub_sections_to_create = []
+        sub_sections_to_edit = []
+        sub_section_uids_to_delete = []
         origin_subsections_to_update_uid = []
 
         for action in actions:
+            ss_origin = action.sub_section
+            ss_destination = None  # set in CREATE/EDIT; not DELETE
+
             if action.action == 'CREATE':
-                ss_to_copy = action.sub_section
                 main_section = snapshot.main_sections.get(
                     universal_main_section_id=(
-                        ss_to_copy.parent.universal_main_section_id
+                        ss_origin.parent.universal_main_section_id
                     ),
                 )
-                copied_ss = SubSection(
+                ss_destination = SubSection(
                     parent=main_section,
-                    title=ss_to_copy.title,
-                    description=ss_to_copy.description,
-                    universal_sub_section_id=ss_to_copy.pk,
+                    title=ss_origin.title,
+                    description=ss_origin.description,
+                    universal_sub_section_id=ss_origin.pk,
                 )
-                sub_sections_to_create.append(copied_ss)
+                sub_sections_to_create.append(ss_destination)
 
                 # Note that the sub section is now universally synced
-                ss_to_copy.universal_sub_section_id = ss_to_copy.pk
-                origin_subsections_to_update_uid.append(ss_to_copy)
-
-                # Update the action
-                action.deck = None
-                action.snapshot = snapshot
-                action.sub_section = copied_ss
+                ss_origin.universal_sub_section_id = ss_origin.pk
+                origin_subsections_to_update_uid.append(ss_origin)
             elif action.action == 'EDIT':
-                ...  # TODO:
+                ss_destination = SubSection.objects.get(
+                    universal_sub_section_id=ss_origin.universal_sub_section_id,
+                    snapshot=snapshot,
+                )  # TODO: find a way to prefetch this
+
+                for attr in SubSection.EDITABLE_ATTRS:
+                    setattr(ss_destination, attr, getattr(ss_origin, attr))
+
+                sub_sections_to_edit.append(ss_destination)
             else:
-                ...  # TODO:
+                sub_section_uids_to_delete.append(ss_origin.universal_sub_section_id)
+
+            # Update the action
+            action.deck = None
+            action.snapshot = snapshot
+            if ss_destination:
+                action.sub_section = ss_destination
 
         SubSection.objects.bulk_create(sub_sections_to_create)
+
+        SubSection.objects.bulk_update(sub_sections_to_edit, SubSection.EDITABLE_ATTRS)
+        SubSection.objects.filter(
+            universal_sub_section_id__in=sub_section_uids_to_delete,
+            snapshot=snapshot,
+        )
+
+        # Note that the origin sub sections are now universally synced
         SubSection.objects.bulk_update(
             origin_subsections_to_update_uid,
             ('universal_sub_section_id',),
@@ -591,45 +625,62 @@ class FlashCardAction(AbstractAction):
         actions: QuerySet[FlashCardAction],
         snapshot: SnapShot,
     ):
-        actions = actions.prefetch_related('flashcard')
+        # NOTE: since FlashCards are not duplicated between snapshots
+        # (unlike sections), this function is considerably different from
+        # the other `Action.apply`s
+        actions = actions.prefetch_related('flashcard').all()
 
         flashcards_to_create = []
+        flashcard_uids_to_remove = []
         origin_flashcards_to_update_uid = []
 
         for action in actions:
-            fc_to_copy = action.flashcard
-            if action.action == 'CREATE':
+            fc_origin = action.flashcard
+
+            # In CREATE/EDIT, a new flashcard is created
+            if action.action == 'CREATE' or action.action == 'EDIT':
+                # Create new flashcard
                 subsection = SubSection.objects.get(
                     parent__shared_deck_snapshots=snapshot,
                     universal_sub_section_id=(
-                        fc_to_copy.subsection.universal_sub_section_id
+                        fc_origin.subsection.universal_sub_section_id
                     ),
                 )
-                copied_fc, _ = fc_to_copy.clone(
+                fc_destination, _ = fc_origin.copy(
                     deck=None,  # will be attached to snapshot
+                    shared_deck_id=snapshot.shared_deck_id,
                     subsection=subsection,
                     skip_creating_review_instances=True,
-                    universal_flashcard_id=fc_to_copy.pk,
+                    universal_flashcard_id=fc_origin.pk,
                 )
-                flashcards_to_create.append(copied_fc)
+                flashcards_to_create.append(fc_destination)
 
                 # Note that this flashcard is now universally synced
-                fc_to_copy.universal_flashcard_id = fc_to_copy.pk
-                origin_flashcards_to_update_uid.append(fc_to_copy)
+                fc_origin.universal_flashcard_id = fc_origin.pk
+                origin_flashcards_to_update_uid.append(fc_origin)
 
-                # Update the action
-                action.deck = None
-                action.snapshot = snapshot
-                action.flashcard = copied_fc
-            elif action.action == 'EDIT':
-                ...  # TODO:
-            else:
-                ...  # TODO:
+                action.flashcard = fc_destination
+
+            # In EDIT/DELETE, the old flashcard is removed
+            if action.action == 'EDIT' or action.action == 'DELETE':
+                # Remove old flashcard
+                flashcard_uids_to_remove.append(fc_origin.universal_flashcard_id)
+
+            # Update the action
+            action.deck = None
+            action.snapshot = snapshot
+
+        # Create and remove flashcards
+        snapshot.flashcards.remove(
+            snapshot.flashcards.filter(
+                pk__in=flashcard_uids_to_remove,
+            ),
+        )
 
         FlashCard.objects.bulk_create(flashcards_to_create)
         snapshot.flashcards.add(*flashcards_to_create)
-        snapshot.save()
 
+        # Note that the origin flashcards are now universally synced
         FlashCard.objects.bulk_update(
             origin_flashcards_to_update_uid,
             ('universal_flashcard_id',),

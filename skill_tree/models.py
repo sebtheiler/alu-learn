@@ -15,6 +15,7 @@ class AbstractSection(models.Model):
     # === BASIC INFO ===
     title = models.CharField(max_length=128)
     description = models.TextField(max_length=4096)
+    EDITABLE_ATTRS = ('title', 'description')
 
     # === CACHES ===
     # Calculating percent complete is expensive, so we cache it
@@ -102,26 +103,73 @@ class AbstractSection(models.Model):
 
 
 class MainSection(AbstractSection):
-    # Each main section is either attached to a deck or to a snapshot
-    deck = models.ForeignKey(
+    decks = models.ManyToManyField(
         'decks.Deck',
-        on_delete=models.CASCADE,
-        related_name='skill_tree_sections',
-        null=True, blank=True,  # only when attached to a snapshot
+        related_name='main_sections',
     )
+    shared_deck = models.ForeignKey(
+        'sharing_system.SharedDeck',
+        related_name='main_sections',
+        on_delete=models.CASCADE,
+        null=True, blank=True,
+    )
+
+    snapshot = models.ForeignKey(
+        'sharing_system.SnapShot',
+        related_name='main_sections',
+        on_delete=models.CASCADE,
+        null=True, blank=True,
+    )
+
     universal_main_section_id = models.UUIDField(null=True, blank=True)
 
     def get_review_instance_query(self):
         return Q(flashcard__subsection__parent=self)
 
+    def copy(
+        self,
+        snapshot_id: str,
+        shared_deck_id: int,
+    ) -> MainSection:
+        return MainSection(
+            title=self.title,
+            universal_main_section_id=self.universal_main_section_id,
+            description=self.description,
+            pk=uuid.uuid4(),
+
+            snapshot_id=snapshot_id,
+            shared_deck_id=shared_deck_id,
+        )
+
 
 class SubSection(AbstractSection):
-    parent = models.ForeignKey(
+    main_section = models.ForeignKey(
         MainSection,
         on_delete=models.CASCADE,
-        related_name='children',
+        related_name='sub_sections',
+    )
+    flashcards = models.ManyToManyField(
+        'decks.FlashCard',
+        related_name='sub_sections',
     )
     universal_sub_section_id = models.UUIDField(null=True, blank=True)
 
     def get_review_instance_query(self):
         return Q(flashcard__subsection=self)
+
+    def copy(
+        self,
+        snapshot_id: str,
+        main_section_id: str,
+        inherited_flashcards,
+    ):
+        return SubSection(
+            title=self.title,
+            description=self.description,
+            universal_sub_section_id=self.universal_sub_section_id,
+            pk=uuid.uuid4(),
+
+            snapshot_id=snapshot_id,
+            main_section_id=main_section_id,
+            flashcards=inherited_flashcards,
+        )

@@ -645,20 +645,16 @@ def flashcard_create_view(request, *args, **kwargs):
     if resp:
         return resp
 
-    # TODO: we could save a query if we could remove this, but we still need to
-    # authenticate that the current user owns the deck
-    deck_id = deck.pk
-
     # Get subsection
     try:
-        subsection, _ = AbstractSection.get_from_formatted_title(
+        sub_section, _ = AbstractSection.get_from_formatted_title(
             request.data.get('subsection'),
-            deck_id=deck_id,
+            deck_id=deck.pk,
         )
     except SubSection.DoesNotExist:
         return Response(
             {'message': 'Subsection not found'},
-            status=400,
+            status=404,
         )
 
     fields = request.data.get('fields')
@@ -686,8 +682,8 @@ def flashcard_create_view(request, *args, **kwargs):
 
     # Create flashcard
     flashcard, _ = FlashCard.create_flashcard(
-        deck_id=deck_id,
-        subsection=subsection,
+        deck=deck,
+        sub_section=sub_section,
         tags=tags,
         flashcard_type=flashcard_type,
         fields=fields,
@@ -697,12 +693,12 @@ def flashcard_create_view(request, *args, **kwargs):
     )
 
     # Clear subsection %-complete cache
-    subsection.cached_percent_complete = None
-    subsection.save()
+    sub_section.cached_percent_complete = None
+    sub_section.save()
 
     # Log the flashcard as being created (for sharing system)
     FlashCardAction.objects.create(
-        deck_id=deck_id,
+        deck_id=deck.pk,
         flashcard=flashcard,
         action='CREATE',
     )

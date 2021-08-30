@@ -25,16 +25,12 @@ FlashCardTypes = Literal['cloze', 'basic', 'reversed']
 LearningStatusType = Literal['UNSEEN', 'LEARNING', 'LEARNED', 'RELEARNING']
 
 
-# TODO: delete
-class DeckManager(models.Manager):
-    def get_queryset(self) -> QuerySet:
-        return super().get_queryset().prefetch_related('user')
-
-
 class Deck(models.Model):
+    # === BASIC INFO ===
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
 
+    # === SHARING ===
     equivalent_to_snapshot = models.ForeignKey(
         'sharing_system.SnapShot',
         on_delete=models.SET_NULL,
@@ -42,6 +38,11 @@ class Deck(models.Model):
         null=True, blank=True,
     )
 
+    # Since deck updates can take a few seconds, there is a lock on the update
+    # condition of decks so that two updates aren't triggered at the same time
+    is_updating = models.BooleanField(default=False)
+
+    # === CLASSROOM ===
     # Specifies which classroom a student has attatched this deck to (if any)
     student_attached_to = models.ForeignKey(
         'teachers.Classroom',
@@ -50,12 +51,6 @@ class Deck(models.Model):
         null=True,
         blank=True,
     )
-
-    # Since deck updates can take a few seconds, there is a lock on the update
-    # condition of decks so that two updates aren't triggered at the same time
-    is_updating = models.BooleanField(default=False)
-
-    objects = DeckManager()
 
     class Meta:
         ordering = ['-id']
@@ -177,21 +172,14 @@ class Deck(models.Model):
 
 
 class FlashCard(models.Model):
-    # === BASIC INFO ===
-    # NOTE: although the deck is also accessible through `subsection__parent__deck`,
-    # this requires less queries
-    deck = models.ForeignKey(
-        'decks.Deck',
-        on_delete=models.CASCADE,
+    shared_deck = models.ForeignKey(
+        'sharing_system.SharedDeck',
         related_name='flashcards',
-        null=True, blank=True,  # only null when attached to a snapshot
-    )  # TODO: update flashcards to use this
+        on_delete=models.CASCADE,
+        null=True, blank=True,
+    )
 
-    subsection = models.ForeignKey(
-        SubSection,
-        on_delete=models.CASCADE,
-        related_name='flashcards',
-    )  # type: SubSection
+    # === BASIC INFO ===
     flashcard_type = models.CharField(default='basic', max_length=16)  # TODO: capitalize
     flashcard_num = models.PositiveSmallIntegerField()  # zero-indexed
 
@@ -286,17 +274,16 @@ class FlashCard(models.Model):
         return query
 
     @staticmethod
-    def get_max_flashcard_num(subsection: SubSection) -> int:
+    def get_max_flashcard_num(sub_section: SubSection) -> int:
         # Returns -1 if there are no flashcards in the deck
-        flashcards = FlashCard.objects.filter(subsection=subsection)
+        flashcards = FlashCard.objects.filter(sub_section=sub_section)
         max_fc_num_obj = flashcards.order_by('-flashcard_num').first()
 
         return max_fc_num_obj.flashcard_num if max_fc_num_obj is not None else -1
 
     @staticmethod
     def create_flashcard(
-        deck_id: int,
-        subsection: SubSection,
+        sub_section: SubSection,
         tags: str,
         flashcard_type: FlashCardTypes,
         fields: List[list],
@@ -307,13 +294,12 @@ class FlashCard(models.Model):
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         flashcard = FlashCard.objects.create(
-            deck_id=deck_id,
-            subsection=subsection,
+            sub_sections=sub_section,
             flashcard_type=flashcard_type,
             flashcard_num=(
                 flashcard_num
                 if flashcard_num is not None else
-                FlashCard.get_max_flashcard_num(subsection) + 1
+                FlashCard.get_max_flashcard_num(sub_section) + 1
             ),
             fields=fields,
             tags=tags,
@@ -331,10 +317,10 @@ class FlashCard(models.Model):
 
         return flashcard, review_instances
 
-    def clone(
+    def copy(
         self,
-        deck: Deck = None,
-        subsection: SubSection = None,
+        deck_id: int = None,
+        shared_deck_id=None,
         skip_creating_review_instances: bool = False,
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
@@ -343,12 +329,13 @@ class FlashCard(models.Model):
         (returns--but does not create--the flashcard's review instances)
         """
         new_flashcard = FlashCard(
-            deck=deck,
-            subsection=subsection,
+            deck_id=deck_id,
+            shared_deck_id=shared_deck_id,
             flashcard_num=self.flashcard_num,
             flashcard_type=self.flashcard_type,
             universal_flashcard_id=universal_flashcard_id,
             id=uuid.uuid4(),
+
             # Text
             fields=self.fields,
             tags=self.tags,
@@ -479,10 +466,7 @@ class ReviewInstance(models.Model):
         return self.flashcard.has_tag('leech')
 
     @staticmethod
-    def create_review_instance(
-        flashcard_type: FlashCardTypes,
-        flashcard: FlashCard,
-    ) -> List[ReviewInstance]:
+    def create_review_instance(flashcard: FlashCard) -> List[ReviewInstance]:
         """
         Function for creating flashcard review instances, given a flashcard
             type, flashcard, and text for cloze
@@ -497,13 +481,10 @@ class ReviewInstance(models.Model):
         # Get background information
         this_morning = get_morning()
 
-        try:
-            all_content_indicies = CONTENT_INDICIES_DICT[flashcard_type.upper()]
-        except KeyError:
-            raise ValueError(f'Flashcard type "{flashcard_type}" unrecognized')
+        all_content_indicies = CONTENT_INDICIES_DICT[flashcard.flashcard_type.upper()]
 
         # Create flashcard review instance
-        if flashcard_type == 'cloze':
+        if flashcard.flashcard_type == 'cloze':
             # Create a flashcard for each cloze segment
             cloze_ids = []
 

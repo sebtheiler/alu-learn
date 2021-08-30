@@ -1,4 +1,3 @@
-from skill_tree.models import MainSection, SubSection
 from decks.models import Deck
 from decks.serializers import DeckSerializer, FlashCardSerializer
 from profiles.models import Profile
@@ -68,6 +67,11 @@ def shared_deck_create_view(request, *args, **kwargs):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
+    """
+    Copies a shared deck - POST
+
+    `title` (Data): Title of the destination deck
+    """
     # TODO: Enforce view_access
     shared_deck, resp = get_obj_or_404(
         SharedDeck,
@@ -84,6 +88,11 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
     )
 
     return Response(DeckSerializer(deck).data, status=200)
+
+
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def shared_deck_push
 
 
 @api_view(['GET'])

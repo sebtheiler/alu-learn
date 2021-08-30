@@ -1500,7 +1500,7 @@ class DeckTestCase(ImprovedTestCase):
         test_flashcard_amounts(0, 0, deck_to_clone_into)
 
         flashcard = deck.flashcards.first()  # type: FlashCard
-        cloned_flashcard, cloned_review_instances = flashcard.clone(
+        cloned_flashcard, cloned_review_instances = flashcard.copy(
             deck_to_clone_into,
             origin_or_copied='COPIED',
             skip_creating_review_instances=False,
