@@ -75,7 +75,7 @@ export function MainSectionButtons({ mainSection }: { mainSection: MainSection }
 
 interface SubSectionButtonsProps {
   subSection: SubSection;
-  mainSectionId: number;
+  mainSectionId: string;
   deckId: number;
 }
 export function SubSectionButtons({ subSection, mainSectionId, deckId }: SubSectionButtonsProps) {

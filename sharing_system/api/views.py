@@ -1,4 +1,6 @@
-from decks.models import Deck
+from skill_tree.models import AbstractSection
+from django.db.models.query_utils import Q
+from decks.models import Deck, FlashCard
 from decks.serializers import DeckSerializer, FlashCardSerializer
 from profiles.models import Profile
 from rest_framework.decorators import api_view, permission_classes
@@ -36,7 +38,12 @@ def shared_deck_create_view(request, *args, **kwargs):
         return resp
 
     try:
-        deck = Deck.objects.get(
+        deck = Deck.objects.prefetch_related(
+            'main_sections__sub_sections__flashcards',
+            'main_sections__attached_action',
+            'main_sections__sub_sections__attached_action',
+            'main_sections__sub_sections__flashcards__attached_action',
+        ).get(
             pk=request.data.get('origin_deck_id'),
             user=request.user,
         )
@@ -114,7 +121,11 @@ def snapshot_flashcards_view(request, *args, **kwargs):
         snapshot = shared_deck.get_latest_snapshot()
 
     return get_paginated_queryset_response(
-        snapshot.flashcards.all(),
+        FlashCard.objects.filter(
+            Q(sub_section__main_section__snapshot_id=snapshot.pk)
+            &
+            AbstractSection.get_query_from_formatted_title(request.GET.get('section', ''))[0]
+        ),
         request,
         FlashCardSerializer,
         page_size=min(int(request.GET.get('page_size', 250)), 250)

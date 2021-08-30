@@ -7,6 +7,7 @@ from accounts.models import User
 from decks.models import Deck, FlashCard, ReviewInstance
 from django.db import models
 from django.db.models.query import QuerySet
+from django.db.models.query_utils import Q
 from django.db.utils import IntegrityError
 from profiles.models import Profile
 from skill_tree.models import MainSection, SubSection
@@ -40,7 +41,7 @@ class SharedDeck(models.Model):
     def get_latest_snapshot(self):
         return self.snapshots\
             .order_by('timestamp')\
-            .select_related(
+            .prefetch_related(
                 'main_sections__sub_sections__flashcards',
                 'main_sections__attached_action',
                 'main_sections__sub_sections__attached_action',
@@ -48,13 +49,13 @@ class SharedDeck(models.Model):
             )\
             .last()
 
-    def has_edit_access(self, author: Profile) -> bool:
+    def has_edit_access(self, author_pk: int) -> bool:
         if self.edit_access == 'PERSONAL':
-            return author in self.owners
+            return self.owners.filter(pk=author_pk).exists()
         elif self.edit_access == 'FRIENDS':
             return Profile.objects.filter(
                 friends__in=self.owners,
-                pk=author.pk,
+                pk=author_pk,
             ).exists()
         elif self.edit_access == 'STUDENT':
             raise NotImplementedError('TODO: ')
@@ -159,15 +160,22 @@ class SharedDeck(models.Model):
             raise ValueError('Deck is not up to date')
 
         # Check edit access
-        if not shared_deck.has_edit_access(author):
+        if not shared_deck.has_edit_access(author.pk):
             raise PermissionError('User does not have permission to edit')
 
         # Create new snapshot
         snapshot = SnapShot.create_child(
-            latest_snapshot,
-            author,
-            message,
-            shared_deck.pk,
+            parent=latest_snapshot,
+            author=author,
+            message=message,
+            shared_deck_id=shared_deck.pk,
+
+            # Instead of removing EDIT/DELETE flashcards later,
+            # it is easier to never include them
+            flashcard_uids_to_remove=FlashCard.objects.filter(
+                Q(sub_section__main_section__deck_id=deck.pk) &
+                (Q(attached_action__action='EDIT') | Q(attached_action__action='DELETE'))
+            ).values_list('universal_flashcard_id', flat=True)
         )
         deck.equivalent_to_snapshot = snapshot
         deck.save()
@@ -310,6 +318,7 @@ class SnapShot(models.Model):
         author: Profile,
         message: str,
         shared_deck_id: int,
+        flashcard_uids_to_remove: List[str] = [],
     ) -> SnapShot:
         child = SnapShot.objects.create(
             message=message,
@@ -318,29 +327,38 @@ class SnapShot(models.Model):
             parent=parent,
         )
 
+        if parent is None:
+            return child
+
+        # Copy main sections and sub sections
         main_sections = []
         sub_sections = []
         for ms_to_copy in parent.main_sections.all():
             copied_ms = ms_to_copy.copy(
                 snapshot_id=child.pk,
                 shared_deck_id=shared_deck_id,
-                apply_action=True,
             )
             main_sections.append(copied_ms)
 
             for ss_to_copy in ms_to_copy.sub_sections.all():
                 copied_ss = ss_to_copy.copy(
-                    snapshot_id=child.pk,
                     main_section_id=copied_ms.pk,
                     inherited_flashcards=ss_to_copy.flashcards,
                 )
                 sub_sections.append(copied_ss)
 
-                # NOTE: flashcards aren't directly copied, but rather set
-                # to re-use old flashcards when copying the SubSection
-
+        # Create main sections and sub sections
         MainSection.objects.bulk_create(main_sections)
         SubSection.objects.bulk_create(sub_sections)
+
+        # Link old flashcards
+        for ss_to_copy, copied_ss in zip(
+            SubSection.objects.filter(snapshot_id=parent.pk),
+            sub_sections,
+        ):
+            copied_ss.flashcards.set(ss_to_copy.flashcards.filter(~Q(
+                universal_flashcard_id__in=flashcard_uids_to_remove,
+            )))
 
         return child
 
@@ -561,7 +579,7 @@ class SubSectionAction(AbstractAction):
         SubSection.objects.bulk_update(sub_sections_to_edit, SubSection.EDITABLE_ATTRS)
         SubSection.objects.filter(
             universal_sub_section_id__in=sub_section_uids_to_delete,
-            snapshot=snapshot,
+            main_section__snapshot=snapshot,
         )
 
         # Note that the origin sub sections are now universally synced
@@ -630,7 +648,6 @@ class FlashCardAction(AbstractAction):
         actions = actions.prefetch_related('flashcard').all()
 
         flashcards_to_create = []
-        flashcard_uids_to_remove = []
         origin_flashcards_to_update_uid = []
 
         for action in actions:
@@ -640,15 +657,14 @@ class FlashCardAction(AbstractAction):
             if action.action == 'CREATE' or action.action == 'EDIT':
                 # Create new flashcard
                 sub_section = SubSection.objects.get(
-                    parent__shared_deck_snapshots=snapshot,
+                    main_section__snapshot=snapshot,
                     universal_sub_section_id=(
                         fc_origin.sub_section.universal_sub_section_id
                     ),
                 )
                 fc_destination, _ = fc_origin.copy(
-                    deck=None,  # will be attached to snapshot
                     shared_deck_id=snapshot.shared_deck_id,
-                    sub_section=sub_section,
+                    sub_section_id=sub_section.pk,
                     skip_creating_review_instances=True,
                     universal_flashcard_id=fc_origin.pk,
                 )
@@ -660,24 +676,16 @@ class FlashCardAction(AbstractAction):
 
                 action.flashcard = fc_destination
 
-            # In EDIT/DELETE, the old flashcard is removed
-            if action.action == 'EDIT' or action.action == 'DELETE':
-                # Remove old flashcard
-                flashcard_uids_to_remove.append(fc_origin.universal_flashcard_id)
+            # Deleted and edited flashcards are never added when creating
+            # the snapshot child
+            # if action.action == 'EDIT' or action.action == 'DELETE':
+            #     flashcard_uids_to_remove.append(fc_origin.universal_flashcard_id)
 
             # Update the action
             action.deck = None
             action.snapshot = snapshot
 
-        # Create and remove flashcards
-        snapshot.flashcards.remove(
-            snapshot.flashcards.filter(
-                pk__in=flashcard_uids_to_remove,
-            ),
-        )
-
         FlashCard.objects.bulk_create(flashcards_to_create)
-        snapshot.flashcards.add(*flashcards_to_create)
 
         # Note that the origin flashcards are now universally synced
         FlashCard.objects.bulk_update(

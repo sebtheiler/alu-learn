@@ -15,7 +15,6 @@ class SnapShotSerializer(serializers.ModelSerializer):
             'author',
             'message',
             'timestamp',
-            'main_section',  # just the ID
             'main_sections',
             'id',
         )

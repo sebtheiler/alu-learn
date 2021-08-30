@@ -40,7 +40,7 @@ urlpatterns = [
         'decks/detail.html',
         context_kwargs=True,
     )),
-    path('community/deck/<int:shared_deck_id>/snapshots/<int:snapshot_id>/', render_basic_view(
+    path('community/deck/<int:shared_deck_id>/snapshots/<uuid:snapshot_id>/', render_basic_view(
         'decks/detail.html',
         context_kwargs=True,
     )),
@@ -55,12 +55,12 @@ urlpatterns = [
             context_kwargs=True,
         ),
     ),
-    path('community/deck/<int:shared_deck_id>/flashcards/<int:snapshot_id>/', render_basic_view(
+    path('community/deck/<int:shared_deck_id>/flashcards/<uuid:snapshot_id>/', render_basic_view(
         'flashcards/list.html',
         context_kwargs=True,
     )),
     path(
-        'community/deck/<int:shared_deck_id>/flashcards/<int:snapshot_id>/sections/<str:section>/',
+        'community/deck/<int:shared_deck_id>/flashcards/<uuid:snapshot_id>/sections/<str:section>/',
         render_basic_view(
             'flashcards/list.html',
             context_kwargs=True,

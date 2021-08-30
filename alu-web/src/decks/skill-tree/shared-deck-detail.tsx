@@ -20,8 +20,7 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
   const snapshot = useMemo(() => {
     if (!sharedDeck) return;
     if (snapshotId)
-      // @ts-expect-error
-      return sharedDeck.snapshots.filter(snapshot => snapshot.id === parseInt(snapshotId))[0];
+      return sharedDeck.snapshots.filter(snapshot => snapshot.id === snapshotId)[0];
     else
       return sharedDeck.snapshots[sharedDeck.snapshots.length - 1];
   }, [snapshotId, sharedDeck]);

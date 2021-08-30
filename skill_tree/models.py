@@ -86,16 +86,26 @@ class AbstractSection(models.Model):
     @staticmethod
     def get_query_from_formatted_title(
         section_titles: str,
-        deck_id: int,
+        deck_id: int = None,
+        shared_deck_id: int = None,
     ) -> Tuple[Q, bool]:
+        if not section_titles:
+            return Q(), None
+
+        if deck_id:
+            deck_query = Q(sub_section__main_section__deck_id=deck_id)
+        elif shared_deck_id:
+            deck_query = Q(sub_section__main_section__shared_deck_id=shared_deck_id)
+        else:
+            deck_query = Q()
+
         titles = section_titles.split('__')
         if len(titles) == 1:
-            return Q(
-                sub_section__main_section__deck_id=deck_id,
+            return deck_query & Q(
                 sub_section__main_section__title__iexact=AbstractSection.clean(titles[0]),
             ), True
         else:
-            return Q(
+            return deck_query & Q(
                 sub_section__main_section__deck_id=deck_id,
                 sub_section__main_section__title__iexact=AbstractSection.clean(titles[0]),
                 sub_section__title__iexact=AbstractSection.clean(titles[1]),
@@ -157,7 +167,6 @@ class SubSection(AbstractSection):
 
     def copy(
         self,
-        snapshot_id: str,
         main_section_id: str,
         inherited_flashcards=None,
     ):
@@ -167,9 +176,7 @@ class SubSection(AbstractSection):
             universal_sub_section_id=self.universal_sub_section_id,
             pk=uuid.uuid4(),
 
-            snapshot_id=snapshot_id,
             main_section_id=main_section_id,
         )
-        sub_section.flashcards.set(inherited_flashcards)
 
         return sub_section

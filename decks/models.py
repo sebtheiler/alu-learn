@@ -321,8 +321,8 @@ class FlashCard(models.Model):
 
     def copy(
         self,
-        deck_id: int = None,
         shared_deck_id=None,
+        sub_section_id=None,
         skip_creating_review_instances: bool = False,
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
@@ -331,8 +331,8 @@ class FlashCard(models.Model):
         (returns--but does not create--the flashcard's review instances)
         """
         new_flashcard = FlashCard(
-            deck_id=deck_id,
             shared_deck_id=shared_deck_id,
+            sub_section_id=sub_section_id,
             flashcard_num=self.flashcard_num,
             flashcard_type=self.flashcard_type,
             universal_flashcard_id=universal_flashcard_id,

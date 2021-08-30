@@ -1135,10 +1135,10 @@ export async function apiReviewInstanceUpdate(
 }
 
 export interface PercentComplete {
-  id: number;
+  id: string;
   percent_complete: number;
   children: {
-    id: number;
+    id: string;
     percent_complete: number;
   }[];
 }

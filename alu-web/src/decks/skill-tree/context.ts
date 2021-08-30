@@ -10,11 +10,11 @@ type DeckEvent =
   // MainSection
   | { action: 'CREATE_MAIN_SECTION', deckId: number, mainSection: MainSection }
   | { action: 'EDIT_MAIN_SECTION', deckId: number, mainSection: Partial<MainSection> & Pick<MainSection, 'id'> }
-  | { action: 'DELETE_MAIN_SECTION', deckId: number, mainSectionId: number }
+  | { action: 'DELETE_MAIN_SECTION', deckId: number, mainSectionId: string }
   // SubSection
-  | { action: 'CREATE_SUB_SECTION', deckId: number, mainSectionId: number, subSection: SubSection }
-  | { action: 'EDIT_SUB_SECTION', deckId: number, mainSectionId: number, subSection: Partial<SubSection> & Pick<SubSection, 'id'> }
-  | { action: 'DELETE_SUB_SECTION', deckId: number, mainSectionId: number, subSectionId: number }
+  | { action: 'CREATE_SUB_SECTION', deckId: number, mainSectionId: string, subSection: SubSection }
+  | { action: 'EDIT_SUB_SECTION', deckId: number, mainSectionId: string, subSection: Partial<SubSection> & Pick<SubSection, 'id'> }
+  | { action: 'DELETE_SUB_SECTION', deckId: number, mainSectionId: string, subSectionId: string }
 
 export const deckReducer = (
   state: Deck[] | undefined,

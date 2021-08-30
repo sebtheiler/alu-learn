@@ -4,7 +4,7 @@ import { UUID } from "../types";
 interface AbstractSection {
   title: string;
   description: string;
-  id: number;
+  id: string;
 
   // This property isn't serialized directly, but rather from `getDeckSectionsPercentComplete`,
   // and is then combined with the Section
