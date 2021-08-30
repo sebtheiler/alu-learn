@@ -32,7 +32,7 @@ export default function RenderMainSection({ mainSection, readOnly }: MainSection
     </div>
     <div className='mt-2'>
       <Row className='main-section-body'>
-        {mainSection.children.map(subSection =>
+        {mainSection.sub_sections.map(subSection =>
           <RenderSubSection
             subSection={subSection}
             mainSection={mainSection}

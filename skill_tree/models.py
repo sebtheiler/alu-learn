@@ -78,8 +78,8 @@ class AbstractSection(models.Model):
             ), True
         else:
             return SubSection.objects.get(
-                parent__deck_id=deck_id,
-                parent__title__iexact=AbstractSection.clean(titles[0]),
+                main_section__deck_id=deck_id,
+                main_section__title__iexact=AbstractSection.clean(titles[0]),
                 title__iexact=AbstractSection.clean(titles[1]),
             ), False
 
@@ -91,21 +91,23 @@ class AbstractSection(models.Model):
         titles = section_titles.split('__')
         if len(titles) == 1:
             return Q(
-                subsection__parent__deck_id=deck_id,
-                subsection__parent__title__iexact=AbstractSection.clean(titles[0]),
+                sub_section__main_section__deck_id=deck_id,
+                sub_section__main_section__title__iexact=AbstractSection.clean(titles[0]),
             ), True
         else:
             return Q(
-                subsection__parent__deck_id=deck_id,
-                subsection__parent__title__iexact=AbstractSection.clean(titles[0]),
-                subsection__title__iexact=AbstractSection.clean(titles[1]),
+                sub_section__main_section__deck_id=deck_id,
+                sub_section__main_section__title__iexact=AbstractSection.clean(titles[0]),
+                sub_section__title__iexact=AbstractSection.clean(titles[1]),
             ), False
 
 
 class MainSection(AbstractSection):
-    decks = models.ManyToManyField(
+    deck = models.ForeignKey(
         'decks.Deck',
         related_name='main_sections',
+        on_delete=models.CASCADE,
+        null=True, blank=True,
     )
     shared_deck = models.ForeignKey(
         'sharing_system.SharedDeck',
@@ -124,7 +126,7 @@ class MainSection(AbstractSection):
     universal_main_section_id = models.UUIDField(null=True, blank=True)
 
     def get_review_instance_query(self):
-        return Q(flashcard__subsection__parent=self)
+        return Q(flashcard__sub_section__main_section=self)
 
     def copy(
         self,
@@ -148,22 +150,18 @@ class SubSection(AbstractSection):
         on_delete=models.CASCADE,
         related_name='sub_sections',
     )
-    flashcards = models.ManyToManyField(
-        'decks.FlashCard',
-        related_name='sub_sections',
-    )
     universal_sub_section_id = models.UUIDField(null=True, blank=True)
 
     def get_review_instance_query(self):
-        return Q(flashcard__subsection=self)
+        return Q(flashcard__sub_section=self)
 
     def copy(
         self,
         snapshot_id: str,
         main_section_id: str,
-        inherited_flashcards,
+        inherited_flashcards=None,
     ):
-        return SubSection(
+        sub_section = SubSection(
             title=self.title,
             description=self.description,
             universal_sub_section_id=self.universal_sub_section_id,
@@ -171,5 +169,7 @@ class SubSection(AbstractSection):
 
             snapshot_id=snapshot_id,
             main_section_id=main_section_id,
-            flashcards=inherited_flashcards,
         )
+        sub_section.flashcards.set(inherited_flashcards)
+
+        return sub_section

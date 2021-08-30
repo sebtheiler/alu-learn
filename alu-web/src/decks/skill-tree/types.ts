@@ -13,11 +13,11 @@ interface AbstractSection {
 
 export interface MainSection extends AbstractSection {
   deck: number;
-  children: SubSection[];
+  sub_sections: SubSection[];
 }
 
 export interface SubSection extends AbstractSection {
-  parent: number;
+  main_section: number;
 }
 
 export interface SharedDeck {

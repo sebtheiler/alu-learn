@@ -22,7 +22,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
         ]
 
     # def get_parent_deck_id(self, obj):
-        # return obj.subsection.parent.deck.id
+        # return obj.sub_section.main_section.deck.id
 
 
 class ReviewInstanceSerializer(serializers.ModelSerializer):
@@ -66,13 +66,13 @@ class ReviewInstanceSerializer(serializers.ModelSerializer):
 
 class DeckSerializer(serializers.ModelSerializer):
     user = MinifiedProfileSerializer('user')
-    skill_tree_sections = MainSectionSerializer('skill_tree_sections', many=True)
+    main_sections = MainSectionSerializer('main_sections', many=True)
 
     class Meta:
         model = Deck
         fields = [
             'user',
             'title',
-            'skill_tree_sections',
+            'main_sections',
             'id',
         ]

@@ -18,18 +18,18 @@ class SubSectionSerializer(AbstractSectionSerializer):
     class Meta(AbstractSectionSerializer.Meta):
         model = SubSection
         fields = AbstractSectionSerializer.Meta.fields + (
-            'parent',  # just ID
+            'main_section',  # just ID
         )
         read_only_fields = fields
 
 
 class MainSectionSerializer(AbstractSectionSerializer):
-    children = SubSectionSerializer('children', many=True)
+    sub_sections = SubSectionSerializer('sub_sections', many=True)
 
     class Meta(AbstractSectionSerializer.Meta):
         model = MainSection
         fields = AbstractSectionSerializer.Meta.fields + (
             'deck',  # just ID
-            'children',
+            'sub_sections',
         )
         read_only_fields = fields

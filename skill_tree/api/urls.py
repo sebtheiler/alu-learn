@@ -12,7 +12,7 @@ urlpatterns = [
         MainSectionSerializer,
         {'title': str, 'description': str, 'deck_id': int},  # TODO: fix `deck_id` vulnerability
         'deck__user', 'USER',
-        prefetch_list=('deck', 'children'),
+        prefetch_list=('deck', 'sub_sections'),
         ActionModel=MainSectionAction,
         uuid_id=True,
         create_with_user=False,
@@ -20,8 +20,8 @@ urlpatterns = [
     *generate_base_api(
         'skill_tree', 'subsection',
         SubSectionSerializer,
-        {'title': str, 'description': str, 'parent_id': str},
-        'parent__deck__user', 'USER',
+        {'title': str, 'description': str, 'main_section_id': str},
+        'main_section__deck__user', 'USER',
         ActionModel=SubSectionAction,
         uuid_id=True,
         create_with_user=False,

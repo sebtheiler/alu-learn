@@ -15,7 +15,7 @@ urlpatterns = [
         DeckSerializer,
         {'title': str},
         'user', 'USER',
-        prefetch_list=('user', 'skill_tree_sections__children'),
+        prefetch_list=('user', 'main_sections__sub_sections'),
     ),
     # ===== Deck Lists =====
     path('deck/list/quick/', views.deck_quick_list_view),
@@ -32,7 +32,7 @@ urlpatterns = [
         'decks', 'flashcard',
         FlashCardSerializer,
         {'fields': list, 'tags': str},
-        'subsection__parent__deck__user', 'USER',
+        'sub_section__main_section__deck__user', 'USER',
         exclude_create=True,
         exclude_list=True,
         exclude_edit=True,

@@ -226,7 +226,7 @@ export function CreateSubSectionButton({ mainSection }: { mainSection: MainSecti
   const createSubSectionCallback = async (title: string, description: string) => {
     if (!deckDispatch) return;
     await apiObjectCreate<SubSection>('skill_tree', 'subsection', {
-      parent_id: mainSection.id,
+      main_section_id: mainSection.id,
       title: title,
       description: description,
     }).then(res =>

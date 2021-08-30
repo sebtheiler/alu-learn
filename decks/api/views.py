@@ -635,7 +635,7 @@ def flashcard_create_view(request, *args, **kwargs):
 
     Required information:
         `deck_id`: (Data) ID of the deck to create a flashcard in
-        `subsection`: (Data) Subsection to put the flashcard in (a__b)
+        `sub_section`: (Data) Subsection to put the flashcard in (a__b)
         `fields`: (Data) List of the fields and their data for the flashcard
         `tags`: (Data) Raw string of tags, separated by commas
         `flashcard_type`: (Data) Type of flashcard
@@ -645,10 +645,10 @@ def flashcard_create_view(request, *args, **kwargs):
     if resp:
         return resp
 
-    # Get subsection
+    # Get sub section
     try:
         sub_section, _ = AbstractSection.get_from_formatted_title(
-            request.data.get('subsection'),
+            request.data.get('sub_section'),
             deck_id=deck.pk,
         )
     except SubSection.DoesNotExist:
@@ -682,7 +682,6 @@ def flashcard_create_view(request, *args, **kwargs):
 
     # Create flashcard
     flashcard, _ = FlashCard.create_flashcard(
-        deck=deck,
         sub_section=sub_section,
         tags=tags,
         flashcard_type=flashcard_type,
@@ -692,7 +691,7 @@ def flashcard_create_view(request, *args, **kwargs):
         flashcard_uuid=flashcard_uuid,
     )
 
-    # Clear subsection %-complete cache
+    # Clear sub section %-complete cache
     sub_section.cached_percent_complete = None
     sub_section.save()
 
@@ -724,7 +723,7 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
     try:
         flashcard = FlashCard.objects.get(
             pk=flashcard_id,
-            subsection__parent__deck__user=request.user,
+            sub_section__main_section__deck__user=request.user,
         )  # TODO: can we use `.selected_related('deck')`?
     except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
@@ -854,7 +853,7 @@ def flashcard_search_view(request, *args, **kwargs):
 @permission_classes([IsAuthenticated])
 def flashcard_list_view(request, *args, **kwargs):
     """
-    List flashcards in a deck and/or by subsection - GET
+    List flashcards in a deck and/or by section - GET
 
     `deck_id`? (GET): Id of the deck to get flashcards from
     `section`? (GET): Section to get flashcards from
@@ -863,8 +862,8 @@ def flashcard_list_view(request, *args, **kwargs):
 
     if deck_id := request.GET.get('deck_id'):
         flashcard_query &= Q(
-            subsection__parent__deck__pk=deck_id,
-            subsection__parent__deck__user=request.user,
+            sub_section__main_section__deck__pk=deck_id,
+            sub_section__main_section__deck__user=request.user,
         )
 
     if section := request.GET.get('section'):
@@ -1035,12 +1034,12 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     """
     Get review instances to study - POST
 
-    `subsection` (Data)?: Subsection to get flashcards from (a__b)
+    `section` (Data)?: Section to get flashcards from (a__b)
     """
     # Build base query
     # TODO: re-add cloze flashcards
     review_instance_query = Q(
-        flashcard__subsection__parent__deck__user=request.user,
+        flashcard__sub_section__main_section__deck__user=request.user,
     )
 
     section = request.data.get('section')
@@ -1048,13 +1047,13 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
         section = section.split('__')
         if len(section) == 2:
             review_instance_query &= Q(
-                flashcard__subsection__parent__title__iexact=AbstractSection.clean(section[0]),
-                flashcard__subsection__title__iexact=AbstractSection.clean(section[1]),
+                flashcard__sub_section__main_section__title__iexact=AbstractSection.clean(section[0]),
+                flashcard__sub_section__title__iexact=AbstractSection.clean(section[1]),
             )
         else:
             section = section.split('__')
             review_instance_query &= Q(
-                flashcard__subsection__parent__title__iexact=AbstractSection.clean(section[0]),
+                flashcard__sub_section__main_section__title__iexact=AbstractSection.clean(section[0]),
             )
 
     # Find review instances that are due
@@ -1113,7 +1112,7 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
         ReviewInstance,
         review_instance_id,
         request.user,
-        'flashcard__subsection__parent__deck__user',
+        'flashcard__sub_section__main_section__deck__user',
     )
     if error:
         return error
@@ -1151,16 +1150,20 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
             else:
                 section = SubSection.objects.get(pk=pk)
         else:
-            section, is_main = AbstractSection.get_from_formatted_title(
-                section_titles=section_titles,
-                deck_id=deck_id,
-            )
-            cache.set(cache_name, (section.pk, is_main), 60*60*24)
+            try:
+                section, is_main = AbstractSection.get_from_formatted_title(
+                    section_titles=section_titles,
+                    deck_id=deck_id,
+                )
+                cache.set(cache_name, (section.pk, is_main), 60*60*24)
+            except (SubSection.DoesNotExist, MainSection.DoesNotExist):
+                section = None
 
-        section.cached_percent_complete = None
-        section.save()
-        if not is_main:
-            section.parent.cached_percent_complete = None
-            section.parent.save()
+        if section is not None:
+            section.cached_percent_complete = None
+            section.save()
+            if not is_main:
+                section.main_section.cached_percent_complete = None
+                section.main_section.save()
 
     return Response({'message': 'Updated review instance'}, status=200)

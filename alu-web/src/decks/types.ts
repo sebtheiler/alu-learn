@@ -16,7 +16,7 @@ export interface Deck {
   title: string;
   shared_deck: number;
   deck_type: 'standard' | 'shared';
-  skill_tree_sections: MainSection[];
+  main_sections: MainSection[];
   id: number;
 }
 

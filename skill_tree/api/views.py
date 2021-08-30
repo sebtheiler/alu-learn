@@ -11,7 +11,7 @@ def get_deck_sections_percent_complete(request, deck_id, *args, **kwargs):
     main_sections = MainSection.objects.filter(
         deck__pk=deck_id,
         deck__user=request.user,
-    ).prefetch_related('children')
+    ).prefetch_related('sub_sections')
     sub_sections = []
 
     def subsection_percent(sub_section):
@@ -21,10 +21,10 @@ def get_deck_sections_percent_complete(request, deck_id, *args, **kwargs):
     sections_percent_complete = [{
         'id': main_section.pk,
         'percent_complete': main_section.get_percent_complete(),
-        'children': [{
+        'sub_sections': [{
             'id': sub_section.pk,
             'percent_complete': subsection_percent(sub_section),
-        } for sub_section in main_section.children.all()]
+        } for sub_section in main_section.sub_sections.all()]
     } for main_section in main_sections]
 
     MainSection.objects.bulk_update(

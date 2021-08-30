@@ -40,60 +40,60 @@ export const deckReducer = (
       return state.filter(deck => deck.id !== event.payload);
     case 'CREATE_MAIN_SECTION':
       index = state.map(deck => deck.id).indexOf(event.deckId);
-      if (!newState[index].skill_tree_sections.includes(event.mainSection))
-        newState[index].skill_tree_sections.push(event.mainSection);
+      if (!newState[index].main_sections.includes(event.mainSection))
+        newState[index].main_sections.push(event.mainSection);
 
       return [...newState];
     case 'EDIT_MAIN_SECTION':
       // Get index of edited deck and of edited main section
       index = state.map(deck => deck.id).indexOf(event.deckId);
-      mainSectionIndex = newState[index].skill_tree_sections.map(
+      mainSectionIndex = newState[index].main_sections.map(
         ms => ms.id
       ).indexOf(event.mainSection.id);
 
       // Make updates
       for (const [attr, val] of Object.entries(event.mainSection))
-        newState[index].skill_tree_sections[mainSectionIndex][attr] = val;
+        newState[index].main_sections[mainSectionIndex][attr] = val;
 
       return [...newState];
     case 'DELETE_MAIN_SECTION':
       index = state.map(deck => deck.id).indexOf(event.deckId);
-      newState[index].skill_tree_sections = newState[index].skill_tree_sections.filter(
+      newState[index].main_sections = newState[index].main_sections.filter(
         ms => ms.id !== event.mainSectionId
       );
 
       return [...newState];
     case 'CREATE_SUB_SECTION':
       index = state.map(deck => deck.id).indexOf(event.deckId);
-      mainSectionIndex = state[index].skill_tree_sections.map(
+      mainSectionIndex = state[index].main_sections.map(
         ms => ms.id
       ).indexOf(event.mainSectionId);
-      if (!newState[index].skill_tree_sections[mainSectionIndex].children.includes(event.subSection))
-        newState[index].skill_tree_sections[mainSectionIndex].children.push(event.subSection);
+      if (!newState[index].main_sections[mainSectionIndex].sub_sections.includes(event.subSection))
+        newState[index].main_sections[mainSectionIndex].sub_sections.push(event.subSection);
 
       return [...newState];
     case 'EDIT_SUB_SECTION':
       // Get index of edited deck and of edited main section
       index = state.map(deck => deck.id).indexOf(event.deckId);
-      mainSectionIndex = state[index].skill_tree_sections.map(
+      mainSectionIndex = state[index].main_sections.map(
         ms => ms.id
       ).indexOf(event.mainSectionId);
-      const subSectionIndex = newState[index].skill_tree_sections[mainSectionIndex].children.map(
+      const subSectionIndex = newState[index].main_sections[mainSectionIndex].sub_sections.map(
         ss => ss.id
       ).indexOf(event.subSection.id);
 
       // Make updates
       for (const [attr, val] of Object.entries(event.subSection))
-        newState[index].skill_tree_sections[mainSectionIndex].children[subSectionIndex][attr] = val;
+        newState[index].main_sections[mainSectionIndex].sub_sections[subSectionIndex][attr] = val;
 
       return [...newState];
     case 'DELETE_SUB_SECTION':
       index = state.map(deck => deck.id).indexOf(event.deckId);
-      mainSectionIndex = state[index].skill_tree_sections.map(
+      mainSectionIndex = state[index].main_sections.map(
         ms => ms.id
       ).indexOf(event.mainSectionId);
-      newState[index].skill_tree_sections[mainSectionIndex].children =
-        newState[index].skill_tree_sections[mainSectionIndex].children.filter(
+      newState[index].main_sections[mainSectionIndex].sub_sections =
+        newState[index].main_sections[mainSectionIndex].sub_sections.filter(
           ss => ss.id !== event.subSectionId
         );
 

@@ -161,7 +161,7 @@ class Deck(models.Model):
                 sub_sections.append(SubSection(
                     title=sub_tag.capitalize(),
                     tag=sub_tag,
-                    parent=main_section,
+                    main_section=main_section,
                 ))
 
         # Bulk create
@@ -177,6 +177,11 @@ class FlashCard(models.Model):
         related_name='flashcards',
         on_delete=models.CASCADE,
         null=True, blank=True,
+    )
+    sub_section = models.ForeignKey(
+        'skill_tree.SubSection',
+        related_name='flashcards',
+        on_delete=models.CASCADE,
     )
 
     # === BASIC INFO ===
@@ -294,7 +299,7 @@ class FlashCard(models.Model):
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         flashcard = FlashCard.objects.create(
-            sub_sections=sub_section,
+            sub_section=sub_section,
             flashcard_type=flashcard_type,
             flashcard_num=(
                 flashcard_num
@@ -309,10 +314,7 @@ class FlashCard(models.Model):
             universal_flashcard_id=universal_flashcard_id,
         )
 
-        review_instances = ReviewInstance.create_review_instance(
-            flashcard_type,
-            flashcard,
-        )
+        review_instances = ReviewInstance.create_review_instance(flashcard)
         ReviewInstance.objects.bulk_create(review_instances)
 
         return flashcard, review_instances
@@ -389,7 +391,7 @@ class FlashCard(models.Model):
 
             FlashCard.objects.bulk_update([self, above_flashcard], ['flashcard_num'])
         elif rearrange_type == 'DOWN':
-            if self.flashcard_num == FlashCard.get_max_flashcard_num(self.subsection):
+            if self.flashcard_num == FlashCard.get_max_flashcard_num(self.sub_section):
                 return 'Flashcard already at bottom'
 
             below_flashcard = self.deck.flashcards.get(
@@ -680,12 +682,9 @@ To create flashcards, click the "sub sections" below.
 def main_section_saved(sender, instance, created, **kwargs):
     if created:
         sub_section = SubSection.objects.create(
-            parent=instance,
+            main_section=instance,
             title='Default',
-            description='''
-Sub sections give you a fine level of control over how your deck is organized.
-Press "TK TK TODO: "
-            ''',
+            description='Edit this description by... TK TODO',
         )
         SubSectionAction = apps.get_model('sharing_system.SubSectionAction')
         SubSectionAction.objects.create(

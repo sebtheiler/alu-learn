@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import uuid
-from typing import List, Tuple, Union
+from typing import List, Union
 
 from accounts.models import User
 from decks.models import Deck, FlashCard, ReviewInstance
 from django.db import models
-from django.db.models.expressions import Q
 from django.db.models.query import QuerySet
 from django.db.utils import IntegrityError
 from profiles.models import Profile
@@ -109,7 +108,7 @@ class SharedDeck(models.Model):
         review_instances_to_create = []
 
         main_sections_to_copy = latest_snapshot.main_sections.all()\
-            .prefetch_related('children', 'children__flashcards')
+            .prefetch_related('sub_sections', 'sub_sections__flashcards')
         for main_section_to_copy in main_sections_to_copy:
             main_section = MainSection(
                 deck=deck,
@@ -120,9 +119,9 @@ class SharedDeck(models.Model):
             )
             main_sections_to_create.append(main_section)
 
-            for sub_section_to_copy in main_section_to_copy.children.all():
+            for sub_section_to_copy in main_section_to_copy.sub_sections.all():
                 sub_section = SubSection(
-                    parent=main_section,
+                    main_section=main_section,
                     title=sub_section_to_copy.title,
                     description=sub_section_to_copy.description,
                     universal_sub_section_id=sub_section_to_copy.universal_sub_section_id,
@@ -203,13 +202,13 @@ class SharedDeck(models.Model):
         snapshot = latest_snapshot
         snapshots_to_apply = []
         while True:
-            if snapshot.parent is None:
+            if snapshot.main_section is None:
                 raise ValueError('Unable to relate the deck\'s snapshot to the latest snapshot')
-            elif snapshot.parent == deck_snapshot:
+            elif snapshot.main_section == deck_snapshot:
                 break
             else:
                 snapshots_to_apply.append(snapshot)
-                snapshot = snapshot.parent
+                snapshot = snapshot.main_section
 
         # Clean up `snapshots_to_apply`
         if len(snapshots_to_apply) == 0:
@@ -296,7 +295,7 @@ class SnapShot(models.Model):
         'self',
         null=True, blank=True,
         on_delete=models.SET_NULL,
-        related_name='children',
+        related_name='sub_sections',
     )
 
     # === OTHER ===
@@ -339,7 +338,7 @@ class SnapShot(models.Model):
 
                 # NOTE: flashcards aren't directly copied, but rather set
                 # to re-use old flashcards when copying the SubSection
-        
+
         MainSection.objects.bulk_create(main_sections)
         SubSection.objects.bulk_create(sub_sections)
 
@@ -510,7 +509,7 @@ class SubSectionAction(AbstractAction):
 
     @staticmethod
     def apply(actions: QuerySet[SubSectionAction], snapshot: SnapShot):
-        actions = actions.prefetch_related('sub_section__parent').all()
+        actions = actions.prefetch_related('sub_section__main_section').all()
 
         sub_sections_to_create = []
         sub_sections_to_edit = []
@@ -524,11 +523,11 @@ class SubSectionAction(AbstractAction):
             if action.action == 'CREATE':
                 main_section = snapshot.main_sections.get(
                     universal_main_section_id=(
-                        ss_origin.parent.universal_main_section_id
+                        ss_origin.main_section.universal_main_section_id
                     ),
                 )
                 ss_destination = SubSection(
-                    parent=main_section,
+                    main_section=main_section,
                     title=ss_origin.title,
                     description=ss_origin.description,
                     universal_sub_section_id=ss_origin.pk,
@@ -590,7 +589,7 @@ class SubSectionAction(AbstractAction):
             # Create a DELETE action
             if sub_section.universal_sub_section_id:
                 return SubSectionAction.objects.create(
-                    deck_id=deck_id or sub_section.parent.deck_id,
+                    deck_id=deck_id or sub_section.main_section.deck_id,
                     action=action,
                     universal_sub_section_id=sub_section.universal_sub_section_id,
                 )
@@ -600,7 +599,7 @@ class SubSectionAction(AbstractAction):
         try:
             # Create a CREATE/EDIT action
             return SubSectionAction.objects.create(
-                deck_id=deck_id or sub_section.parent.deck_id,
+                deck_id=deck_id or sub_section.main_section.deck_id,
                 action=action,
                 sub_section=sub_section,
             )
@@ -640,16 +639,16 @@ class FlashCardAction(AbstractAction):
             # In CREATE/EDIT, a new flashcard is created
             if action.action == 'CREATE' or action.action == 'EDIT':
                 # Create new flashcard
-                subsection = SubSection.objects.get(
+                sub_section = SubSection.objects.get(
                     parent__shared_deck_snapshots=snapshot,
                     universal_sub_section_id=(
-                        fc_origin.subsection.universal_sub_section_id
+                        fc_origin.sub_section.universal_sub_section_id
                     ),
                 )
                 fc_destination, _ = fc_origin.copy(
                     deck=None,  # will be attached to snapshot
                     shared_deck_id=snapshot.shared_deck_id,
-                    subsection=subsection,
+                    sub_section=sub_section,
                     skip_creating_review_instances=True,
                     universal_flashcard_id=fc_origin.pk,
                 )
