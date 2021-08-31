@@ -17,7 +17,7 @@ export function PushSharedDeck(props: { deckId: string }) {
   const [diff] = useApiObjectHook<Diff>(
     apiSharedPushChanges,
     [200], 1020,
-    [deckId, (deck as Deck).shared_deck, true],
+    [deckId, null, true],
     null, null,
     !!deck,
   );
@@ -26,9 +26,9 @@ export function PushSharedDeck(props: { deckId: string }) {
     event.preventDefault();
     if (pushingChanges === false && deck) {
       setPushingChanges(true);
-      apiSharedPushChanges(deckId, deck.shared_deck, false, (response, status) => {
+      apiSharedPushChanges(deckId, -1, false, (response, status) => {
         if (status === 200) {
-          window.location.href = `/decks/${deck.shared_deck}`;
+          window.location.href = `/decks/${null}`;
         } else {
           // Error pushing changes to new deck
           errorHandler(response, status, 1020);

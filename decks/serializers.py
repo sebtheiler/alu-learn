@@ -1,6 +1,8 @@
+from sharing_system.models import FlashCardAction
 from profiles.serializers import MinifiedProfileSerializer
 from rest_framework import serializers
-from skill_tree.serializers import MainSectionSerializer
+from skill_tree.serializers import (AbstractActionSerializer,
+                                    MainSectionSerializer)
 
 from .models import Deck, FlashCard, ReviewInstance
 
@@ -23,6 +25,17 @@ class FlashCardSerializer(serializers.ModelSerializer):
 
     # def get_parent_deck_id(self, obj):
         # return obj.sub_section.main_section.deck.id
+
+
+class FlashcardActionSerializer(AbstractActionSerializer):
+    flashcard = FlashCardSerializer('flashcard')
+
+    class Meta:
+        model = FlashCardAction
+        fields = AbstractActionSerializer.Meta.fields + (
+            'flashcard',
+            'universal_flashcard_id',
+        )
 
 
 class ReviewInstanceSerializer(serializers.ModelSerializer):
@@ -74,5 +87,6 @@ class DeckSerializer(serializers.ModelSerializer):
             'user',
             'title',
             'main_sections',
+            'equivalent_to_snapshot',
             'id',
         ]

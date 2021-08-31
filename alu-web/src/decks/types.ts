@@ -14,9 +14,8 @@ export type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
 export interface Deck {
   user: MinifiedProfile;
   title: string;
-  shared_deck: number;
-  deck_type: 'standard' | 'shared';
   main_sections: MainSection[];
+  equivalent_to_snapshot: UUID;
   id: number;
 }
 

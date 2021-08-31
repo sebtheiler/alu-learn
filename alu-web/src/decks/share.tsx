@@ -19,13 +19,13 @@ export function ShareDeck(props) {
 
     if (makingPublic === false && deck) {
       setMakingPublic(true);
-      if (deck.shared_deck) { 
-        apiObjectEdit<SharedDeck>('decks', 'deck', deck.shared_deck, {
-          title: form.elements.title.value,
-          description: form.elements.description.value,
-          sharingSetting: form.elements.sharingSetting.value,
-        }).then(deck => window.location.href = `/decks/${deck.id}/`);
-      } else {
+      // if (deck.shared_deck) { 
+      //   apiObjectEdit<SharedDeck>('decks', 'deck', deck.shared_deck, {
+      //     title: form.elements.title.value,
+      //     description: form.elements.description.value,
+      //     sharingSetting: form.elements.sharingSetting.value,
+      //   }).then(deck => window.location.href = `/decks/${deck.id}/`);
+      // } else {
         // apiCreateSharedDeck(deckId, form.elements.title.value, form.elements.description.value, form.elements.sharingSetting.value, (response, status) => {
         //   if (status === 201) {
         //     window.location.href = `/decks/${response.id}/`;
@@ -34,7 +34,7 @@ export function ShareDeck(props) {
         //     errorHandler(response, status, 1019);
         //   }
         // });
-      }
+      // }
     }
   }
 
@@ -75,18 +75,18 @@ export function ShareDeck(props) {
       </Form.Group>
       <ButtonGroup>
         <Button type='submit' id='make-public'>
-          {makingPublic ? 'Loading...' : (
+          {/* {makingPublic ? 'Loading...' : (
             deck.shared_deck ? 'Update Sharing Settings' : 'Make Public'
-          )}
+          )} */}
         </Button>
-        {deck.shared_deck && <>
+        {/* {deck.shared_deck && <>
           <Button href={`/decks/${deck.shared_deck}/`} className='ml-1' id='shared-page'>
             Deck Shared Page
           </Button>
           <Button href={`/decks/${deck.id}/share/push/`} className='ml-1' id='push-changes'>
             Push New Changes
           </Button>
-        </>}
+        </>} */}
       </ButtonGroup>
     </Form> : <>Loading...</>}
   </>);

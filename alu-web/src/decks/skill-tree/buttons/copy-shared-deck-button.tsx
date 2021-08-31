@@ -41,6 +41,7 @@ export default function CopySharedDeckButton({ sharedDeck }: { sharedDeck: Share
         <Modal.Footer>
           <LoadingButton
             clickFunc={cloneDeck}
+            // TODO: add `type='submit'` to more LoadingButtons
             type='submit'
             block
           >

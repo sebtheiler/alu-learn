@@ -134,16 +134,13 @@ class MainSection(AbstractSection):
     def copy(
         self,
         snapshot_id: str,
-        shared_deck_id: int,
     ) -> MainSection:
         return MainSection(
             title=self.title,
             universal_main_section_id=self.universal_main_section_id,
             description=self.description,
-            pk=uuid.uuid4(),
-
             snapshot_id=snapshot_id,
-            shared_deck_id=shared_deck_id,
+            pk=uuid.uuid4(),
         )
 
 

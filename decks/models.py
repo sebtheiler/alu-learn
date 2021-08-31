@@ -193,6 +193,7 @@ class FlashCard(models.Model):
     tags = models.CharField(default='', max_length=1024, blank=True)
     front_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
     back_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
+
     EDITABLE_ATTRS = ('fields', 'tags', 'front_image', 'back_image')
 
     # === OTHER ===

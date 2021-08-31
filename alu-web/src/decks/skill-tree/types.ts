@@ -1,5 +1,5 @@
 import { MinifiedProfile } from "../../profiles/types";
-import { UUID } from "../types";
+import { FlashCard, UUID } from "../types";
 
 interface AbstractSection {
   title: string;
@@ -37,4 +37,25 @@ export interface SnapShot {
   timestamp: string;
   parent: UUID;
   id: UUID;
+}
+
+interface AbstractAction {
+  deck_id: number;
+  snapshot_id: number;
+  action: 'CREATE' | 'EDIT' | 'DELETE';
+}
+
+export interface MainSectionAction extends AbstractAction {
+  main_section: MainSection;
+  universal_main_section_id: string;
+}
+
+export interface SubSectionAction extends AbstractAction {
+  sub_section: SubSection;
+  universal_sub_section_id: string;
+}
+
+export interface FlashCardAction extends AbstractAction {
+  flashcard: FlashCard;
+  universal_flashcard_id: string;
 }

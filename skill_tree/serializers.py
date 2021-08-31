@@ -1,6 +1,18 @@
 from rest_framework import serializers
+from sharing_system.models import (AbstractAction, MainSectionAction,
+                                   SubSectionAction)
 
 from .models import AbstractSection, MainSection, SubSection
+
+
+class AbstractActionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AbstractAction
+        fields = (
+            'deck_id',
+            'snapshot_id',
+            'action',
+        )
 
 
 class AbstractSectionSerializer(serializers.ModelSerializer):
@@ -23,6 +35,17 @@ class SubSectionSerializer(AbstractSectionSerializer):
         read_only_fields = fields
 
 
+class SubSectionActionSerializer(AbstractActionSerializer):
+    sub_section = SubSectionSerializer('sub_section')
+
+    class Meta:
+        model = SubSectionAction
+        fields = AbstractActionSerializer.Meta.fields + (
+            'sub_section',
+            'universal_sub_section_id',
+        )
+
+
 class MainSectionSerializer(AbstractSectionSerializer):
     sub_sections = SubSectionSerializer('sub_sections', many=True)
 
@@ -33,3 +56,14 @@ class MainSectionSerializer(AbstractSectionSerializer):
             'sub_sections',
         )
         read_only_fields = fields
+
+
+class MainSectionActionSerializer(AbstractActionSerializer):
+    main_section = MainSectionSerializer('main_section')
+
+    class Meta:
+        model = MainSectionAction
+        fields = AbstractActionSerializer.Meta.fields + (
+            'main_section',
+            'universal_main_section_id',
+        )

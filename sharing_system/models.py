@@ -35,6 +35,8 @@ class SharedDeck(models.Model):
     edit_access = models.CharField(max_length=10, choices=EDIT_ACCESS_OPTIONS)
     owners = models.ManyToManyField(Profile, related_name='owned_shared_decks')
 
+    EDITABLE_ATTRS = ('title', 'description', 'view_access', 'edit_access')
+
     def __str__(self) -> str:
         return f'{self.title} by {", ".join([owner.user.username for owner in self.owners.all()])}'
 
@@ -49,6 +51,17 @@ class SharedDeck(models.Model):
             )\
             .last()
 
+    def has_view_access(self, author_pk):
+        if self.view_access == 'PUBLIC' or self.is_owner(author_pk):
+            return True
+        elif self.view_access == 'FRIENDS':
+            return Profile.objects.filter(
+                friends__in=self.owners,
+                pk=author_pk,
+            ).exists()
+        elif self.edit_access == 'STUDENT':
+            raise NotImplementedError('TODO: ')
+
     def has_edit_access(self, author_pk: int) -> bool:
         if self.edit_access == 'PERSONAL':
             return self.owners.filter(pk=author_pk).exists()
@@ -59,8 +72,9 @@ class SharedDeck(models.Model):
             ).exists()
         elif self.edit_access == 'STUDENT':
             raise NotImplementedError('TODO: ')
-        else:
-            return True
+
+    def is_owner(self, author_pk: int):
+        return self.owners.filter(pk=author_pk).exists()
 
     @staticmethod
     def create(
@@ -154,7 +168,6 @@ class SharedDeck(models.Model):
     def push(
         deck: Deck,
         shared_deck: SharedDeck,
-        /,
         author: Profile,
         message: str,
     ) -> SnapShot:
@@ -163,7 +176,7 @@ class SharedDeck(models.Model):
             raise ValueError('Deck is not up to date')
 
         # Check edit access
-        if not shared_deck.has_edit_access(author.pk):
+        if not shared_deck.is_owner(author.pk):
             raise PermissionError('User does not have permission to edit')
 
         # Create new snapshot
@@ -337,17 +350,11 @@ class SnapShot(models.Model):
         main_sections = []
         sub_sections = []
         for ms_to_copy in parent.main_sections.all():
-            copied_ms = ms_to_copy.copy(
-                snapshot_id=child.pk,
-                shared_deck_id=shared_deck_id,
-            )
+            copied_ms = ms_to_copy.copy(child.pk)
             main_sections.append(copied_ms)
 
             for ss_to_copy in ms_to_copy.sub_sections.all():
-                copied_ss = ss_to_copy.copy(
-                    main_section_id=copied_ms.pk,
-                    inherited_flashcards=ss_to_copy.flashcards,
-                )
+                copied_ss = ss_to_copy.copy(copied_ms.pk)
                 sub_sections.append(copied_ss)
 
         # Create main sections and sub sections
@@ -562,7 +569,7 @@ class SubSectionAction(AbstractAction):
             elif action.action == 'EDIT':
                 ss_destination = SubSection.objects.get(
                     universal_sub_section_id=ss_origin.universal_sub_section_id,
-                    snapshot=snapshot,
+                    main_section__snapshot_id=snapshot.pk,
                 )  # TODO: find a way to prefetch this
 
                 for attr in SubSection.EDITABLE_ATTRS:

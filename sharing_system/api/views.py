@@ -1,7 +1,8 @@
+from skill_tree.serializers import MainSectionActionSerializer, SubSectionActionSerializer
 from skill_tree.models import AbstractSection
 from django.db.models.query_utils import Q
 from decks.models import Deck, FlashCard
-from decks.serializers import DeckSerializer, FlashCardSerializer
+from decks.serializers import DeckSerializer, FlashCardSerializer, FlashcardActionSerializer
 from profiles.models import Profile
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -9,8 +10,56 @@ from rest_framework.response import Response
 from utils.api_utils import (assert_request_data_type, get_obj_or_404,
                              get_paginated_queryset_response)
 
-from ..models import SharedDeck, SnapShot
-from ..serializers import SharedDeckSerializer
+from ..models import FlashCardAction, MainSectionAction, SharedDeck, SnapShot, SubSectionAction
+from ..serializers import SharedDeckSerializer, SnapShotSerializer
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_shared_deck(request, shared_deck_id, *args, **kwargs):
+    try:
+        shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'SharedDeck not found'}, status=404)
+
+    if not shared_deck.has_view_access(request.user.profile.pk):
+        return Response({'message': 'You are unauthorized to view this shared deck'}, status=403)
+
+    return Response(SharedDeckSerializer(shared_deck).data, status=200)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_shared_deck(request, shared_deck_id, *args, **kwargs):
+    try:
+        shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'SharedDeck not found'}, status=404)
+
+    if not shared_deck.is_owner(request.user.profile.pk):
+        return Response({'message': 'You are unauthorized to edit this shared deck'}, status=403)
+
+    edited_values = request.data.get('edited_values')
+    for attr in shared_deck.EDITABLE_ATTRS:
+        setattr(shared_deck, attr, edited_values.get(attr, getattr(shared_deck, attr)))
+
+    owners = edited_values.get('owners')
+    if (
+        ', '.join([
+            owner.user.username
+            for owner in
+            shared_deck.owners.prefetch_related('user')
+        ])
+        != owners
+        and owners is not None
+    ):
+        shared_deck.owners.set(Profile.objects.filter(
+            user__username__in=owners.split(', ')
+        ))
+
+    shared_deck.save()
+
+    return Response(SharedDeckSerializer(shared_deck).data, status=200)
 
 
 @api_view(['POST'])
@@ -50,22 +99,15 @@ def shared_deck_create_view(request, *args, **kwargs):
     except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
 
-    try:
-        owners = [
-            Profile.objects.get(user__username=username)
-            for username in
-            request.data.get('owners').split(', ')
-        ]
-    except Profile.DoesNotExist:
-        return Response({'message': 'Profile not found for owners'}, status=404)
-
     shared_deck = SharedDeck.create(
         origin_deck=deck,
         title=request.data.get('title'),
         description=request.data.get('description'),
         view_access=request.data.get('view_access'),
         edit_access=request.data.get('edit_access'),
-        owners=owners,
+        owners=Profile.objects.filter(
+            user__username__in=request.data.get('owners').split(', ')
+        ),
     )
 
     return Response(SharedDeckSerializer(shared_deck).data, status=200)
@@ -97,9 +139,88 @@ def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
     return Response(DeckSerializer(deck).data, status=200)
 
 
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def shared_deck_push
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def shared_deck_push_view(request, shared_deck_id: int, *args, **kwargs):
+    """
+    Pushes changes from an origin deck to a shared deck - POST
+
+    `shared_deck_id`: ID of the shared deck
+    `origin_deck_id`: ID of the origin deck
+    `message`: Snapshot message
+    """
+    deck, resp = get_obj_or_404(Deck, request.data.get('origin_deck_id'), request.user, 'user')
+    if resp:
+        return resp
+
+    shared_deck, resp = get_obj_or_404(SharedDeck, shared_deck_id, None, None)
+    if resp:
+        return resp
+
+    try:
+        snapshot = SharedDeck.push(
+            deck=deck,
+            shared_deck=shared_deck,
+            author=request.user.profile,
+            message=request.data.get('message', 'New snapshot'),
+        )
+    except ValueError:
+        return Response(
+            {'message': 'Deck is not up to date'},
+            status=400,
+            exception=True,
+        )
+    except PermissionError:
+        return Response(
+            {'message': 'You are not authorized to edit this deck'},
+            status=403,
+            exception=True,
+        )
+
+    return Response(SnapShotSerializer(snapshot).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_shared_deck_from_snapshot_id(request, snapshot_id: str, *args, **kwargs):
+    """
+    Gets detail about a snapshot and its shared deck from a deck's `equivalent_to_snapshot` - GET
+
+    `snapshot_id`: ID of the snapshot to get information about
+    """
+    try:
+        snapshot = SnapShot.objects.get(
+            pk=snapshot_id,
+        )
+    except SnapShot.DoesNotExist:
+        return Response({'message': 'SnapShot not found'}, status=404)
+
+    if not snapshot.shared_deck.has_view_access(request.user.profile.pk):
+        return Response({'message': 'You cannot view this snapshot'}, status=403)
+
+    return Response(SharedDeckSerializer(snapshot.shared_deck).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_deck_actions(request, deck_id: int, *args, **kwargs):
+    """
+    Gets the actions attached to a deck
+    """
+    return Response({
+        'main_section_actions': MainSectionActionSerializer(
+            MainSectionAction.objects.prefetch_related('main_section').filter(deck_id=deck_id),
+            many=True,
+        ).data,
+        'sub_section_actions': SubSectionActionSerializer(
+            SubSectionAction.objects.prefetch_related('sub_section').filter(deck_id=deck_id),
+            many=True,
+        ).data,
+        'flashcard_actions': FlashcardActionSerializer(
+            FlashCardAction.objects.prefetch_related('flashcard').filter(deck_id=deck_id),
+            many=True,
+        ).data,
+    }, status=200)
 
 
 @api_view(['GET'])
