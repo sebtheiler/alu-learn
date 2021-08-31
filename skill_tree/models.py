@@ -119,13 +119,6 @@ class MainSection(AbstractSection):
         on_delete=models.CASCADE,
         null=True, blank=True,
     )
-    shared_deck = models.ForeignKey(
-        'sharing_system.SharedDeck',
-        related_name='main_sections',
-        on_delete=models.CASCADE,
-        null=True, blank=True,
-    )
-
     snapshot = models.ForeignKey(
         'sharing_system.SnapShot',
         related_name='main_sections',
@@ -168,7 +161,6 @@ class SubSection(AbstractSection):
     def copy(
         self,
         main_section_id: str,
-        inherited_flashcards=None,
     ):
         sub_section = SubSection(
             title=self.title,

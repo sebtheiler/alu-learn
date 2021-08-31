@@ -7,7 +7,7 @@ from .models import Deck, FlashCard, ReviewInstance, ReviewInstanceHistory
 class FlashCardAdmin(admin.ModelAdmin):
     search_fields = ('tags', 'deck__title', 'deck__user__username', 'fields')
     list_display = (
-        'get_sub_section',
+        'get_section',
         'flashcard_type',
         'flashcard_num',
         'fields',
@@ -15,13 +15,21 @@ class FlashCardAdmin(admin.ModelAdmin):
     model = FlashCard
 
     def get_queryset(self, request):
-        queryset = super(ReviewInstanceHistoryAdmin, self).get_queryset(request)
-        queryset = queryset.prefetch_related('sub_sections')
+        queryset = super(FlashCardAdmin, self).get_queryset(request)
+        queryset = queryset.prefetch_related('sub_section__main_section__deck')
         return queryset
 
-    def get_sub_section(self, obj):
-        return ', '.join([sub_section.title for sub_section in obj.sub_sections.all()])
-    get_sub_section.short_description = 'Sub Sections'
+    def get_section(self, obj):
+        return f'''
+            {(
+                obj.sub_section.main_section.deck.title
+                if obj.sub_section.main_section.deck else
+                obj.sub_section.main_section.snapshot.message
+            )} >
+            {obj.sub_section.main_section.title} >
+            {obj.sub_section.title}'''
+    get_section.short_description = 'Section'
+    get_section.admin_order_field = 'sub_section__main_section__deck__title'
 
 
 class ReviewInstanceAdmin(admin.ModelAdmin):

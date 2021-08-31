@@ -327,8 +327,8 @@ class FlashCard(models.Model):
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         """
-        Clones and saves a full copy of a flashcard
-        (returns--but does not create--the flashcard's review instances)
+        Clones a full copy of a flashcard
+        (returns--but also does not create--the flashcard's review instances)
         """
         new_flashcard = FlashCard(
             shared_deck_id=shared_deck_id,
@@ -345,10 +345,7 @@ class FlashCard(models.Model):
 
         # Derive the review instances from the flashcard
         if not skip_creating_review_instances:
-            new_review_instances = ReviewInstance.create_review_instance(
-                new_flashcard.flashcard_type,
-                new_flashcard,
-            )
+            new_review_instances = ReviewInstance.create_review_instance(new_flashcard)
         else:
             new_review_instances = None
 

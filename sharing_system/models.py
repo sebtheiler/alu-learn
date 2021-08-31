@@ -103,18 +103,20 @@ class SharedDeck(models.Model):
         # inefficient since it implies having to apply every snapshot since creation
         # when we could just directly copy the latest snapshot
 
+        # Copy tree
         main_sections_to_create = []
         sub_sections_to_create = []
         flashcards_to_create = []
         review_instances_to_create = []
 
         main_sections_to_copy = latest_snapshot.main_sections.all()\
-            .prefetch_related('sub_sections', 'sub_sections__flashcards')
+            .prefetch_related('sub_sections__flashcards')
         for main_section_to_copy in main_sections_to_copy:
             main_section = MainSection(
                 deck=deck,
                 title=main_section_to_copy.title,
                 description=main_section_to_copy.description,
+
                 universal_main_section_id=main_section_to_copy.universal_main_section_id,
                 id=uuid.uuid4(),
             )
@@ -125,6 +127,7 @@ class SharedDeck(models.Model):
                     main_section=main_section,
                     title=sub_section_to_copy.title,
                     description=sub_section_to_copy.description,
+
                     universal_sub_section_id=sub_section_to_copy.universal_sub_section_id,
                     id=uuid.uuid4(),
                 )
@@ -132,14 +135,14 @@ class SharedDeck(models.Model):
 
                 for flashcard_to_copy in sub_section_to_copy.flashcards.all():
                     flashcard, review_instances = flashcard_to_copy.copy(
-                        deck=deck,
+                        sub_section_id=sub_section.pk,
                         universal_flashcard_id=flashcard_to_copy.universal_flashcard_id,
                     )
-                    sub_section.flashcards.add(flashcard)  # TODO: make this bulk
 
                     flashcards_to_create.append(flashcard)
                     review_instances_to_create += review_instances
 
+        # Create objects
         MainSection.objects.bulk_create(main_sections_to_create)
         SubSection.objects.bulk_create(sub_sections_to_create)
         FlashCard.objects.bulk_create(flashcards_to_create)
@@ -352,8 +355,9 @@ class SnapShot(models.Model):
         SubSection.objects.bulk_create(sub_sections)
 
         # Link old flashcards
+        # TODO: make more efficient
         for ss_to_copy, copied_ss in zip(
-            SubSection.objects.filter(snapshot_id=parent.pk),
+            SubSection.objects.filter(main_section__snapshot_id=parent.pk),
             sub_sections,
         ):
             copied_ss.flashcards.set(ss_to_copy.flashcards.filter(~Q(
@@ -676,7 +680,7 @@ class FlashCardAction(AbstractAction):
 
                 action.flashcard = fc_destination
 
-            # Deleted and edited flashcards are never added when creating
+            # NOTE: Deleted and edited flashcards are never added when creating
             # the snapshot child
             # if action.action == 'EDIT' or action.action == 'DELETE':
             #     flashcard_uids_to_remove.append(fc_origin.universal_flashcard_id)
