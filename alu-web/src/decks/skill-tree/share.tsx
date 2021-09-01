@@ -71,16 +71,15 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
       message: message,
     }).then(
       (resp: any) => {
-        if (resp.ok) {
+        if (resp.message === 'Deck is not up to date') {
+          setErrorMsg(<>Your deck isn't up to date.  Please <a href='TODO: '>pull the new updates</a>, then try again.</>);
+        } else if (resp.message === 'You are not authorized to edit this deck') {
+          setErrorMsg('You are not authorized to edit this deck.  Please contact the owners if you think this is a mistake.');
+        } else if (resp.id) {
           window.location.href = `/community/deck/${sharedDeck.id}/`;
         } else {
-          if (resp.message === 'Deck is not up to date') {
-            setErrorMsg(<>Your deck isn't up to date.  Please <a href='TODO: '>pull the new updates</a>, then try again.</>);
-          } else if (resp.message === 'You are not authorized to edit this deck') {
-            setErrorMsg('You are not authorized to edit this deck.  Please contact the owners if you think this is a mistake.');
-          } else {
-            setErrorMsg(resp.message);
-          }
+          console.log(resp)
+          setErrorMsg(resp.message);
         }
       },
     );
@@ -215,7 +214,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
         </Col>
       </Row>
       <Row>
-        <Col md={numTotalChanges > 0 ? 6 : 12} xs={12}>
+        <Col md={numTotalChanges > 0 && deck.equivalent_to_snapshot ? 6 : 12} xs={12}>
           <LoadingButton clickFunc={shareDeck} className='mb-3' block>
             {sharedDeck ? 'Save Changes' : 'Share'}
           </LoadingButton>

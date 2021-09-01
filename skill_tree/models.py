@@ -93,22 +93,22 @@ class AbstractSection(models.Model):
             return Q(), None
 
         if deck_id:
-            deck_query = Q(sub_section__main_section__deck_id=deck_id)
+            deck_query = Q(sub_sections__main_section__deck_id=deck_id)
         elif shared_deck_id:
-            deck_query = Q(sub_section__main_section__shared_deck_id=shared_deck_id)
+            deck_query = Q(sub_sections__main_section__shared_deck_id=shared_deck_id)
         else:
             deck_query = Q()
 
         titles = section_titles.split('__')
         if len(titles) == 1:
             return deck_query & Q(
-                sub_section__main_section__title__iexact=AbstractSection.clean(titles[0]),
+                sub_sections__main_section__title__iexact=AbstractSection.clean(titles[0]),
             ), True
         else:
             return deck_query & Q(
-                sub_section__main_section__deck_id=deck_id,
-                sub_section__main_section__title__iexact=AbstractSection.clean(titles[0]),
-                sub_section__title__iexact=AbstractSection.clean(titles[1]),
+                sub_sections__main_section__deck_id=deck_id,
+                sub_sections__main_section__title__iexact=AbstractSection.clean(titles[0]),
+                sub_sections__title__iexact=AbstractSection.clean(titles[1]),
             ), False
 
 
@@ -129,7 +129,7 @@ class MainSection(AbstractSection):
     universal_main_section_id = models.UUIDField(null=True, blank=True)
 
     def get_review_instance_query(self):
-        return Q(flashcard__sub_section__main_section=self)
+        return Q(flashcard__sub_sections__main_section=self)
 
     def copy(
         self,
@@ -150,10 +150,14 @@ class SubSection(AbstractSection):
         on_delete=models.CASCADE,
         related_name='sub_sections',
     )
+    flashcards = models.ManyToManyField(
+        'decks.FlashCard',
+        related_name='sub_sections',
+    )
     universal_sub_section_id = models.UUIDField(null=True, blank=True)
 
     def get_review_instance_query(self):
-        return Q(flashcard__sub_section=self)
+        return Q(flashcard__sub_sections=self)
 
     def copy(
         self,

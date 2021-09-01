@@ -1,5 +1,3 @@
-from sharing_system.serializers import SharedDeckSerializer
-from utils.api_gen import generate_base_api
 from django.urls import path
 
 from . import views

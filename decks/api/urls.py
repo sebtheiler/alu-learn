@@ -32,7 +32,7 @@ urlpatterns = [
         'decks', 'flashcard',
         FlashCardSerializer,
         {'fields': list, 'tags': str},
-        'sub_section__main_section__deck__user', 'USER',
+        'sub_sections__main_section__deck__user', 'USER',
         exclude_create=True,
         exclude_list=True,
         exclude_edit=True,

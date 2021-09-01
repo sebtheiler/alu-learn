@@ -172,18 +172,6 @@ class Deck(models.Model):
 
 
 class FlashCard(models.Model):
-    shared_deck = models.ForeignKey(
-        'sharing_system.SharedDeck',
-        related_name='flashcards',
-        on_delete=models.CASCADE,
-        null=True, blank=True,
-    )
-    sub_section = models.ForeignKey(
-        'skill_tree.SubSection',
-        related_name='flashcards',
-        on_delete=models.CASCADE,
-    )
-
     # === BASIC INFO ===
     flashcard_type = models.CharField(default='basic', max_length=16)  # TODO: capitalize
     flashcard_num = models.PositiveSmallIntegerField()  # zero-indexed
@@ -282,7 +270,7 @@ class FlashCard(models.Model):
     @staticmethod
     def get_max_flashcard_num(sub_section: SubSection) -> int:
         # Returns -1 if there are no flashcards in the deck
-        flashcards = FlashCard.objects.filter(sub_section=sub_section)
+        flashcards = FlashCard.objects.filter(sub_sections=sub_section)
         max_fc_num_obj = flashcards.order_by('-flashcard_num').first()
 
         return max_fc_num_obj.flashcard_num if max_fc_num_obj is not None else -1
@@ -300,7 +288,6 @@ class FlashCard(models.Model):
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         flashcard = FlashCard.objects.create(
-            sub_section=sub_section,
             flashcard_type=flashcard_type,
             flashcard_num=(
                 flashcard_num
@@ -314,6 +301,7 @@ class FlashCard(models.Model):
             pk=flashcard_uuid,
             universal_flashcard_id=universal_flashcard_id,
         )
+        sub_section.flashcards.add(flashcard)
 
         review_instances = ReviewInstance.create_review_instance(flashcard)
         ReviewInstance.objects.bulk_create(review_instances)
@@ -322,8 +310,6 @@ class FlashCard(models.Model):
 
     def copy(
         self,
-        shared_deck_id=None,
-        sub_section_id=None,
         skip_creating_review_instances: bool = False,
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
@@ -332,8 +318,6 @@ class FlashCard(models.Model):
         (returns--but also does not create--the flashcard's review instances)
         """
         new_flashcard = FlashCard(
-            shared_deck_id=shared_deck_id,
-            sub_section_id=sub_section_id,
             flashcard_num=self.flashcard_num,
             flashcard_type=self.flashcard_type,
             universal_flashcard_id=universal_flashcard_id,
@@ -389,7 +373,8 @@ class FlashCard(models.Model):
 
             FlashCard.objects.bulk_update([self, above_flashcard], ['flashcard_num'])
         elif rearrange_type == 'DOWN':
-            if self.flashcard_num == FlashCard.get_max_flashcard_num(self.sub_section):
+            # TODO: rewrite this `self.sub_sections.first()`
+            if self.flashcard_num == FlashCard.get_max_flashcard_num(self.sub_sections.first()):
                 return 'Flashcard already at bottom'
 
             below_flashcard = self.deck.flashcards.get(

@@ -16,20 +16,20 @@ class FlashCardAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super(FlashCardAdmin, self).get_queryset(request)
-        queryset = queryset.prefetch_related('sub_section__main_section__deck')
+        queryset = queryset.prefetch_related('sub_sections__main_section__deck')
         return queryset
 
     def get_section(self, obj):
         return f'''
             {(
-                obj.sub_section.main_section.deck.title
-                if obj.sub_section.main_section.deck else
-                obj.sub_section.main_section.snapshot.message
+                obj.sub_sections.first().main_section.deck.title
+                if obj.sub_sections.first().main_section.deck else
+                obj.sub_sections.first().main_section.snapshot.message
             )} >
-            {obj.sub_section.main_section.title} >
-            {obj.sub_section.title}'''
+            {obj.sub_sections.first().main_section.title} >
+            {obj.sub_sections.first().title}'''
     get_section.short_description = 'Section'
-    get_section.admin_order_field = 'sub_section__main_section__deck__title'
+    get_section.admin_order_field = 'sub_sections__main_section__deck__title'
 
 
 class ReviewInstanceAdmin(admin.ModelAdmin):

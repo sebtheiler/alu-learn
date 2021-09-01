@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections import defaultdict
 
 import uuid
 from typing import List, Union
@@ -149,8 +150,7 @@ class SharedDeck(models.Model):
 
                 for flashcard_to_copy in sub_section_to_copy.flashcards.all():
                     flashcard, review_instances = flashcard_to_copy.copy(
-                        sub_section_id=sub_section.pk,
-                        universal_flashcard_id=flashcard_to_copy.universal_flashcard_id,
+                        flashcard_to_copy.universal_flashcard_id,
                     )
 
                     flashcards_to_create.append(flashcard)
@@ -162,6 +162,14 @@ class SharedDeck(models.Model):
         FlashCard.objects.bulk_create(flashcards_to_create)
         ReviewInstance.objects.bulk_create(review_instances_to_create)
 
+        # Link flashcards to sub sections
+        # TODO: make more efficient
+        for ss_to_copy, copied_ss in zip(
+            SubSection.objects.filter(main_section__snapshot_id=latest_snapshot.pk),
+            sub_sections_to_create,
+        ):
+            copied_ss.flashcards.set(ss_to_copy.flashcards)
+
         return deck
 
     @staticmethod
@@ -171,6 +179,7 @@ class SharedDeck(models.Model):
         author: Profile,
         message: str,
     ) -> SnapShot:
+        print('1', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=shared_deck).count())
         latest_snapshot = shared_deck.get_latest_snapshot()
         if deck.equivalent_to_snapshot != latest_snapshot:
             raise ValueError('Deck is not up to date')
@@ -180,6 +189,7 @@ class SharedDeck(models.Model):
             raise PermissionError('User does not have permission to edit')
 
         # Create new snapshot
+        print('2', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=shared_deck).count())
         snapshot = SnapShot.create_child(
             parent=latest_snapshot,
             author=author,
@@ -189,26 +199,30 @@ class SharedDeck(models.Model):
             # Instead of removing EDIT/DELETE flashcards later,
             # it is easier to never include them
             flashcard_uids_to_remove=FlashCard.objects.filter(
-                Q(sub_section__main_section__deck_id=deck.pk) &
+                Q(sub_sections__main_section__deck_id=deck.pk) &
                 (Q(attached_action__action='EDIT') | Q(attached_action__action='DELETE'))
             ).values_list('universal_flashcard_id', flat=True)
         )
         deck.equivalent_to_snapshot = snapshot
         deck.save()
+        print('3', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=shared_deck).count())
 
         # Apply actions
         MainSectionAction.apply(
             deck.mainsectionactions,
             snapshot,
         )
+        print('14', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
         SubSectionAction.apply(
             deck.subsectionactions,
             snapshot,
         )
+        print('21', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
         FlashCardAction.apply(
             deck.flashcardactions,
             snapshot,
         )
+        print('end', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         return snapshot
 
@@ -342,6 +356,7 @@ class SnapShot(models.Model):
             shared_deck_id=shared_deck_id,
             parent=parent,
         )
+        print('2.1', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck_id=shared_deck_id).count())
 
         if parent is None:
             return child
@@ -356,10 +371,12 @@ class SnapShot(models.Model):
             for ss_to_copy in ms_to_copy.sub_sections.all():
                 copied_ss = ss_to_copy.copy(copied_ms.pk)
                 sub_sections.append(copied_ss)
+        print('2.2', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck_id=shared_deck_id).count())
 
         # Create main sections and sub sections
         MainSection.objects.bulk_create(main_sections)
         SubSection.objects.bulk_create(sub_sections)
+        print('2.3', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck_id=shared_deck_id).count())
 
         # Link old flashcards
         # TODO: make more efficient
@@ -370,6 +387,8 @@ class SnapShot(models.Model):
             copied_ss.flashcards.set(ss_to_copy.flashcards.filter(~Q(
                 universal_flashcard_id__in=flashcard_uids_to_remove,
             )))
+            print('2.4', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck_id=shared_deck_id).count())
+        print('2.5', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck_id=shared_deck_id).count())
 
         return child
 
@@ -438,6 +457,7 @@ class MainSectionAction(AbstractAction):
         for action in actions:
             ms_origin = action.main_section
             ms_destination = None  # set in CREATE/EDIT; not DELETE
+            print('4', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
             if action.action == 'CREATE':
                 ms_destination = MainSection(
@@ -450,6 +470,7 @@ class MainSectionAction(AbstractAction):
                 # Note that the main section is now universally synced
                 ms_origin.universal_main_section_id = ms_origin.pk
                 origin_mainsections_to_update_uid.append(ms_origin)
+                print('5', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
             elif action.action == 'EDIT':
                 ms_destination = MainSection.objects.get(
                     universal_main_section_id=ms_origin.universal_main_section_id,
@@ -460,36 +481,44 @@ class MainSectionAction(AbstractAction):
                     setattr(ms_destination, attr, getattr(ms_origin, attr))
 
                 main_sections_to_edit.append(ms_destination)
+                print('6', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
             else:
                 main_section_uids_to_delete.append(ms_origin.universal_main_section_id)
+                print('7', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
             # Update the action
             action.deck = None
             action.snapshot = snapshot
             if ms_destination is not None:
                 action.main_section = ms_destination
+            print('8', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         MainSection.objects.bulk_create(main_sections_to_create)
         snapshot.main_sections.add(*main_sections_to_create)
         snapshot.save()
+        print('9', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         MainSection.objects.bulk_update(main_sections_to_edit, MainSection.EDITABLE_ATTRS)
+        print('10', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
         MainSection.objects.filter(
             universal_main_section_id__in=main_section_uids_to_delete,
             snapshot=snapshot,
         )
+        print('11', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         # Note that the origin main sections are now universally synced
         MainSection.objects.bulk_update(
             origin_mainsections_to_update_uid,
             ('universal_main_section_id',),
         )
+        print('12', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         # Transfer the actions from the deck to the snapshot
         MainSectionAction.objects.bulk_update(
             actions,
             ('deck', 'snapshot', 'main_section'),
         )
+        print('13', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
     @staticmethod
     def create_action(action: str, main_section: MainSection):
@@ -544,6 +573,7 @@ class SubSectionAction(AbstractAction):
         sub_sections_to_edit = []
         sub_section_uids_to_delete = []
         origin_subsections_to_update_uid = []
+        print('15', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         for action in actions:
             ss_origin = action.sub_section
@@ -584,26 +614,32 @@ class SubSectionAction(AbstractAction):
             action.snapshot = snapshot
             if ss_destination:
                 action.sub_section = ss_destination
+            print('15', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         SubSection.objects.bulk_create(sub_sections_to_create)
+        print('16', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         SubSection.objects.bulk_update(sub_sections_to_edit, SubSection.EDITABLE_ATTRS)
+        print('17', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
         SubSection.objects.filter(
             universal_sub_section_id__in=sub_section_uids_to_delete,
             main_section__snapshot=snapshot,
         )
+        print('18', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         # Note that the origin sub sections are now universally synced
         SubSection.objects.bulk_update(
             origin_subsections_to_update_uid,
             ('universal_sub_section_id',),
         )
+        print('20', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         # Transfer the actions from the deck to the snapshot
         SubSectionAction.objects.bulk_update(
             actions,
             ('deck', 'snapshot', 'sub_section'),
         )
+        print('20', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
     @staticmethod
     def create_action(action: str, sub_section: SubSection, deck_id: int = None):
@@ -658,57 +694,69 @@ class FlashCardAction(AbstractAction):
         # the other `Action.apply`s
         actions = actions.prefetch_related('flashcard').all()
 
+        # Hold a dict of sub sections to the flashcards to link to them
+        # key: universal_sub_section_id; val: flashcards to link to that sub section
+        sub_sections_to_link_flashcards = defaultdict(list)
+
         flashcards_to_create = []
         origin_flashcards_to_update_uid = []
+        print('22', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         for action in actions:
             fc_origin = action.flashcard
 
             # In CREATE/EDIT, a new flashcard is created
+            # NOTE: Deleted and edited flashcards are never added when creating
             if action.action == 'CREATE' or action.action == 'EDIT':
-                # Create new flashcard
-                sub_section = SubSection.objects.get(
-                    main_section__snapshot=snapshot,
-                    universal_sub_section_id=(
-                        fc_origin.sub_section.universal_sub_section_id
-                    ),
-                )
                 fc_destination, _ = fc_origin.copy(
-                    shared_deck_id=snapshot.shared_deck_id,
-                    sub_section_id=sub_section.pk,
                     skip_creating_review_instances=True,
                     universal_flashcard_id=fc_origin.pk,
                 )
                 flashcards_to_create.append(fc_destination)
+                sub_sections_to_link_flashcards[
+                    fc_origin.sub_sections.first().universal_sub_section_id
+                ].append(fc_destination)
 
                 # Note that this flashcard is now universally synced
                 fc_origin.universal_flashcard_id = fc_origin.pk
                 origin_flashcards_to_update_uid.append(fc_origin)
 
                 action.flashcard = fc_destination
-
-            # NOTE: Deleted and edited flashcards are never added when creating
-            # the snapshot child
-            # if action.action == 'EDIT' or action.action == 'DELETE':
-            #     flashcard_uids_to_remove.append(fc_origin.universal_flashcard_id)
+            print('23', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
             # Update the action
             action.deck = None
             action.snapshot = snapshot
 
         FlashCard.objects.bulk_create(flashcards_to_create)
+        print('24', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         # Note that the origin flashcards are now universally synced
         FlashCard.objects.bulk_update(
             origin_flashcards_to_update_uid,
             ('universal_flashcard_id',),
         )
+        print('25', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
 
         # Transfer the actions from the deck to the snapshot
         FlashCardAction.objects.bulk_update(
             actions,
             ('deck', 'snapshot', 'flashcard')
         )
+        print('26', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
+
+        # Link the new flashcards to their sub sections
+        for (
+            universal_sub_section_id,
+            flashcards_to_link,
+        ) in sub_sections_to_link_flashcards.items():
+            sub_section = SubSection.objects.get(
+                main_section__snapshot=snapshot,
+                universal_sub_section_id=universal_sub_section_id,
+            )
+            sub_section.flashcards.add(*flashcards_to_link)
+        print('26.1', FlashCard.objects.filter(sub_sections__main_section__snapshot__shared_deck=snapshot.shared_deck).count())
+
 
     @staticmethod
     def create_action(action: str, flashcard: FlashCard):

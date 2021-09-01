@@ -112,8 +112,8 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
           <hr />
           <div>
             <h1>History</h1>
-            <ol>
-              {sharedDeck.snapshots.map(snapshot => <li key={snapshot.id}>
+            <ol reversed>
+              {sharedDeck.snapshots.reverse().map((snapshot, i) => <li key={snapshot.id}>
                 <a href={`/community/deck/${sharedDeck.id}/snapshots/${snapshot.id}/`}>
                   {snapshot.message}
                 </a> by <DisplayProfileInline profile={snapshot.author} />
