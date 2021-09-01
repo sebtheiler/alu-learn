@@ -1125,6 +1125,7 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
     time_taken = request.data.get('time_taken')
     ReviewInstanceHistory.objects.create(
         review_instance=review_instance,
+        review_instance_backup_id=review_instance.pk,
         grade_response=request.data.get('grade_response'),
         time_taken=time_taken,
         ease=review_instance.ease,

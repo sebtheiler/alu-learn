@@ -629,15 +629,6 @@ class ReviewInstanceHistory(models.Model):
         verbose_name_plural = 'Review instance histories'
 
 
-# When a ReviewInstance is deleted, backup its ID in its history objs
-def review_instance_deleted(sender, instance, using, **kwargs):
-    ReviewInstanceHistory.objects.using(using).filter(
-        review_instance=instance,
-    ).update(
-        review_instance_backup_id=instance.pk,
-    )
-
-
 # When a deck is created, create an example MainSection
 def deck_saved(sender, instance, created, **kwargs):
     if created:
@@ -677,6 +668,13 @@ def main_section_saved(sender, instance, created, **kwargs):
         )
 
 
-pre_delete.connect(review_instance_deleted, sender=ReviewInstance)
+# When a deck is deleted, delete all its flashcards
+def deck_deleted(sender, instance, using, **kwargs):
+    FlashCard.objects.using(using).filter(
+        sub_sections__main_section__deck_id=instance.pk,
+    ).delete()
+
+
 post_save.connect(deck_saved, sender=Deck)
 post_save.connect(main_section_saved, sender=MainSection)
+pre_delete.connect(deck_deleted, sender=Deck)

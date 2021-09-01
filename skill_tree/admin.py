@@ -14,8 +14,9 @@ class MainSectionAdmin(admin.ModelAdmin):
     list_display = (
         'title',
         'get_user',
-        'get_decks',
-        'get_shared_decks',
+        # 'get_decks',
+        'deck',
+        'snapshot',
     )
     search_fields = (
         'title',
@@ -25,20 +26,16 @@ class MainSectionAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super(MainSectionAdmin, self).get_queryset(request)
-        queryset = queryset.prefetch_related('decks__user', 'shared_decks')
+        queryset = queryset.prefetch_related('deck__user', 'snapshot')
         return queryset
 
     def get_user(self, obj):
-        return obj.decks.first().user if obj.decks.first() else None
+        return obj.deck.user if obj.deck else '<Multiple owners>'
     get_user.short_description = 'User'
 
-    def get_decks(self, obj):
-        return ', '.join([deck.title for deck in obj.decks])
-    get_decks.short_description = 'Decks'
-
-    def get_shared_decks(self, obj):
-        return ', '.join([shared_deck.title for shared_deck in obj.shared_decks])
-    get_shared_decks.short_description = 'Shared Decks'
+    # def get_decks(self, obj):
+    #     return ', '.join([deck.title for deck in obj.decks])
+    # get_decks.short_description = 'Decks'
 
 
 admin.site.register(MainSection, MainSectionAdmin)

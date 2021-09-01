@@ -11,9 +11,10 @@ export default function CopySharedDeckButton({ sharedDeck }: { sharedDeck: Share
   const [isOpen, setIsOpen] = useState(false);
 
   const cloneDeck = async () => {
-    const deck = await backendFetch<Deck>('POST', `sharing_system/shareddeck/${sharedDeck.id}/clone/`, {
+    const deck = await backendFetch<Deck>('POST', `sharing_system/shareddeck/${sharedDeck.id}/copy/`, {
       title: (document.getElementsByName('title')[0] as HTMLFormElement).value,
     });
+    console.log(deck)
 
     window.location.href = `/deck/${deck.id}/`;
   }

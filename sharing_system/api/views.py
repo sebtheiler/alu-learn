@@ -115,7 +115,7 @@ def shared_deck_create_view(request, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
+def copy_shared_deck_view(request, shared_deck_id, *args, **kwargs):
     """
     Copies a shared deck - POST
 

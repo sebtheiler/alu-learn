@@ -20,24 +20,47 @@ class FlashCardAdmin(admin.ModelAdmin):
         return queryset
 
     def get_section(self, obj):
-        return f'''
-            {(
-                obj.sub_sections.first().main_section.deck.title
-                if obj.sub_sections.first().main_section.deck else
-                obj.sub_sections.first().main_section.snapshot.message
-            )} >
-            {obj.sub_sections.first().main_section.title} >
-            {obj.sub_sections.first().title}'''
+        try:
+            return f'''
+                {(
+                    obj.sub_sections.first().main_section.deck.title
+                    if obj.sub_sections.first().main_section.deck else
+                    obj.sub_sections.first().main_section.snapshot.message
+                )} >
+                {obj.sub_sections.first().main_section.title} >
+                {obj.sub_sections.first().title}'''
+        except AttributeError:
+            return 'Section not found'
     get_section.short_description = 'Section'
     get_section.admin_order_field = 'sub_sections__main_section__deck__title'
 
 
 class ReviewInstanceAdmin(admin.ModelAdmin):
-    list_display = ['__str__', 'flashcard']
+    list_display = ['__str__', 'flashcard', 'get_deck']
     search_fields = ['flashcard__deck__title']
 
     class Meta:
         model = ReviewInstance
+
+    def get_queryset(self, request):
+        queryset = super(ReviewInstanceAdmin, self).get_queryset(request)
+        queryset = queryset.prefetch_related(
+            'flashcard__sub_sections__main_section__deck',
+            'flashcard__sub_sections__main_section__snapshot__shared_deck',
+        )
+        return queryset
+
+    def get_deck(self, obj):
+        try:
+            print(obj.flashcard.sub_sections.all())
+            return (
+                obj.flashcard.sub_sections.first().main_section.deck
+                or
+                obj.flashcard.sub_sections.first().main_section.shared_deck
+            )
+        except AttributeError:
+            return 'Deck not found'
+    get_deck.short_description = '(Shared) Deck'
 
 
 class ReviewInstanceHistoryAdmin(admin.ModelAdmin):
