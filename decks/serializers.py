@@ -88,5 +88,6 @@ class DeckSerializer(serializers.ModelSerializer):
             'title',
             'main_sections',
             'equivalent_to_snapshot',
+            'is_updated',
             'id',
         ]

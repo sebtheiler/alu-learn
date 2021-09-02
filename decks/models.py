@@ -120,6 +120,7 @@ class Deck(models.Model):
 
         return needs_updating
 
+    # TODO: REMOVE
     def generate_skill_tree(
         self,
         blacklisted_tags: tuple = ('', 'essential'),  # don't include these tags
@@ -169,6 +170,17 @@ class Deck(models.Model):
         SubSection.objects.bulk_create(sub_sections)
 
         return skill_tree
+
+    def is_updated(self) -> bool:
+        return (
+            not self.equivalent_to_snapshot_id
+            or
+            (
+                self.equivalent_to_snapshot.shared_deck.get_latest_snapshot().pk
+                ==
+                self.equivalent_to_snapshot.pk
+            )
+        )
 
 
 class FlashCard(models.Model):

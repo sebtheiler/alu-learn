@@ -1,9 +1,10 @@
-import { useContext } from 'react';
-import { useAsyncDispatch, getDeckSectionsPercentComplete, PercentComplete } from '../../lookup/lookup';
+import RenderMainSection from './main-section';
+import { CreateMainSectionButton } from './buttons/section-buttons';
 import { Deck } from '../types';
 import { DeckDispatch } from './context';
-import { CreateMainSectionButton } from './buttons/section-buttons';
-import RenderMainSection from './main-section';
+import { useAsyncDispatch, getDeckSectionsPercentComplete, PercentComplete } from '../../lookup/lookup';
+import { useContext } from 'react';
+import UpdateDeck from './update-deck';
 
 const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: PercentComplete[]) => {
   let deckCopy = deck;
@@ -16,7 +17,7 @@ const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: Perc
     deckCopy.main_sections[mainSectionIdx].percent_complete =
       sectionPercentComplete.percent_complete;
 
-    for (const childSectionPercentComplete of sectionPercentComplete.children) {
+    for (const childSectionPercentComplete of sectionPercentComplete.sub_sections) {
       const childSectionIdx = deckCopy.main_sections[mainSectionIdx].sub_sections.indexOf(
         deckCopy.main_sections[mainSectionIdx].sub_sections.filter(
           subSection => subSection.id === childSectionPercentComplete.id,
@@ -49,7 +50,10 @@ export default function SkillTree({ deck }: { deck: Deck }) {
           {deck.title}
         </a>
       </h1>
-      <small className='text-secondary'>Click the title above to study all flashcards, or choose a section below to study</small>
+      <small className='text-secondary'>
+        Click the title above to study all flashcards, or choose a section below to study
+      </small>
+      {!deck.is_updated && <UpdateDeck deck={deck} />}
     </div>
     <div>
       {deck.main_sections.map(mainSection =>

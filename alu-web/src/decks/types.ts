@@ -16,6 +16,7 @@ export interface Deck {
   title: string;
   main_sections: MainSection[];
   equivalent_to_snapshot: UUID;
+  is_updated: boolean;
   id: number;
 }
 

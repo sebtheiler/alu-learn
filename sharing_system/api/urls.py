@@ -2,14 +2,15 @@ from django.urls import path
 
 from . import views
 
-# Base endpoint = /api/decks/
+# Base endpoint = /api/sharing_system/
 urlpatterns = [
-    path('deck/share/', views.shared_deck_create_view),
     path('deck/<int:deck_id>/actions/', views.get_deck_actions),
+    path('deck/<int:deck_id>/pull/', views.pull_deck_updates),
+    path('deck/<int:deck_id>/share/', views.shared_deck_create_view),
+    path('flashcard/list/', views.snapshot_flashcards_view),
     path('shareddeck/<int:shared_deck_id>/', views.get_shared_deck),
-    path('shareddeck/<int:shared_deck_id>/edit/', views.edit_shared_deck),
     path('shareddeck/<int:shared_deck_id>/copy/', views.copy_shared_deck_view),
+    path('shareddeck/<int:shared_deck_id>/edit/', views.edit_shared_deck),
     path('shareddeck/<int:shared_deck_id>/push/', views.shared_deck_push_view),
     path('snapshot/<uuid:snapshot_id>/shareddeck/', views.get_shared_deck_from_snapshot_id),
-    path('flashcard/list/', views.snapshot_flashcards_view),
 ]

@@ -64,12 +64,12 @@ def edit_shared_deck(request, shared_deck_id, *args, **kwargs):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def shared_deck_create_view(request, *args, **kwargs):
+def shared_deck_create_view(request, deck_id: int, *args, **kwargs):
     """
     Creates a shared deck - POST
 
     Params:
-        `origin_deck_id` (Data): ID of the deck to share
+        `deck_id` (URL): ID of the deck to share
         `title` (Data): Title of the new shared deck
         `description` (Data): Description of the new shared deck
         `view_access` (Data): View access of the new shared deck
@@ -77,7 +77,6 @@ def shared_deck_create_view(request, *args, **kwargs):
         `owners` (Data): Owners of the new shared deck
     """
     if resp := assert_request_data_type(request, {
-        'origin_deck_id': int,
         'title': str,
         'description': str,
         'view_access': str,
@@ -93,7 +92,7 @@ def shared_deck_create_view(request, *args, **kwargs):
             'main_sections__sub_sections__attached_action',
             'main_sections__sub_sections__flashcards__attached_action',
         ).get(
-            pk=request.data.get('origin_deck_id'),
+            pk=deck_id,
             user=request.user,
         )
     except Deck.DoesNotExist:
@@ -178,6 +177,23 @@ def shared_deck_push_view(request, shared_deck_id: int, *args, **kwargs):
         )
 
     return Response(SnapShotSerializer(snapshot).data, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def pull_deck_updates(request, deck_id: int, *args, **kwargs):
+    """
+    Applies available updates for a deck - POST
+
+    `deck_id`: ID of the deck to update
+    """
+    deck, resp = get_obj_or_404(Deck, deck_id, request.user, 'user')
+    if resp:
+        return resp
+
+    deck = SharedDeck.pull(deck)
+
+    return Response(DeckSerializer(deck).data, status=200)
 
 
 @api_view(['GET'])

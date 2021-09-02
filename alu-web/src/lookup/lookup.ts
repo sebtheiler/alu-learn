@@ -583,15 +583,14 @@ export function apiSharedDeckDetail(
 
 // Creates a shared deck
 export async function apiCreateSharedDeck(
-  originDeckId: number,
+  deckId: number,
   title: string,
   description: string,
   viewAccess: ViewAccess,
   editAccess: EditAccess,
   owners: string,
 ): Promise<SharedDeck> {
-  return backendFetch('POST', 'sharing_system/deck/share/', {
-    origin_deck_id: originDeckId,
+  return backendFetch('POST', `sharing_system/deck/${deckId}/share/`, {
     title: title,
     description: description,
     view_access: viewAccess,
@@ -1137,7 +1136,7 @@ export async function apiReviewInstanceUpdate(
 export interface PercentComplete {
   id: string;
   percent_complete: number;
-  children: {
+  sub_sections: {
     id: string;
     percent_complete: number;
   }[];
