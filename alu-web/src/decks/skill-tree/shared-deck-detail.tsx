@@ -90,7 +90,12 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
           <div>
             <h3>Skill Tree</h3>
             {snapshot.main_sections.map(mainSection =>
-              <RenderMainSection mainSection={mainSection} key={mainSection.id} readOnly />
+              <RenderMainSection
+                mainSection={mainSection}
+                numMainSections={snapshot.main_sections.length}
+                key={mainSection.id}
+                readOnly
+              />
             )}
             <hr />
             <h3>Example Flashcards</h3>

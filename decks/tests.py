@@ -221,7 +221,7 @@ class DeckTestCase(ImprovedTestCase):
         self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 1)
         self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 1)
         self.assertEqual(review_instances[0].ease, 250)
-        self.assertEqual(flashcard.flashcard_num, 0)
+        self.assertEqual(flashcard.order_num, 0)
 
     def test_flashcard_edit_api(self):
         api_view = api_views.flashcard_edit_view
@@ -259,7 +259,7 @@ class DeckTestCase(ImprovedTestCase):
                 },
                 kwargs={
                     'deck_id': deck.id,
-                    'flashcard_num': review_instance.flashcard.flashcard_num
+                    'flashcard_num': review_instance.flashcard.order_num
                 },
             )
             review_instance = ReviewInstance.objects.get(pk=review_instance.pk)
@@ -352,7 +352,7 @@ class DeckTestCase(ImprovedTestCase):
             'basic',
             [create_slate_element('a'), create_slate_element('b')],
         )
-        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.flashcard_num}/'
+        api_path = f'/api/decks/{deck.pk}/flashcards/{flashcard.order_num}/'
         api_view = api_views.flashcard_detail_view
 
         # Attempt to get non-existant flashcard

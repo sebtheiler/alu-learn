@@ -41,7 +41,6 @@ import {
   apiProfileReadPopup,
   apiGameFlashcards,
   apiStaffForceLogin,
-  apiRearrangeFlashcard,
   apiFlashcardEditTags,
   apiFlashcardReviewInstanceEdit,
   apiDeckStatistics,
@@ -86,7 +85,6 @@ import {
   apiTodoList,
   apiTodoDelete,
   apiTodoComplete,
-  apiDeckGenerateSkillTree,
 } from './lookup';
 
 export {
@@ -132,7 +130,6 @@ export {
   apiProfileReadPopup,
   apiGameFlashcards,
   apiStaffForceLogin,
-  apiRearrangeFlashcard,
   apiFlashcardEditTags,
   apiFlashcardReviewInstanceEdit,
   apiDeckStatistics,
@@ -177,5 +174,4 @@ export {
   apiTodoList,
   apiTodoDelete,
   apiTodoComplete,
-  apiDeckGenerateSkillTree,
 }

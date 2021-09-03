@@ -11,10 +11,12 @@ type DeckEvent =
   | { action: 'CREATE_MAIN_SECTION', deckId: number, mainSection: MainSection }
   | { action: 'EDIT_MAIN_SECTION', deckId: number, mainSection: Partial<MainSection> & Pick<MainSection, 'id'> }
   | { action: 'DELETE_MAIN_SECTION', deckId: number, mainSectionId: string }
+  | { action: 'MOVE_MAIN_SECTION', deckId: number, mainSectionId: string, mainSectionNum: number, direction: 'UP' | 'DOWN' }
   // SubSection
   | { action: 'CREATE_SUB_SECTION', deckId: number, mainSectionId: string, subSection: SubSection }
   | { action: 'EDIT_SUB_SECTION', deckId: number, mainSectionId: string, subSection: Partial<SubSection> & Pick<SubSection, 'id'> }
   | { action: 'DELETE_SUB_SECTION', deckId: number, mainSectionId: string, subSectionId: string }
+  | { action: 'MOVE_SUB_SECTION', deckId: number, mainSectionId: string, subSectionId: string, subSectionNum: number, direction: 'UP' | 'DOWN' }
 
 export const deckReducer = (
   state: Deck[] | undefined,
@@ -23,6 +25,7 @@ export const deckReducer = (
   if (!state) return undefined;
   let index: number;
   let mainSectionIndex: number
+  let subSectionIndex: number
   let newState = state;
   switch (event.action) {
     case 'CREATE':
@@ -63,6 +66,33 @@ export const deckReducer = (
       );
 
       return [...newState];
+    case 'MOVE_MAIN_SECTION':
+      index = state.map(deck => deck.id).indexOf(event.deckId);
+
+      mainSectionIndex = newState[index].main_sections.map(
+        ms => ms.id
+      ).indexOf(event.mainSectionId);
+
+      // We need this check to prevent firing twice
+      if (
+        state[index].main_sections[mainSectionIndex].order_num
+        !==
+        event.mainSectionNum
+      ) return [...newState];
+
+      // Move
+      if (event.direction === 'UP') {
+        newState[index].main_sections[mainSectionIndex].order_num--;
+        newState[index].main_sections[mainSectionIndex - 1].order_num++;
+      } else {
+        newState[index].main_sections[mainSectionIndex].order_num++;
+        newState[index].main_sections[mainSectionIndex + 1].order_num--;
+      }
+      newState[index].main_sections = newState[index].main_sections.sort(
+        (a, b) => a.order_num - b.order_num,
+      );
+
+      return [...newState];
     case 'CREATE_SUB_SECTION':
       index = state.map(deck => deck.id).indexOf(event.deckId);
       mainSectionIndex = state[index].main_sections.map(
@@ -78,7 +108,7 @@ export const deckReducer = (
       mainSectionIndex = state[index].main_sections.map(
         ms => ms.id
       ).indexOf(event.mainSectionId);
-      const subSectionIndex = newState[index].main_sections[mainSectionIndex].sub_sections.map(
+      subSectionIndex = newState[index].main_sections[mainSectionIndex].sub_sections.map(
         ss => ss.id
       ).indexOf(event.subSection.id);
 
@@ -96,6 +126,36 @@ export const deckReducer = (
         newState[index].main_sections[mainSectionIndex].sub_sections.filter(
           ss => ss.id !== event.subSectionId
         );
+
+      return [...newState];
+    case 'MOVE_SUB_SECTION':
+      index = state.map(deck => deck.id).indexOf(event.deckId);
+
+      mainSectionIndex = newState[index].main_sections.map(
+        ms => ms.id
+      ).indexOf(event.mainSectionId);
+      subSectionIndex = newState[index].main_sections[mainSectionIndex].sub_sections.map(
+        ss => ss.id
+      ).indexOf(event.subSectionId);
+
+      // We need this check to prevent firing twice
+      if (
+        state[index].main_sections[mainSectionIndex].sub_sections[subSectionIndex].order_num
+        !==
+        event.subSectionNum
+      ) return [...newState];
+
+      // Move
+      if (event.direction === 'UP') {
+        newState[index].main_sections[mainSectionIndex].sub_sections[subSectionIndex].order_num--;
+        newState[index].main_sections[mainSectionIndex].sub_sections[subSectionIndex - 1].order_num++;
+      } else {
+        newState[index].main_sections[mainSectionIndex].sub_sections[subSectionIndex].order_num++;
+        newState[index].main_sections[mainSectionIndex].sub_sections[subSectionIndex + 1].order_num--;
+      }
+      newState[index].main_sections[mainSectionIndex].sub_sections = newState[index].main_sections[mainSectionIndex].sub_sections.sort(
+        (a, b) => a.order_num - b.order_num,
+      );
 
       return [...newState];
     default:

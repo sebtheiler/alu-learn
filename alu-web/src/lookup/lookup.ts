@@ -1,6 +1,6 @@
 // TODO: Break this file up into a separate file for each "package"
 // Each file should contain the lookups for just that package
-import { Deck, ReviewInstance, FlashCard, SchedulingAlgorithm, SSMInterface, SharedDeck, ViewAccess, EditAccess } from '../decks/types';
+import { Deck, ReviewInstance, SchedulingAlgorithm, SSMInterface, SharedDeck, ViewAccess, EditAccess } from '../decks/types';
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
 import { Profile, ProfileHistory } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
@@ -211,6 +211,19 @@ export async function apiObjectEdit<T>(
     'PUT',
     `${appName}/${modelName}/${objectId}/edit/`,
     { edited_values: edited_values },
+  );
+}
+
+export async function apiObjectRearrange<T>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
+  direction: 'UP' | 'DOWN',
+): Promise<T> {
+  return backendFetch<T>(
+    'PUT',
+    `${appName}/${modelName}/${objectId}/rearrange/`,
+    { direction: direction },
   );
 }
 
@@ -670,17 +683,6 @@ export function apiStaffForceLogin(username, callback) {
   backendLookup('POST', 'profiles/staff-force-login/', callback, { username: username });
 }
 
-// Rearranges a flashcard
-export function apiRearrangeFlashcard(
-  flashcardId: number,
-  rearrangeType: 'UP' | 'DOWN',
-  callback: (response: Message | FlashCard, status: number) => void,
-) {
-  backendLookup('POST', `decks/flashcard/${flashcardId}/rearrange/`, callback, {
-    rearrange_type: rearrangeType,
-  });
-}
-
 // Edits the tags of many flashcards at once
 export function apiFlashcardEditTags(
   flashcardIds: number[],
@@ -1076,11 +1078,6 @@ export function apiTodoComplete(
   backendLookup('POST', `habits/todos/${todoId}/complete/`, callback, {
     completed: completed,
   });
-}
-
-// Generates (or re-generates) a skill tree for a deck
-export async function apiDeckGenerateSkillTree(deckId: number): Promise<Deck> {
-  return backendFetch('POST', `decks/deck/${deckId}/gen-skill-tree/`);
 }
 
 // Get review instances to study

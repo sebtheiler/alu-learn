@@ -2,6 +2,7 @@ from typing import List, Literal, Union
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.db import models
+from django.db.models import F
 from django.urls import path
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
@@ -157,10 +158,66 @@ def edit_object_view(
     return view
 
 
+def rearrange_object_view(
+    Serializer: serializers.ModelSerializer,
+    owner_path: str,
+    parent_model: str,
+):
+    """
+    Creates an API view for rearranging a given model
+
+    `Serializer`: Model's serializer (also gives information on the Model)
+    `owner_path`: Path/attribute to get the objects owner
+        ('user', 'profile.user', 'deck__user')
+    """
+    Model = Serializer.Meta.model  # type: models.Model
+
+    @api_view(['PUT'])
+    @permission_classes([IsAuthenticated])
+    def view(request: WSGIRequest, obj_id: int):
+        model, error = get_obj_or_404(Model, obj_id, request.user, owner_path)
+        if error:
+            return error
+
+        direction = request.data.get('direction')
+        if direction == 'UP':
+            if model.order_num == 0:
+                return Response({'message': 'Model already at top'}, status=400)
+
+            other_model = Model.objects.get(
+                **{parent_model: getattr(model, parent_model)},
+                order_num=model.order_num - 1,
+            )
+
+            other_model.order_num += 1
+            model.order_num -= 1
+        elif direction == 'DOWN':
+            if model.order_num == model.get_self_max_order_num():
+                return Response({'message': 'Model already at bottom'}, status=400)
+
+            other_model = Model.objects.get(
+                **{parent_model: getattr(model, parent_model)},
+                order_num=model.order_num + 1,
+            )
+
+            other_model.order_num -= 1
+            model.order_num += 1
+        else:
+            return Response({'message': 'Invalid `direction`'}, status=400)
+
+        Model.objects.bulk_update([model, other_model], ['order_num'])
+
+        return Response(Serializer(model).data, status=200)
+
+    return view
+
+
 def delete_object_view(
     Serializer: serializers.ModelSerializer,
     owner_path: str,
     ActionModel: models.Model = None,
+    decrement_order: bool = False,
+    parent_model: str = None,
 ):
     """
     Creates an API view for deleting a given model
@@ -168,6 +225,7 @@ def delete_object_view(
     `Serializer`: Model's serializer (also gives information on the Model)
     `owner_path`: Path/attribute to get the objects owner
         ('user', 'profile.user', 'deck__user')
+    `decrement_order`: Decrement the `order_num` of models _after_ this one
     """
     Model = Serializer.Meta.model  # type: models.Model
 
@@ -183,6 +241,13 @@ def delete_object_view(
 
         model.delete()
 
+        if decrement_order:
+            # Shift proceeding models up one
+            Model.objects.filter(
+                **{parent_model: getattr(model, parent_model)},
+                order_num__gt=model.order_num,
+            ).update(order_num=F('order_num') + 1)
+
         return Response({'message': 'Object deleted'}, status=200)
 
     return view
@@ -196,16 +261,18 @@ def generate_base_api(
     owner_path: Union[str, None],
     owner_type: Literal['USER', 'PROFILE'],
     /,
-    exclude_app_name: bool = True,
-    exclude_create: bool = False,
-    exclude_get: bool = False,
-    exclude_list: bool = False,
-    exclude_edit: bool = False,
-    exclude_delete: bool = False,
-    uuid_id: bool = False,
-    prefetch_list: tuple() = tuple(),
     ActionModel: models.Model = None,
     create_with_user: bool = True,
+    exclude_app_name: bool = True,
+    exclude_create: bool = False,
+    exclude_delete: bool = False,
+    exclude_edit: bool = False,
+    exclude_get: bool = False,
+    exclude_list: bool = False,
+    exclude_rearrange: bool = True,
+    parent_model: str = None,
+    prefetch_list: tuple() = tuple(),
+    uuid_id: bool = False,
 ):
     """
     Generate a list of API paths for a model
@@ -265,7 +332,17 @@ def generate_base_api(
             ))
         )
 
-    # TODO: add rearrange view
+    if not exclude_rearrange:
+        if not parent_model:
+            raise ValueError('`parent_model` must be specified if including rearrange')
+
+        views.append(
+            path(f'{base_name}/<{id_type}:obj_id>/rearrange/', rearrange_object_view(
+                Serializer=Serializer,
+                owner_path=owner_path,
+                parent_model=parent_model,
+            ))
+        )
 
     if not exclude_delete:
         views.append(
@@ -273,6 +350,8 @@ def generate_base_api(
                 Serializer=Serializer,
                 owner_path=owner_path,
                 ActionModel=ActionModel,
+                decrement_order=exclude_rearrange,
+                parent_model=parent_model,
             ))
         )
     return views

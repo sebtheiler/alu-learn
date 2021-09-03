@@ -22,39 +22,6 @@ from ..serializers import (DeckSerializer, FlashCardSerializer,
 
 # ====== Decks ======
 # ===== Deck Lists =====
-# TODO: rewrite this as a `sharing_system` view
-# @api_view(['GET'])
-# @vary_on_cookie
-# @cache_control(private=True)
-# def deck_shared_list(request, username: str, *args, **kwargs) -> List[SharedDeck]:
-#     """
-#     Gets decks from a user that are either shared with the requester or public - GET
-
-#     Required information:
-#         `username`: (URL) Username of the user to get decks from
-#     """
-#     # Get user
-#     try:
-#         profile = Profile.objects.get(user__username=username)
-#     except Profile.DoesNotExist:
-#         return Response({'message': f'Invalid username "{username}"'}, status=404)
-
-#     # Get user's decks that are either public or shared
-#     is_friend = request.user in profile.friends.all()
-#     if is_friend or profile.user.id == request.user.id:
-#         decks_qs = SharedDeck.objects.filter(
-#             Q(user__username=username) &
-#             (Q(sharing_setting='PUBLIC') | Q(sharing_setting='FRIENDS'))
-#         )
-#     else:
-#         decks_qs = SharedDeck.objects.filter(
-#             user__username=username,
-#             sharing_setting='PUBLIC',
-#         )
-
-#     return Response(SharedDeckSerializer(decks_qs, many=True).data, status=200)
-
-
 # TODO: Rename and revamp
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -144,229 +111,15 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
         # Return paginated list of all flashcards
         reverse = request.GET.get('reverse')
         return get_paginated_queryset_response(
-            deck.flashcards.order_by('flashcard_num' if not reverse else '-flashcard_num'),
+            deck.flashcards.order_by('order_num' if not reverse else '-order_num'),
             request,
             FlashCardSerializer,
             page_size=250
         )
 
 
-# ===== Shared Decks =====
-# TODO: rewrite in `sharing_system`
-
-# TODO: delete and use `custom_..._func`
-# @api_view(['GET'])
-# def shared_deck_detail_view(request, shared_deck_id, *args, **kwargs):
-#     """
-#     Get specific information about a deck - GET
-
-#     Required information:
-#         `deck_id`: (URL) The ID of the deck
-
-#     Returns:
-#         Author of the deck (PublicProfileSerializer): 'author'
-#         Title of the deck: 'title'
-#         ID of the deck: 'id'
-
-#     Possible errors:
-#         Invalid deck: 404, Deck not found
-#         Deck is not shared with user: 403, You are unauthorized to view this deck
-#     """
-#     # Get deck
-#     try:
-#         shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
-#     except SharedDeck.DoesNotExist:
-#         return Response({'message': 'Deck not found'}, status=404)
-
-#     # Make sure the user is authorized
-#     if not shared_deck.user_has_access(request.user):
-#         return Response({'message': 'You are unauthorized to view this deck'}, status=403)
-
-#     return Response(
-#         SharedDeckSerializer(
-#             shared_deck,
-#             context={'request': request}
-#         ).data,
-#         status=200,
-#     )
-
-
-# # TODO: Rewrite view, along with other function-views, to be simpler
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def shared_deck_create_view(request, *args, **kwargs):
-#     """
-#     Creates a shared deck - POST
-
-#     Required information:
-#         `origin_deck_id`: (Data) Id of the deck that will be made shared
-#         `title`: (Data) Title of the public deck to create
-#         `description`: (Data) Description of the public deck to create
-#         `sharing_setting`: (Data) 'FRIENDS' or 'PUBLIC'
-#     """
-#     assert_dict_data_type(request.data, {
-#         'origin_deck_id': int,
-#         'title': str,
-#         'description': str,
-#         'view_access': str,
-#         'edit_access': str,
-#         'owners': str,
-#     })
-
-#     # Get deck to originate from
-#     origin_deck, resp = get_obj_or_404(
-#         Deck,
-#         request.data.get('origin_deck_id'),
-#         request.user,
-#         'user',
-#     )
-#     if resp:
-#         return resp
-
-#     # Create shared deck object
-#     shared_deck = origin_deck.create_shared_deck(
-#         request.data.get('title'),
-#         request.data.get('description'),
-#         request.data.get('view_access'),
-#         request.data.get('edit_access'),
-#         request.data.get('owners'),
-#     )
-
-#     return Response(SharedDeckSerializer(shared_deck).data, status=201)
-
-
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def shared_deck_clone_view(request, shared_deck_id, *args, **kwargs):
-#     """
-#     Clones a shared deck for a user that is not the author to use it - POST
-
-#     Required information:
-#         `shared_deck_id`: (URL) Id of the shared deck
-#         `destination_deck_title`: (Data) Title of the deck to clone into
-#     """
-#     try:
-#         shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
-#         if not shared_deck.user_has_access(request.user):
-#             return Response({'message': 'You are unauthorized to clone this deck'}, status=403)
-#     except SharedDeck.DoesNotExist:
-#         return Response({'message': 'Shared deck not found'}, status=404)
-
-#     # Check if the user has already cloned this deck
-#     if SharedDeckRelation.objects.filter(
-#         deck__user=request.user,
-#         shared_deck=shared_deck,
-#     ).exists():
-#         return Response({'message': 'You have already cloned this deck'}, status=400)
-
-#     deck = shared_deck.clone(
-#         request.user,
-#         request.data.get('destination_deck_title'),
-#         request.data,
-#     )
-
-#     return Response(DeckSerializer(deck).data, status=200)
-
-
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def shared_deck_push_updates_view(request, shared_deck_id, *args, **kwargs):
-#     """
-#     Allows the author of a shared deck to push flashcard changes - POST
-
-#     Required information:
-#         `shared_deck_id`: (Data) Id of the shared deck
-#         `origin_deck_id`: (Data) Id of the deck to get new changes from
-#         `check_diff_only`: (Data) If True, this will get the difference between the
-#             shared deck and the origin deck, and not actually enact the changes
-#     """
-#     check_diff_only = request.data.get('check_diff_only', False)
-
-#     # Get shared deck
-#     try:
-#         shared_deck = SharedDeck.objects.get(
-#             pk=shared_deck_id,
-#             user=request.user,
-#         )
-#     except SharedDeck.DoesNotExist:
-#         return Response({'message': 'Could not find the specified shared deck'}, status=404)
-
-#     # Get origin deck
-#     try:
-#         origin_deck = Deck.objects.get(
-#             pk=request.data.get('origin_deck_id'),
-#             user=request.user,
-#         )
-#    except Deck.DoesNotExist:
-#        return Response(
-#             {'message': 'This deck does not exist / you are unauthorized'},
-#             status=400,
-#         )
-
-#     data = shared_deck.push_updates(origin_deck, check_diff_only)
-#     if isinstance(data, SharedDeck):
-#         data = SharedDeckSerializer(data).data
-
-#     return Response(data, status=200)
-
-
-# # TODO: Combine with `deck_pull_updates_view`
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def deck_get_updates_view(request, deck_id, *args, **kwargs):
-#     """
-#     Gets the updates for a deck - GET
-
-#     Required information:
-#         `deck_id`: (URL) Id of the deck to get updates for
-#     """
-#     # Get deck
-#     try:
-#         deck = Deck.objects.get(
-#             pk=deck_id,
-#             user=request.user,
-#         )
-#     except Deck.DoesNotExist:
-#         return Response({'message': 'Deck does not exist / you are unauthorized'}, status=400)
-
-#     # Find decks that need updating
-#     needs_updating = deck.list_available_updates()
-
-#     return Response({'needs_updating': needs_updating}, status=200)
-
-
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def deck_pull_updates_view(request, deck_id, *args, **kwargs):
-#     """
-#     Gets the updates for a deck - POST
-
-#     Required information:
-#         `deck_id`: (URL) Id of the deck to updates
-#         `to_pull_from`: (Data) Id of the shared deck to pull changes from
-#     """
-#     # Get deck
-#     try:
-#         deck = Deck.objects.get(
-#             pk=deck_id,
-#             user=request.user,
-#         )  # type: Deck
-#     except Deck.DoesNotExist:
-#         return Response({'message': 'Deck does not exist'}, status=400)
-
-#     # Get shared deck
-#     to_pull_from = request.data.get('to_pull_from')
-#     try:
-#         shared_deck = SharedDeck.objects.get(pk=to_pull_from)
-#     except SharedDeck.DoesNotExist:
-#         return Response({'message': 'Shared deck does not exist'}, status=400)
-
-#     deck = deck.pull_updates(shared_deck)
-
-#     return Response(DeckSerializer(deck).data, status=200)
-
-
 # ===== Deck Import/Export =====
+# TODO: rewrite all of these functions
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def deck_json_export_view(request, deck_id, *args, **kwargs):
@@ -392,7 +145,7 @@ def deck_json_export_view(request, deck_id, *args, **kwargs):
                 'fields': flashcard.fields,
                 'tags': flashcard.tags,
                 'flashcard_type': flashcard.flashcard_type,
-                'flashcard_num': flashcard.flashcard_num,
+                'order_num': flashcard.order_num,
                 'review_instances': [
                     {
                         'content_indicies': review_instance.content_indicies,
@@ -408,7 +161,7 @@ def deck_json_export_view(request, deck_id, *args, **kwargs):
                     for review_instance in flashcard.review_instances.all()
                 ] if export_review_instances else None,
             }
-            for flashcard in deck.flashcards.order_by('flashcard_num').all()
+            for flashcard in deck.flashcards.order_by('order_num').all()
         ],
     }
 
@@ -446,7 +199,7 @@ def deck_json_import_view(request, *args, **kwargs):
         flashcard = FlashCard(
             deck=deck,
             flashcard_type=json_flashcard.get('flashcard_type', 'basic'),
-            flashcard_num=json_flashcard.get('flashcard_num', i),
+            order_num=json_flashcard.get('order_num', i),
             # Tags
             fields=json_flashcard.get('fields', []),
             tags=json_flashcard.get('tags', ''),
@@ -505,12 +258,12 @@ def deck_txt_import_view(request, *args, **kwargs):
     deck, _ = Deck.objects.get_or_create(user=request.user, title=deck_title)
 
     # Create flashcards
-    max_flashcard_num = FlashCard.get_max_flashcard_num(deck)
+    max_flashcard_num = FlashCard.get_max_order_num(deck)
     flashcards = FlashCard.objects.bulk_create([
         FlashCard(
             deck=deck,
             flashcard_type='basic',
-            flashcard_num=max_flashcard_num + i + 1,
+            order_num=max_flashcard_num + i + 1,
             fields=[
                 create_slate_element(front_and_back[i][0]),
                 create_slate_element(front_and_back[i][1]),
@@ -532,10 +285,6 @@ def deck_txt_import_view(request, *args, **kwargs):
     return Response(DeckSerializer(deck).data, status=201)
 
 
-# ===== Other deck functions =====
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def deck_generate_skill_tree_view(request, deck_id, *args, **kwargs):
     """
     Generates and saves a skill tree for a deck - POST
 
@@ -783,36 +532,6 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
     )
 
     return Response(FlashCardSerializer(instance=flashcard).data, 200)
-
-
-# TODO: make function on `api_gen`
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def flashcard_rearrange_view(request, deck_id, flashcard_num, *args, **kwargs):
-    """
-    Rearranges flashcards - POST
-
-    Required information:
-        `flashcard_id`: Id of the FlashCard to rearrange
-        `rearrange_type`: Way to rearrange the flashcard
-            'UP': Decrease the flashcard's number
-            'DOWN': Increase the flashcard's number
-    """
-    try:
-        flashcard = FlashCard.objects.get(
-            flashcard_num=flashcard_num,
-            deck__pk=deck_id,
-            deck__user=request.user,
-        )
-    except FlashCard.DoesNotExist:
-        return Response({'message': 'Flashcard not found'}, status=404)
-
-    rearrange_type = request.data.get('rearrange_type')
-    msg = flashcard.rearrange(rearrange_type)
-    if msg is not None:
-        return Response({'message': msg}, status=400)
-
-    return Response(FlashCardSerializer(flashcard).data, status=200)
 
 
 @api_view(['GET'])

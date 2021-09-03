@@ -5,9 +5,10 @@ import { MainSection } from './types';
 
 interface MainSectionProps {
   mainSection: MainSection;
+  numMainSections: number;
   readOnly?: boolean;
 }
-export default function RenderMainSection({ mainSection, readOnly }: MainSectionProps) {
+export default function RenderMainSection({ mainSection, numMainSections, readOnly }: MainSectionProps) {
   return (<div className='main-section'>
     <div className='main-section-header text-center'>
       <div className='d-flex mx-auto'>
@@ -23,7 +24,7 @@ export default function RenderMainSection({ mainSection, readOnly }: MainSection
           }
         </h2>
         <hr className='flex-grow-1' />
-        {!readOnly && <MainSectionButtons mainSection={mainSection} />}
+        {!readOnly && <MainSectionButtons mainSection={mainSection} numMainSections={numMainSections} />}
       </div>
       <small className='text-secondary'>
         {/* {mainSection.description} */}
@@ -36,6 +37,7 @@ export default function RenderMainSection({ mainSection, readOnly }: MainSection
           <RenderSubSection
             subSection={subSection}
             mainSection={mainSection}
+            numSubSections={mainSection.sub_sections.length}
             readOnly={readOnly}
             key={subSection.id}
           />

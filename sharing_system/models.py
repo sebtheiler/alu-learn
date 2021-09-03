@@ -517,6 +517,7 @@ class MainSectionAction(AbstractAction):
                 ms_destination = MainSection(
                     title=ms_origin.title,
                     description=ms_origin.description,
+                    order_num=ms_origin.order_num,
                     universal_main_section_id=ms_origin.pk,
                 )
                 main_sections_to_create.append(ms_destination)

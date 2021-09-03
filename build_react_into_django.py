@@ -19,7 +19,10 @@ def build_react_into_django():
     if COMPILE_REACT:
         print('Compiling React...')
         os.chdir(REACT_DIRECTORY)
-        os.system('npm run build')
+        if settings.PRODUCTION:
+            os.system('npm run build --nomaps')  # don't send raw React code to client
+        else:
+            os.system('npm run build')
         os.chdir(base_dir)
 
     # Copy static files

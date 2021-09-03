@@ -75,7 +75,6 @@ int(hexadecimal_string, 16)
 1028: Error getting deck's statistics through apiDeckStatistics
 1029: Error getting decks list for homepage of student through apiQuickDeckList
 1030: Error exporting deck to JSON through apiDeckJSONExport
-1031: Error generating skill tree for deck through apiDeckGenerateSkillTree
 
 === Flashcard related errors ===
 2000: Error getting flashcard detail through apiFlashCardDetail in alu-web/src/decks/flashcards/create.js
@@ -87,7 +86,7 @@ int(hexadecimal_string, 16)
 2006: Error updating flashcard tags in bulk
 2007: Error searching for flashcards in custom study through apiFlashCardSearch in alu-web/src/decks/study/components.js
 2008: Error deleting flashcard while studying through apiFlashCardDelete in alu-web/src/decks/study/components.js
-2009: Error moving flashcard up through apiRearrangeFlashcard
+2009:
 2010:
 2011: Error bulk editing flashcard review instances through apiFlashcardReviewInstanceEdit
 

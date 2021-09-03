@@ -16,7 +16,7 @@ export default function RenderFlashcard({ flashcard, deckId }: { flashcard: Flas
       >
         <Row className='flashcard-head'>
           <Col>
-            <span>Flashcard #{flashcard.flashcard_num + 1}: {capitalize(flashcard.flashcard_type)}</span>
+            <span>Flashcard #{flashcard.order_num + 1}: {capitalize(flashcard.flashcard_type)}</span>
             <span className='float-right'>{flashcard.tags}</span>
           </Col>
         </Row>

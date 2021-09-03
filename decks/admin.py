@@ -9,7 +9,7 @@ class FlashCardAdmin(admin.ModelAdmin):
     list_display = (
         'get_section',
         'flashcard_type',
-        'flashcard_num',
+        'order_num',
         'fields',
     )
     model = FlashCard

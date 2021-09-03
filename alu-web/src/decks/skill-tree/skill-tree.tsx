@@ -57,7 +57,11 @@ export default function SkillTree({ deck }: { deck: Deck }) {
     </div>
     <div>
       {deck.main_sections.map(mainSection =>
-        <RenderMainSection mainSection={mainSection} key={mainSection.id} />
+        <RenderMainSection
+          mainSection={mainSection}
+          numMainSections={deck.main_sections.length}
+          key={mainSection.id}
+        />
       )}
     </div>
     <CreateMainSectionButton deckId={deck.id} />

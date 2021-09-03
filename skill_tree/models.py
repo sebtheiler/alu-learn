@@ -15,6 +15,7 @@ class AbstractSection(models.Model):
     # === BASIC INFO ===
     title = models.CharField(max_length=128)
     description = models.TextField(max_length=4096)
+    order_num = models.PositiveSmallIntegerField()  # zero-indexed, for sorting
     EDITABLE_ATTRS = ('title', 'description')
 
     # === CACHES ===
@@ -28,6 +29,7 @@ class AbstractSection(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('order_num',)
 
     def __str__(self) -> str:
         return self.title
@@ -143,6 +145,17 @@ class MainSection(AbstractSection):
             pk=uuid.uuid4(),
         )
 
+    @staticmethod
+    def get_max_order_num(deck) -> int:
+        # Returns -1 if there are no main sections in the deck
+        main_sections = MainSection.objects.filter(deck=deck)
+        max_ms_num_obj = main_sections.order_by('order_num').last()
+
+        return getattr(max_ms_num_obj, 'order_num', -1)
+
+    def get_self_max_order_num(self) -> int:
+        return MainSection.get_max_order_num(self.deck)
+
 
 class SubSection(AbstractSection):
     main_section = models.ForeignKey(
@@ -173,3 +186,14 @@ class SubSection(AbstractSection):
         )
 
         return sub_section
+
+    @staticmethod
+    def get_max_order_num(main_section: MainSection) -> int:
+        # Returns -1 if there are no main sections in the deck
+        sub_sections = SubSection.objects.filter(main_section=main_section)
+        max_ss_num_obj = sub_sections.order_by('order_num').last()
+
+        return getattr(max_ss_num_obj, 'order_num', -1)
+
+    def get_self_max_order_num(self) -> int:
+        return SubSection.get_max_order_num(self.main_section)

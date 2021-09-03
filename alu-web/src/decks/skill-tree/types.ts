@@ -5,6 +5,7 @@ interface AbstractSection {
   title: string;
   description: string;
   id: string;
+  order_num: number;
 
   // This property isn't serialized directly, but rather from `getDeckSectionsPercentComplete`,
   // and is then combined with the Section

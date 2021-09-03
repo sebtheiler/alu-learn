@@ -1,8 +1,52 @@
+from decks.models import Deck
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from skill_tree.serializers import MainSectionSerializer, SubSectionSerializer
 
 from ..models import MainSection, SubSection
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_main_section(request, *args, **kwargs):
+    try:
+        deck = Deck.objects.get(
+            pk=request.data.get('deck_id'),
+            user=request.user,
+        )
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    main_section = MainSection.objects.create(
+        title=request.data.get('title', 'New Main Section'),
+        description=request.data.get('description', ''),
+        order_num=MainSection.get_max_order_num(deck) + 1,
+        deck_id=deck.pk,
+    )
+
+    return Response(MainSectionSerializer(main_section).data, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_sub_section(request, *args, **kwargs):
+    try:
+        main_section = MainSection.objects.get(
+            pk=request.data.get('main_section_id'),
+            deck__user_id=request.user.pk,
+        )
+    except MainSection.DoesNotExist:
+        return Response({'message': 'Main section not found'}, status=404)
+
+    sub_section = SubSection.objects.create(
+        title=request.data.get('title', 'New Sub Section'),
+        description=request.data.get('description', ''),
+        order_num=SubSection.get_max_order_num(main_section) + 1,
+        main_section_id=main_section.pk,
+    )
+
+    return Response(SubSectionSerializer(sub_section).data, status=200)
 
 
 @api_view(['GET'])

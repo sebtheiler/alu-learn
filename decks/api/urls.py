@@ -25,7 +25,6 @@ urlpatterns = [
     path('deck/import/json/', views.deck_json_import_view),
     path('deck/<int:deck_id>/export/json/', views.deck_json_export_view),
     # ===== Other Deck Functions =====
-    path('deck/<int:deck_id>/gen-skill-tree/', views.deck_generate_skill_tree_view),
     path('deck/<int:deck_id>/statistics/', views.deck_statistics_view),
     # ====== Flashcards =====
     *generate_base_api(
@@ -33,17 +32,18 @@ urlpatterns = [
         FlashCardSerializer,
         {'fields': list, 'tags': str},
         'sub_sections__main_section__deck__user', 'USER',
-        exclude_create=True,
-        exclude_list=True,
-        exclude_edit=True,
-        uuid_id=True,
         ActionModel=FlashCardAction,
+        exclude_create=True,
+        exclude_edit=True,
+        exclude_list=True,
+        exclude_rearrange=False,
+        parent_model='sub_sections',
+        uuid_id=True,
     ),
     # ===== Flashcard Operations =====
     path('flashcard/create/', views.flashcard_create_view),
     path('flashcard/list/', views.flashcard_list_view),
     path('flashcard/<uuid:flashcard_id>/edit/', views.flashcard_edit_view),
-    path('flashcard/<uuid:flashcard_id>/rearrange/', views.flashcard_rearrange_view),
     path('flashcard/search/', views.flashcard_search_view),
     # ==== Flashcard Bulk Update ====
     path('flashcard/edit-tags/', views.flashcard_edit_tags_bulk_view),

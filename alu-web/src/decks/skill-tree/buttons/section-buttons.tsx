@@ -1,16 +1,15 @@
-import { useContext, useState } from 'react';
-import { DeckDispatch } from '../context';
-import { MainSection, SubSection } from '../types';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import IconTooltip from './IconTooltip';
 import LoadingButton from './LoadingButton';
-import { apiObjectCreate, apiObjectDelete, apiObjectEdit } from '../../../lookup/lookup';
+import Modal from 'react-bootstrap/Modal';
+import { DeckDispatch } from '../context';
+import { MainSection, SubSection } from '../types';
+import { apiObjectCreate, apiObjectDelete, apiObjectEdit, apiObjectRearrange } from '../../../lookup/lookup';
+import { useContext, useState } from 'react';
 
-export function MainSectionButtons({ mainSection }: { mainSection: MainSection }) {
+export function MainSectionButtons({ mainSection, numMainSections }: { mainSection: MainSection, numMainSections: number }) {
   const deckDispatch = useContext(DeckDispatch);
 
   const renameMainSection = () => {
@@ -41,34 +40,47 @@ export function MainSectionButtons({ mainSection }: { mainSection: MainSection }
     apiObjectDelete<MainSection>('skill_tree', 'mainsection', mainSection.id);
   }
 
+  const moveMainSection = (direction: 'UP' | 'DOWN') => {
+    return async () => {
+      if (!deckDispatch) return;
+
+      apiObjectRearrange('skill_tree', 'mainsection', mainSection.id, direction);
+      deckDispatch({
+        action: 'MOVE_MAIN_SECTION',
+        deckId: mainSection.deck,
+        mainSectionId: mainSection.id,
+        mainSectionNum: mainSection.order_num,
+        direction: direction,
+      });
+    }
+  }
+
   return (
     <div className='main-section-buttons'>
-      <OverlayTrigger
-        overlay={
-          <Tooltip id={`edit-main-section-tooltip-${mainSection.id}`}>
-            Edit main section title
-          </Tooltip>
-        }
-      >
-        <i
-          className='fas fa-pencil-alt'
-          role='button'
-          onClick={renameMainSection}
-        />
-      </OverlayTrigger>
-      <OverlayTrigger
-        overlay={
-          <Tooltip id={`delete-main-section-tooltip-${mainSection.id}`}>
-            Delete main section
-          </Tooltip>
-        }
-      >
-        <i
-          className='fas fa-trash-alt ml-2'
-          role='button'
-          onClick={deleteMainSection}
-        />
-      </OverlayTrigger>
+      {mainSection.order_num !== 0 && <IconTooltip
+        tooltip='Move main section up'
+        onClick={moveMainSection('UP')}
+        faClass='fas fa-caret-up'
+        id={`move-up-main-section-tooltip-${mainSection.id}`}
+      />}
+      {mainSection.order_num !== numMainSections - 1 && <IconTooltip
+        tooltip='Move main section down'
+        onClick={moveMainSection('DOWN')}
+        faClass='fas fa-caret-down ml-2'
+        id={`move-down-main-section-tooltip-${mainSection.id}`}
+      />}
+      <IconTooltip
+        tooltip='Edit main section title'
+        onClick={renameMainSection}
+        faClass='fas fa-pencil-alt ml-2'
+        id={`edit-main-section-tooltip-${mainSection.id}`}
+      />
+      <IconTooltip
+        tooltip='Delete main section'
+        onClick={deleteMainSection}
+        faClass='fas fa-trash-alt ml-2'
+        id={`delete-main-section-tooltip-${mainSection.id}`}
+      />
     </div>
   );
 }
@@ -76,9 +88,10 @@ export function MainSectionButtons({ mainSection }: { mainSection: MainSection }
 interface SubSectionButtonsProps {
   subSection: SubSection;
   mainSectionId: string;
+  numSubSections: number;
   deckId: number;
 }
-export function SubSectionButtons({ subSection, mainSectionId, deckId }: SubSectionButtonsProps) {
+export function SubSectionButtons({ subSection, numSubSections, mainSectionId, deckId }: SubSectionButtonsProps) {
   const deckDispatch = useContext(DeckDispatch);
 
   const renameSubSection = () => {
@@ -110,35 +123,49 @@ export function SubSectionButtons({ subSection, mainSectionId, deckId }: SubSect
     });
     apiObjectDelete<MainSection>('skill_tree', 'subsection', subSection.id);
   }
+
+  const moveSubSection = (direction: 'UP' | 'DOWN') => {
+    return async () => {
+      if (!deckDispatch) return;
+
+      apiObjectRearrange('skill_tree', 'subsection', subSection.id, direction);
+      deckDispatch({
+        action: 'MOVE_SUB_SECTION',
+        deckId: deckId,
+        mainSectionId: mainSectionId,
+        subSectionId: subSection.id,
+        subSectionNum: subSection.order_num,
+        direction: direction,
+      });
+    }
+  }
   
   return (
     <div className='sub-section-buttons'>
-      <OverlayTrigger
-        overlay={
-          <Tooltip id={`edit-sub-section-tooltip-${subSection.id}`}>
-            Delete sub section
-          </Tooltip>
-        }
-      >
-        <i
-          className='fas fa-trash-alt float-right ml-2'
-          role='button'
-          onClick={deleteSubSection}
-        />
-      </OverlayTrigger>
-      <OverlayTrigger
-        overlay={
-          <Tooltip id={`edit-sub-section-tooltip-${subSection.id}`}>
-            Edit sub section title
-          </Tooltip>
-        }
-      >
-        <i
-          className='fas fa-pencil-alt float-right'
-          role='button'
-          onClick={renameSubSection}
-        />
-      </OverlayTrigger>
+      <IconTooltip
+        tooltip='Delete sub section'
+        onClick={deleteSubSection}
+        faClass='fas fa-trash-alt float-right ml-2'
+        id={`delete-sub-section-tooltip-${subSection.id}`}
+      />
+      <IconTooltip
+        tooltip='Edit sub section title'
+        onClick={renameSubSection}
+        faClass='fas fa-pencil-alt float-right ml-2'
+        id={`edit-sub-section-tooltip-${subSection.id}`}
+      />
+      {subSection.order_num !== numSubSections - 1 && <IconTooltip
+        tooltip='Move sub section right'
+        onClick={moveSubSection('DOWN')}
+        faClass='fas fa-caret-right float-right ml-2'
+        id={`move-down-sub-section-tooltip-${subSection.id}`}
+      />}
+      {subSection.order_num !== 0 && <IconTooltip
+        tooltip='Move sub section left'
+        onClick={moveSubSection('UP')}
+        faClass='fas fa-caret-left float-right ml-2'
+        id={`move-up-sub-section-tooltip-${subSection.id}`}
+      />}
     </div>
   );
 }

@@ -21,6 +21,7 @@ class AbstractSectionSerializer(serializers.ModelSerializer):
         fields = (
             'title',
             'description',
+            'order_num',
             'id',
         )
         read_only_fields = fields

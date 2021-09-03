@@ -60,7 +60,7 @@ export interface FlashCard {
   fields: Node[][];
   tags: string;
   flashcard_type: FlashCardTypes;
-  flashcard_num: number;
+  order_num: number;
   parent_deck_id: number;
   front_image?: string;
   back_image?: string;

@@ -12,9 +12,10 @@ export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll
 interface SubSectionProps {
   subSection: SubSection;
   mainSection: MainSection;
+  numSubSections: number;
   readOnly?: boolean;
 }
-export default function RenderSubSection({ subSection, mainSection, readOnly }: SubSectionProps) {
+export default function RenderSubSection({ subSection, mainSection, numSubSections, readOnly }: SubSectionProps) {
   return (
     <Col
       xl={3}
@@ -25,11 +26,12 @@ export default function RenderSubSection({ subSection, mainSection, readOnly }: 
     >
       <OverlayTrigger
         overlay={
-          <Popover id='study-section-popover'>
+          <Popover id='study-section-popover' style={{ minWidth: '240px' }}>
             <Popover.Title as='h3' className='text-center'>
               {subSection.title}
               {!readOnly && <SubSectionButtons
                 subSection={subSection}
+                numSubSections={numSubSections}
                 mainSectionId={mainSection.id}
                 deckId={mainSection.deck}
               />}

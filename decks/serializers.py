@@ -16,7 +16,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'fields',
             'tags',
             'flashcard_type',
-            'flashcard_num',
+            'order_num',
             # 'parent_deck_id',
             'front_image',
             'back_image',

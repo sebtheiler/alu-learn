@@ -186,7 +186,7 @@ class Deck(models.Model):
 class FlashCard(models.Model):
     # === BASIC INFO ===
     flashcard_type = models.CharField(default='basic', max_length=16)  # TODO: capitalize
-    flashcard_num = models.PositiveSmallIntegerField()  # zero-indexed
+    order_num = models.PositiveSmallIntegerField()  # zero-indexed
 
     # === CONTENT INFO ===
     fields = models.JSONField()  # list of two lists of Slate Nodes
@@ -201,7 +201,7 @@ class FlashCard(models.Model):
     universal_flashcard_id = models.UUIDField(null=True, blank=True)  # for sharing
 
     class Meta:
-        ordering = ['flashcard_num']
+        ordering = ('order_num',)
 
     def __str__(self) -> str:
         return f'Flashcard: {str(self.fields)[:50]}...'
@@ -280,12 +280,15 @@ class FlashCard(models.Model):
         return query
 
     @staticmethod
-    def get_max_flashcard_num(sub_section: SubSection) -> int:
-        # Returns -1 if there are no flashcards in the deck
+    def get_max_order_num(sub_section: SubSection) -> int:
+        # Returns -1 if there are no flashcards in the sub section
         flashcards = FlashCard.objects.filter(sub_sections=sub_section)
-        max_fc_num_obj = flashcards.order_by('-flashcard_num').first()
+        max_fc_num_obj = flashcards.order_by('order_num').last()
 
-        return max_fc_num_obj.flashcard_num if max_fc_num_obj is not None else -1
+        return getattr(max_fc_num_obj, 'order_num', -1)
+
+    def get_self_max_order_num(self) -> int:
+        return FlashCard.get_max_order_num(self.sub_sections.first())
 
     @staticmethod
     def create_flashcard(
@@ -293,7 +296,7 @@ class FlashCard(models.Model):
         tags: str,
         flashcard_type: FlashCardTypes,
         fields: List[list],
-        flashcard_num: int = None,
+        order_num: int = None,
         front_image: ContentFile = None,
         back_image: ContentFile = None,
         flashcard_uuid: uuid.uuid4 = None,
@@ -301,10 +304,10 @@ class FlashCard(models.Model):
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
         flashcard = FlashCard.objects.create(
             flashcard_type=flashcard_type,
-            flashcard_num=(
-                flashcard_num
-                if flashcard_num is not None else
-                FlashCard.get_max_flashcard_num(sub_section) + 1
+            order_num=(
+                order_num
+                if order_num is not None else
+                FlashCard.get_max_order_num(sub_section) + 1
             ),
             fields=fields,
             tags=tags,
@@ -330,7 +333,7 @@ class FlashCard(models.Model):
         (returns--but also does not create--the flashcard's review instances)
         """
         new_flashcard = FlashCard(
-            flashcard_num=self.flashcard_num,
+            order_num=self.order_num,
             flashcard_type=self.flashcard_type,
             universal_flashcard_id=universal_flashcard_id,
             id=uuid.uuid4(),
@@ -354,7 +357,7 @@ class FlashCard(models.Model):
         check_diff_only: bool = False,
     ) -> Tuple[FlashCard, bool]:
         # FIXME: this function does not work for cloze, when the number of RIs changes
-        attrs_to_update = ['fields', 'tags', 'flashcard_num']
+        attrs_to_update = ['fields', 'tags', 'order_num']
         actual_difference = False
 
         for attr in attrs_to_update:
@@ -365,39 +368,6 @@ class FlashCard(models.Model):
                     setattr(self, attr, updated_attr)
 
         return self, actual_difference
-
-    def rearrange(
-        self,
-        rearrange_type: Literal['UP', 'DOWN'],
-    ) -> Union[None, str]:
-        if self.deck.deck_type != 'standard':
-            return 'Can only rearrange flashcards on standard decks'
-
-        if rearrange_type == 'UP':
-            if self.flashcard_num == 0:
-                return 'Flashcard already at top'
-
-            above_flashcard = self.deck.flashcards.get(
-                flashcard_num=self.flashcard_num - 1
-            )
-            above_flashcard.flashcard_num += 1
-            self.flashcard_num -= 1
-
-            FlashCard.objects.bulk_update([self, above_flashcard], ['flashcard_num'])
-        elif rearrange_type == 'DOWN':
-            # TODO: rewrite this `self.sub_sections.first()`
-            if self.flashcard_num == FlashCard.get_max_flashcard_num(self.sub_sections.first()):
-                return 'Flashcard already at bottom'
-
-            below_flashcard = self.deck.flashcards.get(
-                flashcard_num=self.flashcard_num + 1
-            )
-            below_flashcard.flashcard_num -= 1
-            self.flashcard_num += 1
-
-            FlashCard.objects.bulk_update([self, below_flashcard], ['flashcard_num'])
-        else:
-            return 'Invalid `rearrange_type`'
 
 
 CONTENT_INDICIES_DICT = {
@@ -454,7 +424,7 @@ class ReviewInstance(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     class Meta:
-        ordering = ['flashcard__flashcard_num']
+        ordering = ['flashcard__order_num']
 
     def __str__(self) -> str:
         return str(self.flashcard.fields)
@@ -655,6 +625,7 @@ Your flashcards are organized into different sections.
 This is the default "main section", which you can edit to be your first topic ("Unit 1").
 To create flashcards, click the "sub sections" below.
             ''',
+            order_num=MainSection.get_max_order_num(deck=instance) + 1,
         )
         MainSectionAction = apps.get_model('sharing_system.MainSectionAction')
         MainSectionAction.objects.create(
@@ -671,6 +642,7 @@ def main_section_saved(sender, instance, created, **kwargs):
             main_section=instance,
             title='Default',
             description='Edit this description by... TK TODO',
+            order_num=SubSection.get_max_order_num(main_section=instance) + 1,
         )
         SubSectionAction = apps.get_model('sharing_system.SubSectionAction')
         SubSectionAction.objects.create(
