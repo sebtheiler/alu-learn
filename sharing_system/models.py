@@ -7,6 +7,7 @@ from typing import List, Tuple, Union
 from accounts.models import User
 from decks.models import Deck, FlashCard, ReviewInstance
 from django.db import models
+from django.db.models.expressions import F
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
 from django.db.utils import IntegrityError
@@ -537,6 +538,12 @@ class MainSectionAction(AbstractAction):
                 main_sections_to_edit.append(ms_destination)
             else:
                 main_section_uids_to_delete.append(ms_origin.universal_main_section_id)
+                MainSection.objects.filter(
+                    order_num__gt=ms_origin.order_num,
+                    snapshot=snapshot,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
 
             # Update the action
             action.deck = None
@@ -601,6 +608,12 @@ class MainSectionAction(AbstractAction):
                 main_sections_to_edit.append(ms_destination)
             else:
                 main_section_uids_to_delete.append(ms_origin.universal_main_section_id)
+                MainSection.objects.filter(
+                    order_num__gt=ms_origin.order_num,
+                    deck=deck,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
 
         return main_sections_to_create, main_sections_to_edit, main_section_uids_to_delete
 
@@ -693,6 +706,12 @@ class SubSectionAction(AbstractAction):
                 sub_sections_to_edit.append(ss_destination)
             else:
                 sub_section_uids_to_delete.append(ss_origin.universal_sub_section_id)
+                MainSection.objects.filter(
+                    order_num__gt=ss_origin.order_num,
+                    snapshot=snapshot,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
 
             # Update the action
             action.deck = None
@@ -762,6 +781,12 @@ class SubSectionAction(AbstractAction):
                 sub_sections_to_edit.append(ss_destination)
             else:
                 sub_section_uids_to_delete.append(ss_origin.universal_sub_section_id)
+                MainSection.objects.filter(
+                    order_num__gt=ss_origin.order_num,
+                    deck=deck,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
 
         return sub_sections_to_create, sub_sections_to_edit, sub_section_uids_to_delete
 
@@ -924,6 +949,12 @@ class FlashCardAction(AbstractAction):
                 flashcards_to_edit.append(fc_destination)
             else:
                 flashcard_uids_to_delete.append(fc_origin.universal_flashcard_id)
+                MainSection.objects.filter(
+                    order_num__gt=fc_origin.order_num,
+                    deck=deck,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
 
         return (
             flashcards_to_create,

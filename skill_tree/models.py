@@ -16,7 +16,7 @@ class AbstractSection(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(max_length=4096)
     order_num = models.PositiveSmallIntegerField()  # zero-indexed, for sorting
-    EDITABLE_ATTRS = ('title', 'description')
+    EDITABLE_ATTRS = ('title', 'description', 'order_num')
 
     # === CACHES ===
     # Calculating percent complete is expensive, so we cache it

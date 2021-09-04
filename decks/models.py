@@ -194,7 +194,7 @@ class FlashCard(models.Model):
     front_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
     back_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
 
-    EDITABLE_ATTRS = ('fields', 'tags', 'front_image', 'back_image')
+    EDITABLE_ATTRS = ('fields', 'tags', 'front_image', 'back_image', 'order_num')
 
     # === OTHER ===
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

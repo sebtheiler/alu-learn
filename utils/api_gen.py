@@ -162,6 +162,7 @@ def rearrange_object_view(
     Serializer: serializers.ModelSerializer,
     owner_path: str,
     parent_model: str,
+    ActionModel: models.Model = None,
 ):
     """
     Creates an API view for rearranging a given model
@@ -184,28 +185,32 @@ def rearrange_object_view(
             if model.order_num == 0:
                 return Response({'message': 'Model already at top'}, status=400)
 
-            other_model = Model.objects.get(
+            other = Model.objects.get(
                 **{parent_model: getattr(model, parent_model)},
                 order_num=model.order_num - 1,
             )
 
-            other_model.order_num += 1
+            other.order_num += 1
             model.order_num -= 1
         elif direction == 'DOWN':
             if model.order_num == model.get_self_max_order_num():
                 return Response({'message': 'Model already at bottom'}, status=400)
 
-            other_model = Model.objects.get(
+            other = Model.objects.get(
                 **{parent_model: getattr(model, parent_model)},
                 order_num=model.order_num + 1,
             )
 
-            other_model.order_num -= 1
+            other.order_num -= 1
             model.order_num += 1
         else:
             return Response({'message': 'Invalid `direction`'}, status=400)
 
-        Model.objects.bulk_update([model, other_model], ['order_num'])
+        Model.objects.bulk_update([model, other], ['order_num'])
+
+        if ActionModel:
+            ActionModel.create_action('EDIT', model),
+            ActionModel.create_action('EDIT', other),
 
         return Response(Serializer(model).data, status=200)
 
@@ -341,6 +346,7 @@ def generate_base_api(
                 Serializer=Serializer,
                 owner_path=owner_path,
                 parent_model=parent_model,
+                ActionModel=ActionModel,
             ))
         )
 
