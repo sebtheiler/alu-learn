@@ -9,119 +9,119 @@ import { ReviewInstance, FlashCard } from '../types';
 import { apiObjectDelete, apiObjectEdit } from '../../lookup/lookup';
 
 
-interface RenderFlashCardTextProps {
-  flashcard: FlashCard;
-  fixSlateLazy: boolean;
-};
-export function RenderFlashCardText(props: RenderFlashCardTextProps) {
-  const { flashcard, fixSlateLazy } = props;
+// interface RenderFlashCardTextProps {
+//   flashcard: FlashCard;
+//   fixSlateLazy: boolean;
+// };
+// export function RenderFlashCardText(props: RenderFlashCardTextProps) {
+//   const { flashcard, fixSlateLazy } = props;
 
-  const [frontValue, setFrontValue] = useState(flashcard.fields[0]);
-  const frontEditor = useMemo(
-    () => createFullEditor(),
-    []
-  );
-  const [backValue, setBackValue] = useState(flashcard.fields.length > 1 && flashcard.fields[1]);
-  const backEditor = useMemo(
-    () => createFullEditor(),
-    []
-  );
+//   const [frontValue, setFrontValue] = useState(flashcard.data_fields[0]);
+//   const frontEditor = useMemo(
+//     () => createFullEditor(),
+//     []
+//   );
+//   const [backValue, setBackValue] = useState(flashcard.data_fields.length > 1 && flashcard.data_fields[1]);
+//   const backEditor = useMemo(
+//     () => createFullEditor(),
+//     []
+//   );
  
-  useEffect(() => {
-    try {
-      if (fixSlateLazy) {
-        // Slate is lazy and won't automatically update the editor when the flashcard
-        // prop is changed, so we manually have to check if it has changed
-        // The frontValue dependency is excluded on purpose - including it causes infinite loop
-        if (
-          flashcard.fields[0] !== frontValue ||
-          (
-            flashcard.fields.length > 1 &&
-            flashcard.fields[1] !== backValue
-          )
-        ) {
-          setFrontValue(flashcard.fields[0]);
-          setBackValue(flashcard.fields.length > 1 ? flashcard.fields[1] : []);
-        }
-      }
-    } catch (e) {
-      console.log(e);
-    }
-    // eslint-disable-next-line
-  }, [flashcard]);
+//   useEffect(() => {
+//     try {
+//       if (fixSlateLazy) {
+//         // Slate is lazy and won't automatically update the editor when the flashcard
+//         // prop is changed, so we manually have to check if it has changed
+//         // The frontValue dependency is excluded on purpose - including it causes infinite loop
+//         if (
+//           flashcard.data_fields[0] !== frontValue ||
+//           (
+//             flashcard.data_fields.length > 1 &&
+//             flashcard.data_fields[1] !== backValue
+//           )
+//         ) {
+//           setFrontValue(flashcard.data_fields[0]);
+//           setBackValue(flashcard.data_fields.length > 1 ? flashcard.data_fields[1] : []);
+//         }
+//       }
+//     } catch (e) {
+//       console.log(e);
+//     }
+//     // eslint-disable-next-line
+//   }, [flashcard]);
 
-  try {
-      switch (flashcard.flashcard_type) {
-      case 'basic': case 'reversed': // two-sided
-        return (<>
-          <div className='col-md-6 text-center'>
-            <Slate
-              editor={frontEditor}
-              value={frontValue}
-              onChange={newValue => {
-                setFrontValue(newValue);
-              }}
-            >
-              <FullEditor
-                editor={frontEditor}
-                readOnly={true}
-                styleOptions={{ showBorder: false, minHeight: '0px' }}
-              />
-            </Slate>
-          </div>
-          <div className='col-md-6 text-center'>
-            {/*
-            This check that `backValue` is available is essential.
-            Without it, when `fixSlateLazy` is active and the flashcard changes
-            from cloze to basic/reversed, `backValue` isn't created yet (it has to wait a render-cycle)
-            so Slate throws an error.
-            This took a long time to understand.
-            */}
-            {backValue && <Slate
-              editor={backEditor}
-              value={backValue}
-              onChange={newValue => {
-                setBackValue(newValue);
-              }}
-            >
-              <FullEditor
-                editor={backEditor}
-                readOnly={true}
-                styleOptions={{ showBorder: false, minHeight: '0px' }}
-              />
-            </Slate>}
-          </div>
-        </>);
-      case 'cloze': // one-sided
-        return (
-          <div className='col-md-12 text-center'>
-            <Slate
-              editor={frontEditor}
-              value={frontValue}
-              onChange={newValue => {
-                setFrontValue(newValue);
-              }}
-            >
-              <FullEditor
-                editor={frontEditor}
-                readOnly={true}
-                styleOptions={{ showBorder: false, minHeight: '0px' }}
-              />
-            </Slate>
-          </div>
-        );
-      default:
-        return (
-          <div className='col-md-12 text-center'>
-            <strong>Invalid flashcard type "{flashcard.flashcard_type}". Please report this issue.</strong>
-          </div>
-        );
-    }
-  } catch (e) {
-    console.log(e);
-    return <p>An error occured.  Please report this.</p>
-  }
-}
+//   try {
+//       switch (flashcard.flashcard_type) {
+//       case 'BASIC': case 'REVERSED': // two-sided
+//         return (<>
+//           <div className='col-md-6 text-center'>
+//             <Slate
+//               editor={frontEditor}
+//               value={frontValue}
+//               onChange={newValue => {
+//                 setFrontValue(newValue);
+//               }}
+//             >
+//               <FullEditor
+//                 editor={frontEditor}
+//                 readOnly={true}
+//                 styleOptions={{ showBorder: false, minHeight: '0px' }}
+//               />
+//             </Slate>
+//           </div>
+//           <div className='col-md-6 text-center'>
+//             {/*
+//             This check that `backValue` is available is essential.
+//             Without it, when `fixSlateLazy` is active and the flashcard changes
+//             from cloze to basic/reversed, `backValue` isn't created yet (it has to wait a render-cycle)
+//             so Slate throws an error.
+//             This took a long time to understand.
+//             */}
+//             {backValue && <Slate
+//               editor={backEditor}
+//               value={backValue}
+//               onChange={newValue => {
+//                 setBackValue(newValue);
+//               }}
+//             >
+//               <FullEditor
+//                 editor={backEditor}
+//                 readOnly={true}
+//                 styleOptions={{ showBorder: false, minHeight: '0px' }}
+//               />
+//             </Slate>}
+//           </div>
+//         </>);
+//       case 'CLOZE': // one-sided
+//         return (
+//           <div className='col-md-12 text-center'>
+//             <Slate
+//               editor={frontEditor}
+//               value={frontValue}
+//               onChange={newValue => {
+//                 setFrontValue(newValue);
+//               }}
+//             >
+//               <FullEditor
+//                 editor={frontEditor}
+//                 readOnly={true}
+//                 styleOptions={{ showBorder: false, minHeight: '0px' }}
+//               />
+//             </Slate>
+//           </div>
+//         );
+//       default:
+//         return (
+//           <div className='col-md-12 text-center'>
+//             <strong>Invalid flashcard type "{flashcard.flashcard_type}". Please report this issue.</strong>
+//           </div>
+//         );
+//     }
+//   } catch (e) {
+//     console.log(e);
+//     return <p>An error occured.  Please report this.</p>
+//   }
+// }
 
 
 // Display an individual flashcard

@@ -12,7 +12,7 @@ class MainSectionAdmin(admin.ModelAdmin):
 
     inlines = (SubSectionInline,)
     list_display = (
-        'title',
+        'data_title',
         'get_user',
         # 'get_decks',
         'deck',
@@ -28,6 +28,9 @@ class MainSectionAdmin(admin.ModelAdmin):
         queryset = super(MainSectionAdmin, self).get_queryset(request)
         queryset = queryset.prefetch_related('deck__user', 'snapshot')
         return queryset
+    
+    def data_title(self, obj):
+        return obj.data.title
 
     def get_user(self, obj):
         return obj.deck.user if obj.deck else '<Multiple owners>'

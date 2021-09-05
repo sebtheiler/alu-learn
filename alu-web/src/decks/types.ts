@@ -8,7 +8,7 @@ export type SchedulingAlgorithm = 'ANKI' | 'ANKING' | 'MANUAL-SR' | 'CRAM';
 export type DeckDifficulty = 'HARD' | 'NORM' | 'EASY';
 export type ViewAccess = 'PUBLIC' | 'FRIENDS' | 'STUDENT';
 export type EditAccess = 'PERSONAL' | 'FRIENDS' | 'EVERYBODY' | 'STUDENTS';
-export type FlashCardTypes = 'basic' | 'reversed' | 'cloze';
+export type FlashCardTypes = 'BASIC' | 'REVERSED' | 'CLOZE';
 export type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
 
 export interface Deck {
@@ -21,6 +21,7 @@ export interface Deck {
 }
 
 
+// TODO: clean up these types
 export interface SharedDeck extends Deck {
   description: string;
   sharing_setting: ViewAccess;
@@ -57,16 +58,20 @@ export interface CSSM extends SSMInterface {
 
 
 export interface FlashCard {
-  fields: Node[][];
-  tags: string;
   flashcard_type: FlashCardTypes;
   order_num: number;
   parent_deck_id: number;
+  data?: FlashCardData;
+  id: UUID;
+}
+
+export interface FlashCardData {
+  fields: Node[][];
+  tags: string;
   front_image?: string;
   back_image?: string;
   id: UUID;
 }
-
 
 export interface ReviewInstance {
   next_review: string; // ISO date string
@@ -74,13 +79,10 @@ export interface ReviewInstance {
   steps_index: number;
   learning_status: LearningStatus;
   ease: number;
-  is_leech: boolean;
-  leech_index: number;
   name: string;
-  flashcard_fields?: Node[][];
-  flashcard_front_image?: string;
-  flashcard_back_image?: string;
+  data?: FlashCardData;
   id: UUID;
 }
 
+// TODO: remove
 export type AnyFlashCard = FlashCard | ReviewInstance;

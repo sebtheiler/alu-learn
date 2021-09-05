@@ -15,7 +15,7 @@ import { QuestionBubble } from '../../utils';
 import { apiObjectCreate, apiObjectDelete, apiObjectEdit, useObjectGet } from '../../lookup/lookup';
 import './create-flashcard.scss';
 
-const ONE_SIDED_CARDS = ['cloze'];
+const ONE_SIDED_CARDS = ['CLOZE'];
 interface CreateFlashcardProps {
   deckId: string;
   subSection: string;
@@ -26,7 +26,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
   const [frontSelectedImageUrl, setFrontSelectedImageUrl] = useState('');
   const [backValue, setBackValue] = useState<Node[]>(blankSlateElement)
   const [backSelectedImageUrl, setBackSelectedImageUrl] = useState('');
-  const [flashcardType, setFlashcardType] = useState<FlashCardTypes>('basic');
+  const [flashcardType, setFlashcardType] = useState<FlashCardTypes>('BASIC');
   const [errorMessage, setErrorMessage] = useState('');
   const [history, setHistory] = useState<FlashCard[]>([]);
 
@@ -35,9 +35,10 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
     flashcardId ?? '',
     undefined,
     flashcard => {
-      setFrontValue(flashcard.fields[0]);
-      if (flashcard.fields.length > 1)
-        setBackValue(flashcard.fields[1]);
+      if (!flashcard.data) return;
+      setFrontValue(flashcard.data.fields[0]);
+      if (flashcard.data.fields.length > 1)
+        setBackValue(flashcard.data.fields[1]);
     },
     !!flashcardId,
   );
@@ -47,7 +48,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
 
     // Check if the flashcard is valid
     switch (flashcardType) {
-      case 'basic': case 'reversed':
+      case 'BASIC': case 'REVERSED':
         if (
           (frontValue === blankSlateElement && frontSelectedImageUrl.length === 0) ||
           (backValue === blankSlateElement && backSelectedImageUrl.length === 0)
@@ -56,7 +57,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
           return;
         }
         break;
-      case 'cloze':
+      case 'CLOZE':
         const clozeRegex = /{{c\d*::.*?}}/gm;
         const match = JSON.stringify(frontValue).match(clozeRegex);
         if (!match) {
@@ -137,9 +138,9 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
             autoFocus
             custom
           >
-            <option value='basic'>Basic</option>
-            <option value='reversed'>Basic and Reversed</option>
-            <option value='cloze'>Cloze</option>
+            <option value='BASIC'>Basic</option>
+            <option value='REVERSED'>Basic and Reversed</option>
+            <option value='CLOZE'>Cloze</option>
           </Form.Control>
         </Form.Group>}
         <Form.Group>
@@ -190,7 +191,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
           <Form.Control
             type='text'
             placeholder='unit 1, unit 1.1, europe, people, ...'
-            defaultValue={flashcard?.tags}
+            defaultValue={flashcard?.data?.tags}
             id='tags'
             name='tags'
             maxLength={1024}
@@ -227,7 +228,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
             <option value='-1'>Recent Flashcards</option>
             {history.map(flashcard =>
               <option key={flashcard.id} value={flashcard.id}>
-                {(flashcard.fields[0][0] as any).children[0].text.slice(0, 20)}...
+                {(flashcard.data?.fields[0][0] as any).children[0].text.slice(0, 20)}...
               </option>
             )}
           </Form.Control>

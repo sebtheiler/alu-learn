@@ -21,7 +21,7 @@ from skill_tree.models import MainSection, SubSection
 from utils import get_morning
 
 User = settings.AUTH_USER_MODEL
-FlashCardTypes = Literal['cloze', 'basic', 'reversed']
+FlashCardTypes = Literal['CLOZE', 'BASIC', 'REVERSED']
 LearningStatusType = Literal['UNSEEN', 'LEARNING', 'LEARNED', 'RELEARNING']
 
 
@@ -183,22 +183,38 @@ class Deck(models.Model):
         )
 
 
+class FlashCardManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related('data')
+
+
 class FlashCard(models.Model):
-    # === BASIC INFO ===
-    flashcard_type = models.CharField(default='basic', max_length=16)  # TODO: capitalize
+    data = models.ForeignKey(
+        'decks.FlashCardData',
+        on_delete=models.CASCADE,
+        related_name='flashcards',
+    )
+    sub_section = models.ForeignKey(
+        'skill_tree.SubSection',
+        on_delete=models.CASCADE,
+        related_name='flashcards',
+    )
+
+    FLASHCARD_TYPE_CHOICES = (
+        ('BASIC', 'Basic'),
+        ('REVERSED', 'Reversed'),
+        ('CLOZE', 'Cloze'),
+    )
+    flashcard_type = models.CharField(
+        default='BASIC',
+        max_length=8,
+        choices=FLASHCARD_TYPE_CHOICES,
+    )
     order_num = models.PositiveSmallIntegerField()  # zero-indexed
-
-    # === CONTENT INFO ===
-    fields = models.JSONField()  # list of two lists of Slate Nodes
-    tags = models.CharField(default='', max_length=1024, blank=True)
-    front_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
-    back_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
-
-    EDITABLE_ATTRS = ('fields', 'tags', 'front_image', 'back_image', 'order_num')
-
-    # === OTHER ===
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     universal_flashcard_id = models.UUIDField(null=True, blank=True)  # for sharing
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    objects = FlashCardManager()
 
     class Meta:
         ordering = ('order_num',)
@@ -302,17 +318,21 @@ class FlashCard(models.Model):
         flashcard_uuid: uuid.uuid4 = None,
         universal_flashcard_id: uuid.uuid4 = None,
     ) -> Tuple[FlashCard, List[ReviewInstance]]:
+        data = FlashCardData.objects.create(
+            fields=fields,
+            tags=tags,
+            front_image=front_image,
+            back_image=back_image,
+        )
+
         flashcard = FlashCard.objects.create(
+            data=data,
             flashcard_type=flashcard_type,
             order_num=(
                 order_num
                 if order_num is not None else
                 FlashCard.get_max_order_num(sub_section) + 1
             ),
-            fields=fields,
-            tags=tags,
-            front_image=front_image,
-            back_image=back_image,
             pk=flashcard_uuid,
             universal_flashcard_id=universal_flashcard_id,
         )
@@ -327,20 +347,28 @@ class FlashCard(models.Model):
         self,
         skip_creating_review_instances: bool = False,
         universal_flashcard_id: uuid.uuid4 = None,
-    ) -> Tuple[FlashCard, List[ReviewInstance]]:
+        create_new_data: bool = True,
+    ) -> Tuple[FlashCardData, FlashCard, List[ReviewInstance]]:
         """
         Clones a full copy of a flashcard
         (returns--but also does not create--the flashcard's review instances)
         """
+        if create_new_data:
+            new_data = FlashCardData(
+                fields=self.fields,
+                tags=self.tags,
+                # TODO: images
+                id=uuid.uuid4(),
+            )
+        else:
+            new_data = self.data
+
         new_flashcard = FlashCard(
+            data=new_data,
             order_num=self.order_num,
             flashcard_type=self.flashcard_type,
             universal_flashcard_id=universal_flashcard_id,
             id=uuid.uuid4(),
-
-            # Text
-            fields=self.fields,
-            tags=self.tags,
         )
 
         # Derive the review instances from the flashcard
@@ -349,7 +377,7 @@ class FlashCard(models.Model):
         else:
             new_review_instances = None
 
-        return new_flashcard, new_review_instances
+        return new_data, new_flashcard, new_review_instances
 
     def update(
         self,
@@ -370,6 +398,17 @@ class FlashCard(models.Model):
         return self, actual_difference
 
 
+class FlashCardData(models.Model):
+    fields = models.JSONField()  # list of two lists of Slate Nodes
+    tags = models.CharField(default='', max_length=1024, blank=True)
+    front_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
+    back_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
+
+    EDITABLE_ATTRS = ('fields', 'tags', 'front_image', 'back_image')
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+
 CONTENT_INDICIES_DICT = {
     'BASIC': [
         # Front to back
@@ -385,6 +424,11 @@ CONTENT_INDICIES_DICT = {
         [0],
     ],
 }
+
+
+class ReviewInstanceManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related('flashcard__data')
 
 
 class ReviewInstance(models.Model):
@@ -422,12 +466,13 @@ class ReviewInstance(models.Model):
     leech_index = models.PositiveSmallIntegerField(default=0)
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    objects = ReviewInstanceManager()
 
     class Meta:
         ordering = ['flashcard__order_num']
 
     def __str__(self) -> str:
-        return str(self.flashcard.fields)
+        return str(self.flashcard.data.fields)
 
     def is_leech(self) -> bool:
         return self.flashcard.has_tag('leech')
@@ -439,7 +484,7 @@ class ReviewInstance(models.Model):
             type, flashcard, and text for cloze
 
         `flashcard_type`: Type of the flashcard to create
-            (e.g., 'cloze', 'basic', 'reversed')
+            (e.g., 'CLOZE', 'BASIC', 'REVERSED')
         `flashcard`: FlashCard object that will house this flashcard
             review instance
         `field`: Only needed for cloze flashcards, provides the text to parse
@@ -451,7 +496,7 @@ class ReviewInstance(models.Model):
         all_content_indicies = CONTENT_INDICIES_DICT[flashcard.flashcard_type.upper()]
 
         # Create flashcard review instance
-        if flashcard.flashcard_type == 'cloze':
+        if flashcard.flashcard_type == 'CLOZE':
             # Create a flashcard for each cloze segment
             cloze_ids = []
 
@@ -469,7 +514,7 @@ class ReviewInstance(models.Model):
             return [
                 cloze_flashcard(match)
                 for match in re.finditer(
-                    r"{{c\d*::.*?}}", json.dumps(flashcard.fields[0]), re.MULTILINE
+                    r"{{c\d*::.*?}}", json.dumps(flashcard.data.fields[0]), re.MULTILINE
                 ) if int(match.group().split("::")[0][3:]) not in cloze_ids
             ]
         else:
@@ -483,7 +528,6 @@ class ReviewInstance(models.Model):
                 for i in range(len(all_content_indicies))
             ]
 
-    # TODO: cache this function
     @staticmethod
     def search_tags(tags: str) -> Q:
         return Q(

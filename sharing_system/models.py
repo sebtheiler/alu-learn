@@ -464,8 +464,8 @@ class AbstractAction(models.Model):
         SnapShot,
         null=True, blank=True,
         on_delete=models.CASCADE,
-        related_name='applied_%(class)s',
-        related_query_name='applied_%(class)s',
+        related_name='applied_%(class)ss',
+        related_query_name='applied_%(class)ss',
     )
 
     ACTION_OPTIONS = (

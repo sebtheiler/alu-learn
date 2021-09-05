@@ -6,8 +6,8 @@ User = get_user_model()
 
 class DevAuthentication(authentication.BasicAuthentication):
     def authenticate(self, request):
-        # username = 'evolvedsquid'
-        username = 'testuser'
+        username = 'evolvedsquid'
+        # username = 'testuser'
         user = User.objects.get(username=username)
 
         return (user, None)

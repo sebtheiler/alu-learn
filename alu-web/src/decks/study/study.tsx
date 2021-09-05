@@ -13,146 +13,146 @@ import { DeckDifficulty, ReviewInstance, FlashCard, SchedulingAlgorithm } from '
 // DO NOT REMOVE
 // @refresh reset
 
-const processFront = (flashcard, showAnswer) => {
-  switch (flashcard.flashcard_type) {
-    case 'basic': case 'reversed':
-      return flashcard.fields[0];
-    case 'cloze':
-      const currentCardText = JSON.stringify(flashcard.fields[0]);
-      const targetClozeNum = parseInt(flashcard.name.split('-')[1]);
-      const regex = /{{c\d*::.*?}}/gm;
-      const str = JSON.stringify(flashcard.fields[0]);
+// const processFront = (flashcard, showAnswer) => {
+//   switch (flashcard.flashcard_type) {
+//     case 'BASIC': case 'REVERSED':
+//       return flashcard.fields[0];
+//     case 'CLOZE':
+//       const currentCardText = JSON.stringify(flashcard.fields[0]);
+//       const targetClozeNum = parseInt(flashcard.name.split('-')[1]);
+//       const regex = /{{c\d*::.*?}}/gm;
+//       const str = JSON.stringify(flashcard.fields[0]);
       
-      let answerHiddenText = currentCardText;
-      let answerRevealedText = currentCardText;
-      let m;
-      while ((m = regex.exec(str)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (m.index === regex.lastIndex)
-          regex.lastIndex++;
+//       let answerHiddenText = currentCardText;
+//       let answerRevealedText = currentCardText;
+//       let m;
+//       while ((m = regex.exec(str)) !== null) {
+//         // This is necessary to avoid infinite loops with zero-width matches
+//         if (m.index === regex.lastIndex)
+//           regex.lastIndex++;
         
-        // The result can be accessed through the `m`-variable.
-        // eslint-disable-next-line
-        m.forEach(match => {
-          const clozeMatch = str.slice(m.index, m.index + match.length);
-          const clozeMatchNum = parseInt(clozeMatch.split('::')[0].slice(3));
-          const clozeMatchText = clozeMatch.split('::').slice(1).join('').slice(0, -2);
-          if (clozeMatchNum === targetClozeNum) {
-            answerHiddenText = answerHiddenText.replace(clozeMatch, '[ ... ]'); // obfuscate
-            answerRevealedText = answerRevealedText.replace(clozeMatch, `${clozeMatchText}`); // reveal
-          } else {
-            answerHiddenText = answerHiddenText.replace(clozeMatch, clozeMatchText);
-            answerRevealedText = answerRevealedText.replace(clozeMatch, clozeMatchText);
-          }
-        });
-      }
+//         // The result can be accessed through the `m`-variable.
+//         // eslint-disable-next-line
+//         m.forEach(match => {
+//           const clozeMatch = str.slice(m.index, m.index + match.length);
+//           const clozeMatchNum = parseInt(clozeMatch.split('::')[0].slice(3));
+//           const clozeMatchText = clozeMatch.split('::').slice(1).join('').slice(0, -2);
+//           if (clozeMatchNum === targetClozeNum) {
+//             answerHiddenText = answerHiddenText.replace(clozeMatch, '[ ... ]'); // obfuscate
+//             answerRevealedText = answerRevealedText.replace(clozeMatch, `${clozeMatchText}`); // reveal
+//           } else {
+//             answerHiddenText = answerHiddenText.replace(clozeMatch, clozeMatchText);
+//             answerRevealedText = answerRevealedText.replace(clozeMatch, clozeMatchText);
+//           }
+//         });
+//       }
 
-      answerHiddenText = JSON.parse(answerHiddenText);
-      answerRevealedText = JSON.parse(answerRevealedText);
+//       answerHiddenText = JSON.parse(answerHiddenText);
+//       answerRevealedText = JSON.parse(answerRevealedText);
 
-      return showAnswer ? answerRevealedText : answerHiddenText;
-    default:
-      return null;
-  }
-}
+//       return showAnswer ? answerRevealedText : answerHiddenText;
+//     default:
+//       return null;
+//   }
+// }
 
-interface RenderFlashCardStudyProps {
-  flashcard: FlashCard;
-  showAnswer: boolean;
-};
-function RenderFlashCardStudy(props: RenderFlashCardStudyProps) {
-  const { flashcard, showAnswer } = props;
+// interface RenderFlashCardStudyProps {
+//   flashcard: FlashCard;
+//   showAnswer: boolean;
+// };
+// function RenderFlashCardStudy(props: RenderFlashCardStudyProps) {
+//   const { flashcard, showAnswer } = props;
 
-  const [frontValue, setFrontValue] = useState(processFront(flashcard, showAnswer));
-  const frontEditor = useMemo(
-    () => createFullEditor(),
-    []
-  );
-  const [backValue, setBackValue] = useState(flashcard.fields.length > 1 ? flashcard.fields[1] : []);
-  const backEditor = useMemo(
-    () => createFullEditor(),
-    []
-  );
+//   const [frontValue, setFrontValue] = useState(processFront(flashcard, showAnswer));
+//   const frontEditor = useMemo(
+//     () => createFullEditor(),
+//     []
+//   );
+//   const [backValue, setBackValue] = useState(flashcard.data_fields.length > 1 ? flashcard.data_fields[1] : []);
+//   const backEditor = useMemo(
+//     () => createFullEditor(),
+//     []
+//   );
 
-  useEffect(() => {
-    // Slate is lazy and won't automatically update the editor when the flashcard
-    // prop is changed, so we manually have to check if it has changed
-    // The frontValue dependency is excluded on purpose - including it causes infinite loop
-    if (processFront(flashcard, showAnswer) !== frontValue) {
-      setFrontValue(processFront(flashcard, showAnswer));
-      setBackValue(flashcard.fields.length > 1 ? flashcard.fields[1] : []);
-    }
-    // eslint-disable-next-line
-  }, [flashcard, showAnswer]);
+//   useEffect(() => {
+//     // Slate is lazy and won't automatically update the editor when the flashcard
+//     // prop is changed, so we manually have to check if it has changed
+//     // The frontValue dependency is excluded on purpose - including it causes infinite loop
+//     if (processFront(flashcard, showAnswer) !== frontValue) {
+//       setFrontValue(processFront(flashcard, showAnswer));
+//       setBackValue(flashcard.data_fields.length > 1 ? flashcard.data_fields[1] : []);
+//     }
+//     // eslint-disable-next-line
+//   }, [flashcard, showAnswer]);
 
-  Transforms.move(backEditor, { edge: 'anchor', distance: 9999999, reverse: true });
-  Transforms.move(backEditor, { edge: 'focus', distance: 9999999, reverse: true });
-  Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999, reverse: true });
-  Transforms.move(frontEditor, { edge: 'focus', distance: 9999999, reverse: true });
+//   Transforms.move(backEditor, { edge: 'anchor', distance: 9999999, reverse: true });
+//   Transforms.move(backEditor, { edge: 'focus', distance: 9999999, reverse: true });
+//   Transforms.move(frontEditor, { edge: 'anchor', distance: 9999999, reverse: true });
+//   Transforms.move(frontEditor, { edge: 'focus', distance: 9999999, reverse: true });
 
-  switch (flashcard.flashcard_type) {
-    case 'basic': case 'reversed':
-      return (<>
-        <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
-          <Slate
-            editor={frontEditor}
-            value={frontValue}
-            onChange={newValue => {
-              setFrontValue(newValue);
-            }}
-          >
-            <FullEditor
-              editor={frontEditor}
-              styleOptions={{ showBorder: false, minHeight: '0px' }}
-              readOnly
-            />
-          </Slate>
-        </div>
-        <hr />
-        <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
-          {flashcard && showAnswer &&
-            <Slate
-              editor={backEditor}
-              value={backValue}
-              onChange={newValue => {
-                setBackValue(newValue);
-              }}
-            >
-              <FullEditor
-                editor={backEditor}
-                readOnly={true}
-                styleOptions={{ showBorder: false, minHeight: '0px' }}
-              />
-            </Slate>
-          }
-        </div>
-      </>);
-    case 'cloze':
-      return (
-        <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
-          <Slate
-            editor={frontEditor}
-            value={processFront(flashcard, showAnswer)}
-            onChange={newValue => {
-              setFrontValue(newValue);
-            }}
-          >
-            <FullEditor
-              editor={frontEditor}
-              styleOptions={{ showBorder: false, minHeight: '0px' }}
-              readOnly
-            />
-          </Slate>
-        </div>
-      );
-    default:
-      return (
-        <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
-          <strong>The flashcard type, "{flashcard.flashcard_type}", is unrecognized. Please report this issue.</strong>
-        </div>
-      );
-  }
-}
+//   switch (flashcard.flashcard_type) {
+//     case 'BASIC': case 'REVERSED':
+//       return (<>
+//         <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
+//           <Slate
+//             editor={frontEditor}
+//             value={frontValue}
+//             onChange={newValue => {
+//               setFrontValue(newValue);
+//             }}
+//           >
+//             <FullEditor
+//               editor={frontEditor}
+//               styleOptions={{ showBorder: false, minHeight: '0px' }}
+//               readOnly
+//             />
+//           </Slate>
+//         </div>
+//         <hr />
+//         <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
+//           {flashcard && showAnswer &&
+//             <Slate
+//               editor={backEditor}
+//               value={backValue}
+//               onChange={newValue => {
+//                 setBackValue(newValue);
+//               }}
+//             >
+//               <FullEditor
+//                 editor={backEditor}
+//                 readOnly={true}
+//                 styleOptions={{ showBorder: false, minHeight: '0px' }}
+//               />
+//             </Slate>
+//           }
+//         </div>
+//       </>);
+//     case 'CLOZE':
+//       return (
+//         <div className='col-md-12 text-center' style={{ minWidth: '200px' }}>
+//           <Slate
+//             editor={frontEditor}
+//             value={processFront(flashcard, showAnswer)}
+//             onChange={newValue => {
+//               setFrontValue(newValue);
+//             }}
+//           >
+//             <FullEditor
+//               editor={frontEditor}
+//               styleOptions={{ showBorder: false, minHeight: '0px' }}
+//               readOnly
+//             />
+//           </Slate>
+//         </div>
+//       );
+//     default:
+//       return (
+//         <div className='col-md-12 text-center' style={{minWidth: '200px'}}>
+//           <strong>The flashcard type, "{flashcard.flashcard_type}", is unrecognized. Please report this issue.</strong>
+//         </div>
+//       );
+//   }
+// }
 
 
 // interface StudyElementProps {

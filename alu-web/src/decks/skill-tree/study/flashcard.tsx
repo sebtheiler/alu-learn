@@ -124,18 +124,18 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section }: ReviewI
       >
         <div className='flashcard front'>
           {
-            reviewInstance.flashcard_fields &&
-            flattenNodes(reviewInstance.flashcard_fields[0]).length > 0 &&
+            reviewInstance.data?.fields &&
+            flattenNodes(reviewInstance.data?.fields[0]).length > 0 &&
             <div className='text'>
               <RenderRichText
-                text={reviewInstance.flashcard_fields ? reviewInstance.flashcard_fields[0] : []}
+                text={reviewInstance.data?.fields ? reviewInstance.data?.fields[0] : []}
                 fixSlateLazy
               />
             </div>
           }
-          {reviewInstance.flashcard_front_image && <div className='image'>
+          {reviewInstance.data?.front_image && <div className='image'>
             <img
-              src={`/${reviewInstance.flashcard_front_image}`}
+              src={`/${reviewInstance.data?.front_image}`}
               alt='Flashcard attached front'
               className='flashcard-image'
             />
@@ -143,18 +143,18 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section }: ReviewI
         </div>
         <div className='flashcard back'>
           {
-            reviewInstance.flashcard_fields &&
-            flattenNodes(reviewInstance.flashcard_fields[1]).length > 0 &&
+            reviewInstance.data?.fields &&
+            flattenNodes(reviewInstance.data?.fields[1]).length > 0 &&
             <div className='text'>
               <RenderRichText
-                text={reviewInstance.flashcard_fields ? reviewInstance.flashcard_fields[1] : []}
+                text={reviewInstance.data?.fields ? reviewInstance.data?.fields[1] : []}
                 fixSlateLazy
               />
             </div>
           }
-          {reviewInstance.flashcard_back_image && <div className='image'>
+          {reviewInstance.data?.back_image && <div className='image'>
             <img
-              src={`/${reviewInstance.flashcard_back_image}`}
+              src={`/${reviewInstance.data?.back_image}`}
               alt='Flashcard attached back'
               className='flashcard-image'
             />

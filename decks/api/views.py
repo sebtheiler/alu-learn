@@ -20,6 +20,7 @@ from ..models import Deck, FlashCard, ReviewInstance, ReviewInstanceHistory
 from ..serializers import (DeckSerializer, FlashCardSerializer,
                            ReviewInstanceSerializer)
 
+
 # ====== Decks ======
 # ===== Deck Lists =====
 # TODO: Rename and revamp
@@ -198,7 +199,7 @@ def deck_json_import_view(request, *args, **kwargs):
     for i, json_flashcard in enumerate(json_flashcards):
         flashcard = FlashCard(
             deck=deck,
-            flashcard_type=json_flashcard.get('flashcard_type', 'basic'),
+            flashcard_type=json_flashcard.get('flashcard_type', 'BASIC'),
             order_num=json_flashcard.get('order_num', i),
             # Tags
             fields=json_flashcard.get('fields', []),
@@ -208,7 +209,7 @@ def deck_json_import_view(request, *args, **kwargs):
 
         if json_flashcard.get('review_instances') is None:
             review_instances_to_create += ReviewInstance.create_review_instance(
-                json_flashcard.get('flashcard_type', 'basic'),
+                json_flashcard.get('flashcard_type', 'BASIC'),
                 flashcard,
             )
 
@@ -262,7 +263,7 @@ def deck_txt_import_view(request, *args, **kwargs):
     flashcards = FlashCard.objects.bulk_create([
         FlashCard(
             deck=deck,
-            flashcard_type='basic',
+            flashcard_type='BASIC',
             order_num=max_flashcard_num + i + 1,
             fields=[
                 create_slate_element(front_and_back[i][0]),
@@ -407,7 +408,7 @@ def flashcard_create_view(request, *args, **kwargs):
         )
 
     fields = request.data.get('fields')
-    flashcard_type = request.data.get('flashcard_type', 'basic')
+    flashcard_type = request.data.get('flashcard_type', 'BASIC')
     tags = request.data.get('tags', '')
     if fields is None:
         return Response({'message': '`fields` must not be None'}, status=400)
@@ -474,18 +475,19 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
             pk=flashcard_id,
             sub_sections__main_section__deck__user=request.user,
         )  # TODO: can we use `.selected_related('deck')`?
+        data = flashcard.data
     except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
 
     edited_values = request.data.get('edited_values')
-    flashcard.tags = edited_values.get('tags', flashcard.tags)
+    data.tags = edited_values.get('tags', data.tags)
     new_fields = edited_values.get('fields')
 
     if new_fields is not None:
-        flashcard.fields = new_fields
+        data.fields = new_fields
 
         # TODO: use this code in pushing/pulling updates with shared deck
-        if flashcard.flashcard_type == 'cloze':
+        if flashcard.flashcard_type == 'CLOZE':
             # Create or delete new flashcards depending on how the cloze has changed
             review_instances = flashcard.review_instances.all()
             flashcards_to_create = []
@@ -523,10 +525,11 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
             review_instances.filter(id__in=flashcards_to_delete).delete()
 
     flashcard.save()
+    data.save()
 
     # Log the flashcard as being edited (for sharing system)
     FlashCardAction.objects.create(
-        deck=flashcard.deck,
+        deck=flashcard.sub_sections.first().main_section.deck,
         flashcard=flashcard,
         action='EDIT',
     )
@@ -703,7 +706,7 @@ def game_flashcards_view(request, *args, **kwargs):
 
     query = Q(flashcard__deck__user=request.user)
     if not request.data.get('options').get('include_cloze'):
-        query &= ~Q(flashcard__flashcard_type='cloze')
+        query &= ~Q(flashcard__flashcard_type='CLOZE')
 
     # # See if the "deck" is actually a CSSM
     # try:

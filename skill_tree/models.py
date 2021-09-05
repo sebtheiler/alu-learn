@@ -10,13 +10,23 @@ from django.utils import timezone
 from utils import get_morning
 
 
+class SectionData(models.Model):
+    title = models.CharField(max_length=128)
+    description = models.TextField(max_length=4096)
+    EDITABLE_ATTRS = ('title', 'description')
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+
+class AbstractSectionManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().select_related('data')
+
+
 # Abstract section that `MainSection` and `SubSection` inherit from
 class AbstractSection(models.Model):
     # === BASIC INFO ===
-    title = models.CharField(max_length=128)
-    description = models.TextField(max_length=4096)
     order_num = models.PositiveSmallIntegerField()  # zero-indexed, for sorting
-    EDITABLE_ATTRS = ('title', 'description', 'order_num')
 
     # === CACHES ===
     # Calculating percent complete is expensive, so we cache it
@@ -115,6 +125,12 @@ class AbstractSection(models.Model):
 
 
 class MainSection(AbstractSection):
+    data = models.ForeignKey(
+        SectionData,
+        on_delete=models.CASCADE,
+        related_name='main_sections',
+    )
+
     deck = models.ForeignKey(
         'decks.Deck',
         related_name='main_sections',
@@ -129,6 +145,7 @@ class MainSection(AbstractSection):
     )
 
     universal_main_section_id = models.UUIDField(null=True, blank=True)
+    objects = AbstractSectionManager()
 
     def get_review_instance_query(self):
         return Q(flashcard__sub_sections__main_section=self)
@@ -158,16 +175,19 @@ class MainSection(AbstractSection):
 
 
 class SubSection(AbstractSection):
+    data = models.ForeignKey(
+        SectionData,
+        on_delete=models.CASCADE,
+        related_name='sub_sections',
+    )
     main_section = models.ForeignKey(
         MainSection,
         on_delete=models.CASCADE,
         related_name='sub_sections',
     )
-    flashcards = models.ManyToManyField(
-        'decks.FlashCard',
-        related_name='sub_sections',
-    )
+
     universal_sub_section_id = models.UUIDField(null=True, blank=True)
+    objects = AbstractSectionManager()
 
     def get_review_instance_query(self):
         return Q(flashcard__sub_sections=self)

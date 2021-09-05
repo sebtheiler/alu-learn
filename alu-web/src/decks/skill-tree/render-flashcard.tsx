@@ -1,6 +1,6 @@
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { capitalize, RenderRichText } from '../../utils';
+import { RenderRichText } from '../../utils';
 import { FlashCard } from '../types';
 
 export default function RenderFlashcard({ flashcard, deckId }: { flashcard: FlashCard, deckId?: number }) {
@@ -16,27 +16,27 @@ export default function RenderFlashcard({ flashcard, deckId }: { flashcard: Flas
       >
         <Row className='flashcard-head'>
           <Col>
-            <span>Flashcard #{flashcard.order_num + 1}: {capitalize(flashcard.flashcard_type)}</span>
-            <span className='float-right'>{flashcard.tags}</span>
+            <span>Flashcard #{flashcard.order_num + 1}</span>
+            <span className='float-right'>{flashcard.data?.tags}</span>
           </Col>
         </Row>
         <Row className='flashcard-body'>
-          {flashcard.fields.map((field, i) =>
+          {flashcard.data?.fields?.map((field, i) =>
             <Col
-              md={12/flashcard.fields.length}
-              className={'flashcard-field' + (i !== flashcard.fields.length - 1 ? ' divider' : '')}
+              md={12/(flashcard.data?.fields?.length ?? 2)}
+              className={'flashcard-field' + (i !== (flashcard.data?.fields?.length ?? 2) - 1 ? ' divider' : '')}
               key={i}
             >
               <div className='text'>
                 <RenderRichText text={field} />
               </div>
               <div className='images'>
-                {i === 0 && flashcard.front_image && <img
-                  src={flashcard.front_image}
+                {i === 0 && flashcard.data?.front_image && <img
+                  src={flashcard.data?.front_image}
                   alt='Flashcard attached front'
                 />}
-                {i === 1 && flashcard.back_image && <img
-                  src={flashcard.back_image}
+                {i === 1 && flashcard.data?.back_image && <img
+                  src={flashcard.data?.back_image}
                   alt='Flashcard attached back'
                 />}
               </div>

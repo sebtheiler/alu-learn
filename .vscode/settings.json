@@ -1,6 +1,6 @@
 {
     "python.linting.enabled": true,
-    "python.pythonPath": "/media/evolvedsquid/2.0 TB HDD/code/in-progress/alu/aluenv/bin/python3.9",
+    "python.pythonPath": "aluenv/bin/python",
     "python.linting.pycodestyleEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.pylintEnabled": false
