@@ -56,7 +56,7 @@ class SharedDeck(models.Model):
         else:
             return self.snapshots.order_by('timestamp').last()
 
-    def has_view_access(self, author_pk):
+    def has_view_access(self, author_pk: int):
         if self.view_access == 'PUBLIC' or self.is_owner(author_pk):
             return True
         elif self.view_access == 'FRIENDS':
@@ -424,6 +424,7 @@ class SnapShot(models.Model):
         # Copy main sections and sub sections
         main_sections = []
         sub_sections = []
+        flashcards = []
         for ms_to_copy in parent.main_sections.all():
             copied_ms = ms_to_copy.copy(child.pk)
             main_sections.append(copied_ms)
@@ -432,19 +433,20 @@ class SnapShot(models.Model):
                 copied_ss = ss_to_copy.copy(copied_ms.pk)
                 sub_sections.append(copied_ss)
 
-        # Create main sections and sub sections
+                for fc_to_copy in ss_to_copy.flashcards.all():
+                    if fc_to_copy.universal_flashcard_id in flashcard_uids_to_remove:
+                        continue
+
+                    copied_fc = fc_to_copy.copy(
+                        copied_ss.pk,
+                        skip_creating_review_instances=True,
+                    )
+                    flashcards.append(copied_fc)
+
+        # Create new objects
         MainSection.objects.bulk_create(main_sections)
         SubSection.objects.bulk_create(sub_sections)
-
-        # Link old flashcards
-        # TODO: make more efficient
-        for ss_to_copy, copied_ss in zip(
-            SubSection.objects.filter(main_section__snapshot_id=parent.pk),
-            sub_sections,
-        ):
-            copied_ss.flashcards.set(ss_to_copy.flashcards.filter(~Q(
-                universal_flashcard_id__in=flashcard_uids_to_remove,
-            )))
+        FlashCard.objects.bulk_create(flashcards)
 
         return child
 

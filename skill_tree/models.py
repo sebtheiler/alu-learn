@@ -153,11 +153,21 @@ class MainSection(AbstractSection):
     def copy(
         self,
         snapshot_id: str,
+        create_new_data: bool = False,
     ) -> MainSection:
+        if create_new_data:
+            data = SectionData(
+                title=self.title,
+                description=self.description,
+                pk=uuid.uuid4(),
+            )
+            data_id = data.pk
+        else:
+            data_id = self.data_id
+
         return MainSection(
-            title=self.title,
+            data_id=data_id,
             universal_main_section_id=self.universal_main_section_id,
-            description=self.description,
             snapshot_id=snapshot_id,
             pk=uuid.uuid4(),
         )
@@ -195,10 +205,20 @@ class SubSection(AbstractSection):
     def copy(
         self,
         main_section_id: str,
+        create_new_data: bool = True,
     ):
+        if create_new_data:
+            data = SectionData(
+                title=self.title,
+                description=self.description,
+                pk=uuid.uuid4(),
+            )
+            data_id = data.pk
+        else:
+            data_id = self.data_id
+
         sub_section = SubSection(
-            title=self.title,
-            description=self.description,
+            data_id=data_id,
             universal_sub_section_id=self.universal_sub_section_id,
             pk=uuid.uuid4(),
 

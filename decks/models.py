@@ -367,7 +367,7 @@ class FlashCard(models.Model):
             data=new_data,
             order_num=self.order_num,
             flashcard_type=self.flashcard_type,
-            universal_flashcard_id=universal_flashcard_id,
+            universal_flashcard_id=universal_flashcard_id or self.universal_flashcard_id,
             id=uuid.uuid4(),
         )
 
