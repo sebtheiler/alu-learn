@@ -15,10 +15,10 @@ export default function RenderMainSection({ mainSection, numMainSections, readOn
         <hr className='flex-grow-1' />
         <h2 className='px-2 align-self-center mb-0'>
           {readOnly ?
-            mainSection.title.toUpperCase()
+            mainSection.data.title.toUpperCase()
             :
-            <a href={`/deck/${mainSection.deck}/study/${cleanTitle(mainSection.title)}/`}>
-              {mainSection.title.toUpperCase()}
+            <a href={`/deck/${mainSection.deck}/study/${cleanTitle(mainSection.data.title)}/`}>
+              {mainSection.data.title.toUpperCase()}
               {!!mainSection.percent_complete && ` - ${mainSection.percent_complete*100}%`}
             </a>
           }

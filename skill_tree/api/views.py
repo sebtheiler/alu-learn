@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from skill_tree.serializers import MainSectionSerializer, SubSectionSerializer
 
-from ..models import MainSection, SubSection
+from ..models import MainSection, SectionData, SubSection
 
 
 @api_view(['POST'])
@@ -18,11 +18,15 @@ def create_main_section(request, *args, **kwargs):
     except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
 
-    main_section = MainSection.objects.create(
+    data = SectionData.objects.create(
         title=request.data.get('title', 'New Main Section'),
         description=request.data.get('description', ''),
-        order_num=MainSection.get_max_order_num(deck) + 1,
+    )
+
+    main_section = MainSection.objects.create(
+        data_id=data.pk,
         deck_id=deck.pk,
+        order_num=MainSection.get_max_order_num(deck) + 1,
     )
 
     return Response(MainSectionSerializer(main_section).data, status=200)
@@ -39,11 +43,15 @@ def create_sub_section(request, *args, **kwargs):
     except MainSection.DoesNotExist:
         return Response({'message': 'Main section not found'}, status=404)
 
-    sub_section = SubSection.objects.create(
+    data = SectionData.objects.create(
         title=request.data.get('title', 'New Sub Section'),
         description=request.data.get('description', ''),
-        order_num=SubSection.get_max_order_num(main_section) + 1,
+    )
+
+    sub_section = SubSection.objects.create(
+        data_id=data.pk,
         main_section_id=main_section.pk,
+        order_num=SubSection.get_max_order_num(main_section) + 1,
     )
 
     return Response(SubSectionSerializer(sub_section).data, status=200)

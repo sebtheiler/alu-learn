@@ -234,6 +234,11 @@ def delete_object_view(
     """
     Model = Serializer.Meta.model  # type: models.Model
 
+    if decrement_order and parent_model is None:
+        raise ValueError(
+            '`parent_model` must be specified when `decrement_order` is True',
+        )
+
     @api_view(['DELETE'])
     @permission_classes([IsAuthenticated])
     def view(request: WSGIRequest, obj_id: int):
@@ -356,7 +361,7 @@ def generate_base_api(
                 Serializer=Serializer,
                 owner_path=owner_path,
                 ActionModel=ActionModel,
-                decrement_order=exclude_rearrange,
+                decrement_order=not exclude_rearrange,
                 parent_model=parent_model,
             ))
         )

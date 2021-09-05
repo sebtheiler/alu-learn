@@ -2,7 +2,17 @@ from rest_framework import serializers
 from sharing_system.models import (AbstractAction, MainSectionAction,
                                    SubSectionAction)
 
-from .models import AbstractSection, MainSection, SubSection
+from .models import AbstractSection, MainSection, SectionData, SubSection
+
+
+class SectionDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SectionData
+        fields = (
+            'title',
+            'description',
+            'id',
+        )
 
 
 class AbstractActionSerializer(serializers.ModelSerializer):
@@ -16,12 +26,13 @@ class AbstractActionSerializer(serializers.ModelSerializer):
 
 
 class AbstractSectionSerializer(serializers.ModelSerializer):
+    data = SectionDataSerializer('data')
+
     class Meta:
         model = AbstractSection
         fields = (
-            'title',
-            'description',
             'order_num',
+            'data',
             'id',
         )
         read_only_fields = fields

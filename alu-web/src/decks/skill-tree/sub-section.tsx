@@ -28,7 +28,7 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
         overlay={
           <Popover id='study-section-popover' style={{ minWidth: '240px' }}>
             <Popover.Title as='h3' className='text-center'>
-              {subSection.title}
+              {subSection.data.title}
               {!readOnly && <SubSectionButtons
                 subSection={subSection}
                 numSubSections={numSubSections}
@@ -37,22 +37,34 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
               />}
             </Popover.Title>
             <Popover.Content>
-              <p>{subSection.description}</p>
+              <p>{subSection.data.description}</p>
               <div>
                 {!readOnly && <Button
-                  href={`/deck/${mainSection.deck}/study/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
+                  href={
+                    `/deck/${mainSection.deck}/study/\
+                    ${cleanTitle(mainSection.data.title)}__\
+                    ${cleanTitle(subSection.data.title)}/`.replaceAll(' ', '')
+                  }
                   block
                 >
                   Study
                 </Button>}
                 {!readOnly && <Button
-                  href={`/deck/${mainSection.deck}/flashcards/create/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
+                  href={
+                    `/deck/${mainSection.deck}/flashcards/create/\
+                    ${cleanTitle(mainSection.data.title)}__\
+                    ${cleanTitle(subSection.data.title)}/`.replaceAll(' ', '')
+                  }
                   block
                 >
                   Add Flashcards
                 </Button>}
                 <Button
-                  href={`flashcards/sections/${cleanTitle(mainSection.title)}__${cleanTitle(subSection.title)}/`}
+                  href={
+                    `flashcards/sections/\
+                    ${cleanTitle(mainSection.data.title)}__\
+                    ${cleanTitle(subSection.data.title)}/`.replaceAll(' ', '')
+                  }
                   variant='secondary'
                   block
                 >
@@ -72,7 +84,7 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
           style={{ background: `conic-gradient(rgba(42, 157, 244, 1) ${(subSection.percent_complete ?? 0)*100}%, transparent 0%)` }}
         >
           <div className='sub-section-inner'>
-            <p className='sub-section-text'>{subSection.title}</p>
+            <p className='sub-section-text'>{subSection.data.title}</p>
           </div>
         </div>
       </OverlayTrigger>

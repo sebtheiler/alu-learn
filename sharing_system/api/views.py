@@ -259,7 +259,7 @@ def snapshot_flashcards_view(request, *args, **kwargs):
 
     return get_paginated_queryset_response(
         FlashCard.objects.filter(
-            Q(sub_sections__main_section__snapshot_id=snapshot.pk)
+            Q(sub_section__main_section__snapshot_id=snapshot.pk)
             &
             AbstractSection.get_query_from_formatted_title(request.GET.get('section', ''))[0]
         ),

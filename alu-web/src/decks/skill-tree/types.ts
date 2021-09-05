@@ -1,9 +1,14 @@
 import { MinifiedProfile } from "../../profiles/types";
 import { FlashCard, UUID } from "../types";
 
-interface AbstractSection {
+export interface SectionData {
   title: string;
   description: string;
+  id: string;
+}
+
+interface AbstractSection {
+  data: SectionData;
   id: string;
   order_num: number;
 

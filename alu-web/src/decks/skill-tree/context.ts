@@ -1,6 +1,6 @@
 import { createContext, Dispatch } from 'react';
 import { Deck } from '../types';
-import { MainSection, SubSection } from './types';
+import { MainSection, SectionData, SubSection } from './types';
 
 type DeckEvent =
   // Deck
@@ -9,14 +9,37 @@ type DeckEvent =
   | { action: 'DELETE', payload: number }
   // MainSection
   | { action: 'CREATE_MAIN_SECTION', deckId: number, mainSection: MainSection }
-  | { action: 'EDIT_MAIN_SECTION', deckId: number, mainSection: Partial<MainSection> & Pick<MainSection, 'id'> }
+  | {
+    action: 'EDIT_MAIN_SECTION',
+    deckId: number,
+    mainSectionId: string,
+    data: Partial<SectionData>,
+  }
   | { action: 'DELETE_MAIN_SECTION', deckId: number, mainSectionId: string }
-  | { action: 'MOVE_MAIN_SECTION', deckId: number, mainSectionId: string, mainSectionNum: number, direction: 'UP' | 'DOWN' }
+  | {
+    action: 'MOVE_MAIN_SECTION',
+    deckId: number, mainSectionId: string,
+    mainSectionNum: number,
+    direction: 'UP' | 'DOWN',
+  }
   // SubSection
   | { action: 'CREATE_SUB_SECTION', deckId: number, mainSectionId: string, subSection: SubSection }
-  | { action: 'EDIT_SUB_SECTION', deckId: number, mainSectionId: string, subSection: Partial<SubSection> & Pick<SubSection, 'id'> }
+  | {
+    action: 'EDIT_SUB_SECTION',
+    deckId: number,
+    mainSectionId: string,
+    subSectionId: string,
+    data: Partial<SectionData>,
+  }
   | { action: 'DELETE_SUB_SECTION', deckId: number, mainSectionId: string, subSectionId: string }
-  | { action: 'MOVE_SUB_SECTION', deckId: number, mainSectionId: string, subSectionId: string, subSectionNum: number, direction: 'UP' | 'DOWN' }
+  | {
+    action: 'MOVE_SUB_SECTION',
+    deckId: number,
+    mainSectionId: string,
+    subSectionId: string,
+    subSectionNum: number,
+    direction: 'UP' | 'DOWN',
+  }
 
 export const deckReducer = (
   state: Deck[] | undefined,
@@ -52,11 +75,11 @@ export const deckReducer = (
       index = state.map(deck => deck.id).indexOf(event.deckId);
       mainSectionIndex = newState[index].main_sections.map(
         ms => ms.id
-      ).indexOf(event.mainSection.id);
+      ).indexOf(event.mainSectionId);
 
       // Make updates
-      for (const [attr, val] of Object.entries(event.mainSection))
-        newState[index].main_sections[mainSectionIndex][attr] = val;
+      for (const [attr, val] of Object.entries(event.data))
+        newState[index].main_sections[mainSectionIndex].data[attr] = val;
 
       return [...newState];
     case 'DELETE_MAIN_SECTION':
@@ -110,11 +133,11 @@ export const deckReducer = (
       ).indexOf(event.mainSectionId);
       subSectionIndex = newState[index].main_sections[mainSectionIndex].sub_sections.map(
         ss => ss.id
-      ).indexOf(event.subSection.id);
+      ).indexOf(event.subSectionId);
 
       // Make updates
-      for (const [attr, val] of Object.entries(event.subSection))
-        newState[index].main_sections[mainSectionIndex].sub_sections[subSectionIndex][attr] = val;
+      for (const [attr, val] of Object.entries(event.data))
+        newState[index].main_sections[mainSectionIndex].sub_sections[subSectionIndex].data[attr] = val;
 
       return [...newState];
     case 'DELETE_SUB_SECTION':

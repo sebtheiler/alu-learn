@@ -13,15 +13,17 @@ export function MainSectionButtons({ mainSection, numMainSections }: { mainSecti
   const deckDispatch = useContext(DeckDispatch);
 
   const renameMainSection = () => {
-    const title = window.prompt(`Renaming main section "${mainSection.title}"`) ?? mainSection.title;
-    if (title === mainSection.title || !deckDispatch) return;
+    const title = window.prompt(
+      `Renaming main section "${mainSection.data.title}"`
+    ) ?? mainSection.data.title;
+    if (title === mainSection.data.title || !deckDispatch) return;
 
     deckDispatch({
       action: 'EDIT_MAIN_SECTION',
       deckId: mainSection.deck,
-      mainSection: {
+      mainSectionId: mainSection.id,
+      data: {
         title: title,
-        id: mainSection.id
       },
     });
     apiObjectEdit<MainSection>('skill_tree', 'mainsection', mainSection.id, {
@@ -95,16 +97,18 @@ export function SubSectionButtons({ subSection, numSubSections, mainSectionId, d
   const deckDispatch = useContext(DeckDispatch);
 
   const renameSubSection = () => {
-    const title = window.prompt(`Renaming sub section "${subSection.title}"`) ?? subSection.title;
-    if (title === subSection.title || !deckDispatch) return;
+    const title = window.prompt(
+      `Renaming sub section "${subSection.data.title}"`
+    ) ?? subSection.data.title;
+    if (title === subSection.data.title || !deckDispatch) return;
 
     deckDispatch({
       action: 'EDIT_SUB_SECTION',
       deckId: deckId,
       mainSectionId: mainSectionId,
-      subSection: {
+      subSectionId: subSection.id,
+      data: {
         title: title,
-        id: subSection.id,
       }
     });
     apiObjectEdit<MainSection>('skill_tree', 'subsection', subSection.id, {

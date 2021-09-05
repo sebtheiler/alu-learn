@@ -473,7 +473,7 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
     try:
         flashcard = FlashCard.objects.get(
             pk=flashcard_id,
-            sub_sections__main_section__deck__user=request.user,
+            sub_section__main_section__deck__user_id=request.user.pk,
         )  # TODO: can we use `.selected_related('deck')`?
         data = flashcard.data
     except FlashCard.DoesNotExist:
@@ -529,7 +529,7 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
 
     # Log the flashcard as being edited (for sharing system)
     FlashCardAction.objects.create(
-        deck=flashcard.sub_sections.first().main_section.deck,
+        deck=flashcard.sub_section.main_section.deck,
         flashcard=flashcard,
         action='EDIT',
     )
@@ -584,8 +584,8 @@ def flashcard_list_view(request, *args, **kwargs):
 
     if deck_id := request.GET.get('deck_id'):
         flashcard_query &= Q(
-            sub_sections__main_section__deck__pk=deck_id,
-            sub_sections__main_section__deck__user=request.user,
+            sub_section__main_section__deck__pk=deck_id,
+            sub_section__main_section__deck__user_id=request.user.pk,
         )
 
     if section := request.GET.get('section'):
@@ -761,7 +761,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     # Build base query
     # TODO: re-add cloze flashcards
     review_instance_query = Q(
-        flashcard__sub_sections__main_section__deck__user=request.user,
+        flashcard__sub_section__main_section__deck__user=request.user,
     )
 
     section = request.data.get('section')
@@ -769,16 +769,16 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
         section = section.split('__')
         if len(section) == 2:
             review_instance_query &= Q(
-                flashcard__sub_sections__main_section__title__iexact=(
+                flashcard__sub_section__main_section__data__title__iexact=(
                     AbstractSection.clean(section[0])
                 ),
-                flashcard__sub_sections__title__iexact=(
+                flashcard__sub_section__data__title__iexact=(
                     AbstractSection.clean(section[1])
                 ),
             )
         else:
             review_instance_query &= Q(
-                flashcard__sub_sections__main_section__title__iexact=(
+                flashcard__sub_section__main_section__data__title__iexact=(
                     AbstractSection.clean(section[0])
                 ),
             )
@@ -839,7 +839,7 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
         ReviewInstance,
         review_instance_id,
         request.user,
-        'flashcard__sub_sections__main_section__deck__user',
+        'flashcard__sub_section__main_section__deck__user',
     )
     if error:
         return error

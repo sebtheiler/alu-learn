@@ -212,7 +212,7 @@ class SharedDeck(models.Model):
             # Instead of removing EDIT/DELETE flashcards later,
             # it is easier to never include them
             flashcard_uids_to_remove=FlashCard.objects.filter(
-                Q(sub_sections__main_section__deck_id=deck.pk) &
+                Q(sub_section__main_section__deck_id=deck.pk) &
                 (Q(attached_action__action='EDIT') | Q(attached_action__action='DELETE'))
             ).values_list('universal_flashcard_id', flat=True)
         )
@@ -912,7 +912,7 @@ class FlashCardAction(AbstractAction):
         dict,
     ]:
         actions = snapshot.applied_flashcardaction.prefetch_related(
-            'flashcard__sub_sections',
+            'flashcard__sub_section',
         ).all()
 
         # Hold a dict of sub sections to the flashcards to link to them

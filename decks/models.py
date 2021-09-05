@@ -15,9 +15,9 @@ from django.db import models
 from django.db.models.aggregates import Avg
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save
 from django.utils import timezone
-from skill_tree.models import MainSection, SubSection
+from skill_tree.models import MainSection, SectionData, SubSection
 from utils import get_morning
 
 User = settings.AUTH_USER_MODEL
@@ -296,15 +296,15 @@ class FlashCard(models.Model):
         return query
 
     @staticmethod
-    def get_max_order_num(sub_section: SubSection) -> int:
+    def get_max_order_num(sub_section_id: int) -> int:
         # Returns -1 if there are no flashcards in the sub section
-        flashcards = FlashCard.objects.filter(sub_sections=sub_section)
+        flashcards = FlashCard.objects.filter(sub_section_id=sub_section_id)
         max_fc_num_obj = flashcards.order_by('order_num').last()
 
         return getattr(max_fc_num_obj, 'order_num', -1)
 
     def get_self_max_order_num(self) -> int:
-        return FlashCard.get_max_order_num(self.sub_sections.first())
+        return FlashCard.get_max_order_num(self.sub_section_id)
 
     @staticmethod
     def create_flashcard(
@@ -326,6 +326,7 @@ class FlashCard(models.Model):
         )
 
         flashcard = FlashCard.objects.create(
+            sub_section=sub_section,
             data=data,
             flashcard_type=flashcard_type,
             order_num=(
@@ -336,7 +337,6 @@ class FlashCard(models.Model):
             pk=flashcard_uuid,
             universal_flashcard_id=universal_flashcard_id,
         )
-        sub_section.flashcards.add(flashcard)
 
         review_instances = ReviewInstance.create_review_instance(flashcard)
         ReviewInstance.objects.bulk_create(review_instances)
@@ -661,14 +661,17 @@ def deck_saved(sender, instance, created, **kwargs):
         if instance.equivalent_to_snapshot:
             return
 
-        main_section = MainSection.objects.create(
-            deck=instance,
+        data = SectionData.objects.create(
             title='Default',
             description='''
 Your flashcards are organized into different sections.
 This is the default "main section", which you can edit to be your first topic ("Unit 1").
 To create flashcards, click the "sub sections" below.
             ''',
+        )
+        main_section = MainSection.objects.create(
+            deck=instance,
+            data=data,
             order_num=MainSection.get_max_order_num(deck=instance) + 1,
         )
         MainSectionAction = apps.get_model('sharing_system.MainSectionAction')
@@ -682,10 +685,13 @@ To create flashcards, click the "sub sections" below.
 # When a main section is created, create an example SubSection
 def main_section_saved(sender, instance, created, **kwargs):
     if created:
-        sub_section = SubSection.objects.create(
-            main_section=instance,
+        data = SectionData.objects.create(
             title='Default',
             description='Edit this description by... TK TODO',
+        )
+        sub_section = SubSection.objects.create(
+            main_section=instance,
+            data=data,
             order_num=SubSection.get_max_order_num(main_section=instance) + 1,
         )
         SubSectionAction = apps.get_model('sharing_system.SubSectionAction')
@@ -696,13 +702,5 @@ def main_section_saved(sender, instance, created, **kwargs):
         )
 
 
-# When a deck is deleted, delete all its flashcards
-def deck_deleted(sender, instance, using, **kwargs):
-    FlashCard.objects.using(using).filter(
-        sub_sections__main_section__deck_id=instance.pk,
-    ).delete()
-
-
 post_save.connect(deck_saved, sender=Deck)
 post_save.connect(main_section_saved, sender=MainSection)
-pre_delete.connect(deck_deleted, sender=Deck)
