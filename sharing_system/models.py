@@ -117,7 +117,7 @@ class SharedDeck(models.Model):
             equivalent_to_snapshot=latest_snapshot,
         )
 
-        # NOTE: these could be rewritten to use `...Action`, but it is
+        # NOTE: these could be rewritten to use actions, but it is
         # inefficient since it implies having to apply every snapshot since creation
         # when we could just directly copy the latest snapshot
 
@@ -127,62 +127,50 @@ class SharedDeck(models.Model):
         flashcards_to_create = []
         review_instances_to_create = []
 
-        sub_sections_to_link_flashcards = defaultdict(list)
+        sections_data_to_create = []
+        flashcards_data_to_create = []
 
-        main_sections_to_copy = latest_snapshot.main_sections.all()\
-            .prefetch_related('sub_sections__flashcards')
+        main_sections_to_copy = latest_snapshot.main_sections\
+            .prefetch_related(
+                'data',
+                'sub_sections__data',
+                'sub_sections__flashcards__data',
+            )\
+            .all()
         for main_section_to_copy in main_sections_to_copy:
-            main_section = MainSection(
-                deck=deck,
-                title=main_section_to_copy.title,
-                description=main_section_to_copy.description,
-
-                universal_main_section_id=main_section_to_copy.universal_main_section_id,
-                id=uuid.uuid4(),
+            main_section_data, main_section = main_section_to_copy.copy(
+                deck_id=deck.pk,
+                create_new_data=True,
             )
             main_sections_to_create.append(main_section)
+            sections_data_to_create.append(main_section_data)
 
             for sub_section_to_copy in main_section_to_copy.sub_sections.all():
-                sub_section = SubSection(
-                    main_section=main_section,
-                    title=sub_section_to_copy.title,
-                    description=sub_section_to_copy.description,
-
-                    universal_sub_section_id=sub_section_to_copy.universal_sub_section_id,
-                    id=uuid.uuid4(),
+                sub_section_data, sub_section = sub_section_to_copy.copy(
+                    main_section_id=main_section.pk,
+                    create_new_data=True,
                 )
                 sub_sections_to_create.append(sub_section)
+                sections_data_to_create.append(sub_section_data)
 
-                sub_section_flashcards = []
                 for flashcard_to_copy in sub_section_to_copy.flashcards.all():
-                    flashcard, review_instances = flashcard_to_copy.copy(
-                        universal_flashcard_id=flashcard_to_copy.universal_flashcard_id,
+                    flashcard_data, flashcard, review_instances = flashcard_to_copy.copy(
+                        sub_section_id=sub_section.pk,
+                        create_new_data=True,
                     )
 
-                    sub_section_flashcards.append(flashcard)
+                    flashcards_to_create.append(flashcard)
+                    flashcards_data_to_create.append(flashcard_data)
                     review_instances_to_create += review_instances
 
-                flashcards_to_create += sub_section_flashcards
-                sub_sections_to_link_flashcards[
-                    sub_section.universal_sub_section_id
-                ] += sub_section_flashcards
-
         # Create objects
+        SectionData.objects.bulk_create(sections_data_to_create)
+        FlashCardData.objects.bulk_create(flashcards_data_to_create)
+
         MainSection.objects.bulk_create(main_sections_to_create)
         SubSection.objects.bulk_create(sub_sections_to_create)
         FlashCard.objects.bulk_create(flashcards_to_create)
         ReviewInstance.objects.bulk_create(review_instances_to_create)
-
-        # Link flashcards to sub sections (needs to be done after SSs are created)
-        for (
-            universal_sub_section_id,
-            flashcards_to_link,
-        ) in sub_sections_to_link_flashcards.items():
-            sub_section = SubSection.objects.get(
-                main_section__deck_id=deck.pk,
-                universal_sub_section_id=universal_sub_section_id,
-            )
-            sub_section.flashcards.add(*flashcards_to_link)
 
         return deck
 
@@ -208,15 +196,19 @@ class SharedDeck(models.Model):
             message=message,
             shared_deck_id=shared_deck.pk,
 
-            # TODO: TODO: TODO: ==DO THE SAME THING FOR ALL DELETED OBJECTS==
-            # TODO: TODO: TODO: ==DO THE SAME THING FOR ALL DELETED OBJECTS==
-            # TODO: TODO: TODO: ==DO THE SAME THING FOR ALL DELETED OBJECTS==
-            # Instead of removing DELETE flashcards later,
-            # it is easier to never include them
+            # Instead of deleting models later, it is simpler never to include them
+            main_section_uids_to_remove=MainSection.objects.filter(
+                deck_id=deck.pk,
+                attached_action__action='DELETE',
+            ).values_list('universal_main_section_id', flat=True),
+            sub_section_uids_to_remove=SubSection.objects.filter(
+                main_section__deck_id=deck.pk,
+                attached_action__action='DELETE',
+            ).values_list('universal_sub_section_id', flat=True),
             flashcard_uids_to_remove=FlashCard.objects.filter(
                 sub_section__main_section__deck_id=deck.pk,
                 attached_action__action='DELETE',
-            ).values_list('universal_flashcard_id', flat=True)
+            ).values_list('universal_flashcard_id', flat=True),
         )
         deck.equivalent_to_snapshot = snapshot
         deck.save()

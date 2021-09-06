@@ -192,9 +192,10 @@ class MainSection(AbstractSection):
 
     def copy(
         self,
-        snapshot_id: str,
+        snapshot_id: str = None,
+        deck_id: int = None,
         create_new_data: bool = False,
-    ) -> MainSection:
+    ) -> Tuple[SectionData, MainSection]:
         if create_new_data:
             data = SectionData(
                 title=self.data.title,
@@ -205,10 +206,12 @@ class MainSection(AbstractSection):
         else:
             data_id = self.data_id
 
-        return MainSection(
-            data_id=data_id,
-            universal_main_section_id=self.universal_main_section_id,
+        return data, MainSection(
             snapshot_id=snapshot_id,
+            deck_id=deck_id,
+            data_id=data_id,
+            order_num=self.order_num,
+            universal_main_section_id=self.universal_main_section_id,
             pk=uuid.uuid4(),
         )
 
@@ -277,7 +280,7 @@ class SubSection(AbstractSection):
         self,
         main_section_id: str,
         create_new_data: bool = True,
-    ):
+    ) -> Tuple[SectionData, SubSection]:
         if create_new_data:
             data = SectionData(
                 title=self.data.title,
@@ -291,12 +294,13 @@ class SubSection(AbstractSection):
         sub_section = SubSection(
             data_id=data_id,
             universal_sub_section_id=self.universal_sub_section_id,
+            order_num=self.order_num,
             pk=uuid.uuid4(),
 
             main_section_id=main_section_id,
         )
 
-        return sub_section
+        return data, sub_section
 
     @staticmethod
     def get_max_order_num(main_section: MainSection) -> int:
