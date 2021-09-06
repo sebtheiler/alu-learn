@@ -36,7 +36,7 @@ class DeckTestCase(ImprovedTestCase):
                     tags = f'{characters[i]}, {characters[i + 1]}, {characters[i + 2]}'
                 else:
                     tags = f'{i}, {i + 1}, {i + 2}'
-                FlashCard.create_flashcard(
+                FlashCard.create(
                     deck,
                     tags,
                     'basic',
@@ -212,7 +212,7 @@ class DeckTestCase(ImprovedTestCase):
         deck = self.create_deck('Test')
         self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 0)
         self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 0)
-        flashcard, review_instances = FlashCard.create_flashcard(
+        flashcard, review_instances = FlashCard.create(
             deck,
             'a, b, c',
             'basic',
@@ -234,7 +234,7 @@ class DeckTestCase(ImprovedTestCase):
             expected_reviews_finish: int,
         ):
             deck = self.create_deck(f'Edit test - {flashcard_type}')
-            review_instance = FlashCard.create_flashcard(
+            review_instance = FlashCard.create(
                 deck,
                 'a, b, c',
                 flashcard_type,
@@ -310,7 +310,7 @@ class DeckTestCase(ImprovedTestCase):
         deck = self.create_deck('Test')
         self.assertEqual(FlashCard.objects.filter(deck=deck).count(), 0)
         self.assertEqual(ReviewInstance.objects.filter(flashcard__deck=deck).count(), 0)
-        flashcards = [FlashCard.create_flashcard(
+        flashcards = [FlashCard.create(
             deck,
             'a, b, c',
             'cloze',
@@ -346,7 +346,7 @@ class DeckTestCase(ImprovedTestCase):
 
     def test_flashcard_detail_api(self):
         deck = self.create_deck('Detail Test')
-        flashcard, _ = FlashCard.create_flashcard(
+        flashcard, _ = FlashCard.create(
             deck,
             'a, b, c',
             'basic',
@@ -1655,7 +1655,7 @@ class DeckTestCase(ImprovedTestCase):
 
     def test_shared_deck_update_api_add_cards(self):
         def add_cards(deck: Deck):
-            FlashCard.create_flashcard(
+            FlashCard.create(
                 deck,
                 '',
                 'cloze',
@@ -1751,7 +1751,7 @@ class DeckTestCase(ImprovedTestCase):
 
         # Test adding flashcards
         num_shared_flashcards = FlashCard.objects.filter(deck=shared_deck).count()
-        FlashCard.create_flashcard(
+        FlashCard.create(
             deck,
             'tags',
             'basic',
@@ -1793,7 +1793,7 @@ class DeckTestCase(ImprovedTestCase):
 
         # Test adding cloze flashcard
         num_shared_flashcards = FlashCard.objects.filter(deck=shared_deck).count()
-        FlashCard.create_flashcard(
+        FlashCard.create(
             deck,
             'tags',
             'cloze',

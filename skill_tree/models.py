@@ -17,6 +17,9 @@ class SectionData(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
+    def __str__(self) -> str:
+        return self.title
+
 
 class AbstractSectionManager(models.Manager):
     def get_queryset(self):
@@ -42,7 +45,7 @@ class AbstractSection(models.Model):
         ordering = ('order_num',)
 
     def __str__(self) -> str:
-        return self.title
+        return self.data.title
 
     def get_percent_complete(self) -> float:
         if (
@@ -83,7 +86,9 @@ class AbstractSection(models.Model):
         deck_id: int,
     ) -> Tuple[Union[MainSection, SubSection], bool]:
         titles = section_titles.split('__')
-        if len(titles) == 1:
+        if len(titles) == 0:
+            raise MainSection.DoesNotExist
+        elif len(titles) == 1:
             return MainSection.objects.get(
                 deck_id=deck_id,
                 title__iexact=AbstractSection.clean(titles[0]),
@@ -150,6 +155,41 @@ class MainSection(AbstractSection):
     def get_review_instance_query(self):
         return Q(flashcard__sub_section__main_section_id=self.pk)
 
+    @staticmethod
+    def create(
+        title: str,
+        description: str,
+        deck=None,
+        snapshot=None,
+        order_num: int = None,
+        universal_main_section_id: str = None,
+        create_models: bool = True,
+    ) -> Tuple[SectionData, MainSection]:
+        data_id = uuid.uuid4()
+        data = SectionData(
+            title=title,
+            description=description,
+            pk=data_id,
+        )
+        main_section = MainSection(
+            deck=deck,
+            snapshot=snapshot,
+            data_id=data_id,
+            order_num=(
+                order_num
+                if order_num is not None else
+                MainSection.get_max_order_num(deck) + 1
+            ),
+            universal_main_section_id=universal_main_section_id,
+        )
+        print(data_id, SectionData.objects.filter(pk=data_id))
+
+        if create_models:
+            data.save()
+            main_section.save()
+
+        return data, main_section
+
     def copy(
         self,
         snapshot_id: str,
@@ -157,8 +197,8 @@ class MainSection(AbstractSection):
     ) -> MainSection:
         if create_new_data:
             data = SectionData(
-                title=self.title,
-                description=self.description,
+                title=self.data.title,
+                description=self.data.description,
                 pk=uuid.uuid4(),
             )
             data_id = data.pk
@@ -202,6 +242,37 @@ class SubSection(AbstractSection):
     def get_review_instance_query(self):
         return Q(flashcard__sub_section_id=self.pk)
 
+    @staticmethod
+    def create(
+        title: str,
+        description: str,
+        main_section: MainSection,
+        order_num: int = None,
+        universal_sub_section_id: str = None,
+        create_models: bool = True,
+    ) -> Tuple[SectionData, SubSection]:
+        data = SectionData(
+            title=title,
+            description=description,
+            pk=uuid.uuid4(),
+        )
+        sub_section = SubSection(
+            data_id=data.pk,
+            main_section_id=main_section.pk,
+            order_num=(
+                order_num
+                if order_num is not None else
+                SubSection.get_max_order_num(main_section) + 1
+            ),
+            universal_sub_section_id=universal_sub_section_id,
+        )
+
+        if create_models:
+            data.save()
+            sub_section.save()
+
+        return data, sub_section
+
     def copy(
         self,
         main_section_id: str,
@@ -209,8 +280,8 @@ class SubSection(AbstractSection):
     ):
         if create_new_data:
             data = SectionData(
-                title=self.title,
-                description=self.description,
+                title=self.data.title,
+                description=self.data.description,
                 pk=uuid.uuid4(),
             )
             data_id = data.pk

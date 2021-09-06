@@ -143,9 +143,9 @@ function StudentDataTable(props: { classroomId: number }) {
         striped
 
         // NOTE: I don't know whether this is depracated, or the other version is deprecated
-        expandableRowsComponent={ExpandableStudentDetailComponent}
-        expandableRowsComponentProps={{ classroomId: classroomId }}
-        // expandableRowsComponent={<ExpandableStudentDetailComponent classroomId={classroomId} />}
+        // expandableRowsComponent={ExpandableStudentDetailComponent}
+        // expandableRowsComponentProps={{ classroomId: classroomId }}
+        expandableRowsComponent={<ExpandableStudentDetailComponent classroomId={classroomId} />}
       />
     </>}
   </>);

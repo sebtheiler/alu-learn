@@ -79,7 +79,7 @@ class TeacherTestCase(ImprovedTestCase):
 
         for i in range(num_flashcards):
             tags = f'{i}, {i + 1}, {i + 2}'
-            FlashCard.create_flashcard(
+            FlashCard.create(
                 deck,
                 tags,
                 'basic',
@@ -1124,7 +1124,7 @@ class TeacherBrowserTestCase(SeleniumTestCase):
 
         num_flashcards = 10
         for i in range(num_flashcards):
-            FlashCard.create_flashcard(
+            FlashCard.create(
                 deck,
                 '1, 2, 3',
                 'basic',

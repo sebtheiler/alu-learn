@@ -205,11 +205,11 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
             </div>
           )}
           <p>
-            {numTotalChanges === 0 ?
+            {deck.equivalent_to_snapshot && (numTotalChanges === 0 ?
               'You\'ve made no changes to your deck, so you can\'t push an update.'
               :
               'Press "Push Updates" to apply these changes to the shared deck'
-            }
+            )}
           </p>
         </Col>
       </Row>

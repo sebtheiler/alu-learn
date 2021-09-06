@@ -307,7 +307,7 @@ class FlashCard(models.Model):
         return FlashCard.get_max_order_num(self.sub_section_id)
 
     @staticmethod
-    def create_flashcard(
+    def create(
         sub_section: SubSection,
         tags: str,
         flashcard_type: FlashCardTypes,
@@ -345,6 +345,7 @@ class FlashCard(models.Model):
 
     def copy(
         self,
+        sub_section_id: int,
         skip_creating_review_instances: bool = False,
         universal_flashcard_id: uuid.uuid4 = None,
         create_new_data: bool = True,
@@ -355,8 +356,8 @@ class FlashCard(models.Model):
         """
         if create_new_data:
             new_data = FlashCardData(
-                fields=self.fields,
-                tags=self.tags,
+                fields=self.data.fields,
+                tags=self.data.tags,
                 # TODO: images
                 id=uuid.uuid4(),
             )
@@ -365,6 +366,7 @@ class FlashCard(models.Model):
 
         new_flashcard = FlashCard(
             data=new_data,
+            sub_section_id=sub_section_id,
             order_num=self.order_num,
             flashcard_type=self.flashcard_type,
             universal_flashcard_id=universal_flashcard_id or self.universal_flashcard_id,
@@ -407,6 +409,9 @@ class FlashCardData(models.Model):
     EDITABLE_ATTRS = ('fields', 'tags', 'front_image', 'back_image')
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    def __str__(self) -> str:
+        return self.fields
 
 
 CONTENT_INDICIES_DICT = {

@@ -19,7 +19,7 @@ class MainSectionAdmin(admin.ModelAdmin):
         'snapshot',
     )
     search_fields = (
-        'title',
+        'data__title',
         'deck__title',
         'deck__user__username',
     )
@@ -28,7 +28,7 @@ class MainSectionAdmin(admin.ModelAdmin):
         queryset = super(MainSectionAdmin, self).get_queryset(request)
         queryset = queryset.prefetch_related('deck__user', 'snapshot')
         return queryset
-    
+
     def data_title(self, obj):
         return obj.data.title
 

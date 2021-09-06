@@ -431,7 +431,7 @@ def flashcard_create_view(request, *args, **kwargs):
         back_image = None
 
     # Create flashcard
-    flashcard, _ = FlashCard.create_flashcard(
+    flashcard, _ = FlashCard.create(
         sub_section=sub_section,
         tags=tags,
         flashcard_type=flashcard_type,
@@ -873,10 +873,13 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
         cache_name = f'{deck_id}__{section_titles.replace(" ", "-")}'
         if pk__is_main := cache.get(cache_name):
             pk, is_main = pk__is_main
-            if is_main:
-                section = MainSection.objects.get(pk=pk)
+            if not pk:
+                section = None
             else:
-                section = SubSection.objects.get(pk=pk)
+                if is_main:
+                    section = MainSection.objects.get(pk=pk)
+                else:
+                    section = SubSection.objects.get(pk=pk)
         else:
             try:
                 section, is_main = AbstractSection.get_from_formatted_title(
