@@ -1,13 +1,11 @@
 from __future__ import annotations
 
 import uuid
-from collections import defaultdict
 from typing import List, Tuple, Union
 
 from accounts.models import User
 from decks.models import Deck, FlashCard, FlashCardData, ReviewInstance
 from django.db import models
-from django.db.models.expressions import F
 from django.db.models.query import QuerySet
 from django.db.utils import IntegrityError
 from profiles.models import Profile
@@ -266,98 +264,106 @@ class SharedDeck(models.Model):
         snapshots_to_apply = SnapShot.objects.filter(
             pk__in=snapshot_ids_to_apply,
         ).prefetch_related(
-            'applied_mainsectionaction__main_section',
-            'applied_subsectionaction__sub_section',
-            'applied_flashcardaction__flashcard',
+            'applied_mainsectionactions__main_section',
+            'applied_subsectionactions__sub_section',
+            'applied_flashcardactions__flashcard',
         ).all()
 
         # Get the changes that need applying
-        main_sections_to_create = []
-        main_sections_to_edit = []
-        main_section_uids_to_delete = []
+        # main_sections_to_create = []
+        # main_section_uids_to_delete = []
 
-        sub_sections_to_create = []
-        sub_sections_to_edit = []
-        sub_section_uids_to_delete = []
+        # sub_sections_to_create = []
+        # sub_section_uids_to_delete = []
 
-        flashcards_to_create = []
-        flashcards_to_edit = []
-        flashcard_uids_to_delete = []
-        review_instances_to_create = []
-        sub_sections_to_link_flashcards = defaultdict(list)
+        # sections_data_to_create = []
+        # sections_data_to_edit = []
+
+        # flashcards_to_create = []
+        # flashcard_uids_to_delete = []
+        # review_instances_to_create = []
+        # # TODO: edit review instances when cloze is edited
+
+        # flashcards_data_to_create = []
+        # flashcards_data_to_edit = []
 
         for snapshot in snapshots_to_apply:
-            mss_to_create, mss_to_edit, ms_uids_to_del = MainSectionAction.pull(
+            # === Copy main sections ===
+            (
+                mss_to_create,
+                ms_uids_to_del,
+                ms_s_data_to_create,
+                ms_s_data_to_edit,
+            ) = MainSectionAction.pull(
                 snapshot,
                 deck,
             )
-            main_sections_to_create += mss_to_create
-            main_sections_to_edit += mss_to_edit
-            main_section_uids_to_delete += ms_uids_to_del
 
-            sss_to_create, sss_to_edit, ss_uids_to_del = SubSectionAction.pull(
+            # Create/edit main sections data
+            SectionData.objects.bulk_create(ms_s_data_to_create)
+            SectionData.objects.bulk_update(
+                ms_s_data_to_edit,
+                SectionData.EDITABLE_ATTRS,
+            )
+
+            # Create/delete main sections
+            MainSection.objects.bulk_create(mss_to_create)
+            MainSection.objects.filter(
+                deck_id=deck.pk,
+                universal_main_section_id__in=ms_uids_to_del,
+            ).delete()
+
+            # === Copy sub sections ===
+            (
+                sss_to_create,
+                ss_uids_to_del,
+                ss_s_data_to_create,
+                ss_s_data_to_edit,
+            ) = SubSectionAction.pull(
                 snapshot,
                 deck,
             )
-            sub_sections_to_create += sss_to_create
-            sub_sections_to_edit += sss_to_edit
-            sub_section_uids_to_delete += ss_uids_to_del
 
+            # Create/edit sub sections data
+            SectionData.objects.bulk_create(ss_s_data_to_create)
+            SectionData.objects.bulk_update(
+                ss_s_data_to_edit,
+                SectionData.EDITABLE_ATTRS,
+            )
+
+            # Create/delete sub sections
+            SubSection.objects.bulk_create(sss_to_create)
+            SubSection.objects.filter(
+                main_section__deck_id=deck.pk,
+                universal_sub_section_id__in=ss_uids_to_del,
+            ).delete()
+
+            # === Copy flashcards ===
             (
                 fcs_to_create,
-                fcs_to_edit,
                 fc_uids_to_del,
                 ris_to_create,
-                sss_to_link_fc
+                f_data_to_create,
+                f_data_to_edit,
             ) = FlashCardAction.pull(
                 snapshot,
                 deck,
             )
-            flashcards_to_create += fcs_to_create
-            flashcards_to_edit += fcs_to_edit
-            flashcard_uids_to_delete += fc_uids_to_del
-            review_instances_to_create += ris_to_create
-            sub_sections_to_link_flashcards |= sss_to_link_fc
 
-        # Apply changes
-        MainSection.objects.bulk_create(main_sections_to_create)
-        MainSection.objects.bulk_update(main_sections_to_edit, MainSection.EDITABLE_ATTRS)
-        if len(main_section_uids_to_delete) > 0:
-            MainSection.objects.filter(
-                deck_id=deck.pk,
-                universal_main_section_id__in=main_section_uids_to_delete,
-            ).delete()
-
-        print(sub_sections_to_create)
-        print(SubSection.objects.count())
-        SubSection.objects.bulk_create(sub_sections_to_create)
-        print(SubSection.objects.count())
-        SubSection.objects.bulk_update(sub_sections_to_edit, SubSection.EDITABLE_ATTRS)
-        if len(sub_section_uids_to_delete) > 0:
-            SubSection.objects.filter(
-                main_section__deck_id=deck.pk,
-                universal_sub_section_id__in=sub_section_uids_to_delete,
-            ).delete()
-
-        FlashCard.objects.bulk_create(flashcards_to_create)
-        FlashCard.objects.bulk_update(flashcards_to_edit, FlashCard.EDITABLE_ATTRS)
-        if len(flashcard_uids_to_delete) > 0:
-            FlashCard.objects.filter(
-                sub_sections__main_section__deck_id=deck.pk,
-                universal_flashcard_id__in=flashcard_uids_to_delete,
-            ).delete()
-        ReviewInstance.objects.bulk_create(review_instances_to_create)
-
-        # Link the new flashcards to their sub sections
-        for (
-            universal_sub_section_id,
-            flashcards_to_link,
-        ) in sub_sections_to_link_flashcards.items():
-            sub_section = SubSection.objects.get(
-                main_section__deck_id=deck.pk,
-                universal_sub_section_id=universal_sub_section_id,
+            # Create/edit flashcard data
+            FlashCardData.objects.bulk_create(f_data_to_create)
+            FlashCardData.objects.bulk_update(
+                f_data_to_edit,
+                FlashCardData.EDITABLE_ATTRS,
             )
-            sub_section.flashcards.add(*flashcards_to_link)
+
+            # Create/delete flashcards and review instances
+            FlashCard.objects.bulk_create(fcs_to_create)
+            FlashCard.objects.filter(
+                sub_section__main_section__deck_id=deck.pk,
+                universal_flashcard_id__in=fc_uids_to_del,
+            ).delete()
+            ReviewInstance.objects.bulk_create(ris_to_create)
 
         # Update deck
         deck.equivalent_to_snapshot = latest_snapshot
@@ -421,11 +427,12 @@ class SnapShot(models.Model):
         main_sections = []
         sub_sections = []
         flashcards = []
+
         for ms_to_copy in parent.main_sections.all():
             if ms_to_copy.universal_main_section_id in main_section_uids_to_remove:
                 continue
 
-            copied_ms = ms_to_copy.copy(
+            _, copied_ms = ms_to_copy.copy(
                 child.pk,
                 create_new_data=False,
             )
@@ -435,7 +442,7 @@ class SnapShot(models.Model):
                 if ss_to_copy.universal_sub_section_id in sub_section_uids_to_remove:
                     continue
 
-                copied_ss = ss_to_copy.copy(
+                _, copied_ss = ss_to_copy.copy(
                     copied_ms.pk,
                     create_new_data=False,
                 )
@@ -502,13 +509,12 @@ class AbstractAction(models.Model):
 
 class MainSectionAction(AbstractAction):
     # Each action must either have a flashcard currently attached to it (edits
-    # or additions), or an abstract universal flashcard ID: XOR
+    # or additions), or a universal flashcard ID: XOR
     main_section = models.OneToOneField(
         MainSection,
         null=True, blank=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         related_name='attached_action',
-        unique=True,
     )
     universal_main_section_id = models.UUIDField(null=True, blank=True)
 
@@ -527,13 +533,10 @@ class MainSectionAction(AbstractAction):
             ms_destination = None  # set in CREATE/EDIT; not DELETE
 
             if action.action == 'CREATE':
-                ms_data, ms_destination = MainSection.create(
-                    snapshot=snapshot,
-                    title=ms_origin.data.title,
-                    description=ms_origin.data.description,
-                    order_num=ms_origin.order_num,
+                ms_data, ms_destination = ms_origin.copy(
+                    snapshot_id=snapshot.pk,
                     universal_main_section_id=ms_origin.pk,
-                    create_models=False,
+                    create_new_data=True,
                 )
                 main_sections_to_create.append(ms_destination)
                 main_sections_data_to_create.append(ms_data)
@@ -609,45 +612,57 @@ class MainSectionAction(AbstractAction):
     def pull(
         snapshot: SnapShot,
         deck: Deck,
-    ) -> Tuple[List[MainSection], List[MainSection], List[str]]:
-        actions = snapshot.applied_mainsectionaction.prefetch_related(
-            'main_section',
+    ) -> Tuple[
+        List[MainSection],
+        List[str],
+
+        List[SectionData],
+        List[SectionData],
+    ]:
+        actions = snapshot.applied_mainsectionactions.prefetch_related(
+            'main_section__data',
         ).all()
 
         main_sections_to_create = []
-        main_sections_to_edit = []
         main_section_uids_to_delete = []
+
+        sections_data_to_create = []
+        sections_data_to_edit = []
 
         for action in actions:
             ms_origin = action.main_section
 
             if action.action == 'CREATE':
-                main_sections_to_create.append(MainSection(
-                    deck=deck,
-                    title=ms_origin.title,
-                    description=ms_origin.description,
-                    universal_main_section_id=ms_origin.universal_main_section_id,
-                ))
+                copied_data, copied_ms = ms_origin.copy(deck_id=deck.pk, create_new_data=True)
+                main_sections_to_create.append(copied_ms)
+                sections_data_to_create.append(copied_data)
             elif action.action == 'EDIT':
-                ms_destination = MainSection.objects.get(
-                    universal_main_section_id=ms_origin.universal_main_section_id,
-                    deck=deck,
+                ms_data = SectionData.objects.get(
+                    main_sections__universal_main_section_id=ms_origin.universal_main_section_id,
+                    main_sections__deck_id=deck.pk,
                 )  # TODO: find a way to prefetch this
 
-                for attr in MainSection.EDITABLE_ATTRS:
-                    setattr(ms_destination, attr, getattr(ms_origin, attr))
+                for attr in SectionData.EDITABLE_ATTRS:
+                    setattr(ms_data, attr, getattr(ms_origin.data, attr))
 
-                main_sections_to_edit.append(ms_destination)
+                sections_data_to_edit.append(ms_data)
             else:
                 main_section_uids_to_delete.append(ms_origin.universal_main_section_id)
-                MainSection.objects.filter(
-                    order_num__gt=ms_origin.order_num,
-                    deck=deck,
-                ).update(
-                    order_num=F('order_num') - 1,
-                )  # TODO: there is surely a better way to do this
+                # TODO: add rearranging
+                # MainSection.objects.filter(
+                #     order_num__gt=ms_origin.order_num,
+                #     deck=deck,
+                # ).update(
+                #     order_num=F('order_num') - 1,
+                # )  # TODO: there is surely a better way to do this
 
-        return main_sections_to_create, main_sections_to_edit, main_section_uids_to_delete
+        return (
+            main_sections_to_create,
+            main_section_uids_to_delete,
+
+            sections_data_to_create,
+            sections_data_to_edit,
+        )
 
     @staticmethod
     def create_action(action: str, main_section: MainSection):
@@ -684,13 +699,12 @@ class MainSectionAction(AbstractAction):
 
 class SubSectionAction(AbstractAction):
     # Each action must either have a flashcard currently attached to it (edits
-    # or additions), or an abstract universal flashcard ID: XOR
+    # or additions), or a universal flashcard ID: XOR
     sub_section = models.OneToOneField(
         SubSection,
         null=True, blank=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         related_name='attached_action',
-        unique=True,
     )
     universal_sub_section_id = models.UUIDField(null=True, blank=True)
 
@@ -715,12 +729,10 @@ class SubSectionAction(AbstractAction):
                         ss_origin.main_section.universal_main_section_id
                     ),
                 )
-                ss_data, ss_destination = SubSection.create(
-                    main_section=main_section,
-                    title=ss_origin.data.title,
-                    description=ss_origin.data.description,
+                ss_data, ss_destination = ss_origin.copy(
+                    main_section_id=main_section.pk,
                     universal_sub_section_id=ss_origin.pk,
-                    create_models=False,
+                    create_new_data=True,
                 )
                 sub_sections_to_create.append(ss_destination)
                 sub_sections_data_to_create.append(ss_data)
@@ -782,52 +794,69 @@ class SubSectionAction(AbstractAction):
     def pull(
         snapshot: SnapShot,
         deck: Deck,
-    ) -> Tuple[List[SubSection], List[SubSection], List[str]]:
-        actions = snapshot.applied_subsectionaction.prefetch_related(
-            'sub_section',
+    ) -> Tuple[
+        List[SubSection],
+        List[str],
+        List[SectionData],
+        List[SectionData],
+    ]:
+        actions = snapshot.applied_subsectionactions.prefetch_related(
+            'sub_section__main_section',
+            'sub_section__data',
         ).all()
 
         sub_sections_to_create = []
-        sub_sections_to_edit = []
         sub_section_uids_to_delete = []
+
+        sections_data_to_create = []
+        sections_data_to_edit = []
 
         for action in actions:
             ss_origin = action.sub_section
 
             if action.action == 'CREATE':
-                # TODO: do the same thing we did in FlashCardAction.apply
-                # and look up main sections at the end
+                # TODO: find a way to prefetch this
                 main_section = deck.main_sections.get(
                     universal_main_section_id=(
                         ss_origin.main_section.universal_main_section_id
                     ),
                 )
-                sub_sections_to_create.append(SubSection(
-                    main_section=main_section,
-                    title=ss_origin.title,
-                    description=ss_origin.description,
-                    universal_sub_section_id=ss_origin.universal_sub_section_id,
-                ))
+
+                copied_data, copied_ss = ss_origin.copy(
+                    main_section_id=main_section.pk,
+                    create_new_data=True,
+                )
+
+                sub_sections_to_create.append(copied_ss)
+                sections_data_to_create.append(copied_data)
             elif action.action == 'EDIT':
-                ss_destination = SubSection.objects.get(
-                    universal_sub_section_id=ss_origin.universal_sub_section_id,
-                    main_section__deck=deck,
+                ss_data = SectionData.objects.get(
+                    sub_sections__universal_sub_section_id=ss_origin.universal_sub_section_id,
+                    sub_sections__main_section__deck_id=deck.pk,
                 )  # TODO: find a way to prefetch this
 
-                for attr in SubSection.EDITABLE_ATTRS:
-                    setattr(ss_destination, attr, getattr(ss_origin, attr))
+                for attr in SectionData.EDITABLE_ATTRS:
+                    setattr(ss_data, attr, getattr(ss_origin.data, attr))
 
-                sub_sections_to_edit.append(ss_destination)
+                sections_data_to_edit.append(ss_data)
             else:
                 sub_section_uids_to_delete.append(ss_origin.universal_sub_section_id)
-                MainSection.objects.filter(
-                    order_num__gt=ss_origin.order_num,
-                    deck=deck,
-                ).update(
-                    order_num=F('order_num') - 1,
-                )  # TODO: there is surely a better way to do this
+                # TODO: add rearranging
+                # sub_section_uids_to_delete.append(ss_origin.universal_sub_section_id)
+                # MainSection.objects.filter(
+                #     order_num__gt=ss_origin.order_num,
+                #     deck=deck,
+                # ).update(
+                #     order_num=F('order_num') - 1,
+                # )  # TODO: there is surely a better way to do this
 
-        return sub_sections_to_create, sub_sections_to_edit, sub_section_uids_to_delete
+        return (
+            sub_sections_to_create,
+            sub_section_uids_to_delete,
+
+            sections_data_to_create,
+            sections_data_to_edit,
+        )
 
     @staticmethod
     def create_action(action: str, sub_section: SubSection, deck_id: int = None):
@@ -954,62 +983,66 @@ class FlashCardAction(AbstractAction):
         deck: Deck,
     ) -> Tuple[
         List[FlashCard],
-        List[FlashCard],
         List[str],
         List[ReviewInstance],
-        dict,
+        List[FlashCardData],
+        List[FlashCardData],
     ]:
-        actions = snapshot.applied_flashcardaction.prefetch_related(
+        actions = snapshot.applied_flashcardactions.prefetch_related(
             'flashcard__sub_section',
+            'flashcard__data'
         ).all()
 
-        # Hold a dict of sub sections to the flashcards to link to them
-        # key: universal_sub_section_id; val: flashcards to link to that sub section
-        sub_sections_to_link_flashcards = defaultdict(list)
-
         flashcards_to_create = []
-        flashcards_to_edit = []
         flashcard_uids_to_delete = []
         review_instances_to_create = []
+
+        flashcards_data_to_create = []
+        flashcards_data_to_edit = []
 
         for action in actions:
             fc_origin = action.flashcard
 
             if action.action == 'CREATE':
-                fc_destination, ris = fc_origin.copy(
-                    universal_flashcard_id=fc_origin.universal_flashcard_id,
+                # TODO: find a way to prefetch this
+                sub_section = SubSection.objects.get(
+                    main_section__deck_id=deck.pk,
+                    universal_sub_section_id=(
+                        fc_origin.sub_section.universal_sub_section_id
+                    ),
                 )
+
+                fc_data, fc_destination, ris = fc_origin.copy(sub_section.pk, create_new_data=True)
 
                 flashcards_to_create.append(fc_destination)
                 review_instances_to_create += ris
-                sub_sections_to_link_flashcards[
-                    fc_origin.sub_sections.first().universal_sub_section_id
-                ].append(fc_destination)
+                flashcards_data_to_create.append(fc_data)
             elif action.action == 'EDIT':
-                fc_destination = FlashCard.objects.get(
-                    universal_flashcard_id=fc_origin.universal_flashcard_id,
-                    subsections__main_section__deck=deck,
+                fc_data = FlashCardData.objects.get(
+                    flashcard__universal_flashcard_id=fc_origin.universal_flashcard_id,
+                    flashcard_sub_section__main_section__deck_id=deck.pk,
                 )  # TODO: find a way to prefetch this
 
-                for attr in FlashCard.EDITABLE_ATTRS:
-                    setattr(fc_destination, attr, getattr(fc_origin, attr))
+                for attr in FlashCardData.EDITABLE_ATTRS:
+                    setattr(fc_data, attr, getattr(fc_origin.data, attr))
 
-                flashcards_to_edit.append(fc_destination)
+                flashcards_data_to_edit.append(fc_data)
             else:
                 flashcard_uids_to_delete.append(fc_origin.universal_flashcard_id)
-                MainSection.objects.filter(
-                    order_num__gt=fc_origin.order_num,
-                    deck=deck,
-                ).update(
-                    order_num=F('order_num') - 1,
-                )  # TODO: there is surely a better way to do this
+                # MainSection.objects.filter(
+                #     order_num__gt=fc_origin.order_num,
+                #     deck=deck,
+                # ).update(
+                #     order_num=F('order_num') - 1,
+                # )  # TODO: there is surely a better way to do this
 
         return (
             flashcards_to_create,
-            flashcards_to_edit,
             flashcard_uids_to_delete,
             review_instances_to_create,
-            sub_sections_to_link_flashcards,
+
+            flashcards_data_to_create,
+            flashcards_data_to_edit,
         )
 
     @staticmethod

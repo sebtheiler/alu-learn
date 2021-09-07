@@ -1,10 +1,11 @@
+from sharing_system.models import MainSectionAction, SubSectionAction
 from decks.models import Deck
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from skill_tree.serializers import MainSectionSerializer, SubSectionSerializer
 
-from ..models import MainSection, SubSection
+from ..models import MainSection, SectionData, SubSection
 
 
 @api_view(['POST'])
@@ -27,6 +28,50 @@ def create_main_section(request, *args, **kwargs):
     return Response(MainSectionSerializer(main_section).data, status=200)
 
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_main_section(request, main_section_id, *args, **kwargs):
+    try:
+        main_section = MainSection.objects.get(
+            pk=main_section_id,
+            deck__user_id=request.user.pk,
+        )
+    except MainSection.DoesNotExist:
+        return Response({'message': 'Main section not found'}, status=404)
+
+    data = main_section.data
+    edited_values = request.data.get('edited_values')
+    for attr in SectionData.EDITABLE_ATTRS:
+        setattr(data, attr, edited_values.get(attr, getattr(data, attr)))
+    data.save()
+
+    MainSectionAction.create_action('EDIT', main_section)
+
+    return Response(MainSectionSerializer(main_section).data, status=200)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_sub_section(request, sub_section_id, *args, **kwargs):
+    try:
+        sub_section = SubSection.objects.get(
+            pk=sub_section_id,
+            main_section__deck__user_id=request.user.pk,
+        )
+    except SubSection.DoesNotExist:
+        return Response({'message': 'Main section not found'}, status=404)
+
+    data = sub_section.data
+    edited_values = request.data.get('edited_values')
+    for attr in SectionData.EDITABLE_ATTRS:
+        setattr(data, attr, edited_values.get(attr, getattr(data, attr)))
+    data.save()
+
+    SubSectionAction.create_action('EDIT', sub_section)
+
+    return Response(SubSectionSerializer(sub_section).data, status=200)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_sub_section(request, *args, **kwargs):
@@ -38,7 +83,7 @@ def create_sub_section(request, *args, **kwargs):
     except MainSection.DoesNotExist:
         return Response({'message': 'Main section not found'}, status=404)
 
-    sub_section = SubSection.create(
+    _, sub_section = SubSection.create(
         title=request.data.get('title', 'New Sub Section'),
         description=request.data.get('description', ''),
         main_section=main_section,

@@ -65,5 +65,6 @@ export default function SkillTree({ deck }: { deck: Deck }) {
       )}
     </div>
     <CreateMainSectionButton deckId={deck.id} />
+    <br />
   </>);
 }

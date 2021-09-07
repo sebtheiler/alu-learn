@@ -91,7 +91,7 @@ class AbstractSection(models.Model):
         elif len(titles) == 1:
             return MainSection.objects.get(
                 deck_id=deck_id,
-                title__iexact=AbstractSection.clean(titles[0]),
+                data__title__iexact=AbstractSection.clean(titles[0]),
             ), True
         else:
             return SubSection.objects.get(
@@ -163,15 +163,16 @@ class MainSection(AbstractSection):
         snapshot=None,
         order_num: int = None,
         universal_main_section_id: str = None,
-        create_models: bool = True,
     ) -> Tuple[SectionData, MainSection]:
+        from sharing_system.models import MainSectionAction  # avoid circular import
+
         data_id = uuid.uuid4()
-        data = SectionData(
+        data = SectionData.objects.create(
             title=title,
             description=description,
             pk=data_id,
         )
-        main_section = MainSection(
+        main_section = MainSection.objects.create(
             deck=deck,
             snapshot=snapshot,
             data_id=data_id,
@@ -182,11 +183,7 @@ class MainSection(AbstractSection):
             ),
             universal_main_section_id=universal_main_section_id,
         )
-        print(data_id, SectionData.objects.filter(pk=data_id))
-
-        if create_models:
-            data.save()
-            main_section.save()
+        MainSectionAction.create_action('CREATE', main_section)
 
         return data, main_section
 
@@ -195,6 +192,7 @@ class MainSection(AbstractSection):
         snapshot_id: str = None,
         deck_id: int = None,
         create_new_data: bool = False,
+        universal_main_section_id: str = None
     ) -> Tuple[SectionData, MainSection]:
         if create_new_data:
             data = SectionData(
@@ -202,16 +200,15 @@ class MainSection(AbstractSection):
                 description=self.data.description,
                 pk=uuid.uuid4(),
             )
-            data_id = data.pk
         else:
-            data_id = self.data_id
+            data = self.data
 
         return data, MainSection(
             snapshot_id=snapshot_id,
             deck_id=deck_id,
-            data_id=data_id,
+            data_id=data.pk,
             order_num=self.order_num,
-            universal_main_section_id=self.universal_main_section_id,
+            universal_main_section_id=universal_main_section_id or self.universal_main_section_id,
             pk=uuid.uuid4(),
         )
 
@@ -252,14 +249,14 @@ class SubSection(AbstractSection):
         main_section: MainSection,
         order_num: int = None,
         universal_sub_section_id: str = None,
-        create_models: bool = True,
     ) -> Tuple[SectionData, SubSection]:
-        data = SectionData(
+        from sharing_system.models import SubSectionAction
+
+        data = SectionData.objects.create(
             title=title,
             description=description,
-            pk=uuid.uuid4(),
         )
-        sub_section = SubSection(
+        sub_section = SubSection.objects.create(
             data_id=data.pk,
             main_section_id=main_section.pk,
             order_num=(
@@ -269,17 +266,15 @@ class SubSection(AbstractSection):
             ),
             universal_sub_section_id=universal_sub_section_id,
         )
-
-        if create_models:
-            data.save()
-            sub_section.save()
+        SubSectionAction.create_action('CREATE', sub_section)
 
         return data, sub_section
 
     def copy(
         self,
         main_section_id: str,
-        create_new_data: bool = True,
+        universal_sub_section_id: str = None,
+        create_new_data: bool = False,
     ) -> Tuple[SectionData, SubSection]:
         if create_new_data:
             data = SectionData(
@@ -287,13 +282,12 @@ class SubSection(AbstractSection):
                 description=self.data.description,
                 pk=uuid.uuid4(),
             )
-            data_id = data.pk
         else:
-            data_id = self.data_id
+            data = self.data
 
         sub_section = SubSection(
-            data_id=data_id,
-            universal_sub_section_id=self.universal_sub_section_id,
+            data_id=data.pk,
+            universal_sub_section_id=universal_sub_section_id or self.universal_sub_section_id,
             order_num=self.order_num,
             pk=uuid.uuid4(),
 

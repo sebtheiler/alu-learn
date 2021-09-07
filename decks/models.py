@@ -220,7 +220,7 @@ class FlashCard(models.Model):
         ordering = ('order_num',)
 
     def __str__(self) -> str:
-        return f'Flashcard: {str(self.fields)[:50]}...'
+        return f'{self.flashcard_type} flashcard in {self.sub_section_id}'
 
     def has_tag(self, tag: str) -> bool:
         return tag in [tag.strip() for tag in self.tags.split(',')]
