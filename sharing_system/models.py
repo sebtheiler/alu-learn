@@ -1151,7 +1151,11 @@ class FlashCardAction(AbstractAction):
         )
 
     @staticmethod
-    def create_action(action: AbstractAction.ACTION_TYPE, flashcard: FlashCard):
+    def create_action(
+        action: AbstractAction.ACTION_TYPE,
+        flashcard: FlashCard,
+        deck_id: int = None,
+    ):
         if action == 'DELETE':
             try:
                 # Try deleting any action that is currently attached to the sub section
@@ -1163,7 +1167,7 @@ class FlashCardAction(AbstractAction):
             # Create a delete action
             if flashcard.universal_flashcard_id:
                 return FlashCardAction.objects.create(
-                    deck_id=flashcard.deck_id,
+                    deck_id=deck_id or flashcard.sub_section.main_section.deck_id,
                     action=action,
                     universal_flashcard_id=flashcard.universal_flashcard_id,
                 )
@@ -1173,7 +1177,7 @@ class FlashCardAction(AbstractAction):
         try:
             # Create a CREATE/EDIT/REARRANGE action
             return FlashCardAction.objects.create(
-                deck_id=flashcard.deck_id,
+                deck_id=deck_id or flashcard.sub_section.main_section.deck_id,
                 action=action,
                 flashcard=flashcard,
             )

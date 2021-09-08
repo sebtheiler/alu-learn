@@ -446,10 +446,10 @@ def flashcard_create_view(request, *args, **kwargs):
     sub_section.save()
 
     # Log the flashcard as being created (for sharing system)
-    FlashCardAction.objects.create(
-        deck_id=deck.pk,
-        flashcard=flashcard,
+    FlashCardAction.create_action(
         action='CREATE',
+        flashcard=flashcard,
+        deck_id=deck.pk,
     )
 
     return Response(
@@ -474,7 +474,7 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
         flashcard = FlashCard.objects.get(
             pk=flashcard_id,
             sub_section__main_section__deck__user_id=request.user.pk,
-        )  # TODO: can we use `.selected_related('deck')`?
+        )
         data = flashcard.data
     except FlashCard.DoesNotExist:
         return Response({'message': 'Flashcard not found / you are unauthorized'}, status=400)
@@ -524,15 +524,20 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
             ReviewInstance.objects.bulk_create(flashcards_to_create)
             review_instances.filter(id__in=flashcards_to_delete).delete()
 
-    flashcard.save()
+    if new_front_image_bs64 := edited_values.get('front_image'):
+        new_front_image = base64_to_file(new_front_image_bs64, f'{flashcard.pk}-front')
+        if new_front_image != data.front_image:
+            data.front_image = new_front_image
+
+    if new_back_image_bs64 := edited_values.get('back_image'):
+        new_back_image = base64_to_file(new_back_image_bs64, f'{flashcard.pk}-back')
+        if new_back_image != data.back_image:
+            data.back_image = new_back_image
+
     data.save()
 
     # Log the flashcard as being edited (for sharing system)
-    FlashCardAction.objects.create(
-        deck=flashcard.sub_section.main_section.deck,
-        flashcard=flashcard,
-        action='EDIT',
-    )
+    FlashCardAction.create_action('EDIT', flashcard)
 
     return Response(FlashCardSerializer(instance=flashcard).data, 200)
 

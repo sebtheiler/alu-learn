@@ -236,7 +236,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
         {deckId && <Col>
           <ButtonGroup className='float-right'>
             <Button
-              href={`/deck/${deckId}/flashcards/`}
+              href={`/deck/${deckId}/flashcards/` + (subSection ? `sections/${subSection}/` : '')}
               target='_blank'
             >
               View All Flashcards
@@ -251,6 +251,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
           </ButtonGroup>
         </Col>}
       </Row>
+      <br />
     </Container>
   );
 }
