@@ -185,23 +185,22 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
           ].map(([title, attr]) =>
             <div className='mt-4' key={attr}>
               <h3>{title}</h3>
-              <ul>
-                <li className='text-success'>
-                  You've created <strong>
-                  {actions[attr].filter(action => action.action === 'CREATE').length}
-                  </strong> {title.toLowerCase()}
-                </li>
-                <li className='text-primary'>
-                  You've edited <strong>
-                  {actions[attr].filter(action => action.action === 'EDIT').length}
-                  </strong> {title.toLowerCase()}
-                </li>
-                <li className='text-danger'>
-                  You've deleted <strong>
-                  {actions[attr].filter(action => action.action === 'DELETE').length}
-                  </strong> {title.toLowerCase()}
-                </li>
-              </ul>
+              {actions[attr].length > 0 ? <ul>
+                {[
+                  ['created', 'CREATE', 'text-success'],
+                  ['edited', 'EDIT', 'text-primary'],
+                  ['rearranged', 'REARRANGE', 'text-info'],
+                  ['deleted', 'DELETE', 'text-danger'],
+                ].map(([actionVerb, actionAttr, textClass]) =>
+                  actions[attr].filter(action => action.action === actionAttr).length > 0
+                  &&
+                  <li className={textClass}>
+                    You've {actionVerb} <strong>
+                    {actions[attr].filter(action => action.action === actionAttr).length}
+                    </strong> {title.toLowerCase()}
+                  </li>
+                )}
+              </ul> : <p>No actions</p>}
             </div>
           )}
           <p>

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import uuid
-from typing import List, Tuple, Union
+from typing import List, Literal, Tuple, Union
+
+from django.db.models.expressions import F
 
 from accounts.models import User
 from decks.models import Deck, FlashCard, FlashCardData, ReviewInstance
@@ -291,7 +293,9 @@ class SharedDeck(models.Model):
             # === Copy main sections ===
             (
                 mss_to_create,
+                mss_to_edit,
                 ms_uids_to_del,
+
                 ms_s_data_to_create,
                 ms_s_data_to_edit,
             ) = MainSectionAction.pull(
@@ -299,11 +303,15 @@ class SharedDeck(models.Model):
                 deck,
             )
 
-            # Create/edit main sections data
+            # Create/edit main sections
             SectionData.objects.bulk_create(ms_s_data_to_create)
             SectionData.objects.bulk_update(
                 ms_s_data_to_edit,
                 SectionData.EDITABLE_ATTRS,
+            )
+            MainSection.objects.bulk_update(
+                mss_to_edit,
+                ('order_num',),
             )
 
             # Create/delete main sections
@@ -316,7 +324,9 @@ class SharedDeck(models.Model):
             # === Copy sub sections ===
             (
                 sss_to_create,
+                sss_to_edit,
                 ss_uids_to_del,
+
                 ss_s_data_to_create,
                 ss_s_data_to_edit,
             ) = SubSectionAction.pull(
@@ -330,6 +340,10 @@ class SharedDeck(models.Model):
                 ss_s_data_to_edit,
                 SectionData.EDITABLE_ATTRS,
             )
+            SubSection.objects.bulk_update(
+                sss_to_edit,
+                ('order_num',),
+            )
 
             # Create/delete sub sections
             SubSection.objects.bulk_create(sss_to_create)
@@ -341,8 +355,10 @@ class SharedDeck(models.Model):
             # === Copy flashcards ===
             (
                 fcs_to_create,
+                fcs_to_edit,
                 fc_uids_to_del,
                 ris_to_create,
+
                 f_data_to_create,
                 f_data_to_edit,
             ) = FlashCardAction.pull(
@@ -355,6 +371,10 @@ class SharedDeck(models.Model):
             FlashCardData.objects.bulk_update(
                 f_data_to_edit,
                 FlashCardData.EDITABLE_ATTRS,
+            )
+            FlashCard.objects.bulk_update(
+                fcs_to_edit,
+                ('order_num',),
             )
 
             # Create/delete flashcards and review instances
@@ -490,11 +510,16 @@ class AbstractAction(models.Model):
         ('CREATE', 'Create'),
         ('EDIT', 'Edit'),
         ('DELETE', 'Delete'),
+        ('REARRANGE', 'Rearrange'),
     )
-    action = models.CharField(max_length=8, choices=ACTION_OPTIONS)
+    ACTION_TYPE = Literal['CREATE', 'EDIT', 'DELETE', 'REARRANGE']
+    action = models.CharField(max_length=10, choices=ACTION_OPTIONS)
+
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         abstract = True
+        ordering = ('timestamp',)
 
     @staticmethod
     def push(*args, **kwargs):
@@ -562,14 +587,25 @@ class MainSectionAction(AbstractAction):
 
                 main_sections_to_edit.append(ms_destination)
                 main_sections_data_to_create.append(ms_data)
+            elif action.action == 'DELETE':
+                # NOTE: deleted MainSections are never included, so we only have to
+                # rearrange the MainSections that come after this one; not delete the original
+                MainSection.objects.filter(
+                    order_num__gt=ms_origin.order_num,
+                    snapshot_id=snapshot.pk,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
+            elif action.action == 'REARRANGE':
+                ms_destination = MainSection.objects.get(
+                    universal_main_section_id=ms_origin.universal_main_section_id,
+                    snapshot=snapshot,
+                )  # TODO: find a way to prefetch this
+                ms_destination.order_num = ms_origin.order_num
+
+                main_sections_to_edit.append(ms_destination)
             else:
-                ...  # TODO: add rearranging
-            #     MainSection.objects.filter(
-            #         order_num__gt=ms_origin.order_num,
-            #         snapshot=snapshot,
-            #     ).update(
-            #         order_num=F('order_num') - 1,
-            #     )  # TODO: there is surely a better way to do this
+                raise ValueError(f'Unknown action: {action.action}, {action}')
 
             # Update the action
             action.deck = None
@@ -593,7 +629,7 @@ class MainSectionAction(AbstractAction):
         #     ms_destination.data_id = data.pk
         MainSection.objects.bulk_update(
             main_sections_to_edit,
-            ('data_id',),
+            ('data_id', 'order_num'),
         )
 
         # Note that the origin main sections are now universally synced
@@ -614,6 +650,7 @@ class MainSectionAction(AbstractAction):
         deck: Deck,
     ) -> Tuple[
         List[MainSection],
+        List[MainSection],
         List[str],
 
         List[SectionData],
@@ -624,6 +661,7 @@ class MainSectionAction(AbstractAction):
         ).all()
 
         main_sections_to_create = []
+        main_sections_to_edit = []
         main_section_uids_to_delete = []
 
         sections_data_to_create = []
@@ -646,18 +684,28 @@ class MainSectionAction(AbstractAction):
                     setattr(ms_data, attr, getattr(ms_origin.data, attr))
 
                 sections_data_to_edit.append(ms_data)
-            else:
+            elif action.action == 'DELETE':
                 main_section_uids_to_delete.append(ms_origin.universal_main_section_id)
-                # TODO: add rearranging
-                # MainSection.objects.filter(
-                #     order_num__gt=ms_origin.order_num,
-                #     deck=deck,
-                # ).update(
-                #     order_num=F('order_num') - 1,
-                # )  # TODO: there is surely a better way to do this
+                MainSection.objects.filter(
+                    order_num__gt=ms_origin.order_num,
+                    deck_id=deck.pk,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
+            elif action.action == 'REARRANGE':
+                main_section = MainSection.objects.get(
+                    universal_main_section_id=ms_origin.universal_main_section_id,
+                    deck_id=deck.pk,
+                )
+                main_section.order_num = ms_origin.order_num
+
+                main_sections_to_edit.append(main_section)
+            else:
+                raise ValueError(f'Unknown action: {action}')
 
         return (
             main_sections_to_create,
+            main_sections_to_edit,
             main_section_uids_to_delete,
 
             sections_data_to_create,
@@ -665,7 +713,7 @@ class MainSectionAction(AbstractAction):
         )
 
     @staticmethod
-    def create_action(action: str, main_section: MainSection):
+    def create_action(action: AbstractAction.ACTION_TYPE, main_section: MainSection):
         if action == 'DELETE':
             try:
                 # Try deleting any action that is currently attached to the sub section
@@ -686,7 +734,7 @@ class MainSectionAction(AbstractAction):
                 return
 
         try:
-            # Create a CREATE/EDIT action
+            # Create a CREATE/EDIT/REARRANGE action
             return MainSectionAction.objects.create(
                 deck_id=main_section.deck_id,
                 action=action,
@@ -755,15 +803,25 @@ class SubSectionAction(AbstractAction):
 
                 sub_sections_to_edit.append(ss_destination)
                 sub_sections_data_to_create.append(ss_data)
+            elif action.action == 'DELETE':
+                # NOTE: deleted SubSections are never included, so we only have to
+                # rearrange the SubSections that come after this one; not delete the original
+                SubSection.objects.filter(
+                    order_num__gt=ss_origin.order_num,
+                    main_section__snapshot_id=snapshot.pk,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
+            elif action.action == 'REARRANGE':
+                ss_destination = SubSection.objects.get(
+                    universal_sub_section_id=ss_origin.universal_sub_section_id,
+                    main_section__snapshot_id=snapshot.pk,
+                )  # TODO: find a way to prefetch this
+                ss_destination.order_num = ss_origin.order_num
+
+                sub_sections_to_edit.append(ss_destination)
             else:
-                ...  # TODO: add rearranging
-                # sub_section_uids_to_delete.append(ss_origin.universal_sub_section_id)
-                # MainSection.objects.filter(
-                #     order_num__gt=ss_origin.order_num,
-                #     snapshot=snapshot,
-                # ).update(
-                #     order_num=F('order_num') - 1,
-                # )  # TODO: there is surely a better way to do this
+                raise ValueError(f'Unknown action: {action.action}, {action}')
 
             # Update the action
             action.deck = None
@@ -775,7 +833,7 @@ class SubSectionAction(AbstractAction):
         SubSection.objects.bulk_create(sub_sections_to_create)
         SubSection.objects.bulk_update(
             sub_sections_to_edit,
-            ('data_id',),
+            ('data_id', 'order_num'),
         )
 
         # Note that the origin sub sections are now universally synced
@@ -796,7 +854,9 @@ class SubSectionAction(AbstractAction):
         deck: Deck,
     ) -> Tuple[
         List[SubSection],
+        List[SubSection],
         List[str],
+
         List[SectionData],
         List[SectionData],
     ]:
@@ -806,6 +866,7 @@ class SubSectionAction(AbstractAction):
         ).all()
 
         sub_sections_to_create = []
+        sub_sections_to_edit = []
         sub_section_uids_to_delete = []
 
         sections_data_to_create = []
@@ -839,19 +900,28 @@ class SubSectionAction(AbstractAction):
                     setattr(ss_data, attr, getattr(ss_origin.data, attr))
 
                 sections_data_to_edit.append(ss_data)
-            else:
+            elif action.action == 'DELETE':
                 sub_section_uids_to_delete.append(ss_origin.universal_sub_section_id)
-                # TODO: add rearranging
-                # sub_section_uids_to_delete.append(ss_origin.universal_sub_section_id)
-                # MainSection.objects.filter(
-                #     order_num__gt=ss_origin.order_num,
-                #     deck=deck,
-                # ).update(
-                #     order_num=F('order_num') - 1,
-                # )  # TODO: there is surely a better way to do this
+                SubSection.objects.filter(
+                    order_num__gt=ss_origin.order_num,
+                    main_section__deck_id=deck.pk,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
+            elif action.action == 'REARRANGE':
+                sub_section = SubSection.objects.get(
+                    universal_sub_section_id=ss_origin.universal_sub_section_id,
+                    main_section__deck_id=deck.pk,
+                )
+                sub_section.order_num = ss_origin.order_num
+
+                sub_sections_to_edit.append(sub_section)
+            else:
+                raise ValueError(f'Unknown action: {action}')
 
         return (
             sub_sections_to_create,
+            sub_sections_to_edit,
             sub_section_uids_to_delete,
 
             sections_data_to_create,
@@ -859,7 +929,11 @@ class SubSectionAction(AbstractAction):
         )
 
     @staticmethod
-    def create_action(action: str, sub_section: SubSection, deck_id: int = None):
+    def create_action(
+        action: AbstractAction.ACTION_TYPE,
+        sub_section: SubSection,
+        deck_id: int = None,
+    ):
         if action == 'DELETE':
             try:
                 # Try deleting any action that is currently attached to the sub section
@@ -879,7 +953,7 @@ class SubSectionAction(AbstractAction):
                 return
 
         try:
-            # Create a CREATE/EDIT action
+            # Create a CREATE/EDIT/REARRANGE action
             return SubSectionAction.objects.create(
                 deck_id=deck_id or sub_section.main_section.deck_id,
                 action=action,
@@ -949,8 +1023,25 @@ class FlashCardAction(AbstractAction):
 
                 flashcards_to_edit.append(fc_destination)
                 flashcards_data_to_create.append(fc_data)
+            elif action.action == 'DELETE':
+                # NOTE: deleted FlashCards are never included, so we only have to
+                # rearrange the FlashCards that come after this one; not delete the original
+                FlashCard.objects.filter(
+                    order_num__gt=fc_origin.order_num,
+                    sub_section__main_section__snapshot_id=snapshot.pk,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
+            elif action.action == 'REARRANGE':
+                fc_destination = FlashCard.objects.get(
+                    universal_flashcard_id=fc_origin.universal_flashcard_id,
+                    sub_section__main_section__snapshot_id=snapshot.pk,
+                )  # TODO : find a way to prefetch this
+                fc_destination.order_num = fc_origin.order_num
+
+                flashcards_to_create.append(fc_destination)
             else:
-                ...  # TODO: add rearranging
+                raise ValueError(f'Unknown action: {action.action}, {action}')
 
             # Update the action
             action.deck = None
@@ -962,7 +1053,7 @@ class FlashCardAction(AbstractAction):
         FlashCard.objects.bulk_create(flashcards_to_create)
         FlashCard.objects.bulk_update(
             flashcards_to_edit,
-            ('data_id',),
+            ('data_id', 'order_num'),
         )
 
         # Note that the origin flashcards are now universally synced
@@ -983,8 +1074,10 @@ class FlashCardAction(AbstractAction):
         deck: Deck,
     ) -> Tuple[
         List[FlashCard],
+        List[FlashCard],
         List[str],
         List[ReviewInstance],
+
         List[FlashCardData],
         List[FlashCardData],
     ]:
@@ -994,6 +1087,7 @@ class FlashCardAction(AbstractAction):
         ).all()
 
         flashcards_to_create = []
+        flashcards_to_edit = []
         flashcard_uids_to_delete = []
         review_instances_to_create = []
 
@@ -1027,17 +1121,28 @@ class FlashCardAction(AbstractAction):
                     setattr(fc_data, attr, getattr(fc_origin.data, attr))
 
                 flashcards_data_to_edit.append(fc_data)
-            else:
+            elif action.action == 'DELETE':
                 flashcard_uids_to_delete.append(fc_origin.universal_flashcard_id)
-                # MainSection.objects.filter(
-                #     order_num__gt=fc_origin.order_num,
-                #     deck=deck,
-                # ).update(
-                #     order_num=F('order_num') - 1,
-                # )  # TODO: there is surely a better way to do this
+                FlashCard.objects.filter(
+                    order_num__gt=fc_origin.order_num,
+                    sub_section__main_section__deck_id=deck.pk,
+                ).update(
+                    order_num=F('order_num') - 1,
+                )  # TODO: there is surely a better way to do this
+            elif action.action == 'REARRANGE':
+                flashcard = FlashCard.objects.get(
+                    universal_flashcard_id=fc_origin.universal_flashcard_id,
+                    sub_section__main_section__deck_id=deck.pk,
+                )
+                flashcard.order_num = fc_origin.order_num
+
+                flashcards_to_edit.append(flashcard)
+            else:
+                raise ValueError(f'Unknown action: {action}')
 
         return (
             flashcards_to_create,
+            flashcards_to_edit,
             flashcard_uids_to_delete,
             review_instances_to_create,
 
@@ -1046,7 +1151,7 @@ class FlashCardAction(AbstractAction):
         )
 
     @staticmethod
-    def create_action(action: str, flashcard: FlashCard):
+    def create_action(action: AbstractAction.ACTION_TYPE, flashcard: FlashCard):
         if action == 'DELETE':
             try:
                 # Try deleting any action that is currently attached to the sub section
@@ -1066,7 +1171,7 @@ class FlashCardAction(AbstractAction):
                 return
 
         try:
-            # Create a CREATE/EDIT action
+            # Create a CREATE/EDIT/REARRANGE action
             return FlashCardAction.objects.create(
                 deck_id=flashcard.deck_id,
                 action=action,

@@ -209,8 +209,8 @@ def rearrange_object_view(
         Model.objects.bulk_update([model, other], ['order_num'])
 
         if ActionModel:
-            ActionModel.create_action('EDIT', model),
-            ActionModel.create_action('EDIT', other),
+            ActionModel.create_action('REARRANGE', model),
+            ActionModel.create_action('REARRANGE', other),
 
         return Response(Serializer(model).data, status=200)
 
