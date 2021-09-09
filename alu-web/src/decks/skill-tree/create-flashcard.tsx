@@ -14,6 +14,7 @@ import { blankSlateElement, createFullEditor, EditorButtons, FullEditor } from '
 import { QuestionBubble } from '../../utils';
 import { apiObjectCreate, apiObjectDelete, apiObjectEdit, useObjectGet } from '../../lookup/lookup';
 import './create-flashcard.scss';
+import { blob2base64 } from '../../utils/utils';
 
 const ONE_SIDED_CARDS = ['CLOZE'];
 interface CreateFlashcardProps {
@@ -39,6 +40,9 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
       setFrontValue(flashcard.data.fields[0]);
       if (flashcard.data.fields.length > 1)
         setBackValue(flashcard.data.fields[1]);
+
+      setFrontSelectedImageUrl(flashcard.data?.front_image ?? '');
+      setBackSelectedImageUrl(flashcard.data?.back_image ?? '');
     },
     !!flashcardId,
   );
@@ -70,18 +74,12 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
     }
     setErrorMessage('');
 
-    let frontImage = frontSelectedImageUrl ? await fetch(frontSelectedImageUrl).then(r => r.blob()) : null;
-    let backImage = backSelectedImageUrl ? await fetch(backSelectedImageUrl).then(r => r.blob()) : null;
-    const blob2base64 = async (blob: Blob) => {
-      return new Promise<string | ArrayBuffer | null>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(blob); 
-        reader.onloadend = () => {
-          const base64data = reader.result;                
-          resolve(base64data);
-        }
-      });
-    }
+    let frontImage = (frontSelectedImageUrl && frontSelectedImageUrl !== flashcard?.data?.front_image)
+      ? await fetch(frontSelectedImageUrl).then(r => r.blob())
+      : null;
+    let backImage = (backSelectedImageUrl && backSelectedImageUrl !== flashcard?.data?.back_image)
+      ? await fetch(backSelectedImageUrl).then(r => r.blob())
+      : null;
 
     const flashcardInfo = {
       fields: ONE_SIDED_CARDS.includes(flashcardType) ? [frontValue] : [frontValue, backValue],

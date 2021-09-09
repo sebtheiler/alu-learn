@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.html import format_html
 
 from .models import (FlashCardAction, MainSectionAction, SharedDeck, SnapShot,
                      SubSectionAction)
@@ -13,7 +15,7 @@ class FlashCardActionAdmin(admin.ModelAdmin):
     list_display = (
         'deck',
         'snapshot',
-        'flashcard',
+        'link_to_flashcard',
         'action',
     )
     search_fields = (
@@ -26,6 +28,11 @@ class FlashCardActionAdmin(admin.ModelAdmin):
         queryset = super(FlashCardActionAdmin, self).get_queryset(request)
         queryset = queryset.prefetch_related('deck', 'snapshot', 'flashcard')
         return queryset
+
+    def link_to_flashcard(self, obj):
+        link = reverse('admin:decks_flashcard_change', args=[obj.flashcard_id])
+        return format_html('<a href="{}">{}</a>', link, str(obj.flashcard))
+    link_to_flashcard.short_description = 'Flashcard'
 
 
 class MainSectionActionAdmin(admin.ModelAdmin):

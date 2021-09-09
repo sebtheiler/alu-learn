@@ -662,3 +662,15 @@ For your own safety, please type "DELETE" (all caps, without the quotes) to conf
 that you want to delete this deck.
   `) === 'DELETE';
 }
+
+// Converts a blob to base64
+export const blob2base64 = async (blob: Blob) => {
+  return new Promise<string | ArrayBuffer | null>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob); 
+    reader.onloadend = () => {
+      const base64data = reader.result;                
+      resolve(base64data);
+    }
+  });
+}

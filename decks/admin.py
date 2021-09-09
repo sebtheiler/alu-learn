@@ -10,11 +10,12 @@ class FlashCardAdmin(admin.ModelAdmin):
         'get_section',
         'flashcard_type',
         'order_num',
-        'fields',
+        'data_fields',
     )
     model = FlashCard
 
     def get_queryset(self, request):
+        # TODO: make use less queries
         queryset = super(FlashCardAdmin, self).get_queryset(request)
         queryset = queryset.prefetch_related('sub_section__main_section__deck')
         return queryset
@@ -34,10 +35,14 @@ class FlashCardAdmin(admin.ModelAdmin):
     get_section.short_description = 'Section'
     get_section.admin_order_field = 'sub_section__main_section__deck__title'
 
+    def data_fields(self, obj):
+        return obj.data.fields
+    data_fields.short_description = 'Fields'
+
 
 class ReviewInstanceAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'flashcard', 'get_deck']
-    search_fields = ['flashcard__deck__title']
+    search_fields = ['flashcard__sub_section__main_section__deck__title']
 
     class Meta:
         model = ReviewInstance

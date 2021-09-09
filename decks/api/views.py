@@ -414,17 +414,17 @@ def flashcard_create_view(request, *args, **kwargs):
         return Response({'message': '`fields` must not be None'}, status=400)
 
     # Create images
-    flashcard_uuid = uuid.uuid4()
+    data_uuid = uuid.uuid4()
 
     if front_image_base64 := request.data.get('front_image'):
-        front_image = base64_to_file(front_image_base64, f'{flashcard_uuid}-front')
+        front_image = base64_to_file(front_image_base64, f'{data_uuid}-front')
         if front_image.size > 1024_000:
             return Response({'message': 'Front image too large'}, status=400)
     else:
         front_image = None
 
     if back_image_base64 := request.data.get('back_image'):
-        back_image = base64_to_file(back_image_base64, f'{flashcard_uuid}-back')
+        back_image = base64_to_file(back_image_base64, f'{data_uuid}-back')
         if back_image.size > 1024_000:
             return Response({'message': 'Back image too large'}, status=400)
     else:
@@ -438,7 +438,7 @@ def flashcard_create_view(request, *args, **kwargs):
         fields=fields,
         front_image=front_image,
         back_image=back_image,
-        flashcard_uuid=flashcard_uuid,
+        data_uuid=data_uuid,
     )
 
     # Clear sub section %-complete cache
@@ -525,12 +525,12 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
             review_instances.filter(id__in=flashcards_to_delete).delete()
 
     if new_front_image_bs64 := edited_values.get('front_image'):
-        new_front_image = base64_to_file(new_front_image_bs64, f'{flashcard.pk}-front')
+        new_front_image = base64_to_file(new_front_image_bs64, f'{data.pk}-front')
         if new_front_image != data.front_image:
             data.front_image = new_front_image
 
     if new_back_image_bs64 := edited_values.get('back_image'):
-        new_back_image = base64_to_file(new_back_image_bs64, f'{flashcard.pk}-back')
+        new_back_image = base64_to_file(new_back_image_bs64, f'{data.pk}-back')
         if new_back_image != data.back_image:
             data.back_image = new_back_image
 

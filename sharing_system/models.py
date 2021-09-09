@@ -3,11 +3,10 @@ from __future__ import annotations
 import uuid
 from typing import List, Literal, Tuple, Union
 
-from django.db.models.expressions import F
-
 from accounts.models import User
 from decks.models import Deck, FlashCard, FlashCardData, ReviewInstance
 from django.db import models
+from django.db.models.expressions import F
 from django.db.models.query import QuerySet
 from django.db.utils import IntegrityError
 from profiles.models import Profile
@@ -989,6 +988,7 @@ class FlashCardAction(AbstractAction):
 
         for action in actions:
             fc_origin = action.flashcard
+            fc_destination = None
 
             if action.action == 'CREATE':
                 sub_section = SubSection.objects.get(
@@ -1010,16 +1010,12 @@ class FlashCardAction(AbstractAction):
                 fc_origin.universal_flashcard_id = fc_origin.pk
                 origin_flashcards_to_update_uid.append(fc_origin)
             elif action.action == 'EDIT':
-                data_id = uuid.uuid4()
-                fc_data = FlashCardData(
-                    fields=fc_origin.data.fields,
-                    tags=fc_origin.data.tags,
-                )
+                fc_data = fc_origin.data.copy()
                 fc_destination = FlashCard.objects.get(
                     universal_flashcard_id=fc_origin.universal_flashcard_id,
                     sub_section__main_section__snapshot_id=snapshot.pk,
                 )
-                fc_destination.data_id = data_id
+                fc_destination.data_id = fc_data.pk
 
                 flashcards_to_edit.append(fc_destination)
                 flashcards_data_to_create.append(fc_data)
@@ -1046,8 +1042,7 @@ class FlashCardAction(AbstractAction):
             # Update the action
             action.deck = None
             action.snapshot = snapshot
-            if fc_destination:
-                action.sub_section = fc_destination
+            action.flashcard_id = fc_destination.pk
 
         FlashCardData.objects.bulk_create(flashcards_data_to_create)
         FlashCard.objects.bulk_create(flashcards_to_create)
@@ -1065,7 +1060,7 @@ class FlashCardAction(AbstractAction):
         # Transfer the actions from the deck to the snapshot
         FlashCardAction.objects.bulk_update(
             actions,
-            ('deck', 'snapshot', 'flashcard')
+            ('deck', 'snapshot', 'flashcard_id')
         )
 
     @staticmethod
@@ -1113,8 +1108,8 @@ class FlashCardAction(AbstractAction):
                 flashcards_data_to_create.append(fc_data)
             elif action.action == 'EDIT':
                 fc_data = FlashCardData.objects.get(
-                    flashcard__universal_flashcard_id=fc_origin.universal_flashcard_id,
-                    flashcard_sub_section__main_section__deck_id=deck.pk,
+                    flashcards__universal_flashcard_id=fc_origin.universal_flashcard_id,
+                    flashcards__sub_section__main_section__deck_id=deck.pk,
                 )  # TODO: find a way to prefetch this
 
                 for attr in FlashCardData.EDITABLE_ATTRS:
@@ -1181,6 +1176,9 @@ class FlashCardAction(AbstractAction):
                 action=action,
                 flashcard=flashcard,
             )
-        except IntegrityError:
+        except IntegrityError as e:
+            print(e)
+            action = FlashCardAction.objects.get(flashcard_id=flashcard.pk)
+            print(action, action.pk)
             # If creating an EDIT action, and there is already a CREATE action, pass
             pass
