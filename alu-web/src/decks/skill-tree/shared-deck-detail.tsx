@@ -10,15 +10,32 @@ import CopySharedDeckButton from './buttons/copy-shared-deck-button';
 import { FlashCard } from '../types';
 import { useObjectGet, useObjectPaginatedList } from '../../lookup/lookup';
 import { SharedDeck } from './types';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { DisplayProfileInline } from '../../profiles';
 import './shared-deck-detail.scss';
 import React from 'react';
 
+interface Permission {
+  hasViewAccess?: boolean;
+  hasEditAccess?: boolean;
+  isOwner?: boolean;
+}
+
 export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedDeckId: string, snapshotId?: string}) {
-  const [sharedDeck] = useObjectGet<SharedDeck>('sharing_system', 'shareddeck', sharedDeckId);
+  const [permissions, setPermissions] = useState<Permission | undefined>();
+  const [sharedDeck] = useObjectGet<SharedDeck>(
+    'sharing_system',
+    'shareddeck',
+    sharedDeckId,
+    undefined,
+    res => setPermissions({
+      hasViewAccess: res.has_view_access,
+      hasEditAccess: res.has_edit_access,
+      isOwner: res.is_owner,
+    }),
+  );
   const snapshot = useMemo(() => {
-    if (!sharedDeck) return;
+    if (!sharedDeck || !sharedDeck.has_view_access) return;
     if (snapshotId)
       return sharedDeck.snapshots.filter(snapshot => snapshot.id === snapshotId)[0];
     else
@@ -60,7 +77,11 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
     page_size: 10,
   }, !!(sharedDeck && snapshot));
 
-  if (!sharedDeck || !snapshot) return <p className='text-center mt-3'>Loading…</p>;
+  if (!permissions) return <p className='text-center mt-3'>Loading…</p>;
+  if (!permissions.hasViewAccess || !sharedDeck || !snapshot) return (<>
+    <p className='text-center mt-3'>You don't have permission to view this shared deck.</p>
+    <p className='text-center'>If you believe this was a mistake, please contact the deck's owners.</p>
+  </>);
   return (
     <Container>
       <Row className='mt-5'>

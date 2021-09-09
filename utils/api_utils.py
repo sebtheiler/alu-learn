@@ -23,11 +23,12 @@ def permissions(
         def wrapper(*args, **kwargs):
             request = args[0]
 
-            if is_authenticated and not request.user.is_authenticated:
+            # We use `getattr` because `AnonymousUser`s don't have these attrs
+            if is_authenticated and not getattr(request.user, 'is_authenticated', False):
                 return redirect('/')
-            elif is_confirmed and not request.user.is_confirmed:
+            elif is_confirmed and not getattr(request.user, 'is_confirmed', False):
                 return redirect('/confirm-email/')
-            elif is_staff and not request.user.is_staff:
+            elif is_staff and not getattr(request.user, 'is_staff', False):
                 raise Http404('Permission denied')
 
             return func(*args, **kwargs)

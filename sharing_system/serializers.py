@@ -24,6 +24,10 @@ class SharedDeckSerializer(serializers.ModelSerializer):
     owners = MinifiedProfileSerializer('owners', many=True)
     snapshots = SnapShotSerializer('snapshots', many=True)
 
+    has_view_access = serializers.SerializerMethodField(read_only=True)
+    has_edit_access = serializers.SerializerMethodField(read_only=True)
+    is_owner = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = SharedDeck
         fields = (
@@ -33,5 +37,23 @@ class SharedDeckSerializer(serializers.ModelSerializer):
             'edit_access',
             'owners',
             'snapshots',
+            'has_view_access',
+            'has_edit_access',
+            'is_owner',
             'id',
         )
+
+    def get_has_view_access(self, obj):
+        return True  # if the user is viewing this response, they have view access
+
+    def get_has_edit_access(self, obj):
+        request = self.context.get('request')
+        if request is None:
+            return
+        return obj.has_edit_access(request.user.profile.pk)
+
+    def get_is_owner(self, obj):
+        request = self.context.get('request')
+        if request is None:
+            return
+        return obj.is_owner(request.user.profile.pk)

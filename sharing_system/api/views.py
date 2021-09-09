@@ -15,17 +15,17 @@ from ..serializers import SharedDeckSerializer, SnapShotSerializer
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_shared_deck(request, shared_deck_id, *args, **kwargs):
     try:
         shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
     except SharedDeck.DoesNotExist:
         return Response({'message': 'SharedDeck not found'}, status=404)
 
-    if not shared_deck.has_view_access(request.user.profile.pk):
+    profile_pk = getattr(getattr(request.user, 'profile', None), 'pk', None)
+    if not shared_deck.has_view_access(profile_pk):
         return Response({'message': 'You are unauthorized to view this shared deck'}, status=403)
 
-    return Response(SharedDeckSerializer(shared_deck).data, status=200)
+    return Response(SharedDeckSerializer(shared_deck, context={'request': request}).data, status=200)
 
 
 @api_view(['PUT'])
@@ -240,7 +240,6 @@ def get_deck_actions(request, deck_id: int, *args, **kwargs):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def snapshot_flashcards_view(request, *args, **kwargs):
     snapshot_id = request.GET.get('snapshot_id')
     if snapshot_id:
@@ -248,6 +247,8 @@ def snapshot_flashcards_view(request, *args, **kwargs):
             snapshot = SnapShot.objects.get(id=snapshot_id)  # TODO: enforce view_access
         except SnapShot.DoesNotExist:
             return Response({'message': 'SnapShot not found'}, status=404)
+
+        shared_deck = snapshot.shared_deck
     else:
         shared_deck_id = request.GET.get('shared_deck_id')
         try:
@@ -256,6 +257,10 @@ def snapshot_flashcards_view(request, *args, **kwargs):
             return Response({'message': 'SharedDeck not found'}, status=404)
 
         snapshot = shared_deck.get_latest_snapshot()
+
+    profile_pk = getattr(getattr(request.user, 'profile', None), 'pk', None)
+    if not shared_deck.has_view_access(profile_pk):
+        return Response({'message': 'You are unauthorized to view this shared deck'}, status=403)
 
     return get_paginated_queryset_response(
         FlashCard.objects.filter(

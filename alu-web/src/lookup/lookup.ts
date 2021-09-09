@@ -108,6 +108,7 @@ export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
     if (objDidFetch || !requirement) return;
     setObjDidFetch(true);
     func(...args).then((res: ObjType) => {
+      console.log(res)
       dispatch({ action: 'INITIAL_SET', payload: res } as Event)
       if (callback) callback(res);
     });

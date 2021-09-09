@@ -39,31 +39,43 @@ urlpatterns = [
     path('community/deck/<int:shared_deck_id>/', render_basic_view(
         'decks/detail.html',
         context_kwargs=True,
+        is_authenticated=False,
+        is_confirmed=False,
     )),
     path('community/deck/<int:shared_deck_id>/snapshots/<uuid:snapshot_id>/', render_basic_view(
         'decks/detail.html',
         context_kwargs=True,
+        is_authenticated=False,
+        is_confirmed=False,
     )),
     path('community/deck/<int:shared_deck_id>/flashcards/', render_basic_view(
         'flashcards/list.html',
         context_kwargs=True,
+        is_authenticated=False,
+        is_confirmed=False,
     )),
     path(
         'community/deck/<int:shared_deck_id>/flashcards/sections/<str:section>/',
         render_basic_view(
             'flashcards/list.html',
             context_kwargs=True,
+            is_authenticated=False,
+            is_confirmed=False,
         ),
     ),
     path('community/deck/<int:shared_deck_id>/flashcards/<uuid:snapshot_id>/', render_basic_view(
         'flashcards/list.html',
         context_kwargs=True,
+        is_authenticated=False,
+        is_confirmed=False,
     )),
     path(
         'community/deck/<int:shared_deck_id>/flashcards/<uuid:snapshot_id>/sections/<str:section>/',
         render_basic_view(
             'flashcards/list.html',
             context_kwargs=True,
+            is_authenticated=False,
+            is_confirmed=False,
         ),
     ),
     path('deck/<int:deck_id>/share/', render_basic_view('decks/shared/share.html')),

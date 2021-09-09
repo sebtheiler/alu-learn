@@ -97,7 +97,6 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
         } else if (resp.id) {
           window.location.href = `/community/deck/${sharedDeck.id}/`;
         } else {
-          console.log(resp)
           setErrorMsg(resp.message);
         }
       },
@@ -138,7 +137,6 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
               <small className='text-secondary'>
                 Who can see and study the deck?
               </small>
-              {console.log(sharedDeck?.view_access)}
               <Form.Control
                 as='select'
                 name='viewAccess'

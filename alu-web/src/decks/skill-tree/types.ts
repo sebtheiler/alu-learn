@@ -33,6 +33,11 @@ export interface SharedDeck {
   edit_access: 'PERSONAL' | 'FRIENDS' | 'PUBLIC' | 'STUDENT';
   owners: MinifiedProfile[];
   snapshots: SnapShot[];
+
+  has_view_access?: boolean;
+  has_edit_access?: boolean;
+  is_owner?: boolean;
+
   id: number;
 }
 
