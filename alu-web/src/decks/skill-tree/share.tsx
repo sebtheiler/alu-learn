@@ -13,6 +13,18 @@ import { ReactElement, useMemo, useState } from 'react';
 import { SharedDeck } from './types';
 import { apiCreateSharedDeck, apiObjectEdit, backendFetch, useAsyncDispatch, useObjectGet } from '../../lookup/lookup';
 
+// NOTE: This is required so that the default will change based on
+// whether or not there is an attached share deck
+const genDefault = (sharedDeck: SharedDeck| undefined, deck: Deck, attr: string, defaultVal?: string) => {
+  if (sharedDeck)
+    return sharedDeck[attr];
+  else
+    if (deck.equivalent_to_snapshot)
+      return undefined;  // makes it so that the `defaultValue` is undefined until the `sharedDeck` loads
+    else
+      return defaultVal;
+}
+
 interface Actions {
   main_section_actions: MainSectionAction[];
   sub_section_actions: SubSectionAction[];
@@ -28,7 +40,11 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
     async () => backendFetch(
       'GET', `sharing_system/snapshot/${deck?.equivalent_to_snapshot}/shareddeck/`,
     ),
-    [], undefined, undefined,
+    [], undefined,
+    sharedDeck => {
+      setViewAccess(sharedDeck.view_access);
+      setEditAccess(sharedDeck.edit_access);
+    },
     !!deck?.equivalent_to_snapshot,
   );
   const numTotalChanges = useMemo(() => (
@@ -38,6 +54,9 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
   ), [actions]);
   const [message, setMessage] = useState('');
   const [errorMsg, setErrorMsg] = useState<ReactElement | string | undefined>(undefined);
+
+  const [viewAccess, setViewAccess] = useState('EVERYBODY');
+  const [editAccess, setEditAccess] = useState('PERSONAL');
 
   const shareDeck = async () => {
     const form = document.getElementById('share-form') as any;
@@ -101,11 +120,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
               <Form.Control
                 type='text'
                 name='title'
-                defaultValue={
-                  // NOTE: This is required so that the default will change based on
-                  // whether or not there is an attached share deck
-                  sharedDeck ? sharedDeck.title : (deck.equivalent_to_snapshot ? undefined : deck.title)
-                }
+                defaultValue={genDefault(sharedDeck, deck, 'title', deck.title)}
               />
             </Form.Group>
             <Form.Group>
@@ -123,10 +138,12 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
               <small className='text-secondary'>
                 Who can see and study the deck?
               </small>
+              {console.log(sharedDeck?.view_access)}
               <Form.Control
                 as='select'
                 name='viewAccess'
-                value={sharedDeck?.view_access}
+                value={viewAccess}
+                onChange={e => setViewAccess(e.target.value)}
                 custom
               >
                 <option value='PUBLIC'>Everybody can view this deck</option>
@@ -141,8 +158,9 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
               <Form.Control
                 as='select'
                 name='editAccess'
+                value={editAccess}
+                onChange={e => setEditAccess(e.target.value)}
                 custom
-                value={sharedDeck?.edit_access}
               >
                 <option value='PERSONAL'>Only you can submit edits</option>
                 <option value='FRIENDS'>Only friends can submit edits</option>
@@ -159,8 +177,6 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 name='owners'
                 required
                 defaultValue={
-                  // NOTE: This is required so that the default will change based on
-                  // whether or not there is an attached share deck
                   sharedDeck ?
                     // Default is the existing owners
                     sharedDeck.owners.map(owner => owner.username).join(', ')
@@ -173,7 +189,6 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                       username
                   )}
               />
-              {console.log(sharedDeck?.owners?.map(owner => owner.username))}
             </Form.Group>
           </Form>
         </Col>

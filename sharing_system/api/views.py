@@ -40,7 +40,7 @@ def edit_shared_deck(request, shared_deck_id, *args, **kwargs):
         return Response({'message': 'You are unauthorized to edit this shared deck'}, status=403)
 
     edited_values = request.data.get('edited_values')
-    for attr in shared_deck.EDITABLE_ATTRS:
+    for attr in SharedDeck.EDITABLE_ATTRS:
         setattr(shared_deck, attr, edited_values.get(attr, getattr(shared_deck, attr)))
 
     owners = edited_values.get('owners')
