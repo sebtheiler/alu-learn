@@ -75,6 +75,8 @@ class SharedDeck(models.Model):
             ).exists()
         elif self.edit_access == 'STUDENT':
             raise NotImplementedError('TODO: ')
+        elif self.edit_access == 'PUBLIC':
+            return True
 
     def is_owner(self, author_pk: int):
         return self.owners.filter(pk=author_pk).exists()

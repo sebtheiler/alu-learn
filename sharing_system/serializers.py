@@ -50,10 +50,14 @@ class SharedDeckSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request is None:
             return
-        return obj.has_edit_access(request.user.profile.pk)
+        return obj.has_edit_access(
+            request.user.profile.pk if request.user.is_authenticated else None
+        )
 
     def get_is_owner(self, obj):
         request = self.context.get('request')
-        if request is None:
+        if request is None or not request.user.is_authenticated:
             return
-        return obj.is_owner(request.user.profile.pk)
+        return obj.is_owner(
+            request.user.profile.pk if request.user.is_authenticated else None
+        )

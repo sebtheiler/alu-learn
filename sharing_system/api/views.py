@@ -25,7 +25,10 @@ def get_shared_deck(request, shared_deck_id, *args, **kwargs):
     if not shared_deck.has_view_access(profile_pk):
         return Response({'message': 'You are unauthorized to view this shared deck'}, status=403)
 
-    return Response(SharedDeckSerializer(shared_deck, context={'request': request}).data, status=200)
+    return Response(
+        SharedDeckSerializer(shared_deck, context={'request': request}).data,
+        status=200,
+    )
 
 
 @api_view(['PUT'])
@@ -214,7 +217,10 @@ def get_shared_deck_from_snapshot_id(request, snapshot_id: str, *args, **kwargs)
     if not snapshot.shared_deck.has_view_access(request.user.profile.pk):
         return Response({'message': 'You cannot view this snapshot'}, status=403)
 
-    return Response(SharedDeckSerializer(snapshot.shared_deck).data, status=200)
+    return Response(
+        SharedDeckSerializer(snapshot.shared_deck, context={'request': request}).data,
+        status=200,
+    )
 
 
 @api_view(['GET'])

@@ -105,7 +105,23 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
                 View Flashcards
               </Button>
               {/* <Button style={{ width: '150px', marginLeft: '2px' }}>View History</Button> */}
+              {permissions.isOwner && <Button
+                href={`/community/deck/${sharedDeck.id}/submitted/`}
+                style={{ width: '150px', marginLeft: '2px' }}
+              >
+                Submitted Edits
+              </Button>}
             </ButtonGroup>
+            {permissions.isOwner && <p className='mt-3'>
+              You are an owner of this deck.  To make edits, go to your local copy and
+              click "Share" in its dropdown.  To approve or deny others' edits, click
+              "Submitted Edits."
+            </p>}
+            {permissions.hasEditAccess && !permissions.isOwner && <p className='mt-3'>
+              You are an editor of this deck.  To submit an edit,
+              go to your local copy and click "Share" in its dropdown
+              (this will have to be approved by an owner).
+            </p>}
           </div>
           <hr />
           <div>

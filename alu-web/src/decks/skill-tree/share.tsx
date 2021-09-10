@@ -120,6 +120,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 type='text'
                 name='title'
                 defaultValue={genDefault(sharedDeck, deck, 'title', deck.title)}
+                readOnly={!sharedDeck?.is_owner}
               />
             </Form.Group>
             <Form.Group>
@@ -130,6 +131,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 rows={5}
                 required
                 defaultValue={sharedDeck?.description}
+                readOnly={!sharedDeck?.is_owner}
               />
             </Form.Group>
             <Form.Group>
@@ -141,7 +143,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 as='select'
                 name='viewAccess'
                 value={viewAccess}
-                onChange={e => setViewAccess(e.target.value)}
+                onChange={e => sharedDeck?.is_owner && setViewAccess(e.target.value)}
                 custom
               >
                 <option value='PUBLIC'>Everybody can view this deck</option>
@@ -157,7 +159,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 as='select'
                 name='editAccess'
                 value={editAccess}
-                onChange={e => setEditAccess(e.target.value)}
+                onChange={e => sharedDeck?.is_owner && setEditAccess(e.target.value)}
                 custom
               >
                 <option value='PERSONAL'>Only you can submit edits</option>
@@ -174,6 +176,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 type='text'
                 name='owners'
                 required
+                readOnly={!sharedDeck?.is_owner}
                 defaultValue={
                   sharedDeck ?
                     // Default is the existing owners
@@ -227,12 +230,18 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
       </Row>
       <Row>
         <Col md={numTotalChanges > 0 && deck.equivalent_to_snapshot ? 6 : 12} xs={12}>
-          <LoadingButton clickFunc={shareDeck} className='mb-3' block>
+          {!sharedDeck?.is_owner && <p className='text-center'>
+            You don't have permission to change this deck's meta info.
+          </p>}
+          {sharedDeck?.is_owner && <LoadingButton clickFunc={shareDeck} className='mb-3' block>
             {sharedDeck ? 'Save Changes' : 'Share'}
-          </LoadingButton>
+          </LoadingButton>}
         </Col>
         {sharedDeck && numTotalChanges > 0 && <Col md={6} xs={12}>
-          <OverlayTrigger
+          {!sharedDeck?.has_edit_access && <p className='text-center'>
+            You don't have permission to push updates to this deck.
+          </p>}
+          {sharedDeck?.has_edit_access && <OverlayTrigger
             trigger='click'
             rootClose
             overlay={<Popover id='push-updates-popover p-3'>
@@ -245,6 +254,9 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                   maxLength={50}
                   onChange={e => setMessage(e.target.value)}
                 />
+                {!sharedDeck?.is_owner && <p className='mt-2'>
+                  Your edit will be reviewed by an owner before being pushed into the shared deck.
+                </p>}
                 {errorMsg && <p className='text-danger mt-2'>{errorMsg}</p>}
                 {message.length > 0 && <LoadingButton clickFunc={pushUpdates} className='mt-3' block>
                   Push Updates
@@ -259,7 +271,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 <i>"Push Updates"</i> applies any flashcard/main-section/sub-section changes you have done.
               </QuestionBubble>
             </Button>
-          </OverlayTrigger>
+          </OverlayTrigger>}
         </Col>}
       </Row>
     </Container>
