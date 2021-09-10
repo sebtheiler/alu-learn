@@ -412,7 +412,7 @@ class FlashCardData(models.Model):
     def __str__(self) -> str:
         return str(self.fields)
 
-    def copy(self):
+    def copy(self) -> FlashCardData:
         new_data = FlashCardData(
             fields=self.fields,
             tags=self.tags,
@@ -432,6 +432,37 @@ class FlashCardData(models.Model):
             )
 
         return new_data
+
+    def pull(self, other: FlashCardData, save: bool = False) -> FlashCardData:
+        for attr in FlashCardData.EDITABLE_ATTRS:
+            setattr(self, attr, getattr(other, attr))
+
+        if save:
+            self.save()
+
+        return self
+
+    def has_view_access(self, profile_id: int) -> bool:
+        flashcards = self.flashcards.prefetch_related(
+            'sub_section__main_section__snapshot__shared_deck',
+        ).all()
+        return any(
+            flashcard.sub_section.main_section.snapshot.shared_deck.has_view_access(profile_id)
+            for flashcard in flashcards
+            if flashcard.sub_section.main_section.snapshot
+        )
+
+    def has_edit_access(self, profile_id: int) -> bool:
+        flashcards = self.flashcards.prefetch_related(
+            'sub_section__main_section__snapshot__shared_deck',
+        ).all()
+        return any(
+            flashcard.sub_section.main_section.snapshot.shared_deck.has_edit_access(profile_id)
+            if flashcard.sub_section.main_section.snapshot else
+            flashcard.sub_section.main_section.deck.user.profile.pk == profile_id
+
+            for flashcard in flashcards
+        )
 
 
 CONTENT_INDICIES_DICT = {

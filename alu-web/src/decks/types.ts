@@ -61,7 +61,7 @@ export interface FlashCard {
   flashcard_type: FlashCardTypes;
   order_num: number;
   parent_deck_id: number;
-  data?: FlashCardData;
+  data: FlashCardData;
   id: UUID;
 }
 

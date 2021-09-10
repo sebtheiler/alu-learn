@@ -9,7 +9,7 @@ import LoadingButton from './buttons/LoadingButton';
 import AddImageButton from './buttons/add-image';
 import { FlashCard, FlashCardTypes } from '../types';
 import { Slate, ReactEditor } from 'slate-react';
-import { Node } from 'slate';
+import { Node as SlateNode } from 'slate';
 import { blankSlateElement, createFullEditor, EditorButtons, FullEditor } from '../../text-editor';
 import { QuestionBubble } from '../../utils';
 import { apiObjectCreate, apiObjectDelete, apiObjectEdit, useObjectGet } from '../../lookup/lookup';
@@ -23,9 +23,9 @@ interface CreateFlashcardProps {
   flashcardId?: string;
 }
 export default function CreateFlashcard({ deckId, flashcardId, subSection }: CreateFlashcardProps) {
-  const [frontValue, setFrontValue] = useState<Node[]>(blankSlateElement)
+  const [frontValue, setFrontValue] = useState<SlateNode[]>(blankSlateElement)
   const [frontSelectedImageUrl, setFrontSelectedImageUrl] = useState('');
-  const [backValue, setBackValue] = useState<Node[]>(blankSlateElement)
+  const [backValue, setBackValue] = useState<SlateNode[]>(blankSlateElement)
   const [backSelectedImageUrl, setBackSelectedImageUrl] = useState('');
   const [flashcardType, setFlashcardType] = useState<FlashCardTypes>('BASIC');
   const [errorMessage, setErrorMessage] = useState('');
@@ -255,8 +255,8 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
 }
 
 interface RenderEditorProps {
-  value: Node[];
-  setValue: (value: Node[]) => void;
+  value: SlateNode[];
+  setValue: (value: SlateNode[]) => void;
 }
 function RenderEditor({ value, setValue }: RenderEditorProps) {
   const editor = useMemo<ReactEditor>(

@@ -20,6 +20,45 @@ class SectionData(models.Model):
     def __str__(self) -> str:
         return self.title
 
+    def pull(self, other: SectionData, save: bool = False) -> SectionData:
+        for attr in SectionData.EDITABLE_ATTRS:
+            setattr(self, attr, getattr(other, attr))
+
+        if save:
+            self.save()
+
+        return self
+
+    def has_view_access(self, profile_id: int) -> bool:
+        return any(
+            sub_section.main_section.snapshot.shared_deck.has_view_access(profile_id)
+            if sub_section.main_section.snapshot else
+            sub_section.main_section.deck.user.profile.pk == profile_id
+
+            for sub_section in self.sub_sections.prefetch_related('main_section__shared_deck')
+        ) or any(
+            main_section.snapshot.shared_deck.has_view_access(profile_id)
+            if main_section.snapshot else
+            main_section.deck.user.profile.pk == profile_id
+
+            for main_section in self.main_sections.prefetch_related('shared_deck')
+        )
+
+    def has_edit_access(self, profile_id: int) -> bool:
+        return any(
+            sub_section.main_section.snapshot.shared_deck.has_edit_access(profile_id)
+            if sub_section.main_section.snapshot else
+            sub_section.main_section.deck.user.profile.pk == profile_id
+
+            for sub_section in self.sub_sections.prefetch_related('main_section__shared_deck')
+        ) or any(
+            main_section.snapshot.shared_deck.has_edit_access(profile_id)
+            if main_section.snapshot else
+            main_section.deck.user.profile.pk == profile_id
+
+            for main_section in self.main_sections.prefetch_related('shared_deck')
+        )
+
 
 class AbstractSectionManager(models.Manager):
     def get_queryset(self):

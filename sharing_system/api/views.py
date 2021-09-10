@@ -1,16 +1,21 @@
-from skill_tree.serializers import MainSectionActionSerializer, SubSectionActionSerializer
-from skill_tree.models import AbstractSection
-from django.db.models.query_utils import Q
 from decks.models import Deck, FlashCard
-from decks.serializers import DeckSerializer, FlashCardSerializer, FlashcardActionSerializer
+from decks.serializers import (DeckSerializer, FlashcardActionSerializer,
+                               FlashCardSerializer)
+from django.db.models.query_utils import Q
 from profiles.models import Profile
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from skill_tree.models import AbstractSection, MainSection, SubSection
+from skill_tree.serializers import (MainSectionActionSerializer,
+                                    MainSectionSerializer,
+                                    SubSectionActionSerializer,
+                                    SubSectionSerializer)
 from utils.api_utils import (assert_request_data_type, get_obj_or_404,
                              get_paginated_queryset_response)
 
-from ..models import FlashCardAction, MainSectionAction, SharedDeck, SnapShot, SubSectionAction
+from ..models import (FlashCardAction, MainSectionAction, SharedDeck, SnapShot,
+                      SubSectionAction)
 from ..serializers import SharedDeckSerializer, SnapShotSerializer
 
 
@@ -194,9 +199,37 @@ def pull_deck_updates(request, deck_id: int, *args, **kwargs):
     if resp:
         return resp
 
-    deck = SharedDeck.pull(deck)
+    deck, conflicts = SharedDeck.pull(deck)
 
-    return Response(DeckSerializer(deck).data, status=200)
+    return Response(
+        {
+            'deck': DeckSerializer(deck).data,
+            'conflicts': {
+                'main_sections': [
+                    (
+                        MainSectionSerializer(ms_origin).data,
+                        MainSectionSerializer(ms_destination).data
+                    )
+                    for (ms_origin, ms_destination) in conflicts['main_sections']
+                ],
+                'sub_sections': [
+                    (
+                        SubSectionSerializer(ss_origin).data,
+                        SubSectionSerializer(ss_destination).data
+                    )
+                    for (ss_origin, ss_destination) in conflicts['sub_sections']
+                ],
+                'flashcards': [
+                    (
+                        FlashCardSerializer(fc_origin).data,
+                        FlashCardSerializer(fc_destination).data
+                    )
+                    for (fc_origin, fc_destination) in conflicts['flashcards']
+                ],
+            },
+        },
+        status=200,
+    )
 
 
 @api_view(['GET'])
@@ -278,3 +311,56 @@ def snapshot_flashcards_view(request, *args, **kwargs):
         FlashCardSerializer,
         page_size=min(int(request.GET.get('page_size', 250)), 250)
     )
+
+
+@api_view(['POST'])
+def resolve_conflict(request, *args, **kwargs):
+    # Get origin and destination data
+    model_type = request.data.get('model_type')
+    if model_type == 'MAIN_SECTION':
+        try:
+            origin = MainSection.objects.get(
+                pk=request.data.get('main_section_origin_id'),
+            )
+            destination = MainSection.objects.get(
+                pk=request.data.get('main_section_destination_id'),
+            )
+        except MainSection.DoesNotExist:
+            return Response({'message': 'Main section not found'}, status=404)
+    elif model_type == 'SUB_SECTION':
+        try:
+            origin = SubSection.objects.get(
+                pk=request.data.get('sub_section_origin_id'),
+            )
+            destination = SubSection.objects.get(
+                pk=request.data.get('sub_section_destination_id'),
+            )
+        except SubSection.DoesNotExist:
+            return Response({'message': 'Sub section not found'}, status=404)
+    elif model_type == 'FLASHCARD':
+        try:
+            origin = FlashCard.objects.get(
+                pk=request.data.get('flashcard_origin_id'),
+            )
+            destination = FlashCard.objects.get(
+                pk=request.data.get('flashcard_destination_id'),
+            )
+        except FlashCard.DoesNotExist:
+            return Response({'message': 'Flashcard not found'}, status=404)
+    else:
+        return Response({'message': 'Unrecognized model type'}, status=400)
+
+    # Check that the current user has access to both
+    if not origin.data.has_view_access(request.user.profile.pk):
+        return Response({'message': 'Unauthorized to view origin data'}, status=403)
+
+    if not destination.data.has_edit_access(request.user.profile.pk):
+        return Response({'message': 'Unauthorized to edit destination data'}, status=403)
+
+    # Update destination data with origin data
+    destination.data.pull(origin.data, save=True)
+
+    # Delete the action attached to the destination
+    destination.attached_action.delete()
+
+    return Response({'message': 'Resolved conflict'}, status=200)

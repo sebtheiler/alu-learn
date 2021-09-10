@@ -231,7 +231,7 @@ class SharedDeck(models.Model):
         return snapshot
 
     @staticmethod
-    def pull(deck: Deck) -> Deck:
+    def pull(deck: Deck) -> Tuple[Deck, dict]:
         shared_deck = deck.equivalent_to_snapshot.shared_deck
 
         # This takes a while, so you don't want to initiate two updates at once
@@ -290,6 +290,12 @@ class SharedDeck(models.Model):
         # flashcards_data_to_create = []
         # flashcards_data_to_edit = []
 
+        conflicts = {
+            'main_sections': [],
+            'sub_sections': [],
+            'flashcards': [],
+        }
+
         for snapshot in snapshots_to_apply:
             # === Copy main sections ===
             (
@@ -299,6 +305,8 @@ class SharedDeck(models.Model):
 
                 ms_s_data_to_create,
                 ms_s_data_to_edit,
+
+                ms_conflicts,
             ) = MainSectionAction.pull(
                 snapshot,
                 deck,
@@ -330,6 +338,8 @@ class SharedDeck(models.Model):
 
                 ss_s_data_to_create,
                 ss_s_data_to_edit,
+
+                ss_conflicts,
             ) = SubSectionAction.pull(
                 snapshot,
                 deck,
@@ -362,6 +372,8 @@ class SharedDeck(models.Model):
 
                 f_data_to_create,
                 f_data_to_edit,
+
+                fc_conflicts,
             ) = FlashCardAction.pull(
                 snapshot,
                 deck,
@@ -386,12 +398,17 @@ class SharedDeck(models.Model):
             ).delete()
             ReviewInstance.objects.bulk_create(ris_to_create)
 
+            # === Add to conflicts ===
+            conflicts['main_sections'] += ms_conflicts
+            conflicts['sub_sections'] += ss_conflicts
+            conflicts['flashcards'] += fc_conflicts
+
         # Update deck
         deck.equivalent_to_snapshot = latest_snapshot
         deck.is_updating = False
         deck.save()
 
-        return deck
+        return deck, conflicts
 
 
 class SnapShot(models.Model):
@@ -656,6 +673,8 @@ class MainSectionAction(AbstractAction):
 
         List[SectionData],
         List[SectionData],
+
+        List[Tuple[MainSection, MainSection]],
     ]:
         actions = snapshot.applied_mainsectionactions.prefetch_related(
             'main_section__data',
@@ -668,6 +687,8 @@ class MainSectionAction(AbstractAction):
         sections_data_to_create = []
         sections_data_to_edit = []
 
+        conflicts = []
+
         for action in actions:
             ms_origin = action.main_section
 
@@ -676,14 +697,19 @@ class MainSectionAction(AbstractAction):
                 main_sections_to_create.append(copied_ms)
                 sections_data_to_create.append(copied_data)
             elif action.action == 'EDIT':
-                ms_data = SectionData.objects.get(
-                    main_sections__universal_main_section_id=ms_origin.universal_main_section_id,
-                    main_sections__deck_id=deck.pk,
+                ms_destination = MainSection.objects.get(
+                    universal_main_section_id=ms_origin.universal_main_section_id,
+                    deck_id=deck.pk,
                 )  # TODO: find a way to prefetch this
 
-                for attr in SectionData.EDITABLE_ATTRS:
-                    setattr(ms_data, attr, getattr(ms_origin.data, attr))
+                # Test if there is an attached action (i.e., there is a conflict)
+                if hasattr(ms_destination, 'attached_action'):
+                    conflicts.append((ms_origin, ms_destination))
+                    continue
 
+                # Edit data
+                ms_data = ms_destination.data
+                ms_data.pull(ms_origin.data)
                 sections_data_to_edit.append(ms_data)
             elif action.action == 'DELETE':
                 main_section_uids_to_delete.append(ms_origin.universal_main_section_id)
@@ -711,6 +737,8 @@ class MainSectionAction(AbstractAction):
 
             sections_data_to_create,
             sections_data_to_edit,
+
+            conflicts,
         )
 
     @staticmethod
@@ -860,6 +888,8 @@ class SubSectionAction(AbstractAction):
 
         List[SectionData],
         List[SectionData],
+
+        List[Tuple[SectionData, SectionData]],
     ]:
         actions = snapshot.applied_subsectionactions.prefetch_related(
             'sub_section__main_section',
@@ -872,6 +902,8 @@ class SubSectionAction(AbstractAction):
 
         sections_data_to_create = []
         sections_data_to_edit = []
+
+        conflicts = []
 
         for action in actions:
             ss_origin = action.sub_section
@@ -892,14 +924,19 @@ class SubSectionAction(AbstractAction):
                 sub_sections_to_create.append(copied_ss)
                 sections_data_to_create.append(copied_data)
             elif action.action == 'EDIT':
-                ss_data = SectionData.objects.get(
-                    sub_sections__universal_sub_section_id=ss_origin.universal_sub_section_id,
-                    sub_sections__main_section__deck_id=deck.pk,
+                ss_destination = SubSection.objects.get(
+                    universal_sub_section_id=ss_origin.universal_sub_section_id,
+                    main_section__deck_id=deck.pk,
                 )  # TODO: find a way to prefetch this
 
-                for attr in SectionData.EDITABLE_ATTRS:
-                    setattr(ss_data, attr, getattr(ss_origin.data, attr))
+                # Test if there is an attached action (i.e., there is a conflict)
+                if hasattr(ss_destination, 'attached_action'):
+                    conflicts.append((ss_origin, ss_destination))
+                    continue
 
+                # Edit data
+                ss_data = ss_destination.data
+                ss_data.pull(ss_origin.data)
                 sections_data_to_edit.append(ss_data)
             elif action.action == 'DELETE':
                 sub_section_uids_to_delete.append(ss_origin.universal_sub_section_id)
@@ -927,6 +964,8 @@ class SubSectionAction(AbstractAction):
 
             sections_data_to_create,
             sections_data_to_edit,
+
+            conflicts,
         )
 
     @staticmethod
@@ -1077,6 +1116,8 @@ class FlashCardAction(AbstractAction):
 
         List[FlashCardData],
         List[FlashCardData],
+
+        List[Tuple[FlashCard, FlashCard]],
     ]:
         actions = snapshot.applied_flashcardactions.prefetch_related(
             'flashcard__sub_section',
@@ -1090,6 +1131,8 @@ class FlashCardAction(AbstractAction):
 
         flashcards_data_to_create = []
         flashcards_data_to_edit = []
+
+        conflicts = []
 
         for action in actions:
             fc_origin = action.flashcard
@@ -1109,14 +1152,19 @@ class FlashCardAction(AbstractAction):
                 review_instances_to_create += ris
                 flashcards_data_to_create.append(fc_data)
             elif action.action == 'EDIT':
-                fc_data = FlashCardData.objects.get(
-                    flashcards__universal_flashcard_id=fc_origin.universal_flashcard_id,
-                    flashcards__sub_section__main_section__deck_id=deck.pk,
+                fc_destination = FlashCard.objects.get(
+                    universal_flashcard_id=fc_origin.universal_flashcard_id,
+                    sub_section__main_section__deck_id=deck.pk,
                 )  # TODO: find a way to prefetch this
 
-                for attr in FlashCardData.EDITABLE_ATTRS:
-                    setattr(fc_data, attr, getattr(fc_origin.data, attr))
+                # Test if there is an attached action (i.e., there is a conflict)
+                if hasattr(fc_destination, 'attached_action'):
+                    conflicts.append((fc_origin, fc_destination))
+                    continue
 
+                # Edit data
+                fc_data = fc_destination.data
+                fc_data.pull(fc_origin.data)
                 flashcards_data_to_edit.append(fc_data)
             elif action.action == 'DELETE':
                 flashcard_uids_to_delete.append(fc_origin.universal_flashcard_id)
@@ -1145,6 +1193,8 @@ class FlashCardAction(AbstractAction):
 
             flashcards_data_to_create,
             flashcards_data_to_edit,
+
+            conflicts,
         )
 
     @staticmethod
@@ -1178,9 +1228,6 @@ class FlashCardAction(AbstractAction):
                 action=action,
                 flashcard=flashcard,
             )
-        except IntegrityError as e:
-            print(e)
-            action = FlashCardAction.objects.get(flashcard_id=flashcard.pk)
-            print(action, action.pk)
+        except IntegrityError:
             # If creating an EDIT action, and there is already a CREATE action, pass
             pass

@@ -13,4 +13,5 @@ urlpatterns = [
     path('shareddeck/<int:shared_deck_id>/edit/', views.edit_shared_deck),
     path('shareddeck/<int:shared_deck_id>/push/', views.shared_deck_push_view),
     path('snapshot/<uuid:snapshot_id>/shareddeck/', views.get_shared_deck_from_snapshot_id),
+    path('resolve/', views.resolve_conflict),
 ]
