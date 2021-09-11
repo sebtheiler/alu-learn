@@ -16,7 +16,7 @@ from utils.api_utils import (assert_request_data_type, get_obj_or_404,
 
 from ..models import (FlashCardAction, MainSectionAction, SharedDeck, SnapShot,
                       SubSectionAction)
-from ..serializers import SharedDeckSerializer, SnapShotSerializer
+from ..serializers import SharedDeckSerializer
 
 
 @api_view(['GET'])
@@ -164,27 +164,50 @@ def shared_deck_push_view(request, shared_deck_id: int, *args, **kwargs):
     if resp:
         return resp
 
-    try:
-        snapshot = SharedDeck.push(
-            deck=deck,
-            shared_deck=shared_deck,
-            author=request.user.profile,
-            message=request.data.get('message', 'New snapshot'),
-        )
-    except ValueError:
+    notUpToDate = Response(
+        {'message': 'Deck is not up to date'},
+        status=400,
+        exception=True,
+    )
+
+    author = request.user.profile
+    message = request.data.get('message', 'New snapshot')
+    if shared_deck.is_owner(author.pk):
+        try:
+            SharedDeck.push(
+                deck=deck,
+                shared_deck=shared_deck,
+                author=author,
+                message=message,
+            )
+        except ValueError:
+            return notUpToDate
+
         return Response(
-            {'message': 'Deck is not up to date'},
-            status=400,
-            exception=True,
+            {'message': 'Pushed changes'},
+            status=200,
         )
-    except PermissionError:
+    elif shared_deck.has_edit_access(author.pk):
+        try:
+            submitted_changes = SharedDeck.submit_changes(
+                deck=deck,
+                shared_deck=shared_deck,
+                author=author,
+                message=message,
+            )
+        except ValueError:
+            return notUpToDate
+
+        return Response(
+            {'message': 'Submitted changes', 'submitted_changes_id': submitted_changes.pk},
+            status=200,
+        )
+    else:
         return Response(
             {'message': 'You are not authorized to edit this deck'},
             status=403,
             exception=True,
         )
-
-    return Response(SnapShotSerializer(snapshot).data, status=200)
 
 
 @api_view(['POST'])

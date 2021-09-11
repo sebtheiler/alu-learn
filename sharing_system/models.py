@@ -186,7 +186,7 @@ class SharedDeck(models.Model):
         if deck.equivalent_to_snapshot != latest_snapshot:
             raise ValueError('Deck is not up to date')
 
-        # Check edit access
+        # Check owner access
         if not shared_deck.is_owner(author.pk):
             raise PermissionError('User does not have permission to edit')
 
@@ -229,6 +229,33 @@ class SharedDeck(models.Model):
         )
 
         return snapshot
+
+    @staticmethod
+    def submit_changes(
+        deck: Deck,
+        shared_deck: SharedDeck,
+        author: Profile,
+        message: str,
+    ) -> SubmittedChanges:
+        latest_snapshot = shared_deck.get_latest_snapshot()
+        if deck.equivalent_to_snapshot != latest_snapshot:
+            raise ValueError('Deck is not up to date')
+
+        # Check edit access
+        if not shared_deck.has_edit_access(author.pk):
+            raise PermissionError('User does not have permission to edit')
+
+        # Create new snapshot
+        submitted_changes = SubmittedChanges.objects.create(
+            author_id=author.pk,
+            shared_deck_id=shared_deck.pk,
+            message=message,
+        )
+
+        # Transfer actions
+        submitted_changes.transfer_actions_from_deck(deck)
+
+        return submitted_changes
 
     @staticmethod
     def pull(deck: Deck) -> Tuple[Deck, dict]:
@@ -505,10 +532,61 @@ class SnapShot(models.Model):
         return child
 
 
+class SubmittedChanges(models.Model):
+    author = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='authored_submitted_changes',
+    )
+    shared_deck = models.ForeignKey(
+        SharedDeck,
+        on_delete=models.CASCADE,
+        related_name='submitted_changes',
+    )
+
+    message = models.JSONField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    def transfer_actions_from_deck(self, deck: Deck) -> SubmittedChanges:
+        deck.mainsectionactions.update(
+            deck=None,
+            submitted_changes=self,
+        )
+        deck.subsectionactions.update(
+            deck=None,
+            submitted_changes=self,
+        )
+        deck.flashcardactions.update(
+            deck=None,
+            submitted_changes=self,
+        )
+
+        return self
+
+    def transfer_actions_to_deck(self, deck: Deck) -> Deck:
+        self.pending_mainsectionactions.update(
+            deck=deck,
+            submitted_changes=None,
+        )
+        self.pending_subsectionactions.update(
+            deck=deck,
+            submitted_changes=None,
+        )
+        self.pending_flashcardactions.update(
+            deck=None,
+            submitted_changes=self,
+        )
+
+        return deck
+
+
 class AbstractAction(models.Model):
-    # Each action must either have a deck or a snapshot: XOR
+    # Each action must either have a Deck, a SnapShot, or a SubmittedChanges (XOR)
     # Actions are initially attached to a Deck, but when that Deck is synced
-    # with a SharedDeck, they are transfered to a SnapShot
+    # with a SharedDeck, they are transfered to a
+    # SnapShot (from an owner) or a SubmittedChanges (from a non-owner editor)
     deck = models.ForeignKey(
         Deck,
         null=True, blank=True,
@@ -522,6 +600,13 @@ class AbstractAction(models.Model):
         on_delete=models.CASCADE,
         related_name='applied_%(class)ss',
         related_query_name='applied_%(class)ss',
+    )
+    submitted_changes = models.ForeignKey(
+        SubmittedChanges,
+        null=True, blank=True,
+        on_delete=models.CASCADE,
+        related_name='pending_%(class)ss',
+        related_query_name='pending_%(class)ss',
     )
 
     ACTION_OPTIONS = (

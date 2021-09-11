@@ -90,14 +90,22 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
       message: message,
     }).then(
       (resp: any) => {
-        if (resp.message === 'Deck is not up to date') {
-          setErrorMsg(<>Your deck isn't up to date.  Please <a href='TODO: '>pull the new updates</a>, then try again.</>);
-        } else if (resp.message === 'You are not authorized to edit this deck') {
-          setErrorMsg('You are not authorized to edit this deck.  Please contact the owners if you think this is a mistake.');
-        } else if (resp.id) {
-          window.location.href = `/community/deck/${sharedDeck.id}/`;
-        } else {
-          setErrorMsg(resp.message);
+        switch (resp.message) {
+          case 'Deck is not up to date':
+            setErrorMsg(<>Your deck isn't up to date.  Please <a href={`/deck/${deckId}/`}>pull the new updates</a>, then try again.</>);
+            break;
+          case 'You are not authorized to edit this deck':
+            setErrorMsg('You are not authorized to edit this deck.  Please contact the owners if you think this is a mistake.');
+            break;
+          case 'Pushed changes':
+            window.location.href = `/community/deck/${sharedDeck.id}/`;
+            break;
+          case 'Submitted changes':
+            window.location.href = `/community/deck/${sharedDeck.id}/submitted/${resp.submitted_changes_id}/`;
+            break;
+          default:
+            setErrorMsg(resp.message);
+            break;
         }
       },
     );
@@ -162,7 +170,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 onChange={e => sharedDeck?.is_owner && setEditAccess(e.target.value)}
                 custom
               >
-                <option value='PERSONAL'>Only you can submit edits</option>
+                <option value='PERSONAL'>Only owners can submit edits</option>
                 <option value='FRIENDS'>Only friends can submit edits</option>
                 <option value='PUBLIC'>Everybody can submit edits</option>
               </Form.Control>

@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 from .models import (FlashCardAction, MainSectionAction, SharedDeck, SnapShot,
-                     SubSectionAction)
+                     SubmittedChanges, SubSectionAction)
 
 
 class FlashCardActionInline(admin.TabularInline):
@@ -96,21 +96,47 @@ class SnapShotAdmin(admin.ModelAdmin):
     search_fields = (
         'message',
         'shared_deck__title',
-        'shared_deck__owners',
+        'author__user__username',
     )
 
     def get_queryset(self, request):
         queryset = super(SnapShotAdmin, self).get_queryset(request)
-        queryset = queryset.prefetch_related('shared_deck', 'parent')
+        queryset = queryset.prefetch_related('shared_deck', 'parent', 'author')
         return queryset
-
-    def get_owners(self, obj):
-        return obj.shared_deck.owners
-    get_owners.short_description = 'Owners'
 
 
 class SnapShotInline(admin.TabularInline):
     model = SnapShot
+
+
+class SubmittedChangesAdmin(admin.ModelAdmin):
+    model = SubmittedChanges
+
+    # inlines = (FlashCardActionInline, MainSectionActionInline, SubSectionActionInline)
+    list_display = (
+        'shared_deck',
+        'message',
+        'author',
+        'timestamp',
+    )
+
+    search_fields = (
+        'message',
+        'shared_deck__title',
+        'author__user__username',
+    )
+
+    def get_queryset(self, request):
+        queryset = super(SubmittedChangesAdmin, self).get_queryset(request)
+        queryset = queryset.prefetch_related(
+            'shared_deck',
+            'author',
+        )
+        return queryset
+
+
+class SubmittedChangesInline(admin.TabularInline):
+    model = SubmittedChanges
 
 
 class SharedDeckAdmin(admin.ModelAdmin):
@@ -138,6 +164,7 @@ class SharedDeckAdmin(admin.ModelAdmin):
 
 
 admin.site.register(SnapShot, SnapShotAdmin)
+admin.site.register(SubmittedChanges, SubmittedChangesAdmin)
 admin.site.register(SharedDeck, SharedDeckAdmin)
 admin.site.register(FlashCardAction, FlashCardActionAdmin)
 admin.site.register(MainSectionAction, MainSectionActionAdmin)
