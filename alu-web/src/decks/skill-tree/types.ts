@@ -50,6 +50,15 @@ export interface SnapShot {
   id: UUID;
 }
 
+export interface SubmittedChanges {
+  author: MinifiedProfile;
+  message: string;
+  pending_mainsectionactions: MainSectionAction[];
+  pending_subsectionactions: SubSectionAction[];
+  pending_flashcardactions: FlashCardAction[];
+  id: UUID;
+}
+
 interface AbstractAction {
   deck_id: number;
   snapshot_id: number;

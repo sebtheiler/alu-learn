@@ -16,7 +16,7 @@ from utils.api_utils import (assert_request_data_type, get_obj_or_404,
 
 from ..models import (FlashCardAction, MainSectionAction, SharedDeck, SnapShot,
                       SubSectionAction)
-from ..serializers import SharedDeckSerializer
+from ..serializers import SharedDeckSerializer, SubmittedChangesSerializer
 
 
 @api_view(['GET'])
@@ -387,3 +387,22 @@ def resolve_conflict(request, *args, **kwargs):
     destination.attached_action.delete()
 
     return Response({'message': 'Resolved conflict'}, status=200)
+
+
+@api_view(['GET'])
+def list_submitted_changes(request, shared_deck_id: int, *args, **kwargs):
+    try:
+        shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'Shared deck not found'}, status=404)
+
+    if not shared_deck.has_view_access(request.user.profile.pk):
+        return Response({'message': 'You are not authorized to view this shared deck'}, status=403)
+
+    return Response(
+        SubmittedChangesSerializer(
+            shared_deck.submitted_changes.all(),
+            many=True,
+        ).data,
+        status=200,
+    )

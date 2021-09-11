@@ -1,8 +1,11 @@
+from decks.serializers import FlashcardActionSerializer
 from profiles.serializers import MinifiedProfileSerializer
 from rest_framework import serializers
-from skill_tree.serializers import MainSectionSerializer
+from skill_tree.serializers import (MainSectionActionSerializer,
+                                    MainSectionSerializer,
+                                    SubSectionActionSerializer)
 
-from .models import SharedDeck, SnapShot
+from .models import SharedDeck, SnapShot, SubmittedChanges
 
 
 class SnapShotSerializer(serializers.ModelSerializer):
@@ -16,6 +19,30 @@ class SnapShotSerializer(serializers.ModelSerializer):
             'message',
             'timestamp',
             'main_sections',
+            'id',
+        )
+
+
+class SubmittedChangesSerializer(serializers.ModelSerializer):
+    pending_mainsectionactions = MainSectionActionSerializer(
+        'pending_mainsectionactions', many=True,
+    )
+    pending_subsectionactions = SubSectionActionSerializer(
+        'pending_subsectionactions', many=True,
+    )
+    pending_flashcardactions = FlashcardActionSerializer(
+        'pending_flashcardactions', many=True,
+    )
+    author = MinifiedProfileSerializer('author')
+
+    class Meta:
+        model = SubmittedChanges
+        fields = (
+            'message',
+            'author',
+            'pending_mainsectionactions',
+            'pending_subsectionactions',
+            'pending_flashcardactions',
             'id',
         )
 

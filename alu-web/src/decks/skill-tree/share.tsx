@@ -5,9 +5,9 @@ import Form from 'react-bootstrap/Form';
 import LoadingButton from './buttons/LoadingButton';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
+import RenderActions, { Actions } from './render-actions';
 import Row from 'react-bootstrap/Row';
 import { Deck } from '../types';
-import { MainSectionAction, SubSectionAction, FlashCardAction } from './types';
 import { QuestionBubble } from '../../utils';
 import { ReactElement, useMemo, useState } from 'react';
 import { SharedDeck } from './types';
@@ -23,12 +23,6 @@ const genDefault = (sharedDeck: SharedDeck| undefined, deck: Deck, attr: string,
       return undefined;  // makes it so that the `defaultValue` is undefined until the `sharedDeck` loads
     else
       return defaultVal;
-}
-
-interface Actions {
-  main_section_actions: MainSectionAction[];
-  sub_section_actions: SubSectionAction[];
-  flashcard_actions: FlashCardAction[];
 }
 
 export default function ShareDeck({ deckId, username }: { deckId: string, username: string }) {
@@ -202,31 +196,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
           </Form>
         </Col>
         <Col md={6} xs={12}>
-          {actions && [
-            ['Flashcards', 'flashcard_actions'],
-            ['Main sections', 'main_section_actions'],
-            ['Sub sections', 'sub_section_actions'],
-          ].map(([title, attr]) =>
-            <div className='mt-4' key={attr}>
-              <h3>{title}</h3>
-              {actions[attr].length > 0 ? <ul>
-                {[
-                  ['created', 'CREATE', 'text-success'],
-                  ['edited', 'EDIT', 'text-primary'],
-                  ['rearranged', 'REARRANGE', 'text-info'],
-                  ['deleted', 'DELETE', 'text-danger'],
-                ].map(([actionVerb, actionAttr, textClass]) =>
-                  actions[attr].filter(action => action.action === actionAttr).length > 0
-                  &&
-                  <li className={textClass}>
-                    You've {actionVerb} <strong>
-                    {actions[attr].filter(action => action.action === actionAttr).length}
-                    </strong> {title.toLowerCase()}
-                  </li>
-                )}
-              </ul> : <p>No actions</p>}
-            </div>
-          )}
+          {actions && <RenderActions actions={actions} />}
           <p>
             {deck.equivalent_to_snapshot && (numTotalChanges === 0 ?
               'You\'ve made no changes to your deck, so you can\'t push an update.'
