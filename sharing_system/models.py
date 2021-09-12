@@ -198,6 +198,7 @@ class SharedDeck(models.Model):
             shared_deck_id=shared_deck.pk,
 
             # Instead of deleting models later, it is simpler never to include them
+            # TODO: this looks weird; there should be a better way: look at SubmittedChanges.accept
             main_section_uids_to_remove=MainSection.objects.filter(
                 deck_id=deck.pk,
                 attached_action__action='DELETE',
@@ -543,6 +544,12 @@ class SubmittedChanges(models.Model):
         on_delete=models.CASCADE,
         related_name='submitted_changes',
     )
+    created_from_deck = models.ForeignKey(
+        Deck,
+        on_delete=models.SET_NULL,
+        related_name='submitted_changes',
+        null=True, blank=True,
+    )
 
     message = models.JSONField()
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -580,6 +587,59 @@ class SubmittedChanges(models.Model):
         )
 
         return deck
+
+    def accept(self) -> None:
+        latest_snapshot = self.shared_deck.get_latest_snapshot()
+
+        snapshot = SnapShot.create_child(
+            parent=latest_snapshot,
+            author=self.author,
+            message=self.message,
+            shared_deck_id=self.shared_deck_id,
+
+            # Instead of deleting models later, it is simpler never to include them
+            main_section_uids_to_remove=self.pending_mainsectionactions.filter(
+                action='DELETE',
+            ).values_list('universal_main_section_id', flat=True),
+            sub_section_uids_to_remove=self.pending_subsectionactions.filter(
+                action='DELETE',
+            ).values_list('universal_sub_section_id', flat=True),
+            flashcard_uids_to_remove=self.pending_flashcardactions.filter(
+                action='DELETE',
+            ).values_list('universal_flashcard_id', flat=True),
+        )
+
+        # Apply actions
+        MainSectionAction.push(
+            self.pending_mainsectionactions,
+            snapshot,
+        )
+        SubSectionAction.push(
+            self.pending_subsectionactions,
+            snapshot,
+        )
+        FlashCardAction.push(
+            self.pending_flashcardactions,
+            snapshot,
+        )
+
+        # Delete self
+        self.delete()
+
+        return snapshot
+
+    def deny(self) -> None:
+        # Log these actions as being part of the original deck again
+        if self.created_from_deck_id:
+            self.transfer_actions_to_deck(self.created_from_deck)
+        else:
+            # If there is no deck to transfer back to, the actions are lost forever
+            self.pending_mainsectionactions.delete()
+            self.pending_subsectionactions.delete()
+            self.pending_flashcardactions.delete()
+
+        # Delete self
+        self.delete()
 
 
 class AbstractAction(models.Model):
@@ -712,6 +772,7 @@ class MainSectionAction(AbstractAction):
 
             # Update the action
             action.deck = None
+            action.submitted_changes = None
             action.snapshot = snapshot
             if ms_destination is not None:
                 action.main_section = ms_destination
@@ -744,7 +805,7 @@ class MainSectionAction(AbstractAction):
         # Transfer the actions from the deck to the snapshot
         MainSectionAction.objects.bulk_update(
             actions,
-            ('deck', 'snapshot', 'main_section'),
+            ('deck', 'submitted_changes', 'snapshot', 'main_section'),
         )
 
     @staticmethod
@@ -939,6 +1000,7 @@ class SubSectionAction(AbstractAction):
 
             # Update the action
             action.deck = None
+            action.submitted_changes = None
             action.snapshot = snapshot
             if ss_destination:
                 action.sub_section = ss_destination
@@ -959,7 +1021,7 @@ class SubSectionAction(AbstractAction):
         # Transfer the actions from the deck to the snapshot
         SubSectionAction.objects.bulk_update(
             actions,
-            ('deck', 'snapshot', 'sub_section'),
+            ('deck', 'submitted_changes', 'snapshot', 'sub_section'),
         )
 
     @staticmethod
@@ -1167,6 +1229,7 @@ class FlashCardAction(AbstractAction):
 
             # Update the action
             action.deck = None
+            action.submitted_changes = None
             action.snapshot = snapshot
             action.flashcard_id = fc_destination.pk
 
@@ -1186,7 +1249,7 @@ class FlashCardAction(AbstractAction):
         # Transfer the actions from the deck to the snapshot
         FlashCardAction.objects.bulk_update(
             actions,
-            ('deck', 'snapshot', 'flashcard_id')
+            ('deck', 'submitted_changes', 'snapshot', 'flashcard_id')
         )
 
     @staticmethod

@@ -116,7 +116,7 @@ function RenderAction({ action }: { action: MainSectionAction | SubSectionAction
               <p className='text-center'><strong>Incoming Submitted Edit</strong></p>
               {changeRendering}
             </Col>
-            <Col md={6} xs={12} className='right-separator'>
+            <Col md={6} xs={12}>
               <p className='text-center'><strong>Current Version</strong></p>
               {currentRendering}
             </Col>

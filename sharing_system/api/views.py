@@ -432,3 +432,28 @@ def get_submitted_changes(request, submitted_changes_id, *args, **kwargs):
         },
         status=200,
     )
+
+
+@api_view(['POST'])
+def decide_submitted_changes(request, submitted_changes_id, *args, **kwargs):
+    try:
+        submitted_changes = SubmittedChanges.objects\
+            .select_related('shared_deck')\
+            .get(pk=submitted_changes_id)
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'Shared deck not found'}, status=404)
+
+    shared_deck = submitted_changes.shared_deck
+    author = request.user.profile if request.user.is_authenticated else None
+    if author is None or not shared_deck.is_owner(author.pk):
+        return Response({'message': 'You are not an owner of this shared deck'}, status=403)
+
+    decision = request.data.get('decision')
+    if decision == 'ACCEPT':
+        submitted_changes.accept()
+        return Response({'message': 'Accepted changes'}, status=200)
+    elif decision == 'DENY':
+        submitted_changes.deny()
+        return Response({'message': 'Denied changes'}, status=200)
+    else:
+        return Response({'message': 'Unrecognized `decision`'}, status=400)

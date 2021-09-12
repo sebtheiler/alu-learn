@@ -6,7 +6,7 @@ import { SubmittedChanges } from './types';
 import { backendFetch } from '../../lookup/lookup';
 import { useObjectGet } from '../../lookup/lookup';
 
-export default function RenderSubmittedChanges({ submittedChangesId }: { submittedChangesId: string }) {
+export default function RenderSubmittedChanges({ sharedDeckId, submittedChangesId }: { sharedDeckId: number, submittedChangesId: string }) {
   const [resp] = useObjectGet<{ changes: SubmittedChanges, is_owner: boolean }>(
     'sharing_system', 'submittedchanges', submittedChangesId,
   );
@@ -14,7 +14,12 @@ export default function RenderSubmittedChanges({ submittedChangesId }: { submitt
   const decideChanges = async (decision: 'ACCEPT' | 'DENY') => {
     await backendFetch('POST', `sharing_system/submittedchanges/${submittedChangesId}/decide/`, {
       decision: decision,
-    }).then(() => window.location.reload());
+    });
+
+    if (decision === 'ACCEPT')
+      window.location.href = `/community/deck/${sharedDeckId}/`;
+    else
+      window.location.href = `/community/deck/${sharedDeckId}/submitted/`;
   }
 
   if (!resp) return <p className='text-center mt-3'>Loading…</p>;
