@@ -15,7 +15,7 @@ from utils.api_utils import (assert_request_data_type, get_obj_or_404,
                              get_paginated_queryset_response)
 
 from ..models import (FlashCardAction, MainSectionAction, SharedDeck, SnapShot,
-                      SubSectionAction)
+                      SubSectionAction, SubmittedChanges)
 from ..serializers import SharedDeckSerializer, SubmittedChangesSerializer
 
 
@@ -404,5 +404,31 @@ def list_submitted_changes(request, shared_deck_id: int, *args, **kwargs):
             shared_deck.submitted_changes.all(),
             many=True,
         ).data,
+        status=200,
+    )
+
+
+@api_view(['GET'])
+def get_submitted_changes(request, submitted_changes_id, *args, **kwargs):
+    try:
+        submitted_changes = SubmittedChanges.objects\
+            .select_related('shared_deck')\
+            .get(pk=submitted_changes_id)
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'Shared deck not found'}, status=404)
+
+    shared_deck = submitted_changes.shared_deck
+    profile_pk = request.user.profile.pk if request.user.is_authenticated else None
+    if not shared_deck.has_view_access(profile_pk):
+        return Response({'message': 'You are not authorized to view this shared deck'}, status=403)
+
+    return Response(
+        {
+            'changes': SubmittedChangesSerializer(
+                submitted_changes,
+                context={'full_detail': True},
+            ).data,
+            'is_owner': shared_deck.is_owner(profile_pk)
+        },
         status=200,
     )

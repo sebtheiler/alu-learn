@@ -16,13 +16,27 @@ class SectionDataSerializer(serializers.ModelSerializer):
 
 
 class AbstractActionSerializer(serializers.ModelSerializer):
+    live_counterpart = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = AbstractAction
         fields = (
             'deck_id',
             'snapshot_id',
+            'live_counterpart',
             'action',
         )
+
+    def get_live_counterpart(self, obj):
+        if not self.context.get('full_detail') or obj.action == 'CREATE':
+            return
+
+        attr = self.Meta.universal_id
+        return self.__class__(self.Meta.model.objects.filter(
+            **{attr: getattr(obj, attr)},
+            deck=None,
+            submitted_changes=None,
+        ).order_by('snapshot__timestamp').last()).data
 
 
 class AbstractSectionSerializer(serializers.ModelSerializer):
@@ -52,6 +66,7 @@ class SubSectionActionSerializer(AbstractActionSerializer):
 
     class Meta:
         model = SubSectionAction
+        universal_id = 'universal_sub_section_id'
         fields = AbstractActionSerializer.Meta.fields + (
             'sub_section',
             'universal_sub_section_id',
@@ -75,6 +90,7 @@ class MainSectionActionSerializer(AbstractActionSerializer):
 
     class Meta:
         model = MainSectionAction
+        universal_id = 'universal_main_section_id'
         fields = AbstractActionSerializer.Meta.fields + (
             'main_section',
             'universal_main_section_id',

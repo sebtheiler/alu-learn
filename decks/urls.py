@@ -82,6 +82,10 @@ urlpatterns = [
         'community/deck/<int:shared_deck_id>/submitted/',
         render_basic_view('decks/submitted-list.html', context_kwargs=True),
     ),
+    path(
+        'community/deck/<int:shared_deck_id>/submitted/<uuid:submitted_changes_id>/',
+        render_basic_view('decks/submitted-changes.html', context_kwargs=True),
+    ),
     path('deck/<int:deck_id>/share/', render_basic_view('decks/shared/share.html')),
     path('decks/<int:deck_id>/share/push/', render_basic_view('decks/shared/push.html')),
     path('decks/<int:deck_id>/get-updates/', render_basic_view('decks/shared/update.html')),

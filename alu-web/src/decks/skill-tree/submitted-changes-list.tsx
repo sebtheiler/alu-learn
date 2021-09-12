@@ -20,7 +20,7 @@ export default function SubmittedList({ sharedDeckId }: { sharedDeckId: string }
     {submittedChanges.map(changes =>
       <div
         key={changes.id}
-        className='submitted-changes-item'
+        className='submitted-changes-item mb-3'
       >
         <h4>
           <a href={`/community/deck/${sharedDeckId}/submitted/${changes.id}/`}>{changes.message}</a>

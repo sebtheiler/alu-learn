@@ -62,20 +62,23 @@ export interface SubmittedChanges {
 interface AbstractAction {
   deck_id: number;
   snapshot_id: number;
-  action: 'CREATE' | 'EDIT' | 'DELETE';
+  action: 'CREATE' | 'EDIT' | 'DELETE' | 'REARRANGE';
 }
 
 export interface MainSectionAction extends AbstractAction {
   main_section: MainSection;
   universal_main_section_id: string;
+  live_counterpart?: MainSectionAction;
 }
 
 export interface SubSectionAction extends AbstractAction {
   sub_section: SubSection;
   universal_sub_section_id: string;
+  live_counterpart?: SubSectionAction;
 }
 
 export interface FlashCardAction extends AbstractAction {
   flashcard: FlashCard;
   universal_flashcard_id: string;
+  live_counterpart?: FlashCardAction;
 }

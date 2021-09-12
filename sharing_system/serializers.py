@@ -24,15 +24,11 @@ class SnapShotSerializer(serializers.ModelSerializer):
 
 
 class SubmittedChangesSerializer(serializers.ModelSerializer):
-    pending_mainsectionactions = MainSectionActionSerializer(
-        'pending_mainsectionactions', many=True,
-    )
-    pending_subsectionactions = SubSectionActionSerializer(
-        'pending_subsectionactions', many=True,
-    )
-    pending_flashcardactions = FlashcardActionSerializer(
-        'pending_flashcardactions', many=True,
-    )
+    # We need to use `serializers.SerializerMethodField` so that we forward our context
+    # (used for `full_detail: True`)
+    pending_mainsectionactions = serializers.SerializerMethodField(read_only=True)
+    pending_subsectionactions = serializers.SerializerMethodField(read_only=True)
+    pending_flashcardactions = serializers.SerializerMethodField(read_only=True)
     author = MinifiedProfileSerializer('author')
 
     class Meta:
@@ -45,6 +41,27 @@ class SubmittedChangesSerializer(serializers.ModelSerializer):
             'pending_flashcardactions',
             'id',
         )
+
+    def get_pending_mainsectionactions(self, obj):
+        return MainSectionActionSerializer(
+            obj.pending_mainsectionactions.all(),
+            many=True,
+            context=self.context,
+        ).data
+
+    def get_pending_subsectionactions(self, obj):
+        return SubSectionActionSerializer(
+            obj.pending_subsectionactions.all(),
+            many=True,
+            context=self.context,
+        ).data
+
+    def get_pending_flashcardactions(self, obj):
+        return FlashcardActionSerializer(
+            obj.pending_flashcardactions.all(),
+            many=True,
+            context=self.context,
+        ).data
 
 
 class SharedDeckSerializer(serializers.ModelSerializer):

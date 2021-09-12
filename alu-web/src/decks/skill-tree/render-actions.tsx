@@ -1,4 +1,10 @@
-import { MainSectionAction, SubSectionAction, FlashCardAction } from './types';
+import Alert from 'react-bootstrap/Alert';
+import Col from 'react-bootstrap/Col';
+import RenderFlashcard from './render-flashcard';
+import Row from 'react-bootstrap/Row';
+import { MainSectionAction, SubSectionAction, FlashCardAction, MainSection, SubSection } from './types';
+import { flattenNodes } from '../../text-editor';
+import './shared.scss';
 
 const sectionActionTypes = [
   ['Flashcards', 'flashcard_actions'],
@@ -24,18 +30,113 @@ export default function RenderActions({ actions }: { actions: Actions }) {
     {sectionActionTypes.map(([title, attr]) =>
       <div className='mt-4' key={attr}>
         <h3>{title}</h3>
-        {actions[attr].length > 0 ? <ul>
-          {actionTypes.map(([actionVerb, actionAttr, textClass]) =>
-            actions[attr].filter(action => action.action === actionAttr).length > 0
-            &&
-            <li className={textClass} key={`${title}-${actionAttr}`}>
-              {actionVerb} <strong>
-              {actions[attr].filter(action => action.action === actionAttr).length}
-              </strong> {title.toLowerCase()}
-            </li>
+        {actions[attr].length > 0 ? <>
+          <ul>
+            {actionTypes.map(([actionVerb, actionAttr, textClass]) =>
+              actions[attr].filter(action => action.action === actionAttr).length > 0
+              &&
+              <li className={textClass} key={`${title}-${actionAttr}`}>
+                {actionVerb} <strong>
+                {actions[attr].filter(action => action.action === actionAttr).length}
+                </strong> {title.toLowerCase()}
+              </li>
+            )}
+          </ul>
+          {!!actions[attr][0].live_counterpart && actions[attr].map(action =>
+            <RenderAction action={action} key={action.pk} />
           )}
-        </ul> : <p>No actions</p>}
+        </>: <p>No actions</p>}
       </div>
     )}
   </>);
+}
+
+function RenderSection({ section }: { section: MainSection | SubSection }) {
+  return (<>
+    <p>Title: {section.data.title}</p>
+    <p>Description: {section.data.description}</p>
+  </>);
+}
+
+function RenderAction({ action }: { action: MainSectionAction | SubSectionAction | FlashCardAction }) {
+  const isMainSection = 'main_section' in action;
+  const isSubSection = 'sub_section' in action;
+  const isFlashCard = 'flashcard' in action;
+  let objTitle: string;
+  let changeRendering: JSX.Element;
+  let currentRendering: JSX.Element | undefined;
+  if (isMainSection) {
+    // @ts-expect-error
+    const mainSection = action.main_section;
+    objTitle = mainSection.data.title;
+    changeRendering = <RenderSection section={mainSection} />;
+    // @ts-expect-error
+    currentRendering = action.live_counterpart && <RenderSection section={action.live_counterpart.main_section} />;
+  } else if (isSubSection) {
+    // @ts-expect-error
+    const subSection = action.sub_section;
+    objTitle = subSection.data.title;
+    changeRendering = <RenderSection section={subSection} />;
+    // @ts-expect-error
+    currentRendering = action.live_counterpart && <RenderSection section={action.live_counterpart.sub_section} />;
+  } else if (isFlashCard) {
+    // @ts-expect-error
+    const flashcard = action.flashcard;
+    objTitle = flattenNodes(flashcard.data.fields[0]);
+    changeRendering = <RenderFlashcard flashcard={flashcard} />
+    // @ts-expect-error
+    currentRendering = action.live_counterpart && <RenderFlashcard flashcard={action.live_counterpart.flashcard} />;
+  } else {
+    objTitle = 'ERROR';
+    changeRendering = <>ERROR</>;
+  }
+
+
+  switch (action.action) {
+    case 'CREATE':
+      return (
+        <Alert variant='success'>
+          <Alert.Heading className='text-center'>Creating "{objTitle}"</Alert.Heading>
+          <hr />
+          <Row>
+            <Col md={12}>
+              <p className='text-center'><strong>Incoming Submitted Create</strong></p>
+              {changeRendering}
+            </Col>
+          </Row>
+        </Alert>
+      );
+    case 'EDIT':
+      return (
+        <Alert variant='primary'>
+          <Alert.Heading className='text-center'>Editing "{objTitle}"</Alert.Heading>
+          <hr />
+          <Row>
+            <Col md={6} xs={12} className='right-separator'>
+              <p className='text-center'><strong>Incoming Submitted Edit</strong></p>
+              {changeRendering}
+            </Col>
+            <Col md={6} xs={12} className='right-separator'>
+              <p className='text-center'><strong>Current Version</strong></p>
+              {currentRendering}
+            </Col>
+          </Row>
+        </Alert>
+      );
+    case 'DELETE':
+      return (
+        <Alert variant='danger'>
+          <Alert.Heading className='text-center'>Deleting "{objTitle}"</Alert.Heading>
+          <hr />
+          <Row>
+            <Col md={12}>
+              <p className='text-center'><strong>Incoming Submitted Deletion</strong></p>
+              {changeRendering}
+            </Col>
+          </Row>
+        </Alert>
+      );
+    default:
+      return null;
+  }
 }

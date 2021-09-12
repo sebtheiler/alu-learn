@@ -37,6 +37,7 @@ class FlashcardActionSerializer(AbstractActionSerializer):
 
     class Meta:
         model = FlashCardAction
+        universal_id = 'universal_flashcard_id'
         fields = AbstractActionSerializer.Meta.fields + (
             'flashcard',
             'universal_flashcard_id',
