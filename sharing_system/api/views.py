@@ -414,8 +414,8 @@ def get_submitted_changes(request, submitted_changes_id, *args, **kwargs):
         submitted_changes = SubmittedChanges.objects\
             .select_related('shared_deck')\
             .get(pk=submitted_changes_id)
-    except SharedDeck.DoesNotExist:
-        return Response({'message': 'Shared deck not found'}, status=404)
+    except SubmittedChanges.DoesNotExist:
+        return Response({'message': 'Submitted changes not found'}, status=404)
 
     shared_deck = submitted_changes.shared_deck
     profile_pk = request.user.profile.pk if request.user.is_authenticated else None
@@ -440,8 +440,8 @@ def decide_submitted_changes(request, submitted_changes_id, *args, **kwargs):
         submitted_changes = SubmittedChanges.objects\
             .select_related('shared_deck')\
             .get(pk=submitted_changes_id)
-    except SharedDeck.DoesNotExist:
-        return Response({'message': 'Shared deck not found'}, status=404)
+    except SubmittedChanges.DoesNotExist:
+        return Response({'message': 'Submitted changes not found'}, status=404)
 
     shared_deck = submitted_changes.shared_deck
     author = request.user.profile if request.user.is_authenticated else None

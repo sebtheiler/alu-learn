@@ -36,5 +36,9 @@ export default function SubmittedList({ sharedDeckId }: { sharedDeckId: string }
         </div>
       </div>
     )}
+    {submittedChanges.length === 0 && <div className='text-center'>
+      <p>No submitted changes yet.</p>
+      <p>Editors of this shared deck can submit changes, which are reviewed by owners before being accepted or denied.</p>
+    </div>}
   </Container>);
 }
