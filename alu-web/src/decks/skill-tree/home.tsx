@@ -11,7 +11,8 @@ import CreateDeckButton from './buttons/create-deck';
 import { useObjectList } from '../../lookup/lookup';  // TODO: clean up imports
 import './home.scss';
 
-export default function SkillTreeHome({ defaultSelected }: { defaultSelected?: string }) {
+export default function SkillTreeHome({ defaultSelected, isTeacherProp }: { defaultSelected?: string, isTeacherProp?: string}) {
+  const isTeacher = isTeacherProp?.toLowerCase() === 'true';
   const [decks, decksDispatch] = useObjectList('decks', 'deck', deckReducer);
   const [selectedDeck, setSelectedDeck] = useState<number | null>(
     defaultSelected ? parseInt(defaultSelected) : null
@@ -23,21 +24,8 @@ export default function SkillTreeHome({ defaultSelected }: { defaultSelected?: s
         <Row>
           <Col md={3} sm={12}>
             <h1 className='invisible'>.</h1>
-            <div className='deck-selection-item mb-4'>
-              <div
-                className={'deck-selection-main mb-0' + (selectedDeck === null ? ' selected' : '')}
-                role='button'
-                onClick={() => {
-                  setSelectedDeck(null);
-                  window.history.pushState(`alu/home/`, 'Home', `/home/`);
-                }}
-              >
-                <p>
-                  <span className='title-text'>Home</span>
-                  <span><i className='fas fa-home fa-2x float-left mt-2 ml-2' /></span>
-                </p>
-              </div>
-            </div>
+            <HomeButton selectedDeck={selectedDeck} setSelectedDeck={setSelectedDeck} />
+            {/* {isTeacher && <Classes} */}
             {decks ? decks.map(deck =>
               <DeckSelection
                 deck={deck}
@@ -72,5 +60,29 @@ export default function SkillTreeHome({ defaultSelected }: { defaultSelected?: s
         </Row>
       </Container>
     </DeckDispatch.Provider>
+  );
+}
+
+interface HomeButtonProps {
+  selectedDeck: number | null;
+  setSelectedDeck: React.Dispatch<React.SetStateAction<number | null>>;
+}
+function HomeButton({ selectedDeck, setSelectedDeck }: HomeButtonProps) {
+  return (
+    <div className='deck-selection-item mb-4'>
+      <div
+        className={'deck-selection-main mb-0' + (selectedDeck === null ? ' selected' : '')}
+        role='button'
+        onClick={() => {
+          setSelectedDeck(null);
+          window.history.pushState(`alu/home/`, 'Home', `/home/`);
+        }}
+      >
+        <p>
+          <span className='title-text'>Home</span>
+          <span><i className='fas fa-home fa-2x float-left mt-2 ml-2' /></span>
+        </p>
+      </div>
+    </div>
   );
 }
