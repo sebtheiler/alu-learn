@@ -10,7 +10,7 @@ export default function CreateClassroomButton() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   return (<>
-    <div className='deck-selection-item mb-5 mt-4'>
+    <div className='deck-selection-item mb-5'>
       <div
         className='deck-selection-main mb-0'
         role='button'

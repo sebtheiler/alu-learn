@@ -71,7 +71,7 @@ export function StudyReviewInstances({ reviewInstances, deckId, section }: Study
             {originalInfo.numTotal > originalInfo.numNew && <p className='text-primary'>
               You refreshed your knowledge of <strong>{originalInfo.numTotal - originalInfo.numNew}</strong> flashcards!
             </p>}
-            <p>TODO: AD</p>
+            {/* <p>TODO: AD</p> */}
           </Col>
         </Row>
       </div>}

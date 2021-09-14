@@ -7,7 +7,7 @@ import { LoginForm } from './login';
 interface RegisterLoginModalProps {
   defaultForm?: 'REGISTER' | 'LOGIN';
   modalIsOpen: boolean;
-  closeModal: Function;
+  closeModal(): void;
   returnUrl: string;
 }
 export function RegisterLoginModal(props: RegisterLoginModalProps) {

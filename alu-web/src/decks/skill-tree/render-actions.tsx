@@ -66,25 +66,19 @@ function RenderAction({ action }: { action: MainSectionAction | SubSectionAction
   let changeRendering: JSX.Element;
   let currentRendering: JSX.Element | undefined;
   if (isMainSection) {
-    // @ts-expect-error
     const mainSection = action.main_section;
     objTitle = mainSection.data.title;
     changeRendering = <RenderSection section={mainSection} />;
-    // @ts-expect-error
     currentRendering = action.live_counterpart && <RenderSection section={action.live_counterpart.main_section} />;
   } else if (isSubSection) {
-    // @ts-expect-error
     const subSection = action.sub_section;
     objTitle = subSection.data.title;
     changeRendering = <RenderSection section={subSection} />;
-    // @ts-expect-error
     currentRendering = action.live_counterpart && <RenderSection section={action.live_counterpart.sub_section} />;
   } else if (isFlashCard) {
-    // @ts-expect-error
     const flashcard = action.flashcard;
     objTitle = flattenNodes(flashcard.data.fields[0]);
     changeRendering = <RenderFlashcard flashcard={flashcard} />
-    // @ts-expect-error
     currentRendering = action.live_counterpart && <RenderFlashcard flashcard={action.live_counterpart.flashcard} />;
   } else {
     objTitle = 'ERROR';

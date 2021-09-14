@@ -135,6 +135,7 @@ function StudentDataTable(props: { classroomId: number }) {
     {students && <>
       <DataTable
         columns={columns}
+        // @ts-expect-error
         data={students}
         expandableRows
         expandOnRowClicked
@@ -145,6 +146,7 @@ function StudentDataTable(props: { classroomId: number }) {
         // NOTE: I don't know whether this is depracated, or the other version is deprecated
         // expandableRowsComponent={ExpandableStudentDetailComponent}
         // expandableRowsComponentProps={{ classroomId: classroomId }}
+        // @ts-expect-error
         expandableRowsComponent={<ExpandableStudentDetailComponent classroomId={classroomId} />}
       />
     </>}

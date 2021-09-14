@@ -46,7 +46,7 @@ export default function SkillTreeHome({ defaultSelected, isTeacherProp }: { defa
               />
             </div>
             <div>
-              <p className='text-left'><strong>Decks</strong></p>
+              <p className='text-left mb-1'><strong>Decks</strong></p>
               {decks ? decks.map(deck =>
                 <DeckSelection
                   deck={deck}
@@ -61,7 +61,7 @@ export default function SkillTreeHome({ defaultSelected, isTeacherProp }: { defa
               <CreateDeckButton />
             </div>
             <div>
-              <p className='text-left'><strong>Classes</strong></p>
+              <p className='text-left mb-1'><strong>Classes</strong></p>
               {classrooms ? classrooms.map(classroom =>
                 <ClassroomSelection
                   classroom={classroom}
@@ -77,7 +77,7 @@ export default function SkillTreeHome({ defaultSelected, isTeacherProp }: { defa
             </div>
           </Col>
           <Col md={6} sm={12} className='px-4'>
-            {selected.selectedType === 'HOME' && <HomeComponent />}
+            {selected.selectedType === 'HOME' && <HomeComponent isTeacher={isTeacher} />}
             {selected.selectedType === 'DECK' && <SkillTree deck={decks?.filter(deck => deck.id === selected.selected)[0]} />}
           </Col>
           <Col md={3} sm={12}>

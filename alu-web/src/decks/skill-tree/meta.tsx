@@ -9,7 +9,8 @@ export default function Meta({ isTeacher }: { isTeacher: boolean }) {
       targetCardsDone={reviewInfo?.target_cards_done ?? 0}
       cardsDone={reviewInfo?.cards_done ?? 0}
       cardsJustDone={0}
-    />}
-    <p>AD</p>
+      />
+    }
+    {/* TODO: AD */}
   </>)
 }
