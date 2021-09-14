@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Deck } from '../../types';
 import { apiObjectDelete, apiObjectEdit } from '../../../lookup/lookup';  // TODO: improve imports
 import { confirmDelete } from '../../../utils/utils';
-import { DeckDispatch } from '../context';
+import { HomeActionDispatch } from '../context';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
@@ -19,20 +19,20 @@ interface EditModalProps {
 }
 export default function EditModal(props: EditModalProps) {
   const { deck, show, close } = props;
-  const deckDispatch = useContext(DeckDispatch);
+  const { decksDispatch } = useContext(HomeActionDispatch);
 
   const editDeck = (options: DeckEditableAttrs) => {
     apiObjectEdit('decks', 'deck', deck.id, options);
-    if (deckDispatch)
-      deckDispatch({ action: 'EDIT', payload: { id: deck.id, ...options } });
+    if (decksDispatch)
+      decksDispatch({ action: 'EDIT', payload: { id: deck.id, ...options } });
   }
 
   const deleteDeck = async () => {
     if (!confirmDelete('deck')) return;
     await apiObjectDelete('decks', 'deck', deck.id);
 
-    if (deckDispatch)
-      deckDispatch({ action: 'DELETE', payload: deck.id});
+    if (decksDispatch)
+      decksDispatch({ action: 'DELETE', payload: deck.id});
     close()
   }
 

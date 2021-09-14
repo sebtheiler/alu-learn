@@ -1,13 +1,12 @@
 import Form from 'react-bootstrap/Form';
-import LoadingButton from '../buttons/LoadingButton';
+import LoadingButton from './LoadingButton';
 import Modal from 'react-bootstrap/Modal';
-import { Deck } from '../../types';
+import { Classroom } from '../../../teachers/types';
 import { HomeActionDispatch } from '../context';
-import { DeckEditableAttrs, DeckForm } from '../modals/edit';
 import { apiObjectCreate } from '../../../lookup/lookup';
-import { useContext, useState  } from 'react';
+import { useContext, useState } from 'react';
 
-export default function CreateDeckButton() {
+export default function CreateClassroomButton() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   return (<>
@@ -18,7 +17,7 @@ export default function CreateDeckButton() {
         onClick={() => setShowCreateModal(true)}
       >
         <p>
-          <span className='title-text'>Create New Deck</span>
+          <span className='title-text'>Create New Classroom</span>
           <span><i className='fas fa-plus fa-2x float-left mt-2 ml-2' /></span>
         </p>
       </div>
@@ -31,7 +30,6 @@ export default function CreateDeckButton() {
 }
 
 
-
 const editableAttrs = ['title'];
 interface CreateModalProps {
   show: boolean;
@@ -39,13 +37,13 @@ interface CreateModalProps {
 }
 function CreateModal(props: CreateModalProps) {
   const { show, close } = props;
-  const { decksDispatch } = useContext(HomeActionDispatch);
+  const { classroomsDispatch } = useContext(HomeActionDispatch);
 
-  const createDeck = async (options: DeckEditableAttrs) => {
-    await apiObjectCreate<Deck>('decks', 'deck', options).then(
-      res => decksDispatch && decksDispatch({
+  const createClassroom = async (options) => {
+    await apiObjectCreate<Classroom>('teachers', 'classroom', options).then(
+      res => classroomsDispatch && classroomsDispatch({
         action: 'CREATE',
-        payload: res,
+        classroom: res,
       }),
     );
     close();
@@ -54,26 +52,33 @@ function CreateModal(props: CreateModalProps) {
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header>
-        <Modal.Title>Creating deck</Modal.Title>
+        <Modal.Title>Creating classroom</Modal.Title>
       </Modal.Header>
-      <Form name='createDeckForm'>
+      <Form name='createClassroomForm'>
         <Modal.Body>
-          <DeckForm />
+          <Form.Group>
+            <Form.Label>Title</Form.Label>
+            <Form.Control
+              type='text'
+              name='title'
+              required
+            />
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <LoadingButton
             clickFunc={async () => {
-              const form = document.getElementsByName('createDeckForm')[0] as HTMLFormElement;
+              const form = document.getElementsByName('createClassroomForm')[0] as HTMLFormElement;
               if (!form) return;
 
-              let createDeckOptions = {};
+              let createClassroomOptions = {};
               for (const el of form.elements) {
                 let elName = (el as any).name;
                 if (editableAttrs.includes(elName))
-                  createDeckOptions[elName] = (el as any).value;
+                  createClassroomOptions[elName] = (el as any).value;
               }
 
-              await createDeck(createDeckOptions);
+              await createClassroom(createClassroomOptions);
             }}
             type='submit'
             block

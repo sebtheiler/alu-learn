@@ -691,3 +691,13 @@ def assignment_detail_view(request, classroom_id: int, assignment_id: int):
 #     )
 
 #     return Response({'message': 'Edited DSSM and any ASSMs available'}, status=200)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def classrooms_list(request, *args, **kwargs):
+    if request.user.profile.settings.user_type == 'TEACHER':
+        classrooms = request.user.profile.classrooms_taught.order_by('title')
+    else:
+        classrooms = request.user.profile.classrooms_in.order_by('title')
+
+    return Response(ClassroomSerializer(classrooms, many=True).data, status=200)

@@ -1,7 +1,7 @@
 import RenderMainSection from './main-section';
 import { CreateMainSectionButton } from './buttons/section-buttons';
 import { Deck } from '../types';
-import { DeckDispatch } from './context';
+import { HomeActionDispatch } from './context';
 import { useAsyncDispatch, getDeckSectionsPercentComplete, PercentComplete } from '../../lookup/lookup';
 import { useContext } from 'react';
 import UpdateDeck from './update-deck';
@@ -31,18 +31,20 @@ const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: Perc
   return deckCopy;
 }
 
-export default function SkillTree({ deck }: { deck: Deck }) {
-  const deckDispatch = useContext(DeckDispatch);
+export default function SkillTree({ deck }: { deck?: Deck }) {
+  const { decksDispatch } = useContext(HomeActionDispatch);
   useAsyncDispatch<PercentComplete[]>(
     getDeckSectionsPercentComplete,
-    [deck.id],
+    [deck?.id],
     undefined,
-    sectionsPercentComplete => deckDispatch && deckDispatch({
+    sectionsPercentComplete => decksDispatch && decksDispatch({
       action: 'EDIT',
-      payload: updateDeckWithPercentComplete(deck, sectionsPercentComplete)
+      payload: deck && updateDeckWithPercentComplete(deck, sectionsPercentComplete)
     }),
+    !!deck,
   );
 
+  if (!deck) return <p>Loading…</p>;
   return (<>
     <div className='mb-3'>
       <h1 className='mb-0'>

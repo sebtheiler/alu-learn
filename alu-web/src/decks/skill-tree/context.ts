@@ -1,8 +1,10 @@
 import { createContext, Dispatch } from 'react';
+import { Classroom } from '../../teachers/types';
 import { Deck } from '../types';
 import { MainSection, SectionData, SubSection } from './types';
 
-type DeckEvent =
+// === Deck ===
+type DeckEvent = (
   // Deck
   | { action: 'CREATE', payload: Deck }
   | { action: 'EDIT', payload: any }
@@ -40,7 +42,7 @@ type DeckEvent =
     subSectionNum: number,
     direction: 'UP' | 'DOWN',
   }
-
+)
 export const deckReducer = (
   state: Deck[] | undefined,
   event: DeckEvent,
@@ -186,4 +188,45 @@ export const deckReducer = (
   }
 }
 
-export const DeckDispatch = createContext<Dispatch<DeckEvent> | undefined>(undefined);
+
+// === Classroom ===
+type ClassroomEvent =
+  | { action: 'CREATE', classroom: Classroom }
+  | { action: 'EDIT', editedValues: Partial<Classroom> & Pick<Classroom, 'id'> }
+  | { action: 'DELETE', classroomId: number }
+export const classroomReducer = (
+  state: Classroom[] | undefined,
+  event: ClassroomEvent,
+): Classroom[] | undefined => {
+  if (!state) return undefined;
+  let index: number;
+  let newState = state;
+  switch (event.action) {
+    case 'CREATE':
+      return [...state, event.classroom];
+    case 'EDIT':
+      // Get index of edited classroom
+      index = state.map(classroom => classroom.id).indexOf(event.editedValues.id);
+
+      // Make updates
+      for (const [attr, val] of Object.entries(event.editedValues))
+        newState[index][attr] = val;
+
+      return [...newState];  // React is very stupid so you need to clone the array to force re-render
+    case 'DELETE':
+      return state.filter(classroom => classroom.id !== event.classroomId);
+    default:
+      return state;
+  }
+}
+
+
+// Context
+interface HomeActionDispatchType {
+  decksDispatch: Dispatch<DeckEvent> | undefined;
+  classroomsDispatch: Dispatch<ClassroomEvent> | undefined;
+}
+export const HomeActionDispatch = createContext<HomeActionDispatchType>({
+  decksDispatch: undefined,
+  classroomsDispatch: undefined,
+});

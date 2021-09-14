@@ -749,11 +749,10 @@ export function apiClassroomDelete(classroomId, callback) {
 }
 
 // Allows a student to join a classroom
-export function apiClassroomStudentJoin(
+export async function apiClassroomStudentJoin(
   classroomCode: string,
-  callback: (response: Message, status: number) => void,
-) {
-  backendLookup('POST', 'teachers/classroom/student-join/', callback, { classroom_code: classroomCode });
+): Promise<Classroom> {
+  return backendFetch('POST', 'teachers/classroom/join/', { classroom_code: classroomCode });
 }
 
 // Gets a list of the classes a student has joined

@@ -96,26 +96,26 @@ function ClassroomsComponent({ joinClassModalIsOpen, setJoinClassModalIsOpen }) 
     event.preventDefault();
     const form = event.target;
 
-    apiClassroomStudentJoin(form.elements.classCode.value, (response, status) => {
-      const joinClassError = document.getElementById('join-class-error');
-      if (status === 200) {
-        if (joinClassError) joinClassError.innerText = '';
-        window.location.reload();
-      } else if (status === 404) {
-        if (!joinClassError) return;
+    // apiClassroomStudentJoin(form.elements.classCode.value, (response, status) => {
+    //   const joinClassError = document.getElementById('join-class-error');
+    //   if (status === 200) {
+    //     if (joinClassError) joinClassError.innerText = '';
+    //     window.location.reload();
+    //   } else if (status === 404) {
+    //     if (!joinClassError) return;
 
-        if (response.message === 'Classroom not found') {
-          joinClassError.innerText = 
-            'That class doesn\'t exist.  Please make sure you\'ve typed in the code correctly';
-        } else if (response.message === 'You may only join classes in the same domain') {
-          joinClassError.innerText = 
-            'You may only join classes from a teacher than has the same email domain as you.';
-        }
-      } else {
-        // Error joining class
-        errorHandler(response, status, 8004);
-      }
-    });
+    //     if (response.message === 'Classroom not found') {
+    //       joinClassError.innerText = 
+    //         'That class doesn\'t exist.  Please make sure you\'ve typed in the code correctly';
+    //     } else if (response.message === 'You may only join classes in the same domain') {
+    //       joinClassError.innerText = 
+    //         'You may only join classes from a teacher than has the same email domain as you.';
+    //     }
+    //   } else {
+    //     // Error joining class
+    //     errorHandler(response, status, 8004);
+    //   }
+    // });
   }
 
   return (<>

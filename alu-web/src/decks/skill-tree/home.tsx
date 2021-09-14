@@ -1,80 +1,107 @@
-import { useState } from 'react';
+import ClassroomSelection from './classroom-selection';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import DeckSelection from './deck-selection';
-import SkillTree from './skill-tree';
-import { DeckDispatch, deckReducer } from './context';
-import HomeComponent from './home-component';
-import Meta from './meta';
+import CreateClassroomButton from './buttons/create-classroom';
 import CreateDeckButton from './buttons/create-deck';
+import DeckSelection from './deck-selection';
+import HomeComponent from './home-component';
+import JoinClassroomButton from './buttons/join-classroom';
+import Meta from './meta';
+import Row from 'react-bootstrap/Row';
+import SkillTree from './skill-tree';
+import { classroomReducer, HomeActionDispatch, deckReducer } from './context';
 import { useObjectList } from '../../lookup/lookup';  // TODO: clean up imports
+import { useState } from 'react';
 import './home.scss';
 
+interface Selected {
+  selectedType: 'HOME' | 'DECK' | 'CLASS';
+  selected: number;
+}
+
+// TODO: make default selected for classroom
 export default function SkillTreeHome({ defaultSelected, isTeacherProp }: { defaultSelected?: string, isTeacherProp?: string}) {
   const isTeacher = isTeacherProp?.toLowerCase() === 'true';
   const [decks, decksDispatch] = useObjectList('decks', 'deck', deckReducer);
-  const [selectedDeck, setSelectedDeck] = useState<number | null>(
-    defaultSelected ? parseInt(defaultSelected) : null
-  );
+  const [classrooms, classroomsDispatch] = useObjectList('teachers', 'classroom', classroomReducer);
+  console.log(classrooms)
+  const [selected, setSelected] = useState<Selected>({
+    selectedType: defaultSelected ? 'DECK' : 'HOME',
+    selected: parseInt(defaultSelected ?? '0'),
+  });
 
   return (
-    <DeckDispatch.Provider value={decksDispatch}>
+    <HomeActionDispatch.Provider value={{ decksDispatch, classroomsDispatch }}>
       <Container className='text-center mt-3' fluid>
         <Row>
           <Col md={3} sm={12}>
             <h1 className='invisible'>.</h1>
-            <HomeButton selectedDeck={selectedDeck} setSelectedDeck={setSelectedDeck} />
-            {/* {isTeacher && <Classes} */}
-            {decks ? decks.map(deck =>
-              <DeckSelection
-                deck={deck}
-                onClick={() => {
-                  setSelectedDeck(deck.id);
-                  window.history.pushState(`alu/deck/${deck.id}/`, deck.title, `/deck/${deck.id}/`);
-                }}
-                selected={selectedDeck === deck.id}
-                key={deck.id}
+            <div>
+              <HomeButton
+                isSelected={selected.selectedType === 'HOME'}
+                setSelected={() => setSelected({
+                  ...selected,
+                  selectedType: 'HOME',
+                })}
               />
-            ) : <p>Loading decks...</p>}
-            <CreateDeckButton />
+            </div>
+            <div>
+              <p className='text-left'><strong>Decks</strong></p>
+              {decks ? decks.map(deck =>
+                <DeckSelection
+                  deck={deck}
+                  onClick={() => {
+                    setSelected({ selectedType: 'DECK', selected: deck.id });
+                    window.history.pushState(`alu/deck/${deck.id}/`, deck.title, `/deck/${deck.id}/`);
+                  }}
+                  selected={selected.selected === deck.id && selected.selectedType === 'DECK'}
+                  key={`deck-${deck.id}`}
+                />
+              ) : <p>Loading decks…</p>}
+              <CreateDeckButton />
+            </div>
+            <div>
+              <p className='text-left'><strong>Classes</strong></p>
+              {classrooms ? classrooms.map(classroom =>
+                <ClassroomSelection
+                  classroom={classroom}
+                  onClick={() => {
+                    setSelected({ selectedType: 'CLASS', selected: classroom.id });
+                    window.history.pushState(`alu/classroom/${classroom.id}/`, classroom.title, `/classroom/${classroom.id}/`);
+                  }}
+                  selected={selected.selected === classroom.id && selected.selectedType === 'CLASS'}
+                  key={`class-${classroom.id}`}
+                />
+              ) : <p>Loading classrooms…</p>}
+              {isTeacher ? <CreateClassroomButton /> : <JoinClassroomButton />}
+            </div>
           </Col>
           <Col md={6} sm={12} className='px-4'>
-            {(
-              selectedDeck === null && !defaultSelected
-            ) || (
-              decks && decks.filter(deck => deck.id === selectedDeck).length === 0
-            ) ?
-              <HomeComponent />
-              : (decks ?
-                <SkillTree deck={decks.filter(deck => deck.id === selectedDeck)[0]} />
-                :
-                <p>Loading...</p>
-              )
-            }
+            {selected.selectedType === 'HOME' && <HomeComponent />}
+            {selected.selectedType === 'DECK' && <SkillTree deck={decks?.filter(deck => deck.id === selected.selected)[0]} />}
           </Col>
           <Col md={3} sm={12}>
             <h1 className='invisible'>.</h1>
-            <Meta />
+            <Meta isTeacher={isTeacher} />
           </Col>
         </Row>
       </Container>
-    </DeckDispatch.Provider>
+    </HomeActionDispatch.Provider>
   );
 }
 
 interface HomeButtonProps {
-  selectedDeck: number | null;
-  setSelectedDeck: React.Dispatch<React.SetStateAction<number | null>>;
+  isSelected: boolean;
+  setSelected(): void;
 }
-function HomeButton({ selectedDeck, setSelectedDeck }: HomeButtonProps) {
+function HomeButton({ isSelected, setSelected }: HomeButtonProps) {
   return (
     <div className='deck-selection-item mb-4'>
       <div
-        className={'deck-selection-main mb-0' + (selectedDeck === null ? ' selected' : '')}
+        className={'deck-selection-main mb-0' + (isSelected ? ' selected' : '')}
         role='button'
         onClick={() => {
-          setSelectedDeck(null);
+          setSelected();
           window.history.pushState(`alu/home/`, 'Home', `/home/`);
         }}
       >

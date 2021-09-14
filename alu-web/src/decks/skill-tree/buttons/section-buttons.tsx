@@ -4,21 +4,21 @@ import Form from 'react-bootstrap/Form';
 import IconTooltip from './IconTooltip';
 import LoadingButton from './LoadingButton';
 import Modal from 'react-bootstrap/Modal';
-import { DeckDispatch } from '../context';
+import { HomeActionDispatch } from '../context';
 import { MainSection, SubSection } from '../types';
 import { apiObjectCreate, apiObjectDelete, apiObjectEdit, apiObjectRearrange } from '../../../lookup/lookup';
 import { useContext, useState } from 'react';
 
 export function MainSectionButtons({ mainSection, numMainSections }: { mainSection: MainSection, numMainSections: number }) {
-  const deckDispatch = useContext(DeckDispatch);
+  const { decksDispatch } = useContext(HomeActionDispatch);
 
   const renameMainSection = () => {
     const title = window.prompt(
       `Renaming main section "${mainSection.data.title}"`
     ) ?? mainSection.data.title;
-    if (title === mainSection.data.title || !deckDispatch) return;
+    if (title === mainSection.data.title || !decksDispatch) return;
 
-    deckDispatch({
+    decksDispatch({
       action: 'EDIT_MAIN_SECTION',
       deckId: mainSection.deck,
       mainSectionId: mainSection.id,
@@ -32,9 +32,9 @@ export function MainSectionButtons({ mainSection, numMainSections }: { mainSecti
   }
 
   const deleteMainSection = () => {
-    if (!deckDispatch || !window.confirm('Are you sure you want to delete this main section?')) return;
+    if (!decksDispatch || !window.confirm('Are you sure you want to delete this main section?')) return;
 
-    deckDispatch({
+    decksDispatch({
       action: 'DELETE_MAIN_SECTION',
       deckId: mainSection.deck,
       mainSectionId: mainSection.id,
@@ -44,10 +44,10 @@ export function MainSectionButtons({ mainSection, numMainSections }: { mainSecti
 
   const moveMainSection = (direction: 'UP' | 'DOWN') => {
     return async () => {
-      if (!deckDispatch) return;
+      if (!decksDispatch) return;
 
       apiObjectRearrange('skill_tree', 'mainsection', mainSection.id, direction);
-      deckDispatch({
+      decksDispatch({
         action: 'MOVE_MAIN_SECTION',
         deckId: mainSection.deck,
         mainSectionId: mainSection.id,
@@ -94,15 +94,15 @@ interface SubSectionButtonsProps {
   deckId: number;
 }
 export function SubSectionButtons({ subSection, numSubSections, mainSectionId, deckId }: SubSectionButtonsProps) {
-  const deckDispatch = useContext(DeckDispatch);
+  const { decksDispatch } = useContext(HomeActionDispatch);
 
   const renameSubSection = () => {
     const title = window.prompt(
       `Renaming sub section "${subSection.data.title}"`
     ) ?? subSection.data.title;
-    if (title === subSection.data.title || !deckDispatch) return;
+    if (title === subSection.data.title || !decksDispatch) return;
 
-    deckDispatch({
+    decksDispatch({
       action: 'EDIT_SUB_SECTION',
       deckId: deckId,
       mainSectionId: mainSectionId,
@@ -117,9 +117,9 @@ export function SubSectionButtons({ subSection, numSubSections, mainSectionId, d
   }
 
   const deleteSubSection = () => {
-    if (!deckDispatch || !window.confirm('Are you sure you want to delete this sub section?')) return;
+    if (!decksDispatch || !window.confirm('Are you sure you want to delete this sub section?')) return;
 
-    deckDispatch({
+    decksDispatch({
       action: 'DELETE_SUB_SECTION',
       deckId: deckId,
       mainSectionId: mainSectionId,
@@ -130,10 +130,10 @@ export function SubSectionButtons({ subSection, numSubSections, mainSectionId, d
 
   const moveSubSection = (direction: 'UP' | 'DOWN') => {
     return async () => {
-      if (!deckDispatch) return;
+      if (!decksDispatch) return;
 
       apiObjectRearrange('skill_tree', 'subsection', subSection.id, direction);
-      deckDispatch({
+      decksDispatch({
         action: 'MOVE_SUB_SECTION',
         deckId: deckId,
         mainSectionId: mainSectionId,
@@ -211,16 +211,16 @@ function AbstractSectionCreateForm({ callback }: { callback(title: string, descr
 
 export function CreateMainSectionButton({ deckId }: { deckId: number }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const deckDispatch = useContext(DeckDispatch);
+  const { decksDispatch } = useContext(HomeActionDispatch);
 
   const createMainSectionCallback = async (title: string, description: string) => {
-    if (!deckDispatch) return;
+    if (!decksDispatch) return;
     await apiObjectCreate<MainSection>('skill_tree', 'mainsection', {
       deck_id: deckId,
       title: title,
       description: description,
     }).then(res =>
-      deckDispatch({
+      decksDispatch({
         action: 'CREATE_MAIN_SECTION',
         deckId: res.deck,
         mainSection: res,
@@ -252,16 +252,16 @@ export function CreateMainSectionButton({ deckId }: { deckId: number }) {
 
 export function CreateSubSectionButton({ mainSection }: { mainSection: MainSection }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const deckDispatch = useContext(DeckDispatch);
+  const { decksDispatch } = useContext(HomeActionDispatch);
 
   const createSubSectionCallback = async (title: string, description: string) => {
-    if (!deckDispatch) return;
+    if (!decksDispatch) return;
     await apiObjectCreate<SubSection>('skill_tree', 'subsection', {
       main_section_id: mainSection.id,
       title: title,
       description: description,
     }).then(res =>
-      deckDispatch({
+      decksDispatch({
         action: 'CREATE_SUB_SECTION',
         deckId: mainSection.deck,
         mainSectionId: mainSection.id,
