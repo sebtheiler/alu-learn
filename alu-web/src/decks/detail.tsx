@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { DeckForeignUserButtonGroup, DefaultSharedDeckButtons } from './buttons';
 // import { FlashCardsList } from './flashcards';
-import { DisplayCountChar, has, MarkdownRender } from '../utils';
+import { DisplayCountChar, has } from '../utils';
 import { UserLink } from '../profiles';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -107,7 +107,7 @@ export function DeckDetail(props: DeckDetailProps) {
         <p className='text-secondary mb-3'>
           <DisplayCountChar>{deck.num_clones}</DisplayCountChar> {deck.num_clones !== 1 ? 'copies' : 'copy'}
         </p>
-        <MarkdownRender source={deck.description} />
+        {/* <MarkdownRender source={deck.description} /> */}
       </div>
       {hideExtras ? null : <div>
         <div>

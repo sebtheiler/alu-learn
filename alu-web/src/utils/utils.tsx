@@ -1,12 +1,12 @@
 import React, { useRef, useEffect, useState, useMemo, Dispatch, SetStateAction, ChangeEvent, ReactNodeArray, ReactNode } from 'react';
 import numeral from 'numeral';
-import ReactMarkdown from 'react-markdown/with-html';
+// import ReactMarkdown from 'react-markdown/with-html';
 import RemarkMathPlugin from 'remark-math';
 import { Tooltip, OverlayTrigger, Button, Form, FormControlProps } from 'react-bootstrap';
-import { BlockMath, InlineMath } from 'react-katex';
+// import { BlockMath, InlineMath } from 'react-katex';
 import { FullEditor, createFullEditor  } from '../text-editor';
 import { Slate } from 'slate-react';
-import 'katex/dist/katex.min.css';
+// import 'katex/dist/katex.min.css';
 import { errorHandler } from './errorHandler';
 import { Node as SlateNode } from 'slate';
 // import { Element } from 'slate';
@@ -239,27 +239,28 @@ export function QuestionBubble(props: QuestionBubbleProps) {
   );
 }
 
+// TODO: DELETE
 // Fully-featured MD rendered with KaTeX, MarkDown, and (safe-ish) HTML rendering
-interface MarkdownRenderProps {
-  source: string;
-  allowHtml?: boolean;
-  allowKatex?: boolean;
-}
-export function MarkdownRender(props: MarkdownRenderProps) {
-  const { source, allowHtml=false, allowKatex=true } = props;
+// interface MarkdownRenderProps {
+//   source: string;
+//   allowHtml?: boolean;
+//   allowKatex?: boolean;
+// }
+// export function MarkdownRender(props: MarkdownRenderProps) {
+//   const { source, allowHtml=false, allowKatex=true } = props;
 
-  return (
-    <ReactMarkdown
-      source={source.replaceAll('<script>', '').replaceAll('</script>', '')}
-      plugins={allowKatex ? [RemarkMathPlugin] : undefined}
-      escapeHtml={!Boolean(allowHtml)}
-      renderers={allowKatex ? {
-        math: ({ value }) => <BlockMath>{value}</BlockMath>,
-        inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
-      } : undefined}
-    />
-  );
-}
+//   return (
+//     <ReactMarkdown
+//       source={source.replaceAll('<script>', '').replaceAll('</script>', '')}
+//       plugins={allowKatex ? [RemarkMathPlugin] : undefined}
+//       escapeHtml={!Boolean(allowHtml)}
+//       renderers={allowKatex ? {
+//         math: ({ value }) => <BlockMath>{value}</BlockMath>,
+//         inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
+//       } : undefined}
+//     />
+//   );
+// }
 
 // Calls a function every N milliseconds
 // Taken from https://gist.github.com/babakness/faca3b633bc23d9a0924efb069c9f1f5

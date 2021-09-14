@@ -7,7 +7,6 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import { apiFlashCardSearch, apiFlashcardReviewInstanceEdit } from '../../lookup';
 // import { FlashCardsList } from '.';
 import { errorHandler } from '../../utils';
-import RangeSlider from 'react-bootstrap-range-slider';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
 import { Deck, ReviewInstance } from '../types';
@@ -23,7 +22,6 @@ interface SearchFormProps {
   setMinEaseValue?: Function;
   maxEaseValue?: number;
   setMaxEaseValue?: Function;
-  showRangeSlider?: boolean;
   defaultContains?: string; /** Default value for the 'contains' field */
   defaultTags?: string;
   defaultLeech?: 'ANY' | 'LEECH' | 'NOTLEECH';
@@ -35,7 +33,8 @@ interface SearchFormProps {
   defaultSelectedDecks?: string[]; /** Ids of the selected decks */
 }
 export function SearchForm(props: SearchFormProps) {
-  const {decks, minEaseValue, setMinEaseValue, maxEaseValue, setMaxEaseValue, showRangeSlider, defaultContains, defaultTags, defaultLeech, defaultLearningStatus, defaultMinEase, defaultMaxEase, as, hideSuspend, defaultSelectedDecks} = props;
+  const {decks, minEaseValue, setMinEaseValue, maxEaseValue, setMaxEaseValue, defaultContains, defaultTags, defaultLeech, defaultLearningStatus, defaultMinEase, defaultMaxEase, as, hideSuspend, defaultSelectedDecks} = props;
+  const showRangeSlider = false;  // `RangeSlider` package is broken
 
   return (<>
     {decks && <Form.Group>
@@ -113,7 +112,7 @@ export function SearchForm(props: SearchFormProps) {
     {(showRangeSlider && setMinEaseValue && setMaxEaseValue) ? <>
       <Form.Group>
         <Form.Label htmlFor='minEase' as={as}>Minimum Ease Factor</Form.Label>
-        <RangeSlider
+        {/* <RangeSlider
           value={minEaseValue}
           onChange={changeEvent => setMinEaseValue(changeEvent.target.value)}
           min={130}
@@ -121,12 +120,12 @@ export function SearchForm(props: SearchFormProps) {
           step={5}
           tooltipLabel={value => parseInt(value) === 130 ? '-∞' : value + '%'}
           name='minEase'
-          />
+          /> */}
       </Form.Group>
       <hr />
       <Form.Group>
         <Form.Label htmlFor='maxEase' as={as}>Maximum Ease Factor</Form.Label>
-        <RangeSlider
+        {/* <RangeSlider
           value={maxEaseValue}
           onChange={changeEvent => setMaxEaseValue(changeEvent.target.value)}
           min={130}
@@ -134,7 +133,7 @@ export function SearchForm(props: SearchFormProps) {
           step={5}
           tooltipLabel={value => parseInt(value) === 350 ? '∞' : value + '%'}
           name='maxEase'
-        />
+        /> */}
       </Form.Group>
     </> : <>
     <Form.Group>
@@ -274,7 +273,6 @@ If you wish to continue, please type "DELETE", without the quotes.
           setMinEaseValue={setMinEaseValue}
           maxEaseValue={maxEaseValue}
           setMaxEaseValue={setMaxEaseValue}
-          showRangeSlider={true}
           as='h5'
         />
         <Form.Group>
