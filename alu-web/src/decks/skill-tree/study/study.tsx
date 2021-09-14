@@ -3,7 +3,6 @@ import { apiReviewInstanceStudy, useAsyncDispatch } from '../../../lookup/lookup
 import { ReviewInstance } from '../../types';
 import { StudyReviewInstances } from './review-instances';
 import { StudyAnswerDispatch, StudyAnswerEvent, studyAnswerReducer } from './context';
-import { uncleanTag } from '../sub-section';
 
 
 export default function StudySkillTree({ deckId, section }: { deckId: string, section: string }) {

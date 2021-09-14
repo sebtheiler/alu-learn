@@ -1,12 +1,12 @@
-import { useMemo } from 'react';
-import { ReviewInstance } from '../../types';
-import { ReviewInstanceStudy } from './flashcard';
-import { OutroSlides } from './outro-slides';
 import Col from 'react-bootstrap/Col';
+import Confetti from 'react-confetti';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-// import useWindowSize from 'react-use/lib/useWindowSize';
-import Confetti from 'react-confetti';
+import { OutroSlides } from './outro-slides';
+import { ReviewInstance } from '../../types';
+import { ReviewInstanceStudy } from './flashcard';
+import { apiStreakReviewInfo, StreakInfo, useAsyncDispatch } from '../../../lookup/lookup';
+import { useMemo } from 'react';
 import './review-instances.scss';
 
 const EASE_FOR_HARD_EXERCISE = 210;  // TODO: update with real data
@@ -16,14 +16,19 @@ interface StudyReviewInstancesProps {
   section: string;
 }
 export function StudyReviewInstances({ reviewInstances, deckId, section }: StudyReviewInstancesProps) {
+  const [originalReviewInfo] = useAsyncDispatch<StreakInfo>(apiStreakReviewInfo);
   const originalInfo = useMemo(
     () => ({
       numTotal: reviewInstances.length,
       numNew: reviewInstances.filter(ri => ri.learning_status === 'UNSEEN').length,
+      reviewInfo: originalReviewInfo,
     }),
+
+    // We don't want to re-update this information when `reviewInstances` changes
     // eslint-disable-next-line
-    [],
+    [originalReviewInfo],
   );
+  console.log(originalInfo)
 
   return (
     <Container style={{ maxHeight: '70vh' }}>
