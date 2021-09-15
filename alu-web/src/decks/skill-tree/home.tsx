@@ -21,15 +21,20 @@ interface Selected {
 }
 
 // TODO: make default selected for classroom
-export default function SkillTreeHome({ defaultSelected, isTeacherProp }: { defaultSelected?: string, isTeacherProp?: string}) {
-  const isTeacher = isTeacherProp?.toLowerCase() === 'true';
+interface SkillTreeHomeProps {
+  defaultDeckSelected?: string;
+  defaultClassroomSelected?: string;
+  userType?: string;
+};
+export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSelected, userType }: SkillTreeHomeProps) {
+  const isTeacher = userType?.toLowerCase() === 'teacher';
   const [decks, decksDispatch] = useObjectList('decks', 'deck', deckReducer);
   const [classrooms, classroomsDispatch] = useObjectList('teachers', 'classroom', classroomReducer);
-  console.log(classrooms)
-  const [selected, setSelected] = useState<Selected>({
-    selectedType: defaultSelected ? 'DECK' : 'HOME',
-    selected: parseInt(defaultSelected ?? '0'),
-  });
+  const [selected, setSelected] = useState<Selected>(() => ({
+    selectedType: defaultDeckSelected ? 'DECK' : (defaultClassroomSelected ? 'CLASS' : 'HOME'),
+    selected: parseInt((defaultDeckSelected || defaultClassroomSelected) ?? '0'),
+  }));
+  console.log(defaultDeckSelected, defaultClassroomSelected, selected)
 
   return (
     <HomeActionDispatch.Provider value={{ decksDispatch, classroomsDispatch }}>

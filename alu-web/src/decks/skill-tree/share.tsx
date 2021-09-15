@@ -52,6 +52,9 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
   const [viewAccess, setViewAccess] = useState('EVERYBODY');
   const [editAccess, setEditAccess] = useState('PERSONAL');
 
+  const isOwner = !sharedDeck || sharedDeck.is_owner;
+  const hasEditAccess = !sharedDeck || sharedDeck.has_edit_access;
+
   const shareDeck = async () => {
     const form = document.getElementById('share-form') as any;
     if (!form) return;
@@ -122,7 +125,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 type='text'
                 name='title'
                 defaultValue={genDefault(sharedDeck, deck, 'title', deck.title)}
-                readOnly={!sharedDeck?.is_owner}
+                readOnly={!isOwner}
               />
             </Form.Group>
             <Form.Group>
@@ -133,7 +136,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 rows={5}
                 required
                 defaultValue={sharedDeck?.description}
-                readOnly={!sharedDeck?.is_owner}
+                readOnly={!isOwner}
               />
             </Form.Group>
             <Form.Group>
@@ -145,7 +148,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 as='select'
                 name='viewAccess'
                 value={viewAccess}
-                onChange={e => sharedDeck?.is_owner && setViewAccess(e.target.value)}
+                onChange={e => isOwner && setViewAccess(e.target.value)}
                 custom
               >
                 <option value='PUBLIC'>Everybody can view this deck</option>
@@ -161,7 +164,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 as='select'
                 name='editAccess'
                 value={editAccess}
-                onChange={e => sharedDeck?.is_owner && setEditAccess(e.target.value)}
+                onChange={e => isOwner && setEditAccess(e.target.value)}
                 custom
               >
                 <option value='PERSONAL'>Only owners can submit edits</option>
@@ -178,7 +181,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                 type='text'
                 name='owners'
                 required
-                readOnly={!sharedDeck?.is_owner}
+                readOnly={!isOwner}
                 defaultValue={
                   sharedDeck ?
                     // Default is the existing owners
@@ -208,18 +211,18 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
       </Row>
       <Row>
         <Col md={numTotalChanges > 0 && deck.equivalent_to_snapshot ? 6 : 12} xs={12}>
-          {!sharedDeck?.is_owner && <p className='text-center'>
+          {!isOwner && <p className='text-center'>
             You don't have permission to change this deck's meta info.
           </p>}
-          {sharedDeck?.is_owner && <LoadingButton clickFunc={shareDeck} className='mb-3' block>
+          {isOwner && <LoadingButton clickFunc={shareDeck} className='mb-3' block>
             {sharedDeck ? 'Save Changes' : 'Share'}
           </LoadingButton>}
         </Col>
         {sharedDeck && numTotalChanges > 0 && <Col md={6} xs={12}>
-          {!sharedDeck?.has_edit_access && <p className='text-center'>
+          {!hasEditAccess && <p className='text-center'>
             You don't have permission to push updates to this deck.
           </p>}
-          {sharedDeck?.has_edit_access && <OverlayTrigger
+          {hasEditAccess && <OverlayTrigger
             trigger='click'
             rootClose
             overlay={<Popover id='push-updates-popover p-3'>
@@ -232,7 +235,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
                   maxLength={50}
                   onChange={e => setMessage(e.target.value)}
                 />
-                {!sharedDeck?.is_owner && <p className='mt-2'>
+                {!isOwner && <p className='mt-2'>
                   Your edit will be reviewed by an owner before being pushed into the shared deck.
                 </p>}
                 {errorMsg && <p className='text-danger mt-2'>{errorMsg}</p>}
