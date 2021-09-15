@@ -1083,10 +1083,12 @@ export function apiTodoComplete(
 export async function apiReviewInstanceStudy(
   deckId: number,
   section: string,
+  studyAhead: boolean,
 ): Promise<ReviewInstance[]> {
   return backendFetch<ReviewInstance[]>('POST', `decks/reviewinstance/study/`, {
     deck_id: deckId,
     section: section,
+    study_ahead: studyAhead,
   });
 }
 

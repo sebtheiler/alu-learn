@@ -15,8 +15,9 @@ interface ReviewInstanceStudyProps {
   reviewInstance: ReviewInstance;
   deckId: number;
   section: string;
+  studyAhead: boolean;
 }
-export function ReviewInstanceStudy({ reviewInstance, deckId, section }: ReviewInstanceStudyProps) {
+export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhead }: ReviewInstanceStudyProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const studyAnswerDispatch = useContext(StudyAnswerDispatch);
   const intervals = useMemo(
@@ -42,16 +43,18 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section }: ReviewI
 
       // Flip back to front and update server review instance
       setIsFlipped(false);
-      apiReviewInstanceUpdate(
-        deckId,
-        reviewInstance.id,
-        browserInteractionTime.getTimeInMilliseconds(),
-        ['AGAIN', 'HARD', 'GOOD', 'EASY'][grade - 1] as 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
-        interval,
-        section,
-      );
 
-      // Wait until the back of the card is no longer shown (half of transition = 0.25s)<
+      if (!studyAhead) // studying ahead doesn't update RIs
+        apiReviewInstanceUpdate(
+          deckId,
+          reviewInstance.id,
+          browserInteractionTime.getTimeInMilliseconds(),
+          ['AGAIN', 'HARD', 'GOOD', 'EASY'][grade - 1] as 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
+          interval,
+          section,
+        );
+
+      // Wait until the back of the card is no longer shown (half of transition = 0.25s),
       // then show the next card
       await new Promise(r => setTimeout(r, 125));
       studyAnswerDispatch({
@@ -63,7 +66,7 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section }: ReviewI
       browserInteractionTime.reset();
       browserInteractionTime.startTimer();
     }
-  }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped, browserInteractionTime, deckId, section]);
+  }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped, browserInteractionTime, deckId, section, studyAhead]);
 
   // Events on keypresses (flipping with space, grading with 1-4)
   useEffect(() => {

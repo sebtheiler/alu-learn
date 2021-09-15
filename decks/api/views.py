@@ -286,25 +286,6 @@ def deck_txt_import_view(request, *args, **kwargs):
     return Response(DeckSerializer(deck).data, status=201)
 
 
-    """
-    Generates and saves a skill tree for a deck - POST
-
-    Params:
-        `deck_id` (URL, int): Id of the deck to generate the skill tree for
-        `sort` (data, bool): Whether or not to alphabetically sort the skill tree
-        `remove_essential` (data, bool): If True, ignore the "essential" tag
-    """
-    try:
-        deck = Deck.objects.get(pk=deck_id, user=request.user)
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck not found'}, status=404)
-
-    deck.generate_skill_tree()
-    deck.save()
-
-    return Response(DeckSerializer(deck).data, status=200)
-
-
 # TODO: do something to make functions easily accessable
 # and combine with skill_tree gen et al
 @api_view(['GET'])
@@ -762,14 +743,17 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     Get review instances to study - POST
 
     `section` (Data)?: Section to get flashcards from (a__b)
+    `study_ahead` (Data)?: If True, return all flashcards, not just non-due ones
     """
+    section = request.data.get('section')
+    study_ahead = request.data.get('study_ahead')
+
     # Build base query
     # TODO: re-add cloze flashcards
     review_instance_query = Q(
         flashcard__sub_section__main_section__deck__user=request.user,
     )
 
-    section = request.data.get('section')
     if section:
         section = section.split('__')
         if len(section) == 2:
@@ -791,10 +775,16 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     # Find review instances that are due
     NUM_FLASHCARDS_PER_LESSON = 25
 
-    due_for_review = ReviewInstance.objects.filter(
+    num_total = ReviewInstance.objects.filter(review_instance_query).count()
+    if not study_ahead:
         # TODO: adapt for timezones
-        review_instance_query & Q(next_review__lte=get_morning())
-    ).prefetch_related('flashcard').order_by('next_review')[:NUM_FLASHCARDS_PER_LESSON]
+        review_instance_query &= Q(next_review__lte=get_morning())
+
+    due_for_review = ReviewInstance.objects\
+        .filter(review_instance_query)\
+        .prefetch_related('flashcard')\
+        .order_by('?' if study_ahead else 'next_review')\
+        [:NUM_FLASHCARDS_PER_LESSON]
 
     # If the number of due review instances doesn't meet `NUM_FLASHCARDDS_PER_LESSON`,
     # also send unseen review instances
@@ -804,14 +794,14 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
             review_instance_query & Q(learning_status='UNSEEN')
         ).prefetch_related('flashcard')[:num_new_review_instances]
 
-    return Response(
-        ReviewInstanceSerializer(
+    return Response({
+        'due_for_review': ReviewInstanceSerializer(
             due_for_review,
             many=True,
             context={'get_flashcard_fields': True},
         ).data,
-        status=200,
-    )
+        'num_total': num_total,
+    }, status=200)
 
 
 RI_EDITABLE_ATTRS = {

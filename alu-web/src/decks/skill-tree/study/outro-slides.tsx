@@ -18,7 +18,6 @@ interface OutroSlidesProps {
 export function OutroSlides({ originalInfo, deckId }: OutroSlidesProps) {
   const [reviewInfo] = useAsyncDispatch<StreakInfo>(apiStreakReviewInfo);
   const [outroSlideNum, setOutroSlideNum] = useState(0);
-  console.log(originalInfo.reviewInfo?.streak, reviewInfo?.streak)
 
   const outroSlides = reviewInfo ? (
     // Increase streak slide (only shown if streak is actually increased)
