@@ -1,4 +1,3 @@
-import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { apiProfileDetail, apiProfileSettingsUpdate } from '../../lookup';
@@ -18,7 +17,7 @@ export function SettingsPage({ username }) {
       {
         send_reminders: form.elements.sendReminders?.checked,
         user_type: form.elements.userType?.value,
-        ideal_time_per_day: form.elements.timePerDay?.value,
+        target_num_cards: form.elements.targetNumCards?.value,
         is_opted_dev: form.elements.isOptedDev?.checked,
       },
       (response, status) => {
@@ -67,19 +66,15 @@ export function SettingsPage({ username }) {
         </FormCheckbox>
       </Form.Group>
       <Form.Group>
-        <Form.Label>Ideal Time Spent Studying per Day</Form.Label>
+        <Form.Label>Target Number of Flashcards Per Day</Form.Label>
         <Form.Control
-          as='select'
-          name='timePerDay'
-          defaultValue={profile.settings.ideal_time_per_day}
-          custom
-        >
-          <option value='MAX'>as long as it takes</option>
-          <option value='20'>20 minutes</option>
-          <option value='15'>15 minutes</option>
-          <option value='10'>10 minutes</option>
-          <option value='5'>5 minutes</option>
-        </Form.Control>
+          type='number'
+          name='targetNumCards'
+          defaultValue={profile.settings.target_num_cards}
+          min={5}
+          max={200}
+          step={5}
+        />
       </Form.Group>
       <Form.Group>
         <Form.Label>User Type</Form.Label>

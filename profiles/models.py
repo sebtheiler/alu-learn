@@ -214,25 +214,23 @@ class ProfileHistorySegment(models.Model):
 
 
 class ProfileSettings(models.Model):
-    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='settings')
+    profile = models.OneToOneField(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='settings',
+    )
     send_reminders = models.BooleanField(default=False)
     USER_TYPE_OPTIONS = (
-        ('STUDENT', 'Student/Learner'),
-        ('TEACHER', 'Teacher/Parent'),
+        ('STUDENT', 'Student'),
+        ('TEACHER', 'Teacher'),
     )
-    user_type = models.CharField(max_length=7, choices=USER_TYPE_OPTIONS, default='STUDENT')
-    TIME_PER_DAY_OPTIONS = (
-        ('MAX', 'As long as it takes (infinite)'),
-        ('20', '20 minutes'),
-        ('15', '15 minutes'),
-        ('10', '10 minutes'),
-        ('5', '5 minutes'),
+    user_type = models.CharField(
+        max_length=7,
+        choices=USER_TYPE_OPTIONS,
+        default='STUDENT',
     )
-    ideal_time_per_day = models.CharField(
-        max_length=3,
-        choices=TIME_PER_DAY_OPTIONS,
-        default='MAX',
-    )
+    target_num_cards = models.PositiveSmallIntegerField(default=50)
+
     is_opted_dev = models.BooleanField(default=False)
     show_update_modal = models.BooleanField(default=False)
 

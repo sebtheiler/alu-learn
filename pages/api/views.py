@@ -54,7 +54,7 @@ def update_settings_api_view(request, *args, **kwargs):
     Required information:
         `settings`: (Data) Object containing all settings
             `user_type`: TEACHER or STUDENT
-            `ideal_time_per_day`: Time the user wants to spend studying per day
+            `target_num_cards`: The goal number of cards the student wants to do
             `send_reminders`: Bool of whether to send email reminders
     """
     settings = request.data.get('settings')
@@ -63,8 +63,8 @@ def update_settings_api_view(request, *args, **kwargs):
 
     request.user.profile.settings.user_type = \
         settings.get('user_type', request.user.profile.settings.user_type)
-    request.user.profile.settings.ideal_time_per_day = \
-        settings.get('ideal_time_per_day', request.user.profile.settings.ideal_time_per_day)
+    request.user.profile.settings.target_num_cards = \
+        settings.get('target_num_cards', request.user.profile.settings.target_num_cards)
     request.user.profile.settings.send_reminders = \
         settings.get('send_reminders', request.user.profile.settings.send_reminders)
     request.user.profile.settings.is_opted_dev = \

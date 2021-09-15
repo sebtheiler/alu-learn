@@ -1096,7 +1096,7 @@ export async function apiReviewInstanceStudy(
 export interface StreakInfo {
   streak: number;
   cards_done: number;
-  target_cards_done: number;
+  target_num_cards: number;
 }
 export async function apiStreakReviewInfo(
 ): Promise<StreakInfo> {

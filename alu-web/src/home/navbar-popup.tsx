@@ -25,22 +25,19 @@ export function NavbarPopup({ showUpdateModal, firstName }) {
         <Modal.Title>{firstName ? `Welcome Back, ${firstName}!` : 'New Changes'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h1 id="less-stress-apr-05-0-6-0">Less Stress - Apr 05 - 0.6.0</h1>
-        <p>Alu v0.6 is all about making studying easier, more enjoyable, and less stressful.  The next major version, v0.7, will be released sometime in April with massive changes to studying.  Until v0.7 is released, v0.6 will release a bunch of tiny and iterative changes improving studying.</p>
-        <p>In this update, I&#39;ve added settings for controlling how many flashcards you see per day in assignments.  You can access these settings by clicking the cog/gear icon next to the class you want to edit.  If the amount of flashcards Alu gives you feels overwhelming, you can decrease the number of new flashcards per day, the maximum number of old flashcards per day, or change the deck to a simpler difficulty.</p>
-        <p>This update also adds &quot;quick feedback questions.&quot;  Occasionally, you will find quick questions on the top of your homepage so that you can provide quick and easy feedback about Alu.</p>
+        <h1 id="skill-tree-sep-17-1.0.0a">Skill Tree (PRE-RELEASE) - Sep 17 - 1.0.0a</h1>
+        <p><strong>This update is a <em>pre-release!</em>  It has not been thoroughly tested and is still missing some old features.  Please let me know about any and all feedback!</strong>  The full release will likely be released on Monday, September 20th.</p>
+        <p>I&#39;ve completely revamped Alu in this update, redoing the way that decks are organized and the way you study them.</p>
+        <p>Decks are now organized into <strong>skill trees</strong> which contain sections for each unit.  Each section contains sub sections, which correspond to different sub units.  You can study and view flashcards for each section and sub section individually, giving you more control over how you study your deck.  Each section also has a &quot;percent-complete&quot; indicator that shows you how much of that section Alu estimates you have memorized.</p>
+        <p>I&#39;ve also completely changed the way that studying works: instead of studying all the flashcards due for a deck at once, studying is now broken up into digestible <strong>bites</strong> of 20 flashcards at a time.  With this new method of studying, you can now study in small bits multiple times, rather than having to review a huge number of flashcards in a single sitting.  At the end of every study session, you can see an increase in the number of flashcards you&#39;ve done that day as you work towards your new, customizable <strong>daily goal</strong>.</p>
+        <p>To accomodate for these huge changes, I&#39;ve completely redesigned Alu&#39;s home page.  You will now have a list of your decks and classes on the left-hand side, rather than them being isolated in a different page.  On the right-hand side, you will see your specified daily goal and how much progress you&#39;ve made towards reaching it.</p>
+        <p>Last (and probably least), the navbar is black instead of blue.</p>
+        <p>Other changes:</p>
         <ul>
-        <li><strong>Added Settings for Classroom Studying:</strong> You can now control the specifics of how many flashcards are shown to you when studying assignments for a classroom.  You can access these options by clicking the cog/gear icon next to the classroom title.  If you&#39;re feeling overwhelmed, lowering these values will make Alu give you fewer flashcards.  This feature was previously limited to just decks but has no been expanded to classrooms as well.<ul>
-        <li><strong>Rearranged Deck-like Options:</strong> The &quot;advanced options&quot; are now hidden by default when editing deck-likes to make it less confusing for new users.</li>
-        <li><strong>Added Option to Control Max Seen Flashcards per Day:</strong> When editing decks/assignments/custom-studies, you can now change the maximum number of previously seen flashcards per day.  It defaults to 200, which is probably right for most people, but you can lower it if you have too many flashcards to review and get overwhelmed or increase it if you want to memorize with Alu better.</li>
-        <li><strong>Added Tooltips When Editing Decks:</strong> There are now tooltips explaining all of the advanced options when editing a deck.</li>
-        </ul>
-        </li>
-        <li><strong>Fixed Tiny Studying Bug:</strong> Fixed a slightly ridiculous bug that allowed you to press &quot;zero&quot; on your keyboard as a valid response when rating your performance on a flashcard instead of the usual 1, 2, 3, and 4.</li>
-        <li><strong>Changed Reminder Email:</strong> The reminder email&#39;s wording was a bit annoying, so I changed it.</li>
-        <li><strong>Fixed Streak Icon For Long Streaks:</strong> The icon for displaying your streak was overflown if you had a streak greater than 100.  It&#39;s now fixed to dynamically make the text smaller if your streak gets longer than 100.  It&#39;ll break again if anyone&#39;s streak surpasses 1,000, but I should have at least 2.5 years to fix that.</li>
-        <li><strong>Added JSON Importing/Exporting:</strong> Added the ability to export decks to downloadable JSON files and then import those JSON files back into useable decks.  This probably won&#39;t be a very widely used feature, but it is useful in some situations, and I need it for prototyping the next big update...</li>
-        <li><strong>Added Quick Feedback Questions:</strong> There will sometimes be quick questions on the top of your homepage designed to get feedback about a feature in Alu.  These are entirely optional, but I would really appreciate it if you could fill them out to help guide Alu&#39;s future development.</li>
+          <li><strong>Revamped flashcard fields:</strong>  Flashcards have been redesigned to be faster to load and easier for me to develop.</li>
+          <li><strong>Revamped deck editing:</strong>  Removed all the arbitrary options from deck editing and streamlined the process of both editing and creating new decks.</li>
+          <li><strong>Removed Notes and Tasks:</strong>  It&#39;s sad, but no one ever used either and they were always broken.  Farewell notes!  Tasks <em>might</em> come back in some form in the future, but don&#39;t count on it.</li>
+          <li><strong>Removed notification about login:</strong>  It was literally just spam.  In the future, notifications will be reserved for more important things.</li>
         </ul>
       </Modal.Body>
       <Modal.Footer>

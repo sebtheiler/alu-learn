@@ -46,12 +46,12 @@ export function OutroSlides({ originalInfo, deckId }: OutroSlidesProps) {
       // Card number increase slide
       (<>
         {
-        reviewInfo.cards_done <= reviewInfo.target_cards_done/2 && <>
+        reviewInfo.cards_done <= reviewInfo.target_num_cards/2 && <>
           <h4 className='text-center mx-auto'>
             Great Start!
           </h4>
           <CardsDoneSVG
-            targetCardsDone={reviewInfo.target_cards_done}
+            targetCardsDone={reviewInfo.target_num_cards}
             cardsDone={reviewInfo.cards_done}
             cardsJustDone={originalInfo.numTotal}
           />
@@ -60,13 +60,13 @@ export function OutroSlides({ originalInfo, deckId }: OutroSlidesProps) {
           </p>
         </>}
         {
-        reviewInfo.cards_done > reviewInfo.target_cards_done/2 &&
-        reviewInfo.cards_done < reviewInfo.target_cards_done && <>
+        reviewInfo.cards_done > reviewInfo.target_num_cards/2 &&
+        reviewInfo.cards_done < reviewInfo.target_num_cards && <>
           <h4 className='text-center mx-auto'>
             Almost There!
           </h4>
           <CardsDoneSVG
-            targetCardsDone={reviewInfo.target_cards_done}
+            targetCardsDone={reviewInfo.target_num_cards}
             cardsDone={reviewInfo.cards_done}
             cardsJustDone={originalInfo.numTotal}
           />
@@ -75,13 +75,13 @@ export function OutroSlides({ originalInfo, deckId }: OutroSlidesProps) {
           </p>
         </>}
         {
-        reviewInfo.cards_done >= reviewInfo.target_cards_done &&
-        reviewInfo.cards_done - originalInfo.numTotal < reviewInfo.target_cards_done && <>
+        reviewInfo.cards_done >= reviewInfo.target_num_cards &&
+        reviewInfo.cards_done - originalInfo.numTotal < reviewInfo.target_num_cards && <>
           <h4 className='text-center mx-auto'>
             Daily Goal Reached!
           </h4>
           <CardsDoneSVG
-            targetCardsDone={reviewInfo.target_cards_done}
+            targetCardsDone={reviewInfo.target_num_cards}
             cardsDone={reviewInfo.cards_done}
             cardsJustDone={originalInfo.numTotal}
           />
@@ -90,13 +90,13 @@ export function OutroSlides({ originalInfo, deckId }: OutroSlidesProps) {
           </p>
         </>}
         {
-        reviewInfo.cards_done >= reviewInfo.target_cards_done &&
-        reviewInfo.cards_done - originalInfo.numTotal >= reviewInfo.target_cards_done && <>
+        reviewInfo.cards_done >= reviewInfo.target_num_cards &&
+        reviewInfo.cards_done - originalInfo.numTotal >= reviewInfo.target_num_cards && <>
           <h4 className='text-center mx-auto'>
             Keep Going!
           </h4>
           <CardsDoneSVG
-            targetCardsDone={reviewInfo.target_cards_done}
+            targetCardsDone={reviewInfo.target_num_cards}
             cardsDone={reviewInfo.cards_done}
             cardsJustDone={originalInfo.numTotal}
           />

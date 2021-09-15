@@ -1,15 +1,27 @@
+# Skill Tree (PRE-RELEASE) - Sep 17 - 1.0.0a
+**This update is a _pre-release!_  It has not been thoroughly tested and is still missing some old features.  Please let me know about any and all feedback!**  The full release will likely be released on Monday, September 20th.
 
 
-* Revamped flashcard fields
-  * Reduced complexity
-  * Easier to update
-  * Faster loading speeds
-* Changed importing/exporting
-  * Not backward compatible
-* Revamped deck editing
-  * Removed all the arbitrary options from deck editing
-* Removed Notes and Tasks
-* Removed notification about login
+I've completely revamped Alu in this update, redoing the way that decks are organized and the way you study them.
+
+
+Decks are now organized into **skill trees** which contain sections for each unit.  Each section contains sub sections, which correspond to different sub units.  You can study and view flashcards for each section and sub section individually, giving you more control over how you study your deck.  Each section also has a "percent-complete" indicator that shows you how much of that section Alu estimates you have memorized.
+
+
+I've also completely changed the way that studying works: instead of studying all the flashcards due for a deck at once, studying is now broken up into digestible **bites** of 20 flashcards at a time.  With this new method of studying, you can now study in small bits multiple times, rather than having to review a huge number of flashcards in a single sitting.  At the end of every study session, you can see an increase in the number of flashcards you've done that day as you work towards your new, customizable **daily goal**.
+
+
+To accomodate for these huge changes, I've completely redesigned Alu's home page.  You will now have a list of your decks and classes on the left-hand side, rather than them being isolated in a different page.  On the right-hand side, you will see your specified daily goal and how much progress you've made towards reaching it.
+
+
+Last (and probably least), the navbar is black instead of blue.
+
+
+Other changes:
+* **Revamped flashcard fields:**  Flashcards have been redesigned to be faster to load and easier for me to develop.
+* **Revamped deck editing:**  Removed all the arbitrary options from deck editing and streamlined the process of both editing and creating new decks.
+* **Removed Notes and Tasks:**  It's sad, but no one ever used either and they were always broken.  Farewell notes!  Tasks _might_ come back in some form in the future, but don't count on it.
+* **Removed notification about login:**  It was literally just spam.  In the future, notifications will be reserved for more important things.
 
 -----
 ## To-dos & Revamped Tutorial (DEVELOPMENT) - Jul 13 - 0.7.3b

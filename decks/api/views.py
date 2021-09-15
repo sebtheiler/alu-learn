@@ -783,8 +783,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     due_for_review = ReviewInstance.objects\
         .filter(review_instance_query)\
         .prefetch_related('flashcard')\
-        .order_by('?' if study_ahead else 'next_review')\
-        [:NUM_FLASHCARDS_PER_LESSON]
+        .order_by('?' if study_ahead else 'next_review')[:NUM_FLASHCARDS_PER_LESSON]
 
     # If the number of due review instances doesn't meet `NUM_FLASHCARDDS_PER_LESSON`,
     # also send unseen review instances

@@ -21,7 +21,7 @@ export interface Profile extends MinifiedProfile {
 export interface Settings {
   send_reminders: boolean;
   user_type: 'STUDENT' | 'TEACHER';
-  ideal_time_per_day: 'MAX' | '20' | '15' | '10' | '5';
+  target_num_cards: number;
   is_opted_dev: boolean;
   id: number;
 }

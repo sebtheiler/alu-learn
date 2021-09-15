@@ -585,5 +585,5 @@ def streak_review_info(request, *args, **kwargs):
     return Response({
         'streak': request.user.profile.current_streak,
         'cards_done': history_segment.cards_done if history_segment else 0,
-        'target_cards_done': 100,  # TODO: make this customizable
+        'target_num_cards': request.user.profile.settings.target_num_cards,
     }, status=200)
