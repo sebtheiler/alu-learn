@@ -146,13 +146,14 @@ def classroom_detail_view(request, classroom_id, *args, **kwargs):
         `classroom_id`: (GET) Id of the classroom to get information about
     """
     classroom = Classroom.objects.filter(
-        Q(pk=classroom_id) & (Q(teachers=request.user.profile) | Q(students=request.user.profile))
+        Q(pk=classroom_id) &
+        (Q(teachers=request.user.profile) | Q(students=request.user.profile))
     ).first()  # we use .filter instead of .get, because this sometimes returns multiple classrooms
 
     if classroom is None:
         return Response({'message': 'Classroom not found'}, status=404)
 
-    return Response(ClassroomSerializer(classroom).data, status=200)
+    return Response(ClassroomAssignmentsSerializer(classroom).data, status=200)
 
 
 @api_view(['GET'])

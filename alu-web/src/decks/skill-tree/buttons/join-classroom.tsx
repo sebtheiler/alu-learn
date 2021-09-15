@@ -4,6 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import { HomeActionDispatch } from '../context';
 import { apiClassroomStudentJoin } from '../../../lookup/lookup';
 import { useContext, useState } from 'react';
+import { has } from '../../../utils';
 
 export default function JoinClassroomButton() {
   const [showJoinModal, setShowJoinModal] = useState(false);
@@ -33,15 +34,30 @@ interface JoinModalProps {
   show: boolean;
   close(): void;
 }
-function JoinModal(props: JoinModalProps) {
-  const { show, close } = props;
+function JoinModal({ show, close }: JoinModalProps) {
   const { classroomsDispatch } = useContext(HomeActionDispatch);
+  const [error, setError] = useState<'NOT_FOUND' | 'DIFFERENT_DOMAIN'>();
 
   const joinClassroom = async (classroomCode: string) => {
     await apiClassroomStudentJoin(classroomCode).then(
-      classroom => classroomsDispatch && classroomsDispatch({ action: 'CREATE', classroom: classroom })
+      classroom => {
+        if (has(classroom, 'message')) {
+          if (classroom.message === 'Classroom not found') {
+            setError('NOT_FOUND');
+          } else if (classroom.message === 'You may only join classes in the same domain') {
+            setError('DIFFERENT_DOMAIN');
+          }
+
+          return;
+        }
+        
+        if (classroomsDispatch) {
+          classroomsDispatch({ action: 'CREATE', classroom: classroom });
+          setError(undefined);
+          close();
+        }
+      }
     );
-    close();
   }
 
   return (
@@ -62,6 +78,11 @@ function JoinModal(props: JoinModalProps) {
               required
             />
           </Form.Group>
+          {error  === 'NOT_FOUND' && <p className='text-danger'>Classroom not found.  Please check the code and try again.</p>}
+          {error === 'DIFFERENT_DOMAIN' && <p className='text-danger'>
+            You may only join classes with teachers that have the same email domain as you.  If needed,
+            you can change your email in the <a href='/settings/'>settings</a>.
+          </p>}
         </Modal.Body>
         <Modal.Footer>
           <LoadingButton

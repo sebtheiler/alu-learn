@@ -3,7 +3,7 @@ import Row from 'react-bootstrap/Row';
 import { Classroom } from '../../teachers/types';
 import './render-classroom.scss';
 
-export default function RenderClassroom({ classroom }: { classroom?: Classroom }) {
+export default function RenderTeacherClassroom({ classroom }: { classroom?: Classroom }) {
   if (!classroom) return <p>Loading…</p>;
   return (
     <div className='mb-3'>
@@ -21,7 +21,8 @@ export default function RenderClassroom({ classroom }: { classroom?: Classroom }
 
 function ChooseClassroomDeck({ classroom }: { classroom: Classroom }) {
   return (<>
-    Your classroom needs to have a deck that your students can use.  Would you like to...
+    <p>Your classroom needs to have a deck that your students can use.  Would you like to…</p>
+    <p>THIS IS NOT YET IMPLEMENTED IN THE PRE-RELEASE</p>
     <Row className='mt-3'>
       <Col md={6} xs={12} className='text-center'>
         <div className='choose-deck-option'>

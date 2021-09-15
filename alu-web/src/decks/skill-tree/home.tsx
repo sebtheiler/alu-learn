@@ -13,7 +13,8 @@ import { classroomReducer, HomeActionDispatch, deckReducer } from './context';
 import { useObjectList } from '../../lookup/lookup';  // TODO: clean up imports
 import { useState } from 'react';
 import './home.scss';
-import RenderClassroom from './render-classroom';
+import RenderTeacherClassroom from './render-teacher-classroom';
+import RenderStudentClassroom from './render-student-classroom';
 
 interface Selected {
   selectedType: 'HOME' | 'DECK' | 'CLASS';
@@ -34,7 +35,6 @@ export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSel
     selectedType: defaultDeckSelected ? 'DECK' : (defaultClassroomSelected ? 'CLASS' : 'HOME'),
     selected: parseInt((defaultDeckSelected || defaultClassroomSelected) ?? '0'),
   }));
-  console.log(defaultDeckSelected, defaultClassroomSelected, selected)
 
   return (
     <HomeActionDispatch.Provider value={{ decksDispatch, classroomsDispatch }}>
@@ -85,7 +85,11 @@ export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSel
           <Col md={6} sm={12} className='px-4'>
             {selected.selectedType === 'HOME' && <HomeComponent isTeacher={isTeacher} />}
             {selected.selectedType === 'DECK' && <SkillTree deck={decks?.filter(deck => deck.id === selected.selected)[0]} />}
-            {selected.selectedType === 'CLASS' && <RenderClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />}
+            {selected.selectedType === 'CLASS' && (
+              isTeacher
+                ? <RenderTeacherClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />
+                : <RenderStudentClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />
+            )}
           </Col>
           <Col md={3} sm={12}>
             <h1 className='invisible'>.</h1>
