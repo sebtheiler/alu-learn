@@ -743,7 +743,7 @@ def main_section_saved(sender, instance, created, **kwargs):
     if created:
         data = SectionData.objects.create(
             title='Default',
-            description='Edit this description by... TK TODO',
+            description='Sub sections allow you to organize your deck into sub units',
         )
         sub_section = SubSection.objects.create(
             main_section=instance,

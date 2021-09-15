@@ -623,7 +623,9 @@ class SubmittedChanges(models.Model):
             snapshot,
         )
 
-        # Delete self
+        # Update the deck this was created from and delete self
+        self.created_from_deck.equivalent_to_snapshot = snapshot
+        self.created_from_deck.save()
         self.delete()
 
         return snapshot
