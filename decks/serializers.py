@@ -46,6 +46,8 @@ class FlashcardActionSerializer(AbstractActionSerializer):
 
 class ReviewInstanceSerializer(serializers.ModelSerializer):
     data = serializers.SerializerMethodField(read_only=True)
+    flashcard_type = serializers.SerializerMethodField(read_only=True)
+    # TODO: make sure this is always prefetched
 
     class Meta:
         model = ReviewInstance
@@ -59,11 +61,15 @@ class ReviewInstanceSerializer(serializers.ModelSerializer):
             'leech_index',
             'name',
             'data',
+            'flashcard_type',
             'id',
         ]
 
     def get_data(self, obj):
         return FlashCardDataSerializer(obj.flashcard.data).data
+
+    def get_flashcard_type(self, obj):
+        return obj.flashcard.flashcard_type
 
 
 class DeckSerializer(serializers.ModelSerializer):

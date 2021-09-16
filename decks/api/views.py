@@ -749,10 +749,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     study_ahead = request.data.get('study_ahead')
 
     # Build base query
-    # TODO: re-add cloze flashcards
-    review_instance_query = Q(
-        flashcard__sub_section__main_section__deck__user=request.user,
-    )
+    review_instance_query = Q(flashcard__sub_section__main_section__deck__user=request.user)
 
     if section:
         section = section.split('__')

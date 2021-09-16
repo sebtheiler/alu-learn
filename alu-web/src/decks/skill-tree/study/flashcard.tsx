@@ -1,14 +1,15 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import BrowserInteractionTime from 'browser-interaction-time';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import { apiReviewInstanceUpdate } from '../../../lookup/lookup';
-import { range, RenderRichText } from '../../../utils';
-import { getAnkiInterval } from '../../study/algorithm';
 import { ReviewInstance } from '../../types';
 import { StudyAnswerDispatch } from './context';
-import { getMinNum } from './utils';
+import { apiReviewInstanceUpdate } from '../../../lookup/lookup';
+import { processFront, processBack } from './process-text';
 import { flattenNodes } from '../../../text-editor';
+import { getAnkiInterval } from '../../study/algorithm';
+import { getMinNum } from './utils';
+import { range, RenderRichText } from '../../../utils';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import './flashcard.scss';
 
 interface ReviewInstanceStudyProps {
@@ -128,10 +129,10 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
         <div className='flashcard front'>
           {
             reviewInstance.data?.fields &&
-            flattenNodes(reviewInstance.data?.fields[0]).length > 0 &&
+            processFront(reviewInstance).length > 0 &&
             <div className='text'>
               <RenderRichText
-                text={reviewInstance.data?.fields ? reviewInstance.data?.fields[0] : []}
+                text={processFront(reviewInstance)}
                 fixSlateLazy
               />
             </div>
@@ -147,10 +148,10 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
         <div className='flashcard back'>
           {
             reviewInstance.data?.fields &&
-            flattenNodes(reviewInstance.data?.fields[1]).length > 0 &&
+            processBack(reviewInstance).length > 0 &&
             <div className='text'>
               <RenderRichText
-                text={reviewInstance.data?.fields ? reviewInstance.data?.fields[1] : []}
+                text={processBack(reviewInstance)}
                 fixSlateLazy
               />
             </div>

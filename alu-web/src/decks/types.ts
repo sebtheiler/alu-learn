@@ -1,4 +1,4 @@
-import { Node } from 'slate';
+import { Node as SlateNode } from 'slate';
 import { MinifiedProfile } from '../profiles/types';
 import { MainSection } from './skill-tree/types';
 
@@ -66,7 +66,7 @@ export interface FlashCard {
 }
 
 export interface FlashCardData {
-  fields: Node[][];
+  fields: SlateNode[][];
   tags: string;
   front_image?: string;
   back_image?: string;
@@ -81,6 +81,7 @@ export interface ReviewInstance {
   ease: number;
   name: string;
   data?: FlashCardData;
+  flashcard_type: FlashCardTypes;
   id: UUID;
 }
 
