@@ -5,7 +5,6 @@ import { ReviewInstance } from '../../types';
 import { StudyAnswerDispatch } from './context';
 import { apiReviewInstanceUpdate } from '../../../lookup/lookup';
 import { processFront, processBack } from './process-text';
-import { flattenNodes } from '../../../text-editor';
 import { getAnkiInterval } from '../../study/algorithm';
 import { getMinNum } from './utils';
 import { range, RenderRichText } from '../../../utils';

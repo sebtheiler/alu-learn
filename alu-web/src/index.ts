@@ -12,7 +12,7 @@ import { ExploreComponent, DeckSearchComponent } from './explore';
 import { LandingComponent } from './landing';
 import { HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization } from './home';
 import { GameComponent, MatchingGame } from './decks/games';
-import { ClassroomDetail, ClassroomStudentDetail, StudyAssignment } from './teachers';
+import { ClassroomDetail, ClassroomStudentDetail } from './teachers';
 import { Habits } from './habits';
 import { SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges } from './decks/skill-tree';  // TODO: remove this
 
@@ -66,7 +66,6 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [StatisticsPage, 'statistics-page'],
   [ClassroomDetail, 'classroom-detail'],
   [ClassroomStudentDetail, 'classroom-student-detail'],
-  [StudyAssignment, 'study-assignment'],
   [Habits, 'habits-component'],
   [SkillTreeHome, 'skill-tree'],
   [StudySkillTree, 'study-skill-tree'],

@@ -1,15 +1,10 @@
 import React, { useRef, useEffect, useState, useMemo, Dispatch, SetStateAction, ChangeEvent, ReactNodeArray, ReactNode } from 'react';
 import numeral from 'numeral';
-// import ReactMarkdown from 'react-markdown/with-html';
-import RemarkMathPlugin from 'remark-math';
 import { Tooltip, OverlayTrigger, Button, Form, FormControlProps } from 'react-bootstrap';
-// import { BlockMath, InlineMath } from 'react-katex';
 import { FullEditor, createFullEditor  } from '../text-editor';
 import { Slate } from 'slate-react';
-// import 'katex/dist/katex.min.css';
 import { errorHandler } from './errorHandler';
 import { Node as SlateNode } from 'slate';
-// import { Element } from 'slate';
 
 // Creates a simple tooltip
 export const generateTooltip = (text) => {

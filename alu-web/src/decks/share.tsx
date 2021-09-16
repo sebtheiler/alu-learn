@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
-import { apiCreateSharedDeck } from '../lookup';
-import { apiObjectEdit, useObjectGet } from '../lookup/lookup';
-import { errorHandler } from '../utils';
+import { useObjectGet } from '../lookup/lookup';
 import { SharedDeck } from './types';
 
 
@@ -15,7 +13,7 @@ export function ShareDeck(props) {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    const form = event.target;
+    // const form = event.target;
 
     if (makingPublic === false && deck) {
       setMakingPublic(true);

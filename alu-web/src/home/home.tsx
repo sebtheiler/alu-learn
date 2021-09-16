@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -7,11 +7,11 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Alert from 'react-bootstrap/Alert';
-import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiDeckQuickList, apiFeedbackGetQuestion, apiFeedbackRespondQuestion } from '../lookup';
-import { errorHandler, shiftDate, range, timezoneToISOString, useApiObjectHook, stringDate } from '../utils';
+import { apiProfileDetail, apiProfileFriends, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiDeckQuickList, apiFeedbackGetQuestion, apiFeedbackRespondQuestion } from '../lookup';
+import { errorHandler, useApiObjectHook } from '../utils';
 import 'react-calendar-heatmap/dist/styles.css';
 import './home.css';
-import { MinifiedProfile, Profile, ProfileHistory } from '../profiles/types';
+import { MinifiedProfile, Profile } from '../profiles/types';
 import { Classroom, ClassroomAssignments } from '../teachers/types';
 import { ClassroomDefaultButtonGroup, ClassroomEditCreateButton } from '../teachers/buttons';
 import Likert from 'react-likert-scale';
@@ -94,7 +94,7 @@ function ClassroomsComponent({ joinClassModalIsOpen, setJoinClassModalIsOpen }) 
 
   const handleJoinClass = event => {
     event.preventDefault();
-    const form = event.target;
+    // const form = event.target;
 
     // apiClassroomStudentJoin(form.elements.classCode.value, (response, status) => {
     //   const joinClassError = document.getElementById('join-class-error');
