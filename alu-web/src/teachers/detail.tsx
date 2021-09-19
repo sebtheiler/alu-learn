@@ -135,10 +135,11 @@ function StudentDataTable(props: { classroomId: number }) {
     {students && <>
       <DataTable
         columns={columns}
-        data={students}
+        // data={students}
+        data={[]}
         expandableRows
         expandOnRowClicked
-        expandableRowsComponent={ExpandableStudentDetailComponent}
+        // expandableRowsComponent={ExpandableStudentDetailComponent}
         expandableRowsComponentProps={{ classroomId: classroomId }}
         noDataComponent={<p>You don't have any students yet.</p>}
         defaultSortFieldId='First Name'

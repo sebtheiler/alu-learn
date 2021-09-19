@@ -6,6 +6,7 @@ git clone https://github.com/EvolvedSquid/Alu.git
 cd Alu/
 python3 -m venv aluenv
 aluenv/bin/pip install -r requirements.txt
+aluenv/bin/pip install selenium Pillow
 echo "{\"ALU_DEBUG\": true, \"ALU_PRODUCTION\": false, \"PYTHON_PATH\": \"$PWD/aluenv/bin/python\", \"DRIVER_EXECUTABLE_PATH\": \"$PWD/chromedriver\"}" > alu/env-vars.json
 echo "[\"test@fakedomain123.edu\", \"allowedemail@abcdef123xyz.com\"]" > alu/allowed-emails.json
 echo "[]" > editor_deck_ids.json
