@@ -113,7 +113,7 @@ export function NotificationComponent(props: NotificationComponentProps) {
       return (
         <>
           <OverlayTrigger trigger='click' rootClose placement='bottom' overlay={notifPopover} onExited={markAllAsRead}>
-            <Button
+            <button
               onClick={(_event) => {
                 if (!totalUnreadNotifs || !numUnreadNotifs) return;
                 setTotalUnreadNotifs(totalUnreadNotifs - numUnreadNotifs);
@@ -135,7 +135,6 @@ export function NotificationComponent(props: NotificationComponentProps) {
               }}
               style={{ transform: 'translate(2px, 1px)' }}
               className='p-0 notification-bell'
-              size='sm'
             >
               {totalUnreadNotifs && totalUnreadNotifs > 0 ? <>
                 <i className='fas fa-bell fa-2x' />
@@ -145,7 +144,7 @@ export function NotificationComponent(props: NotificationComponentProps) {
               </>:
                 <i className='far fa-bell fa-2x' />
               }
-            </Button>
+            </button>
           </OverlayTrigger>
         </>
       );

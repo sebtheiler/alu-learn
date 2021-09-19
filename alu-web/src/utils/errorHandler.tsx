@@ -43,37 +43,37 @@ Python:
 int(hexadecimal_string, 16)
 
 === Deck related errors ===
-1000: Error updating deck through apiDeckEdit in alu-web/src/decks/button.js
+1000:
 1001: Error deleting deck through apiDeckDelete in alu-web/src/decks/button.js
 1002: Error copying deck through apiDeckCopy in alu-web/src/decks/button.js
-1003: Error getting deck detail through apiDeckDetail in alu-web/src/decks/components.js
+1003: Error getting deck detail through apiSharedDeckDetail in alu-web/src/decks/components.js
 1004: Error creating deck through apiDeckCreate in alu-web/src/decks/create.js
-1005: Error thanking deck through apiDeckThank in alu-web/src/decks/detail.js
-1006: Error getting deck through apiDeckHome in alu-web/src/decks/home.js
-1007: Error handling next set of decks (pagination, decks home page) through apiDeckHome in alu-web/src/decks/home.js
+1005:
+1006:
+1007:
 1008: Error getting shared decks through apiDeckSharedList in alu-web/src/decks/list.js
-1009: Error getting a profile's list of decks for autoflashcard through apiDeckHome in alu-web/src/notes/autonote/autoflashcard/autoflashcard.js
+1009:
 1010: Error getting explore deck lists through apiExploreLists in alu-web/src/explore/base.js
 1011: Error performing deck search through apiDeckSearch in alu-web/src/explore/search.js
 1012: Error handling next set of decks (pagination, decks search) through apiDeckSearch in alu-web/src/explore/search.js
 1013: Error importing deck from .txt file through apiDeckTextImport in alu-web/src/decks/import.js
 1014: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/components.js
-1015: Error looking up deck through apiDeckDetail in alu-web/src/decks/flashcards/list.js
+1015:
 1016: Error getting a deck's flashcards through apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
-1017: Error getting deck detail for sharing through apiDeckDetail in alu-web/src/decks/share.js
+1017:
 1018: Error handling next set of deck's flashcards (pagination) through apiDeckFlashcards in alu-web/src/decks/flashcards/list.js
 1019: Error creating shared deck through apiCreateShareddeck in alu-web/src/decks/share.js
 1020: Error checking diff between shared and origin deck through apiSharedPushChanges in alu-web/src/decks/push.js
-1021: Error getting deck detail for sharing through apiDeckDetail in alu-web/src/decks/push.js
+1021:
 1022: Error pushing changes to new deck through apiSharedPushChanges in alu-web/src/decks/push.js
-1023: Error getting deck detail for updating through apiDeckDetail in alu-web/src/decks/update.js
+1023:
 1024: Error getting deck updates through apiDeckGetUpdates in alu-web/src/decks/update.js
 1024: Error pulling deck updates through apiDeckPullUpdates in alu-web/src/decks/update.js
-1025: Error getting list of private decks for searching through apiDeckPrivateList in alu-web/src/flashcards/search.js
-1026: Error getting private decks for CSSM edit modal through apiDeckPrivateList in alu-web/src/decks/buttons.js
+1025: Error pulling updates through apiDeckPullUpdates
+1026:
 1027: Error getting flashcards for games through apiGameFlashcards
 1028: Error getting deck's statistics through apiDeckStatistics
-1029: Error getting decks list for homepage of student through apiDeckPrivateList
+1029: Error getting decks list for homepage of student through apiQuickDeckList
 1030: Error exporting deck to JSON through apiDeckJSONExport
 
 === Flashcard related errors ===
@@ -81,12 +81,12 @@ int(hexadecimal_string, 16)
 2001: Error creating or editing flashcard through apiFlashCardEdit or apiFlashCardCreate in alu-web/src/decks/flashcards/create.js
 2002: Error marking flashcard as leech or suspending while studying through apiFlashCardSuspendLeech in alu-web/src/decks/study/components.js
 2003: Error suspending/leeching flashcard through apiFlashCardSuspendLeech in alu-web/src/decks/flashcards/list.js
-2004: Error deleting flashcard through apiFlashCardDelete in alu-web/src/decks/flashcards/detail.js
+2004:
 2005: Error searching for flashcards through apiFlashCardSearch in alu-web/src/decks/flashcards/search.js
 2006: Error updating flashcard tags in bulk
 2007: Error searching for flashcards in custom study through apiFlashCardSearch in alu-web/src/decks/study/components.js
 2008: Error deleting flashcard while studying through apiFlashCardDelete in alu-web/src/decks/study/components.js
-2009: Error moving flashcard up through apiRearrangeFlashcard
+2009:
 2010:
 2011: Error bulk editing flashcard review instances through apiFlashcardReviewInstanceEdit
 
@@ -130,24 +130,9 @@ int(hexadecimal_string, 16)
 5004: Error deleting SSM through apiSSMDelete in alu-web/src/decks/buttons.js
 5005: Error creating SSM through apiSSMCreate in alu-web/src/decks/flashcards/search.js
 
-=== Note related errors ===
-6000: Error getting note detail through apiNoteDetail in alu-web/src/notes/standard/editor.js
-6001: Error updating note through apiNoteUpdate in alu-web/src/notes/standard/editor.js
-6002: Error getting notes home through apiNoteHome in alu-web/src/notes/home.js
-6003: Error getting note detail through apiNoteDetail in alu-web/src/notes/autonote/autoflashcard/autoflashcard.js
-6004: Error creating note through apiNoteCreate in alu-web/src/notes/buttons.js
-6005: Error deleting note through apiNoteDelete in alu-web/src/notes/buttons.js
-6006: Error creating new page through apiCreateNewNotePage in alu-web/src/notes/editor.js
-6007: Error deleting note page through apiDeleteNotePage in alu-web/src/notes/editor.js
-6008: Error getting note page detail through apiNotePageDetail in alu-web/src/notes/editor.js
+=== Unused ===
 
-=== Manual SR Task related errors ===
-7000: Error getting list of manual sr tasks through apiManualSRTaskList in alu-web/src/manual-sr/home.js
-7001: Error getting next set of tasks (pagination) through apiManualSRTaskList in alu-web/src/manual-sr/home.js
-7002: Error creating manual SR task through apiManualSRTaskCreate in alu-web/src/manual-sr/home.js
-7003: Error updating manual SR task's review information through apiManualSRTaskUpdate in alu-web/src/manual-sr/task.js
-7004: Error deleting manual SR task through apiManualSRTaskDelete in alu-web/src/manual-sr/task.js
-7005: Error editing manual SR task through apiManualSRTaskEdit in alu-web/src/manual-sr/task.js
+=== Unused ===
 
 === Teacher related errors ===
 8000: Error getting classroom homepage through apiClassroomsHomepage
@@ -158,7 +143,7 @@ int(hexadecimal_string, 16)
 8005: Error getting list of classes a student has joined through apiClassroomsStudentJoined
 8006: Error getting class detail through apiClassroomDetail
 8007: Error getting list of students in a class through apiClassroomStudentsList
-8008: Error getting list of decks for attaching to classroom through apiDeckHome
+8008: Error getting list of decks for attaching to classroom through apiDeckQuickList
 8009: Error attaching deck to classroom through apiClassroomAttachDeck
 8010: Error getting class detail for students through apiClassroomDetail
 8011: Error getting student attached deck through apiClassroomGetStudentDeck

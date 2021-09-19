@@ -1,36 +1,30 @@
-import { Node } from 'slate';
-import { MinifiedProfile, Profile } from '../profiles/types';
+import { Node as SlateNode } from 'slate';
+import { MinifiedProfile } from '../profiles/types';
+import { MainSection } from './skill-tree/types';
 
 export type UUID = string;  // Just a more clear representation
 
 export type SchedulingAlgorithm = 'ANKI' | 'ANKING' | 'MANUAL-SR' | 'CRAM';
 export type DeckDifficulty = 'HARD' | 'NORM' | 'EASY';
-export type SharingSetting = 'PUBLIC' | 'FRIENDS' | 'STUDENT' | 'PRIVATE';
-export type FlashCardTypes = 'basic' | 'reversed' | 'cloze';
+export type ViewAccess = 'PUBLIC' | 'FRIENDS' | 'STUDENT';
+export type EditAccess = 'PERSONAL' | 'FRIENDS' | 'EVERYBODY' | 'STUDENTS';
+export type FlashCardTypes = 'BASIC' | 'REVERSED' | 'CLOZE';
 export type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
 
 export interface Deck {
-  author: Profile | MinifiedProfile;
+  user: MinifiedProfile;
   title: string;
-  num_thanks?: number;
-  you_have_thanked?: boolean;
-  serializer_name: 'deck' | 'shared_deck' | 'cssm';
-  scheduling_algorithm: SchedulingAlgorithm;
-  shuffle_unseen_cards: boolean;
-  new_cards_done_today: number;
-  daily_new_card_limit: number;
-  daily_seen_card_limit: number;
-  review_ahead_minutes: number;
-  shared_deck: number;
-  deck_type: 'standard' | 'shared';
-  difficulty: DeckDifficulty;
+  main_sections: MainSection[];
+  equivalent_to_snapshot: UUID;
+  is_updated: boolean;
   id: number;
 }
 
 
+// TODO: clean up these types
 export interface SharedDeck extends Deck {
   description: string;
-  sharing_setting: SharingSetting;
+  sharing_setting: ViewAccess;
   num_clones: number;
   creators: Deck[];
 }
@@ -63,40 +57,33 @@ export interface CSSM extends SSMInterface {
 }
 
 
-export interface FlashCardField {
-  text: Node[];
-  field_number: number;
-  id: string;
-}
-
-
-export interface FlashCardCreator {
-  deck_fields: FlashCardField[];
+export interface FlashCard {
   flashcard_type: FlashCardTypes;
-  flashcard_num: number;
-  tags: string;
+  order_num: number;
   parent_deck_id: number;
+  data: FlashCardData;
   id: UUID;
 }
 
-
-export interface FlashCard extends FlashCardCreator {
-  deck_fields: FlashCardField[];
+export interface FlashCardData {
+  fields: SlateNode[][];
   tags: string;
+  front_image?: string;
+  back_image?: string;
+  id: UUID;
+}
+
+export interface ReviewInstance {
   next_review: string; // ISO date string
+  last_review: string; // ISO date string
   steps_index: number;
   learning_status: LearningStatus;
   ease: number;
-  interval: number;
-  is_suspended: boolean;
-  is_leech: boolean;
-  leech_index: number;
-  parent_deck_id: number;
-  parent_deck_title: string;
-  creator_id: UUID;
-  flashcard_type: FlashCardTypes;
   name: string;
+  data?: FlashCardData;
+  flashcard_type: FlashCardTypes;
   id: UUID;
 }
 
-export type AnyFlashCard = FlashCardCreator | FlashCard;
+// TODO: remove
+export type AnyFlashCard = FlashCard | ReviewInstance;

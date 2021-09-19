@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Browsing Flashcards at{% endblock title %}
+{% block title %}Viewing Flashcards at{% endblock title %}
 
 {% block content %}
 <div
-    class='flashcard-list'
-    data-deck-id='{{ deck_id }}'
-    data-class-name='mx-auto'
-    data-foreign-user='{{ is_foreign_user }}'
+  id='view-flashcards'
+  data-deck-id='{{ deck_id }}'
+  data-shared-deck-id='{{ shared_deck_id }}'
+  data-snapshot-id='{{ snapshot_id }}'
+  data-section='{{ section }}'
 ></div>
 {% endblock content %}

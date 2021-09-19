@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { errorHandler } from '../utils';
-import { apiDeckDetail, apiDeckGetUpdates, apiDeckPullUpdates } from '../lookup';
+import React, { useState } from 'react';
+import { errorHandler, useApiObjectHook } from '../utils';
+import { apiDeckGetUpdates, apiDeckPullUpdates } from '../lookup';
 import Button from 'react-bootstrap/Button';
 import { Deck } from './types';
+import { useObjectGet } from '../lookup/lookup';
 
 interface UpdateDeckProps {
   deckId: string;
@@ -13,35 +14,9 @@ interface Update {
 }
 export function UpdateDeck(props: UpdateDeckProps) {
   const deckId = parseInt(props.deckId);
-  const [deckDidSet, setDeckDidSet] = useState(false);
-  const [deck, setDeck] = useState<Deck>();
-  const [updates, setUpdates] = useState<Update[]>();
-  const [notFound, setNotFound] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-
-  useEffect(() => {
-    if (deckDidSet === false) {
-      setDeckDidSet(true);
-      apiDeckDetail(deckId, {}, (response, status) => {
-        if (status === 200) {
-          setDeck(response);
-          apiDeckGetUpdates(deckId, (response, status) => {
-            if (status === 200) {
-              setUpdates(response.needs_updating as Update[]);
-            } else if (!notFound) {
-              // Error getting deck updates
-              errorHandler(response, status, 1024);
-            }
-          });
-        } else if (status === 404) {
-          setNotFound(true);
-        } else {
-          // Error getting deck detail for sharing deck
-          errorHandler(response, status, 1023);
-        }
-      });
-    }
-  }, [deckDidSet, deckId, notFound]);
+  const [deck] = useObjectGet<Deck>('decks', 'deck', deckId);
+  const [updates] = useApiObjectHook<Update[]>(apiDeckGetUpdates, [200], 1024, [deckId]);
 
   const pullHandleWrapper = (sharedDeckId: number) => {
     return (event) => {
@@ -60,7 +35,6 @@ export function UpdateDeck(props: UpdateDeckProps) {
     }
   }
 
-  if (notFound) return 'We couldn\'t find the deck you\'re looking for'
   return (<>
     <h1>Updating "{deck ? deck.title : 'Loading...'}"</h1>
     {updates !== undefined ? 

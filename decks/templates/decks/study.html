@@ -1,21 +1,12 @@
 {% extends 'base.html' %}
 
-{% block title %}Studying {{ deck_title }} at{% endblock title %}
+{% block title %}Studying at{% endblock title %}
 
 
 {% block content %}
-<h2 class='text-center mt-3'>Studying</h2>
-<div class="horizontal-rule mt-2 mb-4"></div>
 <div
-  id='study-component'
-  data-study-session-manager-id='{{ ssm_id }}'
+  id='study-skill-tree'
+  data-section='{{ section }}'
+  data-deck-id='{{ deck_id }}''
 ></div>
-<style>
-  .horizontal-rule {
-    margin-right: auto;
-    margin-left: auto;
-    width: 20%;
-    border-top: 2px dashed lightslategrey;
-  }
-</style>
 {% endblock content %}

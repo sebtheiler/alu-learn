@@ -1,0 +1,79 @@
+@import './shared';
+
+.main-section {
+  padding: 10px;
+  margin-bottom: 20px;
+
+  border-radius: $cardBorderRadius;
+  background: $lightBackground;
+  border: $grayBorder;
+
+  >.main-section-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 200px;
+  }
+}
+
+.main-section-buttons {
+  position: absolute;
+  right: 0;
+  transform: translate(-40px, -8px);
+}
+
+.sub-section-buttons {
+  position: absolute;
+  right: 0;
+  transform: translate(-8px, -18px);
+}
+
+.sub-section {
+  margin-left: auto;
+  margin-right: auto;
+
+  width: $subSectionSize;
+  height: $subSectionSize;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 50%;
+  border: $grayBorder;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-left: 2px;
+  padding-right: 2px;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: $cardShadow;
+    transition-duration: 0.2s;
+    cursor: pointer;
+  }
+
+  >.sub-section-inner {
+    width: 90%;
+    height: 90%;
+    border-radius: 50%;
+    padding: 5px;
+    border: $grayBorder;
+    background: darken($lightBackground, 2%);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    >.sub-section-text {
+      hyphens: auto;
+      user-select: none;
+      margin-bottom: 0;
+    }
+  }
+}
+
+a.no-underline, a.no-underline:hover, a.no-underline:focus, a.no-underline:active {
+  text-decoration: none;
+}

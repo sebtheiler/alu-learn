@@ -13,7 +13,6 @@ export interface Profile extends MinifiedProfile {
   you_are_pending: boolean;
   settings: Settings;
   badges: Badge[];
-  total_thanks_received: number;
   longest_streak: number;
   current_streak: number;
   id: number;
@@ -22,7 +21,7 @@ export interface Profile extends MinifiedProfile {
 export interface Settings {
   send_reminders: boolean;
   user_type: 'STUDENT' | 'TEACHER';
-  ideal_time_per_day: 'MAX' | '20' | '15' | '10' | '5';
+  target_num_cards: number;
   is_opted_dev: boolean;
   id: number;
 }
@@ -44,8 +43,8 @@ export interface Notification {
 }
 
 export interface ProfileHistory {
-  date: Date;
-  cardsDone: number;
-  timeSpent: number;
-  habitsDone: number;
+  date: string;
+  cards_done: number;
+  time_spent: number;
+  habits_done: number;
 }

@@ -10,7 +10,6 @@ import {
   range,
   FormCheckbox,
   QuestionBubble,
-  MarkdownRender,
   useInterval,
   inMatch,
   shuffle,
@@ -30,6 +29,7 @@ import {
   setCookie,
   getCookie,
   eraseCookie,
+  capitalize,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -47,7 +47,6 @@ export {
   errorHandler,
   FormCheckbox,
   QuestionBubble,
-  MarkdownRender,
   useInterval,
   inMatch,
   shuffle,
@@ -67,4 +66,5 @@ export {
   setCookie,
   getCookie,
   eraseCookie,
+  capitalize,
 }

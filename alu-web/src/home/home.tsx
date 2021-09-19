@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -7,18 +7,15 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Alert from 'react-bootstrap/Alert';
-import { apiClassroomStudentJoin, apiProfileDetail, apiProfileFriends, apiProfileHistory, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiQuickDeckList, apiFeedbackGetQuestion, apiFeedbackRespondQuestion } from '../lookup';
-import { errorHandler, shiftDate, range, timezoneToISOString, useApiObjectHook, stringDate } from '../utils';
-import { randomTip } from './randomtips';
-import CalendarHeatmap from 'react-calendar-heatmap';
-import ReactTooltip from 'react-tooltip';
+import { apiProfileDetail, apiProfileFriends, apiClassroomsStudentJoined, apiClassroomsHomepage, apiStudentAssignmentsList, apiDeckQuickList, apiFeedbackGetQuestion, apiFeedbackRespondQuestion } from '../lookup';
+import { errorHandler, useApiObjectHook } from '../utils';
 import 'react-calendar-heatmap/dist/styles.css';
 import './home.css';
-import { MinifiedProfile, Profile, ProfileHistory } from '../profiles/types';
+import { MinifiedProfile, Profile } from '../profiles/types';
 import { Classroom, ClassroomAssignments } from '../teachers/types';
 import { ClassroomDefaultButtonGroup, ClassroomEditCreateButton } from '../teachers/buttons';
-import { ClassroomSSMEditForm } from '../decks/buttons';
 import Likert from 'react-likert-scale';
+import StatsComponent from '../decks/skill-tree/stats';
 
 export function HomeComponent({ username }) {
   const [profile] = useApiObjectHook<Profile>(apiProfileDetail, 200, 3010, [username]);
@@ -58,22 +55,6 @@ export function HomeComponent({ username }) {
               </a>
             </h4>
           </li>}
-          <li>
-            <h4>
-              <a href='/home/notes/' id='notes-link'>
-                <i className='fas fa-edit'></i>{' '}
-                Notes
-              </a>
-            </h4>
-          </li>
-          <li>
-            <h4>
-              <a href='/home/manual-sr/' id='tasks-link'>
-                <i className='fas fa-clock'></i>{' '}
-                Tasks
-              </a>
-            </h4>
-          </li>
           <hr />
           <li>
             <FriendsComponent />
@@ -95,7 +76,7 @@ export function HomeComponent({ username }) {
     </Row>
     {profile?.settings.user_type !== 'TEACHER' && <Row>
       <Col className='px-0'>
-        <StatsComponent profile={profile} />
+        <StatsComponent />
       </Col>
     </Row>}
   </Container>);
@@ -113,28 +94,28 @@ function ClassroomsComponent({ joinClassModalIsOpen, setJoinClassModalIsOpen }) 
 
   const handleJoinClass = event => {
     event.preventDefault();
-    const form = event.target;
+    // const form = event.target;
 
-    apiClassroomStudentJoin(form.elements.classCode.value, (response, status) => {
-      const joinClassError = document.getElementById('join-class-error');
-      if (status === 200) {
-        if (joinClassError) joinClassError.innerText = '';
-        window.location.reload();
-      } else if (status === 404) {
-        if (!joinClassError) return;
+    // apiClassroomStudentJoin(form.elements.classCode.value, (response, status) => {
+    //   const joinClassError = document.getElementById('join-class-error');
+    //   if (status === 200) {
+    //     if (joinClassError) joinClassError.innerText = '';
+    //     window.location.reload();
+    //   } else if (status === 404) {
+    //     if (!joinClassError) return;
 
-        if (response.message === 'Classroom not found') {
-          joinClassError.innerText = 
-            'That class doesn\'t exist.  Please make sure you\'ve typed in the code correctly';
-        } else if (response.message === 'You may only join classes in the same domain') {
-          joinClassError.innerText = 
-            'You may only join classes from a teacher than has the same email domain as you.';
-        }
-      } else {
-        // Error joining class
-        errorHandler(response, status, 8004);
-      }
-    });
+    //     if (response.message === 'Classroom not found') {
+    //       joinClassError.innerText = 
+    //         'That class doesn\'t exist.  Please make sure you\'ve typed in the code correctly';
+    //     } else if (response.message === 'You may only join classes in the same domain') {
+    //       joinClassError.innerText = 
+    //         'You may only join classes from a teacher than has the same email domain as you.';
+    //     }
+    //   } else {
+    //     // Error joining class
+    //     errorHandler(response, status, 8004);
+    //   }
+    // });
   }
 
   return (<>
@@ -239,132 +220,6 @@ function FriendsComponent() {
 
 
 
-const today = new Date();
-const blankValues = range(0, 366).map(i => {
-  return {
-    date: shiftDate(today, -i),
-    cardsDone: 0,
-    timeSpent: 0,
-    habitsDone: 0,
-  } as ProfileHistory;
-});
-const calcWorkDone = hist => {
-  if (hist.cards_done !== undefined) {
-    return hist.cards_done + hist.habits_done * 10;
-  } else {
-    return hist.cardsDone + hist.habitsDone * 10;
-  }
-}
-
-function StatsComponent({ profile }) {
-  const [userHistory, setUserHistory] = useState<ProfileHistory[]>(blankValues);
-  const [gotHistory, setGotHistory] = useState(false);
-  const [maxWorkDone, setMaxWorkDone] = useState(0);
-
-  // Get profile history
-  useEffect(() => {
-    if (gotHistory === false && profile) {
-      setGotHistory(true);
-      apiProfileHistory(profile.username, (response, status) => {
-        if (status === 200) {
-          setMaxWorkDone(Math.max(...response.map(
-            hist => calcWorkDone(hist),
-          )));
-          const gottenDates = response.map(hist => hist.date);
-          const historyValues = userHistory.map(hist => {
-            // Check if we have that date in history
-            if (gottenDates.includes(timezoneToISOString(hist.date).slice(0, 10))) {
-              // Get the date that matches
-              const date = response.filter(subHist => subHist.date === timezoneToISOString(hist.date).slice(0, 10))[0];
-              return {
-                ...hist,
-                cardsDone: date.cards_done,
-                timeSpent: date.time_spent,
-                habitsDone: date.habits_done,
-              };
-            } else {
-              // Return the standard/blank value
-              return hist;
-            }
-          });
-          setUserHistory(historyValues);
-        } else {
-          // Error getting user history
-          errorHandler(response, status, 3013);
-        }
-      });
-    }
-  }, [profile, gotHistory, setGotHistory, userHistory, setUserHistory]);
-
-  return (
-    <div className='text-center mb-3' id='home-stats'>
-      <h3 className='mt-3'>Stats</h3>
-      <h4>{profile?.first_name} {profile?.last_name}</h4>
-      <h5 className='text-secondary'>@{profile?.username}</h5>
-      <Container className='mx-auto mb-3'>
-        <CalendarHeatmap
-          startDate={shiftDate(today, -366)}
-          endDate={today}
-          values={userHistory}
-          tooltipDataAttrs={(value: ProfileHistory) => {
-            if (!value || !value.date)
-              return {'data-tip': 'Error, please report this'};
-
-            let dataTip = '';
-            if (value.cardsDone) {
-              dataTip += `You reviewed ${value.cardsDone} flashcard`;
-              if (value.cardsDone > 1)
-                dataTip += 's';
-            }
-            if (value.habitsDone) {
-              if (dataTip === '')
-                dataTip += `You did ${value.habitsDone} habit`;
-              else
-                dataTip += ` and did ${value.habitsDone} habit`;
-              
-                if (value.habitsDone > 1)
-                  dataTip += 's';
-            }
-            if (dataTip !== '')
-              dataTip += ` on ${stringDate()}`
-            if (value.timeSpent)
-              dataTip += ` in ${Math.round(value.timeSpent/1000/60)} minutes`;
-
-            return { 'data-tip': dataTip };
-          }}
-          classForValue={(value) => {
-            let colorValue: number;
-            if (!value) {
-              colorValue = 0;
-            } else {
-              const unit = maxWorkDone / 7; // 7 = number of colors that aren't zero
-              const workDone = calcWorkDone(value);
-              if (workDone === 0) {colorValue = 0} else
-              if (workDone > maxWorkDone - unit*1) {colorValue = 7} else
-              if (workDone > maxWorkDone - unit*2) {colorValue = 6} else
-              if (workDone > maxWorkDone - unit*3) {colorValue = 5} else
-              if (workDone > maxWorkDone - unit*4) {colorValue = 4} else
-              if (workDone > maxWorkDone - unit*5) {colorValue = 3} else
-              if (workDone > maxWorkDone - unit*6) {colorValue = 2} else
-              {colorValue = 1}
-            }
-            return `color-scale-${Math.min(colorValue, 7)}`;
-          }}
-        />
-        <ReactTooltip />
-        Reviews today: {userHistory.sort(hist => hist.date.getTime())[0].cardsDone} |{' '}
-        Time studying today: {Math.round(userHistory.sort(hist => hist.date.getTime())[0].timeSpent/1000/60)}m |{' '}
-        Longest streak: {profile?.longest_streak} |{' '}
-        Current streak: {profile?.current_streak}
-        <div className='text-center mx-auto alert alert-info mb-3'>
-          {randomTip}
-        </div>
-      </Container>
-    </div>
-  );
-}
-
-
 interface QuickDeck {
   title: string;
   percent_complete: number;
@@ -377,7 +232,7 @@ function AssignmentsComponent({ setJoinClassModalIsOpen }) {
     8018,
   );
   const [decks] = useApiObjectHook<QuickDeck[]>(
-    apiQuickDeckList,
+    apiDeckQuickList,
     200,
     1029,
     [true, true],
@@ -423,7 +278,7 @@ function AssignmentsComponent({ setJoinClassModalIsOpen }) {
           </thead>
           <tbody>
             {decks.map((deck, i) => {
-              const studyUrl = `/decks/${deck.id}/study/`;
+              const studyUrl = `/deck/${deck.id}/study/`;
 
               return (
                 <tr onClick={() => {window.location.href = studyUrl}} key={i}>
@@ -509,10 +364,10 @@ function RenderClassroom(props: RenderClassroomProps) {
           Editing Flashcard Settings for {classroom.title}
         </Modal.Title>
       </Modal.Header>
-      <ClassroomSSMEditForm
+      {/* <ClassroomSSMEditForm
         classroomId={classroom.id}
         closeModal={() => setEditModalIsOpen(false)}
-      />
+      /> */}
     </Modal>
   </>);
 }

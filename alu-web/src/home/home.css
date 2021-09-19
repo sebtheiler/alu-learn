@@ -3,7 +3,7 @@ a.card:hover {
 }
 
 /* Taken from https://www.materials-world.com/paint-colors/benjamin_moore/images/Benjamin-Moore-Color-14.gif */
-.react-calendar-heatmap .color-scale-0 { fill: #ecf2f3; }
+.react-calendar-heatmap .color-scale-0 { fill: #ececec; }
 .react-calendar-heatmap .color-scale-1 { fill: #daeef1; }
 .react-calendar-heatmap .color-scale-2 { fill: #BFE2E9; }
 .react-calendar-heatmap .color-scale-3 { fill: #97CFE5; }
@@ -15,11 +15,6 @@ a.card:hover {
 
 #home-nav-sidebar {
   border-right: 1px solid black;
-}
-
-#home-stats {
-  /* background: cornflowerblue; */
-  border-top: 1px solid black;
 }
 
 .no-bullets {

@@ -1,7 +1,6 @@
 import React from 'react';
 import Slider from 'react-slick';
 import { UserLink } from '../profiles';
-import { MarkdownRender } from '../utils';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './explore.css';
@@ -66,16 +65,16 @@ export function DeckSlider(props: DeckSliderProps) {
                   {deck.title}
                 </h4>
               </a>
-              <UserLink user={deck.author} small />
+              <UserLink user={deck.user} small />
               <a href={`/decks/${deck.id}/`}>
                 <div className='deck-description mt-2 w-75' style={{outline: 'none', color: 'black'}}>
-                  <MarkdownRender
+                  {/* <MarkdownRender
                     // The truncation will theoretically cause glitches
                     // if there is special syntax at the very end.
                     source={
                       deck.description.substring(0, 64) + (deck.description.length > 64 ? '...' : '')
                     }
-                  />
+                  /> */}
                 </div>
               </a>
             </div>

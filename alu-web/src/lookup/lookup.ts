@@ -1,87 +1,246 @@
 // TODO: Break this file up into a separate file for each "package"
 // Each file should contain the lookups for just that package
-import { Node } from 'slate';
-import { CSSM, Deck, DeckDifficulty, FlashCard, FlashCardCreator, FlashCardTypes, LearningStatus, SchedulingAlgorithm, SharedDeck, SSMInterface } from '../decks/types';
+import { Deck, ReviewInstance, SchedulingAlgorithm, SSMInterface, SharedDeck, ViewAccess, EditAccess } from '../decks/types';
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
-import { Profile } from '../profiles/types';
+import { Profile, ProfileHistory } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
+import { getCookie } from '../utils';
 import { backendLookup, baseUrl } from './components';
+import { useReducer, useEffect, useState, Dispatch } from 'react';
+import { Interval } from '../decks/study/algorithm';
 
 type Message = { 'message': string };
-type PaginatedResponse = {
+type PaginatedResponse<T = any> = {
   count: number;
   next: string;
   previous: string;
-  results: any[];
+  results: T[];
 }
 
-// Creates a new deck
-export function apiDeckCreate(
-  title: string,
-  shuffleUnseenCards: boolean,
-  dailyNewCardLimit: number,
-  dailySeenCardLimit: number,
-  schedulingAlgo: SchedulingAlgorithm,
-  deckDifficulty: DeckDifficulty,
-  reviewAheadMinutes: number,
-  callback: (response: Deck, status: number) => void,
+const csrfToken = getCookie('csrftoken');
+export async function backendFetch<T>(
+  method: 'GET' | 'POST' | 'DELETE' | 'PUT',
+  endpoint: string,
+  data: Object = {},
+): Promise<T> {
+  let url = `${baseUrl}/api/${endpoint}`;
+  if (method === 'GET' && !!data) {
+    if (!url.includes('?')) url += '?';
+    for (const [attr, val] of Object.entries(data)) {
+      url += `&${attr}=${val}`;
+    }
+  }
+
+  return fetch(url, {
+    method: method,
+    headers: {
+      'content-type': 'application/json',
+      'X-CSRFTOKEN': csrfToken ?? '',
+    },
+    body: method === 'GET' ? undefined : JSON.stringify(data),
+  }).then(res => res.json());
+}
+
+export function apiObjectCreate<T>(
+  appName: string,
+  modelName: string,
+  options: Object,
+): Promise<T> {
+  return backendFetch<T>(
+    'POST',
+    `${appName}/${modelName}/create/`,
+    options,
+  );
+}
+
+export async function apiObjectGet<T>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
 ) {
-  backendLookup('POST', 'decks/create/', callback, {
-    title: title,
-    shuffle_unseen_cards: shuffleUnseenCards,
-    daily_new_card_limit: dailyNewCardLimit,
-    daily_seen_card_limit: dailySeenCardLimit,
-    scheduling_algorithm: schedulingAlgo,
-    difficulty: deckDifficulty,
-    review_ahead_minutes: reviewAheadMinutes,
-  });
+  return backendFetch<T>(
+    'GET',
+    `${appName}/${modelName}/${objectId}/`,
+  );
 }
 
-// Creates a flashcard in a deck
-export function apiFlashCardCreate(
-  deckId: number,
-  fields: Node[][],
-  tags: string,
-  flashcardType: FlashCardTypes,
-  callback: (response: FlashCardCreator, status: number) => void,
-) {
-  backendLookup('POST', `decks/${deckId}/flashcards/create/`, callback, {
-    fields: fields,
-    tags: tags,
-    flashcard_type: flashcardType,
-  });
+export async function apiObjectList<T>(
+  appName: string,
+  modelName: string,
+  nextUrl?: string,
+  data?: Object,
+): Promise<T> {
+  let endpoint = `${appName}/${modelName}/list/`;
+  if (nextUrl) {
+    const page = nextUrl.match(/page=\d*/);
+    if (page) endpoint += `?${page[0]}`;
+  }
+
+  return backendFetch<T>(
+    'GET',
+    endpoint,
+    data,
+  );
 }
 
-// Deletes a flashcard in a deck
-export function apiFlashCardDelete(
-  deckId: number,
-  flashcardNum: number,
-  callback: (response: Message, status: number) => void,
-) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardNum}/delete/`, callback);
+interface DefaultEvent {
+  action: any,
+  payload?: any,
+}
+export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
+  func: Function,
+  args: any[] = [],
+  reducer?: (
+    state: ObjType | undefined,
+    event: Event,
+  ) => ObjType | undefined,
+  callback?: (response: ObjType) => void,
+  requirement: boolean = true,
+): [ObjType | undefined, Dispatch<Event>] {
+  const [obj, dispatch] = useReducer((state: ObjType | undefined, event: Event) => {
+    if (event && event.action === 'INITIAL_SET')
+      return event.payload as ObjType;
+    return reducer ? reducer(state, event) : undefined;
+  }, undefined);
+  const [objDidFetch, setObjDidFetch] = useState(false);
+
+  useEffect(() => {
+    if (objDidFetch || !requirement) return;
+    setObjDidFetch(true);
+    func(...args).then((res: ObjType) => {
+      dispatch({ action: 'INITIAL_SET', payload: res } as Event)
+      if (callback) callback(res);
+    });
+  }, [func, args, callback, objDidFetch, requirement]);
+
+  return [obj, dispatch];
 }
 
-// Edit a flashcard
-export function apiFlashCardEdit(deckId, flashcardId, fields, tags, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/edit/`, callback, {
-    fields: fields,
-    tags: tags,
-  });
+export function useObjectGet<ObjType, Event extends DefaultEvent = never>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
+  reducer?: (
+    state: ObjType | undefined,
+    event: Event,
+  ) => ObjType | undefined,
+  callback?: (response: ObjType) => void,
+  requirement?: boolean,
+): [ObjType | undefined, Dispatch<Event>] {
+  return useAsyncDispatch<ObjType, Event>(
+    apiObjectGet,
+    [appName, modelName, objectId],
+    reducer,
+    callback,
+    requirement,
+  );
 }
 
-// Gets specific information about a flashcard
-export function apiFlashCardDetail(deckId, flashcardId, callback) {
-  backendLookup('GET', `decks/${deckId}/flashcards/${flashcardId}/`, callback);
+export function useObjectList<ObjType, Event extends DefaultEvent = never>(
+  appName: string,
+  modelName: string,
+  reducer?: (
+    state: ObjType[] | undefined,
+    action: Event,
+  ) => ObjType[] | undefined,
+): [ObjType[] | undefined, Dispatch<Event>] {
+  return useAsyncDispatch<ObjType[], Event>(
+    apiObjectList,
+    [appName, modelName],
+    reducer,
+  );
 }
 
-// Marks a flashcard as suspended or as a leech
-export function apiFlashCardSuspendLeech(deckId, flashcardId, action, callback) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardId}/suspend_or_leech/`, callback, {action: action});
+export function useObjectPaginatedList<ObjType, Event extends DefaultEvent = never>(
+  appName: string,
+  modelName: string,
+  reducer?: (
+    state: ObjType[] | undefined,
+    action: Event,
+  ) => ObjType[] | undefined,
+  data?: Object,
+  requirement: boolean = true,
+): [
+  ObjType[] | undefined,
+  Dispatch<Event>,
+  (() => void) | undefined,
+  number | undefined,
+] {
+  type PaginatedObj = { next?: string, previous?: string, count: number, results: ObjType[] };
+  const [objs, dispatch] = useReducer((state: ObjType[] | undefined, event: Event) => {
+    if (event && event.action === 'INITIAL_SET')
+      return event.payload as ObjType[];
+    return reducer ? reducer(state, event) : undefined;
+  }, undefined);
+  const [objsDidFetch, setObjsDidFetch] = useState(false);
+  const [count, setCount] = useState<number | undefined>(undefined);
+  const [nextUrl, setNextUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (objsDidFetch || !requirement) return;
+    setObjsDidFetch(true);
+    apiObjectList<PaginatedObj>(appName, modelName, undefined, data).then(
+      (res: PaginatedObj) => {
+        dispatch({ action: 'INITIAL_SET', payload: res.results } as Event);
+        setCount(res.count);
+        setNextUrl(res.next);
+      }
+    );
+  }, [appName, modelName, data, objsDidFetch, requirement]);
+
+  const fetchNext = (nextUrl && objs) ? () => {
+    apiObjectList<PaginatedObj>(appName, modelName, nextUrl, data).then(
+      (res: PaginatedObj) => {
+        dispatch({ action: 'INITIAL_SET', payload: [...objs, ...res.results] } as Event);
+        setCount(res.count);
+        setNextUrl(res.next);
+      }
+    );
+  } : undefined;
+
+  return [objs, dispatch, fetchNext, count];
+}
+
+export async function apiObjectEdit<T>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
+  edited_values: Object,
+): Promise<T> {
+  return backendFetch<T>(
+    'PUT',
+    `${appName}/${modelName}/${objectId}/edit/`,
+    { edited_values: edited_values },
+  );
+}
+
+export async function apiObjectRearrange<T>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
+  direction: 'UP' | 'DOWN',
+): Promise<T> {
+  return backendFetch<T>(
+    'PUT',
+    `${appName}/${modelName}/${objectId}/rearrange/`,
+    { direction: direction },
+  );
+}
+
+export async function apiObjectDelete<T>(
+  appName: string,
+  modelName: string,
+  objectId: number | string,
+): Promise<T> {
+  return backendFetch<T>(
+    'DELETE',
+    `${appName}/${modelName}/${objectId}/delete/`,
+  );
 }
 
 // Search for flashcards
 export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, learningStatus, minEase, maxEase, callback) {
-  let endpoint = 'decks/flashcards/search/?';
+  let endpoint = 'decks/flashcard/search/?';
   if (deckIds !== null && deckIds !== undefined) {endpoint += `&deckIds=${deckIds}`}
   if (tags !== null && tags !== undefined) {endpoint += `&tags=${tags}`}
   if (contains !== null && contains !== undefined) {endpoint += `&contains=${contains}`}
@@ -95,24 +254,15 @@ export function apiFlashCardSearch(deckIds, tags, contains, suspended, leech, le
   backendLookup('GET', endpoint, callback);
 }
 
-// Gets detail information on a deck with ID `deckId`
-export function apiDeckDetail(
-  deckId: number,
-  options: { getFullDetail?: boolean },
-  callback: (response: Deck | SharedDeck, status: number) => void,
-) {
-  const {getFullDetail} = options;
-  let endpoint = `decks/${deckId}/`;
-  if (getFullDetail) {
-    endpoint += '?fullDetail=true';
-  }
-  backendLookup('GET', endpoint, callback);
-}
-
 // Gets a deck's flashcards
-export function apiDeckFlashcards(deckId, options, callback, nextUrl='') {
-  const {limit, reverse} = options;
-  let endpoint = `decks/${deckId}/flashcards/?`;
+export function apiDeckFlashcards(
+  deckId: number,
+  options: { limit: number, reverse: boolean },
+  callback: (response, status: number) => void,
+  nextUrl?: string,
+) {
+  const { limit, reverse } = options;
+  let endpoint = `decks/deck/${deckId}/flashcards/?`;
 
   if (limit) endpoint += `&limit=${limit}`;
   if (reverse) endpoint += '&reverse=true';
@@ -123,59 +273,28 @@ export function apiDeckFlashcards(deckId, options, callback, nextUrl='') {
   backendLookup('GET', endpoint, callback);
 }
 
-// Deletes a deck
-export function apiDeckDelete(deckId, callback) {
-  backendLookup('POST', `decks/${deckId}/delete/`, callback);
-}
-
-export function apiDeckEdit(
-  deckId: number,
-  newTitle: string,
-  schedulingAlgo: SchedulingAlgorithm,
-  shuffleUnseenCards: boolean,
-  dailyNewCardLimit: number,
-  dailySeenCardLimit: number,
-  reviewAheadMinutes: number,
-  deckDifficulty: DeckDifficulty,
-  callback: (response: Deck, status: number) => void,
-) {
-  backendLookup('POST', `decks/${deckId}/edit/`, callback, {
-    new_title: newTitle,
-    scheduling_algorithm: schedulingAlgo,
-    shuffle_unseen_cards: shuffleUnseenCards,
-    daily_new_card_limit: dailyNewCardLimit,
-    daily_seen_card_limit: dailySeenCardLimit,
-    review_ahead_minutes: reviewAheadMinutes,
-    difficulty: deckDifficulty,
-  });
-}
-
-
 // Gets a list of decks owned by a user with username `username` that are shared with the given user
-export function apiDeckSharedList(username, callback) {
-  backendLookup('GET', `decks/detail/${username.toLowerCase()}/`, callback);
-}
-
-// Gets a list of the current user's decks
-export function apiDeckPrivateList(callback) {
-  backendLookup('GET', 'decks/list/', callback);
-}
-
-// Gets a page of decks from the API
-export function apiDeckHome(
-  callback: (response: (Deck | CSSM)[], status: number) => void,
+export function apiDeckSharedList(
+  username: string,
+  callback: (response: SharedDeck[], status: number) => void,
 ) {
-  backendLookup('GET', 'decks/list/?include_cssms=true', callback);
+  backendLookup('GET', `decks/deck/list/user/${username.toLowerCase()}/`, callback);
+}
+
+export function apiDeckQuickList(
+  calcPercentComplete: boolean,
+  includeHasSharedDeck: boolean,
+  callback: (response: Deck[], status: number) => void,
+) {
+  let endpoint = 'decks/deck/list/quick/?';
+  if (calcPercentComplete) endpoint += 'calc_percent_complete=true&';
+  if (includeHasSharedDeck) endpoint += 'include_has_shared_deck=true';
+  backendLookup('GET', endpoint, callback);
 }
 
 // Copies a deck
 export function apiDeckCopy(deckId, callback) {
   backendLookup('POST', `decks/${deckId}/copy/`, callback);
-}
-
-// Creates a thank for a deck
-export function apiDeckThank(deckId, callback) {
-  backendLookup('POST', `decks/${deckId}/thank/`, callback);
 }
 
 // Searches for decks based on a query
@@ -194,7 +313,7 @@ export function apiDeckTextImport(
   convertFormatting: boolean,
   callback: (response: Deck, status: number) => void,
 ) {
-  backendLookup('POST', 'decks/textupload/', callback, {
+  backendLookup('POST', 'decks/deck/import/txt/', callback, {
     deck_title: title,
     uploaded_file: fileContents,
     convert_formatting: convertFormatting,
@@ -207,7 +326,7 @@ export function apiDeckJSONExport(
   exportReviewInstances: boolean,
   callback: (response: Object, status: number) => void,
 ) {
-  backendLookup('GET', `decks/${deckId}/export/json/?export_review_instances=${exportReviewInstances}`, callback);
+  backendLookup('GET', `decks/deck/${deckId}/export/json/?export_review_instances=${exportReviewInstances}`, callback);
 }
 
 // Imports a deck from an exported JSON file
@@ -215,7 +334,7 @@ export function apiDeckJSONImport(
   jsonDeck: Object,
   callback: (response: Deck, status: number) => void,
 ) {
-  backendLookup('POST', `decks/upload/json/`, callback, jsonDeck);
+  backendLookup('POST', `decks/deck/import/json/`, callback, jsonDeck);
 }
 
 // Gets detail information about a profile, such as bio, name, username, etc.
@@ -287,12 +406,12 @@ export function apiProfileLogout(callback) {
 
 // Gets a list of a user's friends
 export function apiProfileFriends(callback) {
-  backendLookup('GET', `profiles/friends/`, callback);
+  backendLookup('GET', 'profiles/friends/', callback);
 }
 
 // Get's a profile's history
-export function apiProfileHistory(username, callback) {
-  backendLookup('GET', `profiles/${username.toLowerCase()}/history/`, callback);
+export async function apiProfileHistory(): Promise<ProfileHistory[]> {
+  return backendFetch('GET', 'profiles/history/');
 }
 
 // Update's a profiles settings
@@ -326,7 +445,6 @@ export function apiNotificationList(
 ) {
   let endpoint = `profiles/notifications/`;
   if (nextUrl) {
-    console.log(nextUrl);
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   }
   backendLookup('GET', endpoint, callback);
@@ -374,187 +492,18 @@ export function apiFeedbackSubmit(
   });
 }
 
-// Gets metadata about an SSM
-export function apiSSMDetail(
-  studySessionmanagerId: number,
-  callback: (response: SSMInterface, status: number) => void,
-) {
-  backendLookup('GET', `decks/ssm/${studySessionmanagerId}/`, callback);
-}
-
 // Gets flashcards to review now from an SSM
 export function apiSSMFlashcards(
   studySessionmanagerId: number,
   reviewOverflowBucket: boolean,
   callback: (response: {
-    flashcards: FlashCard[],
+    flashcards: ReviewInstance[],
     num_overflow?: number,
   }, status: number) => void,
 ) {
   let endpoint = `decks/ssm/${studySessionmanagerId}/flashcards/`;
   if (reviewOverflowBucket) endpoint += '?from_overflow_bucket=true';
   backendLookup('GET', endpoint, callback);
-}
-
-// Updates a flashcard in an SSM's database
-export function apiSSMFlashcardUpdate(
-  studySessionmanagerId: number,
-  flashcardId: string, /** UUID of the flashcard to update */
-  nextReviewDate: string | Date,
-  interval: number,
-  easeFactor: number,
-  learningStatus: LearningStatus,
-  stepsIndex: number,
-  leechIndex: number,
-  isLeech: boolean,
-  incrementNewCardsDoneToday: boolean,
-  timezoneOffset: number,
-  timeTaken: number,
-  callback: (response: FlashCard, status: number) => void,
-) {
-  backendLookup('POST', `decks/ssm/${studySessionmanagerId}/flashcards/${flashcardId}/update/`, callback, {
-    next_review: nextReviewDate,
-    interval: interval,
-    ease: easeFactor,
-    learning_status: learningStatus,
-    steps_index: stepsIndex,
-    leech_index: leechIndex,
-    is_leech: isLeech,
-    increment_new_cards_done_today: incrementNewCardsDoneToday,
-    utc_timezone_offset: timezoneOffset,
-    time_taken: timeTaken,
-  });
-}
-
-// Updates a study session manager
-export function apiSSMEdit(
-  studySessionmanagerId: number,
-  title?: string,
-  schedulingAlgo?: SchedulingAlgorithm,
-  shuffleUnseenCards?: boolean,
-  dailyNewCardLimit?: number,
-  dailySeenCardLimit?: number,
-  reviewAheadMinutes?: number,
-  deckIds?: number[],
-  tags?: string,
-  contains?: string,
-  leech?: boolean | null,
-  learningStatus?: LearningStatus,
-  minEase?: number,
-  maxEase?: number,
-  callback?: (reponse: SSMInterface, status: number) => void,
-) {
-  if (!callback) {
-    console.error('Must provide `callback`');
-    return;
-  }
-
-  backendLookup('POST', `decks/ssm/${studySessionmanagerId}/edit/`, callback, {
-    title: title,
-    scheduling_algorithm: schedulingAlgo,
-    shuffle_unseen_cards: shuffleUnseenCards,
-    daily_new_card_limit: dailyNewCardLimit,
-    daily_seen_card_limit: dailySeenCardLimit,
-    review_ahead_minutes: reviewAheadMinutes,
-    deck_ids: deckIds,
-    tags: tags,
-    contains: contains,
-    leech: leech,
-    learning_status: learningStatus,
-    min_ease: minEase,
-    max_ease: maxEase,
-  });
-}
-
-// Deletes a study session manager
-export function apiSSMDelete(
-  studySessionmanagerId: number,
-  callback: (reponse: Message, status: number) => void,
-) {
-  backendLookup('POST', `decks/ssm/${studySessionmanagerId}/delete/`, callback);
-}
-
-// Creates a study session manager
-export function apiSSMCreate(
-  title: string,
-  deckIds?: number[],
-  tags?: string,
-  contains?: string,
-  leech?: boolean,
-  learningStatus?: LearningStatus,
-  minEase?: number,
-  maxEase?: number,
-  callback?: (reponse: CSSM, status: number) => void,
-) {
-  if (!callback) {
-    console.error('Must provide `callback`');
-    return;
-  }
-
-  backendLookup('POST', `decks/ssm/create/`, callback, {
-    title: title,
-    deck_ids: deckIds,
-    tags: tags,
-    contains: contains,
-    leech: leech,
-    learning_status: learningStatus,
-    min_ease: minEase,
-    max_ease: maxEase,
-  });
-}
-
-// Creates a note
-export function apiNoteCreate(title, callback) {
-  backendLookup('POST', 'notes/create/', callback, {title: title});
-}
-
-// Gets info about a note
-export function apiNoteDetail(noteId, getPages, callback) {
-  let backend = `notes/detail/${noteId}/`;
-  if (getPages) {
-    backend += '?getPages=true';
-  }
-  backendLookup('GET', backend, callback);
-}
-
-// Gets a note page's content
-export function apiNotePageDetail(noteId, pageNumber, callback) {
-  backendLookup('GET', `notes/page-detail/${noteId}/${pageNumber}/`, callback);
-}
-
-// Updates a note's metadata
-export function apiNoteUpdate(noteId, newTitle, callback) {
-  backendLookup('POST', `notes/update/${noteId}/`, callback, { new_title: newTitle });
-}
-
-// Updates the content of a single note page
-export function apiNotePageUpdate(noteId, pageId, newContent, callback) {
-  backendLookup('POST', `notes/page-update/${noteId}/${pageId}/`, callback, { new_content: newContent });
-}
-
-// Deletes a note
-export function apiNoteDelete(noteId, callback) {
-  backendLookup('POST', `notes/delete/${noteId}/`, callback);
-}
-
-// Gets all of the user's notes
-export function apiNoteHome(callback) {
-  backendLookup('GET', 'notes/list/', callback);
-}
-
-// Creates a new page in a note
-export function apiCreateNewNotePage(pageTitle, noteId, version, pagePosition, callback) {
-  backendLookup('POST', 'notes/create-page/', callback, {
-    note_id: noteId,
-    title: pageTitle,
-    version: version,
-    page_position: pagePosition,
-  });
-}
-
-// Deletes a page in a note
-export function apiDeleteNotePage(noteId, pageId, callback) {
-  backendLookup('POST', `notes/delete-page/${noteId}/${pageId}/`, callback);
 }
 
 // Changes a user's password
@@ -638,33 +587,39 @@ export function apiManualSRTaskEdit(id, newTitle, newDescription, callback) {
 }
 
 // Gets detail information for a shared deck
-export function apiSharedDeckDetail(id, callback) {
-  backendLookup('GET', `decks/shared/detail/${id}/`, callback);
+export function apiSharedDeckDetail(
+  sharedDeckId: number,
+  callback: (reseponse: SharedDeck, status: number) => void,
+) {
+  backendLookup('GET', `decks/deck/shared/${sharedDeckId}/detail/`, callback);
 }
 
 // Creates a shared deck
-export function apiCreateSharedDeck(originDeckId, title, description, sharingSetting, callback) {
-  backendLookup('POST', 'decks/shared/create/', callback, {
-    origin_deck_id: originDeckId,
+export async function apiCreateSharedDeck(
+  deckId: number,
+  title: string,
+  description: string,
+  viewAccess: ViewAccess,
+  editAccess: EditAccess,
+  owners: string,
+): Promise<SharedDeck> {
+  return backendFetch('POST', `sharing_system/deck/${deckId}/share/`, {
     title: title,
     description: description,
-    sharing_setting: sharingSetting,
+    view_access: viewAccess,
+    edit_access: editAccess,
+    owners: owners,
   });
 }
 
 // Clones a shared deck
-export function apiSharedDeckClone(sharedDeckId, destinationDeckTitle, callback) {
-  backendLookup('POST', `decks/shared/clone/${sharedDeckId}/`, callback, {
+export function apiSharedDeckClone(
+  sharedDeckId: number,
+  destinationDeckTitle: string,
+  callback: (response: SharedDeck | Message, status: number) => void,
+) {
+  backendLookup('POST', `decks/shared/${sharedDeckId}/clone/`, callback, {
     destination_deck_title: destinationDeckTitle,
-  });
-}
-
-// Edits a shared deck's metadata
-export function apiSharedDeckEdit(sharedDeckId, newTitle, newDescription, newSharingSetting, callback) {
-  backendLookup('POST', `decks/shared/edit/${sharedDeckId}/`, callback, {
-    new_title: newTitle,
-    new_description: newDescription,
-    new_sharing_setting: newSharingSetting,
   });
 }
 
@@ -675,9 +630,8 @@ export function apiSharedPushChanges(
   checkDiffOnly: boolean,
   callback: (response: any, status: number) => void,
 ) {
-  backendLookup('POST', `decks/shared/update/`, callback, {
+  backendLookup('POST', `decks/deck/shared/${sharedDeckId}/push-updates/`, callback, {
     origin_deck_id: originDeckId,
-    shared_deck_id: sharedDeckId,
     check_diff_only: checkDiffOnly,
   });
 }
@@ -687,7 +641,7 @@ export function apiDeckGetUpdates(
   deckId: number,
   callback: (response: { needs_updating: { title: string, id: number }[] }, status: number) => void,
 ) {
-  backendLookup('GET', `decks/get-updates/${deckId}/`, callback);
+  backendLookup('GET', `decks/deck/${deckId}/get-updates/`, callback);
 }
 
 // Pulls specified updates for a deck
@@ -696,7 +650,7 @@ export function apiDeckPullUpdates(
   toPullFrom: number,
   callback: (response: Deck, status: number) => void,
 ) {
-  backendLookup('POST', `decks/pull-updates/${deckId}/`, callback, {to_pull_from: toPullFrom});
+  backendLookup('POST', `decks/deck/${deckId}/pull-updates/`, callback, { to_pull_from: toPullFrom });
 }
 
 // Marks the changelog popup as read
@@ -712,7 +666,7 @@ export function apiGameFlashcards(
   amount: number,
   randomOrder: boolean,
   options: { tag?: string | null },
-  callback: (response: FlashCard[], status: number) => void,
+  callback: (response: ReviewInstance[], status: number) => void,
 ) {
   backendLookup('POST', 'decks/games/flashcards/', callback, {
     deck_id: deckId,
@@ -729,18 +683,6 @@ export function apiStaffForceLogin(username, callback) {
   backendLookup('POST', 'profiles/staff-force-login/', callback, { username: username });
 }
 
-// Rearranges a flashcard
-export function apiRearrangeFlashcard(
-  deckId: number,
-  flashcardNum: number,
-  rearrangeType: 'UP' | 'DOWN',
-  callback: (response: Message | FlashCardCreator, status: number) => void,
-) {
-  backendLookup('POST', `decks/${deckId}/flashcards/${flashcardNum}/rearrange/`, callback, {
-    rearrange_type: rearrangeType,
-  });
-}
-
 // Edits the tags of many flashcards at once
 export function apiFlashcardEditTags(
   flashcardIds: number[],
@@ -749,7 +691,7 @@ export function apiFlashcardEditTags(
   renameTo: string | null,
   callback: (response: Message, status: number) => void,
 ) {
-  backendLookup('POST', `decks/edit-tags/`, callback, {
+  backendLookup('POST', `decks/flashcard/edit-tags/`, callback, {
     flashcard_ids: flashcardIds,
     action: action,
     tag: tag,
@@ -759,7 +701,7 @@ export function apiFlashcardEditTags(
 
 // Edits multiple review instances at once (e.g., suspend/unsuspend/delete)
 export function apiFlashcardReviewInstanceEdit(flashcardIds, action, callback) {
-  backendLookup('POST', `decks/edit-review-instances/`, callback, {
+  backendLookup('POST', `decks/flashcard/edit-review-instances/`, callback, {
     flashcard_ids: flashcardIds,
     action: action,
   });
@@ -778,7 +720,7 @@ export function apiDeckStatistics(
   deckId: number,
   callback: (response: Statistics, status: number) => void,
 ) {
-  backendLookup<Statistics>('GET', `decks/${deckId}/statistics/`, callback);
+  backendLookup('GET', `decks/deck/${deckId}/statistics/`, callback);
 }
 
 // Gets a teacher's classes for the homepage
@@ -807,11 +749,10 @@ export function apiClassroomDelete(classroomId, callback) {
 }
 
 // Allows a student to join a classroom
-export function apiClassroomStudentJoin(
+export async function apiClassroomStudentJoin(
   classroomCode: string,
-  callback: (response: Message, status: number) => void,
-) {
-  backendLookup('POST', 'teachers/classroom/student-join/', callback, { classroom_code: classroomCode });
+): Promise<Classroom | Message> {
+  return backendFetch('POST', 'teachers/classroom/join/', { classroom_code: classroomCode });
 }
 
 // Gets a list of the classes a student has joined
@@ -917,22 +858,11 @@ export function apiStudentPercentCompleteList(
   backendLookup('GET', `teachers/classroom/${classroomId}/assignments/${assignmentId}/progress/`, callback);
 }
 
-export function apiQuickDeckList(
-  calcPercentComplete: boolean,
-  includeHasSharedDeck: boolean,
-  callback: (response: Deck[], status: number) => void,
-) {
-  let endpoint = 'decks/quick/?';
-  if (calcPercentComplete) endpoint += 'calc_percent_complete=true&';
-  if (includeHasSharedDeck) endpoint += 'include_has_shared_deck=true';
-  backendLookup('GET', endpoint, callback);
-}
-
 export function apiStudyAssignment(
   classroomId: number,
   assignmentId: number,
   reviewOverflowBucket: boolean,
-  callback: (response: FlashCard[], status: number) => void,
+  callback: (response: ReviewInstance[], status: number) => void,
 ) {
   let endpoint = `teachers/classroom/${classroomId}/assignments/${assignmentId}/study/`;
   if (reviewOverflowBucket) endpoint += '?from_overflow_bucket=true';
@@ -1147,4 +1077,70 @@ export function apiTodoComplete(
   backendLookup('POST', `habits/todos/${todoId}/complete/`, callback, {
     completed: completed,
   });
+}
+
+// Get review instances to study
+export async function apiReviewInstanceStudy(
+  deckId: number,
+  section: string,
+  studyAhead: boolean,
+): Promise<ReviewInstance[]> {
+  return backendFetch<ReviewInstance[]>('POST', `decks/reviewinstance/study/`, {
+    deck_id: deckId,
+    section: section,
+    study_ahead: studyAhead,
+  });
+}
+
+// Gets basic info about the user's streak and reviews
+export interface StreakInfo {
+  streak: number;
+  cards_done: number;
+  target_num_cards: number;
+}
+export async function apiStreakReviewInfo(
+): Promise<StreakInfo> {
+  const utcTimezoneOffset = new Date().getTimezoneOffset();
+  return backendFetch<StreakInfo>(
+    'GET',
+    `profiles/streak-review-info/?utc_timezone_offset=${utcTimezoneOffset}`,
+  );
+}
+
+// Studies a review instance, updating it with new info and increasing streak etc.
+export async function apiReviewInstanceUpdate(
+  deckId: number,
+  reviewInstanceId: string,
+  timeTaken: number,
+  gradeResponse: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY',
+  editedValues: Interval,
+  section: string,
+): Promise<Message> {
+  const utcTimezoneOffset = new Date().getTimezoneOffset();
+  return backendFetch<Message>(
+    'PUT',
+    `decks/reviewinstance/study/${reviewInstanceId}/`,
+    {
+      time_taken: Math.floor(timeTaken),
+      utc_timezone_offset: utcTimezoneOffset,
+      grade_response: gradeResponse,
+      edited_values: editedValues,
+      deck_id: deckId,
+      section: section,
+    },
+  );
+}
+
+export interface PercentComplete {
+  id: string;
+  percent_complete: number;
+  sub_sections: {
+    id: string;
+    percent_complete: number;
+  }[];
+}
+export async function getDeckSectionsPercentComplete(
+  deckId: number,
+): Promise<PercentComplete[]> {
+  return backendFetch('GET', `skill_tree/mainsection/${deckId}/percent-complete/`);
 }

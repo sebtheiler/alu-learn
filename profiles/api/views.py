@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.mail import send_mail
 from django.shortcuts import redirect
-from django.utils import timezone
 from django.utils.crypto import get_random_string
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -13,8 +12,8 @@ from simple_email_confirmation.models import EmailAddress
 from utils import get_paginated_queryset_response
 
 from ..models import Notification, Profile
-from ..serializers import (HistorySerializer, MinifiedProfileSerializer,
-                           NotificationSerializer, PublicProfileSerializer)
+from ..serializers import (MinifiedProfileSerializer, NotificationSerializer,
+                           PublicProfileSerializer)
 
 User = get_user_model()
 
@@ -46,17 +45,8 @@ def friend_toggle_api_view(request, recipient_username, *args, **kwargs):
     """
     Adds or removes a friend - POST
 
-    Required information:
-        `recipient_username`: The username of the user who launched the friend request
-        `action`: (Data) 'friend' | 'unfriend'
-
-    Possible errors:
-        Recipient profile not found: 404, User not found
-        Already friends when adding friend: 400, You are already friends with this user
-        Unfriending user who is not a friend: 400 You cannot unfriend a user who is not your friend
-        Action is not friend/unfriend: 400, Unknown action
-        Adding yourself as a friend: 400, You cannot friend yourself
-        Friend a user who has not requested you: 400, You cannot friend a user who has not requested to be your friend
+    `recipient_username`: The username of the user who launched the friend request
+    `action`: (Data) 'friend' | 'unfriend'
     """
     # Find the user in question
     try:
@@ -188,7 +178,7 @@ def notification_read_api_view(request, *args, **kwargs):
 
             return Response(NotificationSerializer(instance=notifs, many=True).data, status=200)
         else:
-            return Response({'message': f'Please specify (a) notification ID(s)'}, status=400)
+            return Response({'message': 'Please specify (a) notification ID(s)'}, status=400)
     elif request.method == 'GET':
         # List all unread notifications
         return Response(NotificationSerializer(
@@ -217,7 +207,10 @@ def check_username_available_api_view(request, *args, **kwargs):
     username_is_available = not User.objects.filter(username=username.lower()).exists()
     email_is_available = not User.objects.filter(email=email.lower()).exists()
 
-    return Response({'username_is_available': username_is_available, 'email_is_available': email_is_available}, status=200)
+    return Response({
+        'username_is_available': username_is_available,
+        'email_is_available': email_is_available,
+    }, status=200)
 
 
 @api_view(['POST'])
@@ -282,7 +275,8 @@ def create_profile_api_view(request, *args, **kwargs):
     # Send confirmation email
     subject = 'Welcome to Alu!'
     message = f"""
-We're glad you signed up.
+We're glad you signed up!
+
 Here's a confirmation code, to make sure this email is really you: {user.confirmation_key}
 If this wasn't you, you can safely ignore this email.
     """
@@ -318,15 +312,6 @@ def login_api_view(request, *args, **kwargs):
     if user is None:
         return Response({'message': 'Invalid credentials'}, status=401)
     login(request, user)
-
-    # Create a notification about a new login
-    # Time check is to ensure the notification isn't created when the user first joins
-    if user.date_joined < timezone.now() - datetime.timedelta(days=1):
-        Notification.objects.create(
-            profile=user.profile,
-            title='New Login',
-            description=f'There was a new login to your account on {str(timezone.now())[:19]} UTC.  If this was not you, please change your password immediately.',
-        )
 
     return Response({'message': 'Successfully authenticated user'}, status=200)
 
@@ -369,7 +354,7 @@ def change_email(request, *args, **kwargs):
         message = f"""
 Look's like you want to change your email.
 Here's a confirmation code, to make sure this email is really you: {confirmation_key}
-If this wasn't you, you can ignore this message.  However, please be aware someone may know your email address.
+If this wasn't you, you can ignore this message, but please be aware someone may know your email.
         """
         email_from = settings.EMAIL_HOST_USER
         recipient_list = [new_email]
@@ -441,7 +426,10 @@ def change_password(request, *args, **kwargs):
 
                 return redirect('/login/')
         else:
-            return Response({'message': 'You must specify `old_password` and `new_password`'}, status=400)
+            return Response(
+                {'message': 'You must specify `old_password` and `new_password`'},
+                status=400,
+            )
 
 
 @api_view(['POST'])
@@ -459,20 +447,22 @@ def password_reset_email_api_view(request, email, *args, **kwargs):
 
     # Generate impossible to guess, one-time-password
     allowed_chars = 'bcdfghjkmpqrtvwxyBCDFGHJKMPQRTVWXY346789-_'
-    unique_id = get_random_string(128, allowed_chars)
+    password = get_random_string(128, allowed_chars)
 
     # Update the user's profile with the one-time-password
-    profile.user.password_reset_key = unique_id
+    profile.user.password_reset_key = password
     profile.user.save()
 
     # Send an email with a link including the one-time-password
     # Send confirmation email
+    link = \
+        f'https://www.alulearn.com/reset-password/confirm/?k={password}&email={profile.user.email}'
     subject = 'Alu Password Reset'
     message = f"""
 Looks like you forgot your password.
 
-Click this link to reset your password: https://www.alulearn.com/reset-password/confirm/?k={unique_id}&email={profile.user.email}
-If this wasn't you, you can safely ignore this email, however, be aware someone may know your email address.
+Click this link to reset your password: {link}
+If this wasn't you, you can safely ignore this email, but be aware someone may know your email.
 
 (if you need it, your username is: {profile.user.username})
 
@@ -508,22 +498,6 @@ def get_user_friends_api_view(request, *args, **kwargs):
         ).data,
         status=200,
     )
-
-
-@api_view(['GET'])
-def profile_history_view(request, username, *args, **kwargs):
-    """
-    Gets a user's history - GET
-
-    Possible errors:
-        Invalid username: 404, User not found
-    """
-    try:
-        profile = Profile.objects.get(user__username=username.lower())
-    except Profile.DoesNotExist:
-        return Response({'message': 'User not found'}, status=404)
-
-    return Response(HistorySerializer(profile.history, many=True).data, status=200)
 
 
 @api_view(['POST'])
@@ -593,3 +567,23 @@ def staff_force_login(request, *args, **kwargs):
     login(request, user)
 
     return Response({'message': 'You\'re in'}, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def streak_review_info(request, *args, **kwargs):
+    """
+    Get basic streak and review information about the current user - GET
+
+    `utc_timezone_offset`? (GET): UTC timezone offset in minutes
+    """
+    history_segment = request.user.profile.get_create_history(
+        create=False,
+        utc_timezone_offset=request.GET.get('utc_timezone_offset'),
+    )[0]
+
+    return Response({
+        'streak': request.user.profile.current_streak,
+        'cards_done': history_segment.cards_done if history_segment else 0,
+        'target_num_cards': request.user.profile.settings.target_num_cards,
+    }, status=200)

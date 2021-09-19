@@ -21,12 +21,12 @@
   background: rgb(235, 235, 235);
 }
 
-.selected {
+.matching-box-selected {
   background: rgb(211, 211, 211) !important;
   transform: scale(0.95);
 }
 
-.correct {
+.matching-box-correct {
   animation: pop 0.3s linear 1;
   background: rgb(156, 225, 187)!important;
   cursor: default !important;

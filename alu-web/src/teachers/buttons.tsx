@@ -128,7 +128,7 @@ export function CreateEditAssignmentModal(props: CreateEditAssignmentModalProps)
     event.preventDefault();
     const form = event.target;
 
-    // NOTE: for some reason, the dueDate is one day behind what it appears
+    // TODO: for some reason, the dueDate is one day behind what it appears
     // to be selected, so we need to add one day to it
     const dueDateString = addDays(dueDate, 1).toISOString().slice(0, 10);
 

@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import { RenderRichText, sample, shuffle } from '../../utils';
-import { FlashCard, UUID } from '../types';
+import { ReviewInstance, UUID } from '../types';
 import './quiz.css';
 
 export function QuizGame({ flashcards, numQuestions }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<FlashCard[]>([]);
+  const [answers, setAnswers] = useState<ReviewInstance[]>([]);
   const [answersDidSet, setAnswersDidSet] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [guessedAnswers, setGuessedAnswers] = useState<UUID[]>([]);
   const [finished, setFinished] = useState(false);
   const [numCorrect, setNumCorrect] = useState(0);
-  const [failedQuestions, setFailedQuestions] = useState<FlashCard[]>([]);
+  const [failedQuestions, setFailedQuestions] = useState<ReviewInstance[]>([]);
 
   useEffect(() => {
     if (!answersDidSet) {
@@ -75,8 +75,8 @@ export function QuizGame({ flashcards, numQuestions }) {
         {failedQuestions.length > 0 && <h3 className='mt-5'>Questions You Missed:</h3>}
         {failedQuestions.map((question, i) => (<React.Fragment key={i}>
           <hr />
-          <RenderRichText text={question.deck_fields[0].text} />
-          <RenderRichText text={question.deck_fields[1].text} />
+          {/* <RenderRichText text={question.fields[0]} />
+          <RenderRichText text={question.fields[1]} /> */}
         </React.Fragment>))}
       </div>
     </>);
@@ -85,7 +85,7 @@ export function QuizGame({ flashcards, numQuestions }) {
   return (<>
     <p>Question {currentQuestion + 1}/{numQuestions}</p>
     <div className='text-center'>
-      <RenderRichText text={flashcards[currentQuestion].deck_fields[0].text} fixSlateLazy />
+      <RenderRichText text={flashcards[currentQuestion].fields[0]} fixSlateLazy />
       <hr />
       <ol style={{ paddingInlineStart: '0' }}>
         {answers.map((answer, i) => (
@@ -97,7 +97,7 @@ export function QuizGame({ flashcards, numQuestions }) {
             key={i}
           >
             <button className='not-a-button' onClick={handleAnswerClick(i)}>
-              <RenderRichText text={answer.deck_fields[1].text} fixSlateLazy />
+              {/* <RenderRichText text={answer.fields[1]} fixSlateLazy /> */}
             </button>
           </li>
         ))}

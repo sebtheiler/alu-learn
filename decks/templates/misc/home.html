@@ -5,7 +5,9 @@
 
 {% block content %}
 <div
-  id='home-component'
-  data-username='{{ username }}'
+  id='skill-tree'
+  data-default-deck-selected='{{ deck_id }}'
+  data-default-classroom-selected='{{ classroom_id }}'
+  data-user-type='{{ request.user.profile.settings.user_type }}'
 ></div>
 {% endblock content %}

@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { DeckForeignUserButtonGroup } from '../decks/buttons';
 import { SharedDeck, Deck } from '../decks/types';
-import { apiClassroomDetail, apiClassroomGetStudentDeck, apiClassroomStudentAttachDeck, apiQuickDeckList } from '../lookup';
+import { apiClassroomDetail, apiClassroomGetStudentDeck, apiClassroomStudentAttachDeck, apiDeckQuickList } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
 import { Classroom } from './types';
 
@@ -12,7 +12,7 @@ export function ClassroomStudentDetail({ classroomId, studentId }) {
   const [classroom] = useApiObjectHook<Classroom>(apiClassroomDetail, 200, 8010, [parseInt(classroomId)]);
   const [studentDeck] = useApiObjectHook<SharedDeck>(apiClassroomGetStudentDeck, 200, 8011, [parseInt(classroomId), parseInt(studentId)]);
   const [decks] = useApiObjectHook<Deck[]>(
-    apiQuickDeckList,
+    apiDeckQuickList,
     200,
     8005,
     [false, true],

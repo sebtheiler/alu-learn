@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}Updating Shared Deck Settings at{% endblock title %}
+{% block title %}Sharing Deck at{% endblock title %}
 
 {% block content %}
 
-<div class='container mt-5'>
-  <div id='share-deck' data-deck-id='{{ deck_id }}'></div>
-</div>
+<div
+  id='share-deck'
+  data-deck-id='{{ deck_id }}'
+  data-username='{{ request.user.username }}'
+/>
 
 {% endblock content %}

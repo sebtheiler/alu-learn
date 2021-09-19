@@ -29,7 +29,7 @@ export function UserCustomization(props) {
       case 1:
         setAnswers({
           ...answers,
-          ideal_time_per_day: event.target.timeSpent.value,
+          target_num_cards: event.target.targetNumCards.value,
         });
         break;
       case 2:
@@ -60,25 +60,22 @@ export function UserCustomization(props) {
         name='userType'
         custom
       >
-        <option value='STUDENT'>Student/Learner</option>
-        <option value='TEACHER'>Teacher/Parent</option>
+        <option value='STUDENT'>Student</option>
+        <option value='TEACHER'>Teacher</option>
       </Form.Control>
       <br />
     </>),
     (<>
-      <p>I want to spend</p>
+      <p>My goal is to do…</p>
       <Form.Control
-        as='select'
-        name='timeSpent'
-        custom
-      >
-        <option value='MAX'>as long as it takes</option>
-        <option value='20'>20 minutes</option>
-        <option value='15'>15 minutes</option>
-        <option value='10'>10 minutes</option>
-        <option value='5'>5 minutes</option>
-      </Form.Control>
-      <p>per day studying</p>
+        type='number'
+        name='targetNumCards'
+        defaultValue={50}
+        min={5}
+        max={200}
+        step={5}
+      />
+      <p>flashcards per day</p>
     </>),
     (<>
       <p>Would you like to be reminded if you forget to study?</p>

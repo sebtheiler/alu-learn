@@ -1,0 +1,95 @@
+import React from 'react';
+
+interface CardsDoneSVGProps {
+  targetCardsDone: number;
+  cardsDone: number;
+  cardsJustDone: number;
+}
+export default function CardsDoneSVG(props: CardsDoneSVGProps) {
+  const { targetCardsDone, cardsDone, cardsJustDone } = props;
+  const DIV_HEIGHT = 400;
+  const DIV_WIDTH = 300;
+  const DIV_BORDER_THICKNESS = 4;
+  const SVG_HEIGHT = DIV_HEIGHT - DIV_BORDER_THICKNESS*2;
+  const SVG_WIDTH = DIV_WIDTH - DIV_BORDER_THICKNESS*2;
+  const LINE_TICK_OFFSET = 40;
+  const BAR_WIDTH = 100;
+  const NUMBER_COLOR = '#d9d9d9';
+  const TARGET_COLOR = '#d52b2c';
+  const LINE_TICK_COLOR = '#a3a3a3';
+  const BAR_COLOR = '#337BFF';
+  const LINE_TICK_INTERVAL = 10;
+
+  const calcY = (i: number) => (DIV_HEIGHT - 30) - i*((DIV_HEIGHT - 20)/lineTickIntervalRange.length) + 5;
+  const lineTickIntervalRange = Array.from(Array(Math.floor(targetCardsDone / LINE_TICK_INTERVAL) + 3).keys());
+  const lineTickYVals = lineTickIntervalRange.map(i => ({
+    i: i,
+    y: calcY(i),
+    val: i*LINE_TICK_INTERVAL,
+  }));
+
+  return (
+    <div className='cards-done' style={{ height: DIV_HEIGHT, maxWidth: DIV_WIDTH }}>
+      <svg width='100%' height='100%'>
+        {/* Chart y-axis and bars */}
+        {lineTickYVals.map(lineTickYVal => {
+          return (<React.Fragment key={lineTickYVal.val}>
+            <line
+              x1={LINE_TICK_OFFSET} y1={lineTickYVal.y - 5}
+              x2={SVG_WIDTH - LINE_TICK_OFFSET} y2={lineTickYVal.y - 5}
+              style={{ stroke: NUMBER_COLOR, strokeWidth: '2' }}
+            />
+            <text
+              x='10'
+              y={lineTickYVal.y}
+              fill={lineTickYVal.val === targetCardsDone ? TARGET_COLOR : LINE_TICK_COLOR}
+              fontWeight={lineTickYVal.val === targetCardsDone ? 'bold' : 'normal'}
+            >
+              {lineTickYVal.val}
+            </text>
+          </React.Fragment>);
+        })}
+        {/* Main bar, for progress */}
+        <rect
+          width={BAR_WIDTH}
+          height={SVG_HEIGHT}
+          x='50%'
+          y={calcY((cardsDone - cardsJustDone)/LINE_TICK_INTERVAL) + 5}
+          transform={`translate(-${BAR_WIDTH/2})`}
+          fill={BAR_COLOR}
+          rx='10'
+        >
+          <animateTransform
+            attributeName='transform'
+            type='translate'
+            by={`0 ${-(SVG_HEIGHT - calcY(cardsJustDone/LINE_TICK_INTERVAL) - 5)}`}
+            dur='1s'
+            fill='freeze'
+          />
+        </rect>
+        {/* Target label */}
+        <line
+          x1={LINE_TICK_OFFSET} y1={calcY(targetCardsDone/LINE_TICK_INTERVAL) - 5}
+          x2={SVG_WIDTH - LINE_TICK_OFFSET} y2={calcY(targetCardsDone/LINE_TICK_INTERVAL) - 5}
+          style={{ stroke: TARGET_COLOR, strokeWidth: '3' }}
+        />
+        <rect
+          width='90' height='25'
+          x='50%' y={calcY(targetCardsDone/LINE_TICK_INTERVAL) - 17.5}
+          transform='translate(-45)'
+          fill={TARGET_COLOR}
+          rx='8'
+        />
+        <text
+          x='50%'
+          y={calcY(targetCardsDone/LINE_TICK_INTERVAL)}
+          textAnchor='middle'
+          fill='white'
+          fontSize='13'
+        >
+          DAILY GOAL
+        </text>
+      </svg>
+    </div>
+  );
+}

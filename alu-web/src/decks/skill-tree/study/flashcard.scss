@@ -1,0 +1,85 @@
+@import '../shared';
+
+.flashcard-flip {
+  position: relative;
+  >.front, >.back {
+    display: block;
+    transition-timing-function: ease-in-out;
+    transition-duration: 0.25s;
+    transition-property: transform, opacity;
+  }
+  >.front {
+    transform: rotateY(0deg);
+    z-index: 1;
+    opacity: 1;
+  }
+
+  >.back {
+    // `position: absolute` screws a bunch of stuff up,
+    // so we avoid it and use JS for positioning instead
+    opacity: 0;
+    z-index: -1;
+    top: 0px;
+    left: 0px;
+    transform: rotateY(-180deg);
+  }
+
+  &.is-flipped {
+    >.front {
+      transform: rotateY(180deg);
+      z-index: -1;
+      opacity: 0;
+    }
+    >.back {
+      opacity: 1;
+      z-index: 1;
+      transform: rotateY(0deg);
+    }
+  }
+}
+
+.flashcard {
+  // Sizes
+  padding: 10px;
+  border-radius: 20px;
+
+  // Colors
+  border: $grayBorder;
+  background: $lightBackground;
+
+  // Center text
+  >.text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  >.image >img {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    margin-bottom: 20px;
+    // max-width: 80%;
+    max-width: 100% !important;
+    height: auto;
+    width: auto;
+    max-height: 300px;
+  }
+
+  &:hover {
+    cursor: pointer;
+    box-shadow: $cardShadow;
+  }
+}
+
+.answer-choices {
+  margin-top: 100px;
+  width: 100%;
+  transition: 0.1s;
+  opacity: 0;
+
+  &.is-flipped {
+    opacity: 1;
+    transition: 1s;
+  }
+}

@@ -9,7 +9,7 @@ class ProfileSettingsSerializer(serializers.ModelSerializer):
         fields = [
             'send_reminders',
             'user_type',
-            'ideal_time_per_day',
+            'target_num_cards',
             'is_opted_dev',
             'id',
         ]
@@ -51,7 +51,6 @@ class PublicProfileSerializer(serializers.ModelSerializer):
             'you_are_pending',
             'settings',
             'badges',
-            'total_thanks_recieved',
             'longest_streak',
             'current_streak',
         ]

@@ -1,4 +1,6 @@
 from django.urls import path
+from utils.api_gen import list_object_view
+from ..serializers import HistorySerializer
 
 from .views import (
     change_email, profile_detail_api_view,
@@ -11,19 +13,19 @@ from .views import (
     login_api_view,
     logout_api_view,
     get_user_friends_api_view,
-    profile_history_view,
     change_password,
     confirm_email_api_view,
     password_reset_email_api_view,
     read_changelog_popup_api_view,
     staff_force_login,
+    streak_review_info,
 )
 
 # Base endpoint = /api/profiles/
 urlpatterns = [
     path('<str:username>/detail/', profile_detail_api_view),
     path('<str:recipient_username>/friend/', friend_toggle_api_view),
-    path('<str:username>/history/', profile_history_view),
+    path('history/', list_object_view(HistorySerializer, 'profile__user')),
     path('<str:recipient_username>/friendrequest/', friend_request_api_view),
     path('notifications/', notification_api_view),
     path('notifications/read/', notification_read_api_view),
@@ -38,4 +40,5 @@ urlpatterns = [
     path('confirmemail/<str:username>/', confirm_email_api_view),
     path('read-popup/', read_changelog_popup_api_view),
     path('staff-force-login/', staff_force_login),
+    path('streak-review-info/', streak_review_info),
 ]

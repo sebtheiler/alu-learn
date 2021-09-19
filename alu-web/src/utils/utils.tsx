@@ -1,15 +1,10 @@
 import React, { useRef, useEffect, useState, useMemo, Dispatch, SetStateAction, ChangeEvent, ReactNodeArray, ReactNode } from 'react';
 import numeral from 'numeral';
-import ReactMarkdown from 'react-markdown/with-html';
-import RemarkMathPlugin from 'remark-math';
-import { Tooltip, OverlayTrigger, Button, Form } from 'react-bootstrap';
-import { BlockMath, InlineMath } from 'react-katex';
-import { FullEditor, createFullEditor  } from '../notes/editor-components';
+import { Tooltip, OverlayTrigger, Button, Form, FormControlProps } from 'react-bootstrap';
+import { FullEditor, createFullEditor  } from '../text-editor';
 import { Slate } from 'slate-react';
-import 'katex/dist/katex.min.css';
 import { errorHandler } from './errorHandler';
 import { Node as SlateNode } from 'slate';
-// import { Element } from 'slate';
 
 // Creates a simple tooltip
 export const generateTooltip = (text) => {
@@ -177,7 +172,7 @@ export function shiftDate(date, numDays) {
 
 // Equivalent of Python's range
 // Taken from https://dev.to/ycmjason/how-to-create-range-in-javascript-539i#:~:text=range%20is%20a%20function%20that,integers%20from%20start%20to%20end.
-export function range(start, end) {
+export function range(start: number, end: number) {
   const length = end - start;
   return Array.from({ length }, (_, i) => start + i);
 }
@@ -239,27 +234,28 @@ export function QuestionBubble(props: QuestionBubbleProps) {
   );
 }
 
+// TODO: DELETE
 // Fully-featured MD rendered with KaTeX, MarkDown, and (safe-ish) HTML rendering
-interface MarkdownRenderProps {
-  source: string;
-  allowHtml?: boolean;
-  allowKatex?: boolean;
-}
-export function MarkdownRender(props: MarkdownRenderProps) {
-  const { source, allowHtml=false, allowKatex=true } = props;
+// interface MarkdownRenderProps {
+//   source: string;
+//   allowHtml?: boolean;
+//   allowKatex?: boolean;
+// }
+// export function MarkdownRender(props: MarkdownRenderProps) {
+//   const { source, allowHtml=false, allowKatex=true } = props;
 
-  return (
-    <ReactMarkdown
-      source={source.replaceAll('<script>', '').replaceAll('</script>', '')}
-      plugins={allowKatex ? [RemarkMathPlugin] : undefined}
-      escapeHtml={!Boolean(allowHtml)}
-      renderers={allowKatex ? {
-        math: ({ value }) => <BlockMath>{value}</BlockMath>,
-        inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
-      } : undefined}
-    />
-  );
-}
+//   return (
+//     <ReactMarkdown
+//       source={source.replaceAll('<script>', '').replaceAll('</script>', '')}
+//       plugins={allowKatex ? [RemarkMathPlugin] : undefined}
+//       escapeHtml={!Boolean(allowHtml)}
+//       renderers={allowKatex ? {
+//         math: ({ value }) => <BlockMath>{value}</BlockMath>,
+//         inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
+//       } : undefined}
+//     />
+//   );
+// }
 
 // Calls a function every N milliseconds
 // Taken from https://gist.github.com/babakness/faca3b633bc23d9a0924efb069c9f1f5
@@ -330,7 +326,7 @@ interface RenderRichTextProps {
   fixSlateLazy?: boolean;
 }
 export function RenderRichText(props: RenderRichTextProps) {
-  const {text, fixSlateLazy} = props;
+  const { text, fixSlateLazy } = props;
 
   const [value, setValue] = useState(text);
   const editor = useMemo(
@@ -362,8 +358,8 @@ export function RenderRichText(props: RenderRichTextProps) {
     >
       <FullEditor
         editor={editor}
-        readOnly={true}
         styleOptions={{ minHeight: '0' }}
+        readOnly
       />
     </Slate>
   );
@@ -407,7 +403,7 @@ export function updateURLParameter(url: string, param: string, paramVal: any){
 }
 
 // Converts a date to an ISOString, but doesn't convert it to UTC
-export function timezoneToISOString(date) {
+export function timezoneToISOString(date: Date) {
   return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
 }
 
@@ -482,11 +478,15 @@ export function stripTime(date: Date) {
 
 // Gets distance between two dates
 // Adapted from https://stackoverflow.com/a/3224854/13042142
-export function dateDiff(date1: Date, date2: Date) {
-  const diffTime = Math.abs(date2.getTime() - date1.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+export function dateDiff(
+  date1: Date,
+  date2: Date,
+  timeUnit: number = 1000 * 60 * 60 * 24,
+): number {
+  const diffTime = date2.getTime() - date1.getTime();
+  const diff = Math.ceil(diffTime / timeUnit); 
 
-  return diffDays;
+  return diff;
 }
 
 
@@ -508,9 +508,10 @@ interface LoadingButtonProps {
   type?: 'submit' | 'reset' | 'button';
   id?: string;
   block?: boolean;
+  className?: string;
 }
 export function LoadingButton(props: LoadingButtonProps) {
-  const { children, loadingMessage, callback, variant, type, id, block } = props;
+  const { children, loadingMessage, callback, variant, type, id, block, className } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = event => {
@@ -521,7 +522,7 @@ export function LoadingButton(props: LoadingButtonProps) {
   }
 
   return (
-    <Button onClick={onClick} variant={variant} type={type} id={id} block={block}>
+    <Button onClick={onClick} variant={variant} type={type} id={id} block={block} className={className}>
       {isLoading ? loadingMessage : children}
     </Button>
   );
@@ -562,12 +563,18 @@ Load file contents with
 file.text().then((fileContents) => {
   // ...
 });
+
+TODO: move to special file in new skill tree with other components
 */
-interface FancyFormFileUploadProps {
-  accept: string; /** Type of file to accept (.txt, .json, etc.) */
+interface FancyFormFileUploadProps extends FormControlProps {
+  accept?: string; /** Type of file to accept (.txt, .json, etc.) */
+  changeCallback?(event): void;
 }
 export function FancyFormFileUpload(props: FancyFormFileUploadProps) {
-  const { accept } = props;
+  const { accept, changeCallback } = props;
+  let defaultProps = {...props as any};
+  if (defaultProps.accept) delete defaultProps.accept;
+  if (defaultProps.changeCallback) delete defaultProps.changeCallback;
   const fileRef = React.createRef<HTMLInputElement>();
 
   return (
@@ -587,13 +594,16 @@ export function FancyFormFileUpload(props: FancyFormFileUploadProps) {
         ref={fileRef}
 
         // Update the label to the name of the uploaded file
-        onChange={() => {
+        onChange={event => {
           const txtFileLabel = document.getElementById('txt-file-label');
           if (txtFileLabel && fileRef) {
             txtFileLabel.innerHTML =
               fileRef!.current!.value.replace('C:\\fakepath\\', '');
           }
+          if (changeCallback) changeCallback(event);
         }}
+
+        {...defaultProps}
       />
     </Form.Group>
   );
@@ -631,4 +641,32 @@ export function getCookie(name: string) {
 
 export function eraseCookie(name: string) {   
   document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+}
+
+// Capitalizes the first letter of a string
+// If `all` is true, it does this for each word in the string
+export function capitalize(str: string, all: boolean = false) {
+  if (all)
+    return str.split(' ').map(s => capitalize(s)).join(' ');
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function confirmDelete(name: string) {
+  return window.prompt(`
+Are you sure you want to delete this ${name}?  This action is instant and irreversible.
+For your own safety, please type "DELETE" (all caps, without the quotes) to confirm
+that you want to delete this deck.
+  `) === 'DELETE';
+}
+
+// Converts a blob to base64
+export const blob2base64 = async (blob: Blob) => {
+  return new Promise<string | ArrayBuffer | null>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob); 
+    reader.onloadend = () => {
+      const base64data = reader.result;                
+      resolve(base64data);
+    }
+  });
 }

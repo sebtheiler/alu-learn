@@ -4,13 +4,13 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Dropdown from 'react-bootstrap/Dropdown'
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { apiFlashCardSearch, apiSSMCreate, apiDeckPrivateList, apiFlashcardReviewInstanceEdit } from '../../lookup';
-import { FlashCardsList } from '.';
-import { errorHandler, useApiObjectHook } from '../../utils';
-import RangeSlider from 'react-bootstrap-range-slider';
+import { apiFlashCardSearch, apiFlashcardReviewInstanceEdit } from '../../lookup';
+// import { FlashCardsList } from '.';
+import { errorHandler } from '../../utils';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
-import { Deck, FlashCard, LearningStatus } from '../types';
+import { Deck, ReviewInstance } from '../types';
+import { useObjectList } from '../../lookup/lookup';
 
 // Does some magic with SlateJS that prevents weird errors
 // DO NOT REMOVE
@@ -22,7 +22,6 @@ interface SearchFormProps {
   setMinEaseValue?: Function;
   maxEaseValue?: number;
   setMaxEaseValue?: Function;
-  showRangeSlider?: boolean;
   defaultContains?: string; /** Default value for the 'contains' field */
   defaultTags?: string;
   defaultLeech?: 'ANY' | 'LEECH' | 'NOTLEECH';
@@ -34,7 +33,8 @@ interface SearchFormProps {
   defaultSelectedDecks?: string[]; /** Ids of the selected decks */
 }
 export function SearchForm(props: SearchFormProps) {
-  const {decks, minEaseValue, setMinEaseValue, maxEaseValue, setMaxEaseValue, showRangeSlider, defaultContains, defaultTags, defaultLeech, defaultLearningStatus, defaultMinEase, defaultMaxEase, as, hideSuspend, defaultSelectedDecks} = props;
+  const {decks, minEaseValue, setMinEaseValue, maxEaseValue, setMaxEaseValue, defaultContains, defaultTags, defaultLeech, defaultLearningStatus, defaultMinEase, defaultMaxEase, as, hideSuspend, defaultSelectedDecks} = props;
+  const showRangeSlider = false;  // `RangeSlider` package is broken
 
   return (<>
     {decks && <Form.Group>
@@ -112,7 +112,7 @@ export function SearchForm(props: SearchFormProps) {
     {(showRangeSlider && setMinEaseValue && setMaxEaseValue) ? <>
       <Form.Group>
         <Form.Label htmlFor='minEase' as={as}>Minimum Ease Factor</Form.Label>
-        <RangeSlider
+        {/* <RangeSlider
           value={minEaseValue}
           onChange={changeEvent => setMinEaseValue(changeEvent.target.value)}
           min={130}
@@ -120,12 +120,12 @@ export function SearchForm(props: SearchFormProps) {
           step={5}
           tooltipLabel={value => parseInt(value) === 130 ? '-∞' : value + '%'}
           name='minEase'
-          />
+          /> */}
       </Form.Group>
       <hr />
       <Form.Group>
         <Form.Label htmlFor='maxEase' as={as}>Maximum Ease Factor</Form.Label>
-        <RangeSlider
+        {/* <RangeSlider
           value={maxEaseValue}
           onChange={changeEvent => setMaxEaseValue(changeEvent.target.value)}
           min={130}
@@ -133,7 +133,7 @@ export function SearchForm(props: SearchFormProps) {
           step={5}
           tooltipLabel={value => parseInt(value) === 350 ? '∞' : value + '%'}
           name='maxEase'
-        />
+        /> */}
       </Form.Group>
     </> : <>
     <Form.Group>
@@ -161,24 +161,14 @@ export function SearchForm(props: SearchFormProps) {
   </>)
 }
 
-interface FlashCardSearchFormElements extends HTMLFormControlsCollection {
-  tags: HTMLInputElement;
-  contains: HTMLInputElement;
-  isSuspended: HTMLOptionElement;
-  isLeech: HTMLOptionElement;
-  learningStatus: HTMLOptionElement;
-  deckSelect: HTMLSelectElement;
-}
-
 // Renders the form for searching for flashcards
 export function FlashCardSearchComponent(props) {
-  const [decks] = useApiObjectHook<Deck[]>(apiDeckPrivateList, 200, 1025);
-  const [searchedFlashcards, setSearchedFlashcards] = useState<FlashCard[]>();
+  const [decks] = useObjectList<Deck[]>('decks', 'deck');
+  const [searchedFlashcards, setSearchedFlashcards] = useState<ReviewInstance[]>();
   const [didSearch, setDidSearch] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [minEaseValue, setMinEaseValue] = useState(130);
   const [maxEaseValue, setMaxEaseValue] = useState(350);
-  const [creatingCSSM, setCreatingCSSM] = useState(false);
   const [showCSSMModal, setShowCSSMModal] = useState(false);
 
   const handleSubmit = (event) => {
@@ -213,43 +203,43 @@ export function FlashCardSearchComponent(props) {
     }
   }
 
-  const createCSSM = (event) => {
-    event.preventDefault();
+  // const createCSSM = (event) => {
+  //   event.preventDefault();
     
-    if (!creatingCSSM) {
-      setCreatingCSSM(true);
-      const form = document.getElementById('searchForm') as HTMLFormElement;
-      const elements = form.elements as FlashCardSearchFormElements;
+  //   if (!creatingCSSM) {
+  //     setCreatingCSSM(true);
+  //     const form = document.getElementById('searchForm') as HTMLFormElement;
+  //     const elements = form.elements as FlashCardSearchFormElements;
 
-      if (form) {
-        const deckSelectElement = elements.deckSelect;
-        const selectedDecks = Array.from(
-          deckSelectElement.querySelectorAll("option:checked"),
-          e => parseInt((e as HTMLOptionElement).value),
-        );
+  //     if (form) {
+  //       const deckSelectElement = elements.deckSelect;
+  //       const selectedDecks = Array.from(
+  //         deckSelectElement.querySelectorAll("option:checked"),
+  //         e => parseInt((e as HTMLOptionElement).value),
+  //       );
   
-        apiSSMCreate(
-          event.target.elements.cssmTitle.value,
-          selectedDecks,
-          elements.tags.value,
-          elements.contains.value,
-          elements.isLeech.value !== 'ANY' ? elements.isLeech.value === 'LEECH' : undefined,
-          elements.learningStatus.value !== 'ANY' ? elements.learningStatus.value as LearningStatus : undefined,
-          minEaseValue,
-          maxEaseValue,
-          (response, status) => {
-            if (status === 201) {
-              window.location.href = `/customstudy/${response.id}/study/`;
-            } else {
-              // Error creating new SSM
-              errorHandler(response, status, 5005);
-            }
-            setCreatingCSSM(false);
-          },
-        );
-      }
-    }
-  }
+  //       apiSSMCreate(
+  //         event.target.elements.cssmTitle.value,
+  //         selectedDecks,
+  //         elements.tags.value,
+  //         elements.contains.value,
+  //         elements.isLeech.value !== 'ANY' ? elements.isLeech.value === 'LEECH' : undefined,
+  //         elements.learningStatus.value !== 'ANY' ? elements.learningStatus.value as LearningStatus : undefined,
+  //         minEaseValue,
+  //         maxEaseValue,
+  //         (response, status) => {
+  //           if (status === 201) {
+  //             window.location.href = `/customstudy/${response.id}/study/`;
+  //           } else {
+  //             // Error creating new SSM
+  //             errorHandler(response, status, 5005);
+  //           }
+  //           setCreatingCSSM(false);
+  //         },
+  //       );
+  //     }
+  //   }
+  // }
 
   const actionAllFlashcards = action => {
     return event => {
@@ -283,7 +273,6 @@ If you wish to continue, please type "DELETE", without the quotes.
           setMinEaseValue={setMinEaseValue}
           maxEaseValue={maxEaseValue}
           setMaxEaseValue={setMaxEaseValue}
-          showRangeSlider={true}
           as='h5'
         />
         <Form.Group>
@@ -295,16 +284,17 @@ If you wish to continue, please type "DELETE", without the quotes.
           <div>
             <hr />
             <h1>Results</h1>
-            <Button id='custom-study-link' onClick={() => setShowCSSMModal(true)}>
+            {/* <Button id='custom-study-link' onClick={() => setShowCSSMModal(true)}>
               {creatingCSSM ? 'Loading...' : 'Study these flashcards (Custom Study)'}
-            </Button>
+            </Button> */}
+            {/* TODO: re add custom study */}
             <Modal show={showCSSMModal} onHide={() => setShowCSSMModal(false)}>
               <Modal.Header>
                 <Modal.Title>
                   Creating Filtered Deck
                 </Modal.Title>
               </Modal.Header>
-              <Form onSubmit={createCSSM}>
+              {/* <Form onSubmit={createCSSM}>
                 <Modal.Body>
                   <Form.Label>Title</Form.Label>
                   <Form.Control
@@ -317,7 +307,7 @@ If you wish to continue, please type "DELETE", without the quotes.
                   <Button variant='secondary' onClick={() => setShowCSSMModal(false)}>Cancel</Button>
                   <Button type='submit'>Create</Button>
                 </Modal.Footer>
-              </Form>
+              </Form> */}
             </Modal>
             <DropdownButton id='dropdown-basic-button' title='Actions' className='mt-1'>
               <Dropdown.Item as={Button} onClick={actionAllFlashcards('SUSPEND')}>Suspend All</Dropdown.Item>
@@ -328,7 +318,8 @@ If you wish to continue, please type "DELETE", without the quotes.
         }
         {didSearch && searchedFlashcards && (
           searchedFlashcards.length > 0 ?
-            <FlashCardsList flashcardList={searchedFlashcards} showParentDeckTitle={true} artificialPaginationNumFlashcards={250} fixSlateLazy={true} /> 
+            // <FlashCardsList flashcardList={searchedFlashcards} showParentDeckTitle={true} artificialPaginationNumFlashcards={250} fixSlateLazy={true} /> 
+            <p>Disabled for now</p>
           : <h5>No results! Maybe try a less specific search, or check your parameters?</h5>
         )}
       </div>

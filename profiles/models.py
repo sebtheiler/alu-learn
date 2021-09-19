@@ -1,10 +1,11 @@
-from typing import Literal
+from __future__ import annotations
+import datetime
+from typing import Literal, Tuple, Union
+
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
-
-import datetime
 
 User = settings.AUTH_USER_MODEL
 
@@ -22,7 +23,6 @@ class Profile(models.Model):
         blank=True,
         related_name='users_who_requested',
     )
-    total_thanks_recieved = models.IntegerField(default=0)
 
     longest_streak = models.PositiveSmallIntegerField(default=0)
     current_streak = models.PositiveSmallIntegerField(default=0)
@@ -34,14 +34,6 @@ class Profile(models.Model):
         else:
             return f'@{self.user.username}'
 
-    def increment_total_thanks_recieved(self) -> int:
-        # Do not use this method if you need to make other changes to the profile obj
-        # Only use this method if the `total_thanks_recieved` is the only attr that
-        # needs to be changed
-        self.total_thanks_recieved += 1
-        self.save()
-        return self.total_thanks_recieved
-
     def increment_work_done_today(
         self,
         cards_done: int = 0,
@@ -50,13 +42,7 @@ class Profile(models.Model):
         habits_done: int = 0,
     ) -> int:
         # Get or create history for today
-        date = datetime.datetime.now()
-        if utc_timezone_offset is not None:
-            date -= datetime.timedelta(minutes=utc_timezone_offset)
-
-        history_obj, created = self.history.get_or_create(
-            date=date.date()
-        )
+        history_obj, created = self.get_create_history(utc_timezone_offset=utc_timezone_offset)
 
         # Increment the current streak if this is the first card done today
         if created:
@@ -73,6 +59,25 @@ class Profile(models.Model):
             time_taken,
             habits_done,
         )
+
+    def get_create_history(
+        self,
+        create: bool = True,
+        utc_timezone_offset: int = None,  # in mins
+    ) -> Tuple[Union[ProfileHistorySegment, None], bool]:
+        date = datetime.datetime.now()
+        if utc_timezone_offset is not None:
+            date -= datetime.timedelta(minutes=max(min(int(utc_timezone_offset), 1440), 0))
+
+        date = date.date()
+
+        if create:
+            return self.history.get_or_create(date=date)
+        else:
+            try:
+                return self.history.get(date=date), False
+            except ProfileHistorySegment.DoesNotExist:
+                return None, False
 
     def toggle_friend(
         self,
@@ -209,25 +214,23 @@ class ProfileHistorySegment(models.Model):
 
 
 class ProfileSettings(models.Model):
-    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='settings')
-    send_reminders = models.BooleanField(default=False)
-    USER_TYPE_OPTIONS = [
-        ('STUDENT', 'Student/Learner'),
-        ('TEACHER', 'Teacher/Parent'),
-    ]
-    user_type = models.CharField(max_length=7, choices=USER_TYPE_OPTIONS, default='STUDENT')
-    TIME_PER_DAY_OPTIONS = [
-        ('MAX', 'As long as it takes (infinite)'),
-        ('20', '20 minutes'),
-        ('15', '15 minutes'),
-        ('10', '10 minutes'),
-        ('5', '5 minutes'),
-    ]
-    ideal_time_per_day = models.CharField(
-        max_length=3,
-        choices=TIME_PER_DAY_OPTIONS,
-        default='MAX',
+    profile = models.OneToOneField(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='settings',
     )
+    send_reminders = models.BooleanField(default=False)
+    USER_TYPE_OPTIONS = (
+        ('STUDENT', 'Student'),
+        ('TEACHER', 'Teacher'),
+    )
+    user_type = models.CharField(
+        max_length=7,
+        choices=USER_TYPE_OPTIONS,
+        default='STUDENT',
+    )
+    target_num_cards = models.PositiveSmallIntegerField(default=50)
+
     is_opted_dev = models.BooleanField(default=False)
     show_update_modal = models.BooleanField(default=False)
 

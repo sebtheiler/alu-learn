@@ -1,0 +1,87 @@
+import Form from 'react-bootstrap/Form';
+import LoadingButton from '../buttons/LoadingButton';
+import Modal from 'react-bootstrap/Modal';
+import { Deck } from '../../types';
+import { HomeActionDispatch } from '../context';
+import { DeckEditableAttrs, DeckForm } from '../modals/edit';
+import { apiObjectCreate } from '../../../lookup/lookup';
+import { useContext, useState  } from 'react';
+
+export default function CreateDeckButton() {
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  return (<>
+    <div className='deck-selection-item mb-5'>
+      <div
+        className='deck-selection-main mb-0'
+        role='button'
+        onClick={() => setShowCreateModal(true)}
+      >
+        <p>
+          <span className='title-text'>Create New Deck</span>
+          <span><i className='fas fa-plus fa-2x float-left mt-2 ml-2' /></span>
+        </p>
+      </div>
+    </div>
+    <CreateModal
+      show={showCreateModal}
+      close={() => setShowCreateModal(false)}
+    />
+  </>);
+}
+
+
+
+const editableAttrs = ['title'];
+interface CreateModalProps {
+  show: boolean;
+  close(): void;
+}
+function CreateModal(props: CreateModalProps) {
+  const { show, close } = props;
+  const { decksDispatch } = useContext(HomeActionDispatch);
+
+  const createDeck = async (options: DeckEditableAttrs) => {
+    await apiObjectCreate<Deck>('decks', 'deck', options).then(
+      res => decksDispatch && decksDispatch({
+        action: 'CREATE',
+        payload: res,
+      }),
+    );
+    close();
+  }
+
+  return (
+    <Modal show={show} onHide={close}>
+      <Modal.Header>
+        <Modal.Title>Creating deck</Modal.Title>
+      </Modal.Header>
+      <Form name='createDeckForm'>
+        <Modal.Body>
+          <DeckForm />
+        </Modal.Body>
+        <Modal.Footer>
+          <LoadingButton
+            clickFunc={async () => {
+              const form = document.getElementsByName('createDeckForm')[0] as HTMLFormElement;
+              if (!form) return;
+
+              let createDeckOptions = {};
+              for (const el of form.elements) {
+                let elName = (el as any).name;
+                if (editableAttrs.includes(elName))
+                  createDeckOptions[elName] = (el as any).value;
+              }
+
+              await createDeck(createDeckOptions);
+            }}
+            type='submit'
+            block
+          >
+            Create
+          </LoadingButton>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+  );
+}

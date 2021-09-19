@@ -14,18 +14,18 @@ urlpatterns = [
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     re_path(r'^favicon\.ico$', favicon_view),
     path('', include('decks.urls')), path('api/decks/', include('decks.api.urls')),
-    path('', include('notes.urls')), path('api/notes/', include('notes.api.urls')),
+    path('api/skill_tree/', include('skill_tree.api.urls')),
     path('', include('pages.urls')), path('api/pages/', include('pages.api.urls')),
-    path('', include('manual_sr.urls')), path('api/manual-sr/', include('manual_sr.api.urls')),
     path('', include('teachers.urls')), path('api/teachers/', include('teachers.api.urls')),
     path('profiles/', include('profiles.urls')), path('api/profiles/', include('profiles.api.urls')),
     path('', include('analytics.urls')), path('api/analytics/', include('analytics.api.urls')),
     path('', include('habits.urls')), path('api/habits/', include('habits.api.urls')),
-]
+    path('api/sharing_system/', include('sharing_system.api.urls')),
+] + static(settings.UPLOADED_FILES_URLPATH, document_root=settings.UPLOADED_FILES_FILEPATH)
 
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += [
+    urlpatterns += (
         url('__debug__/', include(debug_toolbar.urls)),
-    ]
+    )

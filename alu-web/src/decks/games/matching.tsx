@@ -5,23 +5,23 @@ import Col from 'react-bootstrap/Col';
 import { range } from '../../utils';
 import { RenderRichText, shuffle } from '../../utils';
 import './matching.css';
-import { FlashCard } from '../types';
+import { ReviewInstance } from '../types';
 
 interface MatchingProps {
   size: number;
-  flashcards: FlashCard[];
+  flashcards: ReviewInstance[];
 }
 export function MatchingGame(props: MatchingProps) {
   const {size, flashcards} = props;
   const randomizedFlashcards = useMemo(() => {
     let randomOrder = [] as any;
-    for (const [i, flashcard] of flashcards.entries()) {
-      randomOrder.push([flashcard.deck_fields[0], i]);
-      randomOrder.push([flashcard.deck_fields[1], i]);
-    }
+    // for (const [i, flashcard] of flashcards.entries()) {
+    //   randomOrder.push([flashcard.fields[0], i]);
+    //   randomOrder.push([flashcard.fields[1], i]);
+    // }
     randomOrder = shuffle(randomOrder);
     return randomOrder;
-  }, [flashcards]);
+  }, []);
   const [numMissed, setNumMissed] = useState<number>(0);
   const [correctlyGuessed, setCorrectlyGuessed] = useState([] as any);
   const [selectedBox, setSelectedBox] = useState<number[]>([-1, -1]);
@@ -63,9 +63,9 @@ export function MatchingGame(props: MatchingProps) {
 
   const getBoxClassName = (i: number, j: number) => {
     if (i === selectedBox[0] && j === selectedBox[1]) {
-      return ' selected';
+      return ' matching-box-selected';
     } else if (correctlyGuessed.includes(randomizedFlashcards[i*size + j][1])) {
-      return ' correct';
+      return ' matching-box-correct';
     } else {
       return '';
     }
@@ -81,10 +81,10 @@ export function MatchingGame(props: MatchingProps) {
             <Col
               key={j}
               className={'matching-col' + getBoxClassName(i, j)}
-              onClick={getBoxClassName(i, j) === ' correct' ? undefined: handleBoxClick(i, j)}
+              onClick={getBoxClassName(i, j) === ' matching-box-correct' ? undefined: handleBoxClick(i, j)}
             >
               <RenderRichText
-                text={randomizedFlashcards[i*size + j][0].text}
+                text={randomizedFlashcards[i*size + j][0]}
               />
             </Col>
           )}
@@ -101,8 +101,8 @@ export function MatchingGame(props: MatchingProps) {
       {failedQuestions.length > 0 && <h3 className='mt-5'>Questions You Missed:</h3>}
       {failedQuestions.map((question, i) => (<React.Fragment key={i}>
         <hr />
-        <RenderRichText text={question.deck_fields[0].text} />
-        <RenderRichText text={question.deck_fields[1].text} />
+        <RenderRichText text={question.fields[0]} />
+        <RenderRichText text={question.fields[1]} />
       </React.Fragment>))}
     </div>}
   </>);

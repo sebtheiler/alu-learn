@@ -1,26 +1,11 @@
+import base64
 import datetime as dt
+import os
 import random
-from typing import List
+from typing import List, Union
 
-from django.http import Http404
-from django.shortcuts import redirect, render
+from django.core.files.base import ContentFile
 from django.utils import timezone
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
-
-
-# Helper function for pagination
-def get_paginated_queryset_response(qs, request, Serializer, page_size=50, other_information={}) -> Response:
-    paginator = PageNumberPagination()
-    paginator.page_size = page_size
-    paginated_qs = paginator.paginate_queryset(qs, request)
-    if isinstance(Serializer, dict):
-        serialized = [Serializer[type(instance)](instance).data for instance in paginated_qs]
-    else:
-        serialized = Serializer(paginated_qs, many=True).data
-
-    paginated_resp = paginator.get_paginated_response(serialized)
-    return Response({**paginated_resp.data, **other_information}, status=200)
 
 
 # Like random.choices, but without replacement
@@ -39,42 +24,6 @@ def weighted_sample(population, weights, k=1) -> List[int]:
                 weights[i] = 0.0
                 indices.append(i)
     return [population[i] for i in indices]
-
-
-# Decorator for non-API views
-def permissions(is_authenticated: bool=True, is_confirmed: bool=True, is_staff: bool=False):
-    """
-    Ensures the user has the specified permissions, or otherwise redirects them
-    """
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            request = args[0]
-
-            if is_authenticated and not request.user.is_authenticated:
-                return redirect('/')
-            elif is_confirmed and not request.user.is_confirmed:
-                return redirect('/confirm-email/')
-            elif is_staff and not request.user.is_staff:
-                raise Http404('Permission denied')
-
-            return func(*args, **kwargs)
-        return wrapper
-    return decorator
-
-
-# Renders a view that has an HTML file, given some permissions
-def render_basic_view(
-    html_location: str,
-    is_authenticated: bool = True,
-    is_confirmed: bool = True,
-    is_staff: bool = False,
-    context_kwargs: bool = True
-):
-    @permissions(is_authenticated, is_confirmed, is_staff)
-    def render_view(request, *args, **kwargs):
-        return render(request, html_location, context=kwargs if context_kwargs else {})
-
-    return render_view
 
 
 # Creates a basic SlateJS Element
@@ -99,3 +48,33 @@ def get_morning() -> dt.datetime:
     this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
     return this_morning
+
+
+def assert_dict_data_type(
+    dict_to_check: dict,
+    expected_attr_types: dict,
+    enforce_all_keys_equal: bool = True,
+) -> Union[str, None]:
+    """
+    Asserts that each specified item in `dict_to_check` is of the type sepcified by `attr_types`
+
+    `expected_attr_types` maps string attributes to types ({'options': dict, 'obj_id': (int, str)})
+    """
+    if enforce_all_keys_equal and dict_to_check.keys() != expected_attr_types.keys():
+        print(dict_to_check.keys(), expected_attr_types.keys())
+        return 'Mismatch between supplied keys and editable keys'
+
+    for given_attr, given_val in dict_to_check.items():
+        expected_type = expected_attr_types.get(given_attr)
+        if expected_type is None or not isinstance(given_val, expected_type):
+            return f'`{given_attr}` must be of type {expected_type}, not {type(given_attr)}'
+
+    return None
+
+
+def base64_to_file(base64_str: str, title: str) -> ContentFile:
+    image_format, imgstr = base64_str.split(';base64,')
+    ext = image_format.split('/')[-1]
+    image = ContentFile(base64.b64decode(imgstr), name=f'{title}.{ext}')
+
+    return image

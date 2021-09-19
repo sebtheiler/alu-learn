@@ -6,13 +6,8 @@ User = get_user_model()
 
 class DevAuthentication(authentication.BasicAuthentication):
     def authenticate(self, request):
-        user_qs = User.objects.all()
-
-        # Random user
-        # user = user_qs.order_by('?').first()
-
-        # Specific username
-        user = user_qs.get(username='evolvedsquid')
-        # user = user_qs.get(username='wasdwasd')
+        username = 'evolvedsquid'
+        # username = 'testuser'
+        user = User.objects.get(username=username)
 
         return (user, None)

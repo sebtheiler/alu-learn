@@ -41,9 +41,7 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
     if (!year || !date || (!month && month !== 0)) return;
 
     const now = new Date();
-    setIsChild(
-      dateDiff(now, new Date(year, month, date)) / 365.25 < 13
-    );
+    setIsChild(dateDiff(new Date(year, month, date), now) / 365.25 < 13);
   }
 
   const registerHandler = (event) => {

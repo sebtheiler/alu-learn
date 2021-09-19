@@ -9,7 +9,7 @@ import DataTable from 'react-data-table-component';
 import { DefaultSharedDeckButtons } from '../decks/buttons';
 import { FlashcardTypesPiechart, HistoryLineChart, parseStats } from '../decks/statistics/statistics';
 import { Deck } from '../decks/types';
-import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiQuickDeckList, apiStudentPercentCompleteList, apiTeacherAssignmentsList } from '../lookup';
+import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiDeckQuickList, apiStudentPercentCompleteList, apiTeacherAssignmentsList } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
 import { Assignment, Classroom, ParsedStats, Student } from './types';
 import { CreateEditAssignmentModal } from './buttons';
@@ -135,15 +135,19 @@ function StudentDataTable(props: { classroomId: number }) {
     {students && <>
       <DataTable
         columns={columns}
-        // data={students}
-        data={[]}
+        // @ts-expect-error
+        data={students}
         expandableRows
         expandOnRowClicked
-        // expandableRowsComponent={ExpandableStudentDetailComponent}
-        expandableRowsComponentProps={{ classroomId: classroomId }}
         noDataComponent={<p>You don't have any students yet.</p>}
         defaultSortFieldId='First Name'
         striped
+
+        // NOTE: I don't know whether this is depracated, or the other version is deprecated
+        // expandableRowsComponent={ExpandableStudentDetailComponent}
+        // expandableRowsComponentProps={{ classroomId: classroomId }}
+        // @ts-expect-error
+        expandableRowsComponent={<ExpandableStudentDetailComponent classroomId={classroomId} />}
       />
     </>}
   </>);
@@ -242,7 +246,7 @@ function RenderAssignment(props: { assignment: Assignment }) {
 
 function ClassroomDeckComponent({ classroomId, deck }) {
   const [decks] = useApiObjectHook<Deck[]>(
-    apiQuickDeckList,
+    apiDeckQuickList,
     200,
     8008,
     [false, false],
