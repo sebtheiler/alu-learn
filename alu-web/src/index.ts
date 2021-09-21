@@ -1,20 +1,18 @@
+import * as serviceWorker from './serviceWorker';
+import LandingComponent from './landing';
 import React, { FunctionComponent } from 'react';
 import ReactDOM from 'react-dom';
-import * as serviceWorker from './serviceWorker';
-import './index.css';
-
-import { ProfileInformationComponent, LoginComponent, StaffForceLogin } from './profiles';
-import { DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, PushSharedDeck, UpdateDeck, StatisticsPage } from './decks';
-// import { FlashCardsList, FlashCardSearchComponent } from './decks/flashcards';
-// import { StudyComponent } from './decks/study';
-import { NotificationComponent } from './profiles/notifications';
-import { ExploreComponent, DeckSearchComponent } from './explore';
-import { LandingComponent } from './landing';
-import { HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization } from './home';
-import { GameComponent, MatchingGame } from './decks/games';
 import { ClassroomDetail, ClassroomStudentDetail } from './teachers';
+import { DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, PushSharedDeck, UpdateDeck, StatisticsPage } from './decks';
+import { ExploreComponent, DeckSearchComponent } from './explore';
+import { GameComponent, MatchingGame } from './decks/games';
 import { Habits } from './habits';
+import { HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization } from './home';
+import { NotificationComponent } from './profiles/notifications';
+import { ProfileInformationComponent, LoginComponent, StaffForceLogin } from './profiles';
 import { SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges } from './decks/skill-tree';  // TODO: remove this
+import './index.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const e = React.createElement;
 
@@ -46,7 +44,7 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [ExploreComponent, 'explore-component'],
   // [FlashCardSearchComponent, 'flashcard-search-component'],
   [DeckSearchComponent, 'deck-search-component'],
-  [LandingComponent, 'landing-component', true],
+  [LandingComponent, 'landing-component'],
   [HomeComponent, 'home-component'],
   [NavbarComponent, 'navbar-component'],
   [LoginComponent, 'login-component'],

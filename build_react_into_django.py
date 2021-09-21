@@ -4,6 +4,14 @@ from shutil import copyfile, copytree, rmtree
 
 import alu.settings as settings
 
+# Changed files:
+# * static/css/*
+# * static/js/*
+# * static/media/*
+# * decks/templates/react/*
+# * decks/templates/react.html
+# * static-root/*  (via ./manage.py collectstatic)
+
 base_dir = os.getcwd()
 REACT_DIRECTORY = os.path.join(base_dir, 'alu-web/')
 

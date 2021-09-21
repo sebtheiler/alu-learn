@@ -21,7 +21,7 @@ export function SendPasswordReset(props) {
         } else if (response.message === 'Email not found') {
           // Invalid code
           document.getElementById('invalidEmail')!.innerHTML = 
-            `We don't recognize that email`
+            `Alu doesn't recognize that email`
         } else {
           // Error confirming email
           errorHandler(response, status, 3019);
@@ -43,7 +43,7 @@ export function SendPasswordReset(props) {
     </>
     : <>
       <p className='text-center'>
-        Please specify your email below so we can send you a reset-password link.
+        Please specify your email below so Alu can send you a reset-password link.
       </p>
       <Form onSubmit={handleSubmit}>
         <Form.Group>
