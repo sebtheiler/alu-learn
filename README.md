@@ -7,7 +7,6 @@ cd Alu/
 python3 -m venv aluenv
 aluenv/bin/pip install -r requirements.txt
 echo "{\"ALU_DEBUG\": true, \"ALU_PRODUCTION\": false, \"PYTHON_PATH\": \"$PWD/aluenv/bin/python\", \"DRIVER_EXECUTABLE_PATH\": \"$PWD/chromedriver\"}" > alu/env-vars.json
-echo "[\"test@fakedomain123.edu\", \"allowedemail@abcdef123xyz.com\"]" > alu/allowed-emails.json
 echo "[]" > editor_deck_ids.json
 echo "[]" > top_deck_ids.json
 sudo su - postgres

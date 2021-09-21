@@ -98,7 +98,7 @@ def build_react_into_django():
 
     print('Clearing cache...')
     clear_cache = 'from django.core.cache import cache; cache.clear()'
-    os.system(f'{PYTHON_PATH} manage.py shell -c "{clear_cache}"')
+    os.system(f'"{PYTHON_PATH}" manage.py shell -c "{clear_cache}"')
     print('Finished')
 
 
