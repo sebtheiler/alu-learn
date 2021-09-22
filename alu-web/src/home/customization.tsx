@@ -82,13 +82,15 @@ export function UserCustomization(props) {
       <p>
         Studying is most effective when it's done every day.{' '}
         Alu can send reminder emails to help you build your study habits.
+        <br />
+        <small className='text-center'>You can unsubscribe at any time in the settings.  Alu will never spam you.</small>
       </p>
       <Form.Control
         as='select'
         name='reminders'
         custom
       >
-        <option value='YES'>Yes, send me reminder emails to help me build study habits</option>
+        <option value='YES'>Yes, send me reminder emails</option>
         <option value='NO'>No, I'm not interested in reminder emails</option>
       </Form.Control>
     </>),

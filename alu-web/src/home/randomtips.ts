@@ -34,7 +34,7 @@ const randomTips = [
   'Start from the basics before going into complex subjects',
   // 'You can drag and drop images into Alu\'s rich text editors',
   // 'You can drag image files directly from desktop into Alu\'s rich text editors',
-  'Always keep in mind the "20 Rules of Formulating Knowledge" when creating flashcards (found on the welcome page)',
+  // 'Always keep in mind the "20 Rules of Formulating Knowledge" when creating flashcards (found on the welcome page)',
   'Making flashcards personal to you will help you remember them better',
   'Make sure your flashcards are all connected - don\'t have random pieces of knowledge floating around',
   'Never memorize content you don\'t understand',
@@ -46,7 +46,7 @@ const randomTips = [
   'You can view advanced statistics about your deck through "Other > Statistics"',
   'Teachers can create classes of students, so that they can track their students\' progress',
   // 'Most people find doing Alu reviews in the morning (before school) more efficient and enjoyable',
-  'Be honest with your Alu reviews, it\'s only designed to help you',
+  // 'Be honest with your Alu reviews, it\'s only designed to help you',
   // Random stuff
   'Hermann Ebbinghaus discovered the forgetting curve, which Alu is based on, in the 1800s',
   'Dr. Piotr Wozniak developed one of the first digital SR apps in the 1990s. His work has made Alu possible.',
