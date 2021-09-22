@@ -19,7 +19,7 @@ export default function RenderMainSection({ mainSection, numMainSections, readOn
             :
             <a href={`/deck/${mainSection.deck}/study/${cleanTitle(mainSection.data.title)}/`}>
               {mainSection.data.title.toUpperCase()}
-              {!!mainSection.percent_complete && ` - ${mainSection.percent_complete*100}%`}
+              {!!mainSection.percent_complete && ` - ${Math.round(mainSection.percent_complete*100*100)/100}%`}
             </a>
           }
         </h2>

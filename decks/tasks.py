@@ -6,23 +6,15 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from profiles.models import Profile
 
-from decks.models import StudySessionManager
-
 
 @shared_task
 def midnight_reset():
     # Break the streaks of users who haven't studied today
-    not_studied_profiles = Profile.objects.filter(has_done_work_today=False)
-    not_studied_profiles.update(current_streak=0)
+    # not_studied_profiles = Profile.objects.filter(has_done_work_today=False)
+    # not_studied_profiles.update(current_streak=0)
 
     # Reset all users to not having studied
     Profile.objects.update(has_done_work_today=False)
-
-    # Reset the number of cards each SSM has done
-    StudySessionManager.objects.update(
-        new_cards_done_today=0,
-        seen_cards_done_today=0,
-    )
 
 
 @periodic_task(run_every=crontab(minute=0, hour=4))
