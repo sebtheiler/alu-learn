@@ -1,3 +1,4 @@
+import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import LoadingButton from '../buttons/LoadingButton';
 import Modal from 'react-bootstrap/Modal';
@@ -6,6 +7,7 @@ import { HomeActionDispatch } from '../context';
 import { DeckEditableAttrs, DeckForm } from '../modals/edit';
 import { apiObjectCreate } from '../../../lookup/lookup';
 import { useContext, useState  } from 'react';
+import { QuestionBubble } from '../../../utils';
 
 export default function CreateDeckButton() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -37,8 +39,7 @@ interface CreateModalProps {
   show: boolean;
   close(): void;
 }
-function CreateModal(props: CreateModalProps) {
-  const { show, close } = props;
+function CreateModal({ show, close }: CreateModalProps) {
   const { decksDispatch } = useContext(HomeActionDispatch);
 
   const createDeck = async (options: DeckEditableAttrs) => {
@@ -54,7 +55,15 @@ function CreateModal(props: CreateModalProps) {
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header>
-        <Modal.Title>Creating deck</Modal.Title>
+        <Modal.Title className='w-100'>
+          Creating deck
+          <Button className='float-right' href='/deck/import/'>
+            Import{' '}
+            <QuestionBubble isWhite>
+              Import flashcards from another program (like Anki or Quizlet)
+            </QuestionBubble>
+          </Button>
+        </Modal.Title>
       </Modal.Header>
       <Form name='createDeckForm'>
         <Modal.Body>

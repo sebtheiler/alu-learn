@@ -15,6 +15,12 @@ class SectionData(models.Model):
     description = models.TextField(max_length=4096)
     EDITABLE_ATTRS = ('title', 'description')
 
+    DEFAULT_MAIN_SECTION_DESC = '''
+Your flashcards are organized into different sections.
+This is the default "main section", which you can edit to be your first topic ("Unit 1").
+To create flashcards, click the "sub sections" below.
+    '''
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     def __str__(self) -> str:

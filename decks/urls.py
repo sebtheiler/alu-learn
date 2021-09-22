@@ -2,7 +2,7 @@ from django.urls import path
 from utils import render_basic_view
 
 urlpatterns = [
-    path('decks/import/', render_basic_view('decks/import.html')),
+    path('deck/import/', render_basic_view('decks/import.html')),
     path('flashcards/search/', render_basic_view('flashcards/search.html')),
     path('deck/<int:deck_id>/', render_basic_view(
         'misc/home.html',

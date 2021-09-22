@@ -719,11 +719,7 @@ def deck_saved(sender, instance, created, **kwargs):
 
         data = SectionData.objects.create(
             title='Default',
-            description='''
-Your flashcards are organized into different sections.
-This is the default "main section", which you can edit to be your first topic ("Unit 1").
-To create flashcards, click the "sub sections" below.
-            ''',
+            description=SectionData.DEFAULT_MAIN_SECTION_DESC,
         )
         main_section = MainSection.objects.create(
             deck=instance,
