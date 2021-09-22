@@ -7,6 +7,8 @@ interface CardsDoneSVGProps {
 }
 export default function CardsDoneSVG(props: CardsDoneSVGProps) {
   const { targetCardsDone, cardsDone, cardsJustDone } = props;
+  const LINE_TICK_INTERVAL = cardsDone > 200 ? 20 : 10;
+  const NUM_EXTRA_BARS = Math.floor((Math.max(cardsDone, targetCardsDone) - targetCardsDone) / LINE_TICK_INTERVAL + 2);
   const DIV_HEIGHT = 400;
   const DIV_WIDTH = 300;
   const DIV_BORDER_THICKNESS = 4;
@@ -18,10 +20,9 @@ export default function CardsDoneSVG(props: CardsDoneSVGProps) {
   const TARGET_COLOR = '#d52b2c';
   const LINE_TICK_COLOR = '#a3a3a3';
   const BAR_COLOR = '#337BFF';
-  const LINE_TICK_INTERVAL = 10;
 
   const calcY = (i: number) => (DIV_HEIGHT - 30) - i*((DIV_HEIGHT - 20)/lineTickIntervalRange.length) + 5;
-  const lineTickIntervalRange = Array.from(Array(Math.floor(targetCardsDone / LINE_TICK_INTERVAL) + 3).keys());
+  const lineTickIntervalRange = Array.from(Array(Math.floor(targetCardsDone / LINE_TICK_INTERVAL) + NUM_EXTRA_BARS + 1).keys());
   const lineTickYVals = lineTickIntervalRange.map(i => ({
     i: i,
     y: calcY(i),
