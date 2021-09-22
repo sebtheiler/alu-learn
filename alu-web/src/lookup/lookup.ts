@@ -359,11 +359,8 @@ export function apiDeckJSONImport(
 }
 
 // Gets detail information about a profile, such as bio, name, username, etc.
-export async function apiProfileDetail(
-  username: string,
-  callback: (response: Profile, status: number) => void,
-): Promise<Profile> {
-  return backendFetch('GET', `profiles/${username.toLowerCase()}/detail/`, callback);
+export async function apiProfileDetail(username: string): Promise<Profile> {
+  return backendFetch('GET', `profiles/${username.toLowerCase()}/detail/`);
 }
 
 

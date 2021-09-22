@@ -1,13 +1,15 @@
+import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { apiProfileDetail, apiProfileSettingsUpdate } from '../../lookup';
-import { UserLink } from '../../profiles';
 import { Profile } from '../../profiles/types';
-import { errorHandler, FormCheckbox, QuestionBubble, useApiObjectHook } from '../../utils';
+import { UserLink } from '../../profiles';
+import { apiProfileDetail, apiProfileSettingsUpdate } from '../../lookup';
+import { errorHandler, FormCheckbox, QuestionBubble } from '../../utils';
+import { useAsyncState } from '../../lookup/lookup';
 import './settings.css';
 
 export function SettingsPage({ username }) {
-  const [profile] = useApiObjectHook<Profile>(apiProfileDetail, 200, 3015, [username]);
+  const [profile] = useAsyncState<Profile>(apiProfileDetail, [username]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -31,11 +33,9 @@ export function SettingsPage({ username }) {
     );
   }
 
-  if (!profile)
-    return <p>Loading...</p>
-
-  return (<>
-    <h1 className='text-center mt-5'>Settings</h1>
+  if (!profile) return <p>Loading...</p>
+  return (<Container className='mt-5'>
+    <h1 className='text-center'>Settings</h1>
     <p className='text-center'>
       Make sure to save your changes by clicking "Save Changes" at the bottom.
     </p>
@@ -43,7 +43,7 @@ export function SettingsPage({ username }) {
       <Form.Group>
         <h3>Account and Security</h3>
         <UserLink user={profile} showAllBadges noLink />
-        <br />
+        {/* <br /> */}
         <ul>
           <li><a href='/settings/change-email/'>
             Change email
@@ -85,7 +85,7 @@ export function SettingsPage({ username }) {
           <option value='TEACHER'>Teacher/Parent</option>
         </Form.Control>
       </Form.Group>
-      <Form.Group>
+      {/* <Form.Group>
         <FormCheckbox name='isOptedDev' defaultChecked={profile.settings.is_opted_dev}>
           Opt into development features{' '}
           <QuestionBubble>
@@ -94,12 +94,12 @@ export function SettingsPage({ username }) {
             No guarantee is made about the stability or safety of development features.
           </QuestionBubble>
         </FormCheckbox>
-      </Form.Group>
+      </Form.Group> */}
       <Form.Group>
         <Button type='submit' id='save-changes-btn' block>
           Save Changes
         </Button>
       </Form.Group>
     </Form>
-  </>);
+  </Container>);
 }
