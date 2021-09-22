@@ -1,7 +1,3 @@
-import {
-  LandingComponent,
-} from './landing';
+import LandingComponent from './landing';
 
-export {
-  LandingComponent,
-}
+export default LandingComponent;

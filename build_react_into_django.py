@@ -4,6 +4,14 @@ from shutil import copyfile, copytree, rmtree
 
 import alu.settings as settings
 
+# Changed files:
+# * static/css/*
+# * static/js/*
+# * static/media/*
+# * decks/templates/react/*
+# * decks/templates/react.html
+# * static-root/*  (via ./manage.py collectstatic)
+
 base_dir = os.getcwd()
 REACT_DIRECTORY = os.path.join(base_dir, 'alu-web/')
 
@@ -90,7 +98,7 @@ def build_react_into_django():
 
     print('Clearing cache...')
     clear_cache = 'from django.core.cache import cache; cache.clear()'
-    os.system(f'{PYTHON_PATH} manage.py shell -c "{clear_cache}"')
+    os.system(f'"{PYTHON_PATH}" manage.py shell -c "{clear_cache}"')
     print('Finished')
 
 

@@ -10,13 +10,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sharing_system.models import FlashCardAction
-from skill_tree.models import AbstractSection, MainSection, SubSection
+from skill_tree.models import AbstractSection, MainSection, SectionData, SubSection
 from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
 from utils.api_utils import get_obj_or_404
 from utils.utils import assert_dict_data_type, base64_to_file
 
-from ..models import Deck, FlashCard, ReviewInstance, ReviewInstanceHistory
+from ..models import Deck, FlashCard, FlashCardData, ReviewInstance, ReviewInstanceHistory
 from ..serializers import (DeckSerializer, FlashCardSerializer,
                            ReviewInstanceSerializer)
 
@@ -251,27 +251,45 @@ def deck_txt_import_view(request, *args, **kwargs):
     deck_title = request.data.get('deck_title')
     uploaded_file = request.data.get('uploaded_file')
 
+    if None in (deck_title, uploaded_file):
+        return Response({'message': 'You must specify `deck_title` and `uploaded_file`'}, status=400)
+
     # Parse text document
     split_lines = uploaded_file.split('\n')
     front_and_back = [line.split('\t') for line in split_lines if line]
 
     # Get/create deck with given title
-    deck, _ = Deck.objects.get_or_create(user=request.user, title=deck_title)
+    deck = Deck.objects.create(
+        user=request.user,
+        title=deck_title,
+    )
+    main_section = deck.main_sections.first()
+    sub_section = main_section.sub_sections.first()
 
     # Create flashcards
-    max_flashcard_num = FlashCard.get_max_order_num(deck)
-    flashcards = FlashCard.objects.bulk_create([
-        FlashCard(
-            deck=deck,
-            flashcard_type='BASIC',
-            order_num=max_flashcard_num + i + 1,
+    flashcards = []
+    flashcards_data = []
+    for i in range(len(front_and_back)):
+        flashcard_data = FlashCardData(
+            tags='',
             fields=[
                 create_slate_element(front_and_back[i][0]),
                 create_slate_element(front_and_back[i][1]),
             ],
+            pk=uuid.uuid4(),
         )
-        for i in range(len(front_and_back))
-    ])
+        flashcards_data.append(flashcard_data)
+
+        flashcard = FlashCard(
+            sub_section=sub_section,
+            flashcard_type='BASIC',
+            order_num=i,
+            data=flashcard_data,
+        )
+        flashcards.append(flashcard)
+
+    flashcards_data = FlashCardData.objects.bulk_create(flashcards_data)
+    flashcards = FlashCard.objects.bulk_create(flashcards)
 
     this_morning = get_morning()
     ReviewInstance.objects.bulk_create([
@@ -746,6 +764,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     `study_ahead` (Data)?: If True, return all flashcards, not just non-due ones
     """
     section = request.data.get('section')
+    deck_id = request.data.get('deck_id')
     study_ahead = request.data.get('study_ahead')
 
     # Build base query
@@ -769,6 +788,9 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
                 ),
             )
 
+    if deck_id:
+        review_instance_query &= Q(flashcard__sub_section__main_section__deck_id=deck_id)
+
     # Find review instances that are due
     NUM_FLASHCARDS_PER_LESSON = 25
 
@@ -782,7 +804,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
         .prefetch_related('flashcard')\
         .order_by('?' if study_ahead else 'next_review')[:NUM_FLASHCARDS_PER_LESSON]
 
-    # If the number of due review instances doesn't meet `NUM_FLASHCARDDS_PER_LESSON`,
+    # If the number of due review instances doesn't meet `NUM_FLASHCARDS_PER_LESSON`,
     # also send unseen review instances
     num_new_review_instances = NUM_FLASHCARDS_PER_LESSON - due_for_review.count()
     if num_new_review_instances > 0:

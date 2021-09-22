@@ -5,7 +5,7 @@ export function MainHook({ onClick }) {
   return (
     <>
       <h1>Learn Anything.  Remember Everything.</h1>
-      <p>
+      <p className='lead'>
         Flashcards that automatically optimize when you should review them<br />
         Spend less time studying, and get more out of it
       </p>

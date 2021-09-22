@@ -1,7 +1,4 @@
-# Skill Tree (PRE-RELEASE) - Sep 17 - 1.0.0a
-**This update is a _pre-release!_  It has not been thoroughly tested and is still missing some old features.  Please let me know about any and all feedback!**  The full release will likely be released on Monday, September 20th.
-
-
+# Skill Tree, Sharing System, and Other Words that Start with "S" - Sep 17 - 1.0.0
 I've completely revamped Alu in this update, redoing the way that decks are organized and the way you study them.
 
 

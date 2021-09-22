@@ -133,7 +133,7 @@ export function DeckImportComponent() {
       </div>}
       {uploadType === 'QUIZLET' && <div className='container-fluid'>
         <p className='text-left'>
-          We are working hard to make Quizlet imports as easy as possible.<br />
+          I'm working hard to make Quizlet imports as easy as possible.<br />
           In the meanwhile, please use these steps:
         </p>
         <ol className='text-left'>
@@ -149,7 +149,7 @@ export function DeckImportComponent() {
       </div>}
       {uploadType === 'APKG' && <>
         <p>
-          We currently don't support Anki imports, but are working hard to implement them as soon as possible.<br />
+          Alu currently doesn't support Anki imports, but I'm working hard to implement them as soon as possible.<br />
           In the meanwhile, you can export your deck as a .txt file and import it to Alu through the .txt upload.
         </p>
       </>}

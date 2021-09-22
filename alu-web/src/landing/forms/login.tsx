@@ -26,7 +26,7 @@ export function LoginForm(props) {
           window.location.href = returnUrl ? returnUrl : '/home/';
         } else if (response.message === 'Invalid credentials') {
           document.getElementById('loginAuthFail')!.innerText =
-            `We don't recognize your username and password.  Maybe try typing it again?`
+            `Alu doesn't recognize your username and password.  Maybe try typing it again?`
         } else {
           // Error logging-in the user
           errorHandler(response, status, 3006);

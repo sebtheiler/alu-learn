@@ -61,7 +61,8 @@ class Deck(models.Model):
 
     def get_statistics(self) -> Dict:
         # Get various flashcard types (only counts are used)
-        default = Q(is_suspended=False, flashcard__deck=self)
+        deck_query = Q(flashcard__sub_section__main_section__deck_id=self.pk)
+        default = Q(is_suspended=False) & deck_query
         unseen_flashcards = ReviewInstance.objects.filter(
             Q(learning_status='UNSEEN') & default,
         )
@@ -75,12 +76,12 @@ class Deck(models.Model):
             Q(learning_status='RELEARNING') & default,
         )
         suspended_flashcards = ReviewInstance.objects.filter(
-            is_suspended=True, flashcard__deck=self,
+            Q(is_suspended=True) & deck_query,
         )
 
         # Get other data
         avg_ease = ReviewInstance.objects.filter(
-            ~Q(learning_status='UNSEEN') & Q(flashcard__deck=self)
+            ~Q(learning_status='UNSEEN') & deck_query,
         ).aggregate(Avg('ease'))['ease__avg']
 
         return {
@@ -719,11 +720,7 @@ def deck_saved(sender, instance, created, **kwargs):
 
         data = SectionData.objects.create(
             title='Default',
-            description='''
-Your flashcards are organized into different sections.
-This is the default "main section", which you can edit to be your first topic ("Unit 1").
-To create flashcards, click the "sub sections" below.
-            ''',
+            description=SectionData.DEFAULT_MAIN_SECTION_DESC,
         )
         main_section = MainSection.objects.create(
             deck=instance,
