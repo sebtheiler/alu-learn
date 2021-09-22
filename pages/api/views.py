@@ -1,9 +1,14 @@
+from sharing_system.serializers import SharedDeckSerializer
+import json
+from typing import List
+from sharing_system.models import SharedDeck
+
 from django.core.mail import mail_admins
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from ..models import ContactFeedback
-from rest_framework.response import Response
 
 
 @api_view(['POST'])
@@ -75,33 +80,24 @@ def update_settings_api_view(request, *args, **kwargs):
 
 
 # Explore views
-# TODO: rewrite these to use new shared decks
-# with open('editor_deck_ids.json', 'r') as f:
-#     EDITOR_PICKS_DECK_IDS = json.loads(f.read())
-
-# with open('top_deck_ids.json', 'r') as f:
-#     TOP_DECK_IDS = json.loads(f.read())
+with open('editor_deck_ids.json', 'r') as f:
+    EDITOR_PICKS_DECK_IDS = json.loads(f.read())
 
 
-# def get_decks_from_ids(id_list, public_only=False):
-#     query = Q(pk__in=id_list)
-#     if public_only:
-#         query &= Q(deck_type='shared') & Q(sharing_setting='PUBLIC')
-
-#     decks_qs = SharedDeck.objects.filter(query)
-#     return SharedDeckSerializer(decks_qs, many=True).data
+def get_shared_decks_from_ids(id_list: List[int]):
+    shared_decks = SharedDeck.objects.filter(pk__in=id_list)
+    return SharedDeckSerializer(shared_decks, many=True).data
 
 
-# @cache_page(60*15)
-# @api_view(['GET'])
-# def api_explore_lists_view(request, *args, **kwargs):
-#     """
-#     Get decks to display in explore list - GET
-#     """
-#     data = {
-#         'EDITOR': get_decks_from_ids(EDITOR_PICKS_DECK_IDS, public_only=True),
-#         'TOP': get_decks_from_ids(TOP_DECK_IDS, public_only=True),
-#         'HOT': [],  # get_decks_from_ids(HOT_DECK_IDS, public_only=True),
-#     }
+@api_view(['GET'])
+def api_explore_lists_view(request, *args, **kwargs):
+    """
+    Get decks to display in explore list - GET
+    """
+    data = {
+        'EDITOR': get_shared_decks_from_ids(EDITOR_PICKS_DECK_IDS),
+        'TOP': [],  # get_decks_from_ids(TOP_DECK_IDS),
+        'HOT': [],  # get_decks_from_ids(HOT_DECK_IDS),
+    }
 
-#     return Response(data, status=200)
+    return Response(data, status=200)

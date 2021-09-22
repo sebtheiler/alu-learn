@@ -1,19 +1,19 @@
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-import RenderMainSection from './main-section';
-import RenderFlashcard  from './render-flashcard';
+import Container from 'react-bootstrap/Container';
 import CopySharedDeckButton from './buttons/copy-shared-deck-button';
+import React from 'react';
+import RenderFlashcard  from './render-flashcard';
+import RenderMainSection from './main-section';
+import Row from 'react-bootstrap/Row';
+import { DisplayProfileInline } from '../../profiles';
 import { FlashCard } from '../types';
-import { useObjectGet, useObjectPaginatedList } from '../../lookup/lookup';
 import { SharedDeck } from './types';
 import { useMemo, useState } from 'react';
-import { DisplayProfileInline } from '../../profiles';
+import { useObjectGet, useObjectPaginatedList } from '../../lookup/lookup';
 import './shared-deck-detail.scss';
-import React from 'react';
 
 interface Permission {
   hasViewAccess?: boolean;
