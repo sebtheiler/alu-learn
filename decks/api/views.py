@@ -746,6 +746,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     `study_ahead` (Data)?: If True, return all flashcards, not just non-due ones
     """
     section = request.data.get('section')
+    deck_id = request.data.get('deck_id')
     study_ahead = request.data.get('study_ahead')
 
     # Build base query
@@ -768,6 +769,9 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
                     AbstractSection.clean(section[0])
                 ),
             )
+
+    if deck_id:
+        review_instance_query &= Q(flashcard__sub_section__main_section__deck_id=deck_id)
 
     # Find review instances that are due
     NUM_FLASHCARDS_PER_LESSON = 25
