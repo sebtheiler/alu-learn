@@ -44,9 +44,6 @@ export function SettingsPage({ username }) {
         <h3>Account and Security</h3>
         <UserLink user={profile} showAllBadges noLink />
         <br />
-        <p>
-          Your email (hover to view): <span className='hidden-email'>{profile.email}</span><br />
-        </p>
         <ul>
           <li><a href='/settings/change-email/'>
             Change email

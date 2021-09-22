@@ -150,20 +150,13 @@ export function NavbarComponent(props) {
                   <i className='fas fa-user-circle'></i>{' '}
                   Your Profile
                 </NavDropdown.Item>
-                <NavDropdown.Item href='/home/decks/' id='decks-option'>
-                  <i className='fas fa-window-restore'></i>{' '}
-                  Decks
-                </NavDropdown.Item>
-                <NavDropdown.Item href='/home/habits/' id='habits-option'>
-                  <i className='fas fa-seedling'></i>{' '}
-                  Habits
-                </NavDropdown.Item>
-                <NavDropdown.Divider />
-
                 <NavDropdown.Item href='/settings/' id='settings-option'>
                   <i className='fas fa-cogs'></i>{' '}
                   Settings
                 </NavDropdown.Item>
+
+                <NavDropdown.Divider />
+
                 <NavDropdown.Item href='/help/' id='help-option'>
                   <i className='fas fa-info-circle'></i>{' '}
                   Help and Tutorials

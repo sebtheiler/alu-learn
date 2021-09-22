@@ -46,16 +46,9 @@ export function RenderNotification(props: NotificationProps) {
     if (acceptedFriendReq === false && senderUsername) {
       setAcceptedFriendReq(true);
       setFriendBtnLabel('Loading...');
-
-      // Accept friend request
-      apiProfileFriendToggle(senderUsername, 'friend', (response, status) => {
-        if (status === 200) {
-          setFriendBtnLabel('Friends')
-        } else {
-          // Error accepting friend request
-          errorHandler(response, status, 3005);
-        }
-      });
+      apiProfileFriendToggle(senderUsername, 'friend').then(
+        () => setFriendBtnLabel('Friends'),
+      );
     }
   }
 

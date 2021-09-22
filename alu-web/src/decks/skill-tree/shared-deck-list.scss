@@ -1,4 +1,4 @@
-@import '../decks/skill-tree/shared';
+@import './shared';
 
 .shared-deck {
   background: $lightBackground;
@@ -22,5 +22,6 @@
 
   >.body {
     padding: 25px;
+    padding-top: 10px;
   }
 }

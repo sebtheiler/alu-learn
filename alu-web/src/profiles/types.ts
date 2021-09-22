@@ -6,7 +6,6 @@ export interface MinifiedProfile {
 }
 
 export interface Profile extends MinifiedProfile {
-  email: string;
   bio: string;
   friend_count: number;
   is_friend: boolean;

@@ -1,11 +1,8 @@
 import Container from 'react-bootstrap/Container';
-import React from 'react';
-import { DisplayProfileInline } from '../profiles';
 import { SharedDeck } from '../decks/skill-tree/types';
 import { apiExploreLists } from '../lookup';
 import { useApiObjectHook } from '../utils';
-import './explore.scss';
-import ReactMarkdown from 'react-markdown';
+import { SharedDeckList } from '../decks/skill-tree';
 
 
 interface ExploreDecks {
@@ -13,7 +10,7 @@ interface ExploreDecks {
   HOT: SharedDeck[];
   TOP: SharedDeck[];
 }
-export function ExploreComponent(props: null) {
+export default function ExploreComponent(props: null) {
   const [decks] = useApiObjectHook<ExploreDecks>(apiExploreLists, 200, 1010);
 
   return (<Container className='mt-5'>
@@ -23,29 +20,6 @@ export function ExploreComponent(props: null) {
     </div>
     {/* <ExploreButtonGroup /> */}
     <hr />
-    {decks ? <div className='mb-5'>
-      {decks.EDITOR.map(sharedDeck => <div className='shared-deck' key={sharedDeck.id}>
-        <div className='title'>
-          <p className='owners'>
-            Created by {sharedDeck.owners.map((owner, i) => <React.Fragment key={i}>
-              <DisplayProfileInline profile={owner} />
-              {i !== sharedDeck.owners.length - 1 && ','}
-            </React.Fragment>)}
-          </p>
-          <h1>
-            <a href={`/community/deck/${sharedDeck.id}/`}>
-              {sharedDeck.title}
-            </a>
-          </h1>
-          <hr />
-        </div>
-        <div className='body'>
-          {sharedDeck.description.length > 0
-            ? <ReactMarkdown source={sharedDeck.description} />
-            : <p>This deck has no description</p>
-          }
-        </div>
-      </div>)}
-    </div> : <p>Loading...</p>}
+    {decks ? <SharedDeckList sharedDecks={decks.EDITOR} /> : <p>Loading...</p>}
   </Container>);
 }

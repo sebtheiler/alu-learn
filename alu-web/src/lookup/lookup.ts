@@ -6,7 +6,7 @@ import { Profile, ProfileHistory } from '../profiles/types';
 import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
 import { getCookie } from '../utils';
 import { backendLookup, baseUrl } from './components';
-import { useReducer, useEffect, useState, Dispatch } from 'react';
+import React, { useReducer, useEffect, useState, Dispatch } from 'react';
 import { Interval } from '../decks/study/algorithm';
 
 type Message = { 'message': string };
@@ -114,6 +114,27 @@ export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
   }, [func, args, callback, objDidFetch, requirement]);
 
   return [obj, dispatch];
+}
+
+export function useAsyncState<ObjType>(
+  func: Function,
+  args: any[] = [],
+  callback?: (response: ObjType) => void,
+  requirement: boolean = true,
+): [ObjType | undefined, Dispatch<React.SetStateAction<ObjType | undefined>>] {
+  const [obj, setObj] = useState<ObjType | undefined>(undefined);
+  const [objDidFetch, setObjDidFetch] = useState(false);
+
+  useEffect(() => {
+    if (objDidFetch || !requirement) return;
+    setObjDidFetch(true);
+    func(...args).then((res: ObjType) => {
+      setObj(res)
+      if (callback) callback(res);
+    });
+  }, [func, args, callback, objDidFetch, requirement]);
+
+  return [obj, setObj];
 }
 
 export function useObjectGet<ObjType, Event extends DefaultEvent = never>(
@@ -338,21 +359,22 @@ export function apiDeckJSONImport(
 }
 
 // Gets detail information about a profile, such as bio, name, username, etc.
-export function apiProfileDetail(
+export async function apiProfileDetail(
   username: string,
   callback: (response: Profile, status: number) => void,
-) {
-  backendLookup('GET', `profiles/${username.toLowerCase()}/detail/`, callback);
+): Promise<Profile> {
+  return backendFetch('GET', `profiles/${username.toLowerCase()}/detail/`, callback);
 }
 
 
 // Sends a friend/unfriend request to the backend
-export function apiProfileFriendToggle(
+export async function apiProfileFriendToggle(
   username: string,
   action: 'friend' | 'unfriend',
-  callback: (response: Profile, status: number) => void,
-) {
-  backendLookup('POST', `profiles/${username.toLowerCase()}/friend/`, callback, {action: action.toLowerCase()});
+): Promise<void> {
+  return backendFetch('POST', `profiles/${username.toLowerCase()}/friend/`, {
+    action: action.toLowerCase(),
+  });
 }
 
 // Checks if a username is available
@@ -422,11 +444,8 @@ export function apiProfileSettingsUpdate(settings, callback) {
 }
 
 // Send a friend request
-export function apiSendFriendReq(
-  recipientUsername: string,
-  callback: (response: Message, status: number) => void,
-) {
-  backendLookup('POST', `profiles/${recipientUsername.toLowerCase()}/friendrequest/`, callback);
+export async function apiSendFriendReq(recipientUsername: string): Promise<void> {
+  return backendFetch('POST', `profiles/${recipientUsername.toLowerCase()}/friendrequest/`);
 }
 
 // Creates a notification

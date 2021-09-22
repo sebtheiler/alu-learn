@@ -1,12 +1,12 @@
-import { UserLink } from './components';
-import { ProfileInformationComponent } from './information';
+import DisplayProfileInline from './display-profile-inline';
+import ProfileDetail from './detail';
 import { LoginComponent } from './login';
 import { StaffForceLogin } from './staff-force-login';
-import DisplayProfileInline from './display-profile-inline';
+import { UserLink } from './components';
 
 export {
   UserLink,
-  ProfileInformationComponent,
+  ProfileDetail,
   LoginComponent,
   StaffForceLogin,
   DisplayProfileInline,
