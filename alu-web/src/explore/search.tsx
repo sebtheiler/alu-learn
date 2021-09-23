@@ -6,7 +6,7 @@ import { DeckDetail } from '../decks';
 import { errorHandler } from '../utils';
 import { SharedDeck } from '../decks/types';
 
-export function DeckSearchComponent(_props) {
+export default function DeckSearchComponent() {
   const searchQueryRef = React.createRef<HTMLInputElement>();
   const [searchBtnLabel, setSearchBtnLabel] = useState<string>('Search!');
   const [currentQuery, setCurrentQuery] = useState('');

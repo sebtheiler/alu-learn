@@ -1,10 +1,5 @@
-import {
-  ExploreComponent,
-} from './base';
-
-import {
-  DeckSearchComponent,
-} from './search';
+import ExploreComponent from './explore';
+import DeckSearchComponent from './search';
 
 export {
   ExploreComponent,

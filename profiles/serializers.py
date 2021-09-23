@@ -29,7 +29,6 @@ class PublicProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField(read_only=True)
     last_name = serializers.SerializerMethodField(read_only=True)
     username = serializers.SerializerMethodField(read_only=True)
-    email = serializers.SerializerMethodField(read_only=True)
     friend_count = serializers.SerializerMethodField(read_only=True)
     is_friend = serializers.SerializerMethodField(read_only=True)
     you_are_pending = serializers.SerializerMethodField(read_only=True)
@@ -42,7 +41,6 @@ class PublicProfileSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'username',
-            'email',
             'id',
             'bio',
             'location',
@@ -82,9 +80,6 @@ class PublicProfileSerializer(serializers.ModelSerializer):
 
     def get_friend_count(self, obj):
         return obj.user.friends.count()
-
-    def get_email(self, obj):
-        return obj.user.email
 
 
 class MinifiedProfileSerializer(serializers.ModelSerializer):

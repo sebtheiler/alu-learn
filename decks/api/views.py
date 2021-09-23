@@ -10,7 +10,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sharing_system.models import FlashCardAction
-from skill_tree.models import AbstractSection, MainSection, SectionData, SubSection
+from skill_tree.models import AbstractSection, MainSection, SubSection
 from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
 from utils.api_utils import get_obj_or_404
@@ -252,7 +252,10 @@ def deck_txt_import_view(request, *args, **kwargs):
     uploaded_file = request.data.get('uploaded_file')
 
     if None in (deck_title, uploaded_file):
-        return Response({'message': 'You must specify `deck_title` and `uploaded_file`'}, status=400)
+        return Response(
+            {'message': 'You must specify `deck_title` and `uploaded_file`'},
+            status=400,
+        )
 
     # Parse text document
     split_lines = uploaded_file.split('\n')

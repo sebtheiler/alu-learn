@@ -9,7 +9,7 @@ import { GameComponent, MatchingGame } from './decks/games';
 import { Habits } from './habits';
 import { HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization } from './home';
 import { NotificationComponent } from './profiles/notifications';
-import { ProfileInformationComponent, LoginComponent, StaffForceLogin } from './profiles';
+import { ProfileDetail, LoginComponent, StaffForceLogin } from './profiles';
 import { SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges } from './decks/skill-tree';  // TODO: remove this
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -35,7 +35,7 @@ type ElementRow = [FunctionComponent, string, boolean?];
 ([
   [DeckPublicList, 'user-decks'],
   [DeckDetailComponent, 'deck-detail', true],
-  [ProfileInformationComponent, 'profile-info', true],
+  [ProfileDetail, 'profile-detail'],
   [DecksHomeComponent, 'decks-home'],
   // [FlashCardCreate, 'create-flashcard'],
   // [FlashCardsList, 'flashcard-list', true],

@@ -43,15 +43,18 @@ def build_react_into_django():
     django_static_dir = os.path.join(base_dir, 'static')
     react_static_dir = os.path.join(REACT_DIRECTORY, 'build/static/')
     for sub_dir in sub_directories:
-        # For each directory...
-        if os.path.isdir(os.path.join(django_static_dir, sub_dir)):
-            # If it exists, remove it
-            rmtree(os.path.join(django_static_dir, sub_dir))
-        # Then copy it from React
-        copytree(os.path.join(react_static_dir, sub_dir), os.path.join(django_static_dir, sub_dir))
+        # Remove each directory if it exists
+        django_sub_dir = os.path.join(django_static_dir, sub_dir)
+        if os.path.isdir(django_sub_dir):
+            rmtree(django_sub_dir)
 
+        # Then copy it from React
+        react_sub_dir = os.path.join(react_static_dir, sub_dir)
+        if os.path.isdir(react_sub_dir):
+            copytree(react_sub_dir, django_sub_dir)
+
+    # Remove the 'static-root' folder
     if os.path.isdir(os.path.join(base_dir, 'static-root')):
-        # Remove the 'static-root' folder
         rmtree(os.path.join(base_dir, 'static-root'))
     os.mkdir(os.path.join(base_dir, 'static-root/'))
 

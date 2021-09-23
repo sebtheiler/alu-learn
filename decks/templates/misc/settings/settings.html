@@ -4,10 +4,8 @@
 
 
 {% block content %}
-<div class='container'>
-  <div
-    id='settings-page'
-    data-username='{{ request.user.username }}'
-  ></div>
-</div>
+<div
+  id='settings-page'
+  data-username='{{ request.user.username }}'
+></div>
 {% endblock content %}

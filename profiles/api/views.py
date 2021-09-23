@@ -8,6 +8,8 @@ from django.utils.crypto import get_random_string
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from sharing_system.models import SharedDeck
+from sharing_system.serializers import SharedDeckSerializer
 from simple_email_confirmation.models import EmailAddress
 from utils import get_paginated_queryset_response
 
@@ -27,7 +29,6 @@ def profile_detail_api_view(request, username, *args, **kwargs):
         `username`: (URL) Username of the profile to get detail about
     """
     # Find the user in question
-    # TODO: "hacker" could get people's emails with this
     try:
         profile = Profile.objects.get(user__username=username)
 
@@ -584,3 +585,16 @@ def streak_review_info(request, *args, **kwargs):
         'cards_done': history_segment.cards_done if history_segment else 0,
         'target_num_cards': request.user.profile.settings.target_num_cards,
     }, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def list_profile_decks(request, username, *args, **kwargs):
+    shared_decks = SharedDeck.objects.filter(owners__user__username=username)
+    shared_decks = [
+        shared_deck
+        for shared_deck in shared_decks
+        if shared_deck.has_view_access(request.user.profile.pk)
+    ]
+
+    return Response(SharedDeckSerializer(shared_decks, many=True).data, status=200)

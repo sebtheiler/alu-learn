@@ -9,8 +9,7 @@ interface NotificationProps {
   notif: Notification;
   read: boolean;
 }
-export function RenderNotification(props: NotificationProps) {
-  const { notif, read } = props;
+export function RenderNotification({ notif, read }: NotificationProps) {
   const [friendBtnLabel, setFriendBtnLabel] = useState('Add Friend');
   const [acceptedFriendReq, setAcceptedFriendReq] = useState(false);
   const senderUsername = useMemo(() => {
@@ -23,19 +22,10 @@ export function RenderNotification(props: NotificationProps) {
 
   useMemo(() => {
     if (notif.category === 'friend_request' && notif.description && senderUsername) {
-  
-      apiProfileDetail(senderUsername, (response, status) => {
-        if (status === 200) {
-          if (response.is_friend) {
-            setFriendBtnLabel('Friends');
-            setAcceptedFriendReq(true);
-          }
-        } else if (status === 404) {
-          setFriendBtnLabel('User not found');
+      apiProfileDetail(senderUsername).then(profile => {
+        if (profile.is_friend) {
+          setFriendBtnLabel('Friends');
           setAcceptedFriendReq(true);
-        } else {
-          // Error getting profile detail for checking if friends
-          errorHandler(response, status, 3004);
         }
       });
     }
@@ -46,16 +36,9 @@ export function RenderNotification(props: NotificationProps) {
     if (acceptedFriendReq === false && senderUsername) {
       setAcceptedFriendReq(true);
       setFriendBtnLabel('Loading...');
-
-      // Accept friend request
-      apiProfileFriendToggle(senderUsername, 'friend', (response, status) => {
-        if (status === 200) {
-          setFriendBtnLabel('Friends')
-        } else {
-          // Error accepting friend request
-          errorHandler(response, status, 3005);
-        }
-      });
+      apiProfileFriendToggle(senderUsername, 'friend').then(
+        () => setFriendBtnLabel('Friends'),
+      );
     }
   }
 
