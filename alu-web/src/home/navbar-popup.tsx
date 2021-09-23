@@ -20,13 +20,12 @@ export function NavbarPopup({ showUpdateModal, firstName }) {
 
   if (!showUpdateModal) return null;
   return (
-    <Modal show={isOpen} onHide={closeModal} size='xl'>
+    <Modal show={isOpen} onHide={closeModal}>
       <Modal.Header>
         <Modal.Title>{firstName ? `Welcome Back, ${firstName}!` : 'New Changes'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h1 id="skill-tree-sep-17-1.0.0a">Skill Tree (PRE-RELEASE) - Sep 17 - 1.0.0a</h1>
-        <p><strong>This update is a <em>pre-release!</em>  It has not been thoroughly tested and is still missing some old features.  Please let me know about any and all feedback!</strong>  The full release will likely be released on Monday, September 20th.</p>
+        <h1 id='skill-tree-sep-17-1.0.0'>Skill Tree - Sep 21 - 1.0.0</h1>
         <p>I&#39;ve completely revamped Alu in this update, redoing the way that decks are organized and the way you study them.</p>
         <p>Decks are now organized into <strong>skill trees</strong> which contain sections for each unit.  Each section contains sub sections, which correspond to different sub units.  You can study and view flashcards for each section and sub section individually, giving you more control over how you study your deck.  Each section also has a &quot;percent-complete&quot; indicator that shows you how much of that section Alu estimates you have memorized.</p>
         <p>I&#39;ve also completely changed the way that studying works: instead of studying all the flashcards due for a deck at once, studying is now broken up into digestible <strong>bites</strong> of 20 flashcards at a time.  With this new method of studying, you can now study in small bits multiple times, rather than having to review a huge number of flashcards in a single sitting.  At the end of every study session, you can see an increase in the number of flashcards you&#39;ve done that day as you work towards your new, customizable <strong>daily goal</strong>.</p>

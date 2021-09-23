@@ -1,4 +1,13 @@
-# Skill Tree, Sharing System, and Other Words that Start with "S" - Sep 17 - 1.0.0
+## Explore and Profiles Fix - S
+Minor fixes.
+
+
+* **Fixed Explore Page:** The explore page now properly shows a list of shared decks.
+* **Fixed Profile Page:** Users' profile pages now properly show a list of their shared decks.
+* **Fixed Flashcards Progress Indicator:** Before, if you studied too many flashcards, the bar indicating your progress would leave the ground (lol).  Now the y-range scales to show all the flashcards you've done today.
+
+
+# Skill Tree, Sharing System, and Other Words that Start with "S" - Sep 21 - 1.0.0
 I've completely revamped Alu in this update, redoing the way that decks are organized and the way you study them.
 
 
