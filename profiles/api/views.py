@@ -588,13 +588,14 @@ def streak_review_info(request, *args, **kwargs):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def list_profile_decks(request, username, *args, **kwargs):
     shared_decks = SharedDeck.objects.filter(owners__user__username=username)
     shared_decks = [
         shared_deck
         for shared_deck in shared_decks
-        if shared_deck.has_view_access(request.user.profile.pk)
+        if shared_deck.has_view_access(
+            None if request.user.is_anonymous else request.user.profile.pk
+        )
     ]
 
     return Response(SharedDeckSerializer(shared_decks, many=True).data, status=200)

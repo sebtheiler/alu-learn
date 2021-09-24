@@ -33,7 +33,7 @@ export default function ProfileDetail({ username, currentUsername }: { username:
   if (!profile) return <p className='text-center mt-5'>Loading…</p>
   return (<Container className='mt-5'>
     <h1>{profile.first_name} {profile.last_name}</h1>
-    {username === currentUsername ? <>
+    {currentUsername.length > 0 && (username === currentUsername ? <>
       <Button href='/profiles/edit/'>
         Edit Profile
       </Button>
@@ -43,7 +43,7 @@ export default function ProfileDetail({ username, currentUsername }: { username:
         {profile.is_friend && 'Remove Friend'}
         {!(profile.you_are_pending || profile.is_friend) && 'Add Friend'}
       </LoadingButton>
-    </>}
+    </>)}
     <hr />
     {sharedDecks ? <SharedDeckList sharedDecks={sharedDecks} /> : <p>Loading decks…</p>}
   </Container>);

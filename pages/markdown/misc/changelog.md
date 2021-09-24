@@ -1,4 +1,4 @@
-## Explore and Profiles Fix - S
+## Explore and Profiles Fix - Sep 23 - 1.0.1
 Minor fixes.
 
 

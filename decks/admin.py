@@ -83,7 +83,9 @@ class ReviewInstanceHistoryAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super(ReviewInstanceHistoryAdmin, self).get_queryset(request)
-        queryset = queryset.prefetch_related('review_instance__flashcard__deck__user')
+        queryset = queryset.prefetch_related(
+            'review_instance__flashcard__sub_section__main_section__deck__user',
+        )
         return queryset
 
     def get_user(self, obj):
@@ -95,7 +97,7 @@ class ReviewInstanceHistoryAdmin(admin.ModelAdmin):
 
     def get_deck(self, obj):
         try:
-            return obj.review_instance.flashcard.deck
+            return obj.review_instance.flashcard.sub_section.main_section.deck
         except AttributeError:
             return None
     get_deck.short_description = 'Deck'

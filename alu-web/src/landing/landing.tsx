@@ -35,7 +35,7 @@ export default function LandingComponent({ showLoginRequired, returnUrl }: Landi
         </Col>
         <Col md={6}>
           <img
-            src='/static/images/spaced-repetition.webp'
+            src='/static/images/spaced-repetition.png'
             alt='Graph depicting how memory decays over time, and how spaced repetition can be used to combat that'
             className='w-100'
             />
