@@ -1,16 +1,14 @@
 import React, { useCallback } from 'react';
-import { Editor, Transforms } from 'slate';
-import { Editable, ReactEditor } from 'slate-react';
 import isHotKey from 'is-hotkey';
-import './editor.css';
-
+import { Editable, ReactEditor } from 'slate-react';
+import { Editor, Transforms } from 'slate';
 import { Element, Leaf } from './renderer';
-
 import { createEditor } from 'slate';
-import { withReact } from 'slate-react';
 import { withHistory } from 'slate-history';
 import { withLinks } from './links';
+import { withReact } from 'slate-react';
 import { withShortcuts } from './shortcuts';
+import './editor.css';
 
 export function createFullEditor() {
   return withShortcuts(withLinks(withHistory(withReact(createEditor()))));

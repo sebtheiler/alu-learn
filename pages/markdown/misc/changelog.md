@@ -1,3 +1,7 @@
+## ??? - Sep 25 - 1.0.2
+
+* **Added Tooltips to Editor Options:** There are now tooltips for each formatting option in any rich text editor.
+
 ## Explore and Profiles Fix - Sep 23 - 1.0.1
 Minor fixes.
 

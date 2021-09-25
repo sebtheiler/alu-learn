@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import { timeSince, errorHandler } from '../../utils';
-import { apiProfileFriendToggle, apiProfileDetail } from '../../lookup';
 import ReactMarkdown from 'react-markdown';
 import { Notification } from '../types';
+import { apiProfileFriendToggle, apiProfileDetail } from '../../lookup';
+import { timeSince } from '../../utils';
+import { useMemo, useState } from 'react';
 
 interface NotificationProps {
   notif: Notification;

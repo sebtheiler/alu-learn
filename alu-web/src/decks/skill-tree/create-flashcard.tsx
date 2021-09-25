@@ -1,20 +1,20 @@
-import { useState, useMemo } from 'react';
+import AddImageButton from './buttons/add-image';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import LoadingButton from './buttons/LoadingButton';
-import AddImageButton from './buttons/add-image';
+import Row from 'react-bootstrap/Row';
 import { FlashCard, FlashCardTypes } from '../types';
-import { Slate, ReactEditor } from 'slate-react';
 import { Node as SlateNode } from 'slate';
-import { blankSlateElement, createFullEditor, EditorButtons, FullEditor } from '../../text-editor';
 import { QuestionBubble } from '../../utils';
+import { Slate, ReactEditor } from 'slate-react';
 import { apiObjectCreate, apiObjectDelete, apiObjectEdit, useObjectGet } from '../../lookup/lookup';
-import './create-flashcard.scss';
+import { blankSlateElement, createFullEditor, EditorButtons, FullEditor } from '../../text-editor';
 import { blob2base64 } from '../../utils/utils';
+import { useState, useMemo } from 'react';
+import './create-flashcard.scss';
 
 const ONE_SIDED_CARDS = ['CLOZE'];
 interface CreateFlashcardProps {
@@ -145,7 +145,11 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
           <Row>
             <Col md={10}>
               <div className='flashcard-create'>
-                <RenderEditor value={frontValue} setValue={setFrontValue} />
+                <RenderEditor
+                  value={frontValue}
+                  setValue={setFrontValue}
+                  isFlashCard
+                />
               </div>
             </Col>
             <Col md={2}>
@@ -161,7 +165,11 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
             <Row>
             <Col md={10}>
               <div className='flashcard-create'>
-                <RenderEditor value={backValue} setValue={setBackValue} />
+                <RenderEditor
+                  value={backValue}
+                  setValue={setBackValue}
+                  isFlashCard
+                />
               </div>
             </Col>
               <Col md={2}>
@@ -173,6 +181,17 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
             </Row>
           </Form.Group>
         }
+        <Form.Group className='text-center mt-1'>
+          <p className='text-center text-danger'>{errorMessage}</p>
+          <LoadingButton
+            clickFunc={createFlashcard}
+            variant='primary'
+            id='create'
+            block
+          >
+            {flashcardId ? 'Save' : 'Create'}
+          </LoadingButton>
+        </Form.Group>
         <Form.Group>
           <Form.Label
             htmlFor='tags'
@@ -181,8 +200,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
             <p className='mb-0'>
               Tags (separate with commas){' '}
               <QuestionBubble>
-                You can give your flashcards tags to group them together.
-                Learn more [here](/help/flashcard-tags/).
+                You can give your flashcards tags to group them together
               </QuestionBubble>
             </p>
           </Form.Label>
@@ -195,17 +213,6 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
             maxLength={1024}
             style={{ textTransform: 'lowercase' }}
           />
-         </Form.Group>
-         <Form.Group className='text-center mt-1'>
-           <p className='text-center text-danger'>{errorMessage}</p>
-           <LoadingButton
-             clickFunc={createFlashcard}
-             variant='primary'
-             id='create'
-             block
-           >
-             {flashcardId ? 'Save' : 'Create'}
-           </LoadingButton>
          </Form.Group>
       </Form>
       <Row>
@@ -257,8 +264,9 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
 interface RenderEditorProps {
   value: SlateNode[];
   setValue: (value: SlateNode[]) => void;
+  isFlashCard?: boolean;
 }
-function RenderEditor({ value, setValue }: RenderEditorProps) {
+function RenderEditor({ value, setValue, isFlashCard }: RenderEditorProps) {
   const editor = useMemo<ReactEditor>(
     () => createFullEditor(),
     [],
@@ -275,14 +283,17 @@ function RenderEditor({ value, setValue }: RenderEditorProps) {
       <div className='editor-head'>
         <EditorButtons
           editor={editor}
+          isFlashCard={isFlashCard}
           untabbable
         />
       </div>
-      <FullEditor
-        id='frontText'
-        editor={editor}
-        styleOptions={{ minHeight: '200px' }}
-      />
+      <div className='editor-body'>
+        <FullEditor
+          id='frontText'
+          editor={editor}
+          styleOptions={{ minHeight: '200px' }}
+        />
+      </div>
     </Slate>
   );
 }

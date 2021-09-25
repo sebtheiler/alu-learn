@@ -1,10 +1,10 @@
-import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import { Profile } from '../../profiles/types';
 import { UserLink } from '../../profiles';
 import { apiProfileDetail, apiProfileSettingsUpdate } from '../../lookup';
-import { errorHandler, FormCheckbox, QuestionBubble } from '../../utils';
+import { errorHandler, FormCheckbox } from '../../utils';
 import { useAsyncState } from '../../lookup/lookup';
 import './settings.css';
 

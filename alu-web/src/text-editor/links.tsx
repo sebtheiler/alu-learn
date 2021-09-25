@@ -1,9 +1,8 @@
-import React from 'react';
-import { Editor, Transforms, Range } from 'slate';
 import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import isUrl from 'is-url'
+import { Editor, Transforms, Range } from 'slate';
 
 export const withLinks = editor => {
   const { insertData, insertText, isInline } = editor;
@@ -37,9 +36,12 @@ export const LinkElement = ({ attributes, children, element }) => {
   return (
     <OverlayTrigger
       overlay={
-        <Tooltip className={'button-tooltip text-center'} id='link-tooltip'>
+        <Tooltip className='button-tooltip text-center' id='link-tooltip'>
           <a href={element.url} style={{ color: 'white' }} target='_blank' rel='noreferrer'>
-            {element.url.length > 50 ? element.url.substring(0, 15) + '   ...   ' + element.url.substring(element.url.length - 10, element.url.length) : element.url}
+            {element.url.length > 50
+              ? element.url.substring(0, 15) + '   ...   ' + element.url.substring(element.url.length - 10, element.url.length)
+              : element.url
+            }
           </a>
         </Tooltip>
       }
@@ -91,21 +93,29 @@ const wrapLink = (editor, url) => {
 
 export function LinkButton({ editor, untabbable }) {
   return (
-    <Button
-      variant='light'
-      onClick={event => {
-        event.preventDefault();
-        const url = window.prompt('Enter the URL of the link:');
-        if (!url) return;
-        insertLink(editor, url);
-      }}
-      style={{
-        background: 'rgba(0, 0, 0, 0)',
-        border: 'none',
-      }}
-      tabIndex={untabbable && '-1'}
+    <OverlayTrigger
+      overlay={
+        <Tooltip id='link-button-tooltip'>
+          Insert Link
+        </Tooltip>
+      }
     >
-      <i className='fas fa-link' />
-    </Button>
+      <Button
+        variant='light'
+        onClick={event => {
+          event.preventDefault();
+          const url = window.prompt('Enter the URL of the link:');
+          if (!url) return;
+          insertLink(editor, url);
+        }}
+        style={{
+          background: 'rgba(0, 0, 0, 0)',
+          border: 'none',
+        }}
+        tabIndex={untabbable && '-1'}
+      >
+        <i className='fas fa-link' />
+      </Button>
+    </OverlayTrigger>
   );
 }
