@@ -4,14 +4,15 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
+import { FlashCardLinkButton } from './flashcard-links';
 import { LinkButton } from './links';
 import { ReactEditor } from 'slate-react';
-import { isMarkActive, toggleMark, isBlockActive, toggleBlock } from './editor';
 import { capitalize } from '../utils';
+import { isMarkActive, toggleMark, isBlockActive, toggleBlock } from './editor';
 
 type numbers = 'one' | 'two' | 'three' | 'four' | 'five' | 'six';
 
-type MarkFormat = 'bold' | 'italic' | 'underline' | 'code' | 'math_inline' | 'link';
+type MarkFormat = 'bold' | 'italic' | 'underline' | 'code' | 'math_inline' | 'link' | 'flashcard_link';
 type BlockFormat = `heading-${numbers}` | 'numbered-list' | 'bulleted-list' | 'math-block' | 'list-item' | 'image';
 
 interface EditorButtonProps {
@@ -35,7 +36,7 @@ export function EditorButtons(props: EditorButtonProps) {
 
       {isFlashCard && <>
         <span className='mx-2' />
-        <MarkButton format='code' icon='code' editor={editor} untabbable={untabbable} />
+        <FlashCardLinkButton editor={editor} untabbable={untabbable} />
       </>}
 
       <span className='mx-2' />

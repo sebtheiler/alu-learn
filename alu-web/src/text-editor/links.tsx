@@ -3,14 +3,16 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import isUrl from 'is-url'
 import { Editor, Transforms, Range } from 'slate';
+import { ReactEditor } from 'slate-react';
 
-export const withLinks = editor => {
+export const withLinks = (editor: ReactEditor) => {
   const { insertData, insertText, isInline } = editor;
 
   editor.isInline = element => {
     return element.type === 'link' ? true : isInline(element);
   }
 
+  // If pasting a link, automatically make it a link
   editor.insertText = text => {
     if (text && isUrl(text)) {
       wrapLink(editor, text);
@@ -21,6 +23,7 @@ export const withLinks = editor => {
 
   editor.insertData = data => {
     const text = data.getData('text/plain');
+    console.log('qwoeijdqpeowijdpoeqwijdq', data, text)
 
     if (text && isUrl(text)) {
       wrapLink(editor, text);
@@ -33,6 +36,7 @@ export const withLinks = editor => {
 }
 
 export const LinkElement = ({ attributes, children, element }) => {
+  // console.log('lleeee', children)
   return (
     <OverlayTrigger
       overlay={
@@ -55,22 +59,22 @@ export const LinkElement = ({ attributes, children, element }) => {
   );
 }
 
-const insertLink = (editor, url) => {
+const insertLink = (editor: ReactEditor, url: string) => {
   if (editor.selection) {
     wrapLink(editor, url);
   }
 }
 
-const isLinkActive = editor => {
+const isLinkActive = (editor: ReactEditor) => {
   const [link] = Editor.nodes(editor, { match: n => n.type === 'link' });
   return !!link;
 }
 
-const unwrapLink = editor => {
+const unwrapLink = (editor: ReactEditor) => {
   Transforms.unwrapNodes(editor, { match: n => n.type === 'link' });
 }
 
-const wrapLink = (editor, url) => {
+const wrapLink = (editor: ReactEditor, url: string) => {
   if (isLinkActive(editor)) {
     unwrapLink(editor);
   }
@@ -83,9 +87,11 @@ const wrapLink = (editor, url) => {
     children: isCollapsed ? [{ text: url }] : [],
   };
 
+  console.log('insert link', editor, link, isCollapsed);
   if (isCollapsed) {
     Transforms.insertNodes(editor, link);
   } else {
+    console.log('fcl', { selection: editor.selection })
     Transforms.wrapNodes(editor, link, { split: true });
     Transforms.collapse(editor, { edge: 'end' });
   }

@@ -1,17 +1,26 @@
-import React, { useCallback } from 'react';
 import isHotKey from 'is-hotkey';
 import { Editable, ReactEditor } from 'slate-react';
 import { Editor, Transforms } from 'slate';
 import { Element, Leaf } from './renderer';
 import { createEditor } from 'slate';
+import { useCallback } from 'react';
+import { withFlashCardLinks } from './flashcard-links';
 import { withHistory } from 'slate-history';
 import { withLinks } from './links';
 import { withReact } from 'slate-react';
 import { withShortcuts } from './shortcuts';
-import './editor.css';
+import './editor.scss';
+
+function withSaveSelectionOnBlur(editor: ReactEditor) {
+  editor.saveSelectionOnBlur = () => {
+    editor.blurSelection = editor.selection;
+  }
+
+  return editor;
+}
 
 export function createFullEditor() {
-  return withShortcuts(withLinks(withHistory(withReact(createEditor()))));
+  return withFlashCardLinks(withSaveSelectionOnBlur(withShortcuts(withLinks(withHistory(withReact(createEditor()))))));
 }
 
 const HOTKEYS = {
@@ -59,6 +68,9 @@ export function FullEditor(props: FullEditorProps) {
           }
         }
       }}
+
+      // @ts-expect-error
+      onBlur={editor.saveSelectionOnBlur}
     />
   );
 }

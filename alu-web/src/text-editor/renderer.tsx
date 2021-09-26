@@ -3,6 +3,7 @@ import { LinkElement } from './links';
 import { BlockMath, InlineMath } from 'react-katex';
 import { Node } from 'slate';
 import './renderer.css';
+import { FlashCardLinkElement } from './flashcard-links';
 
 export const Element = (props) => {
   const { attributes, children, element, readOnly } = props;
@@ -28,10 +29,12 @@ export const Element = (props) => {
       return <ol {...attributes} style={{ listStylePosition: 'inside' }}>{children}</ol>
     case 'link':
       return <LinkElement {...props} />
+    case 'flashcard-link':
+      return <FlashCardLinkElement {...props} />
     case 'image':
       return <p>
         The image choice is now deprecated.
-        Please change <a target='_blank' rel='noreferrer' href={element.url}>{element.url}</a> to use the new image uploading system.
+        Please change <a target='_blank' rel='noreferrer' href={element.url}>{element.url.slice(0, 50)}</a> to use the new image uploading system.
       </p>
     case 'math-block':
       if (readOnly)
@@ -57,8 +60,9 @@ export const Leaf = ({ attributes, children, leaf, readOnly }) => {
 
   if (leaf.math_inline) {
     if (readOnly) {
-      // I'm sure there's some way like Node.string(...) to avoid this parse error
+      // TODO: I'm sure there's some way like Node.string(...) to avoid this parse error
       // and allow for rich text ignoring, but I can't find it at the moment
+      // is it flattenNodes???
       const text = children?.props?.text?.text;
       if (!text) {
         children = <strong>KaTeX Parse Error: Please make sure the equation has no rich text formatting in it</strong>

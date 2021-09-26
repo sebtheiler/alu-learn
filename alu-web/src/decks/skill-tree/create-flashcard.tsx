@@ -7,7 +7,7 @@ import Form from 'react-bootstrap/Form';
 import LoadingButton from './buttons/LoadingButton';
 import Row from 'react-bootstrap/Row';
 import { FlashCard, FlashCardTypes } from '../types';
-import { Node as SlateNode } from 'slate';
+import { Node as SlateNode, Transforms } from 'slate';
 import { QuestionBubble } from '../../utils';
 import { Slate, ReactEditor } from 'slate-react';
 import { apiObjectCreate, apiObjectDelete, apiObjectEdit, useObjectGet } from '../../lookup/lookup';
@@ -23,10 +23,14 @@ interface CreateFlashcardProps {
   flashcardId?: string;
 }
 export default function CreateFlashcard({ deckId, flashcardId, subSection }: CreateFlashcardProps) {
+  const frontEditor = useMemo<ReactEditor>(createFullEditor, []);
   const [frontValue, setFrontValue] = useState<SlateNode[]>(blankSlateElement)
   const [frontSelectedImageUrl, setFrontSelectedImageUrl] = useState('');
+
+  const backEditor = useMemo<ReactEditor>(createFullEditor, []);
   const [backValue, setBackValue] = useState<SlateNode[]>(blankSlateElement)
   const [backSelectedImageUrl, setBackSelectedImageUrl] = useState('');
+
   const [flashcardType, setFlashcardType] = useState<FlashCardTypes>('BASIC');
   const [errorMessage, setErrorMessage] = useState('');
   const [history, setHistory] = useState<FlashCard[]>([]);
@@ -98,6 +102,8 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
         flashcard_type: flashcardType,
         ...flashcardInfo,
       }).then(flashcard => {
+        Transforms.select(frontEditor, [0]);
+        Transforms.select(backEditor, [0]);
         setFrontValue(blankSlateElement);
         setBackValue(blankSlateElement);
         setFrontSelectedImageUrl('');
@@ -146,6 +152,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
             <Col md={10}>
               <div className='flashcard-create'>
                 <RenderEditor
+                  editor={frontEditor}
                   value={frontValue}
                   setValue={setFrontValue}
                   isFlashCard
@@ -166,6 +173,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
             <Col md={10}>
               <div className='flashcard-create'>
                 <RenderEditor
+                  editor={backEditor}
                   value={backValue}
                   setValue={setBackValue}
                   isFlashCard
@@ -265,14 +273,17 @@ interface RenderEditorProps {
   value: SlateNode[];
   setValue: (value: SlateNode[]) => void;
   isFlashCard?: boolean;
+  editor: ReactEditor;
 }
-function RenderEditor({ value, setValue, isFlashCard }: RenderEditorProps) {
-  const editor = useMemo<ReactEditor>(
-    () => createFullEditor(),
-    [],
-  );
-
-  return (
+function RenderEditor({ editor, value, setValue, isFlashCard }: RenderEditorProps) {
+  return (<div className='editor'>
+    <div className='editor-head'>
+      <EditorButtons
+        editor={editor}
+        isFlashCard={isFlashCard}
+        untabbable
+      />
+    </div>
     <Slate
       editor={editor}
       value={value}
@@ -280,13 +291,6 @@ function RenderEditor({ value, setValue, isFlashCard }: RenderEditorProps) {
         setValue(newValue);
       }}
     >
-      <div className='editor-head'>
-        <EditorButtons
-          editor={editor}
-          isFlashCard={isFlashCard}
-          untabbable
-        />
-      </div>
       <div className='editor-body'>
         <FullEditor
           id='frontText'
@@ -295,5 +299,5 @@ function RenderEditor({ value, setValue, isFlashCard }: RenderEditorProps) {
         />
       </div>
     </Slate>
-  );
+  </div>);
 }

@@ -28,6 +28,7 @@ class FlashCardSerializer(serializers.ModelSerializer):
             'flashcard_type',
             'order_num',
             'data',
+            'universal_flashcard_id',
             'id',
         ]
 

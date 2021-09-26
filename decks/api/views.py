@@ -23,7 +23,6 @@ from ..serializers import (DeckSerializer, FlashCardSerializer,
 
 # ====== Decks ======
 # ===== Deck Lists =====
-# TODO: Rename and revamp
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def deck_quick_list_view(request, *args, **kwargs):
@@ -120,7 +119,6 @@ def deck_flashcards_view(request, deck_id, *args, **kwargs):
 
 
 # ===== Deck Import/Export =====
-# TODO: rewrite all of these functions
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def deck_json_export_view(request, deck_id, *args, **kwargs):
@@ -327,56 +325,6 @@ def deck_statistics_view(request, deck_id, *args, **kwargs):
     return Response(deck.get_statistics(), status=200)
 
 
-# TODO: Rewrite function
-# @api_view(['GET'])
-# def deck_search_view(request, *args, **kwargs):
-#     """
-#     Searches for decks based on a query - GET
-
-#     Required information:
-#         `q`: (GET) Query for searching
-
-#     Possible errors:
-#         No query: 400, Please specify a query
-
-#     Returns:
-#         A list of decks (DeckSerializer)
-#     """
-#     query = request.GET.get('q')
-#     if query is None:
-#         return Response({'message': 'Please specify a query'}, status=400)
-
-#     # Attempt to read cached value for query
-#     # (spaces will break it, so we need to replace them)
-#     CACHE_KEY = f'deck-search-q="{query.replace(" ", "<<SPACE_CHAR>>")}"'
-#     sorted_qs = cache.get(CACHE_KEY)
-
-#     if sorted_qs is None:
-#         # Get all public decks
-#         deck_qs = SharedDeck.objects.filter(sharing_setting='PUBLIC')
-
-#         # Function for calculating how "relevant" each search result is
-#         THRESHOLD = 120
-
-#         def sorting_function(deck):
-#             return -(
-#                 + fuzz.token_set_ratio(query, deck.description) * 1.0
-#                 + fuzz.token_set_ratio(query, deck.title) * 2.0
-#                 + fuzz.token_set_ratio(query, deck.user.username) * 0.8
-#             )
-
-#         # Sort based on function
-#         sorted_qs = sorted(
-#             [deck for deck in deck_qs if sorting_function(deck) < -THRESHOLD],
-#             key=sorting_function,
-#         )
-
-#         # Cache result for 6 hours
-#         cache.set(CACHE_KEY, sorted_qs, 60*60*6)
-
-#     return get_paginated_queryset_response(sorted_qs, request, SharedDeckSerializer, 5)
-
-
 # ====== Flashcards ======
 # ===== Flashcard Operations =====
 @api_view(['POST'])
@@ -544,9 +492,41 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
     return Response(FlashCardSerializer(instance=flashcard).data, 200)
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def flashcard_search_view(request, *args, **kwargs):
+    # Currently only allows for searching in fields
+    contains_text = request.data.get('contains_text')
+
+    flashcards = FlashCard.objects.filter(
+        data__fields__icontains=contains_text,
+        sub_section__main_section__deck__user_id=request.user.pk,
+    )
+
+    return get_paginated_queryset_response(flashcards, request, FlashCardSerializer)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def find_universal_flashcard(request, universal_flashcard_id, *args, **kwargs):
+    try:
+        flashcard = FlashCard.objects.get(
+            Q(sub_section__main_section__deck__user_id=request.user.pk) &
+            (
+                Q(universal_flashcard_id=universal_flashcard_id)
+                |
+                Q(pk=universal_flashcard_id)
+            )
+        )
+    except FlashCard.DoesNotExist:
+        return Response({'message': 'Flashcard not found'}, status=404)
+
+    return Response(FlashCardSerializer(flashcard).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def review_instance_search_view(request, *args, **kwargs):
     """
     Searches for flashcards based on some parameters - GET
 

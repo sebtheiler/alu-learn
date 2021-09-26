@@ -45,6 +45,8 @@ const randomTips = [
   'It\'s much more efficient to have a big deck, and organize units with sections, than it is to have a bunch of small decks for each unit',
   'You can view advanced statistics about your deck through "Other > Statistics"',
   'Teachers can create classes of students, so that they can track their students\' progress',
+  'You can insert previews of other flashcards using the "Flashcard Links" feature',
+  'Hover over purple links in flashcards to preview that term',
   // 'Most people find doing Alu reviews in the morning (before school) more efficient and enjoyable',
   // 'Be honest with your Alu reviews, it\'s only designed to help you',
   // Random stuff
