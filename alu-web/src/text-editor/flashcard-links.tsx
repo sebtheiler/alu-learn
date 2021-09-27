@@ -149,7 +149,7 @@ export function FlashCardLinkButton({ editor, untabbable }) {
                   <div>
                     {searchedFlashcards.map(flashcard =>
                       <p
-                        className='searched-flashcard'
+                        className='searched-item'
                         onClick={() => insertFlashCardLink(editor, flashcard)}
                         key={flashcard.id}
                       >

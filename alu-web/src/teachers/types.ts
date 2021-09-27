@@ -1,10 +1,10 @@
-import { SharedDeck } from '../decks/types';
+import { SharedDeck } from '../decks/skill-tree/types';
 import { ProfileHistory } from '../profiles/types';
 
 export interface Classroom {
   title: string;
   code: string;
-  deck?: SharedDeck;
+  shared_deck?: SharedDeck;
   id: number;
 }
 

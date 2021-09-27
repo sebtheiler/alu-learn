@@ -185,7 +185,7 @@ def classroom_students_view(request, classroom_id, *args, **kwargs):
 @permission_classes([IsAuthenticated])
 def teacher_attach_deck_view(request, classroom_id, *args, **kwargs):
     """
-    Allows a teacher to attache a deck to a classroom - POST
+    Allows a teacher to attach a deck to a classroom - POST
 
     Required information:
         `classroom_id`: (URL) Id of the classroom to attach to
@@ -195,6 +195,7 @@ def teacher_attach_deck_view(request, classroom_id, *args, **kwargs):
     try:
         classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
     except Classroom.DoesNotExist:
+        import pdb; pdb.set_trace()
         return Response({'message': 'Classroom not found'}, status=404)
 
     try:

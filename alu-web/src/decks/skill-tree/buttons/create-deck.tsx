@@ -25,7 +25,7 @@ export default function CreateDeckButton() {
         </p>
       </div>
     </div>
-    <CreateModal
+    <CreateDeckModal
       show={showCreateModal}
       close={() => setShowCreateModal(false)}
     />
@@ -38,17 +38,25 @@ const editableAttrs = ['title'];
 interface CreateModalProps {
   show: boolean;
   close(): void;
+  callback?(deck: Deck): Promise<void>;
 }
-function CreateModal({ show, close }: CreateModalProps) {
+export function CreateDeckModal({ show, close, callback }: CreateModalProps) {
   const { decksDispatch } = useContext(HomeActionDispatch);
 
   const createDeck = async (options: DeckEditableAttrs) => {
     await apiObjectCreate<Deck>('decks', 'deck', options).then(
-      res => decksDispatch && decksDispatch({
-        action: 'CREATE',
-        payload: res,
-      }),
+      res => {
+        if (decksDispatch)
+          decksDispatch({
+            action: 'CREATE',
+            payload: res,
+          });
+
+        if (callback)
+          callback(res);
+      }
     );
+
     close();
   }
 

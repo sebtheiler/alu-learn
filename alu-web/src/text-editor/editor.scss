@@ -12,19 +12,6 @@
   background: rgba(66, 135, 245, 0.4) !important;
 }
 
-.searched-flashcard {
-  background: $lightBackground;
-  border: $grayBorder;
-  border-radius: 5px;
-  padding: 5px;
-
-  &:hover {
-    cursor: pointer;
-    transform: scale(1.05);
-    background: darken($lightBackground, 3%);
-  }
-}
-
 .flashcard-link {
   color: #8166ee;
   font-weight: bold;

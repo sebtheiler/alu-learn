@@ -16,12 +16,12 @@ class Classroom(models.Model):
     code = models.CharField(max_length=8)
     teachers = models.ManyToManyField(Profile, related_name='classrooms_taught')
     students = models.ManyToManyField(Profile, related_name='classrooms_in', blank=True)
-    deck = models.OneToOneField(
+    shared_deck = models.ForeignKey(
         SharedDeck,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='attached_to_classroom',
+        related_name='attached_to_classrooms',
     )
 
     def __str__(self) -> str:
@@ -34,10 +34,12 @@ class Classroom(models.Model):
             title=deck.title,
             description=f'Deck for "{self.title}."  Students can copy and study this deck.',
             view_access='STUDENT',
+            edit_access='PERSONAL',
+            owners=self.teachers.all(),
         )
 
         # Attach the deck
-        self.deck = shared_deck
+        self.shared_deck = shared_deck
         self.save()
 
         return shared_deck
@@ -57,9 +59,9 @@ class Classroom(models.Model):
             )
         except Deck.DoesNotExist:
             if copy_if_missing:
-                if self.deck is None:
+                if self.shared_deck is None:
                     raise AttributeError('Teacher has not attached deck to this classroom')
-                return self.deck.clone(student)
+                return self.shared_deck.clone(student)
             else:
                 return None
 

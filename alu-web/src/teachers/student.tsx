@@ -41,9 +41,9 @@ export function ClassroomStudentDetail({ classroomId, studentId }) {
   return (<div className='text-center container-fluid mt-5'>
     <h1>{classroom?.title ?? 'Loading...'}</h1>
     <h3 className='mt-3'>Classroom Deck</h3>
-    {classroom?.deck ? <>
-      <h5>{(classroom as Classroom)?.deck?.title}</h5>
-      <DeckForeignUserButtonGroup deck={(classroom as Classroom)?.deck} hideCopy={!(!studentDeck && !(studentDeck === undefined))} />
+    {classroom?.shared_deck ? <>
+      <h5>{(classroom as Classroom)?.shared_deck?.title}</h5>
+      <DeckForeignUserButtonGroup deck={(classroom as Classroom)?.shared_deck} hideCopy={!(!studentDeck && !(studentDeck === undefined))} />
       <br />
       {studentDeck ?
         <p>You've attached a deck to this class: "{studentDeck.title}"</p>

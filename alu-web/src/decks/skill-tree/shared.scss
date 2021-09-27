@@ -20,3 +20,16 @@ $cardBorderRadius: 20px;
     border-right: 1px solid black;
   }
 }
+
+.searched-item {
+  background: $lightBackground;
+  border: $grayBorder;
+  border-radius: 5px;
+  padding: 5px;
+
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.01);
+    background: darken($lightBackground, 3%);
+  }
+}

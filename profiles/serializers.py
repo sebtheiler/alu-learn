@@ -43,7 +43,6 @@ class PublicProfileSerializer(serializers.ModelSerializer):
             'username',
             'id',
             'bio',
-            'location',
             'friend_count',
             'is_friend',
             'you_are_pending',

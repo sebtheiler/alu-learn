@@ -99,7 +99,7 @@ export function ClassroomDetail({ classroomId }) {
     <small className='text-muted'>
       Give the class code to your students so that they can join your class.
     </small>
-    <ClassroomDeckComponent deck={classroom.deck} classroomId={classroomId} />
+    <ClassroomDeckComponent deck={classroom.shared_deck} classroomId={classroomId} />
     <hr />
     <Row>
       <Col xs={6} onClick={() => setViewSelection('ASSIGNMENTS')}>
@@ -121,7 +121,7 @@ export function ClassroomDetail({ classroomId }) {
     {viewSelection === 'STUDENTS' ?
       <StudentDataTable classroomId={classroomId} />
     :
-      <AssignmentsList classroomId={classroomId} attachedDeck={!!classroom.deck} />
+      <AssignmentsList classroomId={classroomId} attachedDeck={!!classroom.shared_deck} />
     }
   </div>);
 }
