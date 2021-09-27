@@ -10,6 +10,7 @@ from profiles.serializers import HistorySerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from sharing_system.serializers import SharedDeckSerializer
 
 from ..models import Assignment, Classroom
 from ..serializers import (AssignmentSerializer,
@@ -43,6 +44,7 @@ def create_classroom_view(request, *args, **kwargs):
     return Response(ClassroomSerializer(classroom).data, status=201)
 
 
+# TODO: delete this?
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def classrooms_homepage_view(request, *args, **kwargs):
@@ -195,7 +197,6 @@ def teacher_attach_deck_view(request, classroom_id, *args, **kwargs):
     try:
         classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
     except Classroom.DoesNotExist:
-        import pdb; pdb.set_trace()
         return Response({'message': 'Classroom not found'}, status=404)
 
     try:
@@ -203,9 +204,15 @@ def teacher_attach_deck_view(request, classroom_id, *args, **kwargs):
     except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
 
-    classroom.attach_deck(deck)
+    shared_deck = classroom.attach_deck(deck)
 
-    return Response({'message': 'Attached shared deck'}, status=200)
+    return Response(
+        SharedDeckSerializer(
+            shared_deck,
+            context={'get_personal_copy': True, 'request': request},
+        ).data,
+        status=200,
+    )
 
 
 @api_view(['GET'])

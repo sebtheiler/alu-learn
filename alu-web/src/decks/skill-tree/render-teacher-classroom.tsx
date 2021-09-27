@@ -14,15 +14,23 @@ import './render-classroom.scss';
 
 export default function RenderTeacherClassroom({ classroom }: { classroom?: Classroom }) {
   if (!classroom) return <p>Loading…</p>;
+  console.log(classroom)
   return (
     <div className='mb-3'>
       <h1 className='text-center'>{classroom.title}</h1>
       <p className='text-center mb-0'>Classroom code: {classroom.code}</p>
       <small className='text-center text-secondary'>Give this code to your students so they can join your class</small>
-      <br />
+      <hr />
       <br />
       <div>
-        {!classroom.shared_deck ? <ChooseClassroomDeck classroom={classroom} /> : <p>{classroom.shared_deck.title}</p>}
+        {!classroom.shared_deck
+          ?  <ChooseClassroomDeck classroom={classroom} />
+          : <div className='text-left'>
+              <p>Attached Deck: {classroom.shared_deck.title}</p>
+              <h3>Assignments</h3>
+              <p>Assignments will be implemented very soon!  Almost there…</p>
+            </div>
+        }
       </div>
     </div>
   );
@@ -39,7 +47,7 @@ function ChooseClassroomDeck({ classroom }: { classroom: Classroom }) {
 
     const sharedDeck = await backendFetch<SharedDeck>('POST', `teachers/classroom/${classroom.id}/attach/`, {
       deck_id: deck.id,
-    })
+    });
 
     classroomsDispatch({
       action: 'EDIT',
