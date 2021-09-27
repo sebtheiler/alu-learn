@@ -1,34 +1,58 @@
-import Col from 'react-bootstrap/Col';
-import Spinner from 'react-bootstrap/Spinner';
 import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
-import { Classroom } from '../../teachers/types';
+import Spinner from 'react-bootstrap/Spinner';
+import { Classroom, Student } from '../../teachers/types';
 import { CreateDeckModal } from './buttons/create-deck';
 import { Deck } from '../types';
 import { HomeActionDispatch } from './context';
 import { SharedDeck } from './types';
-import { backendFetch, useObjectList } from '../../lookup/lookup';
+import { backendFetch, useAsyncState, useObjectList, apiClassroomStudentsList } from '../../lookup/lookup';
 import { useContext, useState } from 'react';
 import './render-classroom.scss';
 
 export default function RenderTeacherClassroom({ classroom }: { classroom?: Classroom }) {
-  if (!classroom) return <p>Loading…</p>;
+  const [students] = useAsyncState<Student[]>(
+    apiClassroomStudentsList,
+    [classroom?.id, new Date().getTimezoneOffset()],
+    undefined,
+    !!classroom,
+  );
+  console.log(students);
   console.log(classroom)
+
+  if (!classroom) return <p>Loading…</p>;
   return (
     <div className='mb-3'>
       <h1 className='text-center'>{classroom.title}</h1>
       <p className='text-center mb-0'>Classroom code: {classroom.code}</p>
       <small className='text-center text-secondary'>Give this code to your students so they can join your class</small>
       <hr />
-      <br />
       <div>
         {!classroom.shared_deck
           ?  <ChooseClassroomDeck classroom={classroom} />
-          : <div className='text-left'>
-              <p>Attached Deck: {classroom.shared_deck.title}</p>
-              <h3>Assignments</h3>
-              <p>Assignments will be implemented very soon!  Almost there…</p>
+          : <div>
+              <h2>Attached Deck: {classroom.shared_deck.title}</h2>
+              <br />
+              <Row>
+                <Col>
+                  <h3>Assignments</h3>
+                  <p className='text-left'>Assignments will be implemented very soon!  Almost there…</p>
+                </Col>
+                <Col>
+                  <h3>Students</h3>
+                  <ul className='text-left'>
+                    {students
+                      ? students.map(student =>
+                          <li>{student.first_name} {student.last_name}</li>
+                        )
+                      : <p>Loading…</p>
+                    }
+                  </ul>
+                  {students?.length === 0 && <p>You don't have any students yet.  Invite some with the class code.</p>}
+                </Col>
+              </Row>
             </div>
         }
       </div>

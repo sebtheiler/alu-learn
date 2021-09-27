@@ -13,7 +13,7 @@ export default function RenderStudentClassroom({ classroom }: { classroom?: Clas
     <div className='mb-3'>
       <h1 className='text-center'>{classroom.title}</h1>
       {classroom.shared_deck
-        ? <p>Attached deck: <a href={`/community/deck/${classroom.shared_deck.id}/`}>{classroom.shared_deck.title}</a></p>
+        ? <p>Teacher's Deck: <a href={`/community/deck/${classroom.shared_deck.id}/`}>{classroom.shared_deck.title}</a></p>
         : <p>Your teacher hasn't attached a deck to this classroom yet</p>
       }
       <div>

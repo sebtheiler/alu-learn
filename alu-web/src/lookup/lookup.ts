@@ -1,7 +1,7 @@
 // TODO: Break this file up into a separate file for each "package"
 // Each file should contain the lookups for just that package
 import React, { useReducer, useEffect, useState, Dispatch } from 'react';
-import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
+import { Assignment, Classroom, ClassroomAssignments, Student } from '../teachers/types';
 import { Deck, ReviewInstance, SchedulingAlgorithm, SSMInterface, SharedDeck, ViewAccess, EditAccess } from '../decks/types';
 import { Interval } from '../decks/study/algorithm';
 import { Profile, ProfileHistory } from '../profiles/types';
@@ -782,8 +782,11 @@ export function apiClassroomDetail(classroomId, callback) {
 }
 
 // Gets a list of students that have joined a classroom
-export function apiClassroomStudentsList(classroomId, tzOffset, callback) {
-  backendLookup('GET', `teachers/classroom/students/${classroomId}/?tz=${tzOffset}`, callback);
+export async function apiClassroomStudentsList(
+  classroomId: number,
+  tzOffset: number,
+): Promise<Student[]> {
+  return backendFetch('GET', `teachers/classroom/${classroomId}/students/?tz=${tzOffset}`);
 }
 
 // Attaches a deck to a classroom

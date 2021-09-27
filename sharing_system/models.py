@@ -62,8 +62,11 @@ class SharedDeck(models.Model):
                 friends__in=User.objects.filter(profile__in=self.owners.all()),
                 pk=author_pk,
             ).exists()
-        elif self.edit_access == 'STUDENT':
-            raise NotImplementedError('TODO: ')
+        elif self.view_access == 'STUDENT':
+            return Profile.objects.filter(
+                classrooms_in__teachers__in=self.owners.all(),
+                pk=author_pk,
+            ).exists()
 
     def has_edit_access(self, author_pk: int) -> bool:
         if self.edit_access == 'PERSONAL':
