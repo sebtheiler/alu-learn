@@ -55,6 +55,7 @@ editor_deck_ids.json
 sites-enabled
 aluenv
 Pipfile
+backups/
 
 # --- JSON Files ---
 env-vars.json
