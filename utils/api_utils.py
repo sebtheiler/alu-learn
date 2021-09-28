@@ -83,7 +83,7 @@ def get_paginated_queryset_response(
         serialized = Serializer(paginated_qs, many=True).data
 
     paginated_resp = paginator.get_paginated_response(serialized)
-    return Response(paginated_resp.data | other_information, status=200)
+    return Response({**paginated_resp.data, **other_information}, status=200)
 
 
 def assert_request_data_type(

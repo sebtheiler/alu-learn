@@ -1,6 +1,14 @@
-## ??? - Sep 25 - 1.0.2
+## Flashcard Links - Sep 28 - 1.0.2
+Flashcard links!  You can now format text in a flashcard to provide a link to another flashcard.  When hovering over this text, you will be able to see a preview of the linked flashcard.
+
 
 * **Added Tooltips to Editor Options:** There are now tooltips for each formatting option in any rich text editor.
+* **Flashcard Links:** Flashcard links allow you to preview other flashcards when studying, filling in context and skipping the need to repeat text.
+* **Improved Landing SR Image:** Improved the landing page's spaced reptition image to use one that I personally made and matches the general art style.
+* **Classroom Fixes:** Classrooms are still mostly broken, but as Alu hurdles towards official launch I am doing everything I possibly can to get them wroking again.
+  * **Fixed Classroom Deck Attaching:** Teachers can now attach decks to classrooms again.
+  * **Fixed Student List Rendering:** There is now a list of students in a classroom for teachers.  This list is extremely rudimentary and I'll improve it in a few days.
+
 
 ## Explore and Profiles Fix - Sep 23 - 1.0.1
 Minor fixes.
