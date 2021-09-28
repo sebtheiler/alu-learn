@@ -21,11 +21,18 @@ urlpatterns = [
     path('', include('analytics.urls')), path('api/analytics/', include('analytics.api.urls')),
     path('', include('habits.urls')), path('api/habits/', include('habits.api.urls')),
     path('api/sharing_system/', include('sharing_system.api.urls')),
-] + static(settings.UPLOADED_FILES_URLPATH, document_root=settings.UPLOADED_FILES_FILEPATH)
+]
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(
+        settings.UPLOADED_FILES_URLPATH,
+        document_root=settings.UPLOADED_FILES_FILEPATH,
+    )
+    urlpatterns += static(
+        settings.STATIC_URL,
+        document_root=settings.STATIC_ROOT,
+    )
     urlpatterns += (
         url('__debug__/', include(debug_toolbar.urls)),
     )
