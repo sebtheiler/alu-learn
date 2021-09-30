@@ -27,7 +27,7 @@ export async function backendFetch<T>(
   if (method === 'GET' && !!data) {
     if (!url.includes('?')) url += '?';
     for (const [attr, val] of Object.entries(data)) {
-      url += `&${attr}=${val}`;
+      url += `&${encodeURIComponent(attr)}=${encodeURIComponent(val)}`;
     }
   }
 
