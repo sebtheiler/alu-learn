@@ -9,7 +9,7 @@ import { Routine, Habit, HabitValue, Todo } from '../habits/types';
 import { backendLookup, baseUrl } from './components';
 import { getCookie } from '../utils/utils';
 
-type Message = { 'message': string };
+export type Message = { 'message': string };
 export type PaginatedResponse<T = any> = {
   count: number;
   next: string;

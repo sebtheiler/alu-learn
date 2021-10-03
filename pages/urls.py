@@ -36,6 +36,7 @@ urlpatterns = [
     path('legal/tos/', views.md_view_wrapper('legal/ToS', 'Terms of Service')),
     path('legal/privacypolicy/', views.md_view_wrapper('legal/PrivacyPolicy', 'Privacy Policy')),
     path('legal/dmca/', views.md_view_wrapper('legal/DMCA', 'Digital Millenium Copyright Notice')),
+    path('legal/imageproxy/', views.md_view_wrapper('legal/ImageProxy', 'Image Proxy')),
     # Contact pages
     path('contactus/', views.contact_view_wrapper(is_legal_issue=False)),
     path('contactus/finished/', views.contact_finished_view_wrapper(is_legal_issue=False)),

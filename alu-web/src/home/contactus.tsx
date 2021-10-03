@@ -36,10 +36,10 @@ export function ContactUs(props) {
 
   return (
     <Form onSubmit={handleSubmit} className='w-75 mx-auto'>
-      <p className='text-center'>
-        If you want faster support, please either use my WESS email or{' '}
+      {!isLegalIssue && <p className='text-center'>
+        If you want faster support, please either use{' '}
         <a href='mailto:aluflashcards@gmail.com'>aluflashcards@gmail.com</a>
-      </p>
+      </p>}
       <Form.Group>
         <Form.Label className='mb-0'>
           Short Description<br />
