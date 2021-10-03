@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from decks.models import Deck, ReviewInstance
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.query_utils import Q
-from decks.models import Deck, ReviewInstance
-from sharing_system.models import SharedDeck
-from profiles.models import Profile
 from django.utils.crypto import get_random_string
+from profiles.models import Profile
+from sharing_system.models import SharedDeck
+from skill_tree import SubSection
 
 User = get_user_model()
 
@@ -88,7 +89,7 @@ class Assignment(models.Model):
         on_delete=models.CASCADE,
         related_name='assignments',
     )  # type: Classroom
-    tag_query = models.CharField(max_length=128)
+    sub_sections = models.ManyToManyField(SubSection, related_name='assignments')
     due_date = models.DateField()
 
     def __str__(self) -> str:

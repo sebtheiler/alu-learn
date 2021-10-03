@@ -19,8 +19,6 @@ export default function RenderTeacherClassroom({ classroom }: { classroom?: Clas
     undefined,
     !!classroom,
   );
-  console.log(students);
-  console.log(classroom)
 
   if (!classroom) return <p>Loading…</p>;
   return (
@@ -64,7 +62,6 @@ function ChooseClassroomDeck({ classroom }: { classroom: Classroom }) {
   const { classroomsDispatch } = useContext(HomeActionDispatch)
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAttachModal, setShowAttachModal] = useState(false);
-  console.log(showAttachModal)
 
   const attachDeckToClassroom = async (deck: Deck) => {
     if (!classroomsDispatch) return;
@@ -110,7 +107,7 @@ function ChooseClassroomDeck({ classroom }: { classroom: Classroom }) {
           </div>
           <AttachDeckModal
             show={showAttachModal}
-            close={() => {console.log('close'); setShowAttachModal(false)}}
+            close={() => setShowAttachModal(false)}
             callback={attachDeckToClassroom}
           />
         </div>

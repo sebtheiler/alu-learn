@@ -52,6 +52,12 @@
     box-shadow: $cardShadow;
     transition-duration: 0.2s;
     cursor: pointer;
+
+    >.sub-section-inner >.sub-section-assignment-indicator {
+      transform: scale(1.1) translateY(10px);
+      transform-origin: center center;
+      transition-duration: 0.2s;
+    }
   }
 
   >.sub-section-inner {
@@ -65,6 +71,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    .sub-section-assignment-indicator {
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin-left: auto;
+      margin-right: auto;
+      width: 50px;
+      bottom: 20%;
+      transform-origin: top right;
+    }
 
     >.sub-section-text {
       hyphens: auto;
