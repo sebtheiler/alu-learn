@@ -1,5 +1,5 @@
-import { dateDiff, errorHandler } from '../../utils';
-import { ReviewInstance, SchedulingAlgorithm, DeckDifficulty } from '../types';
+import { dateDiff, errorHandler } from '../../../utils';
+import { ReviewInstance, SchedulingAlgorithm, DeckDifficulty } from '../../types';
 
 const minutesToDays = (minutes: number) => minutes / (60*24);
 const daysToMinutes = (days: number) => days * 60*24;
@@ -116,7 +116,7 @@ export interface Interval {
   steps_index: number;
   leech_index: number;
 }
-export function getAnkiInterval(
+export function getStudyInterval(
   card: ReviewInstance,
   grade: 1 | 2 | 3 | 4,
   settingsAlgorithm: SchedulingAlgorithm = 'ANKING',

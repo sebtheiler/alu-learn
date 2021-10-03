@@ -1,11 +1,10 @@
-import React, { useMemo } from 'react';
 import Chart from 'react-google-charts';
-import { apiDeckStatistics } from '../../lookup';
-import { ParsedStats } from '../../teachers/types';
-import { stripTime, useApiObjectHook } from '../../utils';
+import { ParsedStats } from '../teachers/types';
+import { apiDeckStatistics } from '../lookup';
+import { stripTime, useApiObjectHook } from '../utils';
+import { useMemo } from 'react';
 
-
-export function StatisticsPage({ deckId }) {
+export default function StatisticsPage({ deckId }) {
   const [data] = useApiObjectHook<ParsedStats>(
     apiDeckStatistics,
     200,

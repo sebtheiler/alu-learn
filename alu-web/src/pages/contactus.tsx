@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FormCheckbox, errorHandler } from '../utils';
 import { apiFeedbackSubmit } from '../lookup';
+import { useState } from 'react';
 
-export function ContactUs(props) {
+export default function ContactUs(props) {
   const userIsAuthenticated = props.userIsAuthenticated ? props.userIsAuthenticated.toLowerCase() === 'true' : false;
   const isLegalIssue = props.isLegalIssue ? props.isLegalIssue.toLowerCase() === 'true' : false;
   const [isLoading, setIsLoading] = useState(false);

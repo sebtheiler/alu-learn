@@ -7,14 +7,15 @@ import DeckSelection from './deck-selection';
 import HomeComponent from './home-component';
 import JoinClassroomButton from './buttons/join-classroom';
 import Meta from './meta';
+import RenderStudentClassroom from './render-student-classroom';
+import RenderTeacherClassroom from './render-teacher-classroom';
 import Row from 'react-bootstrap/Row';
 import SkillTree from './skill-tree';
 import { classroomReducer, HomeActionDispatch, deckReducer } from './context';
 import { useObjectList } from '../../lookup/lookup';  // TODO: clean up imports
 import { useState } from 'react';
 import './home.scss';
-import RenderTeacherClassroom from './render-teacher-classroom';
-import RenderStudentClassroom from './render-student-classroom';
+import 'react-calendar-heatmap/dist/styles.css';
 
 interface Selected {
   selectedType: 'HOME' | 'DECK' | 'CLASS';

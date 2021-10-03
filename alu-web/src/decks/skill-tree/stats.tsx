@@ -3,7 +3,7 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import Container from 'react-bootstrap/Container';
 import ReactTooltip from 'react-tooltip';
 import { shiftDate, range, timezoneToISOString, stringDate } from '../../utils';
-import { randomTip } from '../../home/randomtips';
+import { randomTip } from '../../pages/randomtips';
 import { ProfileHistory } from '../../profiles/types';
 import { apiProfileHistory } from '../../lookup';
 

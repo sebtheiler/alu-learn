@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
 import { apiProfileSettingsUpdate } from '../lookup';
 import { errorHandler } from '../utils';
+import { useState } from 'react';
 
 
-export function UserCustomization(props) {
+export default function UserCustomization() {
   const [slideNum, setSlideNum] = useState(0);
   const [answers, setAnswers] = useState({});
 

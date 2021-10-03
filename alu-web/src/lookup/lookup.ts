@@ -2,10 +2,11 @@
 // Each file should contain the lookups for just that package
 import React, { useReducer, useEffect, useState, Dispatch } from 'react';
 import { Assignment, Classroom, ClassroomAssignments, Student } from '../teachers/types';
-import { Deck, ReviewInstance, SchedulingAlgorithm, SSMInterface, SharedDeck, ViewAccess, EditAccess } from '../decks/types';
-import { Interval } from '../decks/study/algorithm';
+import { Deck, ReviewInstance, ViewAccess, EditAccess } from '../decks/types';
+import { Interval } from '../decks/skill-tree/study/algorithm';
 import { Profile, ProfileHistory } from '../profiles/types';
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
+import { SharedDeck } from '../decks/skill-tree/types';
 import { backendLookup, baseUrl } from './components';
 import { getCookie } from '../utils/utils';
 
@@ -292,14 +293,6 @@ export function apiDeckFlashcards(
     endpoint = nextUrl.replace(`${baseUrl}/api/`, '');
   }
   backendLookup('GET', endpoint, callback);
-}
-
-// Gets a list of decks owned by a user with username `username` that are shared with the given user
-export function apiDeckSharedList(
-  username: string,
-  callback: (response: SharedDeck[], status: number) => void,
-) {
-  backendLookup('GET', `decks/deck/list/user/${username.toLowerCase()}/`, callback);
 }
 
 export function apiDeckQuickList(
@@ -602,14 +595,6 @@ export function apiManualSRTaskEdit(id, newTitle, newDescription, callback) {
   });
 }
 
-// Gets detail information for a shared deck
-export function apiSharedDeckDetail(
-  sharedDeckId: number,
-  callback: (reseponse: SharedDeck, status: number) => void,
-) {
-  backendLookup('GET', `decks/deck/shared/${sharedDeckId}/detail/`, callback);
-}
-
 // Creates a shared deck
 export async function apiCreateSharedDeck(
   deckId: number,
@@ -894,31 +879,6 @@ export function apiAssignmentDetail(
   callback: (response: Assignment, status: number) => void,
 ) {
   backendLookup('GET', `teachers/classroom/${classroomId}/assignments/${assignmentId}/`, callback);
-}
-
-export function apiClassroomGetSSM(
-  classroomId: number,
-  callback: (response: SSMInterface, status: number) => void,
-) {
-  backendLookup('GET', `teachers/classroom/${classroomId}/ssm/`, callback);
-}
-
-export function apiClassroomEditSSM(
-  classroomId: number,
-  schedulingAlgo: SchedulingAlgorithm,
-  shuffleUnseenCards: boolean,
-  dailyNewCardLimit: number,
-  dailySeenCardLimit: number,
-  reviewAheadMinutes: number,
-  callback: (response: SSMInterface, status: number) => void,
-) {
-  backendLookup('POST', `teachers/classroom/${classroomId}/ssm/edit/`, callback, {
-    scheduling_algorithm: schedulingAlgo,
-    shuffle_unseen_cards: shuffleUnseenCards,
-    daily_new_card_limit: dailyNewCardLimit,
-    daily_seen_card_limit: dailySeenCardLimit,
-    review_ahead_minutes: reviewAheadMinutes,
-  });
 }
 
 // Gets a possible feedback question to display to the user

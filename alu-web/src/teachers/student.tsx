@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { DeckForeignUserButtonGroup } from '../decks/buttons';
-import { SharedDeck, Deck } from '../decks/types';
+import { Classroom } from './types';
+import { Deck } from '../decks/types';
+import { SharedDeck } from '../decks/skill-tree/types';
 import { apiClassroomDetail, apiClassroomGetStudentDeck, apiClassroomStudentAttachDeck, apiDeckQuickList } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
-import { Classroom } from './types';
+import { useState } from 'react';
 
 
 export function ClassroomStudentDetail({ classroomId, studentId }) {
@@ -43,7 +43,6 @@ export function ClassroomStudentDetail({ classroomId, studentId }) {
     <h3 className='mt-3'>Classroom Deck</h3>
     {classroom?.shared_deck ? <>
       <h5>{(classroom as Classroom)?.shared_deck?.title}</h5>
-      <DeckForeignUserButtonGroup deck={(classroom as Classroom)?.shared_deck} hideCopy={!(!studentDeck && !(studentDeck === undefined))} />
       <br />
       {studentDeck ?
         <p>You've attached a deck to this class: "{studentDeck.title}"</p>

@@ -1,15 +1,15 @@
-import { Node as SlateNode } from 'slate';
-import { MinifiedProfile } from '../profiles/types';
 import { MainSection } from './skill-tree/types';
+import { MinifiedProfile } from '../profiles/types';
+import { Node as SlateNode } from 'slate';
 
 export type UUID = string;  // Just a more clear representation
 
-export type SchedulingAlgorithm = 'ANKI' | 'ANKING' | 'MANUAL-SR' | 'CRAM';
 export type DeckDifficulty = 'HARD' | 'NORM' | 'EASY';
-export type ViewAccess = 'PUBLIC' | 'FRIENDS' | 'STUDENT';
 export type EditAccess = 'PERSONAL' | 'FRIENDS' | 'EVERYBODY' | 'STUDENTS';
 export type FlashCardTypes = 'BASIC' | 'REVERSED' | 'CLOZE';
 export type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
+export type SchedulingAlgorithm = 'ANKI' | 'ANKING' | 'MANUAL-SR' | 'CRAM';
+export type ViewAccess = 'PUBLIC' | 'FRIENDS' | 'STUDENT';
 
 export interface Deck {
   user: MinifiedProfile;
@@ -19,43 +19,6 @@ export interface Deck {
   is_updated: boolean;
   id: number;
 }
-
-
-// TODO: clean up these types
-export interface SharedDeck extends Deck {
-  description: string;
-  sharing_setting: ViewAccess;
-  num_clones: number;
-  creators: Deck[];
-}
-
-
-export interface SSMInterface {
-  scheduling_algorithm: SchedulingAlgorithm;
-  shuffle_unseen_cards: boolean;
-  daily_new_card_limit: number;
-  daily_seen_card_limit: number;
-  new_cards_done_today: number;
-  review_ahead_minutes: number;
-  difficulty: DeckDifficulty;
-  deck_id?: number;
-  id: number;
-}
-
-
-export interface CSSM extends SSMInterface {
-  author: MinifiedProfile;
-  title: string;
-  serializer_name: 'cssm';
-  deck_ids?: string;
-  tags?: string;
-  contains?: string;
-  leech?: boolean;
-  learning_status?: LearningStatus;
-  min_ease?: number;
-  max_ease?: number;
-}
-
 
 export interface FlashCard {
   flashcard_type: FlashCardTypes;
@@ -85,6 +48,3 @@ export interface ReviewInstance {
   flashcard_type: FlashCardTypes;
   id: UUID;
 }
-
-// TODO: remove
-export type AnyFlashCard = FlashCard | ReviewInstance;
