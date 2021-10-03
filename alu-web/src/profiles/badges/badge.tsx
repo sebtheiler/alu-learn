@@ -1,9 +1,8 @@
-import React from 'react';
-import { identifierDict } from './identifiers';
-import { generateTooltip } from '../../utils';
 import Badge from 'react-bootstrap/Badge';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { Profile } from '../types';
+import { identifierDict } from './identifiers';
 
 interface BadgeDetail extends Badge {
   description: string;
@@ -23,7 +22,11 @@ export function BadgeComponent(props: BadgeProps) {
   const individualBadge = (badge: BadgeDetail, username?: string) => {
     return (
       <OverlayTrigger
-        overlay={generateTooltip(badge.description)}
+        overlay={
+          <Tooltip id={`badge-${username}-${badge.shortTitle}`}>
+            {badge.description}
+          </Tooltip>
+        }
         placement='right'
         delay={{ show: 20, hide: 200 }}
         key={username ? `${badge.shortTitle}-${username}` : null}

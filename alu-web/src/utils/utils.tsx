@@ -1,19 +1,9 @@
 import React, { useRef, useEffect, useState, useMemo, Dispatch, SetStateAction, ChangeEvent, ReactNodeArray, ReactNode } from 'react';
-import numeral from 'numeral';
-import { Tooltip, OverlayTrigger, Button, Form, FormControlProps } from 'react-bootstrap';
 import { FullEditor, createFullEditor  } from '../text-editor';
-import { Slate } from 'slate-react';
-import { errorHandler } from './errorHandler';
 import { Node as SlateNode } from 'slate';
-
-// Creates a simple tooltip
-export const generateTooltip = (text) => {
-  return (props) => (
-    <Tooltip className='button-tooltip' {...props}>
-      {text}
-    </Tooltip>
-  );
-}
+import { Slate } from 'slate-react';
+import { Tooltip, OverlayTrigger, Button, Form, FormControlProps } from 'react-bootstrap';
+import { errorHandler } from './errorHandler';
 
 // Displays the time since a date in a pretty format
 // Modified from https://stackoverflow.com/questions/3177836/how-to-format-time-since-xxx-e-g-4-minutes-ago-similar-to-stack-exchange-site
@@ -87,25 +77,6 @@ export function timeUntil(date) {
       return ['in ' + timeSince(date, true), 1];
     }
   }
-}
-
-
-// Makes the passed number appear in the format: 1231 -> 1k, 123 -> 123, 4124124 -> 4m
-export function DisplayCountChar(props) {
-  return (
-    <span className={props.className}>
-      {parseInt(props.children) < 1000 ? parseInt(props.children) : numeral(props.children).format('0.0a')}
-    </span>
-  );
-}
-
-// Makes the passed number appear in the format: 1231 -> 1,231, 123 -> 123, 4124124 -> 4,124,124
-export function DisplayCountCommas(props) {
-  return (
-    <span className={props.className}>
-      {numeral(props.children).format('0,0')}
-    </span>
-  );
 }
 
 // Calculates whether a color is dark or light
@@ -225,7 +196,7 @@ export function QuestionBubble(props: QuestionBubbleProps) {
 
   return (
     <OverlayTrigger
-      overlay={generateTooltip(props.children)}
+      overlay={<Tooltip id='question-bubble-tooltip'>{props.children}</Tooltip>}
       placement='right'
       delay={{ show: showDelay, hide: hideDelay }}
     >

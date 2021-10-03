@@ -15,12 +15,12 @@ interface AddImageButtonProps {
 }
 export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }: AddImageButtonProps) {
   const [addImageModalIsOpen, setAddImageModalIsOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
   const [selectedUploadType, setSelectedUploadType] = useState<UploadType>('URL');
   const [error, setError] = useState<string | undefined>();
 
   const processFile = (file: File) => {
     const url = URL.createObjectURL(file);
-    console.log(url)
     if (file.size / 1024 > 1000) {
       setError(`Image must be smaller than 1000kb.  Your image is currently ${Math.floor(file.size / 1024)}kb Please reduce the size of your image.`);
     } else {
@@ -30,16 +30,13 @@ export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }
   }
 
   const getImageFromUrl = async () => {
-    const urlEl = document.getElementsByName('imageUrl')[0] as HTMLFormElement;
-    if (!urlEl) return;
-    const url = prependHttp(urlEl.value);
-
     // We need to use our custom proxy because of CORS
+    const url = prependHttp(imageUrl);
     const imageResp = await backendFetch<string | Message>('GET', 'pages/image-proxy/', { url });
 
     // Error handling
     if (typeof imageResp !== 'string') {
-      console.log(imageResp)
+      setError('Error getting image.  Please check the URL and try again.');
       return;
     }
 
@@ -113,11 +110,12 @@ export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }
             <Form.Control
               type='text'
               name='imageUrl'
+              onChange={e => setImageUrl(e.target.value)}
               required
             />
-            <LoadingButton clickFunc={getImageFromUrl} className='mt-2'>
+            {imageUrl.length > 0 && <LoadingButton clickFunc={getImageFromUrl} className='mt-2'>
               Load Image
-            </LoadingButton>
+            </LoadingButton>}
             {imgEl}
           </Form.Group>}
           {selectedUploadType === 'FILE' && <Form.Group>

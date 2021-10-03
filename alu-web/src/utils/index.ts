@@ -1,9 +1,6 @@
 import {
-  generateTooltip,
   timeSince,
   timeUntil,
-  DisplayCountChar,
-  DisplayCountCommas,
   lightOrDark,
   isAlphaNumeric,
   shiftDate,
@@ -35,11 +32,8 @@ import {
 import { errorHandler } from './errorHandler';
 
 export {
-  generateTooltip,
   timeSince,
   timeUntil,
-  DisplayCountChar,
-  DisplayCountCommas,
   lightOrDark,
   isAlphaNumeric,
   shiftDate,

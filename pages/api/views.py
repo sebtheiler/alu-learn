@@ -97,10 +97,11 @@ def get_image_with_proxy(request, *args, **kwargs):
             response = requests.get(url, headers=settings.USER_AGENT_HEADERS)
             ok = response.ok
         except Exception:
+            response = None
             ok = False
 
         # Check that response is valid
-        content_type = response.headers['Content-Type']
+        content_type = response.headers['Content-Type'] if response else ''
         if not ok or not content_type.startswith('image/'):
             return Response(
                 {'message': 'Problem getting response'},

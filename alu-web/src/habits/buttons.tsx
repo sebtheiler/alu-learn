@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { useMemo } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
@@ -7,10 +5,12 @@ import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import { apiHabitCreate, apiHabitDelete, apiHabitRearrange, apiRoutineCreate, apiRoutineDelete, apiRoutineRearrange } from '../lookup';
-import { errorHandler, generateTooltip, LoadingButton, stringDate } from '../utils';
-import { Routine, Habit, EditHabitOptions } from './types';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { HistoryAction } from '../lookup/lookup';
+import { Routine, Habit, EditHabitOptions } from './types';
+import { apiHabitCreate, apiHabitDelete, apiHabitRearrange, apiRoutineCreate, apiRoutineDelete, apiRoutineRearrange } from '../lookup';
+import { errorHandler, LoadingButton, stringDate } from '../utils';
+import { useState, useMemo } from 'react';
 
 
 interface CreateRoutineButtonProps {
@@ -180,12 +180,14 @@ export function HabitTopButtonGroup(props: HabitTopButtonGroupProps) {
       {habit.value !== 'NEUTRAL' && <OverlayTrigger
         placement='left'
         delay={{ show: 250, hide: 400 }}
-        overlay={generateTooltip(
-          habit.value === 'POSITIVE' ?
-          'Mark this habit as completed for the day'
-          :
-          'Mark this habit as avoided for the day'
-        )}
+        overlay={
+          <Tooltip id={`habit-mark-${habit.id}`}>
+            {habit.value === 'POSITIVE'
+              ? 'Mark this habit as completed for the day'
+              : 'Mark this habit as avoided for the day'
+            }
+          </Tooltip>
+        }
       >
         {completedToday ?
           <i className='fas fa-check-circle' />
