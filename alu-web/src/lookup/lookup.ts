@@ -3,10 +3,10 @@
 import React, { useReducer, useEffect, useState, Dispatch } from 'react';
 import { Assignment, Classroom, ClassroomAssignments, Student } from '../teachers/types';
 import { Deck, ReviewInstance, ViewAccess, EditAccess } from '../decks/types';
-import { Interval } from '../decks/skill-tree/study/algorithm';
+import { Interval } from '../decks/study/algorithm';
 import { Profile, ProfileHistory } from '../profiles/types';
 import { Routine, Habit, HabitValue, Todo } from '../habits/types';
-import { SharedDeck } from '../decks/skill-tree/types';
+import { SharedDeck } from '../decks/types';
 import { backendLookup, baseUrl } from './components';
 import { getCookie } from '../utils/utils';
 

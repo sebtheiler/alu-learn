@@ -2,7 +2,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { Classroom } from './types';
 import { Deck } from '../decks/types';
-import { SharedDeck } from '../decks/skill-tree/types';
+import { SharedDeck } from '../decks/types';
 import { apiClassroomDetail, apiClassroomGetStudentDeck, apiClassroomStudentAttachDeck, apiDeckQuickList } from '../lookup';
 import { errorHandler, useApiObjectHook } from '../utils';
 import { useState } from 'react';

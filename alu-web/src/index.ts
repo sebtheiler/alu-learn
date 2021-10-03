@@ -1,14 +1,13 @@
 import * as serviceWorker from './serviceWorker';
-import { SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges } from './decks/skill-tree';  // TODO: remove this
-import { ProfileDetail, LoginComponent, StaffForceLogin } from './profiles';
-import { NotificationComponent } from './profiles/notifications';
-import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent } from './pages';
-import { Habits } from './habits';
-import { GameComponent, MatchingGame } from './decks/games';
-import { DeckImportComponent, StatisticsPage } from './decks';
-import { ClassroomDetail, ClassroomStudentDetail } from './teachers';
-import ReactDOM from 'react-dom';
 import React, { FunctionComponent } from 'react';
+import ReactDOM from 'react-dom';
+import { ClassroomDetail, ClassroomStudentDetail } from './teachers';
+import { DeckImportComponent, StatisticsPage,SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges } from './decks';
+import { GameComponent, MatchingGame } from './decks/games';
+import { Habits } from './habits';
+import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent } from './pages';
+import { NotificationComponent } from './profiles/notifications';
+import { ProfileDetail, LoginComponent, StaffForceLogin } from './profiles';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 

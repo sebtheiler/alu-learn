@@ -1,10 +1,10 @@
 import Container from 'react-bootstrap/Container';
-import LoadingButton from '../decks/skill-tree/buttons/LoadingButton';
+import LoadingButton from '../decks/buttons/LoadingButton';
 import React from 'react';
-import SharedDeckList from '../decks/skill-tree/shared-deck-list';
+import SharedDeckList from '../decks/shared-deck-list';
 import { Button } from 'react-bootstrap';
 import { Profile } from './types';
-import { SharedDeck } from '../decks/skill-tree/types';
+import { SharedDeck } from '../decks/types';
 import { apiProfileDetail, backendFetch, apiSendFriendReq, useAsyncState, apiProfileFriendToggle } from '../lookup/lookup';
 
 export default function ProfileDetail({ username, currentUsername }: { username: string, currentUsername: string }) {

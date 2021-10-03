@@ -7,7 +7,7 @@ from django.db.models.query_utils import Q
 from django.utils.crypto import get_random_string
 from profiles.models import Profile
 from sharing_system.models import SharedDeck
-from skill_tree import SubSection
+from skill_tree.models import SubSection
 
 User = get_user_model()
 

@@ -1,8 +1,8 @@
 import Container from 'react-bootstrap/Container';
-import { SharedDeck } from '../decks/skill-tree/types';
+import { SharedDeck } from '../decks/types';
 import { apiExploreLists } from '../lookup';
 import { useApiObjectHook } from '../utils';
-import { SharedDeckList } from '../decks/skill-tree';
+import { SharedDeckList } from '../decks';
 
 
 interface ExploreDecks {
