@@ -71,7 +71,7 @@ class Classroom(models.Model):
 
     @staticmethod
     def generate_class_code() -> str:
-        allowed_chars = 'bcdfghjkmpqrtvwxyBCDFGHJKMPQRTVWXY346789-_'
+        allowed_chars = 'BCDFGHJKMPQRTVWXY346789'
         while True:
             classroom_code = get_random_string(8, allowed_chars)
             try:

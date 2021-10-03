@@ -11,6 +11,7 @@ export interface Classroom {
 export interface Student {
   first_name: string;
   last_name: string;
+  username: string;
   current_streak: number;
   today_stats: ProfileHistory[];
   id: number;

@@ -24,6 +24,7 @@ class ClassroomSerializer(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     first_name = serializers.SerializerMethodField(read_only=True)
     last_name = serializers.SerializerMethodField(read_only=True)
+    username = serializers.SerializerMethodField(read_only=True)
     today_stats = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -31,6 +32,7 @@ class StudentSerializer(serializers.ModelSerializer):
         fields = [
             'first_name',
             'last_name',
+            'username',
             'current_streak',
             'today_stats',
             'id',
@@ -41,6 +43,9 @@ class StudentSerializer(serializers.ModelSerializer):
 
     def get_last_name(self, obj):
         return obj.user.last_name
+
+    def get_username(self, obj):
+        return obj.user.username
 
     def get_today_stats(self, obj):
         last_history = obj.history.order_by('date').last()

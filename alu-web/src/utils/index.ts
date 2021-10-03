@@ -30,6 +30,7 @@ import {
 } from './utils';
 
 import { errorHandler } from './errorHandler';
+import Jdenticon from './jdenticon';
 
 export {
   timeSince,
@@ -61,4 +62,5 @@ export {
   getCookie,
   eraseCookie,
   capitalize,
+  Jdenticon,
 }

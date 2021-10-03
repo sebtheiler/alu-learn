@@ -5,7 +5,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import { NavbarPopup } from './navbar-popup';
 import { NotificationComponent } from '../profiles/notifications';
 import { apiProfileLogout } from '../lookup';
-import { errorHandler } from '../utils';
+import { errorHandler, Jdenticon } from '../utils';
 import './navbar.scss';
 
 export default function NavbarComponent(props) {
@@ -138,9 +138,7 @@ export default function NavbarComponent(props) {
                 </span>
               </Nav.Link>
               <NavDropdown
-                title={
-                  <i className='fas fa-user-circle text-light fa-2x'></i>
-                }
+                title={<Jdenticon value={username} size={35} />}
                 id='profile-dropdown'
                 style={{width: '57px', height: '57px'}}
                 alignRight

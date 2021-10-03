@@ -1,5 +1,6 @@
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
+import Container from 'react-bootstrap/Col';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import Spinner from 'react-bootstrap/Spinner';
@@ -7,12 +8,14 @@ import { Classroom, Student } from '../teachers/types';
 import { CreateDeckModal } from './buttons/create-deck';
 import { Deck } from './types';
 import { HomeActionDispatch } from './context';
+import { Jdenticon } from '../utils';
 import { SharedDeck } from './types';
 import { backendFetch, useAsyncState, useObjectList, apiClassroomStudentsList } from '../lookup/lookup';
 import { useContext, useState } from 'react';
 import './render-classroom.scss';
 
 export default function RenderTeacherClassroom({ classroom }: { classroom?: Classroom }) {
+  const [selectedTab, setSelectedTab] = useState('ASSIGNMENTS');
   const [students] = useAsyncState<Student[]>(
     apiClassroomStudentsList,
     [classroom?.id, new Date().getTimezoneOffset()],
@@ -29,27 +32,21 @@ export default function RenderTeacherClassroom({ classroom }: { classroom?: Clas
       <hr />
       <div>
         {!classroom.shared_deck
-          ?  <ChooseClassroomDeck classroom={classroom} />
+          ? <ChooseClassroomDeck classroom={classroom} />
           : <div>
-              <h2>Attached Deck: {classroom.shared_deck.title}</h2>
+              <h3>Attached Deck: {classroom.shared_deck.title}</h3>
               <br />
               <Row>
-                <Col>
-                  <h3>Assignments</h3>
-                  <p className='text-left'>Assignments will be implemented very soon!  Almost there…</p>
+                <Col onClick={() => setSelectedTab('ASSIGNMENTS')} role='button'>
+                  <h3 className={selectedTab === 'ASSIGNMENTS' ? 'font-weight-bold' : ''}>Assignments</h3>
                 </Col>
-                <Col>
-                  <h3>Students</h3>
-                  <ul className='text-left'>
-                    {students
-                      ? students.map(student =>
-                          <li>{student.first_name} {student.last_name}</li>
-                        )
-                      : <p>Loading…</p>
-                    }
-                  </ul>
-                  {students?.length === 0 && <p>You don't have any students yet.  Invite some with the class code.</p>}
+                <Col onClick={() => setSelectedTab('STUDENTS')} role='button'>
+                  <h3 className={selectedTab === 'STUDENTS' ? 'font-weight-bold' : ''}>Students</h3>
                 </Col>
+              </Row>
+              <Row>
+                {selectedTab === 'ASSIGNMENTS' && <AssignmentsList />}
+                {selectedTab === 'STUDENTS' && <StudentsList students={students} />}
               </Row>
             </div>
         }
@@ -155,4 +152,22 @@ function AttachDeckModal({ show, close, callback }: AttachDeckModalProps) {
       </Modal.Footer>
     </Modal>
   );
+}
+
+function AssignmentsList() {
+  return (<>
+  </>);
+}
+
+function StudentsList({ students }: { students?: Student[] }) {
+  if (!students) return <p>Loading…</p>;
+  return (<Container>
+    {students.map(student =>
+      <Row key={student.username} className='student-row'>
+        <Jdenticon value={student.username} size={30} />
+        {student.first_name} {student.last_name}
+      </Row>
+    )}
+    {students.length === 0 && <p>You have no students yet.  Invite some with your class code.</p>}
+  </Container>);
 }
