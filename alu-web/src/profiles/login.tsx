@@ -1,7 +1,6 @@
-import React from 'react';
-import { LoginForm } from '../landing/forms';
+import { LoginForm } from '../pages/landing/forms';
 
-export function LoginComponent(_props) {
+export function LoginComponent() {
   return (
     <>
       <h2 className='text-center'>Log-in</h2>

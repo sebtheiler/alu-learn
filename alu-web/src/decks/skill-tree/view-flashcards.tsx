@@ -1,11 +1,10 @@
-import React from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Container from 'react-bootstrap/Container';
 import RenderFlashcard from './render-flashcard';
-import { useObjectPaginatedList } from '../../lookup/lookup';
-import { capitalize } from '../../utils';
 import { FlashCard } from '../types';
+import { capitalize } from '../../utils';
+import { useObjectPaginatedList } from '../../lookup/lookup';
 import './view-flashcards.scss';
 
 interface ViewFlashcardsProps {

@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Chart from 'react-google-charts';
+import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import DataTable from 'react-data-table-component';
-import { DefaultSharedDeckButtons } from '../decks/buttons';
-import { FlashcardTypesPiechart, HistoryLineChart, parseStats } from '../decks/statistics/statistics';
-import { Deck } from '../decks/types';
-import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiDeckQuickList, apiStudentPercentCompleteList, apiTeacherAssignmentsList } from '../lookup';
-import { errorHandler, useApiObjectHook } from '../utils';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
 import { Assignment, Classroom, ParsedStats, Student } from './types';
 import { CreateEditAssignmentModal } from './buttons';
+import { Deck } from '../decks/types';
+import { FlashcardTypesPiechart, HistoryLineChart, parseStats } from '../decks/statistics';
+import { apiClassroomAttachDeck, apiClassroomDetail, apiClassroomStudentsList, apiClassroomStudentStats, apiDeckQuickList, apiStudentPercentCompleteList, apiTeacherAssignmentsList } from '../lookup';
+import { errorHandler, useApiObjectHook } from '../utils';
+import { useState } from 'react';
 import './detail.css';
-import Chart from 'react-google-charts';
 
 
 const columns = [
@@ -289,7 +288,6 @@ function ClassroomDeckComponent({ classroomId, deck }) {
         To add flashcards to this deck, add flashcards to the deck it was created from,{' '}
         then click "Push Changes."
       </small><br />
-      <DefaultSharedDeckButtons deck={deck} hideUpdateSettings /><br />
       <Button onClick={() => setShowModal(true)} className='mt-1' id='create-assignment-btn'>
         Create Assignment
       </Button>

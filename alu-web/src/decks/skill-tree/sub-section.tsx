@@ -6,7 +6,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import { MainSection, SubSection } from './types';
 import { SubSectionButtons } from './buttons/section-buttons';
 
-export const cleanTitle = (title: string) => title.toLowerCase().replaceAll(' ', '-');
+export const cleanTitle = (title: string) => encodeURIComponent(title.toLowerCase().replaceAll(' ', '-'));
 export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll('__', ' AND ')
 
 interface SubSectionProps {

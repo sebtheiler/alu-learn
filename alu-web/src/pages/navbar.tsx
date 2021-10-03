@@ -1,15 +1,14 @@
-import React from 'react';
 import Button from 'react-bootstrap/Button';
-import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import Navbar from 'react-bootstrap/Navbar';
+import { NavbarPopup } from './navbar-popup';
+import { NotificationComponent } from '../profiles/notifications';
 import { apiProfileLogout } from '../lookup';
 import { errorHandler } from '../utils';
-import { NotificationComponent } from '../profiles/notifications';
-import { NavbarPopup } from './navbar-popup';
 import './navbar.scss';
 
-export function NavbarComponent(props) {
+export default function NavbarComponent(props) {
   const firstName = props.firstName ? props.firstName : '';
   const username = props.username ? props.username : '';
   const currentStreak = parseInt(props.currentStreak);

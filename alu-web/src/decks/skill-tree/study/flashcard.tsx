@@ -5,7 +5,7 @@ import { ReviewInstance } from '../../types';
 import { StudyAnswerDispatch } from './context';
 import { apiReviewInstanceUpdate } from '../../../lookup/lookup';
 import { processFront, processBack } from './process-text';
-import { getAnkiInterval } from '../../study/algorithm';
+import { getStudyInterval } from './algorithm';
 import { getMinNum } from './utils';
 import { range, RenderRichText } from '../../../utils';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -21,7 +21,7 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
   const [isFlipped, setIsFlipped] = useState(false);
   const studyAnswerDispatch = useContext(StudyAnswerDispatch);
   const intervals = useMemo(
-    () => range(0, 4).map(i => getAnkiInterval(reviewInstance, (i + 1) as 1 | 2 | 3 | 4)),
+    () => range(0, 4).map(i => getStudyInterval(reviewInstance, (i + 1) as 1 | 2 | 3 | 4)),
     [reviewInstance],
   );
   const browserInteractionTime = useMemo(() => {

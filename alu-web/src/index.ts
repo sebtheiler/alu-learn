@@ -1,16 +1,14 @@
 import * as serviceWorker from './serviceWorker';
-import LandingComponent from './landing';
-import React, { FunctionComponent } from 'react';
-import ReactDOM from 'react-dom';
-import { ClassroomDetail, ClassroomStudentDetail } from './teachers';
-import { DeckPublicList, DeckDetailComponent, DecksHomeComponent, DeckImportComponent, PushSharedDeck, UpdateDeck, StatisticsPage } from './decks';
-import { ExploreComponent, DeckSearchComponent } from './explore';
-import { GameComponent, MatchingGame } from './decks/games';
-import { Habits } from './habits';
-import { HomeComponent, NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization } from './home';
-import { NotificationComponent } from './profiles/notifications';
-import { ProfileDetail, LoginComponent, StaffForceLogin } from './profiles';
 import { SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges } from './decks/skill-tree';  // TODO: remove this
+import { ProfileDetail, LoginComponent, StaffForceLogin } from './profiles';
+import { NotificationComponent } from './profiles/notifications';
+import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent } from './pages';
+import { Habits } from './habits';
+import { GameComponent, MatchingGame } from './decks/games';
+import { DeckImportComponent, StatisticsPage } from './decks';
+import { ClassroomDetail, ClassroomStudentDetail } from './teachers';
+import ReactDOM from 'react-dom';
+import React, { FunctionComponent } from 'react';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -33,19 +31,10 @@ const renderElement = (Component: FunctionComponent | string, htmlName: string, 
 
 type ElementRow = [FunctionComponent, string, boolean?];
 ([
-  [DeckPublicList, 'user-decks'],
-  [DeckDetailComponent, 'deck-detail', true],
   [ProfileDetail, 'profile-detail'],
-  [DecksHomeComponent, 'decks-home'],
-  // [FlashCardCreate, 'create-flashcard'],
-  // [FlashCardsList, 'flashcard-list', true],
-  // [StudyComponent, 'study-component'],
   [NotificationComponent, 'notification-component', true],
   [ExploreComponent, 'explore-component'],
-  // [FlashCardSearchComponent, 'flashcard-search-component'],
-  [DeckSearchComponent, 'deck-search-component'],
   [LandingComponent, 'landing-component'],
-  [HomeComponent, 'home-component'],
   [NavbarComponent, 'navbar-component'],
   [LoginComponent, 'login-component'],
   [DeckImportComponent, 'deck-importer'],
@@ -55,8 +44,6 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [ConfirmEmail, 'confirm-email'],
   [SendPasswordReset, 'send-password-reset'],
   [ShareDeck, 'share-deck'],
-  [PushSharedDeck, 'push-deck'],
-  [UpdateDeck, 'update-deck'],
   [UserCustomization, 'user-customization'],
   [MatchingGame, 'matching-game'],
   [GameComponent, 'game-component'],

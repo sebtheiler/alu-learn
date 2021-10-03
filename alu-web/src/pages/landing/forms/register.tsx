@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import { isAlphaNumeric, errorHandler, FormCheckbox, dateDiff, getMonthNumber, has } from '../../utils';
-import { apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin } from '../../lookup';
+import { apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin } from '../../../lookup';
+import { isAlphaNumeric, errorHandler, FormCheckbox, dateDiff, getMonthNumber, has } from '../../../utils';
+import { useState } from 'react';
 
 export function ModalRegisterForm(props: { returnUrl?: string }) {
   const returnUrl = props.returnUrl ? new URL(props.returnUrl).pathname : null;

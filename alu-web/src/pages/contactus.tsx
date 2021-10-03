@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { FormCheckbox, errorHandler } from '../utils';
 import { apiFeedbackSubmit } from '../lookup';
+import { useState } from 'react';
 
-export function ContactUs(props) {
+export default function ContactUs(props) {
   const userIsAuthenticated = props.userIsAuthenticated ? props.userIsAuthenticated.toLowerCase() === 'true' : false;
   const isLegalIssue = props.isLegalIssue ? props.isLegalIssue.toLowerCase() === 'true' : false;
   const [isLoading, setIsLoading] = useState(false);
@@ -36,10 +36,10 @@ export function ContactUs(props) {
 
   return (
     <Form onSubmit={handleSubmit} className='w-75 mx-auto'>
-      <p className='text-center'>
-        If you want faster support, please either use my WESS email or{' '}
+      {!isLegalIssue && <p className='text-center'>
+        If you want faster support, please either use{' '}
         <a href='mailto:aluflashcards@gmail.com'>aluflashcards@gmail.com</a>
-      </p>
+      </p>}
       <Form.Group>
         <Form.Label className='mb-0'>
           Short Description<br />

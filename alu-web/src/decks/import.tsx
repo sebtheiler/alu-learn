@@ -6,7 +6,7 @@ import { errorHandler } from '../utils';
 import { FancyFormFileUpload } from '../utils/utils';
 import { Deck } from './types';
 
-export function DeckImportComponent() {
+export default function DeckImportComponent() {
   const titleRef = React.createRef<HTMLInputElement>();
 
   const [uploadType, setUploadType] = useState('TXT');

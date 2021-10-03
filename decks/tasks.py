@@ -1,8 +1,11 @@
+import datetime as dt
+import os
+
 from celery import shared_task
 from celery.decorators import periodic_task
 from celery.schedules import crontab
-from django.core import mail
 from django.conf import settings
+from django.core import mail
 from django.template.loader import render_to_string
 from profiles.models import Profile
 
@@ -15,6 +18,10 @@ def midnight_reset():
 
     # Reset all users to not having studied
     Profile.objects.update(has_done_work_today=False)
+
+    # Backup the server
+    filepath = f'{settings.DB_BACKUP_DIR}/{dt.datetime.now().strftime("%Y-%m-%d")}.sql'
+    os.system(f'pg_dump alu > "{filepath}"')
 
 
 @periodic_task(run_every=crontab(minute=0, hour=4))

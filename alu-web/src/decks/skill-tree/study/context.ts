@@ -1,7 +1,7 @@
+import { Interval } from './algorithm';
+import { ReviewInstance } from '../../types';
 import { createContext, Dispatch } from 'react';
 import { dateDiff } from '../../../utils';
-import { Interval } from '../../study/algorithm';
-import { ReviewInstance } from '../../types';
 
 export const REVIEW_AHEAD_MINUTES = 120;
 

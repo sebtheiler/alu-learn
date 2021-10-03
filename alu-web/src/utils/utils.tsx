@@ -695,3 +695,12 @@ export function useDebounce<T>(value: T, delay: number, callback?: () => void): 
 
   return debouncedValue;
 }
+
+// Adapted from https://github.com/sindresorhus/prepend-http/blob/main/index.js
+export function prependHttp(url: string, { https = true } = {}) {
+	url = url.trim();
+
+	if (/^\.*\/|^(?!localhost)\w+?:/.test(url)) return url;
+
+	return url.replace(/^(?!(?:\w+?:)?\/\/)/, https ? 'https://' : 'http://');
+}

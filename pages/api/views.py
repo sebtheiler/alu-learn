@@ -1,12 +1,15 @@
-from sharing_system.serializers import SharedDeckSerializer
-import json
+import base64
 from typing import List
-from sharing_system.models import SharedDeck
 
+import requests
+from django.conf import settings
+from django.core.cache import cache
 from django.core.mail import mail_admins
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from sharing_system.models import SharedDeck
+from sharing_system.serializers import SharedDeckSerializer
 
 from ..models import ContactFeedback
 
@@ -79,11 +82,39 @@ def update_settings_api_view(request, *args, **kwargs):
     return Response({'message': 'Updated account settings'}, status=200)
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_image_with_proxy(request, *args, **kwargs):
+    url = request.GET.get('url')
+    if not url:
+        return Response({'message': 'You must specify `url`'}, status=400)
+
+    cache_key = f'IMAGEPROXY__{url}'
+    uri = cache.get(cache_key)
+    if not uri:
+        # Get response
+        try:
+            response = requests.get(url, headers=settings.USER_AGENT_HEADERS)
+            ok = response.ok
+        except Exception:
+            ok = False
+
+        # Check that response is valid
+        content_type = response.headers['Content-Type']
+        if not ok or not content_type.startswith('image/'):
+            return Response(
+                {'message': 'Problem getting response'},
+                status=400,
+            )
+
+        # Construct base64 URI
+        uri = f'data:{content_type};base64,{base64.b64encode(response.content).decode("utf8")}'
+        cache.set(cache_key, uri, 86400)  # cache for a day
+
+    return Response(uri, status=200)
+
+
 # Explore views
-with open('editor_deck_ids.json', 'r') as f:
-    EDITOR_PICKS_DECK_IDS = json.loads(f.read())
-
-
 def get_shared_decks_from_ids(id_list: List[int]):
     shared_decks = SharedDeck.objects.filter(pk__in=id_list)
     return SharedDeckSerializer(shared_decks, many=True).data
@@ -95,9 +126,9 @@ def api_explore_lists_view(request, *args, **kwargs):
     Get decks to display in explore list - GET
     """
     data = {
-        'EDITOR': get_shared_decks_from_ids(EDITOR_PICKS_DECK_IDS),
-        'TOP': [],  # get_decks_from_ids(TOP_DECK_IDS),
-        'HOT': [],  # get_decks_from_ids(HOT_DECK_IDS),
+        'EDITOR': get_shared_decks_from_ids(settings.EDITOR_PICKS_DECK_IDS),
+        'TOP': [],
+        'HOT': [],
     }
 
     return Response(data, status=200)

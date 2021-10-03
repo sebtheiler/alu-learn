@@ -5,7 +5,7 @@ from .models import Deck, FlashCard, ReviewInstance, ReviewInstanceHistory
 
 
 class FlashCardAdmin(admin.ModelAdmin):
-    search_fields = ('tags', 'deck__title', 'deck__user__username', 'fields')
+    search_fields = ('data__tags', 'data__fields')
     list_display = (
         'get_section',
         'flashcard_type',

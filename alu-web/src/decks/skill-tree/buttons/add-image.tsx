@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import LoadingButton from '../buttons/LoadingButton';
-import { FancyFormFileUpload } from '../../../utils/utils';
+import Modal from 'react-bootstrap/Modal';
+import Row from 'react-bootstrap/Row';
+import { FancyFormFileUpload, prependHttp } from '../../../utils/utils';
+import { backendFetch, Message } from '../../../lookup/lookup';
+import { useMemo, useState } from 'react';
 
 type UploadType = 'URL' | 'FILE';
 const uploadTypes = ['URL', 'File'];
@@ -15,29 +16,57 @@ interface AddImageButtonProps {
 export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }: AddImageButtonProps) {
   const [addImageModalIsOpen, setAddImageModalIsOpen] = useState(false);
   const [selectedUploadType, setSelectedUploadType] = useState<UploadType>('URL');
+  const [error, setError] = useState<string | undefined>();
 
-  const getImageFromUrl = async event => {
+  const processFile = (file: File) => {
+    const url = URL.createObjectURL(file);
+    console.log(url)
+    if (file.size / 1024 > 1000) {
+      setError(`Image must be smaller than 1000kb.  Your image is currently ${Math.floor(file.size / 1024)}kb Please reduce the size of your image.`);
+    } else {
+      setSelectedImageUrl(url);
+      setError(undefined);
+    }
+  }
+
+  const getImageFromUrl = async () => {
     const urlEl = document.getElementsByName('imageUrl')[0] as HTMLFormElement;
     if (!urlEl) return;
-    const url = urlEl.value;
+    const url = prependHttp(urlEl.value);
 
-    await fetch(url).then(res => res.blob()).then(imgBlob => {
-      const reader = new FileReader();
-      reader.onload = function() {
-        const dataUrl = reader.result as string;
-        console.log(dataUrl);
-        if (!dataUrl) return;
-        const base64 = dataUrl.split(',')[1];
-        console.log(base64)
-      };
-      reader.readAsDataURL(imgBlob);
-    });
+    // We need to use our custom proxy because of CORS
+    const imageResp = await backendFetch<string | Message>('GET', 'pages/image-proxy/', { url });
+
+    // Error handling
+    if (typeof imageResp !== 'string') {
+      console.log(imageResp)
+      return;
+    }
+
+    // Convert base64 string to File object (this was hard)
+    const fetched = await fetch(imageResp);
+    const blob = await fetched.blob();
+    const fileName = url.substring(url.lastIndexOf('/') + 1);
+    const file = new File([blob], fileName);
+    processFile(file);
   }
 
   const uploadImage = async event => {
     event.preventDefault();
     setAddImageModalIsOpen(false);
   }
+
+  const imgEl = useMemo(() => {
+    return (<>
+      <img
+        id='uploaded-image-preview'
+        alt=''
+        className='w-100'
+        src={selectedImageUrl}
+      />
+      <p className='text-danger text-center' id='image-error'>{error}</p>
+    </>);
+  }, [selectedImageUrl, error]);
 
   return (<>
     <div
@@ -89,7 +118,7 @@ export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }
             <LoadingButton clickFunc={getImageFromUrl} className='mt-2'>
               Load Image
             </LoadingButton>
-            {/* TODO: make this work */}
+            {imgEl}
           </Form.Group>}
           {selectedUploadType === 'FILE' && <Form.Group>
             <Form.Label>Select File</Form.Label>
@@ -97,29 +126,10 @@ export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }
               accept='image/*'
               changeCallback={event => {
                 const [file] = event.target.files;
-                if (file) {
-                  const url = URL.createObjectURL(file);
-                  if (file.size / 1024 > 1000) {
-                    const errorEl = document.getElementById('image-error');
-                    if (!errorEl) return;
-                    errorEl.innerText =
-                      `Image must be smaller than 1000kb.  Your image is currently ${Math.floor(file.size / 1024)}kb Please reduce the size of your image.`;
-                  } else {
-                    setSelectedImageUrl(url);
-                    const errorEl = document.getElementById('image-error');
-                    if (errorEl)
-                      errorEl.innerText = '';
-                  }
-                }
+                if (file) processFile(file);
               }}
             />
-            {selectedImageUrl && <img
-              id='uploaded-image-preview'
-              alt=''
-              className='w-100'
-              src={selectedImageUrl}
-            />}
-            <p className='text-danger text-center' id='image-error'></p>
+            {imgEl}
           </Form.Group>}
         </Modal.Body>
         {selectedImageUrl && <Modal.Footer>
@@ -130,9 +140,9 @@ export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }
           >
             Upload
           </LoadingButton>
-          <p className='text-secondary text-center mx-auto'>
-            Please make sure you have the rights to use this image
-          </p>
+          <small className='text-secondary text-center mx-auto'>
+            By uploading this image, you assert that you have the right to use it (<a href='/legal/tos/' target='_blank'>ToS</a>)
+          </small>
         </Modal.Footer>}
       </Form>
     </Modal>

@@ -1,5 +1,5 @@
 import { dateDiff } from '../../../utils';
-import { Interval } from '../../study/algorithm';
+import { Interval } from './algorithm';
 import { REVIEW_AHEAD_MINUTES } from './context';
 
 export function getMinNum(interval: Interval): number {

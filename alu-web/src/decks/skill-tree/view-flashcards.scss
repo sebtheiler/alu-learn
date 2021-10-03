@@ -32,6 +32,15 @@
           display: flex;
           justify-content: center;
           align-items: center;
+
+          &.divider {
+            @media (min-width: 767px) {
+              border-right: $grayBorder;
+            }
+            @media (max-width: 767px) {
+              border-bottom: $grayBorder;
+            }
+          }
         }
 
         >.images >img {
@@ -43,10 +52,6 @@
         }
       }
   
-      &.divider {
-        border-right: $grayBorder;
-      }
-    
       &.rich-text-editor {
         padding: 10px;
         display: flex;

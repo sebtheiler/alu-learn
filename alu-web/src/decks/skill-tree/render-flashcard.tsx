@@ -24,10 +24,10 @@ export default function RenderFlashcard({ flashcard, deckId }: { flashcard: Flas
           {flashcard.data?.fields?.map((field, i) =>
             <Col
               md={12/(flashcard.data?.fields?.length ?? 2)}
-              className={'flashcard-field' + (i !== (flashcard.data?.fields?.length ?? 2) - 1 ? ' divider' : '')}
+              className='flashcard-field'
               key={i}
             >
-              <div className='text'>
+              <div className={'text' + (i !== (flashcard.data?.fields?.length ?? 2) - 1 ? ' divider' : '')}>
                 <RenderRichText text={field} />
               </div>
               <div className='images'>

@@ -1,7 +1,6 @@
 import StatsComponent from './stats';
 
 export default function HomeComponent({ isTeacher }: { isTeacher: boolean }) {
-
   return (<>
     <h1>Welcome!</h1>
     {isTeacher
