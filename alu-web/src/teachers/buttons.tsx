@@ -236,7 +236,6 @@ export function CreateEditAssignmentModal(props: CreateEditAssignmentModalProps)
             <Form.Control
               type='text'
               name='tagQuery'
-              defaultValue={assignment?.tag_query}
               required
             />
           </Form.Group>

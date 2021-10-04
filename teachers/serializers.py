@@ -4,6 +4,7 @@ from django.utils import timezone
 from profiles.models import Profile
 from rest_framework import serializers
 from sharing_system.serializers import SharedDeckSerializer
+from skill_tree.serializers import SubSectionSerializer
 
 from .models import Assignment, Classroom
 
@@ -65,18 +66,18 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class AssignmentSerializer(serializers.ModelSerializer):
+    sub_sections = SubSectionSerializer('sub_sections', many=True)
     percent_complete = serializers.SerializerMethodField(read_only=True)
-    study_session_manager = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Assignment
         fields = [
             'title',
-            'classroom',
-            'tag_query',
+            'classrooms',
+            'sub_sections',
             'due_date',
+            'essential_only',
             'percent_complete',
-            'study_session_manager',
             'id',
         ]
 
@@ -85,12 +86,6 @@ class AssignmentSerializer(serializers.ModelSerializer):
             return None
 
         return obj.calc_percent_complete(self.context['request'].user)
-
-    def get_study_session_manager(self, obj):
-        if not self.context.get('get_study_session_manager'):
-            return None
-
-        return obj.get_study_session_manager(self.context['request'].user)
 
 
 class ClassroomAssignmentsSerializer(ClassroomSerializer):

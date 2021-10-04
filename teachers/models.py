@@ -84,18 +84,17 @@ class Classroom(models.Model):
 
 class Assignment(models.Model):
     title = models.CharField(max_length=128)
-    classroom = models.ForeignKey(
-        Classroom,
-        on_delete=models.CASCADE,
-        related_name='assignments',
-    )  # type: Classroom
-    sub_sections = models.ManyToManyField(SubSection, related_name='assignments')
-    due_date = models.DateField()
+    classrooms = models.ManyToManyField(Classroom, related_name='assignments')
+    sub_sections = models.ManyToManyField(SubSection, related_name='attached_assignments')
+    essential_only = models.BooleanField(default=False)
+    due_date = models.DateField(null=True, blank=True)
 
     def __str__(self) -> str:
         return self.title
 
     def calc_percent_complete(self, user: User) -> float:
+        raise NotImplementedError
+
         flashcards = ReviewInstance.objects.filter(
             Q(
                 flashcard__deck__student_attached_to=self.classroom,

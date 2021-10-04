@@ -38,7 +38,7 @@ export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSel
   }));
 
   return (
-    <HomeActionDispatch.Provider value={{ decksDispatch, classroomsDispatch }}>
+    <HomeActionDispatch.Provider value={{ decks, decksDispatch, classrooms, classroomsDispatch }}>
       <Container className='text-center mt-3' fluid>
         <Row>
           <Col md={3} sm={12}>

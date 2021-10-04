@@ -1,4 +1,4 @@
-import { SharedDeck } from '../decks/types';
+import { SharedDeck, SubSection } from '../decks/types';
 import { ProfileHistory } from '../profiles/types';
 
 export interface Classroom {
@@ -25,11 +25,11 @@ export interface ParsedStats {
 
 export interface Assignment {
   title: string;
-  classroom: number;
-  tag_query: string;
+  classrooms: number[];
+  sub_sections: SubSection[];
+  essential_only: boolean;
   due_date: string;
   percent_complete?: number;
-  study_session_manager?: number;
   id: number;
 }
 

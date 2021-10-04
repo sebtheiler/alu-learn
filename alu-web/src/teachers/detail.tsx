@@ -179,7 +179,7 @@ function RenderAssignment(props: { assignment: Assignment }) {
   const [studentData] = useApiObjectHook<(number | string)[]>(
     apiStudentPercentCompleteList,
     200, 8016,
-    [assignment.classroom, assignment.id],
+    [assignment.classrooms[0], assignment.id],
     null,
     (response: StudentPercentData[]) => response.map(
       data => [data.name, data.percent_complete ?? 0]
@@ -204,7 +204,7 @@ function RenderAssignment(props: { assignment: Assignment }) {
           Edit
         </Button>
         <CreateEditAssignmentModal
-          classroomId={assignment.classroom}
+          classroomId={assignment.classrooms[0]}
           onHide={() => setShowEditModal(false)}
           showModal={showEditModal}
           assignment={assignment}

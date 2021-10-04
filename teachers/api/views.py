@@ -11,6 +11,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sharing_system.serializers import SharedDeckSerializer
+from skill_tree.models import SubSection
 
 from ..models import Assignment, Classroom
 from ..serializers import (AssignmentSerializer,
@@ -353,51 +354,46 @@ def suspend_students_flashcards_view(request, classroom_id: int):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def create_assignment_view(request, classroom_id: int):
+def create_assignment(request):
     """
-    Allows a teacher to suspend certain flashcards in a student's deck - POST
+    Allows a teacher to create an assignment for their classes
 
     Required information:
-        `classroom_id`: (URL) Id of the classroom to create an assignment in
-        `title`: (Data) Title of the assignment
-        `tag_query`: (Data) Query for the assignment
-        `due_date`: (Data) ISO string of the due date for the assignment
+        `assignment_title`: (Data) Title of the assignment
+        `classroom_ids`: (Data) Ids of the classrooms to create the assignment in
+        `section_ids`: (Data) Ids of the sub sections to assign
+        `essential_only`: (Data) Whether or not the assignment should only show essential cards
+        # `due_date`: (Data) ISO string of the due date for the assignment
     """
-    try:
-        classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
-    except Classroom.DoesNotExist:
-        return Response({'message': 'Classroom not found'}, status=404)
+    assignment_title = request.data.get('assignment_title')
+    classroom_ids = request.data.get('classroom_ids')
+    section_ids = request.data.get('section_ids')
+    essential_only = request.data.get('essential_only')
+    if None in (assignment_title, classroom_ids, section_ids, essential_only):
+        return Response({'message': 'You must specify all arguments'}, status=400)
 
-    title = request.data.get('title')
-    tag_query = request.data.get('tag_query')
-    due_date = request.data.get('due_date')
-    create_essential_copy = request.data.get('create_essential_copy', False)
-    if None in (title, tag_query, due_date):
-        return Response(
-            {'message': 'You must specify `title`, `tag_query`, and `due_date`'},
-            status=400,
-        )
+    classrooms = Classroom.objects.filter(
+        pk__in=classroom_ids,
+        teachers=request.user.profile,
+    )
+    if classrooms.count() != len(classroom_ids) or len(classroom_ids) == 0:
+        return Response({'message': 'Classrooms not found'}, status=404)
 
-    assignments = [
-        Assignment(
-            title=title,
-            classroom=classroom,
-            tag_query=tag_query,
-            due_date=due_date,
-        )
-    ]
-    if create_essential_copy:
-        assignments.append(
-            Assignment(
-                title=f'{title} (Essential Only)',
-                classroom=classroom,
-                tag_query=f'{tag_query} AND essential',
-                due_date=due_date,
-            )
-        )
-    Assignment.objects.bulk_create(assignments)
+    sub_sections = SubSection.objects.filter(
+        pk__in=section_ids,
+        main_section__snapshot__shared_deck__owners=request.user.profile,
+    )
+    if sub_sections.count() != len(section_ids) or len(section_ids) == 0:
+        return Response({'message': 'Sub sections not found'}, status=404)
 
-    return Response({'message': 'Created assignment'}, status=201)
+    assignment = Assignment.objects.create(
+        title=assignment_title,
+        essential_only=essential_only,
+    )
+    assignment.classrooms.set(classrooms)
+    assignment.sub_sections.set(sub_sections)
+
+    return Response(AssignmentSerializer(assignment).data, status=201)
 
 
 @api_view(['GET'])

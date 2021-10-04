@@ -409,7 +409,7 @@ class TeacherTestCase(ImprovedTestCase):
     def test_create_assignment_api(self):
         # Create classroom
         classroom = self.create_classroom('Assignment Class', 1)
-        api_view = api_views.create_assignment_view
+        api_view = api_views.create_assignment
         api_path = f'/api/teachers/classroom/{classroom.pk}/assignments/create/'
         kwargs = {'classroom_id': classroom.pk}
         data = {
