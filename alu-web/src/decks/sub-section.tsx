@@ -2,7 +2,7 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-import Tooltip from 'react-bootstrap/Tooltip';
+// import Tooltip from 'react-bootstrap/Tooltip';
 import { MainSection, SubSection } from './types';
 import { SubSectionButtons } from './buttons/section-buttons';
 
@@ -84,7 +84,7 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
           style={{ background: `conic-gradient(rgba(42, 157, 244, 1) ${(subSection.percent_complete ?? 0)*100}%, transparent 0%)` }}
         >
           <div className='sub-section-inner'>
-            <div className='sub-section-assignment-indicator'>
+            {/* <div className='sub-section-assignment-indicator'>
               <OverlayTrigger
                 overlay={
                   <Tooltip id={`sub-section-assigned-tooltip-${subSection.id}`}>
@@ -94,7 +94,7 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
               >
                 <i className='far fa-star fa-lg' />
               </OverlayTrigger>
-            </div>
+            </div> */}
             <p className='sub-section-text'>{subSection.data.title}</p>
           </div>
         </div>

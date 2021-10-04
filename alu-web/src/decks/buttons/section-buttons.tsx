@@ -12,7 +12,7 @@ import { useContext, useState } from 'react';
 export function MainSectionButtons({ mainSection, numMainSections }: { mainSection: MainSection, numMainSections: number }) {
   const { decksDispatch } = useContext(HomeActionDispatch);
 
-  const renameMainSection = () => {
+  const renameMainSection = async () => {
     const title = window.prompt(
       `Renaming main section "${mainSection.data.title}"`
     ) ?? mainSection.data.title;
@@ -26,12 +26,12 @@ export function MainSectionButtons({ mainSection, numMainSections }: { mainSecti
         title: title,
       },
     });
-    apiObjectEdit<MainSection>('skill_tree', 'mainsection', mainSection.id, {
+    await apiObjectEdit<MainSection>('skill_tree', 'mainsection', mainSection.id, {
       title: title,
     });
   }
 
-  const deleteMainSection = () => {
+  const deleteMainSection = async () => {
     if (!decksDispatch || !window.confirm('Are you sure you want to delete this main section?')) return;
 
     decksDispatch({
@@ -39,7 +39,7 @@ export function MainSectionButtons({ mainSection, numMainSections }: { mainSecti
       deckId: mainSection.deck,
       mainSectionId: mainSection.id,
     });
-    apiObjectDelete<MainSection>('skill_tree', 'mainsection', mainSection.id);
+    await apiObjectDelete<MainSection>('skill_tree', 'mainsection', mainSection.id);
   }
 
   const moveMainSection = (direction: 'UP' | 'DOWN') => {
@@ -96,7 +96,7 @@ interface SubSectionButtonsProps {
 export function SubSectionButtons({ subSection, numSubSections, mainSectionId, deckId }: SubSectionButtonsProps) {
   const { decksDispatch } = useContext(HomeActionDispatch);
 
-  const renameSubSection = () => {
+  const renameSubSection = async () => {
     const title = window.prompt(
       `Renaming sub section "${subSection.data.title}"`
     ) ?? subSection.data.title;
@@ -111,12 +111,12 @@ export function SubSectionButtons({ subSection, numSubSections, mainSectionId, d
         title: title,
       }
     });
-    apiObjectEdit<MainSection>('skill_tree', 'subsection', subSection.id, {
+    await apiObjectEdit<MainSection>('skill_tree', 'subsection', subSection.id, {
       title: title,
     });
   }
 
-  const deleteSubSection = () => {
+  const deleteSubSection = async () => {
     if (!decksDispatch || !window.confirm('Are you sure you want to delete this sub section?')) return;
 
     decksDispatch({
@@ -125,7 +125,7 @@ export function SubSectionButtons({ subSection, numSubSections, mainSectionId, d
       mainSectionId: mainSectionId,
       subSectionId: subSection.id,
     });
-    apiObjectDelete<MainSection>('skill_tree', 'subsection', subSection.id);
+    await apiObjectDelete<MainSection>('skill_tree', 'subsection', subSection.id);
   }
 
   const moveSubSection = (direction: 'UP' | 'DOWN') => {

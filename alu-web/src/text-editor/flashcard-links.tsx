@@ -11,6 +11,7 @@ import { backendFetch, PaginatedResponse, useAsyncState } from '../lookup/lookup
 import { flattenNodes } from '.';
 import { useEffect, useState } from 'react';
 import './editor.scss';
+import IconTooltip from '../decks/buttons/IconTooltip';
 
 export const withFlashCardLinks = (editor: ReactEditor) => {
   const { isInline } = editor;
@@ -28,23 +29,35 @@ export const FlashCardLinkElement = ({ attributes, children, element }) => {
     () => backendFetch('GET', `decks/flashcard/find-universal/${element.flashcardUID}/`),
     [], undefined,
     popoverIsOpen,
-  )
+  );
+
+  const editFlashcard = async e => {
+    e.preventDefault();
+    window.open(`/deck/${flashcard?.parent_deck_id}/flashcards/${flashcard?.id}/edit/`, '_blank');
+  }
 
   return (
     <OverlayTrigger
       overlay={
-        <Popover id='flashcard-preview-popover'>
+        <Popover id='flashcard-preview-popover' style={{ minWidth: '200px' }}>
           <div>
             <Popover.Title as='h3' className='text-center'>
               Flashcard Preview
+              {flashcard?.id && <IconTooltip
+                tooltip='Edit this flashcard'
+                onClick={editFlashcard}
+                faClass='fas fa-external-link-alt'
+                className='float-right'
+                id={`edit-flashcard-${flashcard.id}`}
+              />}
             </Popover.Title>
-            <Popover.Content>
+            {flashcard?.data ? <Popover.Content>
               {flashcard && flashcard.data.fields.map((field, i) => <>
                 <RenderRichText text={field} />
                 {i !== flashcard.data.fields.length - 1 && <hr />}
               </>)}
               {!flashcard && <p>Loading…</p>}
-            </Popover.Content>
+            </Popover.Content> : <Popover.Content>Flashcard not found</Popover.Content>}
           </div>
         </Popover>
       }

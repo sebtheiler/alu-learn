@@ -1161,9 +1161,9 @@ class FlashCardAction(AbstractAction):
     # or additions), or an abstract universal flashcard ID: XOR
     flashcard = models.OneToOneField(
         FlashCard,
+        null=True, blank=True,
         on_delete=models.CASCADE,
         related_name='attached_action',
-        unique=True,
     )
     universal_flashcard_id = models.UUIDField(null=True, blank=True)
 

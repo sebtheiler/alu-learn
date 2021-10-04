@@ -1,9 +1,28 @@
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { RenderRichText } from '../utils';
+import IconTooltip from './buttons/IconTooltip';
+import Row from 'react-bootstrap/Row';
 import { FlashCard } from './types';
+import { RenderRichText } from '../utils';
+import { apiObjectDelete } from '../lookup/lookup';
 
-export default function RenderFlashcard({ flashcard, deckId }: { flashcard: FlashCard, deckId?: number }) {
+// TODO: put this in a separate file
+export type FlashCardEvent =
+  | { action: 'DELETE', flashcardId: string }
+
+interface RenderFlashcardProps {
+  flashcard: FlashCard;
+  dispatchFlashcards?: React.Dispatch<FlashCardEvent>;
+  deckId?: number;
+}
+export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards }: RenderFlashcardProps) {
+  const deleteFlashcard = async (e, flashcardId: string) => {
+    e.stopPropagation();
+    if (!dispatchFlashcards || !window.confirm('Are you sure you want do delete this flashcard?')) return;
+    await apiObjectDelete<FlashCard>('decks', 'flashcard', flashcardId).then(() =>
+      dispatchFlashcards({ action: 'DELETE', flashcardId: flashcardId }),
+    );
+  }
+
   return (
     <div
       role='button'
@@ -17,7 +36,17 @@ export default function RenderFlashcard({ flashcard, deckId }: { flashcard: Flas
         <Row className='flashcard-head'>
           <Col>
             <span>Flashcard #{flashcard.order_num + 1}</span>
-            <span className='float-right'>{flashcard.data?.tags}</span>
+            <span className='float-right mr-3'>{flashcard.data?.tags}</span>
+            {deckId && <span>
+              <IconTooltip
+                tooltip='Delete Flashcard'
+                onClick={e => deleteFlashcard(e, flashcard.id)}
+                faClass='fas fa-trash-alt'
+                className='float-right'
+                style={{ transform: 'translateY(4px)'}}
+                id={`delete-flashcard-${flashcard.id}`}
+              />
+            </span>}
           </Col>
         </Row>
         <Row className='flashcard-body'>
