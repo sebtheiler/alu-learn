@@ -39,4 +39,5 @@ urlpatterns = [
     ),
     path('subsection/create/', views.create_sub_section),
     path('subsection/<uuid:sub_section_id>/edit/', views.edit_sub_section),
+    path('abstractsection/<str:section_title>/', views.get_section_from_title),
 ]

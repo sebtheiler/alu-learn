@@ -351,7 +351,7 @@ def flashcard_create_view(request, *args, **kwargs):
             request.data.get('sub_section'),
             deck_id=deck.pk,
         )
-    except SubSection.DoesNotExist:
+    except (MainSection.DoesNotExist, SubSection.DoesNotExist):
         return Response(
             {'message': 'Subsection not found'},
             status=404,

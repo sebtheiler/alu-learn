@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from skill_tree.serializers import MainSectionSerializer, SubSectionSerializer
 
-from ..models import MainSection, SectionData, SubSection
+from ..models import AbstractSection, MainSection, SectionData, SubSection
 
 
 @api_view(['POST'])
@@ -124,3 +124,38 @@ def get_deck_sections_percent_complete(request, deck_id, *args, **kwargs):
     )
 
     return Response(sections_percent_complete, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_section_from_title(request, section_title):
+    deck_id = request.GET.get('deck_id')
+    if deck_id is None:
+        return Response({'message': 'You must specify `deck_id`'}, status=400)
+
+    try:
+        section, is_main_section = AbstractSection.get_from_formatted_title(
+            section_title,
+            deck_id,
+        )
+
+        # Check that the current user has access to the section
+        if (
+            (is_main_section and section.deck.user != request.user)
+            or
+            (not is_main_section and section.main_section.deck.user != request.user)
+        ):
+            raise MainSection.DoesNotExist
+    except (MainSection.DoesNotExist, SubSection.DoesNotExist):
+        return Response({'message': 'Section not found'}, status=404)
+
+    if is_main_section:
+        return Response(
+            {'section': MainSectionSerializer(section).data, 'is_main_section': True},
+            status=200,
+        )
+    else:
+        return Response(
+            {'section': SubSectionSerializer(section).data, 'is_main_section': False},
+            status=200,
+        )

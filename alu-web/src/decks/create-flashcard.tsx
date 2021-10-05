@@ -6,15 +6,18 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import LoadingButton from './buttons/LoadingButton';
 import Row from 'react-bootstrap/Row';
-import { FlashCard, FlashCardTypes } from './types';
+import { Deck, FlashCard, FlashCardTypes, MainSection, SubSection } from './types';
 import { Node as SlateNode, Transforms } from 'slate';
 import { QuestionBubble } from '../utils';
 import { Slate, ReactEditor } from 'slate-react';
-import { apiObjectCreate, apiObjectDelete, apiObjectEdit, useObjectGet } from '../lookup/lookup';
+import { apiObjectCreate, apiObjectDelete, apiObjectEdit, apiObjectGet, backendFetch, useAsyncState, useObjectGet } from '../lookup/lookup';
 import { blankSlateElement, createFullEditor, EditorButtons, FullEditor } from '../text-editor';
 import { blob2base64 } from '../utils/utils';
 import { useState, useMemo } from 'react';
 import './create-flashcard.scss';
+import { cleanTitle } from './sub-section';
+
+type Section = { section: MainSection, is_main_section: true } | { section: SubSection, is_main_section: false };
 
 const ONE_SIDED_CARDS = ['CLOZE'];
 interface CreateFlashcardProps {
@@ -23,6 +26,24 @@ interface CreateFlashcardProps {
   flashcardId?: string;
 }
 export default function CreateFlashcard({ deckId, flashcardId, subSection }: CreateFlashcardProps) {
+  const [section] = useAsyncState<Section>(() => backendFetch('GET', `skill_tree/abstractsection/${subSection}/`, {
+    deck_id: deckId,
+  }));
+  useMemo(async () => {
+    if (subSection.length === 0) {
+      const deck = await apiObjectGet<Deck>('decks', 'deck', deckId);
+      const mainSectionTitle = cleanTitle(deck.main_sections[0].data.title);
+      const subSectionTitle = cleanTitle(deck.main_sections[0].sub_sections[0].data.title);
+      window.location.href = `/deck/${deckId}/flashcards/create/${mainSectionTitle}__${subSectionTitle}/`;
+    }
+
+    if (!section) return;
+    if (section.is_main_section) {
+      const subSectionTitle = cleanTitle(section.section.sub_sections[0].data.title);
+      window.location.href = `/deck/${deckId}/flashcards/create/${subSection}__${subSectionTitle}`;
+    }
+  }, [section, deckId, subSection]);
+
   const frontEditor = useMemo<ReactEditor>(createFullEditor, []);
   const [frontValue, setFrontValue] = useState<SlateNode[]>(blankSlateElement)
   const [frontSelectedImageUrl, setFrontSelectedImageUrl] = useState('');

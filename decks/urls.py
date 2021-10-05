@@ -16,6 +16,10 @@ urlpatterns = [
         'decks/study.html',
         context_kwargs=True,
     )),
+    path('deck/<int:deck_id>/flashcards/create/', render_basic_view(
+        'flashcards/create.html',
+        context_kwargs=True,
+    )),
     path('deck/<int:deck_id>/flashcards/create/<str:sub_section>/', render_basic_view(
         'flashcards/create.html',
         context_kwargs=True,
