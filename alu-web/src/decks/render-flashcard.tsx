@@ -36,7 +36,6 @@ export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards 
         <Row className='flashcard-head'>
           <Col>
             <span>Flashcard #{flashcard.order_num + 1}</span>
-            <span className='float-right mr-3'>{flashcard.data?.tags}</span>
             {deckId && <span>
               <IconTooltip
                 tooltip='Delete Flashcard'
@@ -47,6 +46,7 @@ export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards 
                 id={`delete-flashcard-${flashcard.id}`}
               />
             </span>}
+            <span className='float-right mr-3'>{flashcard.data?.tags}</span>
           </Col>
         </Row>
         <Row className='flashcard-body'>

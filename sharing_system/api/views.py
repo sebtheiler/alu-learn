@@ -15,8 +15,8 @@ from utils.api_utils import (assert_request_data_type, get_obj_or_404,
                              get_paginated_queryset_response)
 
 from ..models import (FlashCardAction, MainSectionAction, SharedDeck, SnapShot,
-                      SubSectionAction, SubmittedChanges)
-from ..serializers import SharedDeckSerializer, SnapShotSerializer, SubmittedChangesSerializer
+                      SubmittedChanges, SubSectionAction)
+from ..serializers import SharedDeckSerializer, SubmittedChangesSerializer
 
 
 @api_view(['GET'])

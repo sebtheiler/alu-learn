@@ -461,7 +461,7 @@ class SharedDeck(models.Model):
         forked_shared_deck.owners.set([author])
 
         parent_snapshot = origin_deck.equivalent_to_snapshot
-        child_snapshot = SharedDeck.push(
+        SharedDeck.push(
             deck=origin_deck,
             shared_deck=forked_shared_deck,
             author=author,
