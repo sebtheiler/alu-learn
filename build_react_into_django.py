@@ -11,27 +11,34 @@ import alu.settings as settings
 # * decks/templates/react/*
 # * decks/templates/react.html
 # * static-root/*  (via ./manage.py collectstatic)
+CHANGED_FILES = [
+    'static/css',
+    'static/js',
+    'static/media',
+    'decks/templates/react',
+    'decks/templates/react.html',
+    'static-root',
+]
 
-base_dir = os.getcwd()
-REACT_DIRECTORY = os.path.join(base_dir, 'alu-web/')
+BASE_DIR = os.getcwd()
+REACT_DIRECTORY = os.path.join(BASE_DIR, 'alu-web/')
+ALUDIR = '/home/aluadmin/aludir'
 
 if settings.PRODUCTION:
     PYTHON_PATH = '/home/aluadmin/aludir/aluenv/bin/python3'
 else:
     PYTHON_PATH = settings.env_vars['PYTHON_PATH']
-COMPILE_REACT = True  # not PRODUCTION
 
 
 def build_react_into_django():
     # Compile react
-    if COMPILE_REACT:
-        print('Compiling React...')
-        os.chdir(REACT_DIRECTORY)
-        if settings.PRODUCTION:
-            os.system('npm run build --nomaps')  # don't send raw React code to client
-        else:
-            os.system('npm run build')
-        os.chdir(base_dir)
+    print('Compiling React...')
+    os.chdir(REACT_DIRECTORY)
+    if settings.PRODUCTION:
+        os.system('npm run build --nomaps')  # don't send raw React code to client
+    else:
+        os.system('npm run build')
+    os.chdir(BASE_DIR)
 
     # Copy static files
     print('Copying static files...')
@@ -40,7 +47,7 @@ def build_react_into_django():
         'js',
         'media',
     ]
-    django_static_dir = os.path.join(base_dir, 'static')
+    django_static_dir = os.path.join(BASE_DIR, 'static')
     react_static_dir = os.path.join(REACT_DIRECTORY, 'build/static/')
     for sub_dir in sub_directories:
         # Remove each directory if it exists
@@ -54,22 +61,22 @@ def build_react_into_django():
             copytree(react_sub_dir, django_sub_dir)
 
     # Remove the 'static-root' folder
-    if os.path.isdir(os.path.join(base_dir, 'static-root')):
-        rmtree(os.path.join(base_dir, 'static-root'))
-    os.mkdir(os.path.join(base_dir, 'static-root/'))
+    if os.path.isdir(os.path.join(BASE_DIR, 'static-root')):
+        rmtree(os.path.join(BASE_DIR, 'static-root'))
+    os.mkdir(os.path.join(BASE_DIR, 'static-root/'))
 
-    os.system(f'{PYTHON_PATH} manage.py collectstatic')
+    os.system(f'"{PYTHON_PATH}" manage.py collectstatic')
 
     # Copy HTML files
     print('Copying HTML files...')
     copyfile(
-        os.path.join(base_dir, 'alu-web/build/index.html'),
-        os.path.join(base_dir, 'decks/templates/react.html'),
+        os.path.join(BASE_DIR, 'alu-web/build/index.html'),
+        os.path.join(BASE_DIR, 'decks/templates/react.html'),
     )
-    if not os.path.isdir(os.path.join(base_dir, 'decks/templates/react/')):
-        os.mkdir(os.path.join(base_dir, 'decks/templates/react/'))
+    if not os.path.isdir(os.path.join(BASE_DIR, 'decks/templates/react/')):
+        os.mkdir(os.path.join(BASE_DIR, 'decks/templates/react/'))
 
-    with open(os.path.join(base_dir, 'decks/templates/react.html'), 'r') as f:
+    with open(os.path.join(BASE_DIR, 'decks/templates/react.html'), 'r') as f:
         contents = f.read()
 
         # <script>!function(e){function r(r) .......... r(a[i]);var p=f;t()}([])</script>
@@ -92,7 +99,7 @@ def build_react_into_django():
         )
 
     def write_file(filename, contents):
-        with open(os.path.join(base_dir, filename), 'w+') as f:
+        with open(os.path.join(BASE_DIR, filename), 'w+') as f:
             f.write(contents)
 
     write_file('decks/templates/react/base_embed.html', base_embed_html)
@@ -104,6 +111,31 @@ def build_react_into_django():
     os.system(f'"{PYTHON_PATH}" manage.py shell -c "{clear_cache}"')
     print('Finished')
 
+    if input('Copy files to production? (y/n) ') == 'y':
+        for CHANGED_FILE in CHANGED_FILES:
+            if CHANGED_FILE == 'static-root':
+                # This will be generated on the server with `collectstatic`
+                continue
+
+            LOCAL_FILE_PATH = os.path.join(BASE_DIR, CHANGED_FILE)
+            REMOTE_FILE_PATH = f'root@alu:{os.path.join(ALUDIR, CHANGED_FILE)}'
+            os.system(f'scp -r "{LOCAL_FILE_PATH}" "{REMOTE_FILE_PATH}"')
+
+
+def delete_react_files():
+    for CHANGED_FILE in CHANGED_FILES:
+        os.system(f'sudo rm -rf "{os.path.join(BASE_DIR, CHANGED_FILE)}"')
+
+    input('Press enter once you have copied the new files to production')
+    os.system(f'"{PYTHON_PATH}" manage.py collectstatic')
+
 
 if __name__ == '__main__':
-    build_react_into_django()
+    if settings.PRODUCTION and os.geteuid() != 0:
+        print('Run as sudo.')
+        exit()
+
+    if settings.PRODUCTION:
+        delete_react_files()
+    else:
+        build_react_into_django()
