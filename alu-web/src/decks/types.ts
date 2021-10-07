@@ -3,11 +3,10 @@ import { Node as SlateNode } from 'slate';
 
 export type UUID = string;  // Just a more clear representation
 
-export type DeckDifficulty = 'HARD' | 'NORM' | 'EASY';
 export type EditAccess = 'PERSONAL' | 'FRIENDS' | 'EVERYBODY' | 'STUDENTS';
 export type FlashCardTypes = 'BASIC' | 'REVERSED' | 'CLOZE';
 export type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
-export type SchedulingAlgorithm = 'ANKI' | 'ANKING' | 'MANUAL-SR' | 'CRAM';
+export type SchedulingAlgorithm = 'ANKI' | 'ANKING';
 export type ViewAccess = 'PUBLIC' | 'FRIENDS' | 'STUDENT';
 
 export interface Deck {

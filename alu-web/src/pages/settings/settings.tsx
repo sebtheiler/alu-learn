@@ -71,6 +71,7 @@ export function SettingsPage({ username }) {
           min={5}
           max={200}
           step={5}
+          required
         />
       </Form.Group>
       <Form.Group>
@@ -81,8 +82,8 @@ export function SettingsPage({ username }) {
           defaultValue={profile.settings.user_type}
           custom
         >
-          <option value='STUDENT'>Student/Learner</option>
-          <option value='TEACHER'>Teacher/Parent</option>
+          <option value='STUDENT'>Student</option>
+          <option value='TEACHER'>Teacher</option>
         </Form.Control>
       </Form.Group>
       {/* <Form.Group>
