@@ -12,10 +12,11 @@ export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll
 interface SubSectionProps {
   subSection: SubSection;
   mainSection: MainSection;
-  numSubSections: number;
+  numSubSections?: number;
   readOnly?: boolean;
+  studyable?: boolean;
 }
-export default function RenderSubSection({ subSection, mainSection, numSubSections, readOnly }: SubSectionProps) {
+export default function RenderSubSection({ subSection, mainSection, numSubSections, readOnly, studyable }: SubSectionProps) {
   return (
     <Col
       xl={3}
@@ -39,9 +40,9 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
             <Popover.Content>
               <p>{subSection.data.description}</p>
               <div>
-                {!readOnly && <Button
+                {studyable && <Button
                   href={
-                    `/deck/${mainSection.deck}/study/\
+                    `study/\
                     ${cleanTitle(mainSection.data.title)}__\
                     ${cleanTitle(subSection.data.title)}/`.replaceAll(' ', '')
                   }

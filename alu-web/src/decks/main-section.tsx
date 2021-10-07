@@ -39,6 +39,7 @@ export default function RenderMainSection({ mainSection, numMainSections, readOn
             mainSection={mainSection}
             numSubSections={mainSection.sub_sections.length}
             readOnly={readOnly}
+            studyable={!readOnly}
             key={subSection.id}
           />
         )}

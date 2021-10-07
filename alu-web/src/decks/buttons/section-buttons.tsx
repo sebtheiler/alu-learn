@@ -90,7 +90,7 @@ export function MainSectionButtons({ mainSection, numMainSections }: { mainSecti
 interface SubSectionButtonsProps {
   subSection: SubSection;
   mainSectionId: string;
-  numSubSections: number;
+  numSubSections?: number;
   deckId: number;
 }
 export function SubSectionButtons({ subSection, numSubSections, mainSectionId, deckId }: SubSectionButtonsProps) {
@@ -158,18 +158,20 @@ export function SubSectionButtons({ subSection, numSubSections, mainSectionId, d
         faClass='fas fa-pencil-alt float-right ml-2'
         id={`edit-sub-section-tooltip-${subSection.id}`}
       />
-      {subSection.order_num !== numSubSections - 1 && <IconTooltip
-        tooltip='Move sub section right'
-        onClick={moveSubSection('DOWN')}
-        faClass='fas fa-caret-right float-right ml-2'
-        id={`move-down-sub-section-tooltip-${subSection.id}`}
-      />}
-      {subSection.order_num !== 0 && <IconTooltip
-        tooltip='Move sub section left'
-        onClick={moveSubSection('UP')}
-        faClass='fas fa-caret-left float-right ml-2'
-        id={`move-up-sub-section-tooltip-${subSection.id}`}
-      />}
+      {numSubSections && <>
+        {subSection.order_num !== numSubSections - 1 && <IconTooltip
+          tooltip='Move sub section right'
+          onClick={moveSubSection('DOWN')}
+          faClass='fas fa-caret-right float-right ml-2'
+          id={`move-down-sub-section-tooltip-${subSection.id}`}
+        />}
+        {subSection.order_num !== 0 && <IconTooltip
+          tooltip='Move sub section left'
+          onClick={moveSubSection('UP')}
+          faClass='fas fa-caret-left float-right ml-2'
+          id={`move-up-sub-section-tooltip-${subSection.id}`}
+        />}
+      </>}
     </div>
   );
 }

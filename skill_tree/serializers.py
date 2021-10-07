@@ -53,12 +53,20 @@ class AbstractSectionSerializer(serializers.ModelSerializer):
 
 
 class SubSectionSerializer(AbstractSectionSerializer):
+    main_section = serializers.SerializerMethodField(read_only=True)
+
     class Meta(AbstractSectionSerializer.Meta):
         model = SubSection
         fields = AbstractSectionSerializer.Meta.fields + (
-            'main_section',  # just ID
+            'main_section',
         )
         read_only_fields = fields
+
+    def get_main_section(self, obj):
+        if self.context.get('get_main_section'):
+            return MainSectionSerializer(obj.main_section).data
+        else:
+            return obj.main_section_id
 
 
 class SubSectionActionSerializer(AbstractActionSerializer):
