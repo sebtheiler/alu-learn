@@ -70,7 +70,7 @@ export interface MainSection extends AbstractSection {
 }
 
 export interface SubSection extends AbstractSection {
-  main_section: number;
+  main_section: UUID | MainSection;
 }
 
 export interface SharedDeck {

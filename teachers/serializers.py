@@ -66,7 +66,12 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class AssignmentSerializer(serializers.ModelSerializer):
-    sub_sections = SubSectionSerializer('sub_sections', many=True)
+    # sub_sections = SubSectionSerializer(
+    #     'sub_sections',
+    #     many=True,
+    #     context={'get_main_section': True},
+    # )
+    sub_sections = serializers.SerializerMethodField(read_only=True)
     percent_complete = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
@@ -86,6 +91,13 @@ class AssignmentSerializer(serializers.ModelSerializer):
             return None
 
         return obj.calc_percent_complete(self.context['request'].user)
+
+    def get_sub_sections(self, obj):
+        return SubSectionSerializer(
+            obj.sub_sections.all(),
+            many=True,
+            context={'get_main_section': True},
+        ).data
 
 
 class ClassroomAssignmentsSerializer(ClassroomSerializer):
