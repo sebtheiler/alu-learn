@@ -1,10 +1,10 @@
 import RenderMainSection from './main-section';
+import UpdateDeck from './update-deck';
 import { CreateMainSectionButton } from './buttons/section-buttons';
 import { Deck } from './types';
 import { HomeActionDispatch } from './context';
 import { useAsyncDispatch, getDeckSectionsPercentComplete, PercentComplete } from '../lookup/lookup';
 import { useContext } from 'react';
-import UpdateDeck from './update-deck';
 
 const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: PercentComplete[]) => {
   let deckCopy = deck;

@@ -32,8 +32,7 @@ def classroom_student_detail(request, classroom_id, *args, **kwargs):
     })
 
 
-@permissions()
-def classroom_assignment_study(request, classroom_id, sub_section, *args, **kwargs):
+def get_student_sub_section(request, classroom_id, sub_section):
     titles = sub_section.split('__')
     if len(titles) != 2:
         raise Http404()
@@ -68,5 +67,20 @@ def classroom_assignment_study(request, classroom_id, sub_section, *args, **kwar
     except SubSection.DoesNotExist:
         raise Http404()
 
+    return student_sub_section
+
+
+@permissions()
+def classroom_assignment_study(request, classroom_id, sub_section, *args, **kwargs):
+    student_sub_section = get_student_sub_section(request, classroom_id, sub_section)
+
     url = f'/deck/{student_sub_section.main_section.deck_id}/study/{sub_section}/'
+    return redirect(f'{url}?isAssignment=true')
+
+
+@permissions()
+def classroom_flashcards(request, classroom_id, sub_section, *args, **kwargs):
+    student_sub_section = get_student_sub_section(request, classroom_id, sub_section)
+
+    url = f'/deck/{student_sub_section.main_section.deck_id}/flashcards/sections/{sub_section}/'
     return redirect(f'{url}?isAssignment=true')

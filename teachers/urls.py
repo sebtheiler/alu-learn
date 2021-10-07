@@ -14,8 +14,8 @@ urlpatterns = [
         'classroom/<int:classroom_id>/study/<str:sub_section>/',
         views.classroom_assignment_study,
     ),
-    # path(
-    #     'classrooms/<int:classroom_id>/flashcards/sections/<str:sub_section>/',
-    #     views.classroom_flashcards,
-    # ),
+    path(
+        'classroom/<int:classroom_id>/flashcards/sections/<str:sub_section>/',
+        views.classroom_flashcards,
+    ),
 ]
