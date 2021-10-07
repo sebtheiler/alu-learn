@@ -1,13 +1,25 @@
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Spinner from 'react-bootstrap/Spinner';
 import Tooltip from 'react-bootstrap/Tooltip';
+import { useState } from 'react';
 
 interface IconTooltipProps {
   tooltip: string;
-  onClick(e): void;
+  onClick(e): Promise<void>;
   faClass: string;
+  className?: string;
+  style?: React.CSSProperties;
   id: string;
 }
-export default function IconTooltip({ tooltip, onClick, faClass, id }: IconTooltipProps) {
+export default function IconTooltip({ tooltip, onClick, faClass, className, style, id }: IconTooltipProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleClick = async (e) => {
+    setIsLoading(true);
+    await onClick(e);
+    setIsLoading(false);
+  }
+
   return (
     <OverlayTrigger
       overlay={
@@ -16,11 +28,24 @@ export default function IconTooltip({ tooltip, onClick, faClass, id }: IconToolt
         </Tooltip>
       }
     >
-      <i
-        className={faClass}
-        role='button'
-        onClick={onClick}
-      />
+      {isLoading
+        ? (
+          <Spinner
+            animation='border'
+            size='sm'
+            className={className}
+            variant='primary'
+          />
+        )
+        : (
+          <i
+            className={faClass + ` ${className}`}
+            role='button'
+            onClick={handleClick}
+            style={style}
+          />
+        )
+      }
     </OverlayTrigger>
   );
 }

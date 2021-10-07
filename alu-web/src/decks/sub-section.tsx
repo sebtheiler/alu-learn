@@ -2,7 +2,7 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-import Tooltip from 'react-bootstrap/Tooltip';
+// import Tooltip from 'react-bootstrap/Tooltip';
 import { MainSection, SubSection } from './types';
 import { SubSectionButtons } from './buttons/section-buttons';
 
@@ -12,10 +12,11 @@ export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll
 interface SubSectionProps {
   subSection: SubSection;
   mainSection: MainSection;
-  numSubSections: number;
+  numSubSections?: number;
   readOnly?: boolean;
+  studyable?: boolean;
 }
-export default function RenderSubSection({ subSection, mainSection, numSubSections, readOnly }: SubSectionProps) {
+export default function RenderSubSection({ subSection, mainSection, numSubSections, readOnly, studyable }: SubSectionProps) {
   return (
     <Col
       xl={3}
@@ -39,9 +40,9 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
             <Popover.Content>
               <p>{subSection.data.description}</p>
               <div>
-                {!readOnly && <Button
+                {studyable && <Button
                   href={
-                    `/deck/${mainSection.deck}/study/\
+                    `study/\
                     ${cleanTitle(mainSection.data.title)}__\
                     ${cleanTitle(subSection.data.title)}/`.replaceAll(' ', '')
                   }
@@ -84,7 +85,7 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
           style={{ background: `conic-gradient(rgba(42, 157, 244, 1) ${(subSection.percent_complete ?? 0)*100}%, transparent 0%)` }}
         >
           <div className='sub-section-inner'>
-            <div className='sub-section-assignment-indicator'>
+            {/* <div className='sub-section-assignment-indicator'>
               <OverlayTrigger
                 overlay={
                   <Tooltip id={`sub-section-assigned-tooltip-${subSection.id}`}>
@@ -94,7 +95,7 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
               >
                 <i className='far fa-star fa-lg' />
               </OverlayTrigger>
-            </div>
+            </div> */}
             <p className='sub-section-text'>{subSection.data.title}</p>
           </div>
         </div>

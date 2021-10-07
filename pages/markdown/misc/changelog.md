@@ -1,3 +1,17 @@
+## Classroom Fixes & Identicons - Oct 05 - 1.0.3
+Classrooms are getting closer to final release with a bunch of improvements and fixes to the current system.  This update is mostly just fixes, but also introduces "remixing" shared decks to create a totally new "branch," and gives everyone a unique identicon for their profile picture.
+
+
+* **Added Assignments:** Teachers can now assign sub sections to their classes
+* **Improved Student List:** Improved teachers' displays for students in their class
+* **Added Identicons:** You now have a slightly more personalized profile picture in the top right.  This is completely unique and based on your username.  In the future, you will be able to further customize your profile picture.
+* **Added Deck Remixing:** You can now **remix** decks, allowing you to create a new shared deck from a copied deck, rather than updating the original deck.  This allows you to create a completely new copy of a shared deck, that others can independently contribute to, rather than everything being tied to the original shared deck.  Classrooms also use this feature to allow teachers to "reshare" shared decks.
+* **Added Flashcard Delete Button:** Added a trash can icon to flashcards when viewing them as a list.  This makes deleting multiple flashcards much easier.
+* **Fixed Flashcard Deleting:** Fixed an error message that occured when trying to delete flashcards in a local copy of a shared deck
+* **Fixed Special Characters in Titles:** You can now have special characters (like ampersands) in the titles of sub sections and main sections
+* **Fixed Image Loading from URLs:** You can now load images directly from a URL, rather than having to download the file manually
+* **Fixed Issue with Flashcard Links:** Fixed an issue where Alu would crash if a flashcard link linked to a deleted flashcard.
+
 ## Flashcard Links - Sep 28 - 1.0.2
 Flashcard links!  You can now format text in a flashcard to provide a link to another flashcard.  When hovering over this text, you will be able to see a preview of the linked flashcard.
 

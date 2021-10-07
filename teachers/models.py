@@ -29,14 +29,24 @@ class Classroom(models.Model):
         return self.title
 
     def attach_deck(self, deck: Deck) -> SharedDeck:
-        # Create or get shared deck
+        # Create, get, or remix shared deck
+        description = f'Deck for "{self.title}."  Students can copy and study this deck.'
         if deck.equivalent_to_snapshot and deck.equivalent_to_snapshot.shared_deck:
-            shared_deck = deck.equivalent_to_snapshot.shared_deck
+            if deck.equivalent_to_snapshot.shared_deck.attached_to_classrooms.count() > 0:
+                shared_deck = deck.equivalent_to_snapshot.shared_deck
+            else:
+                shared_deck = SharedDeck.remix(
+                    origin_deck=deck,
+                    title=deck.title,
+                    description=description,
+                    view_access='STUDENT',
+                    edit_access='PERSONAL',
+                )
         else:
             shared_deck = SharedDeck.create(
                 origin_deck=deck,
                 title=deck.title,
-                description=f'Deck for "{self.title}."  Students can copy and study this deck.',
+                description=description,
                 view_access='STUDENT',
                 edit_access='PERSONAL',
                 owners=self.teachers.all(),

@@ -7,6 +7,7 @@ urlpatterns = [
     path('deck/<int:deck_id>/actions/', views.get_deck_actions),
     path('deck/<int:deck_id>/pull/', views.pull_deck_updates),
     path('deck/<int:deck_id>/share/', views.shared_deck_create_view),
+    path('deck/<int:deck_id>/remix/', views.remix_deck),
     path('flashcard/list/', views.snapshot_flashcards_view),
     path('resolve/', views.resolve_conflict),
     path('shareddeck/<int:shared_deck_id>/', views.get_shared_deck),

@@ -15,7 +15,7 @@ from utils.api_utils import (assert_request_data_type, get_obj_or_404,
                              get_paginated_queryset_response)
 
 from ..models import (FlashCardAction, MainSectionAction, SharedDeck, SnapShot,
-                      SubSectionAction, SubmittedChanges)
+                      SubmittedChanges, SubSectionAction)
 from ..serializers import SharedDeckSerializer, SubmittedChangesSerializer
 
 
@@ -253,6 +253,36 @@ def pull_deck_updates(request, deck_id: int, *args, **kwargs):
         },
         status=200,
     )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def remix_deck(request, deck_id):
+    if resp := assert_request_data_type(request, {
+        'title': str,
+        'description': str,
+        'view_access': str,
+        'edit_access': str,
+    }):
+        return resp
+
+    try:
+        origin_deck = Deck.objects.get(
+            pk=deck_id,
+            user=request.user,
+        )
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    shared_deck = SharedDeck.remix(
+        origin_deck=origin_deck,
+        title=request.data.get('title'),
+        description=request.data.get('description'),
+        view_access=request.data.get('view_access'),
+        edit_access=request.data.get('edit_access'),
+    )
+
+    return Response(SharedDeckSerializer(shared_deck).data, status=201)
 
 
 @api_view(['GET'])

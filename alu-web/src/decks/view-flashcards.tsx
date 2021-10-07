@@ -1,11 +1,24 @@
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Container from 'react-bootstrap/Container';
-import RenderFlashcard from './render-flashcard';
+import RenderFlashcard, { FlashCardEvent } from './render-flashcard';
 import { FlashCard } from './types';
 import { capitalize } from '../utils';
 import { useObjectPaginatedList } from '../lookup/lookup';
 import './view-flashcards.scss';
+
+const flashcardReducer = (state: FlashCard[] | undefined, event: FlashCardEvent) => {
+  if (!state) return state;
+
+  let newState = state;
+  switch (event.action) {
+    case 'DELETE':
+      newState = newState.filter(flashcard => flashcard.id !== event.flashcardId)
+      return [...newState];
+    default:
+      return state;
+  }
+}
 
 interface ViewFlashcardsProps {
   deckId?: number;
@@ -14,10 +27,10 @@ interface ViewFlashcardsProps {
   section?: string;
 }
 export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, section='', }: ViewFlashcardsProps) {
-  const [flashcards, , fetchNext] = useObjectPaginatedList<FlashCard>(
+  const [flashcards, dispatchFlashcards, fetchNext] = useObjectPaginatedList<FlashCard, FlashCardEvent>(
     sharedDeckId ? 'sharing_system' : 'decks',
     'flashcard',
-    undefined,
+    flashcardReducer,
     sharedDeckId ? {
       snapshot_id: snapshotId,
       shared_deck_id: sharedDeckId,
@@ -63,6 +76,7 @@ export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, secti
     {flashcards.map(flashcard =>
       <RenderFlashcard
         flashcard={flashcard}
+        dispatchFlashcards={dispatchFlashcards}
         deckId={deckId}
         key={flashcard.id}
       />

@@ -2,7 +2,9 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
+import IconTooltip from './buttons/IconTooltip';
 import LoadingButton from './buttons/LoadingButton';
+import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import RenderActions, { Actions } from './render-actions';
@@ -115,6 +117,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
         {sharedDeck ? <>Updating
           "<a href={`/community/deck/${sharedDeck.id}`}>{sharedDeck.title}</a>"
         </> : `Sharing "${deck.title}"`}
+        {sharedDeck && <RemixButton deckId={parseInt(deckId)} sharedDeck={sharedDeck} />}
       </h1>
       <Row>
         <Col md={6} xs={12}>
@@ -257,4 +260,57 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
       </Row>
     </Container>
   );
+}
+
+function RemixButton({ deckId, sharedDeck }: { deckId: number, sharedDeck: SharedDeck }) {
+  const [remixModalIsOpen, setRemixModalIsOpen] = useState(false);
+  const [remixTitle, setRemixTitle] = useState(`Remix of "${sharedDeck.title}"`);
+
+  const createRemix = async () => {
+    await backendFetch<SharedDeck>('POST', `sharing_system/deck/${deckId}/remix/`, {
+      title: remixTitle,
+      description: `Remix of "${sharedDeck.title}"`,
+      view_access: 'PUBLIC',
+      edit_access: 'PERSONAL',
+    }).then(sharedDeck => window.location.href = `/community/deck/${sharedDeck.id}/`);
+  }
+
+  return (<>
+    <IconTooltip
+      tooltip='Remix this shared deck'
+      onClick={async () => setRemixModalIsOpen(true)}
+      faClass='fas fa-code-branch'
+      className='float-right'
+      id='code-branch-tooltip'
+    />
+    <Modal show={remixModalIsOpen} onHide={() => setRemixModalIsOpen(false)}>
+      <Modal.Header>
+        <Modal.Title>Remixing "{sharedDeck.title}"</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>Remixing allows you to create a new shared deck from this copied deck, rather than pushing your changes to the current shared deck.</p>
+        <p>This is useful when you want to make an entirely new shared deck without updating the original.</p>
+        <hr />
+        <Form.Group>
+          <Form.Label>
+            Remix Title{' '}
+            <QuestionBubble>This will be the title of the new shared deck</QuestionBubble>
+          </Form.Label>
+          <Form.Control
+            type='text'
+            name='remixTitle'
+            onChange={e => setRemixTitle(e.target.value)}
+            defaultValue={`Remix of "${sharedDeck.title}"`}
+            required
+          />
+        </Form.Group>
+        {remixTitle.length > 0 && <LoadingButton
+          clickFunc={createRemix}
+          block
+        >
+          Create Remix
+        </LoadingButton>}
+      </Modal.Body>
+    </Modal>
+  </>);
 }

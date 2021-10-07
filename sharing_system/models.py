@@ -184,8 +184,9 @@ class SharedDeck(models.Model):
         shared_deck: SharedDeck,
         author: Profile,
         message: str,
+        origin_snapshot: SnapShot = None,  # only specify when forking
     ) -> SnapShot:
-        latest_snapshot = shared_deck.get_latest_snapshot()
+        latest_snapshot = origin_snapshot or shared_deck.get_latest_snapshot()
         if deck.equivalent_to_snapshot != latest_snapshot:
             raise ValueError('Deck is not up to date')
 
@@ -441,6 +442,35 @@ class SharedDeck(models.Model):
 
         return deck, conflicts
 
+    @staticmethod
+    def remix(
+        origin_deck: Deck,
+        title: str,
+        description: str,
+        view_access: str,
+        edit_access: str,
+    ) -> SnapShot:
+        author = origin_deck.user.profile
+
+        forked_shared_deck = SharedDeck.objects.create(
+            title=title,
+            description=description,
+            view_access=view_access,
+            edit_access=edit_access,
+        )
+        forked_shared_deck.owners.set([author])
+
+        parent_snapshot = origin_deck.equivalent_to_snapshot
+        SharedDeck.push(
+            deck=origin_deck,
+            shared_deck=forked_shared_deck,
+            author=author,
+            message=f'Forked {parent_snapshot.shared_deck.title}',
+            origin_snapshot=parent_snapshot,
+        )
+
+        return forked_shared_deck
+
 
 class SnapShot(models.Model):
     # === BASIC INFO ===
@@ -684,6 +714,7 @@ class AbstractAction(models.Model):
     action = models.CharField(max_length=10, choices=ACTION_OPTIONS)
 
     timestamp = models.DateTimeField(auto_now_add=True)
+    order_num = models.PositiveSmallIntegerField(null=True, blank=True)  # used for DELETE actions
 
     class Meta:
         abstract = True
@@ -759,7 +790,7 @@ class MainSectionAction(AbstractAction):
                 # NOTE: deleted MainSections are never included, so we only have to
                 # rearrange the MainSections that come after this one; not delete the original
                 MainSection.objects.filter(
-                    order_num__gt=ms_origin.order_num,
+                    order_num__gt=action.order_num,
                     snapshot_id=snapshot.pk,
                 ).update(
                     order_num=F('order_num') - 1,
@@ -779,8 +810,7 @@ class MainSectionAction(AbstractAction):
             action.deck = None
             action.submitted_changes = None
             action.snapshot = snapshot
-            if ms_destination is not None:
-                action.main_section = ms_destination
+            action.main_section = ms_destination
 
         SectionData.objects.bulk_create(main_sections_data_to_create)
         MainSection.objects.bulk_create(main_sections_to_create)
@@ -909,6 +939,7 @@ class MainSectionAction(AbstractAction):
                     deck_id=main_section.deck_id,
                     action=action,
                     universal_main_section_id=main_section.universal_main_section_id,
+                    order_num=main_section.order_num,
                 )
             else:
                 return
@@ -987,7 +1018,7 @@ class SubSectionAction(AbstractAction):
                 # NOTE: deleted SubSections are never included, so we only have to
                 # rearrange the SubSections that come after this one; not delete the original
                 SubSection.objects.filter(
-                    order_num__gt=ss_origin.order_num,
+                    order_num__gt=action.order_num,
                     main_section__snapshot_id=snapshot.pk,
                 ).update(
                     order_num=F('order_num') - 1,
@@ -1007,8 +1038,7 @@ class SubSectionAction(AbstractAction):
             action.deck = None
             action.submitted_changes = None
             action.snapshot = snapshot
-            if ss_destination:
-                action.sub_section = ss_destination
+            action.sub_section = ss_destination
 
         SectionData.objects.bulk_create(sub_sections_data_to_create)
         SubSection.objects.bulk_create(sub_sections_to_create)
@@ -1140,6 +1170,7 @@ class SubSectionAction(AbstractAction):
                     deck_id=deck_id or sub_section.main_section.deck_id,
                     action=action,
                     universal_sub_section_id=sub_section.universal_sub_section_id,
+                    order_num=sub_section.order_num,
                 )
             else:
                 return
@@ -1161,9 +1192,9 @@ class FlashCardAction(AbstractAction):
     # or additions), or an abstract universal flashcard ID: XOR
     flashcard = models.OneToOneField(
         FlashCard,
+        null=True, blank=True,
         on_delete=models.CASCADE,
         related_name='attached_action',
-        unique=True,
     )
     universal_flashcard_id = models.UUIDField(null=True, blank=True)
 
@@ -1216,7 +1247,7 @@ class FlashCardAction(AbstractAction):
                 # NOTE: deleted FlashCards are never included, so we only have to
                 # rearrange the FlashCards that come after this one; not delete the original
                 FlashCard.objects.filter(
-                    order_num__gt=fc_origin.order_num,
+                    order_num__gt=action.order_num,
                     sub_section__main_section__snapshot_id=snapshot.pk,
                 ).update(
                     order_num=F('order_num') - 1,
@@ -1236,7 +1267,7 @@ class FlashCardAction(AbstractAction):
             action.deck = None
             action.submitted_changes = None
             action.snapshot = snapshot
-            action.flashcard_id = fc_destination.pk
+            action.flashcard = fc_destination
 
         FlashCardData.objects.bulk_create(flashcards_data_to_create)
         FlashCard.objects.bulk_create(flashcards_to_create)
@@ -1370,6 +1401,7 @@ class FlashCardAction(AbstractAction):
                     deck_id=deck_id or flashcard.sub_section.main_section.deck_id,
                     action=action,
                     universal_flashcard_id=flashcard.universal_flashcard_id,
+                    order_num=flashcard.order_num,
                 )
             else:
                 return
