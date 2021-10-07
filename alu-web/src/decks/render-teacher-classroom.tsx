@@ -10,11 +10,11 @@ import Spinner from 'react-bootstrap/Spinner';
 import { Assignment, Classroom, Student } from '../teachers/types';
 import { CreateDeckModal } from './buttons/create-deck';
 import { Deck } from './types';
-import { HomeActionDispatch } from './context';
 import { FormCheckbox, Jdenticon, QuestionBubble } from '../utils';
+import { HomeActionDispatch } from './context';
 import { SharedDeck } from './types';
 import { backendFetch, useAsyncState, useObjectList, apiClassroomStudentsList, apiObjectCreate } from '../lookup/lookup';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import './render-classroom.scss';
 
 export default function RenderTeacherClassroom({ classroom }: { classroom?: Classroom }) {
@@ -152,10 +152,14 @@ function AttachDeckModal({ show, close, callback }: AttachDeckModalProps) {
 }
 
 function AssignmentsList({ classroom }: { classroom: Classroom }) {
-  const [assignments, setAssignments] = useAsyncState<Assignment[]>(
+  const [assignments, setAssignments, , setAssignmentsDidSet] = useAsyncState<Assignment[]>(
     () => backendFetch('GET', `teachers/classroom/${classroom.id}/assignments/`),
     [],
   );
+
+  useEffect(() => {
+    setAssignmentsDidSet(false);
+  }, [classroom.id, setAssignmentsDidSet]);
 
   if (!assignments) return <p>Loading…</p>;
   return (<Container>
@@ -183,11 +187,15 @@ function AssignmentsList({ classroom }: { classroom: Classroom }) {
 }
 
 function StudentsList({ classroomId }: { classroomId: number }) {
-  const [students] = useAsyncState<Student[]>(
+  const [students, , , setStudentsDidSet] = useAsyncState<Student[]>(
     apiClassroomStudentsList,
     [classroomId, new Date().getTimezoneOffset()],
     undefined,
   );
+
+  useEffect(() => {
+    setStudentsDidSet(false);
+  }, [classroomId, setStudentsDidSet]);
 
   if (!students) return <p>Loading…</p>;
   return (<Container>

@@ -97,7 +97,12 @@ export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
   ) => ObjType | undefined,
   callback?: (response: ObjType) => void,
   requirement: boolean = true,
-): [ObjType | undefined, Dispatch<Event>] {
+): [
+  ObjType | undefined,
+  Dispatch<Event>,
+  boolean,
+  Dispatch<boolean>,
+] {
   const [obj, dispatch] = useReducer((state: ObjType | undefined, event: Event) => {
     if (event && event.action === 'INITIAL_SET')
       return event.payload as ObjType;
@@ -114,7 +119,7 @@ export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
     });
   }, [func, args, callback, objDidFetch, requirement]);
 
-  return [obj, dispatch];
+  return [obj, dispatch, objDidFetch, setObjDidFetch];
 }
 
 export function useAsyncState<ObjType>(
@@ -122,7 +127,12 @@ export function useAsyncState<ObjType>(
   args: any[] = [],
   callback?: (response: ObjType) => void,
   requirement: boolean = true,
-): [ObjType | undefined, Dispatch<React.SetStateAction<ObjType | undefined>>] {
+): [
+  ObjType | undefined,
+  Dispatch<React.SetStateAction<ObjType | undefined>>,
+  boolean,
+  Dispatch<React.SetStateAction<boolean>>,
+] {
   const [obj, setObj] = useState<ObjType | undefined>(undefined);
   const [objDidFetch, setObjDidFetch] = useState(false);
 
@@ -135,7 +145,7 @@ export function useAsyncState<ObjType>(
     });
   }, [func, args, callback, objDidFetch, requirement]);
 
-  return [obj, setObj];
+  return [obj, setObj, objDidFetch, setObjDidFetch];
 }
 
 export function useObjectGet<ObjType, Event extends DefaultEvent = never>(
@@ -148,7 +158,12 @@ export function useObjectGet<ObjType, Event extends DefaultEvent = never>(
   ) => ObjType | undefined,
   callback?: (response: ObjType) => void,
   requirement?: boolean,
-): [ObjType | undefined, Dispatch<Event>] {
+): [
+  ObjType | undefined,
+  Dispatch<Event>,
+  boolean,
+  Dispatch<boolean>,
+] {
   return useAsyncDispatch<ObjType, Event>(
     apiObjectGet,
     [appName, modelName, objectId],
@@ -165,7 +180,12 @@ export function useObjectList<ObjType, Event extends DefaultEvent = never>(
     state: ObjType[] | undefined,
     action: Event,
   ) => ObjType[] | undefined,
-): [ObjType[] | undefined, Dispatch<Event>] {
+): [
+  ObjType[] | undefined,
+  Dispatch<Event>,
+  boolean,
+  Dispatch<boolean>,
+] {
   return useAsyncDispatch<ObjType[], Event>(
     apiObjectList,
     [appName, modelName],

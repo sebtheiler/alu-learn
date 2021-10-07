@@ -1,12 +1,17 @@
-import { useObjectGet } from '../lookup/lookup';
 import { Classroom, ClassroomAssignments } from '../teachers/types';
+import { useEffect } from 'react';
+import { useObjectGet } from '../lookup/lookup';
 
 export default function RenderStudentClassroom({ classroom }: { classroom?: Classroom }) {
-  const [fullClassroom] = useObjectGet<ClassroomAssignments>(
+  const [fullClassroom, , , setClassroomDidSet] = useObjectGet<ClassroomAssignments>(
     'teachers', 'classroom', classroom?.id ?? 0,
     undefined, undefined,
     !!classroom,
   );
+
+  useEffect(() => {
+    setClassroomDidSet(false);
+  }, [classroom?.id, setClassroomDidSet]);
 
   if (!classroom) return <p>Loading…</p>;
   return (
