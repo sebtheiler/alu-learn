@@ -816,7 +816,7 @@ RI_EDITABLE_ATTRS = {
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def review_instance_update_view(request, review_instance_id, *args, **kwargs) -> dict:
+def review_instance_update_view(request, review_instance_id) -> dict:
     """
     Updates a review instance after studying it - PUT
 
@@ -825,7 +825,7 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
     * `utc_timezone_offset`: Num minutes
     * `time_taken`: Num milliseconds
     * `section`: The section that houses the flashcard
-    * `deck_id`: The id of the deck the review instance is in
+    * `deck_id`: The ID of the deck the review instance is in
     """
     edited_values = request.data.get('edited_values')
     if msg := assert_dict_data_type(edited_values, RI_EDITABLE_ATTRS, False):
@@ -863,34 +863,15 @@ def review_instance_update_view(request, review_instance_id, *args, **kwargs) ->
         time_taken=time_taken,
     )
 
-    section_titles = request.data.get('section')
-    deck_id = request.data.get('deck_id')
-    if section_titles is not None and deck_id is not None:
-        cache_name = f'{deck_id}__{section_titles.replace(" ", "-")}'
-        if pk__is_main := cache.get(cache_name):
-            pk, is_main = pk__is_main
-            if not pk:
-                section = None
-            else:
-                if is_main:
-                    section = MainSection.objects.get(pk=pk)
-                else:
-                    section = SubSection.objects.get(pk=pk)
-        else:
-            try:
-                section, is_main = AbstractSection.get_from_formatted_title(
-                    section_titles=section_titles,
-                    deck_id=deck_id,
-                )
-                cache.set(cache_name, (section.pk, is_main), 60*60*24)
-            except (SubSection.DoesNotExist, MainSection.DoesNotExist):
-                section = None
+    sub_section = review_instance.flashcard.sub_section
+    if sub_section.cached_percent_complete is not None:
+        sub_section.cached_percent_complete = None
+        sub_section.cached_total_percent_complete = None
+        sub_section.save()
 
-        if section is not None:
-            section.cached_percent_complete = None
-            section.save()
-            if not is_main:
-                section.main_section.cached_percent_complete = None
-                section.main_section.save()
+        main_section = sub_section.main_section
+        main_section.cached_percent_complete = None
+        main_section.cached_total_percent_complete = None
+        main_section.save()
 
     return Response({'message': 'Updated review instance'}, status=200)

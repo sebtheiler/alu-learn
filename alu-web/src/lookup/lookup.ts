@@ -1133,9 +1133,11 @@ export async function apiReviewInstanceUpdate(
 export interface PercentComplete {
   id: string;
   percent_complete: number;
+  total_percent_complete: number;
   sub_sections: {
     id: string;
     percent_complete: number;
+    total_percent_complete: number;
   }[];
 }
 export async function getDeckSectionsPercentComplete(

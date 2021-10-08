@@ -80,6 +80,7 @@ class AbstractSection(models.Model):
     # Calculating percent complete is expensive, so we cache it
     # Cache is cleared when a flashcard is completed or when fetching and a day has passed
     cached_percent_complete = models.FloatField(null=True, blank=True)
+    cached_total_percent_complete = models.FloatField(null=True, blank=True)
     cached_percent_complete_time = models.DateTimeField(null=True, blank=True)
 
     # === OTHER ===
@@ -92,31 +93,33 @@ class AbstractSection(models.Model):
     def __str__(self) -> str:
         return self.data.title
 
-    def get_percent_complete(self) -> float:
-        if (
-            self.cached_percent_complete is not None and
-            # And the day hasn't changed
-            (
-                self.cached_percent_complete == 0 or  # can't go below 0
-                self.cached_percent_complete_time.day == timezone.now().day
-            )
-        ):
-            return self.cached_percent_complete
+    def get_percent_complete(self, total: bool = False) -> float:
+        day_changed = (
+            self.cached_percent_complete == 0 or  # can't go below 0
+            getattr(self.cached_percent_complete_time, 'day', 0) == timezone.now().day
+        )
+        if total:
+            if self.cached_total_percent_complete is not None and not day_changed:
+                return self.cached_total_percent_complete
+        else:
+            if self.cached_percent_complete is not None and not day_changed:
+                return self.cached_percent_complete
 
         # Need this because of circular-import
         ReviewInstance = apps.get_model('decks', 'ReviewInstance')
 
         query = self.get_review_instance_query()
         total_num = ReviewInstance.objects.filter(query).count()
-        query &= (
-            ~Q(learning_status='UNSEEN')
-            &
-            Q(next_review__gt=get_morning())
-        )  # learned flashcards that aren't due
+        query &= ~Q(learning_status='UNSEEN')
+        if not total:
+            query &= Q(next_review__gt=get_morning())
         completed_num = ReviewInstance.objects.filter(query).count()
 
         percent_complete = round(completed_num / total_num, 2) if total_num else 0
-        self.cached_percent_complete = percent_complete
+        if total:
+            self.cached_total_percent_complete = percent_complete
+        else:
+            self.cached_percent_complete = percent_complete
         self.cached_percent_complete_time = timezone.now()
 
         return percent_complete

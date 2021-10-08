@@ -4,7 +4,7 @@ import { CreateMainSectionButton } from './buttons/section-buttons';
 import { Deck } from './types';
 import { HomeActionDispatch } from './context';
 import { useAsyncDispatch, getDeckSectionsPercentComplete, PercentComplete } from '../lookup/lookup';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 
 const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: PercentComplete[]) => {
   let deckCopy = deck;
@@ -16,6 +16,8 @@ const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: Perc
     );
     deckCopy.main_sections[mainSectionIdx].percent_complete =
       sectionPercentComplete.percent_complete;
+    deckCopy.main_sections[mainSectionIdx].total_percent_complete =
+      sectionPercentComplete.total_percent_complete;
 
     for (const childSectionPercentComplete of sectionPercentComplete.sub_sections) {
       const childSectionIdx = deckCopy.main_sections[mainSectionIdx].sub_sections.indexOf(
@@ -25,6 +27,8 @@ const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: Perc
       );
       deckCopy.main_sections[mainSectionIdx].sub_sections[childSectionIdx].percent_complete =
         childSectionPercentComplete.percent_complete;
+      deckCopy.main_sections[mainSectionIdx].sub_sections[childSectionIdx].total_percent_complete =
+        childSectionPercentComplete.total_percent_complete;
     }
   }
 
@@ -33,7 +37,7 @@ const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: Perc
 
 export default function SkillTree({ deck }: { deck?: Deck }) {
   const { decksDispatch } = useContext(HomeActionDispatch);
-  useAsyncDispatch<PercentComplete[]>(
+  const [, , , setPercentCompleteDidSet] = useAsyncDispatch<PercentComplete[]>(
     getDeckSectionsPercentComplete,
     [deck?.id],
     undefined,
@@ -43,6 +47,10 @@ export default function SkillTree({ deck }: { deck?: Deck }) {
     }),
     !!deck,
   );
+
+  useEffect(() => {
+    setPercentCompleteDidSet(false);
+  }, [deck, setPercentCompleteDidSet]);
 
   if (!deck) return <p>Loading…</p>;
   return (<>

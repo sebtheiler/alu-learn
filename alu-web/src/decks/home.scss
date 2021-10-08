@@ -44,8 +44,6 @@
   border: $grayBorder;
   margin-top: 10px;
   margin-bottom: 10px;
-  padding-left: 2px;
-  padding-right: 2px;
 
   &:hover {
     transform: scale(1.1);
@@ -60,33 +58,46 @@
     }
   }
 
-  >.sub-section-inner {
-    width: 90%;
-    height: 90%;
+  >.sub-section-percent-complete {
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    padding: 5px;
-    border: $grayBorder;
-    background: darken($lightBackground, 2%);
+
+    padding-left: 2px;
+    padding-right: 2px;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    .sub-section-assignment-indicator {
-      position: absolute;
-      left: 0;
-      right: 0;
-      margin-left: auto;
-      margin-right: auto;
-      width: 50px;
-      bottom: 20%;
-      transform-origin: top right;
-    }
-
-    >.sub-section-text {
-      hyphens: auto;
-      user-select: none;
-      margin-bottom: 0;
+    >.sub-section-inner {
+      width: 90%;
+      height: 90%;
+      border-radius: 50%;
+      padding: 5px;
+      border: $grayBorder;
+      background: darken($lightBackground, 2%);
+  
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  
+      .sub-section-assignment-indicator {
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50px;
+        bottom: 20%;
+        transform-origin: top right;
+      }
+  
+      >.sub-section-text {
+        hyphens: auto;
+        user-select: none;
+        margin-bottom: 0;
+      }
     }
   }
 }
