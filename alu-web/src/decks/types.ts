@@ -5,9 +5,9 @@ export type UUID = string;  // Just a more clear representation
 
 export type EditAccess = 'PERSONAL' | 'FRIENDS' | 'EVERYBODY' | 'STUDENTS';
 export type FlashCardTypes = 'BASIC' | 'REVERSED' | 'CLOZE';
-export type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
 export type SchedulingAlgorithm = 'ANKI' | 'ANKING';
 export type ViewAccess = 'PUBLIC' | 'FRIENDS' | 'STUDENT';
+type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
 
 export interface Deck {
   user: MinifiedProfile;
@@ -28,7 +28,7 @@ export interface FlashCard {
   id: UUID;
 }
 
-export interface FlashCardData {
+interface FlashCardData {
   fields: SlateNode[][];
   tags: string;
   front_image?: string;

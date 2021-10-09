@@ -2,7 +2,7 @@ import { HistoryAction } from '../lookup/lookup';
 
 export type HabitValue = 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
 
-export interface HabitHistory {
+interface HabitHistory {
   date: string;
   done: boolean;
 }

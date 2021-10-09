@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useMemo, Dispatch, SetStateAction, ChangeEvent, ReactNodeArray, ReactNode } from 'react';
+import React, { useEffect, useState, useMemo, Dispatch, SetStateAction, ChangeEvent, ReactNodeArray, ReactNode } from 'react';
 import { FullEditor, createFullEditor  } from '../text-editor';
 import { Node as SlateNode } from 'slate';
 import { Slate } from 'slate-react';
@@ -38,84 +38,6 @@ export function timeSince(date: Date, reverse=false) {
   }
 
   return Math.floor(seconds) + (Math.floor(seconds) === 1 ? " second" : " seconds");
-}
-// export const oneDay = 24*60*60*1000;
-
-export function timeUntil(date) {
-  // The second thing returned is 0 if it is today, -1 if it is in past, 1 in future
-  date.setMinutes(date.getMinutes() + (new Date()).getTimezoneOffset());
-  const today = new Date(new Date().setHours(0, 0, 0));
-
-  if (date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      date.getDate() === today.getDate()
-    ) {
-      return ['today', 0];
-  } else if (date < today) {
-    let yesterday = today;
-    yesterday.setDate(today.getDate() - 1);
-
-    if (date.getFullYear() === yesterday.getFullYear() &&
-        date.getMonth() === yesterday.getMonth() &&
-        date.getDate() === yesterday.getDate()
-    ) {
-      return ['yesterday', -1];
-    } else {
-      return [timeSince(date) + ' ago', -1];
-    }
-  } else {
-    let tomorrow = today;
-    tomorrow.setDate(today.getDate() + 1);
-
-    if (
-      date.getFullYear() === tomorrow.getFullYear() &&
-      date.getMonth() === tomorrow.getMonth() &&
-      date.getDate() === tomorrow.getDate()
-    ) {
-      return ['tomorrow', 1];
-    } else {
-      return ['in ' + timeSince(date, true), 1];
-    }
-  }
-}
-
-// Calculates whether a color is dark or light
-// Adapted from https://awik.io/determine-color-bright-dark-using-javascript/
-export function lightOrDark(color) {
-  // Variables for red, green, blue values
-  let r, g, b, hsp;
-  
-  // Check the format of the color, HEX or RGB?
-  if (color.match(/^rgb/)) {
-    // If RGB --> store the red, green, blue values in separate variables
-    color = color.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/);
-
-    r = color[1];
-    g = color[2];
-    b = color[3];
-  } else {
-    // If hex --> Convert it to RGB: http://gist.github.com/983661
-    color = +("0x" + color.slice(1).replace( 
-    color.length < 5 && /./g, '$&$&'));
-
-    r = color >> 16;
-    g = (color >> 8) & 255;
-    b = color & 255;
-  }
-  
-  // HSP equation from http://alienryderflex.com/hsp.html
-  hsp = Math.sqrt(
-    0.299 * (r * r) +
-    0.587 * (g * g) +
-    0.114 * (b * b)
-  );
-
-  // Using the HSP value, determine whether the color is light or dark
-  if (hsp > 127.5) {
-    return 'light';
-  }  else {
-    return 'dark';
-  }
 }
 
 // Taken from https://stackoverflow.com/a/25352300
@@ -205,71 +127,6 @@ export function QuestionBubble(props: QuestionBubbleProps) {
   );
 }
 
-// TODO: DELETE
-// Fully-featured MD rendered with KaTeX, MarkDown, and (safe-ish) HTML rendering
-// interface MarkdownRenderProps {
-//   source: string;
-//   allowHtml?: boolean;
-//   allowKatex?: boolean;
-// }
-// export function MarkdownRender(props: MarkdownRenderProps) {
-//   const { source, allowHtml=false, allowKatex=true } = props;
-
-//   return (
-//     <ReactMarkdown
-//       source={source.replaceAll('<script>', '').replaceAll('</script>', '')}
-//       plugins={allowKatex ? [RemarkMathPlugin] : undefined}
-//       escapeHtml={!Boolean(allowHtml)}
-//       renderers={allowKatex ? {
-//         math: ({ value }) => <BlockMath>{value}</BlockMath>,
-//         inlineMath: ({ value }) => <InlineMath>{value}</InlineMath>
-//       } : undefined}
-//     />
-//   );
-// }
-
-// Calls a function every N milliseconds
-// Taken from https://gist.github.com/babakness/faca3b633bc23d9a0924efb069c9f1f5
-type IntervalFunction = () => (unknown | void);
-export function useInterval(callback: IntervalFunction, delay: number | null) {
-  const savedCallback = useRef<IntervalFunction| null>(null);
-
-  // Remember the latest callback.
-  useEffect(() => {
-    savedCallback.current = callback;
-  });
-
-  // Set up the interval.
-  useEffect(() => {
-    if (delay !== null) {
-      function tick() {
-        if (savedCallback.current !== null) {
-          savedCallback.current();
-        }
-      }
-  
-      const id = setInterval(tick, delay);
-      return () => clearInterval(id);
-    }
-  }, [delay]);
-}
-
-// Returns whether or not an index of a string is in a regex match
-// Taken from https://stackoverflow.com/a/64188089/13042142
-export function inMatch(pos, str, regex) {
-  let match;
-  while ((match = regex.exec(str)) !== null) {
-    // regex.lastIndex is the position after the last match.
-    // And match[0] is the whole last match.
-    if (pos >= regex.lastIndex - match[0].length && pos < regex.lastIndex) {
-      // if pos is between the beginning and the end of the last match,
-      // it is within a match, therefore, return true.
-      return true;
-    }
-  }
-  // pos is not within any match, so, return false.
-  return false;
-}
 
 // https://stackoverflow.com/a/2450976/13042142
 export function shuffle(array) {
@@ -352,28 +209,7 @@ export function sample(arr, n) {
     return result;
 }
 
-// Adapted from http://stackoverflow.com/a/10997390/11236
-export function updateURLParameter(url: string, param: string, paramVal: any){
-  let newAdditionalURL = "";
-  let tempArray = url.split("?");
-  const baseURL = tempArray[0];
-  const additionalURL = tempArray[1];
-  let temp = "";
-  if (additionalURL) {
-    tempArray = additionalURL.split("&");
-    for (var i=0; i<tempArray.length; i++){
-      if(tempArray[i].split('=')[0] !== param){
-        newAdditionalURL += temp + tempArray[i];
-        temp = "&";
-      }
-    }
-  }
-
-  const rows_txt = temp + "" + param + "=" + paramVal;
-  return baseURL + "?" + newAdditionalURL + rows_txt;
-}
-
-// Converts a date to an ISOString, but doesn't convert it to UTC
+/// Converts a date to an ISOString, but doesn't convert it to UTC
 export function timezoneToISOString(date: Date) {
   return new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
 }
@@ -458,15 +294,6 @@ export function dateDiff(
   const diff = Math.ceil(diffTime / timeUnit); 
 
   return diff;
-}
-
-
-// Adds some days to a date
-// Adapted from https://stackoverflow.com/a/563442/13042142
-export function addDays(date: Date, days: number): Date {
-  let result = new Date(date);
-  result.setDate(date.getDate() + days);
-  return result;
 }
 
 
@@ -608,10 +435,6 @@ export function getCookie(name: string) {
 
   // @ts-ignore  /** TS fails to realize `parts.length === 1` ensures `.pop()` isn't undefined */
   if (parts.length === 2) return parts.pop().split(';').shift();
-}
-
-export function eraseCookie(name: string) {   
-  document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
 }
 
 // Capitalizes the first letter of a string

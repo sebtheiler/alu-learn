@@ -36,101 +36,6 @@ def deck_list(request):
     return Response(DeckSerializer(decks, many=True).data, status=200)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def deck_quick_list_view(request, *args, **kwargs):
-    """
-    Gets a minified list of decks and their progress for use on the main homepage - GET
-
-    Parameters:
-        calc_percent_complete=False: (GET) Calc the percent complete for each deck
-        include_has_shared_deck=False: (GET) Include decks that have been shared
-    """
-    decks_query = Q(
-        user=request.user,
-        deck_type='standard',
-        student_attached_to=None,
-    )
-    if not request.GET.get('include_has_shared_deck', False):
-        decks_query &= Q(shared_deck=None)
-
-    decks = Deck.objects.filter(
-        decks_query
-    ).order_by('title')  # type: List[Deck]
-
-    flashcards = ReviewInstance.objects.filter(
-        flashcard__deck__in=decks,
-    )
-
-    calc = request.GET.get('calc_percent_complete', False)
-    data = [
-        {
-            'title': deck.title,
-            'id': deck.pk,
-            'percent_complete': deck.calc_percent_complete(flashcards) if calc else None,
-        }
-        for deck in decks
-    ]
-
-    return Response(data, status=200)
-
-
-@api_view(['GET'])
-def deck_flashcards_view(request, deck_id, *args, **kwargs):
-    """
-    Gets flashcards from a deck - GET
-
-    Required information:
-        `deck_id`: (URL) The ID of the deck
-        `limit`: (GET) Number of results to return (optional)
-            if True, instead of directly returning flashcards it will return:
-                'results': Regular list of flashcards
-                'count': Total number of flashcards
-        `reverse`: (GET) Reverse the results (ignored if `limit` is specified)
-
-    Returns:
-        Author of the deck (PublicProfileSerializer): 'author'
-        Title of the deck: 'title'
-        ID of the deck: 'id'
-
-    Possible errors:
-        Invalid deck: 404, Deck not found
-        Deck is not shared with user: 403, You are unauthorized to view this deck
-    """
-    # Get deck
-    try:
-        deck = Deck.objects.get(pk=deck_id)
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck not found'}, status=404)
-
-    # Make sure the user is authorized
-    if not deck.user_has_access(request.user):
-        return Response({'message': 'You are unauthorized to view this deck'}, status=403)
-
-    limit = request.GET.get('limit')
-    if limit:
-        # Return set number of flashcards (not paginated)
-        serializer = FlashCardSerializer(
-            deck.flashcards.all()[:int(limit)],
-            context={'request': request},
-            many=True,
-        )
-
-        return Response({
-            'results': serializer.data,
-            'count': deck.flashcards.count(),
-        })
-    else:
-        # Return paginated list of all flashcards
-        reverse = request.GET.get('reverse')
-        return get_paginated_queryset_response(
-            deck.flashcards.order_by('order_num' if not reverse else '-order_num'),
-            request,
-            FlashCardSerializer,
-            page_size=250
-        )
-
-
 # ===== Deck Import/Export =====
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -622,88 +527,6 @@ def flashcard_list_view(request, *args, **kwargs):
     )
 
 
-# ==== Flashcard Bulk Update ====
-# TODO: Combine with function views
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def flashcard_edit_tags_bulk_view(request, *args, **kwargs):
-    """
-    Edits multiple flashcard's tags at once - POST
-
-    Required information:
-        `flashcard_ids`: Ids for all the flashcards to edit
-        `action`: ADD/REMOVE/RENAME
-        `tag`: Tag to add/remove
-    """
-    flashcard_ids = request.data.get('flashcard_ids', [])
-    action = request.data.get('action')
-    tag = request.data.get('tag')
-    if len(flashcard_ids) == 0:
-        return Response({'message': 'Must specify at least one flashcard Id'}, status=400)
-    elif action not in ('ADD', 'REMOVE', 'RENAME'):
-        return Response({'message': 'Invalid action'}, status=400)
-    elif not isinstance(tag, str):
-        return Response({'message': 'You must specify a tag to add/remove'}, status=400)
-
-    flashcards = FlashCard.objects.filter(
-        deck__user=request.user,
-        pk__in=flashcard_ids,
-    )
-    if flashcards.count() != len(flashcard_ids):
-        return Response({'message': 'Could not find all flashcards specified'}, status=400)
-
-    if action == 'ADD':
-        for flashcard in flashcards:
-            flashcard.add_tag(tag, False)
-    elif action == 'REMOVE':
-        for flashcard in flashcards:
-            flashcard.remove_tag(tag, False)
-    elif action == 'RENAME':
-        rename_to = request.data.get('rename_to')
-        if rename_to is None:
-            return Response({'message': 'If renaming, you must specify `rename_to`'}, status=400)
-        for flashcard in flashcards:
-            flashcard.rename_tag(tag, rename_to, False)
-
-    FlashCard.objects.bulk_update(flashcards, ['tags'])
-    return Response({'message': 'Updated tags'}, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def flashcard_review_instance_bulk_update_view(request, *args, **kwargs):
-    """
-    Bulk updated flashcards - POST
-
-    Required information:
-        `flashcard_ids`: Ids of the flashcard review instances to update
-        `action`: Action to take on the flashcards SUSPEND/UNSUSPEND/DELETE
-    """
-    flashcard_ids = request.data.get('flashcard_ids', [])
-    action = request.data.get('action')
-    if len(flashcard_ids) == 0:
-        return Response({'message': 'Must specify at least one flashcard Id'}, status=400)
-
-    flashcards = ReviewInstance.objects.filter(
-        flashcard__deck__user=request.user,
-        pk__in=flashcard_ids,
-    )
-    if flashcards.count() != len(flashcard_ids):
-        return Response({'message': 'Could not find all flashcards specified'}, status=400)
-
-    if action == 'SUSPEND':
-        flashcards.update(is_suspended=True)
-    elif action == 'UNSUSPEND':
-        flashcards.update(is_suspended=False)
-    elif action == 'DELETE':
-        flashcards = FlashCard.objects.filter(review_instances__in=flashcards)
-        flashcards.delete()
-    else:
-        return Response({'message': 'Invalid action'}, status=400)
-
-    return Response({'message': 'Edited flashcard review instances'}, status=200)
-
-
 # ===== Flashcard Study =====
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -722,20 +545,12 @@ def game_flashcards_view(request, *args, **kwargs):
     if None in (method_type, deck_id, amount):
         return Response({'message': 'You must specify type, deck_id, and amount'}, status=400)
 
-    query = Q(flashcard__deck__user=request.user)
+    query = Q(
+        flashcard__sub_section__main_section__deck__user=request.user,
+        flashcard__sub_section__main_section__deck_id=deck_id,
+    )
     if not request.data.get('options').get('include_cloze'):
         query &= ~Q(flashcard__flashcard_type='CLOZE')
-
-    # # See if the "deck" is actually a CSSM
-    # try:
-    #     cssm = CustomStudySessionManager.objects.get(pk=deck_id, user=request.user.profile)
-    # except CustomStudySessionManager.DoesNotExist:
-    #     cssm = None
-
-    # if cssm:
-    #     query &= cssm.generate_query()
-    # else:
-    query &= Q(flashcard__deck__id=deck_id)
 
     # Get the list of all possible flashcards, based on the method type
     if method_type == 'SEEN' or method_type == 'PERSONAL':

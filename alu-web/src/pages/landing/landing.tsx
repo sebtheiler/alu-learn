@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import { MainHook } from './components';
+import { MainHook } from './main-hook';
 import { RegisterLoginModal } from './forms';
 import { useState } from 'react';
 

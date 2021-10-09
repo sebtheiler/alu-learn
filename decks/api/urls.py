@@ -8,7 +8,6 @@ from . import views
 # Base endpoint = /api/decks/
 app_names = 'decks'
 urlpatterns = [
-    # path('search/', views.deck_search_view),
     # ====== Decks ======
     *generate_base_api(
         'decks', 'deck',
@@ -20,8 +19,6 @@ urlpatterns = [
     ),
     # ===== Deck Lists =====
     path('deck/list/', views.deck_list),
-    path('deck/list/quick/', views.deck_quick_list_view),
-    path('deck/<int:deck_id>/flashcards/', views.deck_flashcards_view),
     # ===== Deck Import/Export =====
     path('deck/import/txt/', views.deck_txt_import_view),
     path('deck/import/json/', views.deck_json_import_view),
@@ -51,8 +48,6 @@ urlpatterns = [
         views.find_universal_flashcard,
     ),
     path('flashcard/<uuid:flashcard_id>/edit/', views.flashcard_edit_view),
-    path('flashcard/edit-tags/', views.flashcard_edit_tags_bulk_view),
-    path('flashcard/edit-review-instances/', views.flashcard_review_instance_bulk_update_view),
     path('flashcard/search/', views.flashcard_search_view),
     # ===== Review Instances =====
     path('reviewinstance/study/', views.review_instance_study_view),
