@@ -122,7 +122,6 @@ def classroom_percent_complete(request, classroom_id):
         main_section__deck__user_id=request.user.pk,
         universal_sub_section_id__in=assigned_sub_sections,
     )
-    print(sub_sections.count())
     sub_sections_percent_complete = [
         {
             'id': sub_section.pk,
@@ -221,3 +220,59 @@ def classrooms_list(request, *args, **kwargs):
         classrooms = request.user.profile.classrooms_in.order_by('title')
 
     return Response(ClassroomSerializer(classrooms, many=True).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def assignments_teacher_list_view(request, classroom_id: int):
+    """
+    Lists the assignments a teacher has created for their class - GET
+
+    Required information:
+        `classroom_id`: (URL) Id of the classroom to get assignments for
+    """
+    try:
+        classroom = Classroom.objects.get(teachers=request.user.profile, pk=classroom_id)
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    assignments = classroom.assignments.all()
+
+    return Response(AssignmentSerializer(assignments, many=True).data, 200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def assignment_percent_complete(request, classroom_id: int, assignment_id: int):
+    try:
+        classroom = Classroom.objects.get(pk=classroom_id)
+        if not classroom.teachers.filter(user=request.user).exists():
+            raise Assignment.DoesNotExist
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
+
+    try:
+        assignment = Assignment.objects.get(pk=assignment_id)
+    except Assignment.DoesNotExist:
+        return Response({'message': 'Assignment not found'}, status=404)
+
+    # NOTE: It is more efficient to do this once, rather than recalculating for each student
+    assigned_sub_sections_uids = assignment.sub_sections.values_list(
+        'universal_sub_section_id',
+        flat=True,
+    )
+
+    student_data = [
+        {
+            'username': student.user.username,
+            'first_name': student.user.first_name,
+            'last_name': student.user.last_name,
+            'percent_complete': assignment.calc_percent_complete(
+                student.user,
+                assigned_sub_sections_uids,
+            ),
+        }
+        for student in classroom.students.prefetch_related('user').all()
+    ]
+
+    return Response(student_data, status=200)

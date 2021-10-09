@@ -3,14 +3,16 @@ import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Col';
 import CreateAssignmentButton from './buttons/create-assignment';
 import Row from 'react-bootstrap/Row';
+import TeacherAssignment from './teacher-assignment';
+import useMountEffect from '../utils/useMountEffect';
 import { Assignment, Classroom, Student } from './types';
 import { CreateDeckModal } from '../decks/buttons/create-deck';
 import { Deck, SharedDeck } from '../decks/types';
 import { Jdenticon } from '../utils';
 import { HomeActionDispatch } from '../decks/context';
 import { backendFetch, useAsyncState, apiClassroomStudentsList } from '../lookup/lookup';
-import { useContext, useEffect, useState } from 'react';
-import './render-classroom.scss';
+import { useContext, useState } from 'react';
+import './teacher-classroom.scss';
 
 export default function TeacherClassroom({ classroom }: { classroom?: Classroom }) {
   const [selectedTab, setSelectedTab] = useState('ASSIGNMENTS');
@@ -111,26 +113,19 @@ function AssignmentsList({ classroom }: { classroom: Classroom }) {
     [],
   );
 
-  useEffect(() => {
+  useMountEffect(() => {
     setAssignmentsDidSet(false);
   }, [classroom.id, setAssignmentsDidSet]);
 
   if (!assignments) return <p>Loading…</p>;
   return (<Container>
     {assignments.map(assignment =>
-      <div key={assignment.id} className='assignment-row'>
-        <div>
-          <h4 className='text-center'>{assignment.title}</h4>
-        </div>
-        <div>
-          <p>
-            Assigned sections: {assignment.sub_sections.map((subSection, i) =>
-              <>{subSection.data.title}{i !== assignment.sub_sections.length - 1 && ', '}</>
-            )}
-          </p>
-        </div>
-      </div>
-    )}
+      <TeacherAssignment
+        assignment={assignment}
+        classroomId={classroom.id}
+        key={assignment.id}
+      />)
+    }
     {assignments?.length === 0 && <p>You haven't created any assignments yet</p>}
     <CreateAssignmentButton
       classroom={classroom}
@@ -147,7 +142,7 @@ function StudentsList({ classroomId }: { classroomId: number }) {
     undefined,
   );
 
-  useEffect(() => {
+  useMountEffect(() => {
     setStudentsDidSet(false);
   }, [classroomId, setStudentsDidSet]);
 
@@ -156,7 +151,7 @@ function StudentsList({ classroomId }: { classroomId: number }) {
     {students.map(student =>
       <Row key={student.username} className='student-row'>
         <Jdenticon value={student.username} size={30} />
-        {student.first_name} {student.last_name}
+        <p style={{ marginTop: '3px' }}>{student.first_name} {student.last_name}</p>
       </Row>
     )}
     {students.length === 0 && <p>You have no students yet.  Invite some with your class code.</p>}

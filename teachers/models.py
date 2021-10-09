@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import uuid
+from typing import List
+
 from decks.models import Deck, ReviewInstance
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models.query_utils import Q
 from django.utils.crypto import get_random_string
 from profiles.models import Profile
 from sharing_system.models import SharedDeck
@@ -102,20 +104,26 @@ class Assignment(models.Model):
     def __str__(self) -> str:
         return self.title
 
-    def calc_percent_complete(self, user: User) -> float:
-        raise NotImplementedError
+    def calc_percent_complete(
+        self,
+        user: User,
+        assigned_sub_sections_uids: List[uuid.uuid4] = None,
+    ) -> float:
+        if assigned_sub_sections_uids is None:
+            assigned_sub_sections_uids = self.sub_sections.values_list(
+                'universal_sub_section_id',
+                flat=True,
+            )
 
         flashcards = ReviewInstance.objects.filter(
-            Q(
-                flashcard__deck__student_attached_to=self.classroom,
-                flashcard__deck__user=user,
-            ) &
-            ReviewInstance.search_tags(self.tag_query)
+            flashcard__sub_section__universal_sub_section_id__in=assigned_sub_sections_uids,
+            flashcard__sub_section__main_section__deck__user_id=user.pk,
         ).prefetch_related('flashcard')
+
         total_flashcard_num = flashcards.count()
         unseen_flashcard_num = flashcards.filter(learning_status='UNSEEN').count()
 
         try:
             return (total_flashcard_num - unseen_flashcard_num) / total_flashcard_num
         except ZeroDivisionError:
-            return None
+            return 0
