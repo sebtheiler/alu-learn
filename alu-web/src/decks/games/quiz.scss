@@ -1,0 +1,30 @@
+@import './matching';
+
+.answer {
+  border: 5px rgb(98, 118, 184) solid;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  list-style-type: none;
+  padding: none;
+
+  &:hover {
+    cursor: pointer;
+    background: rgb(235, 235, 235);
+  }
+
+  &.incorrect {
+    cursor: none;
+    background: rgb(216, 108, 108)!important;
+  }
+
+  &.correct {
+    background: #9CE1BB!important;
+    animation: pop 0.3s linear 1;
+  }
+}
+
+.not-a-button {
+  background: none;
+  border: none;
+  width: 100%;
+}

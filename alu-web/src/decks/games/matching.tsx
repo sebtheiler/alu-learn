@@ -1,31 +1,31 @@
-import React, { useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { range } from '../../utils';
+import React, { useMemo, useState } from 'react';
+import Row from 'react-bootstrap/Row';
+import { Node as SlateNode } from 'slate';
 import { RenderRichText, shuffle } from '../../utils';
-import './matching.css';
 import { ReviewInstance } from '../types';
+import { range } from '../../utils';
+import './matching.scss';
 
 interface MatchingProps {
   size: number;
-  flashcards: ReviewInstance[];
+  reviewInstances: ReviewInstance[];
 }
-export function MatchingGame(props: MatchingProps) {
-  const {size, flashcards} = props;
+export function MatchingGame({ size, reviewInstances }: MatchingProps) {
   const randomizedFlashcards = useMemo(() => {
-    let randomOrder = [] as any;
-    // for (const [i, flashcard] of flashcards.entries()) {
-    //   randomOrder.push([flashcard.fields[0], i]);
-    //   randomOrder.push([flashcard.fields[1], i]);
-    // }
+    let randomOrder = [] as [SlateNode[], number][];
+    for (const [i, reviewInstance] of reviewInstances.entries()) {
+      randomOrder.push([reviewInstance.data?.fields[0] ?? [], i]);
+      randomOrder.push([reviewInstance.data?.fields[1] ?? [], i]);
+    }
     randomOrder = shuffle(randomOrder);
     return randomOrder;
-  }, []);
+  }, [reviewInstances]);
   const [numMissed, setNumMissed] = useState<number>(0);
   const [correctlyGuessed, setCorrectlyGuessed] = useState([] as any);
   const [selectedBox, setSelectedBox] = useState<number[]>([-1, -1]);
-  const [failedQuestions, setFailedQuestions] = useState([] as any);
+  const [failedQuestions, setFailedQuestions] = useState<ReviewInstance[]>([]);
 
   const handleBoxClick = (rowNum: number, colNum: number) => {
     return event => {
@@ -43,11 +43,11 @@ export function MatchingGame(props: MatchingProps) {
           } else {
             setNumMissed(numMissed + 1);
             let newFailedQuestions = failedQuestions;
-            if (!failedQuestions.includes(flashcards[currentBox[1]])) {
-              newFailedQuestions = [...newFailedQuestions, flashcards[currentBox[1]]];
+            if (!failedQuestions.includes(reviewInstances[currentBox[1]])) {
+              newFailedQuestions = [...newFailedQuestions, reviewInstances[currentBox[1]]];
             }
-            if (!failedQuestions.includes(flashcards[guessedBox[1]])) {
-              newFailedQuestions = [...newFailedQuestions, flashcards[guessedBox[1]]];
+            if (!failedQuestions.includes(reviewInstances[guessedBox[1]])) {
+              newFailedQuestions = [...newFailedQuestions, reviewInstances[guessedBox[1]]];
             }
             setFailedQuestions(newFailedQuestions);
           }
@@ -101,8 +101,8 @@ export function MatchingGame(props: MatchingProps) {
       {failedQuestions.length > 0 && <h3 className='mt-5'>Questions You Missed:</h3>}
       {failedQuestions.map((question, i) => (<React.Fragment key={i}>
         <hr />
-        <RenderRichText text={question.fields[0]} />
-        <RenderRichText text={question.fields[1]} />
+        <RenderRichText text={question.data?.fields[0] ?? []} />
+        <RenderRichText text={question.data?.fields[1] ?? []} />
       </React.Fragment>))}
     </div>}
   </>);

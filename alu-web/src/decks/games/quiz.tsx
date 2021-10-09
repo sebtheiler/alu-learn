@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
+import React, { useEffect, useState } from 'react';
 import { RenderRichText, sample, shuffle } from '../../utils';
 import { ReviewInstance, UUID } from '../types';
-import './quiz.css';
+import './quiz.scss';
 
-export function QuizGame({ flashcards, numQuestions }) {
+interface QuizGameProps {
+  reviewInstances: ReviewInstance[],
+  numQuestions: number,
+}
+export function QuizGame({ reviewInstances, numQuestions }: QuizGameProps) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<ReviewInstance[]>([]);
   const [answersDidSet, setAnswersDidSet] = useState(false);
@@ -18,9 +22,9 @@ export function QuizGame({ flashcards, numQuestions }) {
     if (!answersDidSet) {
       setAnswersDidSet(true);
 
-      const otherFlashcards = [...flashcards.slice(0, currentQuestion), ...flashcards.slice(currentQuestion + 1)];
+      const otherFlashcards = [...reviewInstances.slice(0, currentQuestion), ...reviewInstances.slice(currentQuestion + 1)];
       const incorrectAnswers = sample(otherFlashcards, 3);
-      const correctAnswer = flashcards[currentQuestion];
+      const correctAnswer = reviewInstances[currentQuestion];
       const newAnswers = shuffle([
         ...incorrectAnswers,
         correctAnswer,
@@ -28,20 +32,20 @@ export function QuizGame({ flashcards, numQuestions }) {
 
       setAnswers(newAnswers);
     }
-  }, [flashcards, answers, answersDidSet, currentQuestion]);
+  }, [reviewInstances, answers, answersDidSet, currentQuestion]);
 
   const handleAnswerClick = i => {
     return event => {
       event.preventDefault();
       if (!showAnswer) {
-        if (answers[i].id === flashcards[currentQuestion].id) {
+        if (answers[i].id === reviewInstances[currentQuestion].id) {
           setShowAnswer(true);
           if (guessedAnswers.length === 0) {
             setNumCorrect(numCorrect + 1);
           }
         } else {
           if (guessedAnswers.length === 0) {
-            setFailedQuestions([...failedQuestions, flashcards[currentQuestion]]);
+            setFailedQuestions([...failedQuestions, reviewInstances[currentQuestion]]);
           }
           setGuessedAnswers([...guessedAnswers, answers[i].id]);
         }
@@ -75,8 +79,8 @@ export function QuizGame({ flashcards, numQuestions }) {
         {failedQuestions.length > 0 && <h3 className='mt-5'>Questions You Missed:</h3>}
         {failedQuestions.map((question, i) => (<React.Fragment key={i}>
           <hr />
-          {/* <RenderRichText text={question.fields[0]} />
-          <RenderRichText text={question.fields[1]} /> */}
+          <RenderRichText text={question.data?.fields[0] ?? []} />
+          <RenderRichText text={question.data?.fields[1] ?? []} />
         </React.Fragment>))}
       </div>
     </>);
@@ -85,25 +89,30 @@ export function QuizGame({ flashcards, numQuestions }) {
   return (<>
     <p>Question {currentQuestion + 1}/{numQuestions}</p>
     <div className='text-center'>
-      <RenderRichText text={flashcards[currentQuestion].fields[0]} fixSlateLazy />
+      <RenderRichText text={reviewInstances[currentQuestion].data?.fields[0] ?? []} fixSlateLazy />
       <hr />
       <ol style={{ paddingInlineStart: '0' }}>
         {answers.map((answer, i) => (
           <li
             className={'answer' + (
-              guessedAnswers.includes(answer.id) ? ' incorrect' : (
-              (showAnswer && answer.id === flashcards[currentQuestion].id) ? ' correct' : ''
-              ))}
+              guessedAnswers.includes(answer.id)
+                ? ' incorrect'
+                : (
+                  (showAnswer && answer.id === reviewInstances[currentQuestion].id)
+                    ? ' correct'
+                    : ''
+                ))
+            }
             key={i}
           >
             <button className='not-a-button' onClick={handleAnswerClick(i)}>
-              {/* <RenderRichText text={answer.fields[1]} fixSlateLazy /> */}
+              <RenderRichText text={answer.data?.fields[1] ?? []} fixSlateLazy />
             </button>
           </li>
         ))}
         {showAnswer &&
           <Button onClick={handleNextQuestion} block>
-            {currentQuestion === flashcards.length - 1 ? 'Finish' : 'Next Question'}
+            {currentQuestion === reviewInstances.length - 1 ? 'Finish' : 'Next Question'}
           </Button>
         }
       </ol>
