@@ -30,6 +30,7 @@ class Deck(models.Model):
     # === BASIC INFO ===
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='decks')
     title = models.CharField(max_length=128)
+    is_archived = models.BooleanField(default=False)
 
     # === SHARING ===
     equivalent_to_snapshot = models.ForeignKey(

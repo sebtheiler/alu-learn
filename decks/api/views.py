@@ -4,13 +4,12 @@ import re
 import uuid
 from typing import List
 
-from django.core.cache import cache
 from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sharing_system.models import FlashCardAction
-from skill_tree.models import AbstractSection, MainSection, SubSection
+from skill_tree.models import AbstractSection, SubSection
 from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
 from utils.api_utils import get_obj_or_404
@@ -23,6 +22,20 @@ from ..serializers import (DeckSerializer, FlashCardSerializer,
 
 # ====== Decks ======
 # ===== Deck Lists =====
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def deck_list(request):
+    decks = Deck.objects.filter(
+        user=request.user,
+        is_archived=request.GET.get('is_archived', 'false').lower() == 'true',
+    ).prefetch_related(
+        'user',
+        'main_sections__sub_sections',
+    )
+
+    return Response(DeckSerializer(decks, many=True).data, status=200)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def deck_quick_list_view(request, *args, **kwargs):
@@ -321,6 +334,24 @@ def deck_statistics_view(request, deck_id, *args, **kwargs):
         deck = Deck.objects.get(pk=deck_id, user=request.user)
     except Deck.DoesNotExist:
         return Response({'message': 'Deck not found'}, status=404)
+
+    return Response(deck.get_statistics(), status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def archive_deck(request, deck_id):
+    is_archived = request.data.get('is_archived')
+    if not isinstance(is_archived, bool):
+        return Response({'message': '`is_archived` must be a bool'}, status=400)
+
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    deck.is_archived = is_archived
+    deck.save()
 
     return Response(deck.get_statistics(), status=200)
 

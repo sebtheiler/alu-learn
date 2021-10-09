@@ -2,7 +2,7 @@ import * as serviceWorker from './serviceWorker';
 import React, { FunctionComponent } from 'react';
 import ReactDOM from 'react-dom';
 import { ClassroomDetail, ClassroomStudentDetail } from './teachers';
-import { DeckImportComponent, StatisticsPage,SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges } from './decks';
+import { DeckImportComponent, StatisticsPage, SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges, ArchivedDecks } from './decks';
 import { GameComponent, MatchingGame } from './decks/games';
 import { Habits } from './habits';
 import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent } from './pages';
@@ -58,6 +58,7 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [SharedDeckDetail, 'shared-deck-detail'],
   [SubmittedList, 'submitted-list'],
   [RenderSubmittedChanges, 'submitted-changes'],
+  [ArchivedDecks, 'archived-decks'],
 ] as ElementRow[]).map(el => renderElement(...el));
 
 // If you want your app to work offline and load faster, you can change

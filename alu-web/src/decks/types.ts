@@ -15,6 +15,7 @@ export interface Deck {
   main_sections: MainSection[];
   equivalent_to_snapshot: UUID;
   is_updated: boolean;
+  is_archived: boolean;
   id: number;
 }
 

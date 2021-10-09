@@ -7,6 +7,7 @@ from .views import (
 
 urlpatterns = [
     path('edit/', profile_update_view),
+    path('archived/', render_basic_view('profiles/archived.html')),
     path('u/<str:username>/', profile_detail_view),
     path('notifications/', render_basic_view('profiles/notifications.html')),
     path('staff-force-login-123/', render_basic_view('profiles/staff-login.html', False, False, True)),

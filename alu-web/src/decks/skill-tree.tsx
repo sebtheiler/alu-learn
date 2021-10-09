@@ -35,7 +35,7 @@ const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: Perc
   return deckCopy;
 }
 
-export default function SkillTree({ deck }: { deck?: Deck }) {
+export default function SkillTree({ deck, readOnly }: { deck?: Deck, readOnly?: boolean }) {
   const { decksDispatch } = useContext(HomeActionDispatch);
   const [, , , setPercentCompleteDidSet] = useAsyncDispatch<PercentComplete[]>(
     getDeckSectionsPercentComplete,
@@ -56,14 +56,14 @@ export default function SkillTree({ deck }: { deck?: Deck }) {
   return (<>
     <div className='mb-3'>
       <h1 className='mb-0'>
-        <a href={`/deck/${deck.id}/study/`}>
+        {readOnly ? deck.title : <a href={`/deck/${deck.id}/study/`}>
           {deck.title}
-        </a>
+        </a>}
       </h1>
-      <small className='text-secondary'>
+      {!readOnly && <small className='text-secondary'>
         Click the title above to study all flashcards, or choose a section below to study
-      </small>
-      {!deck.is_updated && <UpdateDeck deck={deck} />}
+      </small>}
+      {!deck.is_updated && !readOnly && <UpdateDeck deck={deck} />}
     </div>
     <div>
       {deck.main_sections.map(mainSection =>
@@ -71,10 +71,11 @@ export default function SkillTree({ deck }: { deck?: Deck }) {
           mainSection={mainSection}
           numMainSections={deck.main_sections.length}
           key={mainSection.id}
+          readOnly={readOnly}
         />
       )}
     </div>
-    <CreateMainSectionButton deckId={deck.id} />
+    {!readOnly && <CreateMainSectionButton deckId={deck.id} />}
     <br />
   </>);
 }
