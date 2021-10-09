@@ -59,6 +59,7 @@ class SubSectionSerializer(AbstractSectionSerializer):
         model = SubSection
         fields = AbstractSectionSerializer.Meta.fields + (
             'main_section',
+            'universal_sub_section_id',
         )
         read_only_fields = fields
 

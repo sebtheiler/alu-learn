@@ -1,12 +1,13 @@
 import RenderMainSection from './main-section';
 import UpdateDeck from './update-deck';
+import useMountEffect from '../utils/useMountEffect';
 import { CreateMainSectionButton } from './buttons/section-buttons';
 import { Deck } from './types';
 import { HomeActionDispatch } from './context';
-import { useAsyncDispatch, getDeckSectionsPercentComplete, PercentComplete } from '../lookup/lookup';
-import { useContext, useEffect } from 'react';
+import { useAsyncDispatch, getDeckSectionsPercentComplete, MainSectionPercentComplete } from '../lookup/lookup';
+import { useContext } from 'react';
 
-const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: PercentComplete[]) => {
+const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: MainSectionPercentComplete[]) => {
   let deckCopy = deck;
   for (const sectionPercentComplete of sectionsPercentComplete) {
     const mainSectionIdx = deckCopy.main_sections.indexOf(
@@ -37,7 +38,7 @@ const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: Perc
 
 export default function SkillTree({ deck, readOnly }: { deck?: Deck, readOnly?: boolean }) {
   const { decksDispatch } = useContext(HomeActionDispatch);
-  const [, , , setPercentCompleteDidSet] = useAsyncDispatch<PercentComplete[]>(
+  const [, , , setPercentCompleteDidSet] = useAsyncDispatch<MainSectionPercentComplete[]>(
     getDeckSectionsPercentComplete,
     [deck?.id],
     undefined,
@@ -48,9 +49,10 @@ export default function SkillTree({ deck, readOnly }: { deck?: Deck, readOnly?: 
     !!deck,
   );
 
-  useEffect(() => {
-    setPercentCompleteDidSet(false);
-  }, [deck, setPercentCompleteDidSet]);
+  useMountEffect(
+    () => setPercentCompleteDidSet(false),
+    [deck?.id, setPercentCompleteDidSet],
+  );
 
   if (!deck) return <p>Loading…</p>;
   return (<>

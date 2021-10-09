@@ -111,6 +111,31 @@ def classroom_students_view(request, classroom_id, *args, **kwargs):
     )
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def classroom_percent_complete(request, classroom_id):
+    assigned_sub_sections = SubSection.objects.filter(
+        attached_assignments__classrooms__pk=classroom_id,
+    ).values_list('universal_sub_section_id', flat=True)
+    sub_sections = SubSection.objects.filter(
+        main_section__deck__student_attached_to=classroom_id,
+        main_section__deck__user_id=request.user.pk,
+        universal_sub_section_id__in=assigned_sub_sections,
+    )
+    print(sub_sections.count())
+    sub_sections_percent_complete = [
+        {
+            'id': sub_section.pk,
+            'universal_sub_section_id': sub_section.universal_sub_section_id,
+            'percent_complete': sub_section.get_percent_complete(),
+            'total_percent_complete': sub_section.get_percent_complete(total=True),
+        }
+        for sub_section in sub_sections
+    ]
+
+    return Response(sub_sections_percent_complete, status=200)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def teacher_attach_deck_view(request, classroom_id, *args, **kwargs):

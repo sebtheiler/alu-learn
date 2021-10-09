@@ -114,7 +114,7 @@ export function useAsyncDispatch<ObjType, Event extends DefaultEvent = never>(
     if (objDidFetch || !requirement) return;
     setObjDidFetch(true);
     func(...args).then((res: ObjType) => {
-      dispatch({ action: 'INITIAL_SET', payload: res } as Event)
+      dispatch({ action: 'INITIAL_SET', payload: res } as Event);
       if (callback) callback(res);
     });
   }, [func, args, callback, objDidFetch, requirement]);
@@ -148,26 +148,21 @@ export function useAsyncState<ObjType>(
   return [obj, setObj, objDidFetch, setObjDidFetch];
 }
 
-export function useObjectGet<ObjType, Event extends DefaultEvent = never>(
+export function useObjectGet<ObjType>(
   appName: string,
   modelName: string,
   objectId: number | string,
-  reducer?: (
-    state: ObjType | undefined,
-    event: Event,
-  ) => ObjType | undefined,
   callback?: (response: ObjType) => void,
   requirement?: boolean,
 ): [
   ObjType | undefined,
-  Dispatch<Event>,
+  Dispatch<ObjType>,
   boolean,
   Dispatch<boolean>,
 ] {
-  return useAsyncDispatch<ObjType, Event>(
+  return useAsyncState<ObjType>(
     apiObjectGet,
     [appName, modelName, objectId],
-    reducer,
     callback,
     requirement,
   );
@@ -791,18 +786,25 @@ export async function apiReviewInstanceUpdate(
   );
 }
 
-export interface PercentComplete {
+interface PercentComplete {
   id: string;
   percent_complete: number;
   total_percent_complete: number;
-  sub_sections: {
-    id: string;
-    percent_complete: number;
-    total_percent_complete: number;
-  }[];
+}
+export interface SubSectionPercentComplete extends PercentComplete {
+  universal_sub_section_id?: string;
+}
+export interface MainSectionPercentComplete extends PercentComplete {
+  sub_sections: SubSectionPercentComplete[];
 }
 export async function getDeckSectionsPercentComplete(
   deckId: number,
-): Promise<PercentComplete[]> {
-  return backendFetch('GET', `skill_tree/mainsection/${deckId}/percent-complete/`);
+): Promise<MainSectionPercentComplete[]> {
+  return backendFetch('GET', `skill_tree/deck/${deckId}/percent-complete/`);
+}
+
+export async function getClassroomAssignmentsPercentComplete(
+  classroomId: number,
+): Promise<SubSectionPercentComplete[]> {
+  return backendFetch('GET', `teachers/classroom/${classroomId}/percent-complete/`);
 }

@@ -1,18 +1,44 @@
 import StudentAssignment from './student-assignment';
+import useMountEffect from '../utils/useMountEffect';
 import { Classroom, ClassroomAssignments } from './types';
-import { useEffect } from 'react';
-import { useObjectGet } from '../lookup/lookup';
+import { getClassroomAssignmentsPercentComplete, SubSectionPercentComplete, useAsyncDispatch, useObjectGet } from '../lookup/lookup';
 
 export default function StudentClassroom({ classroom }: { classroom?: Classroom }) {
-  const [fullClassroom, , , setClassroomDidSet] = useObjectGet<ClassroomAssignments>(
+  const [fullClassroom, setFullClassroom, , setClassroomDidSet] = useObjectGet<ClassroomAssignments>(
     'teachers', 'classroom', classroom?.id ?? 0,
-    undefined, undefined,
+    undefined,
     !!classroom,
   );
+  const [, , , setPercentCompleteDidSet] = useAsyncDispatch<SubSectionPercentComplete[]>(
+    getClassroomAssignmentsPercentComplete,
+    [classroom?.id],
+    undefined,
+    sectionsPercentComplete => updateWithPercentComplete(sectionsPercentComplete),
+    !!fullClassroom,
+  );
 
-  useEffect(() => {
+  const updateWithPercentComplete = (sectionsPercentComplete: SubSectionPercentComplete[]) => {
+    if (!fullClassroom) return;
+    let classroomCopy = fullClassroom;
+    for (let assignment of classroomCopy.assignments) {
+      for (let subSection of assignment.sub_sections) {
+        for (let percentComplete of sectionsPercentComplete) {
+          if (subSection.universal_sub_section_id === percentComplete.universal_sub_section_id) {
+            subSection.percent_complete = percentComplete.percent_complete;
+            subSection.total_percent_complete = percentComplete.total_percent_complete;
+            break;
+          }
+        }
+      }
+    }
+
+    setFullClassroom({ ...classroomCopy });
+  }
+
+  useMountEffect(() => {
     setClassroomDidSet(false);
-  }, [classroom?.id, setClassroomDidSet]);
+    setPercentCompleteDidSet(false);
+  }, [classroom?.id]);
 
   if (!classroom) return <p>Loading…</p>;
   return (

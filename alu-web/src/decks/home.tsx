@@ -84,7 +84,7 @@ export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSel
           <Col md={6} sm={12} className='px-4'>
             {selected.selectedType === 'HOME' && <HomeComponent isTeacher={isTeacher} />}
             {selected.selectedType === 'DECK' && <SkillTree deck={decks?.filter(deck => deck.id === selected.selected)[0]} />}
-            {selected.selectedType === 'CLASS' && (
+            {selected.selectedType === 'CLASS' && classrooms && (
               isTeacher
                 ? <TeacherClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />
                 : <StudentClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />
