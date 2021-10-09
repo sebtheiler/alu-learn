@@ -1,11 +1,9 @@
-import RenderSubSection from './sub-section';
-import { Assignment, Classroom, ClassroomAssignments } from '../teachers/types';
-import { MainSection } from './types';
-import { Row } from 'react-bootstrap';
+import StudentAssignment from './student-assignment';
+import { Classroom, ClassroomAssignments } from './types';
 import { useEffect } from 'react';
 import { useObjectGet } from '../lookup/lookup';
 
-export default function RenderStudentClassroom({ classroom }: { classroom?: Classroom }) {
+export default function StudentClassroom({ classroom }: { classroom?: Classroom }) {
   const [fullClassroom, , , setClassroomDidSet] = useObjectGet<ClassroomAssignments>(
     'teachers', 'classroom', classroom?.id ?? 0,
     undefined, undefined,
@@ -28,35 +26,12 @@ export default function RenderStudentClassroom({ classroom }: { classroom?: Clas
         <h3>Assignments</h3>
         {!fullClassroom && <p>Loading…</p>}
         {fullClassroom && fullClassroom.assignments.map(assignment =>
-          <RenderAssignment
+          <StudentAssignment
             key={assignment.id}
             assignment={assignment}
           />
         )}
         {fullClassroom && fullClassroom.assignments.length === 0 && <p>You have no assignments due!  Hurrah!</p>}
-      </div>
-    </div>
-  );
-}
-
-function RenderAssignment({ assignment }: { assignment: Assignment }) {
-  return (
-    <div className='main-section'>
-      <div className='main-section-header text-center'>
-        <h2>{assignment.title}</h2>
-      </div>
-      <div className='mt-2'>
-        <Row className='main-section-body'>
-          {assignment.sub_sections.map(subSection =>
-            <RenderSubSection
-              subSection={subSection}
-              mainSection={subSection.main_section as MainSection}
-              key={subSection.id}
-              readOnly
-              studyable
-            />
-          )}
-        </Row>
       </div>
     </div>
   );

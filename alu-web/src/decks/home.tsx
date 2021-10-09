@@ -7,10 +7,9 @@ import DeckSelection from './deck-selection';
 import HomeComponent from './home-component';
 import JoinClassroomButton from './buttons/join-classroom';
 import Meta from './meta';
-import RenderStudentClassroom from './render-student-classroom';
-import RenderTeacherClassroom from './render-teacher-classroom';
 import Row from 'react-bootstrap/Row';
 import SkillTree from './skill-tree';
+import { StudentClassroom, TeacherClassroom} from '../teachers';
 import { classroomReducer, HomeActionDispatch, deckReducer } from './context';
 import { useObjectList } from '../lookup/lookup';
 import { useState } from 'react';
@@ -22,7 +21,6 @@ interface Selected {
   selected: number;
 }
 
-// TODO: make default selected for classroom
 interface SkillTreeHomeProps {
   defaultDeckSelected?: string;
   defaultClassroomSelected?: string;
@@ -88,8 +86,8 @@ export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSel
             {selected.selectedType === 'DECK' && <SkillTree deck={decks?.filter(deck => deck.id === selected.selected)[0]} />}
             {selected.selectedType === 'CLASS' && (
               isTeacher
-                ? <RenderTeacherClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />
-                : <RenderStudentClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />
+                ? <TeacherClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />
+                : <StudentClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />
             )}
           </Col>
           <Col md={3} sm={12}>

@@ -1,8 +1,7 @@
-import { ClassroomDetail } from './detail';
-import { ClassroomStudentDetail } from './student';
-
+import StudentClassroom from './student-classroom';
+import TeacherClassroom from './teacher-classroom';
 
 export {
-  ClassroomDetail,
-  ClassroomStudentDetail,
-};
+  StudentClassroom,
+  TeacherClassroom,
+}
