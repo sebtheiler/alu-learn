@@ -41,4 +41,10 @@
       border-right: $grayBorder;
     }
   }
+
+  @media (max-height:767px) {
+    &.right {
+      transform: translateY(60px);
+    }
+  }
 }

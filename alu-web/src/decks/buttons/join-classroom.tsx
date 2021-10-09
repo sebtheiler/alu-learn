@@ -39,7 +39,7 @@ function JoinModal({ show, close }: JoinModalProps) {
   const [error, setError] = useState<'NOT_FOUND' | 'DIFFERENT_DOMAIN'>();
 
   const joinClassroom = async (classroomCode: string) => {
-    await apiClassroomStudentJoin(classroomCode).then(
+    await apiClassroomStudentJoin(classroomCode.trim()).then(
       classroom => {
         if (has(classroom, 'message')) {
           if (classroom.message === 'Classroom not found') {

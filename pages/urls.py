@@ -23,14 +23,6 @@ urlpatterns = [
     # Tutorial pages
     path('help/welcome/', views.welcome_view),
     path('help/', views.md_view_wrapper('main', 'User Guide')),
-    path('help/faq/', views.md_view_wrapper('misc/faq', 'FAQ')),
-    path('help/flashcard-tags/', views.md_view_wrapper('decks/flashcard-tags', 'Flashcard Tags')),
-    path('help/suspended/', views.md_view_wrapper('decks/flashcard-suspended', 'Suspended Flashcards')),
-    path('help/leeches/', views.md_view_wrapper('decks/flashcard-leech', 'Leech Flashcards')),
-    path('help/freezing-fields/', views.md_view_wrapper('decks/flashcard-field-freezing', 'Freezing Fields in Flashcard Creation')),
-    path('help/cloze-deletion/', views.md_view_wrapper('decks/cloze-deletion', 'Cloze Deletion')),
-    path('help/writing-latex/', views.md_view_wrapper('decks/writing-latex', 'LaTeX')),
-    path('help/selection-mode/', views.md_view_wrapper('decks/selection-mode', 'Selection Mode')),
     # Legal pages
     path('legal/', views.md_view_wrapper('legal/main', 'Legal Documents')),
     path('legal/tos/', views.md_view_wrapper('legal/ToS', 'Terms of Service')),

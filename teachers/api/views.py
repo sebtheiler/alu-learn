@@ -50,7 +50,7 @@ def student_join_class_view(request, *args, **kwargs):
         `classroom_code`: (Data) Code of the class to join
     """
     try:
-        classroom = Classroom.objects.get(code=request.data.get('classroom_code'))
+        classroom = Classroom.objects.get(code=request.data.get('classroom_code', '').strip())
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
 
