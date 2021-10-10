@@ -225,12 +225,13 @@ export const classroomReducer = (
 interface HomeActionDispatchType {
   decks: Deck[] | undefined;
   decksDispatch: Dispatch<DeckEvent> | undefined;
-  classrooms: Classroom[] | undefined;
-  classroomsDispatch: Dispatch<ClassroomEvent> | undefined;
+  classroomsTaught: Classroom[] | undefined;
+  classroomsTaughtDispatch: Dispatch<ClassroomEvent> | undefined;
+  classroomsIn: Classroom[] | undefined;
+  classroomsInDispatch: Dispatch<ClassroomEvent> | undefined;
 }
 export const HomeActionDispatch = createContext<HomeActionDispatchType>({
-  decks: undefined,
-  decksDispatch: undefined,
-  classrooms: undefined,
-  classroomsDispatch: undefined,
+  decks: undefined, decksDispatch: undefined,
+  classroomsTaught: undefined, classroomsTaughtDispatch: undefined,
+  classroomsIn: undefined, classroomsInDispatch: undefined,
 });

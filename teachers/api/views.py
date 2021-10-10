@@ -213,11 +213,16 @@ def create_assignment(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def classrooms_list(request, *args, **kwargs):
-    if request.user.profile.settings.user_type == 'TEACHER':
-        classrooms = request.user.profile.classrooms_taught.order_by('title')
-    else:
-        classrooms = request.user.profile.classrooms_in.order_by('title')
+def classrooms_taught_list(request, *args, **kwargs):
+    classrooms = request.user.profile.classrooms_taught.order_by('title')
+
+    return Response(ClassroomSerializer(classrooms, many=True).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def classrooms_in_list(request, *args, **kwargs):
+    classrooms = request.user.profile.classrooms_in.order_by('title')
 
     return Response(ClassroomSerializer(classrooms, many=True).data, status=200)
 

@@ -50,18 +50,18 @@ export default function TeacherClassroom({ classroom }: { classroom?: Classroom 
 }
 
 function ChooseClassroomDeck({ classroom }: { classroom: Classroom }) {
-  const { classroomsDispatch } = useContext(HomeActionDispatch)
+  const { classroomsTaughtDispatch } = useContext(HomeActionDispatch)
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAttachModal, setShowAttachModal] = useState(false);
 
   const attachDeckToClassroom = async (deck: Deck) => {
-    if (!classroomsDispatch) return;
+    if (!classroomsTaughtDispatch) return;
 
     const sharedDeck = await backendFetch<SharedDeck>('POST', `teachers/classroom/${classroom.id}/attach/`, {
       deck_id: deck.id,
     });
 
-    classroomsDispatch({
+    classroomsTaughtDispatch({
       action: 'EDIT',
       editedValues: {
         shared_deck: sharedDeck,
@@ -151,7 +151,9 @@ function StudentsList({ classroomId }: { classroomId: number }) {
     {students.map(student =>
       <Row key={student.username} className='student-row'>
         <Jdenticon value={student.username} size={30} />
-        <p style={{ marginTop: '3px' }}>{student.first_name} {student.last_name}</p>
+        <p style={{ marginTop: '3px', marginBottom: '0' }}>
+          {student.first_name} {student.last_name}
+        </p>
       </Row>
     )}
     {students.length === 0 && <p>You have no students yet.  Invite some with your class code.</p>}

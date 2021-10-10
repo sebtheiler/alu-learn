@@ -84,6 +84,7 @@ export function SettingsPage({ username }) {
         >
           <option value='STUDENT'>Student</option>
           <option value='TEACHER'>Teacher</option>
+          <option value='MIXED'>Mixed (can create and join classrooms)</option>
         </Form.Control>
       </Form.Group>
       {/* <Form.Group>

@@ -9,34 +9,59 @@ import JoinClassroomButton from './buttons/join-classroom';
 import Meta from './meta';
 import Row from 'react-bootstrap/Row';
 import SkillTree from './skill-tree';
+import { Settings } from '../profiles/types';
 import { StudentClassroom, TeacherClassroom} from '../teachers';
+import { backendFetch, useAsyncDispatch, useObjectList } from '../lookup/lookup';
 import { classroomReducer, HomeActionDispatch, deckReducer } from './context';
-import { useObjectList } from '../lookup/lookup';
 import { useState } from 'react';
 import './home.scss';
 import 'react-calendar-heatmap/dist/styles.css';
 
 interface Selected {
-  selectedType: 'HOME' | 'DECK' | 'CLASS';
+  selectedType: 'HOME' | 'DECK' | 'CLASS_TAUGHT' | 'CLASS_IN';
   selected: number;
 }
 
 interface SkillTreeHomeProps {
   defaultDeckSelected?: string;
   defaultClassroomSelected?: string;
-  userType?: string;
+  userType: Settings['user_type'];
 };
 export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSelected, userType }: SkillTreeHomeProps) {
-  const isTeacher = userType?.toLowerCase() === 'teacher';
   const [decks, decksDispatch] = useObjectList('decks', 'deck', deckReducer);
-  const [classrooms, classroomsDispatch] = useObjectList('teachers', 'classroom', classroomReducer);
-  const [selected, setSelected] = useState<Selected>(() => ({
-    selectedType: defaultDeckSelected ? 'DECK' : (defaultClassroomSelected ? 'CLASS' : 'HOME'),
-    selected: parseInt((defaultDeckSelected || defaultClassroomSelected) ?? '0'),
-  }));
+  const [classroomsTaught, classroomsTaughtDispatch] = useAsyncDispatch(
+    () => backendFetch('GET', 'teachers/classroom/taught-list/'), [],
+    classroomReducer,
+    undefined,
+    ['TEACHER', 'MIXED'].includes(userType),
+  );
+  const [classroomsIn, classroomsInDispatch] = useAsyncDispatch(
+    () => backendFetch('GET', 'teachers/classroom/in-list/'), [],
+    classroomReducer,
+    undefined,
+    ['STUDENT', 'MIXED'].includes(userType),
+  );
+  const [selected, setSelected] = useState<Selected>(() => {
+    let selectedType: Selected['selectedType'];
+    if (defaultDeckSelected) {
+      selectedType = 'DECK';
+    } else if (defaultClassroomSelected) {
+      selectedType = userType === 'TEACHER' ? 'CLASS_TAUGHT' : 'CLASS_IN';
+    } else {
+      selectedType = 'HOME';
+    }
+
+    let selected = parseInt((defaultDeckSelected || defaultClassroomSelected) ?? '0');
+
+    return { selectedType, selected };
+  });
 
   return (
-    <HomeActionDispatch.Provider value={{ decks, decksDispatch, classrooms, classroomsDispatch }}>
+    <HomeActionDispatch.Provider value={{
+      decks, decksDispatch,
+      classroomsTaught, classroomsTaughtDispatch,
+      classroomsIn, classroomsInDispatch,
+    }}>
       <Container className='text-center mt-3' fluid>
         <Row>
           <Col md={3} sm={12}>
@@ -65,34 +90,46 @@ export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSel
               ) : <p>Loading decks…</p>}
               <CreateDeckButton />
             </div>
-            <div>
-              <p className='text-left mb-1'><strong>Classes</strong></p>
-              {classrooms ? classrooms.map(classroom =>
+            {['TEACHER', 'MIXED'].includes(userType) && <div>
+              <p className='text-left mb-1'><strong>Classes{userType === 'MIXED' && ' Taught'}</strong></p>
+              {classroomsTaught ? classroomsTaught.map(classroom =>
                 <ClassroomSelection
                   classroom={classroom}
                   onClick={() => {
-                    setSelected({ selectedType: 'CLASS', selected: classroom.id });
+                    setSelected({ selectedType: 'CLASS_TAUGHT', selected: classroom.id });
                     window.history.pushState(`alu/classroom/${classroom.id}/`, classroom.title, `/classroom/${classroom.id}/`);
                   }}
-                  selected={selected.selected === classroom.id && selected.selectedType === 'CLASS'}
+                  selected={selected.selected === classroom.id && selected.selectedType === 'CLASS_TAUGHT'}
                   key={`class-${classroom.id}`}
                 />
               ) : <p>Loading classrooms…</p>}
-              {isTeacher ? <CreateClassroomButton /> : <JoinClassroomButton />}
-            </div>
+              <CreateClassroomButton />
+            </div>}
+            {['STUDENT', 'MIXED'].includes(userType) && <div>
+              <p className='text-left mb-1'><strong>Classes{userType === 'MIXED' && ' In'}</strong></p>
+              {classroomsIn ? classroomsIn.map(classroom =>
+                <ClassroomSelection
+                  classroom={classroom}
+                  onClick={() => {
+                    setSelected({ selectedType: 'CLASS_IN', selected: classroom.id });
+                    window.history.pushState(`alu/classroom/${classroom.id}/`, classroom.title, `/classroom/${classroom.id}/`);
+                  }}
+                  selected={selected.selected === classroom.id && selected.selectedType === 'CLASS_IN'}
+                  key={`class-${classroom.id}`}
+                />
+              ) : <p>Loading classrooms…</p>}
+              <JoinClassroomButton />
+            </div>}
           </Col>
           <Col md={6} sm={12} className='px-4'>
-            {selected.selectedType === 'HOME' && <HomeComponent isTeacher={isTeacher} />}
+            {selected.selectedType === 'HOME' && <HomeComponent isTeacher={userType === 'TEACHER'} />}
             {selected.selectedType === 'DECK' && <SkillTree deck={decks?.filter(deck => deck.id === selected.selected)[0]} />}
-            {selected.selectedType === 'CLASS' && classrooms && (
-              isTeacher
-                ? <TeacherClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />
-                : <StudentClassroom classroom={classrooms?.filter(classroom => classroom.id === selected.selected)[0]} />
-            )}
+            {selected.selectedType === 'CLASS_TAUGHT' && <TeacherClassroom classroom={classroomsTaught?.filter(classroom => classroom.id === selected.selected)[0]} />}
+            {selected.selectedType === 'CLASS_IN' && <StudentClassroom classroom={classroomsIn?.filter(classroom => classroom.id === selected.selected)[0]} />}
           </Col>
           <Col md={3} sm={12}>
             <h1 className='invisible'>.</h1>
-            <Meta isTeacher={isTeacher} />
+            <Meta isTeacher={userType === 'TEACHER'} />
           </Col>
         </Row>
       </Container>

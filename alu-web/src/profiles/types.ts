@@ -19,7 +19,7 @@ export interface Profile extends MinifiedProfile {
 
 export interface Settings {
   send_reminders: boolean;
-  user_type: 'STUDENT' | 'TEACHER';
+  user_type: 'STUDENT' | 'TEACHER' | 'MIXED';
   target_num_cards: number;
   is_opted_dev: boolean;
   id: number;

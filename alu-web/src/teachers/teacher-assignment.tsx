@@ -50,7 +50,7 @@ export default function TeacherAssignment({ classroomId, assignment }: { classro
         </p>
         <small>(click to {showFullDetail ? 'collapse' : 'expand'})</small>
       </div>
-      {showFullDetail && <div>
+      {showFullDetail && (studentsPercentComplete?.length ?? 0) > 0 && <div>
         <br />
         <Chart
           width={'100%'}
@@ -72,6 +72,9 @@ export default function TeacherAssignment({ classroomId, assignment }: { classro
           }}
         />
       </div>}
+      {showFullDetail && studentsPercentComplete?.length === 0 && <p className='mt-2'>
+        You'll be able to track your students' progress here after you invite them to this class
+      </p>}
     </div>
   );
 }

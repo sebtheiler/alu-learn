@@ -16,7 +16,7 @@ interface CreateAssignmentButtonProps {
 }
 export default function CreateAssignmentButton({ classroom, assignments, setAssignments }: CreateAssignmentButtonProps) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { classrooms } = useContext(HomeActionDispatch)
+  const { classroomsTaught } = useContext(HomeActionDispatch)
   const mainSections = useMemo(() => {
     if (!classroom.shared_deck) return [];
     const sortedSnapshots = classroom.shared_deck.snapshots.sort(
@@ -99,7 +99,7 @@ export default function CreateAssignmentButton({ classroom, assignments, setAssi
               multiple
               custom
             >
-              {classrooms?.map(classroom =>
+              {classroomsTaught?.map(classroom =>
                 <option value={classroom.id} key={classroom.id}>{classroom.title}</option>
               )}
             </Form.Control>

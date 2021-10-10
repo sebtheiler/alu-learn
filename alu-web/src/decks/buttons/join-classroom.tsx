@@ -35,7 +35,7 @@ interface JoinModalProps {
   close(): void;
 }
 function JoinModal({ show, close }: JoinModalProps) {
-  const { classroomsDispatch } = useContext(HomeActionDispatch);
+  const { classroomsInDispatch } = useContext(HomeActionDispatch);
   const [error, setError] = useState<'NOT_FOUND' | 'DIFFERENT_DOMAIN'>();
 
   const joinClassroom = async (classroomCode: string) => {
@@ -51,8 +51,8 @@ function JoinModal({ show, close }: JoinModalProps) {
           return;
         }
         
-        if (classroomsDispatch) {
-          classroomsDispatch({ action: 'CREATE', classroom: classroom });
+        if (classroomsInDispatch) {
+          classroomsInDispatch({ action: 'CREATE', classroom: classroom });
           setError(undefined);
           close();
         }
