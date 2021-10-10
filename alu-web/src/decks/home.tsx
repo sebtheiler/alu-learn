@@ -9,6 +9,8 @@ import JoinClassroomButton from './buttons/join-classroom';
 import Meta from './meta';
 import Row from 'react-bootstrap/Row';
 import SkillTree from './skill-tree';
+import { Classroom } from '../teachers/types';
+import { Deck } from './types';
 import { Settings } from '../profiles/types';
 import { StudentClassroom, TeacherClassroom} from '../teachers';
 import { backendFetch, useAsyncDispatch, useObjectList } from '../lookup/lookup';
@@ -55,6 +57,10 @@ export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSel
 
     return { selectedType, selected };
   });
+
+  const getSelectedDeck = () => decks?.filter(deck => deck.id === selected.selected)[0];
+  const getSelectedClassroomTaught = () => classroomsTaught?.filter(classroom => classroom.id === selected.selected)[0];
+  const getSelectedClassroomIn = () => classroomsIn?.filter(classroom => classroom.id === selected.selected)[0];
 
   return (
     <HomeActionDispatch.Provider value={{
@@ -123,9 +129,9 @@ export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSel
           </Col>
           <Col md={6} sm={12} className='px-4'>
             {selected.selectedType === 'HOME' && <HomeComponent isTeacher={userType === 'TEACHER'} />}
-            {selected.selectedType === 'DECK' && <SkillTree deck={decks?.filter(deck => deck.id === selected.selected)[0]} />}
-            {selected.selectedType === 'CLASS_TAUGHT' && <TeacherClassroom classroom={classroomsTaught?.filter(classroom => classroom.id === selected.selected)[0]} />}
-            {selected.selectedType === 'CLASS_IN' && <StudentClassroom classroom={classroomsIn?.filter(classroom => classroom.id === selected.selected)[0]} />}
+            {selected.selectedType === 'DECK' && getSelectedDeck() && <SkillTree deck={getSelectedDeck() as Deck} />}
+            {selected.selectedType === 'CLASS_TAUGHT' && getSelectedClassroomTaught() && <TeacherClassroom classroom={getSelectedClassroomTaught() as Classroom} />}
+            {selected.selectedType === 'CLASS_IN' && getSelectedClassroomIn() && <StudentClassroom classroom={getSelectedClassroomIn() as Classroom} />}
           </Col>
           <Col md={3} sm={12}>
             <h1 className='invisible'>.</h1>

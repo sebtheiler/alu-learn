@@ -14,7 +14,7 @@ import { backendFetch, useAsyncState, apiClassroomStudentsList } from '../lookup
 import { useContext, useState } from 'react';
 import './teacher-classroom.scss';
 
-export default function TeacherClassroom({ classroom }: { classroom?: Classroom }) {
+export default function TeacherClassroom({ classroom }: { classroom: Classroom }) {
   const [selectedTab, setSelectedTab] = useState('ASSIGNMENTS');
 
   if (!classroom) return <p>Loading…</p>;

@@ -36,7 +36,7 @@ const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: Main
   return deckCopy;
 }
 
-export default function SkillTree({ deck, readOnly }: { deck?: Deck, readOnly?: boolean }) {
+export default function SkillTree({ deck, readOnly }: { deck: Deck, readOnly?: boolean }) {
   const { decksDispatch } = useContext(HomeActionDispatch);
   const [, , , setPercentCompleteDidSet] = useAsyncDispatch<MainSectionPercentComplete[]>(
     getDeckSectionsPercentComplete,

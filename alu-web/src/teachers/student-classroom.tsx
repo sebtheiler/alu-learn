@@ -3,7 +3,7 @@ import useMountEffect from '../utils/useMountEffect';
 import { Classroom, ClassroomAssignments } from './types';
 import { getClassroomAssignmentsPercentComplete, SubSectionPercentComplete, useAsyncDispatch, useObjectGet } from '../lookup/lookup';
 
-export default function StudentClassroom({ classroom }: { classroom?: Classroom }) {
+export default function StudentClassroom({ classroom }: { classroom: Classroom }) {
   const [fullClassroom, setFullClassroom, , setClassroomDidSet] = useObjectGet<ClassroomAssignments>(
     'teachers', 'classroom', classroom?.id ?? 0,
     undefined,

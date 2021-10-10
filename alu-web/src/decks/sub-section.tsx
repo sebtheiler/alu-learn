@@ -1,8 +1,8 @@
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
+import LoadingButton from './buttons/LoadingButton';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-// import Tooltip from 'react-bootstrap/Tooltip';
 import { MainSection, SubSection } from './types';
 import { SubSectionButtons } from './buttons/section-buttons';
 
@@ -40,16 +40,16 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
             <Popover.Content>
               <p>{subSection.data.description}</p>
               <div>
-                {studyable && <Button
-                  href={
+                {studyable && <LoadingButton
+                  clickFunc={async () => {window.location.href = (
                     `study/\
                     ${cleanTitle(mainSection.data.title)}__\
                     ${cleanTitle(subSection.data.title)}/`.replaceAll(' ', '')
-                  }
+                  ); await new Promise(r => setTimeout(r, 100000))}}
                   block
                 >
                   Study
-                </Button>}
+                </LoadingButton>}
                 {!readOnly && <Button
                   href={
                     `/deck/${mainSection.deck}/flashcards/create/\
@@ -60,17 +60,17 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
                 >
                   Add Flashcards
                 </Button>}
-                <Button
-                  href={
+                <LoadingButton
+                  clickFunc={async () => {window.location.href = (
                     `flashcards/sections/\
                     ${cleanTitle(mainSection.data.title)}__\
                     ${cleanTitle(subSection.data.title)}/`.replaceAll(' ', '')
-                  }
+                  ); await new Promise(r => setTimeout(r, 100000))}}
                   variant='secondary'
                   block
                 >
                   View
-                </Button>
+                </LoadingButton>
               </div>
             </Popover.Content>
           </Popover>

@@ -11,6 +11,8 @@ export default function ArchivedDecks() {
   const [decks] = useAsyncState<Deck[]>(() => backendFetch('GET', 'decks/deck/list', { is_archived: true }));
   const [selectedDeck, setSelectedDeck] = useState(-1);
 
+  const getSelectedDeck = () => decks?.filter(deck => deck.id === selectedDeck)[0];
+
   return (<Container className='text-center' fluid>
     <h1 className='text-center mt-5'>Archived Decks</h1>
     <hr />
@@ -39,9 +41,9 @@ export default function ArchivedDecks() {
         )}
       </Col>
       <Col md={6}>
-        {selectedDeck > 0
+        {selectedDeck > 0 && getSelectedDeck()
           ? <SkillTree
-              deck={decks?.filter(deck => deck.id === selectedDeck)[0]}
+              deck={getSelectedDeck() as Deck}
               readOnly
             />
           : (
