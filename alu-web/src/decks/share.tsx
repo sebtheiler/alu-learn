@@ -13,11 +13,11 @@ import { Deck } from './types';
 import { QuestionBubble } from '../utils';
 import { ReactElement, useMemo, useState } from 'react';
 import { SharedDeck } from './types';
-import { apiCreateSharedDeck, apiObjectEdit, backendFetch, useAsyncDispatch, useObjectGet } from '../lookup/lookup';
+import { apiCreateSharedDeck, apiObjectEdit, backendFetch, Message, useAsyncDispatch, useAsyncState, useObjectGet } from '../lookup/lookup';
 
 // NOTE: This is required so that the default will change based on
 // whether or not there is an attached share deck
-const genDefault = (sharedDeck: SharedDeck| undefined, deck: Deck, attr: string, defaultVal?: string) => {
+const genDefault = (sharedDeck: SharedDeck | undefined, deck: Deck, attr: string, defaultVal?: string) => {
   if (sharedDeck)
     return sharedDeck[attr];
   else
@@ -117,6 +117,7 @@ export default function ShareDeck({ deckId, username }: { deckId: string, userna
         {sharedDeck ? <>Updating
           "<a href={`/community/deck/${sharedDeck.id}`}>{sharedDeck.title}</a>"
         </> : `Sharing "${deck.title}"`}
+        {sharedDeck && sharedDeck.is_owner && <MergeButton sharedDeck={sharedDeck} />}
         {sharedDeck && <RemixButton deckId={parseInt(deckId)} sharedDeck={sharedDeck} />}
       </h1>
       <Row>
@@ -281,7 +282,7 @@ function RemixButton({ deckId, sharedDeck }: { deckId: number, sharedDeck: Share
       onClick={async () => setRemixModalIsOpen(true)}
       faClass='fas fa-code-branch'
       className='float-right'
-      id='code-branch-tooltip'
+      id='remix-tooltip'
     />
     <Modal show={remixModalIsOpen} onHide={() => setRemixModalIsOpen(false)}>
       <Modal.Header>
@@ -310,6 +311,73 @@ function RemixButton({ deckId, sharedDeck }: { deckId: number, sharedDeck: Share
         >
           Create Remix
         </LoadingButton>}
+      </Modal.Body>
+    </Modal>
+  </>);
+}
+
+function MergeButton({ sharedDeck }: { sharedDeck: SharedDeck }) {
+  const [mergeModalIsOpen, setMergeModalIsOpen] = useState(false);
+  const [remixedFrom] = useAsyncState<SharedDeck[]>(
+    () => backendFetch('GET', `sharing_system/shareddeck/${sharedDeck.id}/remixed-from/`),
+    [], undefined,
+    mergeModalIsOpen,
+  );
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const mergeDeck = async (e, sharedDeckToMerge: SharedDeck) => {
+    e.stopPropagation();
+    const message = await backendFetch<Message>('POST', `sharing_system/shareddeck/${sharedDeck.id}/merge/`, {
+      shared_deck_to_merge_id: sharedDeckToMerge.id,
+    });
+
+    if (message.message === 'Nothing to merge') {
+      setErrorMsg('Nothing to merge.  You are up to date with this shared deck.');
+      return;
+    }
+
+    window.location.href = `/community/deck/${sharedDeck.id}/`;
+  }
+
+  return (<>
+    <IconTooltip
+      tooltip='Merge this shared deck'
+      onClick={async () => setMergeModalIsOpen(true)}
+      faClass='fas fa-code-branch fa-flip-vertical'
+      className='float-right ml-2'
+      id='merge-tooltip'
+    />
+    <Modal show={mergeModalIsOpen} onHide={() => setMergeModalIsOpen(false)}>
+      <Modal.Header>
+        <Modal.Title>Merging "{sharedDeck.title}"</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>When you remix a shared deck, you split it into multiple shared decks.  When you merge a shared deck, you take the updates from two shared decks and combine them.</p>
+        <p>If this deck was remixed from another shared deck, you can merge the new updates from that original deck into this one.</p>
+        <hr />
+        <div>
+          <p>
+            Merge with:
+          </p>
+          {remixedFrom?.map(remixedSharedDeck =>
+            <div
+              className='searched-item text-right p-3'
+              onClick={() => window.open(`/community/deck/${remixedSharedDeck.id}/`)}
+              key={remixedSharedDeck.id}
+            >
+              <h4 className='float-left mt-1'>{remixedSharedDeck.title}</h4>
+              <LoadingButton
+                className='ml-auto'
+                clickFunc={e => mergeDeck(e, remixedSharedDeck)}
+              >
+                Merge
+              </LoadingButton>
+            </div>
+          )}
+          {remixedFrom?.length === 0 && <p>This deck wasn't remixed from anything, so it can't be merged</p>}
+          {remixedFrom === undefined && <p>Loading…</p>}
+        </div>
+        <p className='text-center text-danger mt-3'>{errorMsg}</p>
       </Modal.Body>
     </Modal>
   </>);

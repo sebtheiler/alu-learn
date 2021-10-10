@@ -487,3 +487,53 @@ def decide_submitted_changes(request, submitted_changes_id, *args, **kwargs):
         return Response({'message': 'Denied changes'}, status=200)
     else:
         return Response({'message': 'Unrecognized `decision`'}, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_remixed_from(request, shared_deck_id):
+    try:
+        shared_deck = SharedDeck.objects.get(pk=shared_deck_id)
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'Shared deck not found'}, status=404)
+
+    if not shared_deck.has_view_access(request.user.profile.pk):
+        return Response({'message': 'You are not authorized to view this shared deck'}, status=403)
+
+    remixed_from = set()
+
+    # TODO: prefetch recursively
+    snapshot = shared_deck.get_latest_snapshot(prefetch=False)
+    while snapshot is not None:
+        remixed_from.add(snapshot.shared_deck_id)
+        snapshot = snapshot.parent
+
+    remixed_from.remove(shared_deck_id)
+
+    remixed_from = SharedDeck.objects.filter(pk__in=remixed_from)
+
+    return Response(SharedDeckSerializer(remixed_from, many=True).data, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def merge_shared_decks(request, shared_deck_id):
+    try:
+        shared_deck_to_update = SharedDeck.objects.get(pk=shared_deck_id)
+        shared_deck_to_merge = SharedDeck.objects.get(
+            pk=request.data.get('shared_deck_to_merge_id'),
+        )
+    except SharedDeck.DoesNotExist:
+        return Response({'message': 'Shared deck not found'}, status=404)
+
+    if not shared_deck_to_update.is_owner(request.user.profile.pk):
+        return Response({'message': 'You do not have permission to merge'}, satus=403)
+
+    if not shared_deck_to_merge.has_view_access(request.user.profile.pk):
+        return Response({'message': 'You do not have permission view this deck'}, satus=403)
+
+    snapshot = SharedDeck.merge(shared_deck_to_update, shared_deck_to_merge)
+    if snapshot is None:
+        return Response({'message': 'Nothing to merge'}, status=200)
+
+    return Response({'message': 'Merged'}, status=200)

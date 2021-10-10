@@ -15,6 +15,8 @@ urlpatterns = [
     path('shareddeck/<int:shared_deck_id>/edit/', views.edit_shared_deck),
     path('shareddeck/<int:shared_deck_id>/push/', views.shared_deck_push_view),
     path('shareddeck/<int:shared_deck_id>/submitted/', views.list_submitted_changes),
+    path('shareddeck/<int:shared_deck_id>/remixed-from/', views.get_remixed_from),
+    path('shareddeck/<int:shared_deck_id>/merge/', views.merge_shared_decks),
     path('snapshot/<uuid:snapshot_id>/shareddeck/', views.get_shared_deck_from_snapshot_id),
     path('submittedchanges/<uuid:submitted_changes_id>/', views.get_submitted_changes),
     path('submittedchanges/<uuid:submitted_changes_id>/decide/', views.decide_submitted_changes),
