@@ -28,7 +28,7 @@ export default function TeacherClassroom({ classroom }: { classroom: Classroom }
         {!classroom.shared_deck
           ? <ChooseClassroomDeck classroom={classroom} />
           : <div>
-              <h3>Attached Deck: {classroom.shared_deck.title}</h3>
+              <h3>Attached Deck: <a href={`/community/deck/${classroom.shared_deck.id}/`}>{classroom.shared_deck.title}</a></h3>
               <br />
               <Row>
                 <Col onClick={() => setSelectedTab('ASSIGNMENTS')} role='button'>

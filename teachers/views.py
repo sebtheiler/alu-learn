@@ -1,12 +1,14 @@
 from django.http.response import Http404
-
-from skill_tree.models import AbstractSection, SubSection
-from .models import Classroom
 from django.shortcuts import redirect
+from sharing_system.models import SharedDeck
+from skill_tree.models import AbstractSection, SubSection
 from utils import permissions
+
+from .models import Classroom
 
 
 def get_student_sub_section(request, classroom_id, sub_section):
+    # Get teacher sub section
     titles = sub_section.split('__')
     if len(titles) != 2:
         raise Http404()
@@ -19,6 +21,7 @@ def get_student_sub_section(request, classroom_id, sub_section):
     if teacher_sub_section is None:
         raise Http404()
 
+    # Get classroom
     try:
         classroom = Classroom.objects.get(pk=classroom_id)
     except Classroom.DoesNotExist:
@@ -27,12 +30,18 @@ def get_student_sub_section(request, classroom_id, sub_section):
     if not classroom.students.filter(pk=request.user.profile.pk).exists():
         raise Http404()
 
+    # Get the deck the student attached to the classroom
     attached_deck = classroom.attached_student_decks.filter(user=request.user).first()
     if attached_deck is None:
         attached_deck = classroom.shared_deck.copy(request.user, classroom.shared_deck.title)
         attached_deck.student_attached_to = classroom
         attached_deck.save()
+    else:
+        # Update the deck if needed
+        if not attached_deck.is_updated():
+            attached_deck, _ = SharedDeck.pull(attached_deck)
 
+    # Get the sub section to study
     try:
         student_sub_section = SubSection.objects.get(
             universal_sub_section_id=teacher_sub_section.universal_sub_section_id,
