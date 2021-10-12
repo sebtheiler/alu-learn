@@ -1,3 +1,23 @@
+## Assignments, Merging Decks, & More Features - Oct 12 - 1.0.4
+Getting closer to final launch!
+
+
+You can now **merge** a deck that remixed from another deck with the original deck, pulling all changes that have been made since the deck was remixed.  This is an essential feature for Alu's continually developing sharing system, as it allows remixes to work more effectively.
+
+
+* **Assignments Students Frontend:** There is now a pretty interface for students to study assignments, as well as a percent complete tracker
+* **Added Progress Tracker for Teachers:** Teachers can now see students' progress in assignments
+* **Fixed Caching Assignments:** Fixed assignments and students caching, so that it now properly resets when you click on a different classroom
+* **Fixed Settings Bug:** Fixed a bug that allowed you to submit a blank value in settings
+* **Added Total Percent Complete:** In compliment to the blue percent complete tracker that shows how many flashcards you currently have memorized, there is now a green percent complete tracker that shows how many flashcards have memorized in total
+* **Added Deck Archiving:** You can now archive decks that you are no longer using
+* **Fixed Games:** Games now work again!
+* **Removed Outdated Help Pages:** The majority of the help pages were outdated and have been removed
+* **Added "Mixed" User Type:** You can now set yourself to the "Mixed" user type to be able to both create and join classrooms
+* **Added Shared Deck Merging:** You can now merge a shared deck with the deck it was remixed from, getting the new set of changes
+* **Added Spinner for Studying Loading:** There is now a spinner that activates when you click study, preventing you from accidentally clicking the button multiple times
+
+
 ## Classroom Fixes & Identicons - Oct 05 - 1.0.3
 Classrooms are getting closer to final release with a bunch of improvements and fixes to the current system.  This update is mostly just fixes, but also introduces "remixing" shared decks to create a totally new "branch," and gives everyone a unique identicon for their profile picture.
 

@@ -175,11 +175,6 @@ class Deck(models.Model):
         return skill_tree
 
     def is_updated(self) -> bool:
-        if self.title == '_Testing':
-            print('==============')
-            print(self.equivalent_to_snapshot)
-            print(self.equivalent_to_snapshot.shared_deck.get_latest_snapshot() if self.equivalent_to_snapshot else None)
-
         return (
             not self.equivalent_to_snapshot_id
             or

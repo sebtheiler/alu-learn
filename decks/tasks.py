@@ -31,6 +31,8 @@ def run_midnight_reset():
 
 @shared_task
 def email_reminder():
+    return
+
     users_to_notify = Profile.objects.filter(
         has_done_work_today=False,
         current_streak__gt=0,
@@ -76,4 +78,5 @@ https://www.alulearn.com/settings/)
 
 @periodic_task(run_every=crontab(hour=23, minute=0))  # hour=23 -> 1800 in NYC
 def run_email_reminder():
-    email_reminder.delay()
+    # email_reminder.delay()
+    pass
