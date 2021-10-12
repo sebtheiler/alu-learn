@@ -1,28 +1,7 @@
-Welcome to the Alu user guide!
+Unfortunately, due to Alu's recent vast overhaul, almost every single help page is outdated.
 
-In the following pages, you can find detailed information on the features Alu has to offer.
 
-## General
-* [Landing Page Introduction (Video)](https://www.youtube.com/watch?v=maoqzbPv4jg)
-* [Frequently Asked Questions (FAQ)](/help/faq/)
+If you need help, just shoot me an email at aluflashcards@gmail.com and I'll get back to you as soon as possible.
 
-## Decks
-* [Introduction to Decks (Video)](https://www.youtube.com/watch?v=T2jA--y0ggk)
-* [Ultimate Beginner Guide to Premade Decks (Video)](https://www.youtube.com/watch?v=kymkOwUsui4)
-* [Copying Shared Decks (Video)](https://www.youtube.com/watch?v=XO2myZbhJxQ)
-* [Creating Filtered Decks (Video)](https://www.youtube.com/watch?v=N-6khJQRCUU)
 
-### Flashcards
-* [Flashcard Tags](/help/flashcard-tags/)
-* [Suspended Flashcards](/help/suspended/)
-* [Leech Flashcards](/help/leeches/)
-* [Freezing Fields in Flashcards](/help/freezing-fields/)
-* [Cloze Deletion](/help/cloze-deletion/)
-* [Writing LaTeX](/help/writing-latex/)
-* [Selection Mode](/help/selection-mode/)
-
-## Classes
-* [Creating Classes (Video)](https://youtu.be/QNpOwlFpCbU)
-
-## Tasks
-* [Introduction to Tasks (Video)](https://www.youtube.com/watch?v=15jt-oQSJ8c)
+Now that Alu is becoming more stable again, I'm working on bringing back the help pages.  Sorry again.

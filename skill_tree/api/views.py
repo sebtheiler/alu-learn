@@ -101,26 +101,36 @@ def get_deck_sections_percent_complete(request, deck_id, *args, **kwargs):
     ).prefetch_related('sub_sections')
     sub_sections = []
 
-    def subsection_percent(sub_section):
+    def sub_section_percent(sub_section):
         sub_sections.append(sub_section)
         return sub_section.get_percent_complete()
 
     sections_percent_complete = [{
         'id': main_section.pk,
-        'percent_complete': main_section.get_percent_complete(),
+        'percent_complete': None,  # main_section.get_percent_complete(),
+        'total_percent_complete': None,  # main_section.get_percent_complete(total=True),
         'sub_sections': [{
             'id': sub_section.pk,
-            'percent_complete': subsection_percent(sub_section),
+            'percent_complete': sub_section_percent(sub_section),
+            'total_percent_complete': sub_section.get_percent_complete(total=True),
         } for sub_section in main_section.sub_sections.all()]
     } for main_section in main_sections]
 
     MainSection.objects.bulk_update(
         main_sections,
-        ('cached_percent_complete', 'cached_percent_complete_time'),
+        (
+            'cached_percent_complete',
+            'cached_total_percent_complete',
+            'cached_percent_complete_time',
+        ),
     )
     SubSection.objects.bulk_update(
         sub_sections,
-        ('cached_percent_complete', 'cached_percent_complete_time'),
+        (
+            'cached_percent_complete',
+            'cached_total_percent_complete',
+            'cached_percent_complete_time',
+        ),
     )
 
     return Response(sections_percent_complete, status=200)

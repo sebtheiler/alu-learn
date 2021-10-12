@@ -23,7 +23,7 @@ urlpatterns = [
     ),
     path('mainsection/create/', views.create_main_section),
     path('mainsection/<uuid:main_section_id>/edit/', views.edit_main_section),
-    path('mainsection/<int:deck_id>/percent-complete/', views.get_deck_sections_percent_complete),
+    path('deck/<int:deck_id>/percent-complete/', views.get_deck_sections_percent_complete),
     *generate_base_api(
         'skill_tree', 'subsection',
         SubSectionSerializer,

@@ -1,3 +1,4 @@
+import ArchivedDecks from './archived';
 import CreateFlashcard from './create-flashcard';
 import DeckImportComponent from './import';
 import RenderSubmittedChanges from './submitted-changes';
@@ -11,6 +12,7 @@ import SubmittedList from './submitted-changes-list';
 import ViewFlashcards from './view-flashcards';
 
 export {
+  ArchivedDecks,
   CreateFlashcard,
   DeckImportComponent,
   RenderSubmittedChanges,

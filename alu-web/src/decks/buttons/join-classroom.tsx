@@ -35,11 +35,11 @@ interface JoinModalProps {
   close(): void;
 }
 function JoinModal({ show, close }: JoinModalProps) {
-  const { classroomsDispatch } = useContext(HomeActionDispatch);
+  const { classroomsInDispatch } = useContext(HomeActionDispatch);
   const [error, setError] = useState<'NOT_FOUND' | 'DIFFERENT_DOMAIN'>();
 
   const joinClassroom = async (classroomCode: string) => {
-    await apiClassroomStudentJoin(classroomCode).then(
+    await apiClassroomStudentJoin(classroomCode.trim()).then(
       classroom => {
         if (has(classroom, 'message')) {
           if (classroom.message === 'Classroom not found') {
@@ -51,8 +51,8 @@ function JoinModal({ show, close }: JoinModalProps) {
           return;
         }
         
-        if (classroomsDispatch) {
-          classroomsDispatch({ action: 'CREATE', classroom: classroom });
+        if (classroomsInDispatch) {
+          classroomsInDispatch({ action: 'CREATE', classroom: classroom });
           setError(undefined);
           close();
         }

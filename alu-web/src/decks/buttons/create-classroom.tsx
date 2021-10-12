@@ -37,11 +37,11 @@ interface CreateModalProps {
 }
 function CreateModal(props: CreateModalProps) {
   const { show, close } = props;
-  const { classroomsDispatch } = useContext(HomeActionDispatch);
+  const { classroomsTaughtDispatch } = useContext(HomeActionDispatch);
 
   const createClassroom = async (options) => {
     await apiObjectCreate<Classroom>('teachers', 'classroom', options).then(
-      res => classroomsDispatch && classroomsDispatch({
+      res => classroomsTaughtDispatch && classroomsTaughtDispatch({
         action: 'CREATE',
         classroom: res,
       }),

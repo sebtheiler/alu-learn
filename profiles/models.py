@@ -17,8 +17,6 @@ class Profile(models.Model):
     birthdate = models.DateField(null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    updated = models.DateTimeField(auto_now=True)  # TODO: remove this?
-
     friends = models.ManyToManyField(User, related_name='friends', blank=True)
     pending_friends = models.ManyToManyField(
         User,
@@ -225,6 +223,7 @@ class ProfileSettings(models.Model):
     USER_TYPE_OPTIONS = (
         ('STUDENT', 'Student'),
         ('TEACHER', 'Teacher'),
+        ('MIXED', 'Mixed'),
     )
     user_type = models.CharField(
         max_length=7,
@@ -245,11 +244,6 @@ def user_did_save(sender, instance, created, *args, **kwargs):
     if created:
         profile, _ = Profile.objects.get_or_create(user=instance)
         ProfileSettings.objects.create(profile=profile)
-        Notification.objects.create(
-            profile=profile,
-            title='Need help?',
-            description="If you ever get lost or need help, you can check our [user-guide](/help/) pages."
-        )
 
 
 post_save.connect(user_did_save, sender=User)

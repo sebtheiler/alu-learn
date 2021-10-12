@@ -1,6 +1,6 @@
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Container from 'react-bootstrap/Container';
 import LoadingButton from '../decks/buttons/LoadingButton';
-import React from 'react';
 import SharedDeckList from '../decks/shared-deck-list';
 import { Button } from 'react-bootstrap';
 import { Profile } from './types';
@@ -33,11 +33,14 @@ export default function ProfileDetail({ username, currentUsername }: { username:
   if (!profile) return <p className='text-center mt-5'>Loading…</p>
   return (<Container className='mt-5'>
     <h1>{profile.first_name} {profile.last_name}</h1>
-    {currentUsername.length > 0 && (username === currentUsername ? <>
+    {currentUsername.length > 0 && (username === currentUsername ? <ButtonGroup>
       <Button href='/profiles/edit/'>
         Edit Profile
       </Button>
-    </> : <>
+      <Button href='/profiles/archived/' className='ml-1'>
+        Archived Decks
+      </Button>
+    </ButtonGroup> : <>
       <LoadingButton clickFunc={addFriend}>
         {profile.you_are_pending && 'Requested'}
         {profile.is_friend && 'Remove Friend'}

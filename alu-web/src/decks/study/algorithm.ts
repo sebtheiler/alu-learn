@@ -1,5 +1,5 @@
 import { dateDiff, errorHandler } from '../../utils';
-import { ReviewInstance, SchedulingAlgorithm, DeckDifficulty } from '../types';
+import { ReviewInstance, SchedulingAlgorithm } from '../types';
 
 const minutesToDays = (minutes: number) => minutes / (60*24);
 const daysToMinutes = (days: number) => days * 60*24;
@@ -17,22 +17,7 @@ interface Config {
   MINIMUM_INTERVAL: number;
   LEECH_THRESHOLD: number;
 }
-function generateConfig(
-  method: SchedulingAlgorithm = 'ANKI',
-  deckDifficulty: ('NONE' | DeckDifficulty) = 'NONE',
-) {
-  // Easier settings have longer spaces between reviews
-  const INTERVAL_MODIFIER = (() => {
-    switch (deckDifficulty) {
-      case 'EASY':
-        return 150;
-      case 'NORM':
-        return 120;
-      case 'HARD': default:
-        return 100;
-    }
-  })();
-
+function generateConfig(method: SchedulingAlgorithm = 'ANKI') {
   switch (method) {
     case 'ANKI':
       // Default Anki settings
@@ -43,7 +28,7 @@ function generateConfig(
         EASY_INTERVAL: 4, // in days
         // "Reviews" tab
         EASY_BONUS: 130, // in percent
-        INTERVAL_MODIFIER: INTERVAL_MODIFIER, // in percent
+        INTERVAL_MODIFIER: 1, // in percent
         // "Lapses" tab
         LAPSES_STEPS: [10], // in minutes
         NEW_INTERVAL: 70, // in percent
@@ -59,43 +44,10 @@ function generateConfig(
         EASY_INTERVAL: 4, // in days
         // "Reviews" tab
         EASY_BONUS: 150, // in percent
-        INTERVAL_MODIFIER: INTERVAL_MODIFIER, // in percent
+        INTERVAL_MODIFIER: 1, // in percent
         // "Lapses" tab
         LAPSES_STEPS: [30, 1440], // in minutes
         NEW_INTERVAL: 20, // in percent
-        MINIMUM_INTERVAL: 1, // in days
-        LEECH_THRESHOLD: 8, // number wrong
-      } as Config;
-    case 'MANUAL-SR':
-      // Settings for Manual SR Tasks
-      return {
-        // "New Cards" tab
-        NEW_STEPS: [1440, 4320], // in minutes
-        GRADUATING_INTERVAL: 3, // in days
-        EASY_INTERVAL: 7, // in days
-        // "Reviews" tab
-        EASY_BONUS: 150, // in percent
-        INTERVAL_MODIFIER: 200, // in percent
-        // "Lapses" tab
-        LAPSES_STEPS: [1440, 4320], // in minutes
-        NEW_INTERVAL: 40, // in percent
-        MINIMUM_INTERVAL: 2, // in days
-        LEECH_THRESHOLD: 8, // number wrong
-      } as Config;
-    case 'CRAM':
-      // Settings for cramming a deck before a test
-      // Not saved on a deck itself: only used in the "Cram" mode
-      return {
-        // "New Cards" tab
-        NEW_STEPS: [1, 5, 10, 20, 40, 60, 90], // in minutes
-        GRADUATING_INTERVAL: 1, // in days
-        EASY_INTERVAL: 1, // in days
-        // "Reviews" tab
-        EASY_BONUS: 130, // in percent
-        INTERVAL_MODIFIER: INTERVAL_MODIFIER, // in percent
-        // "Lapses" tab
-        LAPSES_STEPS: [10], // in minutes
-        NEW_INTERVAL: 70, // in percent
         MINIMUM_INTERVAL: 1, // in days
         LEECH_THRESHOLD: 8, // number wrong
       } as Config;
@@ -120,9 +72,8 @@ export function getStudyInterval(
   card: ReviewInstance,
   grade: 1 | 2 | 3 | 4,
   settingsAlgorithm: SchedulingAlgorithm = 'ANKING',
-  deckDifficulty: ('NONE' | DeckDifficulty) = 'NONE',
 ) {
-  const config = generateConfig(settingsAlgorithm, deckDifficulty);
+  const config = generateConfig(settingsAlgorithm);
   if (!config) console.error(config);
 
   // eslint-disable-next-line

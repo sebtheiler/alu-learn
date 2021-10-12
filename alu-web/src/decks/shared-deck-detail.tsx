@@ -26,7 +26,6 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
     'sharing_system',
     'shareddeck',
     sharedDeckId,
-    undefined,
     res => setPermissions({
       hasViewAccess: res.has_view_access,
       hasEditAccess: res.has_edit_access,
@@ -147,7 +146,7 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
             <p>Edit Access: {editAccess}</p>
             <p>Owners: {sharedDeck.owners.map((owner, i) => <React.Fragment key={i}>
               <DisplayProfileInline profile={owner} />
-              {i !== sharedDeck.owners.length - 1 && ','}
+              {i !== sharedDeck.owners.length - 1 && ', '}
             </React.Fragment>)}</p>
           </div>
           <hr />

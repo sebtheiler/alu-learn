@@ -250,8 +250,9 @@ class SharedDeck(models.Model):
         if not shared_deck.has_edit_access(author.pk):
             raise PermissionError('User does not have permission to edit')
 
-        # Create new snapshot
+        # Create new submission
         submitted_changes = SubmittedChanges.objects.create(
+            created_from_deck=deck,
             author_id=author.pk,
             shared_deck_id=shared_deck.pk,
             message=message,
@@ -471,6 +472,93 @@ class SharedDeck(models.Model):
 
         return forked_shared_deck
 
+    @staticmethod
+    def merge(
+        shared_deck_to_update: SharedDeck,
+        shared_deck_to_merge: SharedDeck,
+    ) -> Union[SnapShot, None]:
+        latest_snapshot_to_update = shared_deck_to_update.get_latest_snapshot()
+        latest_snapshot_to_merge = shared_deck_to_merge.get_latest_snapshot()
+
+        # Find the snapshot that shared deck was remixed from
+        remixed_from_snapshot = latest_snapshot_to_update
+        while True:
+            if remixed_from_snapshot is None:
+                # We've hit the beginning without finding a matching parent
+                raise ValueError('Unable to relate the deck\'s snapshot to the latest snapshot')
+            elif remixed_from_snapshot.shared_deck.pk == shared_deck_to_merge.pk:
+                # We found the match
+                break
+            elif (
+                remixed_from_snapshot.merge_parent and
+                remixed_from_snapshot.merge_parent.shared_deck.pk == shared_deck_to_merge.pk
+            ):
+                # We found the match
+                remixed_from_snapshot = remixed_from_snapshot.merge_parent
+                break
+
+            remixed_from_snapshot = remixed_from_snapshot.parent
+
+        snapshot_ids_to_apply = SnapShot.objects.filter(
+            timestamp__gt=remixed_from_snapshot.timestamp,
+            shared_deck_id=shared_deck_to_merge.pk,
+        ).values_list('pk', flat=True)
+
+        if len(snapshot_ids_to_apply) == 0:
+            return None
+
+        # Get all the actions to apply
+        main_section_actions_to_apply = MainSectionAction.objects.filter(
+            main_section__snapshot__pk__in=snapshot_ids_to_apply,
+        ).order_by('timestamp')
+
+        sub_section_actions_to_apply = SubSectionAction.objects.filter(
+            sub_section__main_section__snapshot__pk__in=snapshot_ids_to_apply,
+        ).order_by('timestamp')
+
+        flashcard_actions_to_apply = FlashCardAction.objects.filter(
+            flashcard__sub_section__main_section__snapshot__pk__in=snapshot_ids_to_apply,
+        ).order_by('timestamp')
+
+        # Create new snapshot to apply the changes to
+        new_snapshot_to_update = SnapShot.create_child(
+            parent=latest_snapshot_to_update,
+            author=latest_snapshot_to_merge.author,
+            message=f'Merged "{shared_deck_to_merge.title}"',
+            shared_deck_id=shared_deck_to_update.pk,
+            main_section_uids_to_remove=main_section_actions_to_apply.filter(
+                action='DELETE',
+            ).values_list('universal_main_section_id', flat=True),
+            sub_section_uids_to_remove=sub_section_actions_to_apply.filter(
+                action='DELETE',
+            ).values_list('universal_sub_section_id', flat=True),
+            flashcard_uids_to_remove=flashcard_actions_to_apply.filter(
+                action='DELETE',
+            ).values_list('universal_flashcard_id', flat=True),
+            merge_parent=latest_snapshot_to_merge,
+        )
+
+        # Apply the changes to the new snapshot
+        MainSectionAction.push(
+            main_section_actions_to_apply,
+            new_snapshot_to_update,
+            transfer_actions=False,
+        )
+
+        SubSectionAction.push(
+            sub_section_actions_to_apply,
+            new_snapshot_to_update,
+            transfer_actions=False,
+        )
+
+        FlashCardAction.push(
+            flashcard_actions_to_apply,
+            new_snapshot_to_update,
+            transfer_actions=False,
+        )
+
+        return new_snapshot_to_update
+
 
 class SnapShot(models.Model):
     # === BASIC INFO ===
@@ -493,7 +581,13 @@ class SnapShot(models.Model):
         'self',
         null=True, blank=True,
         on_delete=models.SET_NULL,
-        related_name='sub_sections',
+        related_name='children',
+    )
+    merge_parent = models.ForeignKey(
+        'self',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='merge_sub_sections',
     )
 
     # === OTHER ===
@@ -511,12 +605,14 @@ class SnapShot(models.Model):
         main_section_uids_to_remove: List[str] = [],
         sub_section_uids_to_remove: List[str] = [],
         flashcard_uids_to_remove: List[str] = [],
+        merge_parent: Union[SnapShot, None] = None,
     ) -> SnapShot:
         child = SnapShot.objects.create(
             message=message,
             author=author,
             shared_deck_id=shared_deck_id,
             parent=parent,
+            merge_parent=merge_parent,
         )
 
         if parent is None:
@@ -743,7 +839,11 @@ class MainSectionAction(AbstractAction):
     universal_main_section_id = models.UUIDField(null=True, blank=True)
 
     @staticmethod
-    def push(actions: QuerySet[MainSectionAction], snapshot: SnapShot):
+    def push(
+        actions: QuerySet[MainSectionAction],
+        snapshot: SnapShot,
+        transfer_actions: bool = True,
+    ):
         actions = actions.prefetch_related('main_section__data').all()
 
         main_sections_to_create = []
@@ -751,6 +851,7 @@ class MainSectionAction(AbstractAction):
         # main_sections_to_link_data = {}
         main_sections_to_edit = []
         origin_mainsections_to_update_uid = []
+        actions_to_create = []
 
         for action in actions:
             ms_origin = action.main_section
@@ -759,7 +860,7 @@ class MainSectionAction(AbstractAction):
             if action.action == 'CREATE':
                 ms_data, ms_destination = ms_origin.copy(
                     snapshot_id=snapshot.pk,
-                    universal_main_section_id=ms_origin.pk,
+                    universal_main_section_id=ms_origin.universal_main_section_id or ms_origin.pk,
                     create_new_data=True,
                 )
                 main_sections_to_create.append(ms_destination)
@@ -807,10 +908,21 @@ class MainSectionAction(AbstractAction):
                 raise ValueError(f'Unknown action: {action.action}, {action}')
 
             # Update the action
-            action.deck = None
-            action.submitted_changes = None
-            action.snapshot = snapshot
-            action.main_section = ms_destination
+            if transfer_actions:
+                action.deck = None
+                action.submitted_changes = None
+                action.snapshot = snapshot
+                action.main_section = ms_destination
+            else:
+                new_action = MainSectionAction(
+                    snapshot=snapshot,
+                    main_section=ms_destination,
+                    universal_main_section_id=action.universal_main_section_id,
+                    order_num=action.order_num,
+                    action=action.action,
+                    timestamp=action.timestamp,
+                )
+                actions_to_create.append(new_action)
 
         SectionData.objects.bulk_create(main_sections_data_to_create)
         MainSection.objects.bulk_create(main_sections_to_create)
@@ -831,17 +943,20 @@ class MainSectionAction(AbstractAction):
             ('data_id', 'order_num'),
         )
 
-        # Note that the origin main sections are now universally synced
-        MainSection.objects.bulk_update(
-            origin_mainsections_to_update_uid,
-            ('universal_main_section_id',),
-        )
+        if transfer_actions:
+            # Note that the origin main sections are now universally synced
+            MainSection.objects.bulk_update(
+                origin_mainsections_to_update_uid,
+                ('universal_main_section_id',),
+            )
 
-        # Transfer the actions from the deck to the snapshot
-        MainSectionAction.objects.bulk_update(
-            actions,
-            ('deck', 'submitted_changes', 'snapshot', 'main_section'),
-        )
+            # Transfer the actions from the deck to the snapshot
+            MainSectionAction.objects.bulk_update(
+                actions,
+                ('deck', 'submitted_changes', 'snapshot', 'main_section'),
+            )
+        else:
+            MainSectionAction.objects.bulk_create(actions_to_create)
 
     @staticmethod
     def pull(
@@ -968,13 +1083,18 @@ class SubSectionAction(AbstractAction):
     universal_sub_section_id = models.UUIDField(null=True, blank=True)
 
     @staticmethod
-    def push(actions: QuerySet[SubSectionAction], snapshot: SnapShot):
+    def push(
+        actions: QuerySet[SubSectionAction],
+        snapshot: SnapShot,
+        transfer_actions: bool = True,
+    ):
         actions = actions.prefetch_related('sub_section__main_section', 'sub_section__data').all()
 
         sub_sections_to_create = []
         sub_sections_data_to_create = []
         sub_sections_to_edit = []
         origin_subsections_to_update_uid = []
+        actions_to_create = []
 
         for action in actions:
             ss_origin = action.sub_section
@@ -990,7 +1110,7 @@ class SubSectionAction(AbstractAction):
                 )
                 ss_data, ss_destination = ss_origin.copy(
                     main_section_id=main_section.pk,
-                    universal_sub_section_id=ss_origin.pk,
+                    universal_sub_section_id=ss_origin.universal_sub_section_id or ss_origin.pk,
                     create_new_data=True,
                 )
                 sub_sections_to_create.append(ss_destination)
@@ -1035,10 +1155,21 @@ class SubSectionAction(AbstractAction):
                 raise ValueError(f'Unknown action: {action.action}, {action}')
 
             # Update the action
-            action.deck = None
-            action.submitted_changes = None
-            action.snapshot = snapshot
-            action.sub_section = ss_destination
+            if transfer_actions:
+                action.deck = None
+                action.submitted_changes = None
+                action.snapshot = snapshot
+                action.sub_section = ss_destination
+            else:
+                new_action = SubSectionAction(
+                    snapshot=snapshot,
+                    sub_section=ss_destination,
+                    universal_sub_section_id=action.universal_sub_section_id,
+                    order_num=action.order_num,
+                    action=action.action,
+                    timestamp=action.timestamp,
+                )
+                actions_to_create.append(new_action)
 
         SectionData.objects.bulk_create(sub_sections_data_to_create)
         SubSection.objects.bulk_create(sub_sections_to_create)
@@ -1047,17 +1178,20 @@ class SubSectionAction(AbstractAction):
             ('data_id', 'order_num'),
         )
 
-        # Note that the origin sub sections are now universally synced
-        SubSection.objects.bulk_update(
-            origin_subsections_to_update_uid,
-            ('universal_sub_section_id',),
-        )
+        if transfer_actions:
+            # Note that the origin sub sections are now universally synced
+            SubSection.objects.bulk_update(
+                origin_subsections_to_update_uid,
+                ('universal_sub_section_id',),
+            )
 
-        # Transfer the actions from the deck to the snapshot
-        SubSectionAction.objects.bulk_update(
-            actions,
-            ('deck', 'submitted_changes', 'snapshot', 'sub_section'),
-        )
+            # Transfer the actions from the deck to the snapshot
+            SubSectionAction.objects.bulk_update(
+                actions,
+                ('deck', 'submitted_changes', 'snapshot', 'sub_section'),
+            )
+        else:
+            SubSectionAction.objects.bulk_create(actions_to_create)
 
     @staticmethod
     def pull(
@@ -1202,6 +1336,7 @@ class FlashCardAction(AbstractAction):
     def push(
         actions: QuerySet[FlashCardAction],
         snapshot: SnapShot,
+        transfer_actions: bool = True,
     ):
         actions = actions.prefetch_related('flashcard__sub_section', 'flashcard__data').all()
 
@@ -1209,6 +1344,7 @@ class FlashCardAction(AbstractAction):
         flashcards_data_to_create = []
         flashcards_to_edit = []
         origin_flashcards_to_update_uid = []
+        actions_to_create = []
 
         for action in actions:
             fc_origin = action.flashcard
@@ -1224,7 +1360,7 @@ class FlashCardAction(AbstractAction):
                 fc_data, fc_destination, _ = fc_origin.copy(
                     sub_section_id=sub_section.pk,
                     skip_creating_review_instances=True,
-                    universal_flashcard_id=fc_origin.pk,
+                    universal_flashcard_id=fc_origin.universal_flashcard_id or fc_origin.pk,
                     create_new_data=True,
                 )
                 flashcards_to_create.append(fc_destination)
@@ -1264,10 +1400,21 @@ class FlashCardAction(AbstractAction):
                 raise ValueError(f'Unknown action: {action.action}, {action}')
 
             # Update the action
-            action.deck = None
-            action.submitted_changes = None
-            action.snapshot = snapshot
-            action.flashcard = fc_destination
+            if transfer_actions:
+                action.deck = None
+                action.submitted_changes = None
+                action.snapshot = snapshot
+                action.flashcard = fc_destination
+            else:
+                new_action = FlashCardAction(
+                    snapshot=snapshot,
+                    flashcard=fc_destination,
+                    universal_flashcard_id=action.universal_flashcard_id,
+                    order_num=action.order_num,
+                    action=action.action,
+                    timestamp=action.timestamp,
+                )
+                actions_to_create.append(new_action)
 
         FlashCardData.objects.bulk_create(flashcards_data_to_create)
         FlashCard.objects.bulk_create(flashcards_to_create)
@@ -1276,17 +1423,20 @@ class FlashCardAction(AbstractAction):
             ('data_id', 'order_num'),
         )
 
-        # Note that the origin flashcards are now universally synced
-        FlashCard.objects.bulk_update(
-            origin_flashcards_to_update_uid,
-            ('universal_flashcard_id',),
-        )
+        if transfer_actions:
+            # Note that the origin flashcards are now universally synced
+            FlashCard.objects.bulk_update(
+                origin_flashcards_to_update_uid,
+                ('universal_flashcard_id',),
+            )
 
-        # Transfer the actions from the deck to the snapshot
-        FlashCardAction.objects.bulk_update(
-            actions,
-            ('deck', 'submitted_changes', 'snapshot', 'flashcard_id')
-        )
+            # Transfer the actions from the deck to the snapshot
+            FlashCardAction.objects.bulk_update(
+                actions,
+                ('deck', 'submitted_changes', 'snapshot', 'flashcard_id')
+            )
+        else:
+            FlashCardAction.objects.bulk_create(actions_to_create)
 
     @staticmethod
     def pull(

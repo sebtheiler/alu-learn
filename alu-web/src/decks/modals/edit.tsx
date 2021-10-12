@@ -2,10 +2,11 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import LoadingButton from '../buttons/LoadingButton';
 import Modal from 'react-bootstrap/Modal';
+import { ButtonGroup } from 'react-bootstrap';
 import { Deck } from '../types';
 import { HomeActionDispatch } from '../context';
-import { apiObjectDelete, apiObjectEdit } from '../../lookup/lookup';  // TODO: improve imports
-import { confirmDelete } from '../../utils/utils';
+import { apiObjectDelete, apiObjectEdit, backendFetch } from '../../lookup/lookup';  // TODO: improve imports
+import { confirmDelete, QuestionBubble } from '../../utils/utils';
 import { useContext } from 'react';
 
 
@@ -33,7 +34,12 @@ export default function EditModal(props: EditModalProps) {
 
     if (decksDispatch)
       decksDispatch({ action: 'DELETE', payload: deck.id});
-    close()
+    close();
+  }
+
+  const archiveDeck = async () => {
+    await backendFetch('POST', `decks/deck/${deck.id}/archive/`, { is_archived: !deck.is_archived });
+    window.location.href = deck.is_archived ? '/home/' : '/profiles/archived/';
   }
 
   return (
@@ -42,13 +48,26 @@ export default function EditModal(props: EditModalProps) {
         <Modal.Title>
           Editing "{deck.title}"
         </Modal.Title>
-        <LoadingButton
-          className='float-right'
-          variant='danger'
-          clickFunc={deleteDeck}
-        >
-          Delete
-        </LoadingButton>
+        <ButtonGroup>
+          <LoadingButton
+            className='float-right mr-1'
+            variant='secondary'
+            clickFunc={archiveDeck}
+          >
+            {deck.is_archived ? 'Unarchive' : 'Archive'}{' '}
+            <QuestionBubble isWhite>
+              Archiving decks allows you to hide decks you are no longer using.
+              They will still be accessible through your <a href='/profile/'>profile page</a>.
+            </QuestionBubble>
+          </LoadingButton>
+          <LoadingButton
+            className='float-right'
+            variant='danger'
+            clickFunc={deleteDeck}
+          >
+            Delete
+          </LoadingButton>
+        </ButtonGroup>
       </Modal.Header>
       <Form onSubmit={e => {e.preventDefault(); close();}}>
         <Modal.Body>

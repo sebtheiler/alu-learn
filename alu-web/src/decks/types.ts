@@ -3,12 +3,11 @@ import { Node as SlateNode } from 'slate';
 
 export type UUID = string;  // Just a more clear representation
 
-export type DeckDifficulty = 'HARD' | 'NORM' | 'EASY';
 export type EditAccess = 'PERSONAL' | 'FRIENDS' | 'EVERYBODY' | 'STUDENTS';
 export type FlashCardTypes = 'BASIC' | 'REVERSED' | 'CLOZE';
-export type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
-export type SchedulingAlgorithm = 'ANKI' | 'ANKING' | 'MANUAL-SR' | 'CRAM';
+export type SchedulingAlgorithm = 'ANKI' | 'ANKING';
 export type ViewAccess = 'PUBLIC' | 'FRIENDS' | 'STUDENT';
+type LearningStatus = 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
 
 export interface Deck {
   user: MinifiedProfile;
@@ -16,6 +15,7 @@ export interface Deck {
   main_sections: MainSection[];
   equivalent_to_snapshot: UUID;
   is_updated: boolean;
+  is_archived: boolean;
   id: number;
 }
 
@@ -28,7 +28,7 @@ export interface FlashCard {
   id: UUID;
 }
 
-export interface FlashCardData {
+interface FlashCardData {
   fields: SlateNode[][];
   tags: string;
   front_image?: string;
@@ -62,6 +62,7 @@ interface AbstractSection {
   // This property isn't serialized directly, but rather from `getDeckSectionsPercentComplete`,
   // and is then combined with the Section
   percent_complete?: number;
+  total_percent_complete?: number;
 }
 
 export interface MainSection extends AbstractSection {
@@ -71,6 +72,7 @@ export interface MainSection extends AbstractSection {
 
 export interface SubSection extends AbstractSection {
   main_section: UUID | MainSection;
+  universal_sub_section_id?: string;
 }
 
 export interface SharedDeck {

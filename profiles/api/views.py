@@ -99,7 +99,7 @@ def friend_request_api_view(request, recipient_username, *args, **kwargs):
     return Response({'message': 'Request sent succesfully'}, status=201)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def notification_api_view(request, *args, **kwargs):
     """
@@ -121,26 +121,16 @@ def notification_api_view(request, *args, **kwargs):
     Possible errors:
         Unknown username: 404, User "`username`" not found
     """
-    if request.method == 'POST':
-        # Create notification object
-        notif = Notification.objects.create(
-            profile=request.user.profile,
-            title=request.data.get('title'),
-            description=request.data.get('description'),
-            category=request.data.get('category'),
-        )
-        return Response(NotificationSerializer(instance=notif).data, status=201)
-    elif request.method == 'GET':
-        # List all notifications
-        notif_qs = Notification.objects.filter(profile__user=request.user).order_by('-timestamp')
+    # List all notifications
+    notif_qs = Notification.objects.filter(profile__user=request.user).order_by('-timestamp')
 
-        return get_paginated_queryset_response(
-            notif_qs,
-            request,
-            NotificationSerializer,
-            page_size=3,
-            other_information={'total_unread': notif_qs.filter(read=False).count()},
-        )
+    return get_paginated_queryset_response(
+        notif_qs,
+        request,
+        NotificationSerializer,
+        page_size=3,
+        other_information={'total_unread': notif_qs.filter(read=False).count()},
+    )
 
 
 @api_view(['GET', 'POST'])

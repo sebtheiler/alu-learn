@@ -1,9 +1,8 @@
 import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { Deck } from './types';
-import { apiFlashcardEditTags, apiDeckJSONExport } from '../lookup';
+import { apiDeckJSONExport } from '../lookup';
 import { errorHandler, FormCheckbox, LoadingButton, QuestionBubble } from '../utils';
 import { useState } from 'react';
 
@@ -187,96 +186,5 @@ export function GameModal(props: GameModalProps) {
         </Modal.Footer>
       </Form>
     </Modal>
-  );
-}
-
-export function SelectFlashcardsButtonGroup(props) {
-  const {selectionMode, setSelectionMode, selectedFlashcards, setSelectedFlashcards, tagEditorModalIsOpen, setTagEditorModalIsOpen} = props;
-  const [tagEditAction, setTagEditAction] = useState<'ADD' | 'REMOVE' | 'RENAME'>('ADD');
-  const [updatingTags, setUpdatingTags] = useState(false);
-
-  const editTags = event => {
-    event.preventDefault();
-    const form = event.target;
-
-    if (!updatingTags) {
-      setUpdatingTags(true);
-      apiFlashcardEditTags(
-        selectedFlashcards,
-        tagEditAction,
-        form.elements.tagValue.value,
-        form.elements.renameTo?.value,
-        (response, status) => {
-          if (status === 200) {
-            window.location.reload();
-          } else {
-            // Error updating flashcard tags in bulk
-            errorHandler(response, status, 2006);
-          }
-          setUpdatingTags(false);
-        },
-      );
-    }
-  }
-
-  return (
-    <ButtonGroup className='mt-1'>
-      <Button onClick={() => {setSelectionMode(!selectionMode); setSelectedFlashcards([])}}>
-        {selectionMode ? 'Exit' : ''} Selection Mode
-      </Button>
-      {selectedFlashcards.length > 0 && <>
-        <Button className='ml-1' onClick={() => setTagEditorModalIsOpen(true)}>
-          Tag Editor
-        </Button>
-        <Modal show={tagEditorModalIsOpen} onHide={() => setTagEditorModalIsOpen(false)}>
-          <Modal.Header>
-            <Modal.Title>Editing Tags of {selectedFlashcards.length} Flashcards</Modal.Title>
-          </Modal.Header>
-          <Form onSubmit={editTags}>
-            <Modal.Body>
-              <Form.Group>
-                <Form.Label>Action</Form.Label>
-                <Form.Control
-                  as='select'
-                  onChange={event => setTagEditAction(event.target.value as 'ADD' | 'REMOVE' | 'RENAME')}
-                  custom
-                >
-                  <option value='ADD'>Add Tag to All Selected</option>
-                  <option value='REMOVE'>Remove Tag from all Selected</option>
-                  <option value='RENAME'>Rename Tag in all Selected</option>
-                </Form.Control>
-              </Form.Group>
-              {tagEditAction === 'RENAME' && <p className='text-danger'>
-                WARNING: "Rename" doesn't work perfectly.
-                If you have the tag "carpet" and attempt to rename
-                "car" to "vehicle", it will rename "carpet" to "vehiclepet."
-              </p>}
-              <Form.Group>
-                <Form.Label>
-                  Tag to {tagEditAction.charAt(0) + tagEditAction.slice(1).toLowerCase()}
-                </Form.Label>
-                <Form.Control type='text' name='tagValue' required />
-              </Form.Group>
-              {tagEditAction === 'RENAME' &&
-                <Form.Group>
-                  <Form.Label>
-                    Rename to...
-                  </Form.Label>
-                  <Form.Control type='text' name='renameTo' required />
-                </Form.Group>
-              }
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant='secondary' onClick={() => setTagEditorModalIsOpen(false)}>
-                Cancel
-              </Button>
-              <Button type='submit'>
-                {updatingTags ? 'Updating...' : 'Update Tags'}
-              </Button>
-            </Modal.Footer>
-          </Form>
-        </Modal>
-      </>}
-    </ButtonGroup>
   );
 }

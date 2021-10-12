@@ -1,8 +1,8 @@
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
+import LoadingButton from './buttons/LoadingButton';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-// import Tooltip from 'react-bootstrap/Tooltip';
 import { MainSection, SubSection } from './types';
 import { SubSectionButtons } from './buttons/section-buttons';
 
@@ -40,16 +40,16 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
             <Popover.Content>
               <p>{subSection.data.description}</p>
               <div>
-                {studyable && <Button
-                  href={
+                {studyable && <LoadingButton
+                  clickFunc={async () => {window.location.href = (
                     `study/\
                     ${cleanTitle(mainSection.data.title)}__\
                     ${cleanTitle(subSection.data.title)}/`.replaceAll(' ', '')
-                  }
+                  ); await new Promise(r => setTimeout(r, 100000))}}
                   block
                 >
                   Study
-                </Button>}
+                </LoadingButton>}
                 {!readOnly && <Button
                   href={
                     `/deck/${mainSection.deck}/flashcards/create/\
@@ -60,17 +60,17 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
                 >
                   Add Flashcards
                 </Button>}
-                <Button
-                  href={
+                <LoadingButton
+                  clickFunc={async () => {window.location.href = (
                     `flashcards/sections/\
                     ${cleanTitle(mainSection.data.title)}__\
                     ${cleanTitle(subSection.data.title)}/`.replaceAll(' ', '')
-                  }
+                  ); await new Promise(r => setTimeout(r, 100000))}}
                   variant='secondary'
                   block
                 >
                   View
-                </Button>
+                </LoadingButton>
               </div>
             </Popover.Content>
           </Popover>
@@ -82,21 +82,26 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
         <div
           className='sub-section'
           role='button'
-          style={{ background: `conic-gradient(rgba(42, 157, 244, 1) ${(subSection.percent_complete ?? 0)*100}%, transparent 0%)` }}
+          style={{ background: `conic-gradient(rgba(94, 209, 73, 1) ${(subSection.total_percent_complete ?? 0)*100}%, transparent 0%)` }}
         >
-          <div className='sub-section-inner'>
-            {/* <div className='sub-section-assignment-indicator'>
-              <OverlayTrigger
-                overlay={
-                  <Tooltip id={`sub-section-assigned-tooltip-${subSection.id}`}>
-                    This sub section is assigned as work
-                  </Tooltip>
-                }
-              >
-                <i className='far fa-star fa-lg' />
-              </OverlayTrigger>
-            </div> */}
-            <p className='sub-section-text'>{subSection.data.title}</p>
+          <div
+            className='sub-section-percent-complete'
+            style={{ background: `conic-gradient(rgba(42, 157, 244, 1) ${(subSection.percent_complete ?? 0)*100}%, transparent 0%)` }}
+          >
+            <div className='sub-section-inner'>
+              {/* <div className='sub-section-assignment-indicator'>
+                <OverlayTrigger
+                  overlay={
+                    <Tooltip id={`sub-section-assigned-tooltip-${subSection.id}`}>
+                      This sub section is assigned as work
+                    </Tooltip>
+                  }
+                >
+                  <i className='far fa-star fa-lg' />
+                </OverlayTrigger>
+              </div> */}
+              <p className='sub-section-text'>{subSection.data.title}</p>
+            </div>
           </div>
         </div>
       </OverlayTrigger>

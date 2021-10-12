@@ -8,8 +8,6 @@ urlpatterns = [
         'misc/home.html',
         context_kwargs=True,
     )),
-    path('classroom/<int:classroom_id>/', views.classroom_detail),
-    path('classroom/<int:classroom_id>/student/', views.classroom_student_detail),
     path(
         'classroom/<int:classroom_id>/study/<str:sub_section>/',
         views.classroom_assignment_study,

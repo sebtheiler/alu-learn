@@ -1,9 +1,9 @@
 import Alert from 'react-bootstrap/Alert';
 import LoadingButton from './buttons/LoadingButton';
+import RenderConflicts, { Conflicts } from './conflicts';
 import { Deck } from './types';
 import { backendFetch } from '../lookup/lookup';
 import { useState } from 'react';
-import RenderConflicts, { Conflicts } from './conflicts';
 import './shared.scss';
 
 export default function UpdateDeck({ deck }: { deck: Deck }) {

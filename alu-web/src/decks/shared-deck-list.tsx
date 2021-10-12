@@ -12,7 +12,7 @@ export default function SharedDeckList({ sharedDecks }: { sharedDecks: SharedDec
           <p className='owners'>
             Created by {sharedDeck.owners.map((owner, i) => <React.Fragment key={i}>
               <DisplayProfileInline profile={owner} />
-              {i !== sharedDeck.owners.length - 1 && ','}
+              {i !== sharedDeck.owners.length - 1 && ', '}
             </React.Fragment>)}
           </p>
           <h1>

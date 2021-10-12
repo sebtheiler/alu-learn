@@ -1,12 +1,7 @@
 import re
-from datetime import timedelta
 
-from decks.models import Deck, ReviewInstance
-from decks.serializers import DeckSerializer
+from decks.models import Deck
 from django.db.models.query_utils import Q
-from django.utils import timezone
-from profiles.models import Profile
-from profiles.serializers import HistorySerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -45,63 +40,6 @@ def create_classroom_view(request, *args, **kwargs):
     return Response(ClassroomSerializer(classroom).data, status=201)
 
 
-# TODO: delete this?
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def classrooms_homepage_view(request, *args, **kwargs):
-    """
-    Gets a list of classrooms the current user is a teacher of - POST
-    """
-    classrooms = request.user.profile.classrooms_taught.order_by('title')
-
-    return Response(ClassroomSerializer(classrooms, many=True).data, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def edit_classroom_view(request, *args, **kwargs):
-    """
-    Edits a classroom - POST
-
-    Required information:
-        `classroom_id`: (Data) Id of the classroom to edit
-        `new_title`: (Data) New title for the classroom
-    """
-    try:
-        classroom = Classroom.objects.get(
-            teachers=request.user.profile,
-            pk=request.data.get('classroom_id'),
-        )
-    except Classroom.DoesNotExist:
-        return Response({'message': 'Classroom not found'}, status=404)
-
-    classroom.title = request.data.get('new_title', classroom.title)
-    classroom.save()
-
-    return Response(ClassroomSerializer(classroom).data, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def delete_classroom_view(request, *args, **kwargs):
-    """
-    Deletes a classroom - POST
-
-    Required information:
-        `classroom_id`: (Data) Id of the classroom to delete
-    """
-    try:
-        classroom = Classroom.objects.get(
-            teachers=request.user.profile,
-            pk=request.data.get('classroom_id'),
-        )
-    except Classroom.DoesNotExist:
-        return Response({'message': 'Classroom not found'}, status=404)
-
-    classroom.delete()
-    return Response(ClassroomSerializer(classroom).data, status=200)
-
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def student_join_class_view(request, *args, **kwargs):
@@ -112,7 +50,7 @@ def student_join_class_view(request, *args, **kwargs):
         `classroom_code`: (Data) Code of the class to join
     """
     try:
-        classroom = Classroom.objects.get(code=request.data.get('classroom_code'))
+        classroom = Classroom.objects.get(code=request.data.get('classroom_code', '').strip())
     except Classroom.DoesNotExist:
         return Response({'message': 'Classroom not found'}, status=404)
 
@@ -126,17 +64,6 @@ def student_join_class_view(request, *args, **kwargs):
     classroom.students.add(request.user.profile)
 
     return Response(ClassroomSerializer(classroom).data, status=200)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def student_joined_classes_view(request, *args, **kwargs):
-    """
-    Gets the list of classes a student has joined - GET
-    """
-    classrooms = request.user.profile.classrooms_in.order_by('title')
-
-    return Response(ClassroomSerializer(classrooms, many=True).data, status=200)
 
 
 @api_view(['GET'])
@@ -184,6 +111,30 @@ def classroom_students_view(request, classroom_id, *args, **kwargs):
     )
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def classroom_percent_complete(request, classroom_id):
+    assigned_sub_sections = SubSection.objects.filter(
+        attached_assignments__classrooms__pk=classroom_id,
+    ).values_list('universal_sub_section_id', flat=True)
+    sub_sections = SubSection.objects.filter(
+        main_section__deck__student_attached_to=classroom_id,
+        main_section__deck__user_id=request.user.pk,
+        universal_sub_section_id__in=assigned_sub_sections,
+    )
+    sub_sections_percent_complete = [
+        {
+            'id': sub_section.pk,
+            'universal_sub_section_id': sub_section.universal_sub_section_id,
+            'percent_complete': sub_section.get_percent_complete(),
+            'total_percent_complete': sub_section.get_percent_complete(total=True),
+        }
+        for sub_section in sub_sections
+    ]
+
+    return Response(sub_sections_percent_complete, status=200)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def teacher_attach_deck_view(request, classroom_id, *args, **kwargs):
@@ -214,142 +165,6 @@ def teacher_attach_deck_view(request, classroom_id, *args, **kwargs):
         ).data,
         status=200,
     )
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def student_statistics_view(request, classroom_id, student_id, *args, **kwargs):
-    """
-    Gets statistics about a student for teachers - GET
-
-    Required information:
-        `classroom_id`: (URL) Id of the classroom the student is currently in
-        `student_id`: (URL) Id of the student Profile to get data for
-    """
-    try:
-        # We need .filter instead of .get because of edge-cases when the teacher
-        # teaches multiple classes the student is in
-        student = Profile.objects.filter(
-            pk=student_id,
-            classrooms_in__teachers=request.user.profile,
-        ).first()
-    except Profile.DoesNotExist:
-        return Response({'message': 'Student not found'}, status=404)
-
-    try:
-        classroom = Classroom.objects.get(teachers=request.user.profile, pk=classroom_id)
-    except Classroom.DoesNotExist:
-        return Response({'message': 'Classroom not found'}, status=404)
-
-    # Get the deck that the student copied
-    student_copied_deck = student.user.decks.filter(student_attached_to=classroom).first()
-    if student_copied_deck is None:
-        return Response({'message': 'Student deck not found'}, status=404)
-
-    # Get statistics about the deck and student
-    deck_stats = student_copied_deck.get_statistics()
-    cutoff_time = timezone.now() - timedelta(days=182)  # half a year, and about school year length
-    student_history = student.history.filter(date__gte=cutoff_time)
-
-    stats = {
-        'deck_stats': deck_stats,
-        'student_history': HistorySerializer(student_history, many=True).data,
-    }
-
-    return Response(stats, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def student_attach_deck_view(request, classroom_id, *args, **kwargs):
-    """
-    Allows a student to attach a deck to a classroom - POST
-
-    Required information:
-        `classroom_id`: (URL) Id of the classroom to attach to
-        `deck_id`: (Data) Id of the deck to attach
-    """
-    # Get classroom and origin deck specified
-    try:
-        classroom = Classroom.objects.get(pk=classroom_id, students=request.user.profile)
-    except Classroom.DoesNotExist:
-        return Response({'message': 'Classroom not found'}, status=404)
-
-    try:
-        deck = Deck.objects.get(pk=request.data.get('deck_id'), user=request.user)
-    except Deck.DoesNotExist:
-        return Response({'message': 'Deck not found'}, status=404)
-
-    # Attach the deck
-    if deck.student_attached_to is None:
-        deck.student_attached_to = classroom
-        deck.save()
-    else:
-        return Response({'You\'ve already attached a deck'}, status=400)
-
-    return Response({'message': 'Deck attached'}, status=200)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def student_get_attached_deck_view(request, classroom_id, student_id, *args, **kwargs):
-    """
-    Allows a student to attach a deck to a classroom - POST
-
-    Required information:
-        `classroom_id`: (URL) Id of the classroom to attach to
-        `student_id`: (URL) Id of the student to get the deck from
-    """
-    # Get classroom and origin deck specified
-    try:
-        classroom = Classroom.objects.get(pk=classroom_id, students=request.user.profile)
-    except Classroom.DoesNotExist:
-        return Response({'message': 'Classroom not found'}, status=404)
-
-    try:
-        student = Profile.objects.get(pk=student_id, user=request.user)
-    except Profile.DoesNotExist:
-        return Response({'message': 'Student not found'}, status=404)
-
-    student_attached_deck = student.user.decks.filter(student_attached_to=classroom).first()
-    if student_attached_deck:
-        # Returns None otherwise
-        student_attached_deck = DeckSerializer(student_attached_deck).data
-
-    return Response(student_attached_deck, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def suspend_students_flashcards_view(request, classroom_id: int):
-    """
-    Allows a teacher to suspend certain flashcards in a student's deck - POST
-
-    Required information:
-        `classroom_id`: (URL) Id of the classroom to attach to
-        `tag_query`: (Data) Query with which to search tags
-        `action`: (Data) Whether to SUSPEND or UNSUSPEND the flashcards
-    """
-    # Get classroom and tags query
-    try:
-        classroom = Classroom.objects.get(pk=classroom_id, teachers=request.user.profile)
-    except Classroom.DoesNotExist:
-        return Response({'message': 'Classroom not found'}, status=404)
-
-    tags_query = request.data.get('tag_query')
-    action = request.data.get('action', 'SUSPEND')
-    if tags_query is None:
-        return Response({'message': 'You must specify a tags query'}, status=400)
-
-    # Get flashcards to suspend
-    query = Q(flashcard__deck__student_attached_to=classroom)
-    query &= ReviewInstance.search_tags(tags_query)
-    flashcards = ReviewInstance.objects.filter(query).prefetch_related('flashcard')
-
-    # Suspend flashcards
-    flashcards.update(is_suspended=action == 'SUSPEND')
-
-    return Response({'message': 'Suspended flashcards', 'count': flashcards.count()}, status=200)
 
 
 @api_view(['POST'])
@@ -398,6 +213,22 @@ def create_assignment(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+def classrooms_taught_list(request, *args, **kwargs):
+    classrooms = request.user.profile.classrooms_taught.order_by('title')
+
+    return Response(ClassroomSerializer(classrooms, many=True).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def classrooms_in_list(request, *args, **kwargs):
+    classrooms = request.user.profile.classrooms_in.order_by('title')
+
+    return Response(ClassroomSerializer(classrooms, many=True).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def assignments_teacher_list_view(request, classroom_id: int):
     """
     Lists the assignments a teacher has created for their class - GET
@@ -417,141 +248,36 @@ def assignments_teacher_list_view(request, classroom_id: int):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def assignments_student_list_view(request):
-    """
-    Lists all of the classes, and their assignments, for a student - GET
-    """
-    classrooms = Classroom.objects.filter(
-        students=request.user.profile
-    ).prefetch_related('assignments').order_by('title')
+def assignment_percent_complete(request, classroom_id: int, assignment_id: int):
+    try:
+        classroom = Classroom.objects.get(pk=classroom_id)
+        if not classroom.teachers.filter(user=request.user).exists():
+            raise Assignment.DoesNotExist
+    except Classroom.DoesNotExist:
+        return Response({'message': 'Classroom not found'}, status=404)
 
-    return Response(
-        ClassroomAssignmentsSerializer(
-            classrooms,
-            many=True,
-            context={'calc_percent_complete': True, 'request': request}
-        ).data,
-        status=200,
+    try:
+        assignment = Assignment.objects.get(pk=assignment_id)
+    except Assignment.DoesNotExist:
+        return Response({'message': 'Assignment not found'}, status=404)
+
+    # NOTE: It is more efficient to do this once, rather than recalculating for each student
+    assigned_sub_sections_uids = assignment.sub_sections.values_list(
+        'universal_sub_section_id',
+        flat=True,
     )
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def edit_assignment_view(request, classroom_id: int, assignment_id: int):
-    """
-    Allows a teacher to edit an assignment - POST
-
-    Required information:
-        `classroom_id`: (URL) Id of the classroom that has the assignment
-        `assignment_id`: (URL) Id of the assignment to delete
-        `new_title`: (Data) New title of the assignment
-        `new_tag_query`: (Data) New tag query for the assignment
-        `new_due_date`: (Data) New due date for the assignment
-    """
-    try:
-        assignment = Assignment.objects.get(
-            pk=assignment_id,
-            classroom__teachers=request.user.profile,
-        )
-    except Assignment.DoesNotExist:
-        return Response({'message': 'Assignment not found'}, status=404)
-
-    assignment.title = request.data.get('new_title', assignment.title)
-    assignment.tag_query = request.data.get('new_tag_query', assignment.tag_query)
-    assignment.due_date = request.data.get('new_due_date', assignment.due_date)
-    assignment.save()
-
-    return Response({'message': 'Edited assignment'}, status=200)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def delete_assignment_view(request, classroom_id: int, assignment_id: int):
-    """
-    Allows a teacher to delete an assignment - POST
-
-    Required information:
-        `classroom_id`: (URL) Id of the classroom that has the assignment
-        `assignment_id`: (URL) Id of the assignment to delete
-    """
-    try:
-        Assignment.objects.get(
-            pk=assignment_id,
-            classroom__teachers=request.user.profile,
-        ).delete()
-        return Response({'message': 'Deleted assignment'})
-    except Assignment.DoesNotExist:
-        return Response({'message': 'Assignment not found'}, status=404)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def student_percent_complete_list(request, classroom_id: int, assignment_id: int):
-    """
-    Allows a teacher to get the percent complete for each student - GET
-
-    Parameters:
-        `classroom_id`: (URL) Id of the classroom that has the assignment
-        `assignment_id`: (URL) Id of the assignment to get percent completes for
-    """
-    try:
-        assignment = Assignment.objects.get(
-            pk=assignment_id,
-            classroom__teachers=request.user.profile,
-        )
-    except Assignment.DoesNotExist:
-        return Response({'message': 'Assignment not found'}, status=404)
 
     student_data = [
         {
-            'name': f'{student.user.first_name} {student.user.last_name}',
-            'percent_complete': assignment.calc_percent_complete(student.user),
-            'id': student.pk,
+            'username': student.user.username,
+            'first_name': student.user.first_name,
+            'last_name': student.user.last_name,
+            'percent_complete': assignment.calc_percent_complete(
+                student.user,
+                assigned_sub_sections_uids,
+            ),
         }
-        for student in assignment.classroom.students.all().prefetch_related('user')
+        for student in classroom.students.prefetch_related('user').all()
     ]
 
     return Response(student_data, status=200)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def assignment_detail_view(request, classroom_id: int, assignment_id: int):
-    """
-    Gets the flashcards to study for a given assignment - GET
-
-    Parameters:
-        `classroom_id`: (URL) Id of the classroom that has the assignment
-        `assignment_id`: (URL) Id of the assignment to get
-    """
-    try:
-        assignment = Assignment.objects.get(
-            Q(pk=assignment_id) & (
-                Q(classroom__students=request.user.profile) |
-                Q(classroom__teachers=request.user.profile)
-            )
-        )
-    except Assignment.DoesNotExist:
-        return Response({'message': 'Assignment not found'}, status=404)
-
-    return Response(
-        AssignmentSerializer(
-            assignment,
-            context={
-                'request': request,
-                'get_study_session_manager': True
-            },
-        ).data,
-        status=200,
-    )
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def classrooms_list(request, *args, **kwargs):
-    if request.user.profile.settings.user_type == 'TEACHER':
-        classrooms = request.user.profile.classrooms_taught.order_by('title')
-    else:
-        classrooms = request.user.profile.classrooms_in.order_by('title')
-
-    return Response(ClassroomSerializer(classrooms, many=True).data, status=200)

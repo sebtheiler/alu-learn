@@ -59,7 +59,6 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
   const [flashcard] = useObjectGet<FlashCard>(
     'decks', 'flashcard',
     flashcardId ?? '',
-    undefined,
     flashcard => {
       if (!flashcard.data) return;
       setFrontValue(flashcard.data.fields[0]);

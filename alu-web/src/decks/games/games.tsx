@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
 import { MatchingGame } from './matching';
 import { QuizGame } from './quiz';
+import { ReviewInstance } from '../types';
 import { apiGameFlashcards, gameFlashcardTypes } from '../../lookup/lookup';
 import { errorHandler } from '../../utils';
-import { ReviewInstance } from '../types';
+import { useState, useEffect, useMemo } from 'react';
 
 export function GameComponent({ deckId }) {
   const [flashcards, setFlashcards] = useState<ReviewInstance[]>();
@@ -95,9 +95,9 @@ Failed to calculate required number of flashcards.  You may need "?size=N" or "?
     switch (gameType) {
       case 'MATCHING':
         if (!size) return;
-        return <MatchingGame flashcards={flashcards} size={size} />
+        return <MatchingGame reviewInstances={flashcards} size={size} />
       case 'QUIZ':
-        return <QuizGame flashcards={flashcards} numQuestions={num} />
+        return <QuizGame reviewInstances={flashcards} numQuestions={num ?? 10} />
       case 'CRAM':
         // return <CramGame initialFlashcards={flashcards} />
         // TODO: delete Cram after creating new study system
