@@ -4,7 +4,7 @@ import { ReviewInstance, SchedulingAlgorithm } from '../types';
 const minutesToDays = (minutes: number) => minutes / (60*24);
 const daysToMinutes = (days: number) => days * 60*24;
 const DEBUG = false;
- // I have broken this so many times there is now an option for console.logging everything
+// I have broken this so many times there is now an option for console.logging everything
 
 interface Config {
   NEW_STEPS: number[];
@@ -28,7 +28,7 @@ function generateConfig(method: SchedulingAlgorithm = 'ANKI') {
         EASY_INTERVAL: 4, // in days
         // "Reviews" tab
         EASY_BONUS: 130, // in percent
-        INTERVAL_MODIFIER: 1, // in percent
+        INTERVAL_MODIFIER: 100, // in percent
         // "Lapses" tab
         LAPSES_STEPS: [10], // in minutes
         NEW_INTERVAL: 70, // in percent
@@ -44,7 +44,7 @@ function generateConfig(method: SchedulingAlgorithm = 'ANKI') {
         EASY_INTERVAL: 4, // in days
         // "Reviews" tab
         EASY_BONUS: 150, // in percent
-        INTERVAL_MODIFIER: 1, // in percent
+        INTERVAL_MODIFIER: 100, // in percent
         // "Lapses" tab
         LAPSES_STEPS: [30, 1440], // in minutes
         NEW_INTERVAL: 20, // in percent
@@ -73,6 +73,7 @@ export function getStudyInterval(
   grade: 1 | 2 | 3 | 4,
   settingsAlgorithm: SchedulingAlgorithm = 'ANKING',
 ) {
+  if (DEBUG) console.log(card);
   const config = generateConfig(settingsAlgorithm);
   if (!config) console.error(config);
 
@@ -148,6 +149,14 @@ export function getStudyInterval(
     } else if (grade === 4) {
       // Easy
       ease = Math.min(350, ease + 15);
+      if (DEBUG) console.log({ ease, INTERVAL_MODIFIER, EASY_BONUS })
+      if (DEBUG) console.log({
+        ease,
+        minutesInterval,
+        mtd: minutesToDays(minutesInterval),
+        mtdc: minutesToDays(minutesInterval) * ease/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100,
+        min: daysToMinutes(minutesToDays(minutesInterval) * ease/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100),
+      })
       minutesInterval = daysToMinutes(minutesToDays(minutesInterval) * ease/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100);
       if (DEBUG) console.log('Easy - ease, minutes interval', ease, minutesInterval);
     }
