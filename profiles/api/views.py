@@ -332,8 +332,12 @@ def change_email(request, *args, **kwargs):
     user = authenticate(username=request.user.username, password=password)
     if user is None:
         return Response({'message': 'Invalid credentials'}, status=401)
-    if new_email is None:
-        return Response({'message': 'You must provide a new email'})
+    elif new_email is None:
+        return Response({'message': 'You must provide a new email'}, status=400)
+    elif request.user.email == new_email:
+        return Response({'message': 'You are already using this email'}, status=400)
+    elif User.objects.filter(email=new_email).exists():
+        return Response({'message': 'This email is being used'}, status=400)
     else:
         confirmation_key = user.add_unconfirmed_email(new_email)
 

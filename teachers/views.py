@@ -43,10 +43,10 @@ def get_student_sub_section(request, classroom_id, sub_section):
 
     # Get the sub section to study
     try:
-        student_sub_section = SubSection.objects.get(
+        student_sub_section = SubSection.objects.filter(
             universal_sub_section_id=teacher_sub_section.universal_sub_section_id,
             main_section__deck__user=request.user,
-        )
+        ).first()  # NOTE: we use .first() instead of .get() if there are mutliple decks
     except SubSection.DoesNotExist:
         raise Http404()
 

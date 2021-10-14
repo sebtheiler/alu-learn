@@ -23,12 +23,10 @@ export function ChangePasswordEmail(props: ChangePasswordEmailProps) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const form = event.target;
-
-    if (isLoading === true) {
-      return;
-    }
+    if (isLoading) return;
     setIsLoading(true);
+
+    const form = event.target;
 
     if (isReset) {
       if (form.elements.newPassword.value !== form.elements.confirmPassword.value) {
@@ -50,12 +48,13 @@ export function ChangePasswordEmail(props: ChangePasswordEmailProps) {
           // Error resetting password
           errorHandler(response, status, 3018);
         }
+        setIsLoading(false);
       });
     } else {
-      const setInvalidCreds = () => {
-        document.getElementById('invalidCreds')!.innerHTML = `
+      const setInvalidCreds = (invalid: boolean = true) => {
+        document.getElementById('invalidCreds')!.innerHTML = invalid ? `
           Your password appears to be incorrect. You can reset it
-          <a href='/reset-password/'>here</a>.`
+          <a href='/reset-password/'>here</a>.` : '';
       }
       if (type === 'password') {
         if (form.elements.newPassword.value !== form.elements.confirmPassword.value) {
@@ -75,6 +74,7 @@ export function ChangePasswordEmail(props: ChangePasswordEmailProps) {
             // Error changing password
             errorHandler(response, status, 3017);
           }
+          setIsLoading(false);
         });
       } else if (type === 'email') {
         apiEmailChange(form.elements.oldPassword.value, form.elements.newEmail.value, (response, status) => {
@@ -83,10 +83,17 @@ export function ChangePasswordEmail(props: ChangePasswordEmailProps) {
           } else if (response.message === 'Invalid credentials') {
             setInvalidCreds();
             return;
+          } else if (response.message === 'This email is being used') {
+            document.getElementById('emailTaken')!.innerHTML = 'This email is already being used';
+            setInvalidCreds(false);
+          } else if (response.message === 'You are already using this email') {
+            document.getElementById('emailTaken')!.innerHTML = 'This is already your email';
+            setInvalidCreds(false);
           } else {
             // Error changing email
             errorHandler(response, status, 3020);
           }
+          setIsLoading(false);
         });
       }
     }
@@ -122,7 +129,7 @@ export function ChangePasswordEmail(props: ChangePasswordEmailProps) {
     return (<>
       <h1 className='my-5'>Reset password for "{email}"</h1>
       <small className='text-danger' id='invalidKey'></small>
-      <Form onSubmit={event => {handleSubmit(event); setIsLoading(false);}}>
+      <Form onSubmit={handleSubmit}>
         {newPasswordConfirm}
         <Button type='submit' className='my-5' block>Reset</Button>
       </Form>
@@ -132,7 +139,7 @@ export function ChangePasswordEmail(props: ChangePasswordEmailProps) {
       <h1 className='text-center mt-5'>
         Update {capitalize(type)}
       </h1>
-      <Form onSubmit={event => {handleSubmit(event); setIsLoading(false);}}>
+      <Form onSubmit={handleSubmit}>
         <Form.Group>
           <Form.Label as='h4'>Current Password</Form.Label>
           <Form.Control
