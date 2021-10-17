@@ -13,9 +13,9 @@ import { Slate, ReactEditor } from 'slate-react';
 import { apiObjectCreate, apiObjectDelete, apiObjectEdit, apiObjectGet, backendFetch, useAsyncState, useObjectGet } from '../lookup/lookup';
 import { blankSlateElement, createFullEditor, EditorButtons, FullEditor } from '../text-editor';
 import { blob2base64 } from '../utils/utils';
+import { cleanTitle } from './sub-section';
 import { useState, useMemo } from 'react';
 import './create-flashcard.scss';
-import { cleanTitle } from './sub-section';
 
 type Section = { section: MainSection, is_main_section: true } | { section: SubSection, is_main_section: false };
 
@@ -28,8 +28,12 @@ interface CreateFlashcardProps {
 export default function CreateFlashcard({ deckId, flashcardId, subSection }: CreateFlashcardProps) {
   const [section] = useAsyncState<Section>(() => backendFetch('GET', `skill_tree/abstractsection/${subSection}/`, {
     deck_id: deckId,
-  }));
+  }), [], undefined, !!subSection);
   useMemo(async () => {
+    // Don't redirect if we're editing
+    if (flashcardId) return;
+
+    // If the sub section is blank, get the default sub section for the deck
     if (subSection.length === 0) {
       const deck = await apiObjectGet<Deck>('decks', 'deck', deckId);
       const mainSectionTitle = cleanTitle(deck.main_sections[0].data.title);
@@ -37,12 +41,12 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
       window.location.href = `/deck/${deckId}/flashcards/create/${mainSectionTitle}__${subSectionTitle}/`;
     }
 
-    if (!section) return;
-    if (section.is_main_section) {
+    // If the sub section only refers to a main section, redirect to the first available sub section
+    if (section?.is_main_section) {
       const subSectionTitle = cleanTitle(section.section.sub_sections[0].data.title);
       window.location.href = `/deck/${deckId}/flashcards/create/${subSection}__${subSectionTitle}`;
     }
-  }, [section, deckId, subSection]);
+  }, [flashcardId, section, deckId, subSection]);
 
   const frontEditor = useMemo<ReactEditor>(createFullEditor, []);
   const [frontValue, setFrontValue] = useState<SlateNode[]>(blankSlateElement)
@@ -179,7 +183,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
                 />
               </div>
             </Col>
-            <Col md={2}>
+            <Col md={2} style={{ paddingBottom: '5px' }}>
               <AddImageButton
                 selectedImageUrl={frontSelectedImageUrl}
                 setSelectedImageUrl={setFrontSelectedImageUrl}
@@ -200,7 +204,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
                 />
               </div>
             </Col>
-              <Col md={2}>
+              <Col md={2} style={{ paddingBottom: '5px' }}>
                 <AddImageButton
                   selectedImageUrl={backSelectedImageUrl}
                   setSelectedImageUrl={setBackSelectedImageUrl}

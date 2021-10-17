@@ -23,8 +23,6 @@
   border-radius: $cardBorderRadius;
   background: $lightBackground;
 
-  margin-bottom: 5px;
-
   &:hover {
     box-shadow: $cardShadow;
     transform: scale(1.05);

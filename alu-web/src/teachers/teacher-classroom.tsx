@@ -123,9 +123,9 @@ function AssignmentsList({ classroom }: { classroom: Classroom }) {
       <TeacherAssignment
         assignment={assignment}
         classroomId={classroom.id}
-        key={assignment.id}
-      />)
-    }
+        key={`${classroom.id}-${assignment.id}`}
+      />
+    )}
     {assignments?.length === 0 && <p>You haven't created any assignments yet</p>}
     <CreateAssignmentButton
       classroom={classroom}

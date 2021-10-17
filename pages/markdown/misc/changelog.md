@@ -1,3 +1,12 @@
+## Small Big Fixes - Oct 17 - 1.0.5
+Fixes.  That's it.
+
+* **Fixed Flashcard Editing:** Fixed a bug that caused the flashcard editor to redirect to creating a new flashcard
+* **Fixed Assignments Uncaching:** Fixed a bug that caused teachers' assignments to not uncache when they changed the selected classroom
+* **Fixed a Bug in the Scheduling Algorithm:** Fixed a slight bug in the scheduling algorithm
+* **Improved Email Changing:** Improved error handling for email changing, so you get more descriptive messages when you take an invalid action (like changing your email to an email that is already in use)
+* **Slight Improvement to Studying Backend:** You can now technically have multiple copies of a deck attached to a classroom, which will at least suppress some errors
+
 ## Assignments, Merging Decks, & More Features - Oct 12 - 1.0.4
 Getting closer to final launch!
 

@@ -57,7 +57,7 @@ def student_join_class_view(request, *args, **kwargs):
     # Check that the student and teacher have same email domain
     teacher_email_domain = re.search(r"@[\w.]+", classroom.teachers.first().user.email).group()
     student_email_domain = re.search(r"@[\w.]+", request.user.email).group()
-    if teacher_email_domain != student_email_domain:
+    if teacher_email_domain.lower() != student_email_domain.lower():
         return Response({'message': 'You may only join classes in the same domain'}, status=404)
 
     # Add student
