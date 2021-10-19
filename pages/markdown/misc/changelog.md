@@ -1,3 +1,9 @@
+## Scheduling Algorithm Fix - Oct 18 1.0.6
+Small fix to the scheduling algorithm.
+
+
+* **Fixed Late-night Studying:** Fixed a bug that caused studying to break after 10 PM.
+
 ## Small Big Fixes - Oct 17 - 1.0.5
 Fixes.  That's it.
 
