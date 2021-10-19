@@ -123,11 +123,15 @@ def build_react_into_django():
 
 
 def delete_react_files():
+    os.system('sudo systemctl stop nginx gunicorn')
+
     for CHANGED_FILE in CHANGED_FILES:
         os.system(f'sudo rm -rf "{os.path.join(BASE_DIR, CHANGED_FILE)}"')
 
     input('Press enter once you have copied the new files to production')
     os.system(f'"{PYTHON_PATH}" manage.py collectstatic')
+
+    os.system('sudo systemctl start nginx gunicorn')
 
 
 if __name__ == '__main__':
