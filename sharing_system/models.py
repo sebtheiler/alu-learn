@@ -73,7 +73,7 @@ class SharedDeck(models.Model):
             return self.owners.filter(pk=author_pk).exists()
         elif self.edit_access == 'FRIENDS':
             return Profile.objects.filter(
-                friends__in=self.owners,
+                friends__in=User.objects.filter(profile__in=self.owners.all()),
                 pk=author_pk,
             ).exists()
         elif self.edit_access == 'STUDENT':
