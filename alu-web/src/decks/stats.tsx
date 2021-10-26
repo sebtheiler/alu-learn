@@ -80,14 +80,12 @@ export default function StatsComponent() {
                 if (value.habits_done > 1)
                   dataTip += 's';
             }
-            if (dataTip !== '')
-              dataTip += ` on ${stringDate()}`
-            if (value.time_spent)
-              dataTip += ` in ${Math.round(value.time_spent/1000/60)} minutes`;
+            if (dataTip !== '') dataTip += ` on ${stringDate(new Date(value.date))}`;
+            if (value.time_spent) dataTip += ` in ${Math.round(value.time_spent/1000/60)} minutes`;
 
             return { 'data-tip': dataTip };
           }}
-          classForValue={(value) => {
+          classForValue={(value: ProfileHistory) => {
             let colorValue: number;
             if (!value) {
               colorValue = 0;
@@ -116,4 +114,3 @@ export default function StatsComponent() {
     </div>
   );
 }
-

@@ -1,10 +1,23 @@
-## Scheduling Algorithm Fix - Oct 18 1.0.6
+## More Small Bug Fixes - Oct 26 - 1.0.7
+More fixes.  That's it.  More features (and public launch announcements!) coming soon.  For real this time...
+
+
+* One month ago: Alu is publically launching in 3 days!
+* Today: Alu is publically launching in 5 days!
+
+
+* **Improved 404 Page:** Improved the 404 page with an easier link to get back home
+* **Fixed Review Heatmap:** The date wasn't correctly appearing when hovering a square on the review heatmap
+* **Fixed Studying Repeat Bug:** Fixed a bug where pressing "Again" sometimes caused the same card to be displayed twice
+* **Improved Studying Order:** Improved the studying order of flashcards when studying an entire deck.  Now, new flashcards are always shown in order of main section and sub section, rather than displaying them all at once.
+
+## Scheduling Algorithm Fix - Oct 18 - 1.0.6
 Small fix to the scheduling algorithm.
 
 
 * **Fixed Late-night Studying:** Fixed a bug that caused studying to break after 10 PM.
 
-## Small Big Fixes - Oct 17 - 1.0.5
+## Small Bug Fixes - Oct 17 - 1.0.5
 Fixes.  That's it.
 
 * **Fixed Flashcard Editing:** Fixed a bug that caused the flashcard editor to redirect to creating a new flashcard

@@ -287,7 +287,7 @@ def flashcard_create_view(request, *args, **kwargs):
             request.data.get('sub_section'),
             deck_id=deck.pk,
         )
-    except (MainSection.DoesNotExist, SubSection.DoesNotExist):
+    except SubSection.DoesNotExist:
         return Response(
             {'message': 'Subsection not found'},
             status=404,
@@ -628,10 +628,20 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
         # TODO: adapt for timezones
         review_instance_query &= Q(next_review__lte=get_morning())
 
+    order_by = (
+        ('?',)
+        if study_ahead else
+        (
+            'flashcard__sub_section__main_section__order_num',
+            'flashcard__sub_section__order_num',
+            'flashcard__order_num',
+            'next_review',
+        )
+    )
     due_for_review = ReviewInstance.objects\
         .filter(review_instance_query)\
         .prefetch_related('flashcard')\
-        .order_by('?' if study_ahead else 'next_review')[:NUM_FLASHCARDS_PER_LESSON]
+        .order_by(*order_by)[:NUM_FLASHCARDS_PER_LESSON]
 
     # If the number of due review instances doesn't meet `NUM_FLASHCARDS_PER_LESSON`,
     # also send unseen review instances

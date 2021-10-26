@@ -5,7 +5,6 @@ import json
 import os
 import re
 import uuid
-from collections import defaultdict
 from typing import Dict, List, Literal, Tuple, Union
 
 from django.apps import apps
@@ -122,57 +121,6 @@ class Deck(models.Model):
                 })
 
         return needs_updating
-
-    # TODO: REMOVE
-    def generate_skill_tree(
-        self,
-        blacklisted_tags: tuple = ('', 'essential'),  # don't include these tags
-    ) -> dict:
-        skill_tree = defaultdict(set)
-        flashcards = self.flashcards.all()
-
-        # NOTE: Doing a double pass, and using dict/set, ensures that we don't
-        # have to check whether or not a tag is already in the skill tree
-
-        # Make dictionary of skill tree
-        for flashcard in flashcards:
-            tags = flashcard.tags.split(', ')
-            if tags[0] in blacklisted_tags:
-                continue
-
-            tag = tags[0]
-            same_tag_flashcards = flashcards.filter(tags__startswith=tag)
-
-            for same_tag_flashcard in same_tag_flashcards:
-                sub_tags = same_tag_flashcard.tags.split(', ')
-                if len(sub_tags) == 1 or sub_tags[1] in blacklisted_tags:
-                    continue
-
-                sub_tag = sub_tags[1]
-                skill_tree[tag].add(sub_tag)
-
-        # Turn dictionary object into MainSection and SubSection
-        main_sections = []
-        sub_sections = []
-        for tag, sub_tags in skill_tree.items():
-            main_section = MainSection(
-                title=tag.capitalize(),
-                tag=tag,
-                deck=self,
-            )
-            main_sections.append(main_section)
-            for sub_tag in sub_tags:
-                sub_sections.append(SubSection(
-                    title=sub_tag.capitalize(),
-                    tag=sub_tag,
-                    main_section=main_section,
-                ))
-
-        # Bulk create
-        MainSection.objects.bulk_create(main_sections)
-        SubSection.objects.bulk_create(sub_sections)
-
-        return skill_tree
 
     def is_updated(self) -> bool:
         return (

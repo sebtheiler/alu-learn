@@ -125,6 +125,7 @@ def build_react_into_django():
 def delete_react_files():
     os.system('sudo systemctl stop nginx gunicorn')
 
+    print('Deleting existing files...')
     for CHANGED_FILE in CHANGED_FILES:
         os.system(f'sudo rm -rf "{os.path.join(BASE_DIR, CHANGED_FILE)}"')
 

@@ -1,6 +1,7 @@
 from rest_framework.throttling import UserRateThrottle
 from .settings import REST_FRAMEWORK
 
+
 # Adapted from https://stackoverflow.com/a/34539025/13042142
 class ExceptionalUserRateThrottle(UserRateThrottle):
     def allow_request(self, request, view):
@@ -34,5 +35,5 @@ class ExceptionalUserRateThrottle(UserRateThrottle):
 
         if len(self.history) >= self.num_requests:
             return self.throttle_failure()
-        
+
         return self.throttle_success()

@@ -59,6 +59,7 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
       await new Promise(r => setTimeout(r, 125));
       studyAnswerDispatch({
         action: 'STUDY_REVIEW_INSTANCE',
+        reviewInstance: reviewInstance,
         interval: interval,
         id: reviewInstance.id,
       });
@@ -66,7 +67,7 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
       browserInteractionTime.reset();
       browserInteractionTime.startTimer();
     }
-  }, [reviewInstance.id, studyAnswerDispatch, intervals, isFlipped, browserInteractionTime, deckId, section, studyAhead]);
+  }, [reviewInstance, studyAnswerDispatch, intervals, isFlipped, browserInteractionTime, deckId, section, studyAhead]);
 
   // Events on keypresses (flipping with space, grading with 1-4)
   useEffect(() => {
