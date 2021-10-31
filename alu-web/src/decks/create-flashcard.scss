@@ -5,13 +5,13 @@
   border-radius: $cardBorderRadius;
   background: $lightBackground;
 
+  overflow: hidden;
   margin-bottom: 5px;
 
   >div.editor >div.editor-head {
     border-bottom: $grayBorder;
     padding-left: 20px;
     background: darken($lightBackground, 3%);
-    border-radius: $cardBorderRadius $cardBorderRadius 0 0;
   }
 }
 
@@ -22,6 +22,7 @@
   border: $grayBorder;
   border-radius: $cardBorderRadius;
   background: $lightBackground;
+  overflow: hidden;
 
   &:hover {
     box-shadow: $cardShadow;
@@ -31,7 +32,6 @@
   >div.add-image-head {
     border-bottom: $grayBorder;
     background: darken($lightBackground, 3%);
-    border-radius: $cardBorderRadius $cardBorderRadius 0 0;
     text-align: center;
     
     padding-top: 5px;

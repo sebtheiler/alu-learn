@@ -1,3 +1,6 @@
+* **Fixed Flashcard Rendering:** Fixed a slight bug that caused some whitespace on the tops of flashcards when displayed in a list
+
+
 ## More Small Bug Fixes - Oct 26 - 1.0.7
 More fixes.  That's it.  More features (and public launch announcements!) coming soon.  For real this time...
 
