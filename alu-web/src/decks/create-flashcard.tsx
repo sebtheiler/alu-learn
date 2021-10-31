@@ -17,7 +17,9 @@ import { cleanTitle } from './sub-section';
 import { useState, useMemo } from 'react';
 import './create-flashcard.scss';
 
-type Section = { section: MainSection, is_main_section: true } | { section: SubSection, is_main_section: false };
+type Section =
+  | { section: MainSection, is_main_section: true }
+  | { section: SubSection, is_main_section: false };
 
 const ONE_SIDED_CARDS = ['CLOZE'];
 interface CreateFlashcardProps {
@@ -29,6 +31,8 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
   const [section] = useAsyncState<Section>(() => backendFetch('GET', `skill_tree/abstractsection/${subSection}/`, {
     deck_id: deckId,
   }), [], undefined, !!subSection);
+
+  // Redirect the user if the full sub section isn't specified
   useMemo(async () => {
     // Don't redirect if we're editing
     if (flashcardId) return;
@@ -71,6 +75,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
 
       setFrontSelectedImageUrl(flashcard.data?.front_image ?? '');
       setBackSelectedImageUrl(flashcard.data?.back_image ?? '');
+      setFlashcardType(flashcard.flashcard_type);
     },
     !!flashcardId,
   );
