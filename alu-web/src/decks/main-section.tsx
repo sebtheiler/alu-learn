@@ -1,3 +1,5 @@
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Row from 'react-bootstrap/Row';
 import RenderSubSection, { cleanTitle } from './sub-section';
 import { MainSectionButtons, CreateSubSectionButton } from './buttons/section-buttons';
@@ -14,21 +16,25 @@ export default function RenderMainSection({ mainSection, numMainSections, readOn
       <div className='d-flex mx-auto'>
         <hr className='flex-grow-1' />
         <h2 className='px-2 align-self-center mb-0'>
-          {readOnly ?
-            mainSection.data.title.toUpperCase()
-            :
-            <a href={`/deck/${mainSection.deck}/study/${cleanTitle(mainSection.data.title)}/`}>
-              {mainSection.data.title.toUpperCase()}
-            </a>
-          }
+          {mainSection.data.title.toUpperCase()}
         </h2>
         <hr className='flex-grow-1' />
         {!readOnly && <MainSectionButtons mainSection={mainSection} numMainSections={numMainSections} />}
       </div>
-      <small className='text-secondary'>
-        {/* {mainSection.description} */}
-        Click the title above to study all flashcards in this main-section, or choose a sub-section below to study specific topics
-      </small>
+      <div className='mt-2'>
+        <ButtonGroup>
+          {!readOnly && <Button href={`study/${cleanTitle(mainSection.data.title)}/`} style={{ width: '100px' }}>
+            Study
+          </Button>}
+          <Button
+            href={`flashcards/sections/${cleanTitle(mainSection.data.title)}/`}
+            style={{ width: '100px', marginLeft: '5px' }}
+            variant='secondary'
+          >
+            View
+          </Button>
+        </ButtonGroup>
+      </div>
     </div>
     <div className='mt-2'>
       <Row className='main-section-body'>

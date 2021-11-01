@@ -1,3 +1,5 @@
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import RenderMainSection from './main-section';
 import UpdateDeck from './update-deck';
 import useMountEffect from '../utils/useMountEffect';
@@ -62,9 +64,20 @@ export default function SkillTree({ deck, readOnly }: { deck: Deck, readOnly?: b
           {deck.title}
         </a>}
       </h1>
-      {!readOnly && <small className='text-secondary'>
-        Click the title above to study all flashcards, or choose a section below to study
-      </small>}
+      <div className='my-2'>
+        <ButtonGroup>
+          {!readOnly && <Button href={`study/`} style={{ width: '100px' }}>
+            Study
+          </Button>}
+          <Button
+            href={`flashcards/`}
+            style={{ width: '100px', marginLeft: '5px' }}
+            variant='secondary'
+          >
+            View
+          </Button>
+        </ButtonGroup>
+      </div>
       {!deck.is_updated && !readOnly && <UpdateDeck deck={deck} />}
     </div>
     <div>
