@@ -60,9 +60,7 @@ export default function SkillTree({ deck, readOnly }: { deck: Deck, readOnly?: b
   return (<>
     <div className='mb-3'>
       <h1 className='mb-0'>
-        {readOnly ? deck.title : <a href={`/deck/${deck.id}/study/`}>
-          {deck.title}
-        </a>}
+        {deck.title}
       </h1>
       <div className='my-2'>
         <ButtonGroup>
