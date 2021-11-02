@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import CopySharedDeckButton from './buttons/copy-shared-deck-button';
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import RenderFlashcard  from './render-flashcard';
 import RenderMainSection from './main-section';
 import Row from 'react-bootstrap/Row';
@@ -93,7 +94,10 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
                 View Latest Version
               </Button>
             </Alert>}
-            <p>{sharedDeck.description}</p>
+            {sharedDeck.description.length > 0
+              ? <ReactMarkdown source={sharedDeck.description} />
+              : <p>This deck has no description</p>
+            }
             <ButtonGroup>
               <CopySharedDeckButton sharedDeck={sharedDeck} />
               <Button
@@ -148,6 +152,7 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
               <DisplayProfileInline profile={owner} />
               {i !== sharedDeck.owners.length - 1 && ', '}
             </React.Fragment>)}</p>
+            <p>Copies: {sharedDeck.num_copies}</p>
           </div>
           <hr />
           <div>

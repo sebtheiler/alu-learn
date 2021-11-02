@@ -14,6 +14,8 @@ export default function SharedDeckList({ sharedDecks }: { sharedDecks: SharedDec
               <DisplayProfileInline profile={owner} />
               {i !== sharedDeck.owners.length - 1 && ', '}
             </React.Fragment>)}
+            <br />
+            {sharedDeck.num_copies} {sharedDeck.num_copies === 1 ? 'copy' : 'copies'}
           </p>
           <h1>
             <a href={`/community/deck/${sharedDeck.id}/`}>

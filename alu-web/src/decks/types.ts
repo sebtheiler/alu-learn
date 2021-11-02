@@ -87,6 +87,8 @@ export interface SharedDeck {
   has_edit_access?: boolean;
   is_owner?: boolean;
 
+  num_copies: number;
+
   id: number;
 }
 

@@ -5,6 +5,7 @@ from typing import List, Literal, Tuple, Union
 
 from accounts.models import User
 from decks.models import Deck, FlashCard, FlashCardData, ReviewInstance
+from django.apps import apps
 from django.db import models
 from django.db.models.expressions import F
 from django.db.models.query import QuerySet
@@ -83,6 +84,28 @@ class SharedDeck(models.Model):
 
     def is_owner(self, author_pk: int):
         return self.owners.filter(pk=author_pk).exists()
+
+    def num_copies(self) -> int:
+        SharedDeck = apps.get_model('sharing_system.SharedDeck')
+
+        direct_copies = Deck.objects.filter(equivalent_to_snapshot__shared_deck=self)
+        indirect_copies = Deck.objects.filter(
+            equivalent_to_snapshot__shared_deck__in=SharedDeck.objects.filter(
+                snapshots__parent__shared_deck=self,
+            ),
+        )  # copied from a shared deck that was remixed from this shared deck
+        copies = (direct_copies | indirect_copies).values('user__username').distinct()
+                # Count(
+                #     'snapshots__decks_equivalent_to',
+                #     distinct=True,
+                # )
+                # +
+                # Count(
+                #     'snapshots__children__shared_deck__snapshots__decks_equivalent_to',
+                #     distinct=True,
+                # )
+
+        return copies.count()
 
     @staticmethod
     def create(

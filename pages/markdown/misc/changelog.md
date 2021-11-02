@@ -4,6 +4,9 @@
 * **Fixed Cloze Editing:** Fixed a bug that caused both fields of the flashcard to appear when editing clozes
 * **Added Study/View Buttons:** Added more obvious study/view buttons for main sections and entire decks, to clarify possible actions
 * **Fixed Image Uploading:** Fixed image uploading.  It also uses a CDN now, making it significantly faster and more efficient
+* **Fixed Deck Title Overflow:** Fixed a bug that allowed a deck's title to overflow its selector on the left side of the screen
+* **Added Number of Copies Counter:** Added a number of copies counter for shared decks
+* **Changed Explore Page Mechanism:** Changed the Explore Page's backend to automatically display the most copied deck
 
 
 ## More Small Bug Fixes - Oct 26 - 1.0.7

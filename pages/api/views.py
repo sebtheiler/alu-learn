@@ -1,10 +1,11 @@
 import base64
-from typing import List
 
 import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.core.mail import mail_admins
+from django.db.models.aggregates import Count
+from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -116,18 +117,32 @@ def get_image_with_proxy(request, *args, **kwargs):
 
 
 # Explore views
-def get_shared_decks_from_ids(id_list: List[int]):
-    shared_decks = SharedDeck.objects.filter(pk__in=id_list)
-    return SharedDeckSerializer(shared_decks, many=True).data
-
-
 @api_view(['GET'])
+@cache_page(60*60*24)
 def api_explore_lists_view(request, *args, **kwargs):
     """
     Get decks to display in explore list - GET
     """
+    shared_decks = SharedDeckSerializer(
+        SharedDeck.objects.annotate(
+            num_copies=(
+                Count(
+                    'snapshots__decks_equivalent_to',
+                    distinct=True,
+                )
+                +
+                Count(
+                    'snapshots__children__shared_deck__snapshots__decks_equivalent_to',
+                    distinct=True,
+                )
+            ),
+        )
+        .order_by('-num_copies')
+        .filter(view_access='PUBLIC')[:10],
+        many=True,
+    ).data
     data = {
-        'EDITOR': get_shared_decks_from_ids(settings.EDITOR_PICKS_DECK_IDS),
+        'EDITOR': shared_decks,
         'TOP': [],
         'HOT': [],
     }

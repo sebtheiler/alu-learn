@@ -84,6 +84,7 @@ class SharedDeckSerializer(serializers.ModelSerializer):
             'has_view_access',
             'has_edit_access',
             'is_owner',
+            'num_copies',
             'id',
         )
 

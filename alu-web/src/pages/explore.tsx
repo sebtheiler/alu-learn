@@ -16,7 +16,7 @@ export default function ExploreComponent(props: null) {
   return (<Container className='mt-5'>
     <div>
       <h1>Explore</h1>
-      <p>Find decks created by others to help you study</p>
+      <p>Find top decks created by others to help you study</p>
     </div>
     {/* <ExploreButtonGroup /> */}
     <hr />

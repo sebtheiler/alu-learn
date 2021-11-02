@@ -147,6 +147,7 @@ class SharedDeckAdmin(admin.ModelAdmin):
         'title',
         'description',
         'formatted_owners',
+        'num_copies',
     )
     search_fields = (
         'title',
@@ -160,7 +161,7 @@ class SharedDeckAdmin(admin.ModelAdmin):
         return queryset
 
     def formatted_owners(self, obj):
-        return ','.join([owner.user.username for owner in obj.owners.all()])
+        return ', '.join([owner.user.username for owner in obj.owners.all()])
 
 
 admin.site.register(SnapShot, SnapShotAdmin)

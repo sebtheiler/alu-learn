@@ -128,7 +128,6 @@ def copy_shared_deck_view(request, shared_deck_id, *args, **kwargs):
 
     `title` (Data): Title of the destination deck
     """
-    # TODO: Enforce view_access
     shared_deck, resp = get_obj_or_404(
         SharedDeck,
         shared_deck_id,
@@ -137,6 +136,9 @@ def copy_shared_deck_view(request, shared_deck_id, *args, **kwargs):
     )
     if resp:
         return resp
+
+    if not shared_deck.has_view_access(request.user.profile.pk):
+        return Response({'message': 'You are not authorized to copy this shared deck'}, status=403)
 
     deck = shared_deck.copy(
         request.user,
@@ -336,7 +338,7 @@ def snapshot_flashcards_view(request, *args, **kwargs):
     snapshot_id = request.GET.get('snapshot_id')
     if snapshot_id:
         try:
-            snapshot = SnapShot.objects.get(id=snapshot_id)  # TODO: enforce view_access
+            snapshot = SnapShot.objects.get(id=snapshot_id)
         except SnapShot.DoesNotExist:
             return Response({'message': 'SnapShot not found'}, status=404)
 
