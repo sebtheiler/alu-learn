@@ -34,6 +34,8 @@
           align-items: center;
 
           &.divider {
+            height: 100%;
+
             @media (min-width: 767px) {
               border-right: $grayBorder;
             }

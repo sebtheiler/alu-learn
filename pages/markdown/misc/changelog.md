@@ -1,6 +1,9 @@
-* **Fixed Flashcard Rendering:** Fixed a slight bug that caused some whitespace on the tops of flashcards when displayed in a list
+* **Fixed Flashcard Rendering:** Fixed a couple of issues with flashcard rendering in lists
+  * **Whitespace:** Fixed a slight bug that caused some whitespace on the tops of flashcards
+  * **Divider:** Fixed a bug that caused the divider for flashcard sides not to reach the bottom if the right side was longer than the left side
 * **Fixed Cloze Editing:** Fixed a bug that caused both fields of the flashcard to appear when editing clozes
 * **Added Study/View Buttons:** Added more obvious study/view buttons for main sections and entire decks, to clarify possible actions
+* **Fixed Image Uploading:** Fixed image uploading.  It also uses a CDN now, making it significantly faster and more efficient
 
 
 ## More Small Bug Fixes - Oct 26 - 1.0.7
