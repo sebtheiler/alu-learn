@@ -595,6 +595,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     section = request.data.get('section')
     deck_id = request.data.get('deck_id')
     study_ahead = request.data.get('study_ahead')
+    utc_timezone_offset = request.data.get('utc_timezone_offset', 0)
 
     # Build base query
     review_instance_query = Q(flashcard__sub_section__main_section__deck__user=request.user)
@@ -625,8 +626,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
 
     num_total = ReviewInstance.objects.filter(review_instance_query).count()
     if not study_ahead:
-        # TODO: adapt for timezones
-        review_instance_query &= Q(next_review__lte=get_morning())
+        review_instance_query &= Q(next_review__lte=get_morning(utc_timezone_offset))
 
     order_by = (
         ('?',)

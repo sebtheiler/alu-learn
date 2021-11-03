@@ -95,6 +95,8 @@ def create_sub_section(request, *args, **kwargs):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_deck_sections_percent_complete(request, deck_id, *args, **kwargs):
+    utc_timezone_offset = int(request.GET.get('utc_timezone_offset', 0))
+
     main_sections = MainSection.objects.filter(
         deck__pk=deck_id,
         deck__user=request.user,
@@ -103,7 +105,7 @@ def get_deck_sections_percent_complete(request, deck_id, *args, **kwargs):
 
     def sub_section_percent(sub_section):
         sub_sections.append(sub_section)
-        return sub_section.get_percent_complete()
+        return sub_section.get_percent_complete(utc_timezone_offset=utc_timezone_offset)
 
     sections_percent_complete = [{
         'id': main_section.pk,
@@ -112,7 +114,7 @@ def get_deck_sections_percent_complete(request, deck_id, *args, **kwargs):
         'sub_sections': [{
             'id': sub_section.pk,
             'percent_complete': sub_section_percent(sub_section),
-            'total_percent_complete': sub_section.get_percent_complete(total=True),
+            'total_percent_complete': sub_section.get_percent_complete(True, utc_timezone_offset),
         } for sub_section in main_section.sub_sections.all()]
     } for main_section in main_sections]
 

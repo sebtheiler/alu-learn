@@ -800,11 +800,13 @@ export interface MainSectionPercentComplete extends PercentComplete {
 export async function getDeckSectionsPercentComplete(
   deckId: number,
 ): Promise<MainSectionPercentComplete[]> {
-  return backendFetch('GET', `skill_tree/deck/${deckId}/percent-complete/`);
+  const utcTimezoneOffset = new Date().getTimezoneOffset();
+  return backendFetch('GET', `skill_tree/deck/${deckId}/percent-complete/`, { utc_timezone_offset: utcTimezoneOffset });
 }
 
 export async function getClassroomAssignmentsPercentComplete(
   classroomId: number,
 ): Promise<SubSectionPercentComplete[]> {
-  return backendFetch('GET', `teachers/classroom/${classroomId}/percent-complete/`);
+  const utcTimezoneOffset = new Date().getTimezoneOffset();
+  return backendFetch('GET', `teachers/classroom/${classroomId}/percent-complete/`, { utc_timezone_offset: utcTimezoneOffset });
 }
