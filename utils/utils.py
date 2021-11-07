@@ -42,8 +42,10 @@ def create_slate_element(inner_text: str):
 BLANK_SLATE_ELEMENT = create_slate_element('')
 
 
-def get_morning() -> dt.datetime:
+def get_morning(utc_timezone_offset: int = 0) -> dt.datetime:
     now = timezone.now()
+    if utc_timezone_offset > 0:
+        now -= dt.timedelta(minutes=utc_timezone_offset)
     this_morning = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
     return this_morning

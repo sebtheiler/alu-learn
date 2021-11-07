@@ -93,7 +93,7 @@ class AbstractSection(models.Model):
     def __str__(self) -> str:
         return self.data.title
 
-    def get_percent_complete(self, total: bool = False) -> float:
+    def get_percent_complete(self, total: bool = False, utc_timezone_offset: int = 0) -> float:
         day_changed = (
             self.cached_percent_complete == 0 or  # can't go below 0
             getattr(self.cached_percent_complete_time, 'day', 0) == timezone.now().day
@@ -112,7 +112,7 @@ class AbstractSection(models.Model):
         total_num = ReviewInstance.objects.filter(query).count()
         query &= ~Q(learning_status='UNSEEN')
         if not total:
-            query &= Q(next_review__gt=get_morning())
+            query &= Q(next_review__gt=get_morning(utc_timezone_offset))
         completed_num = ReviewInstance.objects.filter(query).count()
 
         percent_complete = round(completed_num / total_num, 2) if total_num else 0

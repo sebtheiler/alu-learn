@@ -7,6 +7,7 @@
 * **Fixed Deck Title Overflow:** Fixed a bug that allowed a deck's title to overflow its selector on the left side of the screen
 * **Added Number of Copies Counter:** Added a number of copies counter for shared decks
 * **Changed Explore Page Mechanism:** Changed the Explore Page's backend to automatically display the most copied deck
+* **Fixed Studying Timezone Issues:** Fixed various issues regarding studying and timezone
 
 
 ## More Small Bug Fixes - Oct 26 - 1.0.7

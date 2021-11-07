@@ -114,6 +114,8 @@ def classroom_students_view(request, classroom_id, *args, **kwargs):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def classroom_percent_complete(request, classroom_id):
+    utc_timezone_offset = int(request.GET.get('utc_timezone_offset', 0))
+
     assigned_sub_sections = SubSection.objects.filter(
         attached_assignments__classrooms__pk=classroom_id,
     ).values_list('universal_sub_section_id', flat=True)
@@ -126,8 +128,8 @@ def classroom_percent_complete(request, classroom_id):
         {
             'id': sub_section.pk,
             'universal_sub_section_id': sub_section.universal_sub_section_id,
-            'percent_complete': sub_section.get_percent_complete(),
-            'total_percent_complete': sub_section.get_percent_complete(total=True),
+            'percent_complete': sub_section.get_percent_complete(False, utc_timezone_offset),
+            'total_percent_complete': sub_section.get_percent_complete(True, utc_timezone_offset),
         }
         for sub_section in sub_sections
     ]
