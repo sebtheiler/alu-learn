@@ -27,6 +27,10 @@ class Profile(models.Model):
     longest_streak = models.PositiveSmallIntegerField(default=0)
     current_streak = models.PositiveSmallIntegerField(default=0)
     has_done_work_today = models.BooleanField(default=False)
+    streak_freeze_expires = models.DateField(
+        default='1970-01-01',
+        null=True, blank=True,
+    )  # expires after this specified date
 
     def __str__(self) -> str:
         if self.user.first_name and self.user.last_name:

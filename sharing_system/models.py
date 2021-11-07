@@ -95,15 +95,6 @@ class SharedDeck(models.Model):
             ),
         )  # copied from a shared deck that was remixed from this shared deck
         copies = (direct_copies | indirect_copies).values('user__username').distinct()
-                # Count(
-                #     'snapshots__decks_equivalent_to',
-                #     distinct=True,
-                # )
-                # +
-                # Count(
-                #     'snapshots__children__shared_deck__snapshots__decks_equivalent_to',
-                #     distinct=True,
-                # )
 
         return copies.count()
 

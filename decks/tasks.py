@@ -7,14 +7,18 @@ from celery.schedules import crontab
 from django.conf import settings
 from django.core import mail
 from django.template.loader import render_to_string
+from django.utils import timezone
 from profiles.models import Profile
 
 
 @shared_task
 def midnight_reset():
     # Break the streaks of users who haven't studied today
-    # not_studied_profiles = Profile.objects.filter(has_done_work_today=False)
-    # not_studied_profiles.update(current_streak=0)
+    not_studied_profiles = Profile.objects.filter(
+        has_done_work_today=False,
+        streak_freeze_expires__lt=timezone.now(),
+    )
+    not_studied_profiles.update(current_streak=0)
 
     # Reset all users to not having studied
     Profile.objects.update(has_done_work_today=False)
@@ -31,8 +35,6 @@ def run_midnight_reset():
 
 @shared_task
 def email_reminder():
-    return
-
     users_to_notify = Profile.objects.filter(
         has_done_work_today=False,
         current_streak__gt=0,
@@ -61,7 +63,7 @@ https://www.alulearn.com/settings/)
         """
 
         mail.send_mail(
-            f'Don\'t lose your {streak}-day streak in Alu!',
+            f'Get a {streak + 1}-day streak in Alu!',
             non_html_email_client_message,
             settings.EMAIL_HOST_USER,
             [user.user.email],
