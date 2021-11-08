@@ -1,3 +1,7 @@
+## Getting There - Nov 07 - 1.0.8
+Launch?  We'll get there.
+
+
 * **Fixed Flashcard Rendering:** Fixed a couple of issues with flashcard rendering in lists
   * **Whitespace:** Fixed a slight bug that caused some whitespace on the tops of flashcards
   * **Divider:** Fixed a bug that caused the divider for flashcard sides not to reach the bottom if the right side was longer than the left side
@@ -8,6 +12,7 @@
 * **Added Number of Copies Counter:** Added a number of copies counter for shared decks
 * **Changed Explore Page Mechanism:** Changed the Explore Page's backend to automatically display the most copied deck
 * **Fixed Studying Timezone Issues:** Fixed various issues regarding studying and timezone
+* **Changed Default Flashcards per Day:** Changed the default flashcards per day to 20
 
 
 ## More Small Bug Fixes - Oct 26 - 1.0.7

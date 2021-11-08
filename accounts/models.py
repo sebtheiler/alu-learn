@@ -5,3 +5,6 @@ from django.db import models
 
 class User(SimpleEmailConfirmationUserMixin, AbstractUser):
     password_reset_key = models.CharField(default=None, null=True, max_length=128)  # base 64
+
+    is_pro = models.BooleanField(default=False)
+    pro_expires = models.DateField(null=True, blank=True)

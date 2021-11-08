@@ -234,7 +234,7 @@ class ProfileSettings(models.Model):
         choices=USER_TYPE_OPTIONS,
         default='STUDENT',
     )
-    target_num_cards = models.PositiveSmallIntegerField(default=50)
+    target_num_cards = models.PositiveSmallIntegerField(default=20)
 
     is_opted_dev = models.BooleanField(default=False)
     show_update_modal = models.BooleanField(default=False)

@@ -70,7 +70,7 @@ export default function UserCustomization() {
       <Form.Control
         type='number'
         name='targetNumCards'
-        defaultValue={50}
+        defaultValue={20}
         min={5}
         max={200}
         step={5}
