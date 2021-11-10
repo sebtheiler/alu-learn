@@ -1,5 +1,7 @@
 import os
 import re
+import sys
+import time
 from shutil import copyfile, copytree, rmtree
 
 import alu.settings as settings
@@ -7,17 +9,15 @@ import alu.settings as settings
 # Changed files:
 # * static/css/*
 # * static/js/*
-# * static/media/*
 # * decks/templates/react/*
 # * decks/templates/react.html
 # * static-root/*  (via ./manage.py collectstatic)
 CHANGED_FILES = [
+    'static-root',
     'static/css',
     'static/js',
-    'static/media',
     'decks/templates/react',
     'decks/templates/react.html',
-    'static-root',
 ]
 
 BASE_DIR = os.getcwd()
@@ -30,11 +30,11 @@ else:
     PYTHON_PATH = settings.env_vars['PYTHON_PATH']
 
 
-def build_react_into_django():
+def build_react_into_django(is_for_production: bool = False):
     # Compile react
     print('Compiling React...')
     os.chdir(REACT_DIRECTORY)
-    if settings.PRODUCTION:
+    if is_for_production:
         os.system('npm run build --nomaps')  # don't send raw React code to client
     else:
         os.system('npm run build')
@@ -109,9 +109,11 @@ def build_react_into_django():
     print('Clearing cache...')
     clear_cache = 'from django.core.cache import cache; cache.clear()'
     os.system(f'"{PYTHON_PATH}" manage.py shell -c "{clear_cache}"')
-    print('Finished')
 
-    if input('Copy files to production? (y/n) ') == 'y':
+    print('Finished building')
+
+    if is_for_production:
+        print('Sending files to production...')
         for CHANGED_FILE in CHANGED_FILES:
             if CHANGED_FILE == 'static-root':
                 # This will be generated on the server with `collectstatic`
@@ -120,6 +122,7 @@ def build_react_into_django():
             LOCAL_FILE_PATH = os.path.join(BASE_DIR, CHANGED_FILE)
             REMOTE_FILE_PATH = f'root@alu:{os.path.join(ALUDIR, CHANGED_FILE)}'
             os.system(f'scp -r "{LOCAL_FILE_PATH}" "{REMOTE_FILE_PATH}"')
+        print('Finished sending files to production')
 
 
 def delete_react_files():
@@ -129,18 +132,27 @@ def delete_react_files():
     for CHANGED_FILE in CHANGED_FILES:
         os.system(f'sudo rm -rf "{os.path.join(BASE_DIR, CHANGED_FILE)}"')
 
-    input('Press enter once you have copied the new files to production')
-    os.system(f'"{PYTHON_PATH}" manage.py collectstatic')
+    # Wait until the final file is copied
+    assert not os.path.exists(os.path.join(BASE_DIR, CHANGED_FILES[-1]))
+    while True:
+        time.sleep(3)
 
+        if os.path.exists(os.path.join(BASE_DIR, CHANGED_FILES[-1])):
+            break
+
+    # Collect static, and restart nginx & gunicorn
+    os.system(f'"{PYTHON_PATH}" manage.py collectstatic')
     os.system('sudo systemctl start nginx gunicorn')
 
 
 if __name__ == '__main__':
-    if settings.PRODUCTION and os.geteuid() != 0:
-        print('Run as sudo.')
-        exit()
-
     if settings.PRODUCTION:
+        if os.geteuid() != 0:
+            print('Run as sudo.')
+            exit()
+
         delete_react_files()
     else:
-        build_react_into_django()
+        options = ('-y', '--yes', '-p', '--production')
+        is_for_production = len(sys.argv) > 1 and sys.argv[1] in options
+        build_react_into_django(is_for_production)
