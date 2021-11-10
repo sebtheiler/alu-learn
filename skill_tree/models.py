@@ -126,7 +126,7 @@ class AbstractSection(models.Model):
 
     @staticmethod
     def clean(title: str):
-        return title.replace('-', ' ')
+        return title.replace('-', ' ').replace('.d.', '-')
 
     @staticmethod
     def get_from_formatted_title(

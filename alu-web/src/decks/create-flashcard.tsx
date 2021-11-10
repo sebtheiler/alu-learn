@@ -28,9 +28,11 @@ interface CreateFlashcardProps {
   flashcardId?: string;
 }
 export default function CreateFlashcard({ deckId, flashcardId, subSection }: CreateFlashcardProps) {
-  const [section] = useAsyncState<Section>(() => backendFetch('GET', `skill_tree/abstractsection/${subSection}/`, {
-    deck_id: deckId,
-  }), [], undefined, !!subSection);
+  const [section] = useAsyncState<Section>(() => backendFetch(
+    'GET',
+    `skill_tree/abstractsection/${subSection}/`,
+    { deck_id: deckId },
+  ), [], undefined, !!subSection);
 
   // Redirect the user if the full sub section isn't specified
   useMemo(async () => {

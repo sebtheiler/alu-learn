@@ -6,8 +6,8 @@ import Popover from 'react-bootstrap/Popover';
 import { MainSection, SubSection } from './types';
 import { SubSectionButtons } from './buttons/section-buttons';
 
-export const cleanTitle = (title: string) => encodeURIComponent(title.toLowerCase().replaceAll(' ', '-'));
-export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll('__', ' AND ')
+export const cleanTitle = (title: string) => encodeURIComponent(title.toLowerCase().replaceAll('-', '.d.').replaceAll(' ', '-'));
+export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll('__', ' AND ').replace('.d.', '-')
 
 interface SubSectionProps {
   subSection: SubSection;
