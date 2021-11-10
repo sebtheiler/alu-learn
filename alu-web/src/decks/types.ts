@@ -45,6 +45,7 @@ export interface ReviewInstance {
   name: string;
   data?: FlashCardData;
   flashcard_type: FlashCardTypes;
+  content_indicies: number[];
   id: UUID;
 }
 

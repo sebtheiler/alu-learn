@@ -7,7 +7,7 @@ export function processFront(reviewInstance: ReviewInstance): SlateNode[] {
 
   switch (reviewInstance.flashcard_type) {
     case 'BASIC': case 'REVERSED':
-      return fields[0];
+      return fields[reviewInstance.content_indicies[0]];
     case 'CLOZE':
       return clozify(reviewInstance, false);
   }
@@ -19,7 +19,7 @@ export function processBack(reviewInstance: ReviewInstance): SlateNode[] {
 
   switch (reviewInstance.flashcard_type) {
     case 'BASIC': case 'REVERSED':
-      return fields[1];
+      return fields[reviewInstance.content_indicies[1]];
     case 'CLOZE':
       return clozify(reviewInstance, true);
   }
@@ -31,9 +31,10 @@ function clozify(reviewInstance: ReviewInstance, showAnswer: boolean): SlateNode
 
   const regex = /{{c\d*::.*?}}/gm;
 
-  const currentCardText = JSON.stringify(fields[0]);
+  const field = fields[reviewInstance.content_indicies[0]];
+  const currentCardText = JSON.stringify(field);
   const targetClozeNum = parseInt(reviewInstance.name.split('-')[1]);
-  const str = JSON.stringify(fields[0]);
+  const str = JSON.stringify(field);
   
   let answerHiddenTextStr = currentCardText;
   let answerRevealedTextStr = currentCardText;

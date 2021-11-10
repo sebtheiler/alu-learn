@@ -1,4 +1,5 @@
 * **Fixed Titles with Dashes:** You can now use dashes in titles for main sections and sub sections.
+* **Fixed Reversed Flashcards:** Fixed a bug that caused basic-and-reversed flashcards to only display in a single direction
 
 ## Getting There - Nov 07 - 1.0.8
 Launch?  We'll get there.

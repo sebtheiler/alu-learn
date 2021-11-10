@@ -32,7 +32,11 @@ else:
 
 def build_react_into_django(is_for_production: bool = False):
     # Compile react
-    print('Compiling React...')
+    if is_for_production:
+        print('Compiling React for production...')
+    else:
+        print('Compiling React...')
+
     os.chdir(REACT_DIRECTORY)
     if is_for_production:
         os.system('npm run build --nomaps')  # don't send raw React code to client
