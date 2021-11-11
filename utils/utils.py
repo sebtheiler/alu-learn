@@ -74,8 +74,8 @@ def assert_dict_data_type(
 
 
 def base64_to_file(base64_str: str, title: str) -> ContentFile:
-    image_format, imgstr = base64_str.split(';base64,')
+    image_format, img_str = base64_str.split(';base64,')
     ext = image_format.split('/')[-1]
-    image = ContentFile(base64.b64decode(imgstr), name=f'{title}.{ext}')
+    image = ContentFile(base64.b64decode(img_str), name=f'{title}.{ext}')
 
     return image

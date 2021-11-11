@@ -137,6 +137,7 @@ def delete_react_files():
         os.system(f'sudo rm -rf "{os.path.join(BASE_DIR, CHANGED_FILE)}"')
 
     # Wait until the final file is copied
+    print('Waiting until files are copied...')
     assert not os.path.exists(os.path.join(BASE_DIR, CHANGED_FILES[-1]))
     while True:
         time.sleep(3)
@@ -145,7 +146,7 @@ def delete_react_files():
             break
 
     # Collect static, and restart nginx & gunicorn
-    os.system(f'"{PYTHON_PATH}" manage.py collectstatic')
+    os.system(f'"{PYTHON_PATH}" manage.py collectstatic --noinput')
     os.system('sudo systemctl start nginx gunicorn')
 
 

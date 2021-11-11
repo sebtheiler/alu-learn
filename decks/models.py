@@ -17,6 +17,7 @@ from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.utils import timezone
+from pages.models import UploadedImage
 from skill_tree.models import MainSection, SectionData, SubSection
 from utils import get_morning
 
@@ -264,8 +265,7 @@ class FlashCard(models.Model):
         flashcard_type: FlashCardTypes,
         fields: List[list],
         order_num: int = None,
-        front_image: ContentFile = None,
-        back_image: ContentFile = None,
+        images: List[UploadedImage] = None,
         flashcard_uuid: uuid.uuid4 = None,
         data_uuid: uuid.uuid4 = None,
         universal_flashcard_id: uuid.uuid4 = None,
@@ -273,10 +273,11 @@ class FlashCard(models.Model):
         data = FlashCardData.objects.create(
             fields=fields,
             tags=tags,
-            front_image=front_image,
-            back_image=back_image,
             pk=data_uuid,
         )
+
+        if images:
+            UploadedImage.objects.bulk_create(images)
 
         flashcard = FlashCard.objects.create(
             sub_section=sub_section,
@@ -308,7 +309,7 @@ class FlashCard(models.Model):
         (returns--but also does not create--the flashcard's review instances)
         """
         if create_new_data:
-            new_data = self.data.copy()
+            new_data, new_images = self.data.copy()
         else:
             new_data = self.data
 
@@ -352,8 +353,6 @@ class FlashCard(models.Model):
 class FlashCardData(models.Model):
     fields = models.JSONField()  # list of two lists of Slate Nodes
     tags = models.CharField(default='', max_length=1024, blank=True)
-    front_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
-    back_image = models.ImageField(upload_to='uploads/', null=True, blank=True)
 
     EDITABLE_ATTRS = ('fields', 'tags', 'front_image', 'back_image')
 
@@ -362,26 +361,22 @@ class FlashCardData(models.Model):
     def __str__(self) -> str:
         return str(self.fields)
 
-    def copy(self) -> FlashCardData:
+    def copy(self) -> Tuple[FlashCardData, List[UploadedImage]]:
         new_data = FlashCardData(
             fields=self.fields,
             tags=self.tags,
             id=uuid.uuid4(),
         )
 
-        if self.front_image:
-            new_data.front_image = ContentFile(
-                self.front_image.read(),
-                name=f'{new_data.pk}-front',
+        new_images = [
+            ContentFile(
+                image.read(),
+                name=f'{new_data.pk}-{image.name.split("-")[-1]}',
             )
+            for image in self.images.all()
+        ]
 
-        if self.back_image:
-            new_data.back_image = ContentFile(
-                self.back_image.read(),
-                name=f'{new_data.pk}-back',
-            )
-
-        return new_data
+        return new_data, new_images
 
     def pull(self, other: FlashCardData, save: bool = False) -> FlashCardData:
         for attr in FlashCardData.EDITABLE_ATTRS:

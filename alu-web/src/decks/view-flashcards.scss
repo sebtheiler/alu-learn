@@ -27,22 +27,23 @@
   >.flashcard-body {
     >div {
       &.flashcard-field {
+        &.divider {
+          height: 100%;
+
+          @media (min-width: 767px) {
+            border-right: $grayBorder;
+          }
+          @media (max-width: 767px) {
+            border-bottom: $grayBorder;
+          }
+        }
+
         >.text {
           align-items: center;
           display: flex;
           justify-content: center;
           align-items: center;
 
-          &.divider {
-            height: 100%;
-
-            @media (min-width: 767px) {
-              border-right: $grayBorder;
-            }
-            @media (max-width: 767px) {
-              border-bottom: $grayBorder;
-            }
-          }
         }
 
         >.images >img {

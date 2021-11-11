@@ -28,11 +28,17 @@ export interface FlashCard {
   id: UUID;
 }
 
+export interface UploadedImage {
+  image: string;
+  description: string;
+  original_url: string;
+  id: number;
+}
+
 interface FlashCardData {
   fields: SlateNode[][];
   tags: string;
-  front_image?: string;
-  back_image?: string;
+  images: UploadedImage[];
   id: UUID;
 }
 

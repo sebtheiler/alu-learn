@@ -75,8 +75,8 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
       if (flashcard.data.fields.length > 1)
         setBackValue(flashcard.data.fields[1]);
 
-      setFrontSelectedImageUrl(flashcard.data?.front_image ?? '');
-      setBackSelectedImageUrl(flashcard.data?.back_image ?? '');
+      setFrontSelectedImageUrl(flashcard.data?.images[0]?.image ?? '');
+      setBackSelectedImageUrl(flashcard.data?.images[1]?.image ?? '');
       setFlashcardType(flashcard.flashcard_type);
     },
     !!flashcardId,
@@ -109,17 +109,29 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
     }
     setErrorMessage('');
 
-    let frontImage = (frontSelectedImageUrl && frontSelectedImageUrl !== flashcard?.data?.front_image)
+    let frontImage = (frontSelectedImageUrl && frontSelectedImageUrl !== flashcard?.data?.images[0]?.image)
       ? await fetch(frontSelectedImageUrl).then(r => r.blob())
       : null;
-    let backImage = (backSelectedImageUrl && backSelectedImageUrl !== flashcard?.data?.back_image)
+    let backImage = (backSelectedImageUrl && backSelectedImageUrl !== flashcard?.data?.images[1]?.image)
       ? await fetch(backSelectedImageUrl).then(r => r.blob())
       : null;
 
     const flashcardInfo = {
       fields: ONE_SIDED_CARDS.includes(flashcardType) ? [frontValue] : [frontValue, backValue],
-      front_image: frontImage ? await blob2base64(frontImage) : undefined,
-      back_image: backImage ? await blob2base64(backImage) : undefined,
+      images: [
+        frontImage ? {
+          base64: await blob2base64(frontImage),
+          description: 'Test description',
+          original_url: 'https://www.google.com/',
+          field_number: 0,
+        } : undefined,
+        backImage ? {
+          base64: await blob2base64(backImage),
+          description: 'Test description',
+          original_url: 'https://www.google.com/',
+          field_number: 1,
+        } : undefined,
+      ],
       tags: (document.getElementsByName('tags')[0] as HTMLFormElement)?.value ?? '',
     }
     if (flashcardId) {

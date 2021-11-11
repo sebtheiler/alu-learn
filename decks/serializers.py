@@ -1,3 +1,4 @@
+from pages.serializers import UploadedImageSerializer
 from profiles.serializers import MinifiedProfileSerializer
 from rest_framework import serializers
 from sharing_system.models import FlashCardAction
@@ -8,13 +9,14 @@ from .models import Deck, FlashCard, FlashCardData, ReviewInstance
 
 
 class FlashCardDataSerializer(serializers.ModelSerializer):
+    images = UploadedImageSerializer('images', many=True)
+
     class Meta:
         model = FlashCardData
         fields = (
             'fields',
             'tags',
-            'front_image',
-            'back_image',
+            'images',
             'id',
         )
 

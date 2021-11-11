@@ -1,10 +1,10 @@
 from django.contrib import admin
-from .models import ContactFeedback
+from .models import ContactFeedback, UploadedImage
 
 
-class IsLegalFilter(admin.SimpleListFilter): # https://timonweb.com/django/adding-custom-filters-to-django-admin-is-easy/
-    title = 'Is legal issue' # a label for our filter
-    parameter_name = 'is_legal' # you can put anything here
+class IsLegalFilter(admin.SimpleListFilter):
+    title = 'Is legal issue'
+    parameter_name = 'is_legal'
 
     def lookups(self, request, model_admin):
         # This is where you create filter options; we have two:
@@ -23,4 +23,16 @@ class ContactFeedbackAdmin(admin.ModelAdmin):
     readonly_fields = ('timestamp',)
     list_filter = (IsLegalFilter,)
 
+
+class UploadedImageAdmin(admin.ModelAdmin):
+    list_display = (
+        'image',
+        'description',
+        'original_url',
+        'timestamp',
+    )
+    ordering = ('-timestamp',)
+
+
 admin.site.register(ContactFeedback, ContactFeedbackAdmin)
+admin.site.register(UploadedImage, UploadedImageAdmin)

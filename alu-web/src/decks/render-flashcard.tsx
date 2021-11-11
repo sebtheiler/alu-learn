@@ -53,19 +53,19 @@ export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards 
           {flashcard.data?.fields?.map((field, i) =>
             <Col
               md={12/(flashcard.data?.fields?.length ?? 2)}
-              className='flashcard-field'
+              className={'flashcard-field' + (i !== (flashcard.data?.fields?.length ?? 2) - 1 ? ' divider' : '')}
               key={i}
             >
-              <div className={'text' + (i !== (flashcard.data?.fields?.length ?? 2) - 1 ? ' divider' : '')}>
+              <div className='text'>
                 <RenderRichText text={field} />
               </div>
               <div className='images'>
-                {i === 0 && flashcard.data?.front_image && <img
-                  src={flashcard.data?.front_image}
+                {i === 0 && flashcard.data?.images[0]?.image && <img
+                  src={flashcard.data?.images[0]?.image}
                   alt='Flashcard attached front'
                 />}
-                {i === 1 && flashcard.data?.back_image && <img
-                  src={flashcard.data?.back_image}
+                {i === 1 && flashcard.data?.images[1]?.image && <img
+                  src={flashcard.data?.images[1]?.image}
                   alt='Flashcard attached back'
                 />}
               </div>

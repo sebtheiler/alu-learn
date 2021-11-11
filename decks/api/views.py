@@ -8,6 +8,7 @@ from django.db.models import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from pages.models import UploadedImage
 from sharing_system.models import FlashCardAction
 from skill_tree.models import AbstractSection, SubSection
 from utils import (create_slate_element, get_morning,
@@ -295,6 +296,7 @@ def flashcard_create_view(request, *args, **kwargs):
 
     fields = request.data.get('fields')
     flashcard_type = request.data.get('flashcard_type', 'BASIC')
+    images = request.data.get('images')
     tags = request.data.get('tags', '')
     if fields is None:
         return Response({'message': '`fields` must not be None'}, status=400)
@@ -302,19 +304,27 @@ def flashcard_create_view(request, *args, **kwargs):
     # Create images
     data_uuid = uuid.uuid4()
 
-    if front_image_base64 := request.data.get('front_image'):
-        front_image = base64_to_file(front_image_base64, f'{data_uuid}-front')
-        if front_image.size > 1024_000:
-            return Response({'message': 'Front image too large'}, status=400)
-    else:
-        front_image = None
+    flashcard_images = []
+    if images:
+        for image in images:
+            if image is None:
+                continue
 
-    if back_image_base64 := request.data.get('back_image'):
-        back_image = base64_to_file(back_image_base64, f'{data_uuid}-back')
-        if back_image.size > 1024_000:
-            return Response({'message': 'Back image too large'}, status=400)
-    else:
-        back_image = None
+            field_number = image.get('field_number', 0)
+            content_file = base64_to_file(
+                image['base64'],
+                f'{data_uuid}-{field_number}',
+            )
+            if content_file.size > 1024_000:
+                return Response({'message': 'Front image too large'}, status=400)
+
+            flashcard_images.append(UploadedImage(
+                flashcard_data_id=data_uuid,
+                image=content_file,
+                description=image.get('description', ''),
+                original_url=image.get('original_url', ''),
+                field_number=field_number,
+            ))
 
     # Create flashcard
     flashcard, _ = FlashCard.create(
@@ -322,8 +332,7 @@ def flashcard_create_view(request, *args, **kwargs):
         tags=tags,
         flashcard_type=flashcard_type,
         fields=fields,
-        front_image=front_image,
-        back_image=back_image,
+        images=flashcard_images,
         data_uuid=data_uuid,
     )
 

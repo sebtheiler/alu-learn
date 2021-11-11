@@ -137,9 +137,9 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
               />
             </div>
           }
-          {reviewInstance.data?.front_image && <div className='image'>
+          {reviewInstance.data?.images[reviewInstance.content_indicies[0]]?.image && <div className='image'>
             <img
-              src={reviewInstance.data?.front_image}
+              src={reviewInstance.data?.images[reviewInstance.content_indicies[0]]?.image}
               alt='Flashcard attached front'
               className='flashcard-image'
             />
@@ -156,9 +156,9 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
               />
             </div>
           }
-          {reviewInstance.data?.back_image && <div className='image'>
+          {reviewInstance.data?.images[reviewInstance.content_indicies[1]]?.image && <div className='image'>
             <img
-              src={reviewInstance.data?.back_image}
+              src={reviewInstance.data?.images[reviewInstance.content_indicies[1]]?.image}
               alt='Flashcard attached back'
               className='flashcard-image'
             />
