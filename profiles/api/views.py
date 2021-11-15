@@ -344,7 +344,7 @@ def change_email(request, *args, **kwargs):
         # Send confirmation email
         subject = 'Change Email'
         message = f"""
-Look's like you want to change your email.
+Looks like you want to change your email.
 Here's a confirmation code, to make sure this email is really you: {confirmation_key}
 If this wasn't you, you can ignore this message, but please be aware someone may know your email.
         """

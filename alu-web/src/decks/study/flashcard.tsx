@@ -10,6 +10,7 @@ import { getMinNum } from './utils';
 import { range, RenderRichText } from '../../utils';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import './flashcard.scss';
+import { RenderFlashcardImage } from '../render-flashcard';
 
 interface ReviewInstanceStudyProps {
   reviewInstance: ReviewInstance;
@@ -137,13 +138,10 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
               />
             </div>
           }
-          {reviewInstance.data?.images[reviewInstance.content_indicies[0]]?.image && <div className='image'>
-            <img
-              src={reviewInstance.data?.images[reviewInstance.content_indicies[0]]?.image}
-              alt='Flashcard attached front'
-              className='flashcard-image'
-            />
-          </div>}
+          <RenderFlashcardImage
+            data={reviewInstance.data}
+            fieldNumber={reviewInstance.content_indicies[0]}
+          />
         </div>
         <div className='flashcard back'>
           {
@@ -156,13 +154,10 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
               />
             </div>
           }
-          {reviewInstance.data?.images[reviewInstance.content_indicies[1]]?.image && <div className='image'>
-            <img
-              src={reviewInstance.data?.images[reviewInstance.content_indicies[1]]?.image}
-              alt='Flashcard attached back'
-              className='flashcard-image'
-            />
-          </div>}
+          <RenderFlashcardImage
+            data={reviewInstance.data}
+            fieldNumber={reviewInstance.content_indicies[1]}
+          />
         </div>
       </div>
       <div className='other-study-els text-secondary text-center mb-1' id='study-flip-text'>

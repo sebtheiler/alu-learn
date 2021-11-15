@@ -32,10 +32,11 @@ export interface UploadedImage {
   image: string;
   description: string;
   original_url: string;
+  field_number: number;
   id: number;
 }
 
-interface FlashCardData {
+export interface FlashCardData {
   fields: SlateNode[][];
   tags: string;
   images: UploadedImage[];

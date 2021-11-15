@@ -56,7 +56,7 @@ export default function EditModal(props: EditModalProps) {
           >
             {deck.is_archived ? 'Unarchive' : 'Archive'}{' '}
             <QuestionBubble isWhite>
-              Archiving decks allows you to hide decks you are no longer using.
+              Archiving allows you to hide decks you are no longer using.
               They will still be accessible through your <a href='/profile/'>profile page</a>.
             </QuestionBubble>
           </LoadingButton>

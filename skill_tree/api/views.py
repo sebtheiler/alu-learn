@@ -109,31 +109,14 @@ def get_deck_sections_percent_complete(request, deck_id, *args, **kwargs):
 
     sections_percent_complete = [{
         'id': main_section.pk,
-        'percent_complete': None,  # main_section.get_percent_complete(),
-        'total_percent_complete': None,  # main_section.get_percent_complete(total=True),
+        'percent_complete': None,
+        'total_percent_complete': None,
         'sub_sections': [{
             'id': sub_section.pk,
             'percent_complete': sub_section_percent(sub_section),
             'total_percent_complete': sub_section.get_percent_complete(True, utc_timezone_offset),
         } for sub_section in main_section.sub_sections.all()]
     } for main_section in main_sections]
-
-    MainSection.objects.bulk_update(
-        main_sections,
-        (
-            'cached_percent_complete',
-            'cached_total_percent_complete',
-            'cached_percent_complete_time',
-        ),
-    )
-    SubSection.objects.bulk_update(
-        sub_sections,
-        (
-            'cached_percent_complete',
-            'cached_total_percent_complete',
-            'cached_percent_complete_time',
-        ),
-    )
 
     return Response(sections_percent_complete, status=200)
 

@@ -336,9 +336,7 @@ def flashcard_create_view(request, *args, **kwargs):
         data_uuid=data_uuid,
     )
 
-    # Clear sub section %-complete cache
-    sub_section.cached_percent_complete = None
-    sub_section.save()
+    sub_section.clear_cache()
 
     # Log the flashcard as being created (for sharing system)
     FlashCardAction.create_action(
@@ -377,6 +375,7 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
     edited_values = request.data.get('edited_values')
     data.tags = edited_values.get('tags', data.tags)
     new_fields = edited_values.get('fields')
+    images = edited_values.get('images')
 
     if new_fields is not None:
         data.fields = new_fields
@@ -419,17 +418,31 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
             ReviewInstance.objects.bulk_create(flashcards_to_create)
             review_instances.filter(id__in=flashcards_to_delete).delete()
 
-    if new_front_image_bs64 := edited_values.get('front_image'):
-        new_front_image = base64_to_file(new_front_image_bs64, f'{data.pk}-front')
-        if new_front_image != data.front_image:
-            data.front_image = new_front_image
+    # Update images
+    if images:
+        updated_images = []
 
-    if new_back_image_bs64 := edited_values.get('back_image'):
-        new_back_image = base64_to_file(new_back_image_bs64, f'{data.pk}-back')
-        if new_back_image != data.back_image:
-            data.back_image = new_back_image
+        for image in images:
+            if image is None:
+                continue
 
-    data.save()
+            field_number = image['field_number']
+
+            content_file = base64_to_file(
+                image['base64'],
+                f'{data.pk}-{field_number}',
+            )
+            db_image = data.images.get(field_number=field_number)
+            if db_image.image.size == content_file.size:
+                continue
+
+            db_image.image = content_file
+            db_image.description = image.get('description', db_image.description)
+            db_image.original_url = image.get('original_url', db_image.original_url)
+
+            updated_images.append(db_image)
+
+        UploadedImage.objects.bulk_update(updated_images, ('image', 'description', 'original_url'))
 
     # Log the flashcard as being edited (for sharing system)
     FlashCardAction.create_action('EDIT', flashcard)
@@ -728,15 +741,6 @@ def review_instance_update_view(request, review_instance_id) -> dict:
         time_taken=time_taken,
     )
 
-    sub_section = review_instance.flashcard.sub_section
-    if sub_section.cached_percent_complete is not None:
-        sub_section.cached_percent_complete = None
-        sub_section.cached_total_percent_complete = None
-        sub_section.save()
-
-        main_section = sub_section.main_section
-        main_section.cached_percent_complete = None
-        main_section.cached_total_percent_complete = None
-        main_section.save()
+    review_instance.flashcard.sub_section.clear_cache()
 
     return Response({'message': 'Updated review instance'}, status=200)

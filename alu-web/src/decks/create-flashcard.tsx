@@ -1,4 +1,4 @@
-import AddImageButton from './buttons/add-image';
+import AddImageButton, { SelectedImage } from './buttons/add-image';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Col from 'react-bootstrap/Col';
@@ -56,11 +56,11 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
 
   const frontEditor = useMemo<ReactEditor>(createFullEditor, []);
   const [frontValue, setFrontValue] = useState<SlateNode[]>(blankSlateElement)
-  const [frontSelectedImageUrl, setFrontSelectedImageUrl] = useState('');
+  const [frontSelectedImage, setFrontSelectedImage] = useState<SelectedImage>();
 
   const backEditor = useMemo<ReactEditor>(createFullEditor, []);
   const [backValue, setBackValue] = useState<SlateNode[]>(blankSlateElement)
-  const [backSelectedImageUrl, setBackSelectedImageUrl] = useState('');
+  const [backSelectedImage, setBackSelectedImage] = useState<SelectedImage>();
 
   const [flashcardType, setFlashcardType] = useState<FlashCardTypes>('BASIC');
   const [errorMessage, setErrorMessage] = useState('');
@@ -75,8 +75,18 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
       if (flashcard.data.fields.length > 1)
         setBackValue(flashcard.data.fields[1]);
 
-      setFrontSelectedImageUrl(flashcard.data?.images[0]?.image ?? '');
-      setBackSelectedImageUrl(flashcard.data?.images[1]?.image ?? '');
+      const frontImage = flashcard.data?.images.filter(img => img.field_number === 0)[0];
+      const backImage = flashcard.data?.images.filter(img => img.field_number === 1)[0];
+      setFrontSelectedImage(frontImage ? {
+        url: frontImage.image ?? '',
+        description: frontImage.description,
+        original_url: frontImage.original_url,
+      } : undefined);
+      setBackSelectedImage(backImage ? {
+        url: backImage.image ?? '',
+        description: backImage.description,
+        original_url: backImage.original_url,
+      } : undefined);
       setFlashcardType(flashcard.flashcard_type);
     },
     !!flashcardId,
@@ -89,8 +99,8 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
     switch (flashcardType) {
       case 'BASIC': case 'REVERSED':
         if (
-          (frontValue === blankSlateElement && frontSelectedImageUrl.length === 0) ||
-          (backValue === blankSlateElement && backSelectedImageUrl.length === 0)
+          (frontValue === blankSlateElement && frontSelectedImage) ||
+          (backValue === blankSlateElement && backSelectedImage)
         ) {
           setErrorMessage('The front and back of flashcards must not be empty');
           return;
@@ -109,29 +119,30 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
     }
     setErrorMessage('');
 
-    let frontImage = (frontSelectedImageUrl && frontSelectedImageUrl !== flashcard?.data?.images[0]?.image)
-      ? await fetch(frontSelectedImageUrl).then(r => r.blob())
+    const frontImage = (frontSelectedImage && frontSelectedImage.url !== flashcard?.data?.images[0]?.image)
+      ? await fetch(frontSelectedImage.url).then(r => r.blob())
       : null;
-    let backImage = (backSelectedImageUrl && backSelectedImageUrl !== flashcard?.data?.images[1]?.image)
-      ? await fetch(backSelectedImageUrl).then(r => r.blob())
+    const backImage = (backSelectedImage && backSelectedImage.url !== flashcard?.data?.images[1]?.image)
+      ? await fetch(backSelectedImage.url).then(r => r.blob())
       : null;
+    const images = [
+      frontImage ? {
+        base64: await blob2base64(frontImage),
+        description: frontSelectedImage!.description,
+        original_url: frontSelectedImage!.original_url,
+        field_number: 0,
+      } : undefined,
+      backImage ? {
+        base64: await blob2base64(backImage),
+        description: backSelectedImage!.description,
+        original_url: backSelectedImage!.original_url,
+        field_number: 1,
+      } : undefined,
+    ];
 
     const flashcardInfo = {
       fields: ONE_SIDED_CARDS.includes(flashcardType) ? [frontValue] : [frontValue, backValue],
-      images: [
-        frontImage ? {
-          base64: await blob2base64(frontImage),
-          description: 'Test description',
-          original_url: 'https://www.google.com/',
-          field_number: 0,
-        } : undefined,
-        backImage ? {
-          base64: await blob2base64(backImage),
-          description: 'Test description',
-          original_url: 'https://www.google.com/',
-          field_number: 1,
-        } : undefined,
-      ],
+      images: images,
       tags: (document.getElementsByName('tags')[0] as HTMLFormElement)?.value ?? '',
     }
     if (flashcardId) {
@@ -149,8 +160,8 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
         Transforms.select(backEditor, [0]);
         setFrontValue(blankSlateElement);
         setBackValue(blankSlateElement);
-        setFrontSelectedImageUrl('');
-        setBackSelectedImageUrl('');
+        setFrontSelectedImage(undefined);
+        setBackSelectedImage(undefined);
         setHistory([flashcard, ...history]);
   
         const flashcardTypeEl = document.getElementById('flashcardType');
@@ -204,8 +215,8 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
             </Col>
             <Col md={2} style={{ paddingBottom: '5px' }}>
               <AddImageButton
-                selectedImageUrl={frontSelectedImageUrl}
-                setSelectedImageUrl={setFrontSelectedImageUrl}
+                selectedImage={frontSelectedImage}
+                setSelectedImage={setFrontSelectedImage}
               />
             </Col>
           </Row>
@@ -225,8 +236,8 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
             </Col>
               <Col md={2} style={{ paddingBottom: '5px' }}>
                 <AddImageButton
-                  selectedImageUrl={backSelectedImageUrl}
-                  setSelectedImageUrl={setBackSelectedImageUrl}
+                  selectedImage={backSelectedImage}
+                  setSelectedImage={setBackSelectedImage}
                 />
               </Col>
             </Row>

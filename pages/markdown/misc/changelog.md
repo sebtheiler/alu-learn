@@ -1,3 +1,5 @@
+* **Fixed Percent Complete Caching:** Fixed a bug that caused percent complete caching to not be properly cleared
+
 ## Reversed Flashcards Hotfix - Nov 10 - 1.0.9
 * **Fixed Titles with Dashes:** You can now use dashes in titles for main sections and sub sections.
 * **Fixed Reversed Flashcards:** Fixed a bug that caused basic-and-reversed flashcards to only display in a single direction

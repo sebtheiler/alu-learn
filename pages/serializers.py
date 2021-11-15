@@ -9,5 +9,6 @@ class UploadedImageSerializer(serializers.ModelSerializer):
             'image',
             'description',
             'original_url',
+            'field_number',
             'id',
         )

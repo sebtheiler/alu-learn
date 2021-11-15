@@ -9,11 +9,17 @@ import { useMemo, useState } from 'react';
 
 type UploadType = 'URL' | 'FILE';
 const uploadTypes = ['URL', 'File'];
-interface AddImageButtonProps {
-  selectedImageUrl: string;
-  setSelectedImageUrl(url: string): void;
+export interface SelectedImage {
+  url: string;
+  description: string;
+  original_url: string;
 }
-export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }: AddImageButtonProps) {
+
+interface AddImageButtonProps {
+  selectedImage?: SelectedImage;
+  setSelectedImage(image: SelectedImage): void;
+}
+export default function AddImageButton({ selectedImage, setSelectedImage }: AddImageButtonProps) {
   const [addImageModalIsOpen, setAddImageModalIsOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [selectedUploadType, setSelectedUploadType] = useState<UploadType>('URL');
@@ -24,8 +30,16 @@ export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }
     if (file.size / 1024 > 1000) {
       setError(`Image must be smaller than 1000kb.  Your image is currently ${Math.floor(file.size / 1024)}kb Please reduce the size of your image.`);
     } else {
-      setSelectedImageUrl(url);
+      console.log(document.getElementsByName('imageDescription'))
+      console.log(document.getElementsByName('originalUrl'))
+      const image = {
+        url: url,
+        description: (document.getElementsByName('imageDescription')[0] as HTMLInputElement)?.value,
+        original_url: (document.getElementsByName('originalUrl')[0] as HTMLInputElement)?.value,
+      }
+      setSelectedImage(image);
       setError(undefined);
+      setImageUrl('');
     }
   }
 
@@ -50,20 +64,24 @@ export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }
 
   const uploadImage = async event => {
     event.preventDefault();
+    const image = {
+      url: selectedImage!.url,
+      description: (document.getElementsByName('imageDescription')[0] as HTMLInputElement)?.value,
+      original_url: (document.getElementsByName('originalUrl')[0] as HTMLInputElement)?.value,
+    }
+    setSelectedImage(image);
     setAddImageModalIsOpen(false);
   }
 
-  const imgEl = useMemo(() => {
-    return (<>
-      <img
-        id='uploaded-image-preview'
-        alt=''
-        className='w-100'
-        src={selectedImageUrl}
-      />
-      <p className='text-danger text-center' id='image-error'>{error}</p>
-    </>);
-  }, [selectedImageUrl, error]);
+  const imgEl = useMemo(() => (<>
+    <img
+      id='uploaded-image-preview'
+      alt=''
+      className='w-100'
+      src={selectedImage?.url}
+    />
+    <p className='text-danger text-center' id='image-error'>{error}</p>
+  </>), [selectedImage, error]);
 
   return (<>
     <div
@@ -75,12 +93,12 @@ export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }
         <p className='mb-0'>Add Image</p>
       </div>
       <div className='add-image-body'>
-        {!selectedImageUrl && <i className='fas fa-images fa-5x' />}
-        {selectedImageUrl && <img
+        {!selectedImage && <i className='fas fa-images fa-5x' />}
+        {selectedImage && <img
           id='attached-image'
           alt=''
           className='w-100'
-          src={selectedImageUrl}
+          src={selectedImage.url}
         />}
       </div>
     </div>
@@ -129,8 +147,28 @@ export default function AddImageButton({ selectedImageUrl, setSelectedImageUrl }
             />
             {imgEl}
           </Form.Group>}
+          {selectedImage && <>
+            <Form.Group>
+              <Form.Label>Description (optional)</Form.Label>
+              <Form.Control
+                type='text'
+                name='imageDescription'
+                defaultValue={selectedImage.description}
+                maxLength={512}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Original URL (optional)</Form.Label>
+              <Form.Control
+                type='text'
+                name='originalUrl'
+                defaultValue={selectedImage.original_url ?? imageUrl}
+                maxLength={512}
+              />
+            </Form.Group>
+          </>}
         </Modal.Body>
-        {selectedImageUrl && <Modal.Footer>
+        {selectedImage && <Modal.Footer>
           <LoadingButton
             clickFunc={uploadImage}
             type='submit'

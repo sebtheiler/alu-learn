@@ -4,9 +4,9 @@ import uuid
 from typing import Tuple, Union
 
 from django.apps import apps
+from django.core.cache import cache
 from django.db import models
 from django.db.models import Q
-from django.utils import timezone
 from utils import get_morning
 
 
@@ -76,13 +76,6 @@ class AbstractSection(models.Model):
     # === BASIC INFO ===
     order_num = models.PositiveSmallIntegerField()  # zero-indexed, for sorting
 
-    # === CACHES ===
-    # Calculating percent complete is expensive, so we cache it
-    # Cache is cleared when a flashcard is completed or when fetching and a day has passed
-    cached_percent_complete = models.FloatField(null=True, blank=True)
-    cached_total_percent_complete = models.FloatField(null=True, blank=True)
-    cached_percent_complete_time = models.DateTimeField(null=True, blank=True)
-
     # === OTHER ===
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -93,17 +86,27 @@ class AbstractSection(models.Model):
     def __str__(self) -> str:
         return self.data.title
 
-    def get_percent_complete(self, total: bool = False, utc_timezone_offset: int = 0) -> float:
-        day_changed = (
-            self.cached_percent_complete == 0 or  # can't go below 0
-            getattr(self.cached_percent_complete_time, 'day', 0) == timezone.now().day
+    def gen_cache_key(self, total=False):
+        return (
+            f'section_total_percent_complete__{self.pk}'
+            if total else
+            f'section_percent_complete__{self.pk}'
         )
-        if total:
-            if self.cached_total_percent_complete is not None and not day_changed:
-                return self.cached_total_percent_complete
-        else:
-            if self.cached_percent_complete is not None and not day_changed:
-                return self.cached_percent_complete
+
+    def clear_cache(self):
+        cache.delete(self.gen_cache_key(False))
+        cache.delete(self.gen_cache_key(True))
+
+    def get_percent_complete(
+        self,
+        total: bool = False,
+        utc_timezone_offset: int = 0,
+    ) -> float:
+        cache_key = self.gen_cache_key(total)
+        if total and (total_percent_complete := cache.get(cache_key)):
+            return total_percent_complete
+        elif percent_complete := cache.get(cache_key):
+            return percent_complete
 
         # Need this because of circular-import
         ReviewInstance = apps.get_model('decks', 'ReviewInstance')
@@ -116,11 +119,7 @@ class AbstractSection(models.Model):
         completed_num = ReviewInstance.objects.filter(query).count()
 
         percent_complete = round(completed_num / total_num, 2) if total_num else 0
-        if total:
-            self.cached_total_percent_complete = percent_complete
-        else:
-            self.cached_percent_complete = percent_complete
-        self.cached_percent_complete_time = timezone.now()
+        cache.set(cache_key, percent_complete, 60*60*12)
 
         return percent_complete
 

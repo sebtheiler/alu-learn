@@ -1,9 +1,10 @@
 import Col from 'react-bootstrap/Col';
 import IconTooltip from './buttons/IconTooltip';
 import Row from 'react-bootstrap/Row';
-import { FlashCard } from './types';
+import { FlashCard, FlashCardData } from './types';
 import { RenderRichText } from '../utils';
 import { apiObjectDelete } from '../lookup/lookup';
+import { useMemo } from 'react';
 
 // TODO: put this in a separate file
 export type FlashCardEvent =
@@ -60,14 +61,8 @@ export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards 
                 <RenderRichText text={field} />
               </div>
               <div className='images'>
-                {i === 0 && flashcard.data?.images[0]?.image && <img
-                  src={flashcard.data?.images[0]?.image}
-                  alt='Flashcard attached front'
-                />}
-                {i === 1 && flashcard.data?.images[1]?.image && <img
-                  src={flashcard.data?.images[1]?.image}
-                  alt='Flashcard attached back'
-                />}
+                {i === 0 && <RenderFlashcardImage data={flashcard.data} fieldNumber={0} />}
+                {i === 1 && <RenderFlashcardImage data={flashcard.data} fieldNumber={1} />}
               </div>
             </Col>
           )}
@@ -75,4 +70,33 @@ export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards 
       </div>
     </div>
   );
+}
+
+export function RenderFlashcardImage({ data, fieldNumber }: { data?: FlashCardData, fieldNumber: number }) {
+  const img = useMemo(
+    () => data?.images.filter(img => img.field_number === fieldNumber)[0],
+    [data, fieldNumber],
+  );
+
+  if (!img) return null;
+  return (<div className='image mb-2'>
+    <img
+      src={img.image}
+      alt={`Flashcard attached ${fieldNumber}`}
+    />
+    <p className='w-100 text-center'>
+      <small className='text-secondary'>
+        {img.original_url
+          ? <a
+              href={img.original_url}
+              target='_blank' rel='noreferrer'
+              onClick={e => e.stopPropagation()}
+            >
+              {img.description}
+            </a>
+          : img.description
+        }
+      </small>
+    </p>
+  </div>);
 }
