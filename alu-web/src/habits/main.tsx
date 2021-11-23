@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import { Habit, Routine } from './types';
 import { CreateRoutineButton } from './buttons';
-import { getCookie, setCookie, useApiObjectHook } from '../utils';
-import { SetupTutorial, SlidesPlayer } from './tutorials';
-import { apiRoutineList } from '../lookup';
+import { Habit, Routine } from './types';
 import { RenderRoutine } from './routine';
+import { SetupTutorial, SlidesPlayer } from './tutorials';
 import { TodoList } from './todo';
-import './main.css';
+import { apiRoutineList } from '../lookup';
+import { getCookie, setCookie, useApiObjectHook } from '../utils';
+import { useState } from 'react';
+import './main.scss';
 
 
 export default function Habits() {

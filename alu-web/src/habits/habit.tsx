@@ -1,4 +1,3 @@
-import React, { useMemo, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Card from 'react-bootstrap/Card';
@@ -8,8 +7,10 @@ import Row from 'react-bootstrap/Row';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import { Habit, HabitValue, Routine, ShowOptions, EditHabitOptions } from './types';
 import { HabitBottomButtonGroup, HabitTopButtonGroup } from './buttons';
-import { errorHandler, QuestionBubble, stringDate } from '../utils';
 import { apiHabitEdit } from '../lookup';
+import { errorHandler, QuestionBubble, stringDate } from '../utils';
+import { useMemo, useState } from 'react';
+import './main.scss';
 
 
 interface RenderHabitProps {
@@ -33,7 +34,7 @@ export function RenderHabit(props: RenderHabitProps) {
         return 'primary';
     }
   }, [habit]);
-  const streak = useMemo(() => {
+  const [streak, hasDoneToday] = useMemo(() => {
     const sorted = habit.history.sort((a, b) =>
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
@@ -47,7 +48,7 @@ export function RenderHabit(props: RenderHabitProps) {
         sorted[0].date !== stringDate(yesterday)
       )
     )
-      return 0;
+      return [0, false];
     
     let streak = 1;  // initialized to 1 because we know the
                      // user did the habit in the last day or so
@@ -65,8 +66,8 @@ export function RenderHabit(props: RenderHabitProps) {
         break;
       }
     }
-    
-    return streak;
+
+    return [streak, sorted[0].done];
   }, [habit]);
 
   const editHabit = (options: EditHabitOptions) => {
@@ -113,6 +114,12 @@ export function RenderHabit(props: RenderHabitProps) {
         onClick={e => {if (e.target === e.currentTarget) setShowBody(!showBody)}}
         role='button'
       >
+        {/* {show.includes('OTHER') && <span className='habit-streak'> */}
+        {<span className='habit-streak'>
+          <span className={'streak-number' + (hasDoneToday ? ' done-today' : ' not-done-today')}>
+            {streak}
+          </span>
+        </span>}
         {habit.title}
         {show.includes('BUTTONS') && <HabitTopButtonGroup
           habit={habit}

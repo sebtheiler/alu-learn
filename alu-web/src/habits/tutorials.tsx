@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import { CreateHabitButton } from './buttons';
-import { Routine, Habit } from './types';
+import { Form } from 'react-bootstrap';
 import { FormCheckbox } from '../utils';
 import { RenderHabit } from './habit';
-import { Form } from 'react-bootstrap';
-import './main.css';
+import { Routine, Habit } from './types';
+import { useState } from 'react';
+import './main.scss';
 
 const introSlides = [
   (<>

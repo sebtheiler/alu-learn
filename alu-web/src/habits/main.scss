@@ -1,0 +1,38 @@
+@import '../decks/shared';
+
+.underline-on-hover:hover {
+  text-decoration: underline;
+}
+
+.centered-list {
+  display: table;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.todo-element {
+  cursor: pointer;
+}
+
+.todo-completed {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.habit-streak {
+  margin-left: 15px;
+  margin-right: 10px;
+  padding: 5px;
+
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+
+  >.streak-number {
+    transform: translate(-20px, 2px);
+    color: white;
+
+    &.not-done-today { background: $unlitBackground; }
+    &.done-today { background: $litBackground; }
+  }
+}

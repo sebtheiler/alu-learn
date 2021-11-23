@@ -1,11 +1,10 @@
-import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import { Todo } from './types';
 import { apiTodoCreate, apiTodoList, apiTodoDelete, apiTodoComplete } from '../lookup';
 import { errorHandler, useApiObjectHook, FormCheckbox } from '../utils';
-import './main.css';
+import './main.scss';
 
 
 export function TodoList() {
