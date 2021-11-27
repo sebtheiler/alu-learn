@@ -1,4 +1,7 @@
+import os
+
 from django.db import models
+from django.db.models.signals import post_delete
 
 
 class ContactFeedback(models.Model):
@@ -38,3 +41,13 @@ class UploadedImage(models.Model):
 
     def __str__(self) -> str:
         return self.image.name
+
+
+# Deletes file from filesystem when corresponding `UploadedImage` object is deleted
+# Adapted from https://stackoverflow.com/a/16041527/10226703
+def auto_delete_file_on_delete(sender, instance, **kwargs):
+    if os.path.isfile(instance.image.path):
+        os.remove(instance.image.path)
+
+
+post_delete.connect(auto_delete_file_on_delete, sender=UploadedImage)

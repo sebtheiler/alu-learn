@@ -114,8 +114,7 @@ export function RenderHabit(props: RenderHabitProps) {
         onClick={e => {if (e.target === e.currentTarget) setShowBody(!showBody)}}
         role='button'
       >
-        {/* {show.includes('OTHER') && <span className='habit-streak'> */}
-        {<span className='habit-streak'>
+        {show.includes('OTHER') && <span className='habit-streak'>
           <span className={'streak-number' + (hasDoneToday ? ' done-today' : ' not-done-today')}>
             {streak}
           </span>

@@ -1,14 +1,15 @@
 import json
+import os
 import random
 import re
 import uuid
 from typing import List
 
 from django.db.models import Q
+from pages.models import UploadedImage
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from pages.models import UploadedImage
 from sharing_system.models import FlashCardAction
 from skill_tree.models import AbstractSection, SubSection
 from utils import (create_slate_element, get_morning,
@@ -16,7 +17,8 @@ from utils import (create_slate_element, get_morning,
 from utils.api_utils import get_obj_or_404
 from utils.utils import assert_dict_data_type, base64_to_file
 
-from ..models import Deck, FlashCard, FlashCardData, ReviewInstance, ReviewInstanceHistory
+from ..models import (Deck, FlashCard, FlashCardData, ReviewInstance,
+                      ReviewInstanceHistory)
 from ..serializers import (DeckSerializer, FlashCardSerializer,
                            ReviewInstanceSerializer)
 
@@ -420,31 +422,47 @@ def flashcard_edit_view(request, flashcard_id, *args, **kwargs):
 
     # Update images
     if images:
-        updated_images = []
-
         for image in images:
             if image is None:
                 continue
 
-            field_number = image['field_number']
+            field_number = image.get('field_number', 0)
 
             content_file = base64_to_file(
                 image['base64'],
                 f'{data.pk}-{field_number}',
             )
-            db_image = data.images.get(field_number=field_number)
-            if db_image.image.size == content_file.size:
+
+            if content_file.size > 1024_000:
                 continue
 
-            db_image.image = content_file
-            db_image.description = image.get('description', db_image.description)
-            db_image.original_url = image.get('original_url', db_image.original_url)
+            try:
+                db_image = data.images.get(field_number=field_number)
+                description = image.get('description', db_image.description)
+                original_url = image.get('original_url', db_image.original_url)
 
-            updated_images.append(db_image)
+                db_image.description = description
+                db_image.original_url = original_url
 
-        UploadedImage.objects.bulk_update(updated_images, ('image', 'description', 'original_url'))
+                if not db_image.image or db_image.image.size != content_file.size:
+                    if os.path.isfile(db_image.image.path):
+                        os.remove(db_image.image.path)
 
-    # Log the flashcard as being edited (for sharing system)
+                    db_image.image = content_file
+
+                # NOTE: doing this in bulk doesn't work because it's harder to delete images
+                db_image.save()
+            except UploadedImage.DoesNotExist:
+                UploadedImage.objects.create(
+                    flashcard_data=data,
+                    image=content_file,
+                    description=image.get('description'),
+                    original_url=image.get('original_url'),
+                    field_number=field_number,
+                )
+
+    # Save the flashcard, and log the flashcard as being edited (for sharing system)
+    data.save()
     FlashCardAction.create_action('EDIT', flashcard)
 
     return Response(FlashCardSerializer(instance=flashcard).data, 200)

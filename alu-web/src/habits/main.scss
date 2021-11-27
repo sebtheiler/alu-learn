@@ -30,9 +30,15 @@
 
   >.streak-number {
     transform: translate(-20px, 2px);
-    color: white;
+    // color: white;
 
-    &.not-done-today { background: $unlitBackground; }
-    &.done-today { background: $litBackground; }
+    &.not-done-today {
+      color: black;
+      background: $unlitBackground;
+    }
+    &.done-today {
+      color: white;
+      background: $litBackground;
+    }
   }
 }

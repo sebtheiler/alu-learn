@@ -2,7 +2,6 @@ from __future__ import \
     annotations  # TODO: remove this when we upgrade to python 3.10 (and Union and others)
 
 import json
-import os
 import re
 import uuid
 from typing import Dict, List, Literal, Tuple, Union
@@ -15,7 +14,7 @@ from django.db import models
 from django.db.models.aggregates import Avg
 from django.db.models.query import QuerySet
 from django.db.models.query_utils import Q
-from django.db.models.signals import post_delete, post_save, pre_save
+from django.db.models.signals import post_save
 from django.utils import timezone
 from pages.models import UploadedImage
 from skill_tree.models import MainSection, SectionData, SubSection
@@ -354,7 +353,7 @@ class FlashCardData(models.Model):
     fields = models.JSONField()  # list of two lists of Slate Nodes
     tags = models.CharField(default='', max_length=1024, blank=True)
 
-    EDITABLE_ATTRS = ('fields', 'tags', 'front_image', 'back_image')
+    EDITABLE_ATTRS = ('fields', 'tags')
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -699,56 +698,5 @@ def main_section_saved(sender, instance, created, **kwargs):
         )
 
 
-# Adapted from https://stackoverflow.com/a/16041527/10226703
-def auto_delete_file_on_delete(sender, instance, **kwargs):
-    """
-    Deletes file from filesystem
-    when corresponding `FlashCardData` object is deleted.
-    """
-    if instance.front_image:
-        if os.path.isfile(instance.front_image.path):
-            os.remove(instance.front_image.path)
-
-    if instance.back_image:
-        if os.path.isfile(instance.back_image.path):
-            os.remove(instance.back_image.path)
-
-
-# Adapted from https://stackoverflow.com/a/16041527/10226703
-def auto_delete_file_on_change(sender, instance, **kwargs):
-    """
-    Deletes old file from filesystem
-    when corresponding `FlashCardData` object is updated
-    with new file.
-    """
-    if not instance.pk:
-        return False
-
-    try:
-        fc_data = FlashCardData.objects.get(pk=instance.pk)
-    except FlashCardData.DoesNotExist:
-        return False
-
-    old_front_image = fc_data.front_image
-    new_front_image = instance.front_image
-    if (
-        old_front_image and
-        old_front_image != new_front_image and
-        os.path.isfile(old_front_image.path)
-    ):
-        os.remove(old_front_image.path)
-
-    old_back_image = fc_data.back_image
-    new_back_image = instance.back_image
-    if (
-        old_back_image and
-        old_back_image != new_back_image and
-        os.path.isfile(old_back_image.path)
-    ):
-        os.remove(old_back_image.path)
-
-
 post_save.connect(deck_saved, sender=Deck)
 post_save.connect(main_section_saved, sender=MainSection)
-post_delete.connect(auto_delete_file_on_delete, sender=FlashCardData)
-pre_save.connect(auto_delete_file_on_change, sender=FlashCardData)

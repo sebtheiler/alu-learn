@@ -119,12 +119,8 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
     }
     setErrorMessage('');
 
-    const frontImage = (frontSelectedImage && frontSelectedImage.url !== flashcard?.data?.images[0]?.image)
-      ? await fetch(frontSelectedImage.url).then(r => r.blob())
-      : null;
-    const backImage = (backSelectedImage && backSelectedImage.url !== flashcard?.data?.images[1]?.image)
-      ? await fetch(backSelectedImage.url).then(r => r.blob())
-      : null;
+    const frontImage = frontSelectedImage && await fetch(frontSelectedImage.url).then(r => r.blob());
+    const backImage = backSelectedImage && await fetch(backSelectedImage.url).then(r => r.blob());
     const images = [
       frontImage ? {
         base64: await blob2base64(frontImage),
