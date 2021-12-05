@@ -38,7 +38,7 @@ export default function LandingComponent({ showLoginRequired, returnUrl }: Landi
             src='/static/images/spaced-repetition.png'
             alt='Graph depicting how memory decays over time, and how spaced repetition can be used to combat that'
             className='w-100'
-            />
+          />
           <div className='text-center'>
             <small className='text-secondary'>Spaced repetition stops you from forgetting information as fast</small>
           </div>
@@ -50,7 +50,7 @@ export default function LandingComponent({ showLoginRequired, returnUrl }: Landi
             src='/static/images/global-sharing-system.png'
             alt="Illustration of Alu's sharing system, and how people from around the world can contribute to a deck"
             className='w-100'
-            />
+          />
         </Col>
         <Col md={6}>
           <h2>Global Sharing System</h2>
@@ -69,7 +69,7 @@ export default function LandingComponent({ showLoginRequired, returnUrl }: Landi
             src='/static/images/skill-tree.png'
             alt='Illustration of an example skill tree'
             className='w-100'
-            />
+          />
         </Col>
       </Row>
       <hr />

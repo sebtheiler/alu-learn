@@ -180,6 +180,18 @@ def deck_txt_import_view(request, *args, **kwargs):
     split_lines = uploaded_file.split('\n')
     front_and_back = [line.split('\t') for line in split_lines if line]
 
+    # Concatenate 1-tab lines to the previous card
+    # (Quizlet stupidly splits flashcards with returns into multiple lines rather
+    # than escaping with \n)
+    front_and_back = []
+    for line in split_lines:
+        if line:
+            split = line.split('\t')
+            if len(split) == 1:
+                front_and_back[-1][1] += f'\n{line}'
+            else:
+                front_and_back.append(split)
+
     # Get/create deck with given title
     deck = Deck.objects.create(
         user=request.user,
@@ -191,12 +203,12 @@ def deck_txt_import_view(request, *args, **kwargs):
     # Create flashcards
     flashcards = []
     flashcards_data = []
-    for i in range(len(front_and_back)):
+    for i, el in enumerate(front_and_back):
         flashcard_data = FlashCardData(
             tags='',
             fields=[
-                create_slate_element(front_and_back[i][0]),
-                create_slate_element(front_and_back[i][1]),
+                create_slate_element(el[0]),
+                create_slate_element(el[1]),
             ],
             pk=uuid.uuid4(),
         )

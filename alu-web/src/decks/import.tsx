@@ -21,7 +21,7 @@ export default function DeckImportComponent() {
     const apiImport = (textData: string) => {
       const callback = (response: Deck, status: number) => {
         if (status === 201) {
-          window.location.href = `/decks/${response.id}/flashcards/`;
+          window.location.href = `/deck/${response.id}/`;
         } else {
           // Error importing deck
           errorHandler(response, status, 1013);
@@ -146,6 +146,11 @@ export default function DeckImportComponent() {
           <li>Paste the study set into the "Or Copy-Paste the Text Directly" section</li>
           <li>Click "Import!"</li>
         </ol>
+        <p>Example:</p>
+        <video width='100%' height='100%' controls>
+          <source src='/static/images/import-from-quizlet.mp4' type='video/mp4' />
+          Your browser does not support the video tag.
+        </video>
       </div>}
       {uploadType === 'APKG' && <>
         <p>

@@ -1,6 +1,11 @@
+## Still Getting There - Dec 05 - 1.0.8
+I promise we're getting closer to launch this time.  Close now.  For real.
+
+
 * **Fixed Percent Complete Caching:** Fixed a bug that caused percent complete caching to not be properly cleared
 * **Added Image Descriptions & Original URLs:** Added an optional field to add descriptions for images and their original URLs.  This is useful for adding clarification, and for legal copyright purposes.
 * **Shuffled Flashcard Order:** Shuffled the order of flashcards when studying to avoid repeats
+* **Improved Quizlet Importing:** Improved Quizlet import to allow for flashcards with multiple lines (Quizlet _oddly_ exports flashcards with return-breaks as multiple lines rather than escaping the character with `\n`).  Also added a short demonstration video.
 
 ## Reversed Flashcards Hotfix - Nov 10 - 1.0.9
 * **Fixed Titles with Dashes:** You can now use dashes in titles for main sections and sub sections.
