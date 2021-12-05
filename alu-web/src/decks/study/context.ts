@@ -18,29 +18,33 @@ export const studyAnswerReducer = (
   event: StudyAnswerEvent,
 ): ReviewInstanceStudy | undefined => {
   if (!state) return;
+  let newState = state;
+
   switch (event.action) {
     case 'STUDY_REVIEW_INSTANCE':
+      // Shuffle the review instances so that cards with the same date are in random order
+      newState.due_for_review = newState.due_for_review.sort(() => 0.5 - Math.random());
+
+      // Sort them by next review, earliest first
+      newState.due_for_review = newState.due_for_review.sort(
+        (a, b) => new Date(a.next_review).getTime() - new Date(b.next_review).getTime(),
+      );
+
       // If the interval is greater than review ahead minutes, remove the review instance from rotation
       if (dateDiff(
         event.interval.last_review,
         event.interval.next_review,
         1000*60,
       ) > REVIEW_AHEAD_MINUTES)
-        return { ...state, due_for_review: state.due_for_review.filter(ri => ri.id !== event.id) };
+        return { ...state, due_for_review: newState.due_for_review.filter(ri => ri.id !== event.id) };
 
       // Get index of reviewed review instance
       const index = state.due_for_review.map(ri => ri.id).indexOf(event.id);
 
       // Make updates to the local review instance
-      let newState = state;
       for (const [attr, val] of Object.entries(event.interval))
         if (!['message', 'is_minute'].includes(attr))
           newState.due_for_review[index][attr] = val;
-
-      // Sort flashcards by next review, earliest first
-      newState.due_for_review = newState.due_for_review.sort((a, b) =>
-        new Date(a.next_review).getTime() - new Date(b.next_review).getTime()
-      );
 
       // Don't show same card twice in a row
       if (

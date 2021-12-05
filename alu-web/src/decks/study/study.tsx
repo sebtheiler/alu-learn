@@ -11,9 +11,7 @@ export default function StudySkillTree({ deckId, section }: { deckId: string, se
 
     return studyAhead ?? false;
   }, []);
-  const [studyData, dispatchStudyData] = useAsyncDispatch<
-    ReviewInstanceStudy, StudyAnswerEvent
-  >(
+  const [studyData, dispatchStudyData] = useAsyncDispatch<ReviewInstanceStudy, StudyAnswerEvent>(
     apiReviewInstanceStudy,
     [parseInt(deckId), section, studyAhead],
     studyAnswerReducer,

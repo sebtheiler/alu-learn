@@ -1,4 +1,6 @@
 * **Fixed Percent Complete Caching:** Fixed a bug that caused percent complete caching to not be properly cleared
+* **Added Image Descriptions & Original URLs:** Added an optional field to add descriptions for images and their original URLs.  This is useful for adding clarification, and for legal copyright purposes.
+* **Shuffled Flashcard Order:** Shuffled the order of flashcards when studying to avoid repeats
 
 ## Reversed Flashcards Hotfix - Nov 10 - 1.0.9
 * **Fixed Titles with Dashes:** You can now use dashes in titles for main sections and sub sections.
