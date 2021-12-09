@@ -369,8 +369,8 @@ class FlashCardData(models.Model):
 
         new_images = [
             ContentFile(
-                image.read(),
-                name=f'{new_data.pk}-{image.name.split("-")[-1]}',
+                image.image.read(),
+                name=f'{new_data.pk}-{image.image.name.split("-")[-1]}',
             )
             for image in self.images.all()
         ]

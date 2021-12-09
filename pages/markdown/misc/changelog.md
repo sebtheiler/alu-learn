@@ -1,4 +1,10 @@
-## Still Getting There - Dec 05 - 1.0.8
+## Shared Deck Hotfix - Dec 08 - 1.0.11
+Quick hotfix for shared decks.
+
+* **Fixed Image Sharing in Flashcards:** Fixed a bug that caused sharing a deck to fail if flashcards contained images
+* **Fixed Friends Sharing Setting:** Fixed a bug that caused sharing a deck with friends to not allow the owner themselves to edit the deck
+
+## Still Getting There - Dec 05 - 1.0.10
 I promise we're getting closer to launch this time.  Close now.  For real.
 
 

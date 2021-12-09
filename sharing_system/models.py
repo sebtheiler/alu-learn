@@ -73,10 +73,13 @@ class SharedDeck(models.Model):
         if self.edit_access == 'PERSONAL':
             return self.owners.filter(pk=author_pk).exists()
         elif self.edit_access == 'FRIENDS':
-            return Profile.objects.filter(
-                friends__in=User.objects.filter(profile__in=self.owners.all()),
-                pk=author_pk,
-            ).exists()
+            return (
+                self.owners.filter(pk=author_pk).exists() or
+                Profile.objects.filter(
+                    friends__in=User.objects.filter(profile__in=self.owners.all()),
+                    pk=author_pk,
+                ).exists()
+            )
         elif self.edit_access == 'STUDENT':
             raise NotImplementedError('TODO: ')
         elif self.edit_access == 'PUBLIC':
