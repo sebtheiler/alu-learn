@@ -67,7 +67,17 @@ export function RenderHabit(props: RenderHabitProps) {
       }
     }
 
-    return [streak, sorted[0].done];
+    // Latest date is done and the same date as today
+    const hasDoneToday = (
+      sorted[0].done &&
+      (
+        new Date(sorted[0].date).toISOString().slice(0, 10)
+        ===
+        new Date().toISOString().slice(0, 10)
+      )
+    );
+
+    return [streak, hasDoneToday];
   }, [habit]);
 
   const editHabit = (options: EditHabitOptions) => {
@@ -115,7 +125,13 @@ export function RenderHabit(props: RenderHabitProps) {
         role='button'
       >
         {show.includes('OTHER') && <span className='habit-streak'>
-          <span className={'streak-number' + (hasDoneToday ? ' done-today' : ' not-done-today')}>
+          <span
+            className={
+              'streak-number'
+              + (hasDoneToday ? ' done-today' : ' not-done-today')  // change color if the habit has been done today
+              + (habit.value === 'NEUTRAL' ? ' placeholder' : '')  // don't show if the habit is neutral, but keep the spacing
+            }
+          >
             {streak}
           </span>
         </span>}

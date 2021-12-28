@@ -30,7 +30,6 @@
 
   >.streak-number {
     transform: translate(-20px, 2px);
-    // color: white;
 
     &.not-done-today {
       color: black;
@@ -39,6 +38,12 @@
     &.done-today {
       color: white;
       background: $litBackground;
+    }
+
+    // Don't show the streak if the habit is neutral, but keep the spacing
+    &.placeholder {
+      color: rgba(0, 0, 0, 0);
+      background: rgba(0, 0, 0, 0);
     }
   }
 }

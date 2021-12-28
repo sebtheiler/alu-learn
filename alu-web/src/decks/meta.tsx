@@ -16,3 +16,4 @@ export default function Meta({ isTeacher }: { isTeacher: boolean }) {
     {/* TODO: AD */}
   </>)
 }
+
