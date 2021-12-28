@@ -4,7 +4,6 @@ import requests
 from django.conf import settings
 from django.core.cache import cache
 from django.core.mail import mail_admins
-from django.db.models.aggregates import Count
 from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -65,6 +64,7 @@ def update_settings_api_view(request, *args, **kwargs):
             `user_type`: TEACHER or STUDENT
             `target_num_cards`: The goal number of cards the student wants to do
             `send_reminders`: Bool of whether to send email reminders
+            `timezone`: Integer of timezone offset (GMT-5=300)
     """
     settings = request.data.get('settings')
     if settings is None:
@@ -78,6 +78,8 @@ def update_settings_api_view(request, *args, **kwargs):
         settings.get('send_reminders', request.user.profile.settings.send_reminders)
     request.user.profile.settings.is_opted_dev = \
         settings.get('is_opted_dev', request.user.profile.settings.is_opted_dev)
+    request.user.profile.settings.timezone = \
+        settings.get('timezone', request.user.profile.settings.timezone)
 
     request.user.profile.settings.save()
     return Response({'message': 'Updated account settings'}, status=200)

@@ -1,6 +1,7 @@
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
+import TZSelect from '../../utils/timezone';
 import { Profile } from '../../profiles/types';
 import { UserLink } from '../../profiles';
 import { apiProfileDetail, apiProfileSettingsUpdate } from '../../lookup';
@@ -17,10 +18,11 @@ export function SettingsPage({ username }) {
 
     apiProfileSettingsUpdate(
       {
-        send_reminders: form.elements.sendReminders?.checked,
-        user_type: form.elements.userType?.value,
-        target_num_cards: form.elements.targetNumCards?.value,
-        is_opted_dev: form.elements.isOptedDev?.checked,
+        send_reminders: form.elements.sendReminders.checked,
+        user_type: form.elements.userType.value,
+        target_num_cards: form.elements.targetNumCards.value,
+        is_opted_dev: form.elements.isOptedDev.checked,
+        timezone: form.elements.timezone.value,
       },
       (response, status) => {
         if (status === 200) {
@@ -87,16 +89,10 @@ export function SettingsPage({ username }) {
           <option value='MIXED'>Mixed (can create and join classrooms)</option>
         </Form.Control>
       </Form.Group>
-      {/* <Form.Group>
-        <FormCheckbox name='isOptedDev' defaultChecked={profile.settings.is_opted_dev}>
-          Opt into development features{' '}
-          <QuestionBubble>
-            If checked, you will be allowed to access feature still in development.
-            These features are the latest Alu offers, but may be unstable.
-            No guarantee is made about the stability or safety of development features.
-          </QuestionBubble>
-        </FormCheckbox>
-      </Form.Group> */}
+      <Form.Group>
+        <Form.Label>Timezone (for resetting flashcards daily)</Form.Label>
+        <TZSelect />
+      </Form.Group>
       <Form.Group>
         <Button type='submit' id='save-changes-btn' block>
           Save Changes

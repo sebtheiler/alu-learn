@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import { apiProfileSettingsUpdate } from '../lookup';
 import { errorHandler } from '../utils';
 import { useState } from 'react';
+import TZSelect from '../utils/timezone';
 
 
 export default function UserCustomization() {
@@ -33,15 +34,19 @@ export default function UserCustomization() {
         });
         break;
       case 2:
-        const newAnswers = {
+        setAnswers({
           ...answers,
           send_reminders: event.target.reminders.value === 'YES',
-        }; // need this because state update doesn't happen until after the API call below is ran
+        });
+        break;
+      case 3:
+        const newAnswers = {
+          ...answers,
+          timezone: event.target.timezone.value,
+        };
         setAnswers(newAnswers);
         apiProfileSettingsUpdate(newAnswers, (response, status) => {
-          if (status === 200) {
-            // pass
-          } else {
+          if (status !== 200) {
             // Error setting user preferences
             errorHandler(response, status, 3021);
           }
@@ -93,6 +98,10 @@ export default function UserCustomization() {
         <option value='YES'>Yes, send me reminder emails</option>
         <option value='NO'>No, I'm not interested in reminder emails</option>
       </Form.Control>
+    </>),
+    (<>
+      <p>What timezone are you in?</p>
+      <TZSelect />
     </>),
   ]
 

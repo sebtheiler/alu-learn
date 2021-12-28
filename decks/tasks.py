@@ -10,35 +10,34 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from profiles.models import Profile
 
+every_hour = ','.join(str(i) for i in range(24))  # 0,1,2,3,...,23
 
-@shared_task
-def midnight_reset():
-    # Break the streaks of users who haven't studied today
+
+# === Reset streaks and send reminder emails for every timezone ===
+def reset_streaks(midnight_for):
+    # Break the streaks of users in the TZ who haven't studied today
     not_studied_profiles = Profile.objects.filter(
         has_done_work_today=False,
         streak_freeze_expires__lt=timezone.now(),
+        settings__timezone=midnight_for,
     )
     not_studied_profiles.update(current_streak=0)
 
-    # Reset all users to not having studied
-    Profile.objects.update(has_done_work_today=False)
-
-    # Backup the server
-    filepath = f'{settings.DB_BACKUP_DIR}/{dt.datetime.now().strftime("%Y-%m-%d")}.sql'
-    os.system(f'pg_dump alu > "{filepath}"')
-
-
-@periodic_task(run_every=crontab(minute=0, hour=4))
-def run_midnight_reset():
-    midnight_reset.delay()
+    # Reset all users in TZ to not having studied
+    Profile.objects.filter(
+        settings__timezone=midnight_for,
+    ).update(
+        has_done_work_today=False,
+    )
 
 
-@shared_task
-def email_reminder():
+def send_email_reminders(email_for):
     users_to_notify = Profile.objects.filter(
         has_done_work_today=False,
         current_streak__gt=0,
         settings__send_reminders=True,
+        streak_freeze_expires__lt=timezone.now(),
+        settings__timezone=email_for,
     )
 
     connection = mail.get_connection()
@@ -49,7 +48,7 @@ def email_reminder():
         name = user.user.first_name
 
         non_html_email_client_message = f"""
-Hello {name},
+Hi {name},
 
 You're on a {streak} day streak.
 Study at Alu today to make it {streak + 1}!  You got this!
@@ -78,6 +77,28 @@ https://www.alulearn.com/settings/)
     connection.close()
 
 
-@periodic_task(run_every=crontab(hour=23, minute=0))  # hour=23 -> 1800 in NYC
-def run_email_reminder():
-    email_reminder.delay()
+@shared_task
+def tz_hourly():
+    utc_hour = dt.datetime.utcnow().hour
+    midnight_for = (utc_hour - 24)*60
+    email_for = (utc_hour - 18)*60
+
+    reset_streaks(midnight_for)
+    send_email_reminders(email_for)
+
+
+@periodic_task(run_every=crontab(minute=0, hour=every_hour))
+def run_tz_hourly():
+    tz_hourly.delay()
+
+
+# === Backup the server at UTC midnight ===
+@shared_task
+def backup_server():
+    filepath = f'{settings.DB_BACKUP_DIR}/{dt.datetime.utcnow().strftime("%Y-%m-%d")}.sql'
+    os.system(f'pg_dump alu > "{filepath}"')
+
+
+@periodic_task(run_every=crontab(minute=0, hour=0))
+def run_backup_server():
+    backup_server.delay()
