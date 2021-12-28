@@ -48,7 +48,7 @@ def contact_us_api_view(request, *args, **kwargs):
 
     mail_admins(
         'New Contact Feedback',
-        f"{title} - {description}",
+        f"{title}: {description}",
     )
 
     return Response({'message': 'Feedback submitted successfully'}, status=201)
@@ -124,21 +124,9 @@ def api_explore_lists_view(request, *args, **kwargs):
     Get decks to display in explore list - GET
     """
     shared_decks = SharedDeckSerializer(
-        SharedDeck.objects.annotate(
-            num_copies=(
-                Count(
-                    'snapshots__decks_equivalent_to',
-                    distinct=True,
-                )
-                +
-                Count(
-                    'snapshots__children__shared_deck__snapshots__decks_equivalent_to',
-                    distinct=True,
-                )
-            ),
-        )
-        .order_by('-num_copies')
-        .filter(view_access='PUBLIC')[:10],
+        SharedDeck.bulk_annotate_with_num_copies(
+            SharedDeck.objects.filter(view_access='PUBLIC'),
+        ).order_by('-num_copies')[:10],
         many=True,
     ).data
     data = {

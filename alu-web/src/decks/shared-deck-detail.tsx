@@ -4,10 +4,12 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import CopySharedDeckButton from './buttons/copy-shared-deck-button';
+import IconTooltip from './buttons/IconTooltip';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import RenderFlashcard  from './render-flashcard';
 import RenderMainSection from './main-section';
+import ReportModal from '../pages/report';
 import Row from 'react-bootstrap/Row';
 import { DisplayProfileInline } from '../profiles';
 import { FlashCard, SharedDeck } from './types';
@@ -21,8 +23,14 @@ interface Permission {
   isOwner?: boolean;
 }
 
-export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedDeckId: string, snapshotId?: string}) {
+interface SharedDeckDetailProps {
+  username: string;
+  sharedDeckId: string;
+  snapshotId?: string;
+}
+export default function SharedDeckDetail({ username, sharedDeckId, snapshotId }: SharedDeckDetailProps) {
   const [permissions, setPermissions] = useState<Permission | undefined>();
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [sharedDeck] = useObjectGet<SharedDeck>(
     'sharing_system',
     'shareddeck',
@@ -86,7 +94,21 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
       <Row className='mt-5'>
         <Col md={9}>
           <div>
-            <h1>{sharedDeck.title}</h1>
+            <h1>
+              {sharedDeck.title}
+              {username && <IconTooltip
+                tooltip='Report Deck'
+                onClick={async () => setIsReportModalOpen(true)}
+                faClass='fas fa-flag fa-xs'
+                className='float-right mt-1'
+                id='report-tooltip'
+              />}
+            </h1>
+            <ReportModal
+              isOpen={isReportModalOpen}
+              close={() => setIsReportModalOpen(false)}
+              defaultSubject={`Reporting "${sharedDeck.title}" (${sharedDeck.id})`}
+            />
             {snapshotId && <Alert variant='warning'>
               <strong>WARNING:</strong> You are viewing a historical version of this deck: "{snapshot.message}"
               <br /><br />

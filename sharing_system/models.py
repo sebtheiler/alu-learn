@@ -7,6 +7,7 @@ from accounts.models import User
 from decks.models import Deck, FlashCard, FlashCardData, ReviewInstance
 from django.apps import apps
 from django.db import models
+from django.db.models.aggregates import Count
 from django.db.models.expressions import F
 from django.db.models.query import QuerySet
 from django.db.utils import IntegrityError
@@ -575,6 +576,22 @@ class SharedDeck(models.Model):
         )
 
         return new_snapshot_to_update
+
+    @staticmethod
+    def bulk_annotate_with_num_copies(queryset: QuerySet) -> QuerySet:
+        return queryset.annotate(
+            num_copies=(
+                Count(
+                    'snapshots__decks_equivalent_to',
+                    distinct=True,
+                )
+                +
+                Count(
+                    'snapshots__children__shared_deck__snapshots__decks_equivalent_to',
+                    distinct=True,
+                )
+            ),
+        )
 
 
 class SnapShot(models.Model):

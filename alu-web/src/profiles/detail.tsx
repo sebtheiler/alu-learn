@@ -1,11 +1,14 @@
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Container from 'react-bootstrap/Container';
+import IconTooltip from '../decks/buttons/IconTooltip';
 import LoadingButton from '../decks/buttons/LoadingButton';
+import ReportModal from '../pages/report';
 import SharedDeckList from '../decks/shared-deck-list';
 import { Button } from 'react-bootstrap';
 import { Profile } from './types';
 import { SharedDeck } from '../decks/types';
 import { apiProfileDetail, backendFetch, apiSendFriendReq, useAsyncState, apiProfileFriendToggle } from '../lookup/lookup';
+import { useState } from 'react';
 
 export default function ProfileDetail({ username, currentUsername }: { username: string, currentUsername: string }) {
   const [profile, setProfile] = useAsyncState<Profile>(apiProfileDetail, [username]);
@@ -13,6 +16,7 @@ export default function ProfileDetail({ username, currentUsername }: { username:
     () => backendFetch('GET', `profiles/profile/${username}/decks/`),
     [username],
   );
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const addFriend = async () => {
     if (!profile) return;
@@ -32,7 +36,21 @@ export default function ProfileDetail({ username, currentUsername }: { username:
 
   if (!profile) return <p className='text-center mt-5'>Loading…</p>
   return (<Container className='mt-5'>
-    <h1>{profile.first_name} {profile.last_name}</h1>
+    <h1>
+      {profile.first_name} {profile.last_name}
+      {currentUsername && currentUsername !== username && <IconTooltip
+        tooltip='Report User'
+        onClick={async () => setIsReportModalOpen(true)}
+        faClass='fas fa-flag fa-xs'
+        className='float-right mt-1'
+        id='report-tooltip'
+      />}
+    </h1>
+    <ReportModal
+      isOpen={isReportModalOpen}
+      close={() => setIsReportModalOpen(false)}
+      defaultSubject={`Reporting @${profile.username} (${profile.id})`}
+    />
     {currentUsername.length > 0 && (username === currentUsername ? <ButtonGroup>
       <Button href='/profiles/edit/'>
         Edit Profile

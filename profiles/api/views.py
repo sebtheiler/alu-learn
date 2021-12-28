@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.mail import send_mail
 from django.shortcuts import redirect
 from django.utils.crypto import get_random_string
+from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -582,8 +583,12 @@ def streak_review_info(request, *args, **kwargs):
 
 
 @api_view(['GET'])
+@cache_page(60*60*12)
 def list_profile_decks(request, username, *args, **kwargs):
-    shared_decks = SharedDeck.objects.filter(owners__user__username=username)
+    shared_decks = SharedDeck.bulk_annotate_with_num_copies(
+        SharedDeck.objects.filter(owners__user__username=username),
+    ).order_by('-num_copies')
+
     shared_decks = [
         shared_deck
         for shared_deck in shared_decks

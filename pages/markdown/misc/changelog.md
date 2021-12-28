@@ -3,6 +3,8 @@
 * **Fixed Flashcard Number Display:** Fixed flashcards' displayed numbers to now properly increment with each flashcard
 * **Fixed Flashcard List Order:** Fixed flashcard list order to be based on the flashcards' subsection and mainsection, rather than simply the order number
 * **Improved Registering:** Improved autocomplete functionality and added a strength bar to the password field
+* **Added Report Buttons:** Added buttons for reporting harmful shared decks and users
+* **Fixed Profile Deck Order:** Decks on a profile-page are now properly ordered number of clones
 
 ## Shared Deck Hotfix - Dec 08 - 1.0.11
 Quick hotfix for shared decks.
