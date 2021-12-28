@@ -1,3 +1,5 @@
+import InputGroup from 'react-bootstrap/InputGroup';
+import PasswordStrengthBar from 'react-password-strength-bar';
 import React, { useEffect, useState, useMemo, Dispatch, SetStateAction, ChangeEvent, ReactNodeArray, ReactNode } from 'react';
 import { FullEditor, createFullEditor  } from '../text-editor';
 import { Node as SlateNode } from 'slate';
@@ -497,4 +499,38 @@ export function prependHttp(url: string, { https = true } = {}) {
 	if (/^\.*\/|^(?!localhost)\w+?:/.test(url)) return url;
 
 	return url.replace(/^(?!(?:\w+?:)?\/\/)/, https ? 'https://' : 'http://');
+}
+
+// Password input with strength checking and view icon
+export function PasswordInput() {
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePassword = e => {
+    e.preventDefault();
+    setShowPassword(!showPassword);
+  }
+
+  return (
+    <Form.Group>
+      <Form.Label className='mb-0'>
+        Password
+      </Form.Label>
+      <InputGroup>
+        <Form.Control
+          type={showPassword ? 'text' : 'password'}
+          name='password'
+          maxLength={512}
+          autoComplete='new-password'
+          onChange={e => setPassword(e.target.value)}
+          required
+        />
+        <InputGroup.Text as='button' onClick={togglePassword} style={{ width: '50px' }}>
+          <i className={`fas fa-eye${showPassword ? '-slash' : ''} mx-auto`} />
+        </InputGroup.Text>
+      </InputGroup>
+      {/* @ts-expect-error */}
+      <PasswordStrengthBar password={password} />
+    </Form.Group>
+  );
 }

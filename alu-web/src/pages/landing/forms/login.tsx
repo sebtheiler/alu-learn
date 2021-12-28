@@ -44,6 +44,7 @@ export function LoginForm(props) {
         <Form.Control
           type='text'
           name='loginUsername'
+          autoComplete='current-username'
           maxLength={15}
           style={{textTransform: 'lowercase'}}
           required
@@ -54,6 +55,7 @@ export function LoginForm(props) {
         <Form.Control
           type='password'
           name='loginPassword'
+          autoComplete='password'
           maxLength={512}
           required
         />

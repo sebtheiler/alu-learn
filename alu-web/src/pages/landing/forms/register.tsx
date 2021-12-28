@@ -2,7 +2,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin } from '../../../lookup';
-import { isAlphaNumeric, errorHandler, FormCheckbox, dateDiff, getMonthNumber, has } from '../../../utils';
+import { isAlphaNumeric, errorHandler, FormCheckbox, dateDiff, getMonthNumber, PasswordInput } from '../../../utils';
 import { useState } from 'react';
 
 export function ModalRegisterForm(props: { returnUrl?: string }) {
@@ -112,18 +112,6 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
           document.getElementById('registerUsernameError')!.innerText = '';
         }
     
-        // Check if password meets security requirements
-        if (
-          isAlphaNumeric(form.elements.registerPassword.value) ||
-          form.elements.registerPassword.value.length < 8 ) {
-            document.getElementById('registerPasswordLengthError')!.innerText =
-            `Your password must be at least 8 characters and include
-            special characters such as @, $, or !.`
-            error = true;
-        } else {
-          document.getElementById('registerPasswordLengthError')!.innerText = '';
-        }
-
         // If all went well, create new profile
         if (error) {
           setIsLoading(false);
@@ -138,12 +126,12 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
           isChild ? '' : form.elements.registerLastName.value,
           form.elements.registerUsername.value,
           form.elements.registerEmail.value,
-          form.elements.registerPassword.value,
+          form.elements.password.value,
           (response, status) => {
             if (status === 201) {
               apiProfileLogin(
                 form.elements.registerUsername.value,
-                form.elements.registerPassword.value,
+                form.elements.password.value,
                 (response, status) => {
                   if (status === 200) {
                     window.location.href = returnUrl ? returnUrl : '/confirm-email/';
@@ -153,13 +141,6 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
                   }
                 },
               );
-            } else if (has(response, 'message') && response.message === 'Email not allowed') {
-              // If the user's email is not allowed
-              document.getElementById('emailNotAllowed')!.innerHTML =
-                `Your email is not currently in the list of allowed emails.
-                To apply, please fill out the
-                <a href='https://forms.gle/7MNRvNfa4yfQinTL7' target='_blank' rel='noopener noreferrer'>
-                Google Form</a>.`
             } else {
               // Error creating the user profile
               errorHandler(response, status, 3008);
@@ -285,24 +266,13 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
         <Form.Control
           type='email'
           name='registerEmail'
+          autoComplete='email'
           maxLength={100}
           required
         />
         <small className='text-danger' id='emailNotAllowed' />
       </Form.Group>
-      <Form.Group>
-        <Form.Label className='mb-0'>
-          Password
-        </Form.Label>
-        <p id='registerPasswordLengthError' className='text-danger mb-0'></p>
-        <Form.Control
-          type='password'
-          name='registerPassword'
-          maxLength={512}
-          autoComplete='new-password'
-          required
-        />
-      </Form.Group>
+      <PasswordInput />
       <Form.Group>
         <FormCheckbox id='register-accept-tos' required>
           I accept the <a href='/legal/tos/' target='_blank'>

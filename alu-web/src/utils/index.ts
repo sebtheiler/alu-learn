@@ -20,6 +20,7 @@ import {
   setCookie,
   getCookie,
   capitalize,
+  PasswordInput,
 } from './utils';
 
 import { errorHandler } from './errorHandler';
@@ -49,4 +50,5 @@ export {
   getCookie,
   capitalize,
   Jdenticon,
+  PasswordInput,
 }
