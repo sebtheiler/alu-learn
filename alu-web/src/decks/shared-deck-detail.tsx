@@ -138,8 +138,8 @@ export default function SharedDeckDetail({ sharedDeckId, snapshotId }: { sharedD
             )}
             <hr />
             <h3>Example Flashcards</h3>
-            {flashcards?.map(flashcard =>
-              <RenderFlashcard flashcard={flashcard} key={flashcard.id} />
+            {flashcards?.map((flashcard, i) =>
+              <RenderFlashcard flashcard={flashcard} orderNum={i} key={flashcard.id} />
             )}
           </div>
         </Col>

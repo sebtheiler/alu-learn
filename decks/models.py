@@ -167,6 +167,14 @@ class FlashCard(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     objects = FlashCardManager()
 
+    # More complicated order by that sorts by section
+    # More DB queries so this isn't the default
+    SECTION_ORDER_BY = (
+        'sub_section__main_section__order_num',
+        'sub_section__order_num',
+        'order_num',
+    )
+
     class Meta:
         ordering = ('order_num',)
 
@@ -467,6 +475,12 @@ class ReviewInstance(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     objects = ReviewInstanceManager()
+
+    # More complicated order by that sorts by section
+    # More DB queries so this isn't the default
+    SECTION_ORDER_BY = tuple(
+        f'flashcard__{ordering}' for ordering in FlashCard.SECTION_ORDER_BY
+    ) + ('next_review',)
 
     class Meta:
         ordering = ['flashcard__order_num']

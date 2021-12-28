@@ -14,8 +14,9 @@ interface RenderFlashcardProps {
   flashcard: FlashCard;
   dispatchFlashcards?: React.Dispatch<FlashCardEvent>;
   deckId?: number;
+  orderNum?: number;
 }
-export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards }: RenderFlashcardProps) {
+export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards, orderNum }: RenderFlashcardProps) {
   const deleteFlashcard = async (e, flashcardId: string) => {
     e.stopPropagation();
     if (!dispatchFlashcards || !window.confirm('Are you sure you want do delete this flashcard?')) return;
@@ -36,7 +37,7 @@ export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards 
       >
         <Row className='flashcard-head'>
           <Col>
-            <span>Flashcard #{flashcard.order_num + 1}</span>
+            <span>Flashcard #{(orderNum ?? flashcard.order_num) + 1}</span>
             {deckId && <span>
               <IconTooltip
                 tooltip='Delete Flashcard'

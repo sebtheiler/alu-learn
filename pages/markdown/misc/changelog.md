@@ -1,3 +1,8 @@
+* **Fixed Habits Streak Display:** Fixed habits streak display to no longer show streak icons on neutral habits
+* **Fixed Flashcard Divider Line:** Fixed the line that divides the left and right of flashcards in a list to be the full height
+* **Fixed Flashcard Number Display:** Fixed flashcards' displayed numbers to now properly increment with each flashcard
+* **Fixed Flashcard List Order:** Fixed flashcard list order to be based on the flashcards' subsection and mainsection, rather than simply the order number
+
 ## Shared Deck Hotfix - Dec 08 - 1.0.11
 Quick hotfix for shared decks.
 

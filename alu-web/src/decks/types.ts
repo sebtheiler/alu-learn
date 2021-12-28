@@ -122,6 +122,7 @@ interface AbstractAction {
   deck_id: number;
   snapshot_id: number;
   action: 'CREATE' | 'EDIT' | 'DELETE' | 'REARRANGE';
+  id: number;
 }
 
 export interface MainSectionAction extends AbstractAction {

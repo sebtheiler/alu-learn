@@ -570,7 +570,10 @@ def flashcard_list_view(request, *args, **kwargs):
         )
         flashcard_query &= section_query
 
-    flashcards = FlashCard.objects.filter(flashcard_query)
+    flashcards = FlashCard.objects\
+        .filter(flashcard_query)\
+        .order_by(*FlashCard.SECTION_ORDER_BY)
+
     return get_paginated_queryset_response(
         flashcards,
         request,
@@ -680,16 +683,8 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     if not study_ahead:
         review_instance_query &= Q(next_review__lte=get_morning(utc_timezone_offset))
 
-    order_by = (
-        ('?',)
-        if study_ahead else
-        (
-            'flashcard__sub_section__main_section__order_num',
-            'flashcard__sub_section__order_num',
-            'flashcard__order_num',
-            'next_review',
-        )
-    )
+    order_by = ('?',) if study_ahead else ReviewInstance.SECTION_ORDER_BY
+
     due_for_review = ReviewInstance.objects\
         .filter(review_instance_query)\
         .prefetch_related('flashcard')\

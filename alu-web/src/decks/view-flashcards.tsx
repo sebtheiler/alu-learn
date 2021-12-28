@@ -73,11 +73,12 @@ export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, secti
         </>}
       </ButtonGroup>
     </div>
-    {flashcards.map(flashcard =>
+    {flashcards.map((flashcard, i) =>
       <RenderFlashcard
         flashcard={flashcard}
         dispatchFlashcards={dispatchFlashcards}
         deckId={deckId}
+        orderNum={i}
         key={flashcard.id}
       />
     )}

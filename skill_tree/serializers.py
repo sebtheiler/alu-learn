@@ -25,6 +25,7 @@ class AbstractActionSerializer(serializers.ModelSerializer):
             'snapshot_id',
             'live_counterpart',
             'action',
+            'id',
         )
 
     def get_live_counterpart(self, obj):

@@ -174,10 +174,10 @@ export default function RenderConflicts({ conflicts, setConflicts }: RenderConfl
     {conflicts.flashcards.length > 0 && <div>
       <h3 className='mt-5'>Flashcards</h3>
       <hr />
-      {conflicts.flashcards.map(([flashcardOrigin, flashcardDestination]) => <Row key={flashcardOrigin.id}>
+      {conflicts.flashcards.map(([flashcardOrigin, flashcardDestination], i) => <Row key={flashcardOrigin.id}>
         <Col md={6} xs={12} className='right-separator'>
           <p className='text-center'><strong>Incoming Updated Flashcard</strong></p>
-          <RenderFlashcard flashcard={flashcardOrigin} />
+          <RenderFlashcard flashcard={flashcardOrigin} orderNum={i} />
           <div className='text-center'>
             <LoadingButton
               clickFunc={() => resolveConflict(
@@ -194,7 +194,7 @@ export default function RenderConflicts({ conflicts, setConflicts }: RenderConfl
         </Col>
         <Col md={6} xs={12}>
           <p className='text-center'><strong>Your Current Flashcard</strong></p>
-          <RenderFlashcard flashcard={flashcardDestination} />
+          <RenderFlashcard flashcard={flashcardDestination} orderNum={i} />
           <div className='text-center'>
             <LoadingButton
               clickFunc={() => resolveConflict(

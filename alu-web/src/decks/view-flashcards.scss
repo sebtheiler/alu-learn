@@ -25,11 +25,10 @@
   }
 
   >.flashcard-body {
+    display: flex;
     >div {
       &.flashcard-field {
         &.divider {
-          height: 100%;
-
           @media (min-width: 767px) {
             border-right: $grayBorder;
           }

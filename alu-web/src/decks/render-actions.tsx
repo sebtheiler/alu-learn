@@ -42,8 +42,13 @@ export default function RenderActions({ actions }: { actions: Actions }) {
               </li>
             )}
           </ul>
-          {!!actions[attr][0].live_counterpart && actions[attr].map(action =>
-            <RenderAction action={action} key={action.pk} />
+          {!!actions[attr][0].live_counterpart && actions[attr].map(
+            (action: MainSectionAction | SubSectionAction | FlashCardAction, i) =>
+              <RenderAction
+                action={action}
+                index={i}
+                key={action.id}
+              />
           )}
         </>: <p>No actions</p>}
       </div>
@@ -58,7 +63,7 @@ function RenderSection({ section }: { section: MainSection | SubSection }) {
   </>);
 }
 
-function RenderAction({ action }: { action: MainSectionAction | SubSectionAction | FlashCardAction }) {
+function RenderAction({ action, index }: { action: MainSectionAction | SubSectionAction | FlashCardAction, index: number }) {
   const isMainSection = 'main_section' in action;
   const isSubSection = 'sub_section' in action;
   const isFlashCard = 'flashcard' in action;
@@ -79,7 +84,7 @@ function RenderAction({ action }: { action: MainSectionAction | SubSectionAction
     const flashcard = action.flashcard;
     objTitle = flattenNodes(flashcard.data.fields[0]);
     changeRendering = <RenderFlashcard flashcard={flashcard} />
-    currentRendering = action.live_counterpart && <RenderFlashcard flashcard={action.live_counterpart.flashcard} />;
+    currentRendering = action.live_counterpart && <RenderFlashcard flashcard={action.live_counterpart.flashcard} orderNum={index} />;
   } else {
     objTitle = 'ERROR';
     changeRendering = <>ERROR</>;
