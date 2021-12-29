@@ -1,3 +1,6 @@
+## Final Fixes - Dec 29 - 1.0.12
+New Year's.
+
 * **Fixed Habits Streak Display:** Fixed habits streak display to no longer show streak icons on neutral habits
 * **Fixed Flashcard Divider Line:** Fixed the line that divides the left and right of flashcards in a list to be the full height
 * **Fixed Flashcard Number Display:** Fixed flashcards' displayed numbers to now properly increment with each flashcard
