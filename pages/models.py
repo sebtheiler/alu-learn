@@ -1,7 +1,12 @@
 import os
 
+from django.conf import settings
+from django.core import mail
 from django.db import models
+from django.db.models import Sum, Q
 from django.db.models.signals import post_delete
+from django.template.loader import render_to_string
+from profiles.models import Profile, ProfileHistorySegment
 
 
 class ContactFeedback(models.Model):
@@ -41,6 +46,52 @@ class UploadedImage(models.Model):
 
     def __str__(self) -> str:
         return self.image.name
+
+
+# Send the Year's Summary
+def send_years_summary():
+    total_flashcards = list(
+        ProfileHistorySegment.objects.aggregate(Sum('cards_done')).values()
+    )[0]
+    total_milliseconds = list(
+        ProfileHistorySegment.objects.aggregate(Sum('time_spent')).values()
+    )[0]
+    profiles = Profile.objects.annotate(
+        total_cards=Sum('history__cards_done'),
+        total_time=Sum('history__time_spent'),
+    ).filter(
+        Q(total_cards__gte=100) & ~Q(settings__user_type='TEACHER'),
+    ).order_by('-total_cards')
+
+    connection = mail.get_connection()
+    connection.open()
+
+    print(total_flashcards, total_milliseconds, profiles.count())
+    for i, profile in enumerate(profiles):
+        context = {
+            'name': profile.user.first_name.strip().capitalize(),
+            'flashcards_studied': profile.total_cards,
+            'time_spent': round(profile.total_time/1000/60/60*10)/10,
+            'longest_streak': profile.longest_streak,
+            'rank': i + 1,
+            'percent': round(profile.total_cards/total_flashcards * 1000)/10,
+        }
+        print(context)
+
+        mail.send_mail(
+            'Your Alu Year\'s Summary',
+            'Please use an HTML-capable browser to view this summary',
+            settings.EMAIL_HOST_USER,
+            [profile.user.email],
+            html_message=render_to_string(
+                'emails/years-summary.html',
+                context,
+            ),
+            fail_silently=False,
+            connection=connection,
+        )
+
+    connection.close()
 
 
 # Deletes file from filesystem when corresponding `UploadedImage` object is deleted

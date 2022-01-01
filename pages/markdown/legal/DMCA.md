@@ -7,6 +7,6 @@ All Infringement Notices should include the following:
 * your name, address, telephone number, and email address;
 * **believe in good faith that the use of the content that you claim to infringe your copyright is not authorized by law, or by the copyright owner or such owner's agent; and (b) under penalty of *perjury,* that all of the information contained in your Infringement Notice is accurate, and that you are either the copyright owner or a person authorized to act on their behalf.**
 
-Infringement Notices should be sent via our [legal contact page](/legal/contactus/) or by email to <aluflashcards@gmail.com>.  As stated above, please include the phrase `[DMCA]` in your title/subject for the quickest and most accurate care.
+Infringement Notices should be sent via our [legal contact page](/legal/contactus/) or by email to <support@alulearn.com>.  As stated above, please include the phrase `[DMCA]` in your title/subject for the quickest and most accurate care.
 
 Thank you for reading.
