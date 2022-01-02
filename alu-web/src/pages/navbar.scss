@@ -7,3 +7,25 @@
   border: none;
   color: #F8F9FA;
 }
+
+#logo {
+  width: 30px;
+  height: auto;
+  transform: translateY(-3px);
+  transition: transform .7s ease-in-out;
+
+  &:hover {
+    transform: translateY(-3px) rotateY(180deg);
+  }
+}
+
+#pro-banner {
+  width: 60px;
+  height: auto;
+  transform: translateY(-5px);
+  transition: transform .7s ease-in-out;
+
+  &:hover {
+    transform: translateY(-5px) rotate(360deg);
+  }
+}

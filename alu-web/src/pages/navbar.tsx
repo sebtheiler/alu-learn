@@ -8,12 +8,21 @@ import { apiProfileLogout } from '../lookup';
 import { errorHandler, Jdenticon } from '../utils';
 import './navbar.scss';
 
-export default function NavbarComponent(props) {
+interface NavbarComponentProps {
+  firstName: string;
+  username: string;
+  currentStreak: string;
+  doneReviewsToday: 'True' | 'False';
+  showUpdateModal: 'True' | 'False';
+  isPro: 'True' | 'False';
+}
+export default function NavbarComponent(props: NavbarComponentProps) {
   const firstName = props.firstName ? props.firstName : '';
   const username = props.username ? props.username : '';
   const currentStreak = parseInt(props.currentStreak);
   const doneReviewsToday = props.doneReviewsToday === 'True';
   const showUpdateModal = props.showUpdateModal === 'True';
+  const isPro = props.isPro === 'True';
 
   const logoutHandler = event => {
     event.preventDefault();
@@ -91,8 +100,17 @@ export default function NavbarComponent(props) {
     <Navbar bg='dark' variant='dark' expand='md' collapseOnSelect>
       <NavbarPopup showUpdateModal={showUpdateModal} firstName={firstName} />
       <Navbar.Brand href='/home/'>
-        <img src='/static/logo.svg' alt="Alu's Logo" width='30' height='auto' style={{transform: 'translateY(-3px)'}} />{' '}
+        <img
+          src='/static/logo.svg'
+          alt="Alu's Logo"
+          id='logo'
+        />{' '}
         Alu Learn
+        {isPro && <a href='/pro/'><img
+          src='/static/images/pro-banner.svg'
+          alt='Pro Banner'
+          id='pro-banner'
+        /></a>}
       </Navbar.Brand>
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>
