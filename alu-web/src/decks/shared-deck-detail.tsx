@@ -120,18 +120,18 @@ export default function SharedDeckDetail({ username, sharedDeckId, snapshotId }:
               ? <ReactMarkdown source={sharedDeck.description} />
               : <p>This deck has no description</p>
             }
-            <ButtonGroup>
-              <CopySharedDeckButton sharedDeck={sharedDeck} />
+            <ButtonGroup className='w-100'>
+              <CopySharedDeckButton sharedDeck={sharedDeck} isLoggedIn={!!username} />
               <Button
                 href={`/community/deck/${sharedDeck.id}/flashcards/${snapshot.id}/`}
-                style={{ width: '150px', marginLeft: '2px' }}
+                className='w-100'
               >
                 View Flashcards
               </Button>
               {/* <Button style={{ width: '150px', marginLeft: '2px' }}>View History</Button> */}
               {permissions.isOwner && <Button
                 href={`/community/deck/${sharedDeck.id}/submitted/`}
-                style={{ width: '150px', marginLeft: '2px' }}
+                className='w-100'
               >
                 Submitted Edits
               </Button>}

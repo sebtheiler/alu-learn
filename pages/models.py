@@ -49,7 +49,7 @@ class UploadedImage(models.Model):
 
 
 # Send the Year's Summary
-def send_years_summary(send: bool = False):
+def send_years_summary(send: bool = False, test_num_users: int = None):
     total_flashcards = list(
         ProfileHistorySegment.objects.aggregate(Sum('cards_done')).values()
     )[0]
@@ -68,8 +68,14 @@ def send_years_summary(send: bool = False):
 
     print(total_flashcards, total_milliseconds, profiles.count())
     for i, profile in enumerate(profiles):
+        if test_num_users is not None and i >= test_num_users:
+            break
+
+        name = profile.user.first_name.strip()
+        name = name[0].capitalize() + name[1:]
+
         context = {
-            'name': profile.user.first_name.strip().capitalize(),
+            'name': name,
             'flashcards_studied': profile.total_cards,
             'time_spent': round(profile.total_time/1000/60/60*10)/10,
             'longest_streak': profile.longest_streak,

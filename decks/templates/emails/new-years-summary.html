@@ -16,10 +16,15 @@
     <br><br>
 
     {% if time_spent >= 1.0 %}
-      <p>That's a lot of studying, putting you at <strong>#{{ rank }}</strong> overall for most flashcards studied, and making up <strong>{{ percent }}%</strong> of all flashcards!</p>
+      <p>
+        That's a lot of studying,
+        {% if rank <= 25 %}
+          placing you at <strong>#{{ rank }}</strong> overall for most flashcards studied, and
+        {% endif %}
+        making up <strong>{{ percent }}%</strong> of all flashcards!</p>
       <br>
     {% endif %}
-    <p>Cummulatively, Alu users studied nearly <strong>150,000 flashcards</strong> in nearly <strong>15 days</strong> (360 hours), with the code that runs Alu totaling over <strong>30,000 lines</strong> in over <strong>300 files</strong>.</p>
+    <p>Cummulatively, Alu users studied nearly <strong>150,000 flashcards</strong> in nearly <strong>360 hours</strong>, with the code that runs Alu totaling over <strong>30,000 lines</strong> in over <strong>300 files</strong>.</p>
   </td>
 </tr>
 
@@ -38,7 +43,7 @@
     <p>New decks are also underway, including</p>
     <ul>
       <li><p><a href="https://www.alulearn.com/l/chem/">AP Chemistry</a></p></li>
-      <li><p><a href="https://www.alulearn.com/l/gov/">AP US Government and Politics</a></p></li>
+      <li><p><a href="https://www.alulearn.com/l/usgov/">AP US Government and Politics</a></p></li>
       <li><p><a href="https://www.alulearn.com/l/stat/">AP Statistics</a></p></li>
       <!-- <li><a href="https://www.alulearn.com/l/macro/">AP Macroeconomics</a> (Community Led)</li> -->
     </ul>

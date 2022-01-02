@@ -7,7 +7,11 @@ import { SharedDeck } from '../types';
 import { backendFetch } from '../../lookup/lookup';
 import { useState } from 'react';
 
-export default function CopySharedDeckButton({ sharedDeck }: { sharedDeck: SharedDeck }) {
+interface CopySharedDeckButtonProps {
+  sharedDeck: SharedDeck;
+  isLoggedIn: boolean;
+}
+export default function CopySharedDeckButton({ sharedDeck, isLoggedIn }: CopySharedDeckButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const cloneDeck = async () => {
@@ -19,8 +23,12 @@ export default function CopySharedDeckButton({ sharedDeck }: { sharedDeck: Share
   }
 
   return (<>
-    <Button style={{ width: '150px', marginLeft: '2px' }} onClick={() => setIsOpen(true)}>
-      Copy
+    <Button
+      onClick={() => setIsOpen(true)}
+      disabled={!isLoggedIn}
+      className='w-100'
+    >
+      Copy {!isLoggedIn && <a href='/login/' className='text-white'>(Log-in)</a>}
     </Button>
     <Modal show={isOpen} onHide={() => setIsOpen(false)}>
       <Modal.Header>

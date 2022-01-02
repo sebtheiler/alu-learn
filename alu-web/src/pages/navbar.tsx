@@ -106,11 +106,16 @@ export default function NavbarComponent(props: NavbarComponentProps) {
           id='logo'
         />{' '}
         Alu Learn
-        {isPro && <a href='/pro/'><img
+        {/* {isPro && <a href='/pro/'><img
           src='/static/images/pro-banner.svg'
           alt='Pro Banner'
           id='pro-banner'
-        /></a>}
+        /></a>} */}
+        {isPro && <img
+          src='/static/images/pro-banner.svg'
+          alt='Pro Banner'
+          id='pro-banner'
+        />}
       </Navbar.Brand>
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>
