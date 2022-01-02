@@ -49,7 +49,7 @@ class UploadedImage(models.Model):
 
 
 # Send the Year's Summary
-def send_years_summary():
+def send_years_summary(send: bool = False):
     total_flashcards = list(
         ProfileHistorySegment.objects.aggregate(Sum('cards_done')).values()
     )[0]
@@ -78,18 +78,19 @@ def send_years_summary():
         }
         print(context)
 
-        mail.send_mail(
-            'Your Alu Year\'s Summary',
-            'Please use an HTML-capable browser to view this summary',
-            settings.EMAIL_HOST_USER,
-            [profile.user.email],
-            html_message=render_to_string(
-                'emails/years-summary.html',
-                context,
-            ),
-            fail_silently=False,
-            connection=connection,
-        )
+        if send:
+            mail.send_mail(
+                'Your Alu New Year\'s Summary',
+                'Please use an HTML-capable browser to view this summary',
+                settings.EMAIL_HOST_USER,
+                [profile.user.email],
+                html_message=render_to_string(
+                    'emails/new-years-summary.html',
+                    context,
+                ),
+                fail_silently=False,
+                connection=connection,
+            )
 
     connection.close()
 

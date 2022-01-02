@@ -1,17 +1,31 @@
-{% extends 'emails/base.html' %}
+{% extends "emails/base.html" %}
+
+{% block title %}{% endblock %}
+{% block entrance %}Daily Study Reminder{% endblock %}
 
 {% block content %}
-<p>Hi {{ name }},</p>
+<tr>
+  <td class="text-chunk">
+    <p>Hi {{ name }}!</p>
+    <br>
+    <p>
+      You're on a {{ streak }}-day streak.<br>
+      Study with <a href="https://www.alulearn.com">Alu</a> today to make it {{ streak | add:1 }} days!  You got this!
+    </p>
+  </td>
+</tr>
 
-<p>
-You're on a {{ streak }} day streak.<br />
-Study with <a href='https://www.alulearn.com'>Alu</a> today to make it {{ streak | add:1 }}!  You got this!
-</p>
-<a href='https://www.alulearn.com/l/streak/' target='_blank' class='button'>Study Today</a>
-<br>
+<tr>
+  <td class="px-3 py-3">
+    <span class="block-button">
+      <a href="https://www.alulearn.com/l/streak/" target="_blank">Study Now</a>
+    </span>
+  </td>
+</tr>
 
-<p>
-Best,<br>
-Alu
-</p>
+<tr>
+  <td class="text-chunk">
+    <p>Best,<br>Alu</p>
+  </td>
+</tr>
 {% endblock content %}

@@ -2,6 +2,7 @@ amqp==2.6.1
 anyjson==0.3.3
 asgiref==3.3.4
 autopep8==1.5.7
+beautifulsoup4==4.10.0
 billiard==3.6.4.0
 boto3==1.19.8
 botocore==1.22.8
@@ -16,12 +17,14 @@ click-plugins==1.1.1
 click-repl==0.1.6
 colorclass==2.2.0
 cryptography==3.4.7
+cssutils==2.3.0
 defusedxml==0.7.1
 dj-rest-auth==2.1.5
 Django==3.2.7
 django-allauth==0.44.0
 django-cors-headers==3.7.0
 django-debug-toolbar==3.2.1
+django-inlinecss==0.3.0
 django-rest-knox==4.1.0
 django-simple-email-confirmation==0.70
 django-storages==1.12.3
@@ -30,6 +33,7 @@ django-user-visit==0.4.1
 djangorestframework==3.12.4
 docopt==0.6.2
 flake8==4.0.1
+future==0.18.2
 fuzzywuzzy==0.18.0
 google-api-core==1.28.0
 google-api-python-client==2.6.0
@@ -56,6 +60,7 @@ pycodestyle==2.8.0
 pycparser==2.20
 pyflakes==2.4.0
 PyJWT==2.1.0
+pynliner==0.8.0
 pyparsing==2.4.7
 python-dateutil==2.8.2
 python-Levenshtein==0.12.2
@@ -70,6 +75,7 @@ rsa==4.7.2
 s3transfer==0.5.0
 selenium==3.141.0
 six==1.16.0
+soupsieve==2.3.1
 sqlparse==0.4.1
 terminaltables==3.1.0
 toml==0.10.2

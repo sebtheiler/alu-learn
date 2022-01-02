@@ -1,81 +1,88 @@
 <!DOCTYPE html>
-<html>
+{% load inlinecss %}
+{% inlinecss "email_base.css" %}
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <style>
-      .table {
-        margin-left: auto;
-        margin-right: auto;
-        white-space: pre-wrap;
-      }
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta name="x-apple-disable-message-reformatting">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="telephone=no" name="format-detection">
 
-      .container {
-        padding-right: 15px;
-        padding-left: 15px;
-        margin-right: auto;
-        margin-left: auto;
-      }
-      @media (min-width: 768px) {
-        .container {
-          width: 750px;
-        }
-      }
-      @media (min-width: 992px) {
-        .container {
-          width: 970px;
-        }
-      }
-      @media (min-width: 1200px) {
-        .container {
-          width: 1170px;
-        }
-      }
+    <title>{% block page_title %}{% endblock %}</title>
 
-      .title {
-        text-align: center;
-      }
-
-      .navbar-brand {
-        padding-top: 0.3125rem;
-        padding-bottom: 0.3125rem;
-        margin-right: 1rem;
-        font-size: 1.25rem;
-        white-space: nowrap;
-        text-decoration: none;
-        color: black;
-      }
-
-      .button {
-        -webkit-appearance: button;
-        -moz-appearance: button;
-        appearance: button;
-        text-decoration: none;
-
-        background-color: #007bff; /* Primary-blue */
-        border: none;
-        color: white!important; /* I know !important is bad practice, but whatever */
-        padding: 10px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 4px;
-        margin: 0 auto;
-        width: 200px;
-      }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
   </head>
   <body>
-    {% block content %}
-    {% endblock content %}
-
-    <small>Sent by Alu Learn | NYC, New York</small><br>
-    <small>
-      <a href='https://www.alulearn.com/settings/'>Unsubscribe</a> from emails</a> | 
-      <a href='https://www.alulearn.com/contactus/'>Contact Us</a> | 
-      <a href='https://www.alulearn.com/legal/privacypolicy/'>Privacy Policy</a> | 
-      <a href='https://www.alulearn.com/legal/tos/'>Terms of Service</a>
-    </small>
+    <div id="background">
+      <table id="body-table">
+        <tr>
+          <!-- <td class="p-0">
+          <td class="p-0 dark-background">
+            <table align="center">
+              <td align="center" class="py-3">
+                <img src="https://alulearn.com/static/logo.svg" width="50">
+              </td>
+            </table>
+          </td> -->
+          <table class="border-collapse w-100">
+            <td class="p-0">
+              <table style="width:100%" cellspacing="0" cellpadding="0" align="center">
+                <td align="left" class="p-0">
+                  <table class="w-100 dark-background">
+                    <td align="center">
+                      <h1>{% block entrance %}{% endblock %}</h1>
+                    </td>
+                  </table>
+                </td>
+              </table>
+            </td>
+          </table>
+          <table style="table-layout:fixed !important;width:100%">
+            <tbody>
+              <tr>
+                <td>
+                  <table cellspacing="0" cellpadding="0" align="center" style="width:100%">
+                    <tr>
+                      <td>
+                        <table id="main-content">
+                          <tbody>
+                            {% block content %}{% endblock %}
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <table cellpadding="0" cellspacing="0" align="center">
+            <tr>
+              <td style="width:540px">
+                <table class="w-100 py-3">
+                  <tr>
+                    <td>
+                      <p class="text-center">
+                        <strong>
+                          <a target="_blank" href="https://www.alulearn.com/settings/" class="small-link">Unsubscribe</a> -
+                          <a target="_blank" href="https://www.alulearn.com/contactus/" class="small-link">Contact Us</a> -
+                          <a target="_blank" href="https://www.alulearn.com/legal/privacypolicy/" class="small-link">Privacy Policy</a> -
+                          <a target="_blank" href="https://www.alulearn.com/legal/tos/" class="small-link">Terms of Service</a>
+                        </strong>
+                      </p>
+                      <p class="text-center"><small>Sent by Alu Learn | NYC, New York</small></p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </tr>
+      </table>
+    </div>
   </body>
 </html>
+{% endinlinecss %}
