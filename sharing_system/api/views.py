@@ -166,7 +166,7 @@ def shared_deck_push_view(request, shared_deck_id: int, *args, **kwargs):
     if resp:
         return resp
 
-    notUpToDate = Response(
+    not_up_to_date = Response(
         {'message': 'Deck is not up to date'},
         status=400,
         exception=True,
@@ -183,7 +183,7 @@ def shared_deck_push_view(request, shared_deck_id: int, *args, **kwargs):
                 message=message,
             )
         except ValueError:
-            return notUpToDate
+            return not_up_to_date
 
         return Response(
             {'message': 'Pushed changes'},
@@ -198,7 +198,7 @@ def shared_deck_push_view(request, shared_deck_id: int, *args, **kwargs):
                 message=message,
             )
         except ValueError:
-            return notUpToDate
+            return not_up_to_date
 
         return Response(
             {'message': 'Submitted changes', 'submitted_changes_id': submitted_changes.pk},

@@ -10,8 +10,10 @@
     <h2 class="in-text-h2">{{ flashcards_studied }} flashcards</h2>
     <p>In a cummulative</p>
     <h2 class="in-text-h2">{{ time_spent }} hours</h2>
-    <p>Reaching a highest streak of</p>
-    <h2 class="in-text-h2">{{ longest_streak }} days</h2>
+    {% if longest_streak > 1 %}
+      <p>Reaching a highest streak of</p>
+      <h2 class="in-text-h2">{{ longest_streak }} days</h2>
+    {% endif %}
 
     <br><br>
 

@@ -321,6 +321,8 @@ class SharedDeck(models.Model):
             'applied_mainsectionactions__main_section',
             'applied_subsectionactions__sub_section',
             'applied_flashcardactions__flashcard',
+        ).order_by(
+            'timestamp',
         ).all()
 
         # Get the changes that need applying
@@ -1404,7 +1406,8 @@ class FlashCardAction(AbstractAction):
                 fc_origin.universal_flashcard_id = fc_origin.pk
                 origin_flashcards_to_update_uid.append(fc_origin)
             elif action.action == 'EDIT':
-                fc_data = fc_origin.data.copy()
+                # TODO: make `uploaded_images` work
+                fc_data, uploaded_images = fc_origin.data.copy()
                 fc_destination = FlashCard.objects.get(
                     universal_flashcard_id=fc_origin.universal_flashcard_id,
                     sub_section__main_section__snapshot_id=snapshot.pk,
