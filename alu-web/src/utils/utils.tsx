@@ -529,6 +529,7 @@ export function PasswordInput() {
           <i className={`fas fa-eye${showPassword ? '-slash' : ''} mx-auto`} />
         </InputGroup.Text>
       </InputGroup>
+      {/* @ts-expect-error */}
       <PasswordStrengthBar password={password} />
     </Form.Group>
   );

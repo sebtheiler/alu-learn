@@ -117,7 +117,7 @@ export default function SharedDeckDetail({ username, sharedDeckId, snapshotId }:
               </Button>
             </Alert>}
             {sharedDeck.description.length > 0
-              ? <ReactMarkdown source={sharedDeck.description} />
+              ? <ReactMarkdown children={sharedDeck.description} />
               : <p>This deck has no description</p>
             }
             <ButtonGroup className='w-100'>
