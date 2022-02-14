@@ -80,8 +80,8 @@ https://www.alulearn.com/settings/)
 @shared_task
 def tz_hourly():
     utc_hour = dt.datetime.utcnow().hour
-    midnight_for = (utc_hour - 24)*60
-    email_for = (utc_hour - 18)*60
+    midnight_for = (utc_hour - 24) % 24 * 60
+    email_for = (utc_hour - 18) % 24 * 60
 
     reset_streaks(midnight_for)
     send_email_reminders(email_for)

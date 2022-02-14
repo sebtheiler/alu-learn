@@ -117,6 +117,7 @@ export default function SharedDeckDetail({ username, sharedDeckId, snapshotId }:
               </Button>
             </Alert>}
             {sharedDeck.description.length > 0
+              // @ts-ignore
               ? <ReactMarkdown source={sharedDeck.description} />
               : <p>This deck has no description</p>
             }

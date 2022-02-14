@@ -21,7 +21,6 @@ export function SettingsPage({ username }) {
         send_reminders: form.elements.sendReminders.checked,
         user_type: form.elements.userType.value,
         target_num_cards: form.elements.targetNumCards.value,
-        is_opted_dev: form.elements.isOptedDev.checked,
         timezone: form.elements.timezone.value,
       },
       (response, status) => {

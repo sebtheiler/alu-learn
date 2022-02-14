@@ -1,3 +1,10 @@
+## Streak & Reminder Email Fix - Feb 13 - 1.0.13
+...
+
+* **Fixed Streak Resets:** Streaks will now properly reset at midnight.
+* **Fixed Reminder Emails:** Reminder emails will now be properly sent at 6 PM to everyone signed up.
+* **Fixed Settings:** Fixed a bug that broke settings changes.
+
 ## Final Fixes - Dec 29 - 1.0.12
 New Year's.
 
