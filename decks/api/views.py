@@ -34,7 +34,7 @@ def deck_list(request):
     ).prefetch_related(
         'user',
         'main_sections__sub_sections',
-    )
+    ).order_by('title')
 
     return Response(DeckSerializer(decks, many=True).data, status=200)
 
@@ -203,6 +203,7 @@ def deck_txt_import_view(request, *args, **kwargs):
     # Create flashcards
     flashcards = []
     flashcards_data = []
+    flashcard_actions = []
     for i, el in enumerate(front_and_back):
         flashcard_data = FlashCardData(
             tags='',
@@ -214,16 +215,23 @@ def deck_txt_import_view(request, *args, **kwargs):
         )
         flashcards_data.append(flashcard_data)
 
-        flashcard = FlashCard(
+        flashcard_id = uuid.uuid4()
+        flashcards.append(FlashCard(
             sub_section=sub_section,
             flashcard_type='BASIC',
             order_num=i,
             data=flashcard_data,
-        )
-        flashcards.append(flashcard)
+            id=flashcard_id,
+        ))
+        flashcard_actions.append(FlashCardAction(
+            action='CREATE',
+            deck_id=deck.pk,
+            flashcard_id=flashcard_id,
+        ))
 
     flashcards_data = FlashCardData.objects.bulk_create(flashcards_data)
     flashcards = FlashCard.objects.bulk_create(flashcards)
+    FlashCardAction.objects.bulk_create(flashcard_actions)
 
     this_morning = get_morning()
     ReviewInstance.objects.bulk_create([

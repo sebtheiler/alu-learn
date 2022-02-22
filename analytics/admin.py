@@ -7,6 +7,21 @@ class UrlHitAdmin(admin.ModelAdmin):
     readonly_fields = ('timestamp',)
     search_fields = ('url__destination', 'user__user__username', 'user__user__first_name')
     ordering = ('-timestamp',)
+    list_display = (
+        'url',
+        'username',
+        'timestamp',
+        'user_agent',
+        'ip_address',
+    )
+
+    def get_queryset(self, request):
+        queryset = super(UrlHitAdmin, self).get_queryset(request)
+        queryset = queryset.prefetch_related('user__user')
+        return queryset
+
+    def username(self, obj):
+        return obj.user.user.username if obj.user is not None else None
 
 
 class QuickFeedbackResponseAdmin(admin.ModelAdmin):

@@ -1,3 +1,9 @@
+# LAUNCH - Feb ?? - ???
+???
+
+* **Share Imported Decks:** You can now share decks that you've imported.  This previously did not work due to a bug.
+* **Alphabetically Ordered Decks:** Decks are now ordered alphabetically on the homepage
+
 ## Streak & Reminder Email Fix - Feb 13 - 1.0.13
 ...
 
