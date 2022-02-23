@@ -8,6 +8,7 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "@types/slate": "^0.47.11",
+    "adblock-detect-react": "^1.0.5",
     "bootstrap": "^4.6.0",
     "browser-interaction-time": "^3.0.0",
     "html-react-parser": "^1.4.5",

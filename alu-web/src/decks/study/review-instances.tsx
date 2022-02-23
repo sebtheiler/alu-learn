@@ -1,3 +1,4 @@
+import AdComponent from '../../pages/ads';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Col from 'react-bootstrap/Col';
@@ -145,7 +146,7 @@ function FinishedStudying({ originalInfo, numTotal, section, deckId }: FinishedS
             {originalInfo.numTotal > originalInfo.numNew && <p className='text-primary'>
               You refreshed your knowledge of <strong>{originalInfo.numTotal - originalInfo.numNew}</strong> flashcards!
             </p>}
-            {/* <p>TODO: AD</p> */}
+            <AdComponent adType='finished-studying' />
           </Col>
         </Row>
       </div>
