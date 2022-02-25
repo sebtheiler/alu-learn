@@ -28,8 +28,9 @@ interface SkillTreeHomeProps {
   defaultDeckSelected?: string;
   defaultClassroomSelected?: string;
   userType: Settings['user_type'];
+  isPro: 'true' | 'false';
 };
-export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSelected, userType }: SkillTreeHomeProps) {
+export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSelected, userType, isPro }: SkillTreeHomeProps) {
   const [decks, decksDispatch] = useObjectList('decks', 'deck', deckReducer);
   const [classroomsTaught, classroomsTaughtDispatch] = useAsyncDispatch(
     () => backendFetch('GET', 'teachers/classroom/taught-list/'), [],
@@ -135,7 +136,10 @@ export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSel
           </Col>
           <Col md={3} sm={12}>
             <h1 className='invisible'>.</h1>
-            <Meta isTeacher={userType === 'TEACHER'} />
+            <Meta
+              isTeacher={userType === 'TEACHER'}
+              isPro={isPro.toLowerCase() === 'true'}
+            />
           </Col>
         </Row>
       </Container>

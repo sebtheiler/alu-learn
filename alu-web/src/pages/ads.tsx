@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react';
 import './ads.scss';
 
 type AdType = 'meta-sidebar' | 'finished-studying';
-export default function AdComponent({ adType, isPro=false }: { adType: AdType, isPro?: boolean}) {
+export default function AdComponent({ adType, isPro }: { adType: AdType, isPro: boolean}) {
   const adBlockDetected = useDetectAdBlock();
   const slot = useMemo(() => {
     switch (adType) {
@@ -15,9 +15,11 @@ export default function AdComponent({ adType, isPro=false }: { adType: AdType, i
   }, [adType]);
 
   useEffect(()=>{
-    // @ts-ignore
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
-  },[]);
+    if (!isPro) {
+      // @ts-ignore
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    }
+  }, [isPro]);
 
   if (isPro) return null;
   return (
