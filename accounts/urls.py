@@ -3,7 +3,7 @@ from utils import render_basic_view
 from . import views
 
 urlpatterns = [
-    path('pro/', render_basic_view('accounts/pro-upgrade.html')),
+    path('pro/', render_basic_view('accounts/pro-upgrade.html', False, False)),
     path('pro/success/', render_basic_view('accounts/pro-success.html')),
     path('pro/cancelled/', render_basic_view('accounts/pro-cancelled.html')),
     path('api/accounts/stripe-config/', views.stripe_config),

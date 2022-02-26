@@ -1,14 +1,18 @@
-import LoadingButton from '../../decks/buttons/LoadingButton';
+import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
+import LoadingButton from '../../decks/buttons/LoadingButton';
 import Row from 'react-bootstrap/Row';
+import { ProPurchaseSuccess } from '.';
 import { backendFetch, useAsyncState } from '../../lookup/lookup';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { useState } from 'react';
-import { ProPurchaseSuccess } from '.';
 
-export default function ProUpgrade(props: { isPro: 'True' | 'False' }) {
+type StrBool = 'True' | 'False';
+export default function ProUpgrade(props: { isPro: StrBool, isAnonymous: StrBool }) {
   const isPro = props.isPro === 'True';
+  const isAnonymous = props.isAnonymous === 'True';
+
   const [stripe, setStripe] = useState<Stripe | null>(null);
   useAsyncState<{ publishableKey: string }>(
     () => backendFetch('GET', 'accounts/stripe-config/'), [],
@@ -48,7 +52,10 @@ export default function ProUpgrade(props: { isPro: 'True' | 'False' }) {
             <li>b</li>
             <li>c</li>
           </ul>
-          <LoadingButton clickFunc={purchase('monthly')}>Upgrade</LoadingButton>
+          {isAnonymous
+            ? <Button href='/?showLoginRequired=true'>Upgrade</Button>
+            : <LoadingButton clickFunc={purchase('monthly')}>Upgrade</LoadingButton>
+          }
         </Col>
         <Col>
           <h1>$30/yr</h1>
@@ -58,7 +65,10 @@ export default function ProUpgrade(props: { isPro: 'True' | 'False' }) {
             <li>b</li>
             <li>c</li>
           </ul>
-          <LoadingButton clickFunc={purchase('yearly')}>Upgrade</LoadingButton>
+          {isAnonymous
+            ? <Button href='/?showLoginRequired=true'>Upgrade</Button>
+            : <LoadingButton clickFunc={purchase('yearly')}>Upgrade</LoadingButton>
+          }
         </Col>
       </Row>
     </Container>

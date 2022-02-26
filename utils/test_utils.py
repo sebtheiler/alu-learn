@@ -12,7 +12,7 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 
-from alu.settings import env_vars
+from alu.settings import ENV_VARS
 
 User = get_user_model()
 
@@ -101,7 +101,7 @@ class SeleniumTestCase(LiveServerTestCase):
         options.add_argument('--start-maximized')
 
         self.driver = webdriver.Chrome(
-            executable_path=env_vars['DRIVER_EXECUTABLE_PATH'],
+            executable_path=ENV_VARS['DRIVER_EXECUTABLE_PATH'],
             options=options,
         )
         self.driver.implicitly_wait(3)

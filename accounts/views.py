@@ -67,6 +67,8 @@ def stripe_webhook(request):
 
     # Handle checkout.session.completed
     if event['type'] == 'checkout.session.completed':
+        # TODO: differentiate monthly/yearly subscription
+
         client_reference_id = event['client_reference_id']
         user = User.objects.get(pk=client_reference_id)
         user.is_pro = True

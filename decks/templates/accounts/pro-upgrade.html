@@ -3,5 +3,5 @@
 {% block title %}Upgrading to Pro at {% endblock title %}
 
 {% block content %}
-<div id="pro-upgrade"></div>
+<div id="pro-upgrade" data-is-anonymous="{{ request.user.is_anonymous }}"></div>
 {% endblock content %}
