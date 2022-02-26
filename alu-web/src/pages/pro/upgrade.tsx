@@ -1,4 +1,4 @@
-import Button from 'react-bootstrap/Button';
+import LoadingButton from '../../decks/buttons/LoadingButton';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -7,16 +7,6 @@ import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { useState } from 'react';
 
 export default function ProUpgrade() {
-  // const stripePromise = useMemo(async () => {
-  //   return await backendFetch<any>('GET', 'accounts/stripe-config/')
-  //     .then(result => result.json())
-  //     .then(data => {
-  //       const stripePromise = loadStripe(data.publishableKey);
-  //       return stripePromise;
-  //     });
-  // }, []);
-  // console.log(stripePromise)
-  // const stripePromise = useApiFetch(async () => {})
   const [stripe, setStripe] = useState<Stripe | null>(null);
   useAsyncState<{ publishableKey: string }>(
     () => backendFetch('GET', 'accounts/stripe-config/'), [],
@@ -26,10 +16,15 @@ export default function ProUpgrade() {
       );
     }
   );
-  console.log(stripe);
   
-  const purchase = (type: 'monthly' | 'yearly') => {
-    return () => {
+  const purchase = (purchaseType: 'monthly' | 'yearly') => {
+    if (!stripe) return async () => {};
+    return async () => {
+      await backendFetch<{ sessionId: string }>(
+        'POST', 'accounts/stripe-create-checkout-session/', { purchaseType },
+      ).then(
+        ({ sessionId }) => stripe.redirectToCheckout({ sessionId }),
+      );
     }
   }
 
@@ -50,7 +45,7 @@ export default function ProUpgrade() {
             <li>b</li>
             <li>c</li>
           </ul>
-          <Button onClick={purchase('monthly')}>Upgrade</Button>
+          <LoadingButton clickFunc={purchase('monthly')}>Upgrade</LoadingButton>
         </Col>
         <Col>
           <h1>$30/yr</h1>
@@ -60,7 +55,7 @@ export default function ProUpgrade() {
             <li>b</li>
             <li>c</li>
           </ul>
-          <Button onClick={purchase('yearly')}>Upgrade</Button>
+          <LoadingButton clickFunc={purchase('yearly')}>Upgrade</LoadingButton>
         </Col>
       </Row>
     </Container>
