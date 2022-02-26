@@ -22,6 +22,7 @@ urlpatterns = [
     path('', include('analytics.urls')), path('api/analytics/', include('analytics.api.urls')),
     path('', include('habits.urls')), path('api/habits/', include('habits.api.urls')),
     path('api/sharing_system/', include('sharing_system.api.urls')),
+    path('api/accounts/', include('accounts.urls')),
 ]
 
 if settings.DEBUG:

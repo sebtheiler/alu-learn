@@ -197,6 +197,7 @@ export function useObjectPaginatedList<ObjType, Event extends DefaultEvent = nev
   ) => ObjType[] | undefined,
   data?: Object,
   requirement: boolean = true,
+  callback?: (data: ObjType) => void,
 ): [
   ObjType[] | undefined,
   Dispatch<Event>,

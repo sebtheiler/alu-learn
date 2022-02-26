@@ -16,7 +16,10 @@ function getCookie(cname) {
 }
 
 
-const host = window.location.host === 'localhost:3000' || window.location.host === '127.0.0.1:3000' ? '127.0.0.1:8000' : window.location.host;
+const host =
+  (window.location.host === 'localhost:3000' || window.location.host === '127.0.0.1:3000' || window.location.host === 'dev.alulearn.com:3000')
+   ? '127.0.0.1:8000'
+   : window.location.host;
 export const baseUrl = `${window.location.protocol}//${host}`; // http://127.0.0.1:8000
 
 

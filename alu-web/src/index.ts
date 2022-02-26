@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { DeckImportComponent, StatisticsPage, SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges, ArchivedDecks } from './decks';
 import { GameComponent, MatchingGame } from './decks/games';
 import { Habits } from './habits';
-import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent } from './pages';
+import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent, ProUpgrade, ProCheckout } from './pages';
 import { NotificationComponent } from './profiles/notifications';
 import { ProfileDetail, LoginComponent, StaffForceLogin } from './profiles';
 import './index.css';
@@ -29,33 +29,35 @@ const renderElement = (Component: FunctionComponent | string, htmlName: string, 
 
 type ElementRow = [FunctionComponent, string, boolean?];
 ([
-  [ProfileDetail, 'profile-detail'],
-  [NotificationComponent, 'notification-component', true],
-  [ExploreComponent, 'explore-component'],
-  [LandingComponent, 'landing-component'],
-  [NavbarComponent, 'navbar-component'],
-  [LoginComponent, 'login-component'],
-  [DeckImportComponent, 'deck-importer'],
-  [ContactUs, 'contact-us'],
-  [SettingsPage, 'settings-page'],
+  [ArchivedDecks, 'archived-decks'],
   [ChangePasswordEmail, 'update-password-email'],
   [ConfirmEmail, 'confirm-email'],
-  [SendPasswordReset, 'send-password-reset'],
-  [ShareDeck, 'share-deck'],
-  [UserCustomization, 'user-customization'],
-  [MatchingGame, 'matching-game'],
+  [ContactUs, 'contact-us'],
+  [CreateFlashcard, 'create-flashcard'],
+  [DeckImportComponent, 'deck-importer'],
+  [ExploreComponent, 'explore-component'],
   [GameComponent, 'game-component'],
+  [Habits, 'habits-component'],
+  [LandingComponent, 'landing-component'],
+  [LoginComponent, 'login-component'],
+  [MatchingGame, 'matching-game'],
+  [NavbarComponent, 'navbar-component'],
+  [NotificationComponent, 'notification-component', true],
+  [ProCheckout, 'pro-checkout'],
+  [ProUpgrade, 'pro-upgrade'],
+  [ProfileDetail, 'profile-detail'],
+  [RenderSubmittedChanges, 'submitted-changes'],
+  [SendPasswordReset, 'send-password-reset'],
+  [SettingsPage, 'settings-page'],
+  [ShareDeck, 'share-deck'],
+  [SharedDeckDetail, 'shared-deck-detail'],
+  [SkillTreeHome, 'skill-tree'],
   [StaffForceLogin, 'staff-force-login'],
   [StatisticsPage, 'statistics-page'],
-  [Habits, 'habits-component'],
-  [SkillTreeHome, 'skill-tree'],
   [StudySkillTree, 'study-skill-tree'],
-  [ViewFlashcards, 'view-flashcards'],
-  [CreateFlashcard, 'create-flashcard'],
-  [SharedDeckDetail, 'shared-deck-detail'],
   [SubmittedList, 'submitted-list'],
-  [RenderSubmittedChanges, 'submitted-changes'],
-  [ArchivedDecks, 'archived-decks'],
+  [UserCustomization, 'user-customization'],
+  [ViewFlashcards, 'view-flashcards'],
 ] as ElementRow[]).map(el => renderElement(...el));
 
 // If you want your app to work offline and load faster, you can change
