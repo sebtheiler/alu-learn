@@ -2,8 +2,6 @@ import ContactUs from './contactus';
 import ExploreComponent from './explore';
 import LandingComponent from './landing';
 import NavbarComponent from './navbar';
-import ProCheckout from './pro/checkout';
-import ProUpgrade from './pro/upgrade';
 import UserCustomization from './customization';
 import {
   ChangePasswordEmail,
@@ -11,6 +9,11 @@ import {
   SendPasswordReset,
   SettingsPage,
 } from './settings';
+import {
+  ProUpgrade,
+  ProPurchaseCancelled,
+  ProPurchaseSuccess,
+} from './pro';
 
 export {
   ChangePasswordEmail,
@@ -19,8 +22,9 @@ export {
   ExploreComponent,
   LandingComponent,
   NavbarComponent,
-  ProCheckout,
   ProUpgrade,
+  ProPurchaseCancelled,
+  ProPurchaseSuccess,
   SendPasswordReset,
   SettingsPage,
   UserCustomization,

@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { DeckImportComponent, StatisticsPage, SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges, ArchivedDecks } from './decks';
 import { GameComponent, MatchingGame } from './decks/games';
 import { Habits } from './habits';
-import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent, ProUpgrade, ProCheckout } from './pages';
+import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent, ProUpgrade, ProPurchaseSuccess, ProPurchaseCancelled } from './pages';
 import { NotificationComponent } from './profiles/notifications';
 import { ProfileDetail, LoginComponent, StaffForceLogin } from './profiles';
 import './index.css';
@@ -43,8 +43,9 @@ type ElementRow = [FunctionComponent, string, boolean?];
   [MatchingGame, 'matching-game'],
   [NavbarComponent, 'navbar-component'],
   [NotificationComponent, 'notification-component', true],
-  [ProCheckout, 'pro-checkout'],
   [ProUpgrade, 'pro-upgrade'],
+  [ProPurchaseCancelled, 'pro-purchase-cancelled'],
+  [ProPurchaseSuccess, 'pro-purchase-success'],
   [ProfileDetail, 'profile-detail'],
   [RenderSubmittedChanges, 'submitted-changes'],
   [SendPasswordReset, 'send-password-reset'],

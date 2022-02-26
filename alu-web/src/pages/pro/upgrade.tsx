@@ -5,8 +5,10 @@ import Row from 'react-bootstrap/Row';
 import { backendFetch, useAsyncState } from '../../lookup/lookup';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { useState } from 'react';
+import { ProPurchaseSuccess } from '.';
 
-export default function ProUpgrade() {
+export default function ProUpgrade(props: { isPro: 'True' | 'False' }) {
+  const isPro = props.isPro === 'True';
   const [stripe, setStripe] = useState<Stripe | null>(null);
   useAsyncState<{ publishableKey: string }>(
     () => backendFetch('GET', 'accounts/stripe-config/'), [],
@@ -28,6 +30,7 @@ export default function ProUpgrade() {
     }
   }
 
+  if (isPro) return <ProPurchaseSuccess />
   return (
     <Container className='mt-5'>
       <Row className='text-center'>
