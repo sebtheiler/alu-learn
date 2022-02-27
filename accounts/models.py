@@ -8,3 +8,12 @@ class User(SimpleEmailConfirmationUserMixin, AbstractUser):
 
     is_pro = models.BooleanField(default=False)
     pro_expires = models.DateField(null=True, blank=True)
+
+
+class StripeCustomer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    stripe_customer_id = models.CharField(max_length=255)
+    stripe_subscription_id = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return self.user.username

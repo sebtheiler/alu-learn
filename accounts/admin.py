@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 
-from .models import User
+from .models import User, StripeCustomer
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -19,3 +19,4 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(StripeCustomer)
