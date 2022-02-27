@@ -46,6 +46,7 @@ export function StudyReviewInstances({ reviewInstances, numTotal, deckId, sectio
   return (
     <Container style={{ maxHeight: '70vh' }}>
       <div>
+        {/* TODO: change this to use the standardized `ProgressBar` */}
         {originalInfo.numTotal > 0 && <div className='study-progress mt-3'>
           <div
             className='study-progress-bar'

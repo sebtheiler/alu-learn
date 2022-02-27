@@ -21,7 +21,7 @@ urlpatterns = [
     path('settings/change-password/', views.change_reset_password_view_wrapper(False)),
     path('settings/change-email/', render_basic_view('misc/settings/change-email.html', True, False)),
     # Tutorial pages
-    path('help/welcome/', views.welcome_view),
+    path('help/welcome/', render_basic_view('help/welcome.html')),
     path('help/', views.md_view_wrapper('main', 'User Guide')),
     # Legal pages
     path('legal/', views.md_view_wrapper('legal/main', 'Legal Documents')),

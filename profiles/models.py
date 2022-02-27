@@ -239,7 +239,7 @@ class ProfileSettings(models.Model):
     is_opted_dev = models.BooleanField(default=False)
     show_update_modal = models.BooleanField(default=False)
 
-    timezone = models.PositiveSmallIntegerField(default=0)  # GMT-5 = 300
+    timezone = models.SmallIntegerField(default=0)  # GMT-5 = 300
 
     def __str__(self) -> str:
         return f'Settings for {self.profile.user.username}'

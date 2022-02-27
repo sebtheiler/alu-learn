@@ -1,0 +1,22 @@
+@import '../decks/shared';
+
+.choice-select {
+  border: $grayBorder;
+  border-radius: $cardBorderRadius;
+  background-color: $lightBackground;
+  overflow: hidden;
+
+  >.choice-selection {
+    padding: 15px;
+    border-bottom: 3px solid $lightGray;
+
+    &:hover {
+      cursor: pointer;
+      background-color: darken($lightBackground, 5%);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}

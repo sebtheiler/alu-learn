@@ -14,11 +14,6 @@ def home_page(request, *args, **kwargs):
     return render(request, 'misc/home.html', context={'username': request.user.username})
 
 
-@cache_page(timeout=60*60*48)  # 2 days - this page will almost never be updated
-def welcome_view(request, *args, **kwargs):
-    return render(request, 'help/welcome.html')
-
-
 def md_view_wrapper(path, title, redirect_if_unauth=False):
     @cache_page(timeout=60*60*48)
     def help_view(request, *args, **kwargs):

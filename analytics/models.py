@@ -1,5 +1,8 @@
-from profiles.models import Profile
+from django.contrib.auth import get_user_model
 from django.db import models
+from profiles.models import Profile, ProfileSettings
+
+User = get_user_model()
 
 
 class ShortUrl(models.Model):
@@ -79,3 +82,19 @@ class QuickFeedbackResponse(models.Model):
 
     def __str__(self) -> str:
         return f'Response for {self.quick_feedback.prompt} by {self.user.user.username}'
+
+
+class WelcomeInfo(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    user_type = models.CharField(
+        max_length=8,
+        choices=ProfileSettings.USER_TYPE_OPTIONS,
+        default='STUDENT',
+    )
+    referrer = models.CharField(max_length=8)
+    join_reason = models.CharField(max_length=8)
+    target_flashcards = models.PositiveSmallIntegerField()
+    send_reminders = models.BooleanField()
+    timezone = models.SmallIntegerField()
