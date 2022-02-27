@@ -14,7 +14,7 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
 
     fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('is_pro', 'pro_expires',)}),
+        (None, {'fields': ('is_pro', 'pro_from_org',)}),
     )
 
 

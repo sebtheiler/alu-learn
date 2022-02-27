@@ -65,8 +65,8 @@ def stripe_webhook(request):
         # Invalid signature
         return Response(status=400)
 
-    # Handle checkout.session.completed
     if event['type'] == 'checkout.session.completed':
+        # Subscribed to pro-mode
         session = event['data']['object']
         client_reference_id = session['client_reference_id']
         stripe_customer_id = session['customer']
@@ -81,5 +81,70 @@ def stripe_webhook(request):
             stripe_customer_id=stripe_customer_id,
             stripe_subscription_id=stripe_subscription_id,
         )
+    elif event['type'] == 'customer.subscription.deleted':
+        # Cancelled pro-mode subscription
+        session = event['data']['object']
+        stripe_customer_id = session['customer']
+
+        stripe_customer = StripeCustomer.objects.get(
+            stripe_customer_id=stripe_customer_id,
+        )
+        user = stripe_customer.user
+
+        stripe_customer.delete()
+        user.is_pro = False
+        user.save()
 
     return Response(status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def stripe_get_subscription(request):
+    try:
+        stripe_customer = StripeCustomer.objects.get(user=request.user)
+    except StripeCustomer.DoesNotExist:
+        return Response(status=404)
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    subscription = stripe.Subscription.retrieve(stripe_customer.stripe_subscription_id)
+    product = stripe.Product.retrieve(subscription.plan.product)
+
+    return Response({
+        'subscription': subscription,
+        'product': product,
+    }, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def stripe_cancel_subscription(request):
+    try:
+        stripe_customer = StripeCustomer.objects.get(user=request.user)
+    except StripeCustomer.DoesNotExist:
+        return Response(status=404)
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    stripe.Subscription.modify(
+        stripe_customer.stripe_subscription_id,
+        cancel_at_period_end=True,
+    )
+
+    return Response({'ok': True}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def stripe_reactivate_subscription(request):
+    try:
+        stripe_customer = StripeCustomer.objects.get(user=request.user)
+    except StripeCustomer.DoesNotExist:
+        return Response(status=404)
+
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    stripe.Subscription.modify(
+        stripe_customer.stripe_subscription_id,
+        cancel_at_period_end=False,
+    )
+
+    return Response({'ok': True}, status=200)
