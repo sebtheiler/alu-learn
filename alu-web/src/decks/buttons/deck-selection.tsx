@@ -2,7 +2,7 @@ import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
 import EditModal from '../modals/edit';
 import { Deck } from '../types';
-import { ExportModal, GameModal } from '../buttons';
+import { ExportModal, GameModal, ToolsModal } from '../buttons';
 import { useState } from 'react';
 
 interface DeckSelectionButtonsProps {
@@ -14,6 +14,7 @@ interface DeckSelectionButtonsProps {
 export default function DeckSelectionButtons({ deck, collapse, isPro, isArchived }: DeckSelectionButtonsProps) {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [gameModalOpen, setGameModalOpen] = useState(false);
+  const [toolsModalOpen, setToolsModalOpen] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
 
   const gameSubmitHandler = event => {
@@ -73,6 +74,19 @@ export default function DeckSelectionButtons({ deck, collapse, isPro, isArchived
           modalIsOpen={gameModalOpen}
           closeModal={() => setGameModalOpen(false)}
           submitHandler={gameSubmitHandler}
+        />
+        {!isArchived && <Button
+          onClick={() => setToolsModalOpen(true)}
+          disabled={!isPro}
+          block
+        >
+          Tools
+          {!isPro && <> (<a href='/pro/' className='text-light'>Pro-only</a>)</>}
+        </Button>}
+        <ToolsModal
+          deck={deck}
+          modalIsOpen={toolsModalOpen}
+          closeModal={() => setToolsModalOpen(false)}
         />
         <Button href={`/decks/${deck.id}/stats/`} block>Statistics</Button>
         <Button onClick={() => setExportModalOpen(true)} block>Export</Button>

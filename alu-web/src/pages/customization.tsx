@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { backendFetch } from '../lookup/lookup';
 
 
-export default function UserCustomization() {
+export default function UserCustomization({ isProFromOrg }) {
   const [slideNum, setSlideNum] = useState(0);
   const [answers, setAnswers] = useState({});
 
@@ -97,11 +97,12 @@ export default function UserCustomization() {
     </>),
     (<>
       <h4>Pro-mode for free!</h4>
-      {/* TODO: make lifetime with correct organization */}
-      <p>
+      {isProFromOrg.toLowerCase() === 'true' ? <p>
+        Since your organization is partnered with Alu, you have free and unlimited access to pro-mode.
+      </p> : <p>
         You now have access to Alu's upgraded pro-mode for a week, <strong>no credit card required.</strong>{' '}
         You can extend your subscription any time for <a href='/pro/'>$3/mo or $30/yr</a>.
-      </p>
+      </p>}
       <LoadingButton clickFunc={handleNext(null)}>Awesome!</LoadingButton>
     </>),
   ];

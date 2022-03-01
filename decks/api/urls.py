@@ -26,6 +26,8 @@ urlpatterns = [
     # ===== Other Deck Functions =====
     path('deck/<int:deck_id>/statistics/', views.deck_statistics_view),
     path('deck/<int:deck_id>/archive/', views.archive_deck),
+    path('deck/<int:deck_id>/difficult-review-instances/', views.get_difficult_review_instances),
+    path('deck/<int:deck_id>/difficult-sub-sections/', views.get_difficult_sub_sections),
     # ====== Flashcards =====
     *generate_base_api(
         'decks', 'flashcard',

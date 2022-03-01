@@ -1,10 +1,15 @@
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import LoadingButton from './buttons/LoadingButton';
 import Modal from 'react-bootstrap/Modal';
-import { Deck } from './types';
+import RenderFlashcard from './render-flashcard';
+import { Deck, MainSection, SubSection } from './types';
 import { apiDeckJSONExport } from '../lookup';
-import { errorHandler, FormCheckbox, LoadingButton, QuestionBubble } from '../utils';
+import { backendFetch } from '../lookup/lookup';
+import { cleanTitle } from './sub-section';
+import { errorHandler, FormCheckbox, LoadingButton as OldLoadingButton, QuestionBubble } from '../utils';
 import { useState } from 'react';
+import './shared.scss';
 
 interface ExportModalProps {
   modalIsOpen: boolean;
@@ -81,9 +86,9 @@ export function ExportModal(props: ExportModalProps) {
           </p>}
         </Modal.Body>
         <Modal.Footer>
-          <LoadingButton loadingMessage='Exporting...' type='submit' block>
+          <OldLoadingButton loadingMessage='Exporting...' type='submit' block>
             Export
-          </LoadingButton>
+          </OldLoadingButton>
         </Modal.Footer>
       </Form>
     </Modal>
@@ -185,6 +190,95 @@ export function GameModal(props: GameModalProps) {
           <Button type='submit' block>Play!</Button>
         </Modal.Footer>
       </Form>
+    </Modal>
+  );
+}
+
+interface ToolsModalProps {
+  deck: Deck;
+  modalIsOpen: boolean;
+  closeModal(): void;
+}
+export function ToolsModal({ deck, modalIsOpen, closeModal }: ToolsModalProps) {
+  const [status, setStatus] = useState<'CHOOSING' | 'LOADING' | string>('CHOOSING');
+  const [results, setResults] = useState<any[]>([]);
+
+  const tool = (toolType: 'findDifficultFlashcards' | 'findDifficultTopics') => {
+    return async () => {
+      setStatus('LOADING');
+      switch (toolType) {
+        case 'findDifficultFlashcards':
+          await backendFetch(
+            'GET', `decks/deck/${deck.id}/difficult-review-instances/`,
+          ).then((resp: any) => {
+            setStatus(toolType);
+            setResults(resp.results);
+          });
+          break;
+        case 'findDifficultTopics':
+          await backendFetch(
+            'GET', `decks/deck/${deck.id}/difficult-sub-sections/`,
+          ).then((resp: any) => {
+            setStatus(toolType);
+            setResults(resp as SubSection[]);
+          });
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  console.log(results)
+
+  return (
+    <Modal show={modalIsOpen} onHide={closeModal} size='xl'>
+      <Modal.Header>
+        <Modal.Title>Tools for "{deck.title}"</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <LoadingButton
+          clickFunc={tool('findDifficultFlashcards')}
+          disabled={status === 'LOADING'}
+          block
+        >
+          Find Difficult Flashcards
+        </LoadingButton>
+        <LoadingButton
+          clickFunc={tool('findDifficultTopics')}
+          disabled={status === 'LOADING'}
+          block
+        >
+          Find Difficult Topics
+        </LoadingButton>
+        {status !== 'CHOOSING' && <hr />}
+        {status === 'findDifficultFlashcards' && <>
+          {results && results.length > 0 ? results.map(
+            (reviewInstance: any, i) => <RenderFlashcard
+              flashcard={reviewInstance}
+              orderNum={i}
+              key={reviewInstance.id}
+            />
+          ) : <p>No flashcards found</p>}
+        </>}
+        {status === 'findDifficultTopics' && <>
+          {results && results.length > 0 ? results.slice(0, 10).map(
+            (subSection: SubSection, i) =>
+            <p
+              className='searched-item'
+              onClick={() => window.open(
+                `/deck/${deck.id}/flashcards/sections/\
+                  ${cleanTitle((subSection.main_section as MainSection).data.title)}__\
+                  ${cleanTitle(subSection.data.title)}/\
+                `.replaceAll(' ', '')
+              )}
+              key={i}
+            >
+              Sub Section: {subSection.data.title}
+              <span className='float-right'>Average Ease: {Math.round(subSection.avg_ease as number)}</span>
+            </p>
+          ) : <p>No topics found</p>}
+        </>}
+      </Modal.Body>
     </Modal>
   );
 }
