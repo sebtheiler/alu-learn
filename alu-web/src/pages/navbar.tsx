@@ -176,10 +176,6 @@ export default function NavbarComponent(props: NavbarComponentProps) {
 
                 <NavDropdown.Divider />
 
-                <NavDropdown.Item href='/help/' id='help-option'>
-                  <i className='fas fa-info-circle'></i>{' '}
-                  Help and Tutorials
-                </NavDropdown.Item>
                 <NavDropdown.Item onClick={logoutHandler} id='logout-option'>
                   <i className='fas fa-sign-out-alt'></i>{' '}
                   Log-out

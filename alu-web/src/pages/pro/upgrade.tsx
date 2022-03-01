@@ -9,8 +9,16 @@ import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { useState } from 'react';
 
 type StrBool = 'True' | 'False';
-export default function ProUpgrade(props: { isPro: StrBool, isAnonymous: StrBool }) {
+interface ProUpgradeProps {
+  isPro: StrBool;
+  isProFromOrg: StrBool;
+  proTrialExpires: string;
+  isAnonymous: StrBool;
+}
+export default function ProUpgrade(props: ProUpgradeProps) {
   const isPro = props.isPro === 'True';
+  const isProFromOrg = props.isProFromOrg === 'True';
+  const { proTrialExpires } = props;
   const isAnonymous = props.isAnonymous === 'True';
 
   const [stripe, setStripe] = useState<Stripe | null>(null);
@@ -34,12 +42,21 @@ export default function ProUpgrade(props: { isPro: StrBool, isAnonymous: StrBool
     }
   }
 
-  if (isPro) return <ProPurchaseSuccess />
+  if (isProFromOrg) return <ProFromOrganization />
+  if (isPro && proTrialExpires.length <= 4) return <ProPurchaseSuccess />
   return (
     <Container className='mt-5'>
       <Row className='text-center'>
         <Col>
           <h1>Upgrade to Alu Pro</h1>
+          {proTrialExpires.length > 4 && <h4>
+            Your free-trial of Alu Pro ends {proTrialExpires.split(',').slice(0, 2).join(',')}.{' '}
+            Upgrade now to make it permanent.
+          </h4>}
+          {isAnonymous && <h4>
+            Get a free week of Alu Pro when you <a href='/?showLoginRequired=true'>Sign Up</a>.{' '}
+            No credit card required.
+          </h4>}
           <p>flashy description</p>
         </Col>
       </Row>
@@ -71,6 +88,18 @@ export default function ProUpgrade(props: { isPro: StrBool, isAnonymous: StrBool
           }
         </Col>
       </Row>
+    </Container>
+  );
+}
+
+function ProFromOrganization() {
+  return (
+    <Container className='text-center mt-5'>
+      <h1>Your Organization Has Free Access to Alu Pro!</h1>
+      <br />
+      <p>Because of your organization, you have free and unlimited access to Alu Pro.</p>
+      <p>If you ever have any questions, you can contact support at <a href='mailto:support@alulearn.com'>support@alulearn.com</a></p>
+      <Button href='/home/'>Return Home</Button>
     </Container>
   );
 }

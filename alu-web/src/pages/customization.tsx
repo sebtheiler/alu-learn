@@ -21,7 +21,7 @@ export default function UserCustomization() {
       if (slideNum === slides.length - 1) {
         await backendFetch(
           'POST', 'analytics/collect-welcome-info/', answers,
-        ).then(() => {console.log('d'); window.location.replace('/home/')});
+        ).then(() => window.location.replace('/home/'));
       } else {
         setSlideNum(slideNum + 1);
       }

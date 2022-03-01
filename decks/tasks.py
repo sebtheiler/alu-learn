@@ -5,10 +5,13 @@ from celery import shared_task
 from celery.decorators import periodic_task
 from celery.schedules import crontab
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core import mail
 from django.template.loader import render_to_string
 from django.utils import timezone
 from profiles.models import Profile
+
+User = get_user_model()
 
 every_hour = ','.join(str(i) for i in range(24))  # 0,1,2,3,...,23
 
@@ -99,6 +102,39 @@ def backup_server():
     os.system(f'pg_dump alu > "{filepath}"')
 
 
+@shared_task
+def expire_pro_mode_trial():
+    users = User.objects.filter(
+        pro_trial_expires__lte=timezone.now(),
+    )
+
+    connection = mail.get_connection()
+    connection.open()
+    for user in users:
+        context = {
+            'name': user.first_name,
+        }
+
+        mail.send_mail(
+            'Your Free Trial of Alu Pro Has Expired',
+            'Please use an HTML-capable browser to view this summary',
+            settings.EMAIL_HOST_USER,
+            [user.email],
+            html_message=render_to_string(
+                'emails/pro-mode-expired.html',
+                context,
+            ),
+            fail_silently=False,
+            connection=connection,
+        )
+
+    users.update(
+        is_pro=False,
+        pro_trial_expires=None,
+    )
+
+
 @periodic_task(run_every=crontab(minute=0, hour=0))
 def run_backup_server():
     backup_server.delay()
+    expire_pro_mode_trial.delay()
