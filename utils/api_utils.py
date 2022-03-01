@@ -6,6 +6,7 @@ from django.db import models
 from django.http import Http404
 from django.shortcuts import redirect, render
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import BasePermission
 from rest_framework.response import Response
 
 from .utils import assert_dict_data_type
@@ -128,4 +129,17 @@ def get_obj_or_404(
         return None, Response(
             {'message': f'{type(Model)} not found'},
             status=404,
+        )
+
+
+class IsPro(BasePermission):
+    """
+    Allows access only to Pro Mode users.
+    """
+
+    def has_permission(self, request, view):
+        return bool(
+            request.user and
+            request.user.is_authenticated and
+            request.user.is_pro
         )

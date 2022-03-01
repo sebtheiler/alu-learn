@@ -92,6 +92,7 @@ export default function SkillTreeHome({ defaultDeckSelected, defaultClassroomSel
                     window.history.pushState(`alu/deck/${deck.id}/`, deck.title, `/deck/${deck.id}/`);
                   }}
                   selected={selected.selected === deck.id && selected.selectedType === 'DECK'}
+                  isPro={isPro.toLowerCase() === 'true'}
                   key={`deck-${deck.id}`}
                 />
               ) : <p>Loading decks…</p>}

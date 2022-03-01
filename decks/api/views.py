@@ -14,7 +14,7 @@ from sharing_system.models import FlashCardAction
 from skill_tree.models import AbstractSection, SubSection
 from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
-from utils.api_utils import get_obj_or_404
+from utils.api_utils import IsPro, get_obj_or_404
 from utils.utils import assert_dict_data_type, base64_to_file
 
 from ..models import (Deck, FlashCard, FlashCardData, ReviewInstance,
@@ -584,7 +584,7 @@ def flashcard_list_view(request, *args, **kwargs):
 
 # ===== Flashcard Study =====
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsPro])
 def game_flashcards_view(request, *args, **kwargs):
     """
     Gets the flashcards for a game, based on some parameters - POST

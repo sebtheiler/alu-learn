@@ -7,9 +7,10 @@ interface DeckSelectionProps {
   deck: Deck;
   onClick(): void;
   selected: boolean;
+  isPro: boolean;
+  isArchived?: boolean;
 }
-export default function DeckSelection(props: DeckSelectionProps) {
-  const { deck, onClick, selected } = props;
+export default function DeckSelection({ deck, onClick, selected, isPro, isArchived }: DeckSelectionProps) {
   const [dropdownExpanded, setDropdownExpanded] = useState(false);
 
   return (
@@ -34,6 +35,8 @@ export default function DeckSelection(props: DeckSelectionProps) {
       <DeckSelectionButtons
         collapse={dropdownExpanded}
         deck={deck}
+        isPro={isPro}
+        isArchived={isArchived}
       />
     </div>
   );
