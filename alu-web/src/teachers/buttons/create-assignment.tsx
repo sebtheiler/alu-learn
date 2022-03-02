@@ -16,16 +16,6 @@ interface CreateAssignmentButtonProps {
 }
 export default function CreateAssignmentButton({ classroom, assignments, setAssignments }: CreateAssignmentButtonProps) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { classroomsTaught } = useContext(HomeActionDispatch)
-  const mainSections = useMemo(() => {
-    if (!classroom.shared_deck) return [];
-    const sortedSnapshots = classroom.shared_deck.snapshots.sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-    );
-    const latestSnapshot = sortedSnapshots[0];
-
-    return latestSnapshot.main_sections;
-  }, [classroom]);
 
   const createAssignment = async () => {
     const form = document.getElementById('assignment-form') as any;
@@ -48,6 +38,36 @@ export default function CreateAssignmentButton({ classroom, assignments, setAssi
 
   return (<>
     <Button onClick={() => setModalIsOpen(true)}>Create Assignment</Button>
+    <CreateEditAssignmentModal
+      modalIsOpen={modalIsOpen}
+      setModalIsOpen={setModalIsOpen}
+      classroom={classroom}
+      createAssignment={createAssignment}
+    />
+  </>);
+}
+
+interface CreateEditAssignmentModalProps {
+  modalIsOpen: boolean;
+  setModalIsOpen(isOpen: boolean): void;
+  classroom: Classroom;
+  createAssignment?(): Promise<void>;
+  editAssignment?(): Promise<void>;
+  assignment?: Assignment;
+}
+export function CreateEditAssignmentModal({ modalIsOpen, setModalIsOpen, classroom, createAssignment, editAssignment, assignment }: CreateEditAssignmentModalProps) {
+  const { classroomsTaught } = useContext(HomeActionDispatch)
+  const mainSections = useMemo(() => {
+    if (!classroom.shared_deck) return [];
+    const sortedSnapshots = classroom.shared_deck.snapshots.sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
+    const latestSnapshot = sortedSnapshots[0];
+
+    return latestSnapshot.main_sections;
+  }, [classroom]);
+
+  return (
     <Modal show={modalIsOpen} onHide={() => setModalIsOpen(false)}>
       <Modal.Header>
         <Modal.Title>
@@ -63,6 +83,7 @@ export default function CreateAssignmentButton({ classroom, assignments, setAssi
             <Form.Control
               type='text'
               name='assignmentTitle'
+              defaultValue={assignment?.title}
               required
             />
           </Form.Group>
@@ -75,6 +96,7 @@ export default function CreateAssignmentButton({ classroom, assignments, setAssi
               as='select'
               name='sections'
               style={{ height: '250px' }}
+              defaultValue={assignment?.sub_sections?.map(s => s.id)}
               multiple
               custom
             >
@@ -95,7 +117,8 @@ export default function CreateAssignmentButton({ classroom, assignments, setAssi
             <Form.Control
               as='select'
               name='classrooms'
-              defaultValue={[classroom.id.toString()]}
+              // @ts-ignore
+              defaultValue={assignment?.classrooms ?? [classroom.id.toString()]}
               multiple
               custom
             >
@@ -105,7 +128,7 @@ export default function CreateAssignmentButton({ classroom, assignments, setAssi
             </Form.Control>
           </Form.Group>
           <Form.Group>
-            <FormCheckbox name='essentialOnly'>
+            <FormCheckbox name='essentialOnly' defaultChecked={assignment?.essential_only}>
               Essential only?{' '}
               <QuestionBubble>
                 Only assign flashcards with the "essential" tag
@@ -115,9 +138,12 @@ export default function CreateAssignmentButton({ classroom, assignments, setAssi
         </Modal.Body>
         <Modal.Footer>
           <ButtonGroup>
-            <LoadingButton clickFunc={createAssignment}>
+            {createAssignment && <LoadingButton clickFunc={createAssignment}>
               Create
-            </LoadingButton>
+            </LoadingButton>}
+            {editAssignment && <LoadingButton clickFunc={editAssignment}>
+              Edit
+            </LoadingButton>}
             <Button
               onClick={() => setModalIsOpen(false)}
               className='ml-1'
@@ -129,5 +155,5 @@ export default function CreateAssignmentButton({ classroom, assignments, setAssi
         </Modal.Footer>
       </Form>
     </Modal>
-  </>);
+  );
 }

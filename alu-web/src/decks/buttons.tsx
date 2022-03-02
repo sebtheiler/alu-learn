@@ -228,7 +228,6 @@ export function ToolsModal({ deck, modalIsOpen, closeModal }: ToolsModalProps) {
       }
     }
   }
-  console.log(results)
 
   return (
     <Modal show={modalIsOpen} onHide={closeModal} size='xl'>

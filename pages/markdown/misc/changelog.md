@@ -1,9 +1,12 @@
-# LAUNCH - Feb ?? - ???
-???
+# Final Fixes - Mar 02 - 1.0.14
+Next update is launch.  Finally.
+
 
 * **Share Imported Decks:** You can now share decks that you've imported.  This previously did not work due to a bug.
 * **Alphabetically Ordered Decks:** Decks are now ordered alphabetically on the homepage
 * **Scheduler Fuzz:** There is now a slight _fuzz_ to the flashcard scheduler for long intervals.  This will decrease the probability of flashcards all lumping up on a single day.
+* **Essential Only:** Added an "Essential Only" option to assignments.
+* **Made Assignments Editable:** Teachers can now edit the assignments they create.
 
 ## Streak & Reminder Email Fix - Feb 13 - 1.0.13
 ...

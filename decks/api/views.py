@@ -688,11 +688,14 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     Get review instances to study - POST
 
     `section` (Data)?: Section to get flashcards from (a__b)
+    `deck_id` (Data)?: Deck to get flashcards from
     `study_ahead` (Data)?: If True, return all flashcards, not just non-due ones
+    `essential_only` (Data)?: If True, only return flashcards with the tag 'essential'
     """
     section = request.data.get('section')
     deck_id = request.data.get('deck_id')
     study_ahead = request.data.get('study_ahead')
+    essential_only = request.data.get('essential_only')
     utc_timezone_offset = request.data.get('utc_timezone_offset', 0)
 
     # Build base query
@@ -718,6 +721,9 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
 
     if deck_id:
         review_instance_query &= Q(flashcard__sub_section__main_section__deck_id=deck_id)
+
+    if essential_only:
+        review_instance_query &= Q(flashcard__data__tags__icontains='essential')
 
     # Find review instances that are due
     NUM_FLASHCARDS_PER_LESSON = 25

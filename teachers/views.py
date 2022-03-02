@@ -46,7 +46,7 @@ def get_student_sub_section(request, classroom_id, sub_section):
         student_sub_section = SubSection.objects.filter(
             universal_sub_section_id=teacher_sub_section.universal_sub_section_id,
             main_section__deck__user=request.user,
-        ).first()  # NOTE: we use .first() instead of .get() if there are mutliple decks
+        ).first()  # NOTE: we use .first() instead of .get() if there are multiple decks
     except SubSection.DoesNotExist:
         raise Http404()
 
@@ -58,7 +58,11 @@ def classroom_assignment_study(request, classroom_id, sub_section, *args, **kwar
     student_sub_section = get_student_sub_section(request, classroom_id, sub_section)
 
     url = f'/deck/{student_sub_section.main_section.deck_id}/study/{sub_section}/'
-    return redirect(f'{url}?isAssignment=true')
+    url = f'{url}?isAssignment=true'
+    if request.GET.get('essentialOnly') == 'true':
+        url += '&essentialOnly=true'
+
+    return redirect(url)
 
 
 @permissions()

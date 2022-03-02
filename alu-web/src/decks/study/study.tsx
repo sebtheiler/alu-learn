@@ -10,15 +10,16 @@ interface StudySkillTreeProps {
   isPro: 'true' | 'false';
 }
 export default function StudySkillTree({ deckId, section, isPro }: StudySkillTreeProps) {
-  const studyAhead = useMemo(() => {
+  const { studyAhead, essentialOnly } = useMemo(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const studyAhead = urlParams.get('studyAhead') === 'true';
+    const essentialOnly = urlParams.get('essentialOnly') === 'true';
 
-    return studyAhead ?? false;
+    return { studyAhead, essentialOnly };
   }, []);
   const [studyData, dispatchStudyData] = useAsyncDispatch<ReviewInstanceStudy, StudyAnswerEvent>(
     apiReviewInstanceStudy,
-    [parseInt(deckId), section, studyAhead],
+    [parseInt(deckId), section, studyAhead, essentialOnly],
     studyAnswerReducer,
   );
 

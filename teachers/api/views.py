@@ -213,6 +213,51 @@ def create_assignment(request):
     return Response(AssignmentSerializer(assignment).data, status=201)
 
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_assignment_view(request, assignment_id):
+    try:
+        assignment = Assignment.objects.filter(
+            pk=assignment_id,
+            classrooms__teachers=request.user.profile,
+        ).first()
+
+        if assignment is None:
+            raise Assignment.DoesNotExist
+    except Assignment.DoesNotExist:
+        return Response({'message': 'Assignment not found'}, status=404)
+
+    edited_values = request.data.get('edited_values')
+
+    assignment.title = edited_values.get('assignment_title', assignment.title)
+    assignment.essential_only = edited_values.get('essential_only', assignment.essential_only)
+    assignment.save()
+
+    classroom_ids = edited_values.get('classroom_ids')
+    if classroom_ids:
+        classrooms = Classroom.objects.filter(
+            pk__in=classroom_ids,
+            teachers=request.user.profile,
+        )
+        if classrooms.count() != len(classroom_ids) or len(classroom_ids) == 0:
+            return Response({'message': 'Classrooms not found'}, status=404)
+
+        assignment.classrooms.set(classrooms)
+
+    section_ids = edited_values.get('section_ids')
+    if section_ids:
+        sub_sections = SubSection.objects.filter(
+            pk__in=section_ids,
+            main_section__snapshot__shared_deck__owners=request.user.profile,
+        )
+        if sub_sections.count() != len(section_ids) or len(section_ids) == 0:
+            return Response({'message': 'Sub sections not found'}, status=404)
+
+        assignment.sub_sections.set(sub_sections)
+
+    return Response(AssignmentSerializer(assignment).data, status=200)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def classrooms_taught_list(request, *args, **kwargs):

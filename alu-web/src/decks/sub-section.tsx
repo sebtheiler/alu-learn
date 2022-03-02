@@ -15,8 +15,9 @@ interface SubSectionProps {
   numSubSections?: number;
   readOnly?: boolean;
   studyable?: boolean;
+  essentialOnly?: boolean;
 }
-export default function RenderSubSection({ subSection, mainSection, numSubSections, readOnly, studyable }: SubSectionProps) {
+export default function RenderSubSection({ subSection, mainSection, numSubSections, readOnly, studyable, essentialOnly }: SubSectionProps) {
   return (
     <Col
       xl={3}
@@ -38,13 +39,15 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
               />}
             </Popover.Title>
             <Popover.Content>
-              <p>{subSection.data.description}</p>
+              {/* <p>{subSection.data.description}</p> */}
               <div>
                 {studyable && <LoadingButton
                   clickFunc={async () => {window.location.href = (
                     `study/\
                     ${cleanTitle(mainSection.data.title)}__\
-                    ${cleanTitle(subSection.data.title)}/`.replaceAll(' ', '')
+                    ${cleanTitle(subSection.data.title)}/\
+                    ${essentialOnly ? '?essentialOnly=true' : ''}\
+                    `.replaceAll(' ', '')
                   ); await new Promise(r => setTimeout(r, 100000))}}
                   block
                 >

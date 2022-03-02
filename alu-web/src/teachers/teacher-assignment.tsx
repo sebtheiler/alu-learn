@@ -1,7 +1,9 @@
+import Button from 'react-bootstrap/Button';
 import Chart from 'react-google-charts';
-import { Assignment } from './types';
-import { backendFetch, useAsyncState } from '../lookup/lookup';
-import { useState } from 'react';
+import { Assignment, Classroom } from './types';
+import { CreateEditAssignmentModal } from './buttons/create-assignment';
+import { apiObjectEdit, backendFetch, useAsyncState } from '../lookup/lookup';
+import React, { useState } from 'react';
 import './teacher-assignment.scss';
 
 interface StudentPercentComplete {
@@ -26,13 +28,45 @@ const parseStudentPercentComplete = (
   return parsed;
 }
 
-export default function TeacherAssignment({ classroomId, assignment }: { classroomId: number, assignment: Assignment }) {
+interface TeacherAssignmentProps {
+  classroom: Classroom;
+  assignment: Assignment;
+  assignments: Assignment[];
+  setAssignments(assignments: Assignment[]): void;
+}
+export default function TeacherAssignment({ classroom, assignment, assignments, setAssignments }: TeacherAssignmentProps) {
   const [showFullDetail, setShowFullDetail] = useState(false);
+  const [editModalIsOpen, setEditModalIsOpen] = useState(false)
   const [studentsPercentComplete] = useAsyncState<StudentPercentComplete[]>(
-    () => backendFetch('GET', `teachers/classroom/${classroomId}/assignments/${assignment.id}/percent-complete/`),
+    () => backendFetch('GET', `teachers/classroom/${classroom.id}/assignments/${assignment.id}/percent-complete/`),
     [], undefined,
     showFullDetail,
   );
+
+  const editAssignment = async () => {
+    const form = document.getElementById('assignment-form') as any;
+    const assignment_title = form.elements.assignmentTitle.value;
+    const section_ids = Array.from(form.elements.sections).filter((section: any) => section.selected).map((section: any) => section.value);
+    const classroom_ids = Array.from(form.elements.classrooms).filter((classroom: any) => classroom.selected).map((classroom: any) => parseInt(classroom.value));
+    const essential_only = form.elements.essentialOnly.checked;
+
+    await apiObjectEdit<Assignment>('teachers', 'assignment', assignment.id, {
+      assignment_title,
+      section_ids,
+      classroom_ids,
+      essential_only,
+    }).then(
+      (editedAssignment: Assignment) => {
+        let newAssignments = assignments;
+        let index = newAssignments.map(a => a.id).indexOf(assignment.id);
+        newAssignments[index] = editedAssignment;
+
+        setAssignments(newAssignments);
+        setEditModalIsOpen(false);
+        window.location.reload();
+      }
+    );
+  }
 
   return (
     <div
@@ -45,9 +79,17 @@ export default function TeacherAssignment({ classroomId, assignment }: { classro
       <div>
         <p>
           Assigned sections: {assignment.sub_sections.map((subSection, i) =>
-            <>{subSection.data.title}{i !== assignment.sub_sections.length - 1 && ', '}</>
+            <span key={i}>{subSection.data.title}{i !== assignment.sub_sections.length - 1 && ', '}</span>
           )}
         </p>
+        <Button onClick={() => setEditModalIsOpen(true)}>Edit</Button><br />
+        <CreateEditAssignmentModal
+          modalIsOpen={editModalIsOpen}
+          setModalIsOpen={setEditModalIsOpen}
+          classroom={classroom}
+          editAssignment={editAssignment}
+          assignment={assignment}
+        />
         <small>(click to {showFullDetail ? 'collapse' : 'expand'})</small>
       </div>
       {showFullDetail && (studentsPercentComplete?.length ?? 0) > 0 && <div>

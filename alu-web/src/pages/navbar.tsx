@@ -126,10 +126,10 @@ export default function NavbarComponent(props: NavbarComponentProps) {
             <i className='fa fa-book'></i>{' '}
             Changelog
           </Nav.Link>
-          <Nav.Link href='/pro/'>
+          {/* <Nav.Link href='/pro/'>
             <i className='fa fa-award'></i>{' '}
             Pro
-          </Nav.Link>
+          </Nav.Link> */}
           {congratulationsMessage}
         </Nav>
         <Nav className='ml-auto'>

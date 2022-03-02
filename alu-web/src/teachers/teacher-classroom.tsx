@@ -122,7 +122,9 @@ function AssignmentsList({ classroom }: { classroom: Classroom }) {
     {assignments.map(assignment =>
       <TeacherAssignment
         assignment={assignment}
-        classroomId={classroom.id}
+        classroom={classroom}
+        assignments={assignments}
+        setAssignments={setAssignments}
         key={`${classroom.id}-${assignment.id}`}
       />
     )}

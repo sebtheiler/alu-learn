@@ -16,6 +16,7 @@ export default function StudentAssignment({ assignment }: { assignment: Assignme
               subSection={subSection}
               mainSection={subSection.main_section as MainSection}
               key={subSection.id}
+              essentialOnly={assignment.essential_only}
               readOnly
               studyable
             />
