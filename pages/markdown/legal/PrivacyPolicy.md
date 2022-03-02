@@ -28,7 +28,7 @@ Alu discloses potentially personally-identifying and personally-identifying info
 
 ## Cookies
 
-A cookie is a string of information that a website stores on a visitor's computer, and that the visitor's browser provides to the website each time the visitor returns. Alu uses cookies to help Alu identify and track visitors, their usage of the Alu website, and their website access preferences. Alu visitors who do not wish to have cookies placed on their computers should set their browsers to refuse cookies before using Alu's websites, with the drawback that certain features of Alu's websites may not function properly without the aid of cookies.  Cookies are, for example, required to keep the current user logged in.
+A cookie is a string of information that a website stores on a visitor's computer, and that the visitor's browser provides to the website each time the visitor returns. Alu uses cookies to help Alu identify and track visitors, their usage of the Alu website, and their website access preferences.  Alu also allows third parties, including Google, to use cookies to serve targeted ads.  Users can opt out of seeing personalized ads by visiting Google's Ad Settings.  Alu visitors who do not wish to have cookies placed on their computers should set their browsers to refuse cookies before using Alu's websites, with the drawback that certain features of Alu's websites may not function properly without the aid of cookies.  Cookies are, for example, required to keep the current user logged in.
 
 ## Privacy Policy Changes
 

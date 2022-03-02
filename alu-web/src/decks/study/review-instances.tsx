@@ -1,3 +1,4 @@
+import AdComponent from '../../pages/ads';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Col from 'react-bootstrap/Col';
@@ -26,8 +27,9 @@ interface StudyReviewInstancesProps {
   deckId: number;
   section: string;
   studyAhead: boolean;
+  isPro: boolean;
 }
-export function StudyReviewInstances({ reviewInstances, numTotal, deckId, section, studyAhead }: StudyReviewInstancesProps) {
+export function StudyReviewInstances({ reviewInstances, numTotal, deckId, section, studyAhead, isPro }: StudyReviewInstancesProps) {
   const [originalReviewInfo] = useAsyncDispatch<StreakInfo>(apiStreakReviewInfo);
   const originalInfo = useMemo<OriginalInfo>(
     () => ({
@@ -44,6 +46,7 @@ export function StudyReviewInstances({ reviewInstances, numTotal, deckId, sectio
   return (
     <Container style={{ maxHeight: '70vh' }}>
       <div>
+        {/* TODO: change this to use the standardized `ProgressBar` */}
         {originalInfo.numTotal > 0 && <div className='study-progress mt-3'>
           <div
             className='study-progress-bar'
@@ -74,6 +77,7 @@ export function StudyReviewInstances({ reviewInstances, numTotal, deckId, sectio
           numTotal={numTotal}
           section={section}
           deckId={deckId}
+          isPro={isPro}
         />
       }
     </Container>
@@ -85,8 +89,9 @@ interface FinishedStudyingProps {
   numTotal: number;
   section: string;
   deckId: number;
+  isPro: boolean;
 }
-function FinishedStudying({ originalInfo, numTotal, section, deckId }: FinishedStudyingProps) {
+function FinishedStudying({ originalInfo, numTotal, section, deckId, isPro }: FinishedStudyingProps) {
   if (numTotal === 0) {
     return (
       <div className='text-center'>
@@ -145,7 +150,7 @@ function FinishedStudying({ originalInfo, numTotal, section, deckId }: FinishedS
             {originalInfo.numTotal > originalInfo.numNew && <p className='text-primary'>
               You refreshed your knowledge of <strong>{originalInfo.numTotal - originalInfo.numNew}</strong> flashcards!
             </p>}
-            {/* <p>TODO: AD</p> */}
+            <AdComponent adType='finished-studying' isPro={isPro} />
           </Col>
         </Row>
       </div>

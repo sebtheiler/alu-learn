@@ -1,7 +1,8 @@
 import CardsDoneSVG from './study/cards-done-svg'
+import AdComponent from '../pages/ads';
 import { apiStreakReviewInfo, useAsyncDispatch, StreakInfo } from '../lookup/lookup';
 
-export default function Meta({ isTeacher }: { isTeacher: boolean }) {
+export default function Meta({ isTeacher, isPro }: { isTeacher: boolean, isPro: boolean}) {
   const [reviewInfo] = useAsyncDispatch<StreakInfo>(apiStreakReviewInfo);
 
   return (<>
@@ -13,7 +14,7 @@ export default function Meta({ isTeacher }: { isTeacher: boolean }) {
       />
       <small className='text-secondary'>You can change this goal in the <a href='/settings'>settings</a></small>
     </>}
-    {/* TODO: AD */}
+    <hr style={{ maxWidth: '300px' }} />
+    <AdComponent adType='meta-sidebar' isPro={isPro} />
   </>)
 }
-

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
 import Button, { ButtonProps } from 'react-bootstrap/Button';
+import Spinner from 'react-bootstrap/Spinner';
+import { useState } from 'react';
 
 interface LoadingButtonProps extends ButtonProps {
   clickFunc(event): Promise<any>;

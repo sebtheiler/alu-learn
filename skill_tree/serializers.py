@@ -55,12 +55,14 @@ class AbstractSectionSerializer(serializers.ModelSerializer):
 
 class SubSectionSerializer(AbstractSectionSerializer):
     main_section = serializers.SerializerMethodField(read_only=True)
+    avg_ease = serializers.SerializerMethodField(read_only=True)
 
     class Meta(AbstractSectionSerializer.Meta):
         model = SubSection
         fields = AbstractSectionSerializer.Meta.fields + (
             'main_section',
             'universal_sub_section_id',
+            'avg_ease',
         )
         read_only_fields = fields
 
@@ -69,6 +71,9 @@ class SubSectionSerializer(AbstractSectionSerializer):
             return MainSectionSerializer(obj.main_section).data
         else:
             return obj.main_section_id
+
+    def get_avg_ease(self, obj):
+        return getattr(obj, 'avg_ease', None)
 
 
 class SubSectionActionSerializer(AbstractActionSerializer):

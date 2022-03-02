@@ -1,11 +1,11 @@
 import datetime as dt
 
+from django.db.models.query_utils import Q
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.db.models.query_utils import Q
 
-from ..models import QuickFeedback, QuickFeedbackResponse
+from ..models import QuickFeedback, QuickFeedbackResponse, WelcomeInfo
 from ..serializers import QuickFeedbackSerializer
 
 
@@ -94,3 +94,30 @@ def respond_to_feedback_question(request, quick_feedback_id, *args, **kwargs):
     )
 
     return Response({'message': 'Responded successfully'}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def collect_user_welcome_info(request):
+    user_type = request.data.get('userType')
+    target_flashcards = request.data.get('targetFlashcards')
+    send_reminders = request.data.get('sendReminders')
+    timezone = request.data.get('timezone')
+    WelcomeInfo.objects.create(
+        user=request.user,
+        user_type=user_type,
+        referrer=request.data.get('referrer'),
+        join_reason=request.data.get('joinReason'),
+        target_flashcards=target_flashcards,
+        send_reminders=send_reminders,
+        timezone=timezone,
+    )
+
+    user_settings = request.user.profile.settings
+    user_settings.send_reminders = send_reminders
+    user_settings.user_type = user_type
+    user_settings.target_num_cards = target_flashcards
+    user_settings.timezone = timezone
+    user_settings.save()
+
+    return Response({'ok': True}, status=200)

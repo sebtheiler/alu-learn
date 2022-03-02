@@ -4,7 +4,17 @@ from django.db import models
 
 
 class User(SimpleEmailConfirmationUserMixin, AbstractUser):
-    password_reset_key = models.CharField(default=None, null=True, max_length=128)  # base 64
+    password_reset_key = models.CharField(default=None, null=True, max_length=128)
 
     is_pro = models.BooleanField(default=False)
-    pro_expires = models.DateField(null=True, blank=True)
+    is_pro_from_org = models.BooleanField(default=False)
+    pro_trial_expires = models.DateTimeField(null=True, blank=True)
+
+
+class StripeCustomer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    stripe_customer_id = models.CharField(max_length=255)
+    stripe_subscription_id = models.CharField(max_length=255)
+
+    def __str__(self) -> str:
+        return self.user.username

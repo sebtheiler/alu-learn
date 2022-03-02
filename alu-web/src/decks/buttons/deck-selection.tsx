@@ -2,18 +2,19 @@ import Button from 'react-bootstrap/Button';
 import Collapse from 'react-bootstrap/Collapse';
 import EditModal from '../modals/edit';
 import { Deck } from '../types';
-import { ExportModal, GameModal } from '../buttons';
+import { ExportModal, GameModal, ToolsModal } from '../buttons';
 import { useState } from 'react';
 
 interface DeckSelectionButtonsProps {
   deck: Deck;
   collapse: boolean;
+  isPro: boolean;
+  isArchived?: boolean;
 }
-export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
-  const { deck, collapse } = props;
-
+export default function DeckSelectionButtons({ deck, collapse, isPro, isArchived }: DeckSelectionButtonsProps) {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [gameModalOpen, setGameModalOpen] = useState(false);
+  const [toolsModalOpen, setToolsModalOpen] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
 
   const gameSubmitHandler = event => {
@@ -30,7 +31,6 @@ export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
         gameOptions += `&size=${form.elements.size.value}`;
         break;
       case 'QUIZ':
-      case 'CRAM':
         gameOptions += `&num=${form.elements.num.value}`;
         break;
       default:
@@ -57,16 +57,36 @@ export default function DeckSelectionButtons(props: DeckSelectionButtonsProps) {
         <Button href={`/deck/${deck.id}/flashcards/`} block>
           View
         </Button>
-        <Button href={`/deck/${deck.id}/share/`} block>
+        {!isArchived && <Button href={`/deck/${deck.id}/share/`} block>
           Share
-        </Button>
+        </Button>}
         <hr />
-        <Button onClick={() => setGameModalOpen(true)} block>Games</Button>
+        {!isArchived && <Button
+          onClick={() => setGameModalOpen(true)}
+          disabled={!isPro}
+          block
+        >
+          Games
+          {!isPro && <> (<a href='/pro/' className='text-light'>Pro-only</a>)</>}
+        </Button>}
         <GameModal
           deck={deck}
           modalIsOpen={gameModalOpen}
           closeModal={() => setGameModalOpen(false)}
           submitHandler={gameSubmitHandler}
+        />
+        {!isArchived && <Button
+          onClick={() => setToolsModalOpen(true)}
+          disabled={!isPro}
+          block
+        >
+          Tools
+          {!isPro && <> (<a href='/pro/' className='text-light'>Pro-only</a>)</>}
+        </Button>}
+        <ToolsModal
+          deck={deck}
+          modalIsOpen={toolsModalOpen}
+          closeModal={() => setToolsModalOpen(false)}
         />
         <Button href={`/decks/${deck.id}/stats/`} block>Statistics</Button>
         <Button onClick={() => setExportModalOpen(true)} block>Export</Button>

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 
-from .models import User
+from .models import User, StripeCustomer
 
 
 class CustomUserChangeForm(UserChangeForm):
@@ -14,8 +14,9 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
 
     fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('is_pro', 'pro_expires',)}),
+        (None, {'fields': ('is_pro', 'is_pro_from_org', 'pro_trial_expires',)}),
     )
 
 
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(StripeCustomer)

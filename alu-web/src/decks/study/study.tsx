@@ -4,7 +4,12 @@ import { apiReviewInstanceStudy, useAsyncDispatch } from '../../lookup/lookup';
 import { useMemo } from 'react';
 
 
-export default function StudySkillTree({ deckId, section }: { deckId: string, section: string }) {
+interface StudySkillTreeProps {
+  deckId: string;
+  section: string;
+  isPro: 'true' | 'false';
+}
+export default function StudySkillTree({ deckId, section, isPro }: StudySkillTreeProps) {
   const studyAhead = useMemo(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const studyAhead = urlParams.get('studyAhead') === 'true';
@@ -28,6 +33,7 @@ export default function StudySkillTree({ deckId, section }: { deckId: string, se
         deckId={parseInt(deckId)}
         section={section}
         studyAhead={studyAhead}
+        isPro={isPro.toLowerCase() === 'true'}
       />
     </StudyAnswerDispatch.Provider>
   );

@@ -9,6 +9,11 @@ import {
   SendPasswordReset,
   SettingsPage,
 } from './settings';
+import {
+  ProUpgrade,
+  ProPurchaseCancelled,
+  ProPurchaseSuccess,
+} from './pro';
 
 export {
   ChangePasswordEmail,
@@ -17,6 +22,9 @@ export {
   ExploreComponent,
   LandingComponent,
   NavbarComponent,
+  ProUpgrade,
+  ProPurchaseCancelled,
+  ProPurchaseSuccess,
   SendPasswordReset,
   SettingsPage,
   UserCustomization,

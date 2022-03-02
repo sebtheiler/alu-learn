@@ -37,7 +37,11 @@ export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards,
       >
         <Row className='flashcard-head'>
           <Col>
-            <span>Flashcard #{(orderNum ?? flashcard.order_num) + 1}</span>
+            {(!isNaN(orderNum as number) || flashcard.order_num) && <span>
+              Flashcard #{(orderNum ?? flashcard.order_num) + 1}{' '}
+            </span>}
+            {/* @ts-expect-error */}
+            {flashcard.ease && <span>Ease: {flashcard.ease}</span>}
             {deckId && <span>
               <IconTooltip
                 tooltip='Delete Flashcard'

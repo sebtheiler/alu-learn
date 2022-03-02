@@ -12,9 +12,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sharing_system.models import FlashCardAction
 from skill_tree.models import AbstractSection, SubSection
+from skill_tree.serializers import SubSectionSerializer
 from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
-from utils.api_utils import get_obj_or_404
+from utils.api_utils import IsPro, get_obj_or_404
 from utils.utils import assert_dict_data_type, base64_to_file
 
 from ..models import (Deck, FlashCard, FlashCardData, ReviewInstance,
@@ -282,6 +283,40 @@ def archive_deck(request, deck_id):
     deck.save()
 
     return Response(deck.get_statistics(), status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsPro])
+def get_difficult_review_instances(request, deck_id):
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    difficult_review_instances = deck.find_difficult_review_instances()
+
+    return get_paginated_queryset_response(
+        difficult_review_instances,
+        request,
+        ReviewInstanceSerializer,
+    )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsPro])
+def get_difficult_sub_sections(request, deck_id):
+    try:
+        deck = Deck.objects.get(pk=deck_id, user=request.user)
+    except Deck.DoesNotExist:
+        return Response({'message': 'Deck not found'}, status=404)
+
+    difficult_sub_sections = deck.find_difficult_sub_sections()
+
+    return Response(SubSectionSerializer(
+        difficult_sub_sections,
+        many=True,
+        context={'get_main_section': True},
+    ).data)
 
 
 # ====== Flashcards ======
@@ -592,7 +627,7 @@ def flashcard_list_view(request, *args, **kwargs):
 
 # ===== Flashcard Study =====
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsPro])
 def game_flashcards_view(request, *args, **kwargs):
     """
     Gets the flashcards for a game, based on some parameters - POST

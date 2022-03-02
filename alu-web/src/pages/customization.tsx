@@ -1,128 +1,120 @@
 import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Form from 'react-bootstrap/Form';
-import { apiProfileSettingsUpdate } from '../lookup';
-import { errorHandler } from '../utils';
-import { useState } from 'react';
+import ChoiceSelect from '../utils/ChoiceSelect';
+import Container from 'react-bootstrap/Container';
+import LoadingButton from '../decks/buttons/LoadingButton';
+import ProgressBar from '../utils/ProgressBar';
 import TZSelect from '../utils/timezone';
+import { useState } from 'react';
+import { backendFetch } from '../lookup/lookup';
 
 
-export default function UserCustomization() {
+export default function UserCustomization({ isProFromOrg }) {
   const [slideNum, setSlideNum] = useState(0);
   const [answers, setAnswers] = useState({});
 
-  const handleBack = event => {
-    event.preventDefault();
-    setSlideNum(slideNum - 1);
-  }
+  const handleNext = (question: string | null) => {
+    return async (response: any) => {
+      let newAnswers = answers;
+      if (question) newAnswers[question] = response;
+      setAnswers(newAnswers);
 
-  const handleNext = event => {
-    event.preventDefault();
-    setSlideNum(slideNum + 1);
-
-    switch (slideNum) {
-      case 0:
-        setAnswers({
-          ...answers,
-          user_type: event.target.userType.value,
-        });
-        break;
-      case 1:
-        setAnswers({
-          ...answers,
-          target_num_cards: event.target.targetNumCards.value,
-        });
-        break;
-      case 2:
-        setAnswers({
-          ...answers,
-          send_reminders: event.target.reminders.value === 'YES',
-        });
-        break;
-      case 3:
-        const newAnswers = {
-          ...answers,
-          timezone: event.target.timezone.value,
-        };
-        setAnswers(newAnswers);
-        apiProfileSettingsUpdate(newAnswers, (response, status) => {
-          if (status !== 200) {
-            // Error setting user preferences
-            errorHandler(response, status, 3021);
-          }
-        });
-        break;
-      default:
-        return;
+      if (slideNum === slides.length - 1) {
+        await backendFetch(
+          'POST', 'analytics/collect-welcome-info/', answers,
+        ).then(() => window.location.replace('/home/'));
+      } else {
+        setSlideNum(slideNum + 1);
+      }
     }
   }
 
   const slides = [
     (<>
-      <p>I am a</p>
-      <Form.Control
-        as='select'
-        name='userType'
-        custom
-      >
-        <option value='STUDENT'>Student</option>
-        <option value='TEACHER'>Teacher</option>
-      </Form.Control>
-      <br />
+      <h4>Are you a student or a teacher?</h4>
+      <ChoiceSelect choices={[
+        { value: 'STUDENT', display: 'Student' },
+        { value: 'TEACHER', display: 'Teacher' },
+      ]} onClick={handleNext('userType')} />
     </>),
     (<>
-      <p>My goal is to do…</p>
-      <Form.Control
-        type='number'
-        name='targetNumCards'
-        defaultValue={20}
-        min={5}
-        max={200}
-        step={5}
-      />
-      <p>flashcards per day</p>
+      <h4>How did you hear about Alu?</h4>
+      <ChoiceSelect choices={[
+        { value: 'FRIENDS', display: 'Friends/Family' },
+        { value: 'TEACHER', display: 'Teacher' },
+        { value: 'SOCIAL', display: 'Social Media' },
+        { value: 'YOUTUBE', display: 'YouTube' },
+        { value: 'NEWS', display: 'News/article/blog' },
+        { value: 'SEARCH', display: 'Web Search' },
+        { value: 'OTHER', display: 'Other' },
+      ]} onClick={handleNext('referrer')} />
     </>),
     (<>
-      <p>Would you like to be reminded if you forget to study?</p>
+      <h4>Why did you join Alu?</h4>
+      <ChoiceSelect choices={[
+        { value: 'MEMORY', display: 'I want to memorize more of what I learn' },
+        { value: 'GRADES', display: 'I want to improve my grades' },
+        { value: 'CONCEPT', display: 'I think it\'s an interesting concept' },
+        { value: 'TEACHER', display: 'My teacher told me to' },
+      ]} onClick={handleNext('joinReason')} />
+    </>),
+    (<>
+      <h4>What is your goal number of flashcards per day?</h4>
+      <ChoiceSelect choices={[
+        { value: 10, display: '10 flashcards' },
+        { value: 25, display: '25 flashcards' },
+        { value: 50, display: '50 flashcards' },
+        { value: 100, display: '100 flashcards' },
+      ]} onClick={handleNext('targetFlashcards')} />
+    </>),
+    (<>
+      <h4>Would you like a reminder email if you forget to study?</h4>
       <p>
         Studying is most effective when it's done every day.{' '}
         Alu can send reminder emails to help you build your study habits.
         <br />
-        <small className='text-center'>You can unsubscribe at any time in the settings.  Alu will never spam you.</small>
+        You can unsubscribe at any time in the settings.  We will never spam you.
       </p>
-      <Form.Control
-        as='select'
-        name='reminders'
-        custom
-      >
-        <option value='YES'>Yes, send me reminder emails</option>
-        <option value='NO'>No, I'm not interested in reminder emails</option>
-      </Form.Control>
+      <ChoiceSelect choices={[
+        { value: true, display: 'Yes, send me reminder emails' },
+        { value: false, display: 'No, I\'m not interested in reminder emails'},
+      ]} onClick={handleNext('sendReminders')} />
     </>),
     (<>
-      <p>What timezone are you in?</p>
+      <h4>What timezone are you in?</h4>
+      <p>This is used to keep track of your streak</p>
       <TZSelect />
+      <Button
+        onClick={() => {
+          const tzSelect = document.getElementsByName('timezone')[0] as HTMLFormElement;
+          const tz = tzSelect.value;
+          handleNext('timezone')(tz);
+        }}
+        className='mt-3'
+        block
+      >
+        Confirm
+      </Button>
     </>),
-  ]
+    (<>
+      <h4>Pro-mode for free!</h4>
+      {isProFromOrg.toLowerCase() === 'true' ? <p>
+        Since your organization is partnered with Alu, you have free and unlimited access to pro-mode.
+      </p> : <p>
+        You now have access to Alu's upgraded pro-mode for a week, <strong>no credit card required.</strong>{' '}
+        You can extend your subscription any time for <a href='/pro/'>$3/mo or $30/yr</a>.
+      </p>}
+      <LoadingButton clickFunc={handleNext(null)}>Awesome!</LoadingButton>
+    </>),
+  ];
 
-  return (<div className='container-fluid'>
-    <p>
-      To help personalize Alu to your needs, please answer a few short questions<br />
-      <small>You can always change your answers in Settings</small>
-    </p>
-    {slideNum < slides.length ? <div>
-      <Form onSubmit={handleNext}>
+  return (
+    <Container className='mt-5'>
+      <h1 className='text-center'>Welcome to Alu!</h1>
+      <ProgressBar stepNum={slideNum} totalNumSteps={slides.length - 1} />
+      <br />
+      <div>
         {slides[slideNum]}
-        <ButtonGroup className='mt-3'>
-          {slideNum > 0 && <Button variant='secondary' onClick={handleBack}>Previous</Button>}
-          <Button className='ml-1' type='submit' id='next-btn'>
-            Next
-          </Button>
-        </ButtonGroup>
-      </Form>
-    </div> : <>
-      <p>Alu has been personalized to fit your needs!</p>
-      <Button href='/home/'>Home</Button>
-    </>}
-  </div>);
+      </div>
+    </Container>
+  );
 }

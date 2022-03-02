@@ -37,6 +37,8 @@ export default function ArchivedDecks() {
             onClick={() => setSelectedDeck(deck.id)}
             selected={selectedDeck === deck.id}
             key={`deck-${deck.id}`}
+            isPro={false}
+            isArchived
           />
         )}
       </Col>

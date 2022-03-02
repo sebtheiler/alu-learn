@@ -1,0 +1,31 @@
+{% extends "emails/base.html" %}
+
+{% block page_title %}Alu - Pro Mode Expired{% endblock %}
+{% block entrance %}Your Free Trial of Pro Mode Has Expired{% endblock %}
+
+{% block content %}
+<tr>
+  <td class="text-chunk">
+    <p>Hi {{ name }},</p>
+    <br>
+    <p>Your free trial of pro-mode has expired.  Don't worry, you won't be charged for anything.</p>
+    <br>
+    <p>Upgrading to pro-mode will:</p>
+    <ul>
+      <li>a</li>
+      <li>b</li>
+      <li>c</li>
+    </ul>
+  </td>
+</tr>
+
+<tr>
+  <td class="px-3 py-3">
+    <span class="block-button">
+      <a href="https://www.alulearn.com/l/pro/" target="_blank">
+        Upgrade to Pro
+      </a>
+    </span>
+  </td>
+</tr>
+{% endblock content %}

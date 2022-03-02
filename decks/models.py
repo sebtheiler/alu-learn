@@ -133,6 +133,19 @@ class Deck(models.Model):
             )
         )
 
+    def find_difficult_review_instances(self):
+        return ReviewInstance.objects.filter(
+            Q(flashcard__sub_section__main_section__deck=self) &
+            (Q(learning_status='LEARNED') | Q(learning_status='RELEARNING'))
+        ).order_by('ease')
+
+    def find_difficult_sub_sections(self):
+        return SubSection.objects.filter(
+            main_section__deck=self,
+        ).annotate(
+            avg_ease=Avg('flashcards__review_instances__ease'),
+        ).order_by('avg_ease')
+
 
 class FlashCardManager(models.Manager):
     def get_queryset(self):

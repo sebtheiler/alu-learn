@@ -106,16 +106,11 @@ export default function NavbarComponent(props: NavbarComponentProps) {
           id='logo'
         />{' '}
         Alu Learn
-        {/* {isPro && <a href='/pro/'><img
+        {isPro && <a href='/pro/'><img
           src='/static/images/pro-banner.svg'
           alt='Pro Banner'
           id='pro-banner'
-        /></a>} */}
-        {isPro && <img
-          src='/static/images/pro-banner.svg'
-          alt='Pro Banner'
-          id='pro-banner'
-        />}
+        /></a>}
       </Navbar.Brand>
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>
@@ -130,6 +125,10 @@ export default function NavbarComponent(props: NavbarComponentProps) {
           <Nav.Link href='/changelog/'>
             <i className='fa fa-book'></i>{' '}
             Changelog
+          </Nav.Link>
+          <Nav.Link href='/pro/'>
+            <i className='fa fa-award'></i>{' '}
+            Pro
           </Nav.Link>
           {congratulationsMessage}
         </Nav>
@@ -177,10 +176,6 @@ export default function NavbarComponent(props: NavbarComponentProps) {
 
                 <NavDropdown.Divider />
 
-                <NavDropdown.Item href='/help/' id='help-option'>
-                  <i className='fas fa-info-circle'></i>{' '}
-                  Help and Tutorials
-                </NavDropdown.Item>
                 <NavDropdown.Item onClick={logoutHandler} id='logout-option'>
                   <i className='fas fa-sign-out-alt'></i>{' '}
                   Log-out

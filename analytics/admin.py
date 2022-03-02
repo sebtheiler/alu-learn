@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ShortUrl, UrlHit, QuickFeedback, QuickFeedbackResponse
+from .models import ShortUrl, UrlHit, QuickFeedback, QuickFeedbackResponse, WelcomeInfo
 
 
 class UrlHitAdmin(admin.ModelAdmin):
@@ -41,3 +41,4 @@ admin.site.register(ShortUrl)
 admin.site.register(UrlHit, UrlHitAdmin)
 admin.site.register(QuickFeedback)
 admin.site.register(QuickFeedbackResponse, QuickFeedbackResponseAdmin)
+admin.site.register(WelcomeInfo)

@@ -12,6 +12,7 @@ urlpatterns = [
     path('super-secret-admin-123/', admin.site.urls),
     path('admin/', RedirectView.as_view(url='https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    path('ads.txt', TemplateView.as_view(template_name='ads.txt', content_type='text/plain')),
     re_path(r'^favicon\.ico$', favicon_view),
     path('', include('decks.urls')), path('api/decks/', include('decks.api.urls')),
     path('api/skill_tree/', include('skill_tree.api.urls')),
@@ -21,6 +22,7 @@ urlpatterns = [
     path('', include('analytics.urls')), path('api/analytics/', include('analytics.api.urls')),
     path('', include('habits.urls')), path('api/habits/', include('habits.api.urls')),
     path('api/sharing_system/', include('sharing_system.api.urls')),
+    path('', include('accounts.urls')),
 ]
 
 if settings.DEBUG:
