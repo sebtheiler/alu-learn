@@ -1,3 +1,8 @@
+# LAUNCH - Mar 0? - ???
+
+
+* **Added Editing Button When Studying:** There is now a button to easily edit flashcards when studying.
+
 # Final Fixes - Mar 02 - 1.0.14
 Next update is launch.  Finally.
 

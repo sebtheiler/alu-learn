@@ -12,6 +12,7 @@ import { ReviewInstanceStudy } from './flashcard';
 import { apiStreakReviewInfo, StreakInfo, useAsyncDispatch } from '../../lookup/lookup';
 import { useMemo } from 'react';
 import './review-instances.scss';
+import ProgressBar from '../../utils/ProgressBar';
 
 const EASE_FOR_HARD_EXERCISE = 210;  // TODO: update with real data
 
@@ -46,16 +47,11 @@ export function StudyReviewInstances({ reviewInstances, numTotal, deckId, sectio
   return (
     <Container style={{ maxHeight: '70vh' }}>
       <div>
-        {/* TODO: change this to use the standardized `ProgressBar` */}
-        {originalInfo.numTotal > 0 && <div className='study-progress mt-3'>
-          <div
-            className='study-progress-bar'
-            style={{ width: `${Math.floor(
-              (1 - reviewInstances.length/originalInfo.numTotal) * 100
-            )}%` }}
-          >
-          </div>
-        </div>}
+        <br />
+        <ProgressBar
+          stepNum={originalInfo.numTotal - reviewInstances.length}
+          totalNumSteps={originalInfo.numTotal}
+        />
         <p className={
           'hard-exercise-text my-2' +
           (reviewInstances[0]?.ease <= EASE_FOR_HARD_EXERCISE ? ' show' : '')
@@ -70,6 +66,14 @@ export function StudyReviewInstances({ reviewInstances, numTotal, deckId, sectio
           section={section}
           studyAhead={studyAhead}
         />
+        <Button
+          href={`/deck/${deckId}/flashcards/${reviewInstances[0].flashcard}/edit/`}
+          target='_blank'
+          className='float-right'
+          variant='secondary'
+        >
+          Edit
+        </Button>
       </div>}
       {reviewInstances.length === 0 &&
         <FinishedStudying

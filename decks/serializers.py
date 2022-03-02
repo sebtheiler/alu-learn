@@ -66,6 +66,7 @@ class ReviewInstanceSerializer(serializers.ModelSerializer):
             'data',
             'flashcard_type',
             'content_indicies',
+            'flashcard',
             'id',
         ]
 
