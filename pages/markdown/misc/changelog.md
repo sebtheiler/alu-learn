@@ -3,6 +3,7 @@
 
 * **Share Imported Decks:** You can now share decks that you've imported.  This previously did not work due to a bug.
 * **Alphabetically Ordered Decks:** Decks are now ordered alphabetically on the homepage
+* **Scheduler Fuzz:** There is now a slight _fuzz_ to the flashcard scheduler for long intervals.  This will decrease the probability of flashcards all lumping up on a single day.
 
 ## Streak & Reminder Email Fix - Feb 13 - 1.0.13
 ...

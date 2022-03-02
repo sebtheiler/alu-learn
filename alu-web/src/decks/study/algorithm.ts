@@ -16,6 +16,7 @@ interface Config {
   NEW_INTERVAL: number;
   MINIMUM_INTERVAL: number;
   LEECH_THRESHOLD: number;
+  SCHEDULER_FUZZ: number;
 }
 function generateConfig(method: SchedulingAlgorithm = 'ANKI') {
   switch (method) {
@@ -34,6 +35,8 @@ function generateConfig(method: SchedulingAlgorithm = 'ANKI') {
         NEW_INTERVAL: 70, // in percent
         MINIMUM_INTERVAL: 1, // in days
         LEECH_THRESHOLD: 8, // number wrong
+
+        SCHEDULER_FUZZ: 0, // in percent
       } as Config;
     case 'ANKING':
       // Optimized Anki settings from https://www.youtube.com/watch?v=wvF5Y2101Lk
@@ -50,6 +53,8 @@ function generateConfig(method: SchedulingAlgorithm = 'ANKI') {
         NEW_INTERVAL: 20, // in percent
         MINIMUM_INTERVAL: 1, // in days
         LEECH_THRESHOLD: 8, // number wrong
+
+        SCHEDULER_FUZZ: 10, // in percent
       } as Config;
     default:
       // Invalid deck config
@@ -78,7 +83,7 @@ export function getStudyInterval(
   if (!config) console.error(config);
 
   // eslint-disable-next-line
-  const {NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, EASY_BONUS, INTERVAL_MODIFIER, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL, LEECH_THRESHOLD}
+  const {NEW_STEPS, GRADUATING_INTERVAL, EASY_INTERVAL, EASY_BONUS, INTERVAL_MODIFIER, LAPSES_STEPS, NEW_INTERVAL, MINIMUM_INTERVAL, LEECH_THRESHOLD, SCHEDULER_FUZZ}
     = config as Config;
   
   if (DEBUG) console.log('Config', config);
@@ -91,6 +96,7 @@ export function getStudyInterval(
     ease,
   } = card;
   let minutesInterval = daysToMinutes(dateDiff(new Date(last_review), new Date()));
+  let applyFuzz = false;
   if (DEBUG) console.log('Minutes interval', minutesInterval);
 
   // Algorithm
@@ -141,10 +147,12 @@ export function getStudyInterval(
       // Hard
       ease = Math.max(130, ease - 15);
       minutesInterval = daysToMinutes(minutesToDays(minutesInterval) * 1.2 * INTERVAL_MODIFIER/100);
+      applyFuzz = true;
       if (DEBUG) console.log('Hard - ease, minutes interval', ease, minutesInterval);
     } else if (grade === 3) {
       // Good
       minutesInterval = daysToMinutes(minutesToDays(minutesInterval) * ease/100 * INTERVAL_MODIFIER/100);
+      applyFuzz = true;
       if (DEBUG) console.log('Good - minutes interval', minutesInterval);
     } else if (grade === 4) {
       // Easy
@@ -158,6 +166,7 @@ export function getStudyInterval(
         min: daysToMinutes(minutesToDays(minutesInterval) * ease/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100),
       })
       minutesInterval = daysToMinutes(minutesToDays(minutesInterval) * ease/100 * INTERVAL_MODIFIER/100 * EASY_BONUS/100);
+      applyFuzz = true;
       if (DEBUG) console.log('Easy - ease, minutes interval', ease, minutesInterval);
     }
   } else if (learningStatus === 'RELEARNING') {
@@ -188,6 +197,14 @@ export function getStudyInterval(
     }
   } else {
     console.error('Invalid learning status', learningStatus);
+  }
+
+  if (applyFuzz) {
+    // Fuzz modifier is in the range of 100% +- SCHEDULER_FUZZ%
+    const fuzzModifier = (Math.random()*SCHEDULER_FUZZ*2-SCHEDULER_FUZZ)/100 + 1;
+    if (DEBUG) console.log('before fuzz', fuzzModifier, minutesInterval);
+    minutesInterval = minutesInterval * fuzzModifier;
+    if (DEBUG) console.log('after fuzz', fuzzModifier, minutesInterval);
   }
 
   // If the minutes setting is like days, use that
