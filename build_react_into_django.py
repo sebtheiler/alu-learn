@@ -24,10 +24,7 @@ BASE_DIR = os.getcwd()
 REACT_DIRECTORY = os.path.join(BASE_DIR, 'alu-web/')
 ALUDIR = '/home/aluadmin/aludir'
 
-if settings.PRODUCTION:
-    PYTHON_PATH = '/home/aluadmin/aludir/aluenv/bin/python3'
-else:
-    PYTHON_PATH = settings.ENV_VARS['PYTHON_PATH']
+PYTHON_PATH = settings.env('PYTHON_PATH')
 
 
 def build_react_into_django(is_for_production: bool = False):

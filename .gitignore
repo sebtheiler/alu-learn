@@ -14,6 +14,10 @@ decks/templates/react/
 uploads/
 
 mysite.log
+
+alu/.env
+alu/gsuite-creds.json
+
 # --- React ---
 
 # dependencies
@@ -57,9 +61,6 @@ sites-enabled
 aluenv
 Pipfile
 backups/
-
-# --- JSON Files ---
-env-vars.json
 
 # --- Selenium ---
 chromedriver
