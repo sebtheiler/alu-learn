@@ -3,27 +3,37 @@ import IconTooltip from './buttons/IconTooltip';
 import Row from 'react-bootstrap/Row';
 import { FlashCard, FlashCardData } from './types';
 import { RenderRichText } from '../utils';
-import { apiObjectDelete } from '../lookup/lookup';
-import { useMemo } from 'react';
+import { apiObjectDelete, apiObjectRearrange } from '../lookup/lookup';
+import { useCallback, useMemo } from 'react';
 
-// TODO: put this in a separate file
 export type FlashCardEvent =
   | { action: 'DELETE', flashcardId: string }
+  | { action: 'MOVE_UP', flashcardId: string, orderNum: number }
+  | { action: 'MOVE_DOWN', flashcardId: string, orderNum: number }
 
 interface RenderFlashcardProps {
   flashcard: FlashCard;
   dispatchFlashcards?: React.Dispatch<FlashCardEvent>;
   deckId?: number;
   orderNum?: number;
+  numFlashcards?: number;
 }
-export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards, orderNum }: RenderFlashcardProps) {
-  const deleteFlashcard = async (e, flashcardId: string) => {
+export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards, orderNum, numFlashcards }: RenderFlashcardProps) {
+  const deleteFlashcard = useCallback(async (e, flashcardId: string) => {
     e.stopPropagation();
     if (!dispatchFlashcards || !window.confirm('Are you sure you want do delete this flashcard?')) return;
     await apiObjectDelete<FlashCard>('decks', 'flashcard', flashcardId).then(() =>
-      dispatchFlashcards({ action: 'DELETE', flashcardId: flashcardId }),
+      dispatchFlashcards({ action: 'DELETE', flashcardId }),
     );
-  }
+  }, [dispatchFlashcards]);
+
+  const rearrangeFlashcard = useCallback(async (e, direction: 'UP' | 'DOWN', flashcardId: string, orderNum: number) => {
+    e.stopPropagation();
+    if (!dispatchFlashcards) return;
+    await apiObjectRearrange('decks', 'flashcard', flashcard.id, direction).then(() =>
+      dispatchFlashcards({ action: `MOVE_${direction}`, flashcardId, orderNum }),
+    );
+  }, [dispatchFlashcards, flashcard]);
 
   return (
     <div
@@ -51,6 +61,22 @@ export default function RenderFlashcard({ flashcard, deckId, dispatchFlashcards,
                 style={{ transform: 'translateY(4px)'}}
                 id={`delete-flashcard-${flashcard.id}`}
               />
+              {flashcard.order_num !== numFlashcards && <IconTooltip
+                tooltip='Move Down'
+                onClick={e => rearrangeFlashcard(e, 'DOWN', flashcard.id, flashcard.order_num)}
+                faClass='fas fa-caret-down'
+                className='float-right mr-2'
+                style={{ transform: 'translateY(4px)'}}
+                id={`move-down-flashcard-${flashcard.id}`}
+              />}
+              {flashcard.order_num !== 0 && <IconTooltip
+                tooltip='Move Up'
+                onClick={e => rearrangeFlashcard(e, 'UP', flashcard.id, flashcard.order_num)}
+                faClass='fas fa-caret-up'
+                className='float-right mr-2'
+                style={{ transform: 'translateY(4px)'}}
+                id={`move-up-flashcard-${flashcard.id}`}
+              />}
             </span>}
             <span className='float-right mr-3'>{flashcard.data?.tags}</span>
           </Col>

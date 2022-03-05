@@ -10,8 +10,6 @@
   &:hover {
     box-shadow: $cardShadow;
     cursor: pointer;
-    transform: scale(1.01);
-    transition-duration: 0.05s;
   }
 
   >.flashcard-head {

@@ -11,13 +11,44 @@ const flashcardReducer = (state: FlashCard[] | undefined, event: FlashCardEvent)
   if (!state) return state;
 
   let newState = state;
+  let indexOfFlashcard = newState.map(f => f.id).indexOf(event.flashcardId);
   switch (event.action) {
     case 'DELETE':
       newState = newState.filter(flashcard => flashcard.id !== event.flashcardId)
       return [...newState];
-    default:
-      return state;
+    case 'MOVE_UP':
+      if (newState[indexOfFlashcard].order_num !== event.orderNum) break;
+
+      newState[indexOfFlashcard].order_num--;
+      newState[indexOfFlashcard - 1].order_num++;
+
+      [
+        newState[indexOfFlashcard - 1],
+        newState[indexOfFlashcard],
+      ] = [
+        newState[indexOfFlashcard],
+        newState[indexOfFlashcard - 1],
+      ];
+
+      return [...newState];
+    case 'MOVE_DOWN':
+      if (newState[indexOfFlashcard].order_num !== event.orderNum) break;
+
+      newState[indexOfFlashcard].order_num++;
+      newState[indexOfFlashcard + 1].order_num--;
+
+      [
+        newState[indexOfFlashcard],
+        newState[indexOfFlashcard + 1],
+      ] = [
+        newState[indexOfFlashcard + 1],
+        newState[indexOfFlashcard],
+      ];
+
+      return [...newState];
   }
+
+  return [...newState];
 }
 
 interface ViewFlashcardsProps {
@@ -79,6 +110,7 @@ export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, secti
         dispatchFlashcards={dispatchFlashcards}
         deckId={deckId}
         orderNum={i}
+        numFlashcards={flashcards.length}
         key={flashcard.id}
       />
     )}
