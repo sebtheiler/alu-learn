@@ -41,6 +41,8 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
     return async () => {
       if (!isFlipped) return;
       let interval = intervals[grade - 1];
+      interval.next_review = interval.calcFuzz ? interval.calcFuzz(interval) : interval.next_review;
+      interval.calcFuzz = undefined;
 
       // Flip back to front and update server review instance
       setIsFlipped(false);
@@ -57,7 +59,7 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
 
       // Wait until the back of the card is no longer shown (half of transition = 0.25s),
       // then show the next card
-      await new Promise(r => setTimeout(r, 125));
+      await new Promise(r => setTimeout(r, 200));
       studyAnswerDispatch({
         action: 'STUDY_REVIEW_INSTANCE',
         reviewInstance: reviewInstance,
@@ -65,6 +67,8 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
         id: reviewInstance.id,
       });
       (document.activeElement as HTMLElement).blur();
+
+      // Reset timer
       browserInteractionTime.reset();
       browserInteractionTime.startTimer();
     }

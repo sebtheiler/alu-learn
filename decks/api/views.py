@@ -780,8 +780,9 @@ def review_instance_update_view(request, review_instance_id) -> dict:
     * `deck_id`: The ID of the deck the review instance is in
     """
     edited_values = request.data.get('edited_values')
+    print(edited_values)
     if msg := assert_dict_data_type(edited_values, RI_EDITABLE_ATTRS, False):
-        return msg
+        return Response({'msg': msg}, status=400)
 
     review_instance, error = get_obj_or_404(
         ReviewInstance,

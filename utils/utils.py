@@ -62,7 +62,6 @@ def assert_dict_data_type(
     `expected_attr_types` maps string attributes to types ({'options': dict, 'obj_id': (int, str)})
     """
     if enforce_all_keys_equal and dict_to_check.keys() != expected_attr_types.keys():
-        print(dict_to_check.keys(), expected_attr_types.keys())
         return 'Mismatch between supplied keys and editable keys'
 
     for given_attr, given_val in dict_to_check.items():

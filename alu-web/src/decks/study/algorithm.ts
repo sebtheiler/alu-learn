@@ -71,7 +71,7 @@ export interface Interval {
   ease: number;
   learning_status: 'UNSEEN' | 'LEARNING' | 'LEARNED' | 'RELEARNING';
   steps_index: number;
-  leech_index: number;
+  calcFuzz?(interval: Interval): Date;
 }
 export function getStudyInterval(
   card: ReviewInstance,
@@ -199,14 +199,6 @@ export function getStudyInterval(
     console.error('Invalid learning status', learningStatus);
   }
 
-  if (applyFuzz) {
-    // Fuzz modifier is in the range of 100% +- SCHEDULER_FUZZ%
-    const fuzzModifier = (Math.random()*SCHEDULER_FUZZ*2-SCHEDULER_FUZZ)/100 + 1;
-    if (DEBUG) console.log('before fuzz', fuzzModifier, minutesInterval);
-    minutesInterval = minutesInterval * fuzzModifier;
-    if (DEBUG) console.log('after fuzz', fuzzModifier, minutesInterval);
-  }
-
   // If the minutes setting is like days, use that
   let isMinute = true;
   if (minutesInterval >= 1440) {
@@ -239,5 +231,15 @@ export function getStudyInterval(
     ease: ease,
     learning_status: learningStatus,
     steps_index: stepsIndex,
+    calcFuzz: (interval: Interval) => {
+      if (!applyFuzz || isMinute) return interval;
+
+      // Fuzz modifier is in the range of 100% +- SCHEDULER_FUZZ%
+      const fuzzModifier = (Math.random()*SCHEDULER_FUZZ*2-SCHEDULER_FUZZ)/100 + 1;
+      let newNextReview = nextReview;
+      newNextReview.setDate(nextReview.getDate() + minutesInterval*fuzzModifier - minutesInterval);
+
+      return newNextReview;
+    },
   } as Interval;
 }
