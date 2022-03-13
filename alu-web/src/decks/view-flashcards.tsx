@@ -3,7 +3,9 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Container from 'react-bootstrap/Container';
 import RenderFlashcard, { FlashCardEvent } from './render-flashcard';
 import { FlashCard } from './types';
-import { capitalize } from '../utils';
+import { capitalize, FormCheckbox } from '../utils';
+import { replaceQueryParam } from './study/utils';
+import { useMemo } from 'react';
 import { useObjectPaginatedList } from '../lookup/lookup';
 import './view-flashcards.scss';
 
@@ -58,6 +60,12 @@ interface ViewFlashcardsProps {
   section?: string;
 }
 export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, section='', }: ViewFlashcardsProps) {
+  const viewEssentialOnly = useMemo(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const viewEssentialOnly = urlParams.get('viewEssentialOnly')?.toLowerCase() === 'true';
+    return viewEssentialOnly;
+  }, []);
+
   const [flashcards, dispatchFlashcards, fetchNext] = useObjectPaginatedList<FlashCard, FlashCardEvent>(
     sharedDeckId ? 'sharing_system' : 'decks',
     'flashcard',
@@ -66,11 +74,21 @@ export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, secti
       snapshot_id: snapshotId,
       shared_deck_id: sharedDeckId,
       section: section,
+      view_essential_only: viewEssentialOnly,
     } : {
       deck_id: deckId,
       section: section,
+      view_essential_only: viewEssentialOnly,
     },
   );
+
+  const toggleViewEssentialOnly = () => {
+    window.location.href = replaceQueryParam(
+      'viewEssentialOnly',
+      (!viewEssentialOnly).toString(),
+      window.location.search,
+    );
+  }
 
   if (!flashcards) return <p className='text-center'>Loading…</p>
   return (<Container>
@@ -103,6 +121,16 @@ export default function ViewFlashcards({ deckId, sharedDeckId, snapshotId, secti
           </Button>
         </>}
       </ButtonGroup>
+      <br />
+      {flashcards.filter(f => f.data.tags.includes('essential')).length > 0 &&
+        <FormCheckbox
+          className='mt-2'
+          onChange={toggleViewEssentialOnly}
+          defaultChecked={viewEssentialOnly}
+        >
+          View essential only?
+        </FormCheckbox>
+      }
     </div>
     {flashcards.map((flashcard, i) =>
       <RenderFlashcard

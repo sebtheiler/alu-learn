@@ -613,6 +613,9 @@ def flashcard_list_view(request, *args, **kwargs):
         )
         flashcard_query &= section_query
 
+    if request.GET.get('view_essential_only') == 'true':
+        flashcard_query &= Q(data__tags__icontains='essential')
+
     flashcards = FlashCard.objects\
         .filter(flashcard_query)\
         .order_by(*FlashCard.SECTION_ORDER_BY)
