@@ -30,8 +30,6 @@ export default function AddImageButton({ selectedImage, setSelectedImage }: AddI
     if (file.size / 1024 > 1000) {
       setError(`Image must be smaller than 1000kb.  Your image is currently ${Math.floor(file.size / 1024)}kb Please reduce the size of your image.`);
     } else {
-      console.log(document.getElementsByName('imageDescription'))
-      console.log(document.getElementsByName('originalUrl'))
       const image = {
         url: url,
         description: (document.getElementsByName('imageDescription')[0] as HTMLInputElement)?.value,
@@ -154,7 +152,7 @@ export default function AddImageButton({ selectedImage, setSelectedImage }: AddI
                 type='text'
                 name='imageDescription'
                 defaultValue={selectedImage.description}
-                maxLength={512}
+                maxLength={200}
               />
             </Form.Group>
             <Form.Group>
@@ -163,7 +161,7 @@ export default function AddImageButton({ selectedImage, setSelectedImage }: AddI
                 type='text'
                 name='originalUrl'
                 defaultValue={selectedImage.original_url ?? imageUrl}
-                maxLength={512}
+                maxLength={200}
               />
             </Form.Group>
           </>}

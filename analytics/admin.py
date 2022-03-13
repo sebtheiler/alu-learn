@@ -37,8 +37,26 @@ class QuickFeedbackResponseAdmin(admin.ModelAdmin):
     ordering = ('-pk',)
 
 
+class WelcomeInfoAdmin(admin.ModelAdmin):
+    model = WelcomeInfo
+    list_display = (
+        'user',
+        'user_type',
+        'referrer',
+        'join_reason',
+        'target_flashcards',
+        'send_reminders',
+        'timestamp',
+    )
+
+    def get_queryset(self, request):
+        queryset = super(WelcomeInfoAdmin, self).get_queryset(request)
+        queryset = queryset.prefetch_related('user')
+        return queryset
+
+
 admin.site.register(ShortUrl)
 admin.site.register(UrlHit, UrlHitAdmin)
 admin.site.register(QuickFeedback)
 admin.site.register(QuickFeedbackResponse, QuickFeedbackResponseAdmin)
-admin.site.register(WelcomeInfo)
+admin.site.register(WelcomeInfo, WelcomeInfoAdmin)

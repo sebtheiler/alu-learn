@@ -89,8 +89,8 @@ def update_settings_api_view(request, *args, **kwargs):
 @permission_classes([IsAuthenticated])
 def get_image_with_proxy(request, *args, **kwargs):
     url = request.GET.get('url')
-    if not url:
-        return Response({'message': 'You must specify `url`'}, status=400)
+    if not url or len(url) > 150:
+        return Response({'message': '`url` invalid'}, status=400)
 
     cache_key = f'IMAGEPROXY__{url}'
     uri = cache.get(cache_key)
