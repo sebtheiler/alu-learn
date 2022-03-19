@@ -150,7 +150,7 @@ export default function SharedDeckDetail({ username, sharedDeckId, snapshotId }:
           <hr />
           <div>
             <h3>Skill Tree</h3>
-            {snapshot.main_sections.map(mainSection =>
+            {snapshot.main_sections.sort((a, b) => a.order_num - b.order_num).map(mainSection =>
               <RenderMainSection
                 mainSection={mainSection}
                 numMainSections={snapshot.main_sections.length}

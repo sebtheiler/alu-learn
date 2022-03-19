@@ -11,7 +11,7 @@ export default function StudentAssignment({ assignment }: { assignment: Assignme
       </div>
       <div className='mt-2'>
         <Row className='main-section-body'>
-          {assignment.sub_sections.map(subSection =>
+          {assignment.sub_sections.sort((a, b) => a.order_num - b.order_num).map(subSection =>
             <RenderSubSection
               subSection={subSection}
               mainSection={subSection.main_section as MainSection}

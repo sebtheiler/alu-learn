@@ -356,12 +356,17 @@ def snapshot_flashcards_view(request, *args, **kwargs):
     if not shared_deck.has_view_access(profile_pk):
         return Response({'message': 'You are unauthorized to view this shared deck'}, status=403)
 
+    flashcard_query = (
+        Q(sub_section__main_section__snapshot_id=snapshot.pk)
+        &
+        AbstractSection.get_query_from_formatted_title(request.GET.get('section', ''))[0]
+    )
+
+    if request.GET.get('view_essential_only') == 'true':
+        flashcard_query &= Q(data__tags__icontains='essential')
+
     return get_paginated_queryset_response(
-        FlashCard.objects.filter(
-            Q(sub_section__main_section__snapshot_id=snapshot.pk)
-            &
-            AbstractSection.get_query_from_formatted_title(request.GET.get('section', ''))[0]
-        ),
+        FlashCard.objects.filter(flashcard_query),
         request,
         FlashCardSerializer,
         page_size=min(int(request.GET.get('page_size', 250)), 250)

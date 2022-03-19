@@ -1,9 +1,11 @@
-# LAUNCH - Mar 0? - ???
+# LAUNCH - Mar 20 - ???
 
 
 * **Added Editing Button When Studying:** There is now a button to easily edit flashcards when studying.
 * **Added Essential Only Toggle to List:** Added a toggle to only view essential flashcards in a list.  This adds to the essential only feature in the last update that allowed you to study essential only flashcards.
 * **Fixed Bug with Long Image URLs:** Fixed a bug when trying to upload images from a source with a very long URL.
+* **Fixed Markdown Rendering:** Fixed markdown rendering, including shared deck descriptions
+* **Fixed Section Order in Shared Decks:** Fixed a bug that screwed up section order in shared decks
 
 # Final Fixes - Mar 02 - 1.0.14
 Next update is launch.  Finally.

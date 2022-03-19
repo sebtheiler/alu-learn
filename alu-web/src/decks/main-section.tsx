@@ -38,7 +38,7 @@ export default function RenderMainSection({ mainSection, numMainSections, readOn
     </div>
     <div className='mt-2'>
       <Row className='main-section-body'>
-        {mainSection.sub_sections.map(subSection =>
+        {mainSection.sub_sections.sort((a, b) => a.order_num - b.order_num).map(subSection =>
           <RenderSubSection
             subSection={subSection}
             mainSection={mainSection}
