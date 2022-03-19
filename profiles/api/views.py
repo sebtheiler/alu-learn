@@ -399,11 +399,8 @@ def change_password(request, *args, **kwargs):
         if reset_key and reset_key != profile.user.password_reset_key:
             return Response({'message': 'Invalid reset key'}, status=401)
 
-        # Update password
+        # Update password and invalidate key
         profile.user.set_password(new_password)
-        profile.user.save()
-
-        # Invalidate key
         profile.user.password_reset_key = None
         profile.user.save()
 

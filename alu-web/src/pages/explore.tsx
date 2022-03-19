@@ -18,7 +18,6 @@ export default function ExploreComponent(props: null) {
       <h1>Explore</h1>
       <p>Find top decks created by others to help you study</p>
     </div>
-    {/* <ExploreButtonGroup /> */}
     <hr />
     {decks ? <SharedDeckList sharedDecks={decks.EDITOR} /> : <p>Loading...</p>}
   </Container>);

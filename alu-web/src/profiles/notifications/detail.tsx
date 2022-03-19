@@ -49,8 +49,7 @@ export function RenderNotification({ notif, read }: NotificationProps) {
         <span style={{color: 'green'}}>{read ? '' : '• '}</span>
         {notif.title}
       </h4>
-      {/* @ts-ignore */}
-      <ReactMarkdown source={notif.description} />
+      <ReactMarkdown>{notif.description}</ReactMarkdown>
       {notif.category === 'friend_request' ?
         <Button
           onClick={handleFriendAccepted}

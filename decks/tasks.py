@@ -106,6 +106,7 @@ def backup_server():
 def expire_pro_mode_trial():
     users = User.objects.filter(
         pro_trial_expires__lte=timezone.now(),
+        is_pro_from_org=False,
     )
 
     connection = mail.get_connection()

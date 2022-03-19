@@ -26,8 +26,7 @@ export default function SharedDeckList({ sharedDecks }: { sharedDecks: SharedDec
         </div>
         <div className='body'>
           {sharedDeck.description.length > 0
-            // @ts-ignore
-            ? <ReactMarkdown source={sharedDeck.description} />
+            ? <ReactMarkdown>{sharedDeck.description}</ReactMarkdown>
             : <p>This deck has no description</p>
           }
         </div>
