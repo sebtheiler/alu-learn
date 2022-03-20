@@ -27,10 +27,11 @@ interface StudyReviewInstancesProps {
   numTotal: number;
   deckId: number;
   section: string;
+  assignmentId: number;
   studyAhead: boolean;
   isPro: boolean;
 }
-export function StudyReviewInstances({ reviewInstances, numTotal, deckId, section, studyAhead, isPro }: StudyReviewInstancesProps) {
+export function StudyReviewInstances({ reviewInstances, numTotal, deckId, section, assignmentId, studyAhead, isPro }: StudyReviewInstancesProps) {
   const [originalReviewInfo] = useAsyncDispatch<StreakInfo>(apiStreakReviewInfo);
   const originalInfo = useMemo<OriginalInfo>(
     () => ({

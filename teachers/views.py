@@ -30,16 +30,8 @@ def get_student_sub_section(request, classroom_id, sub_section):
     if not classroom.students.filter(pk=request.user.profile.pk).exists():
         raise Http404()
 
-    # Get the deck the student attached to the classroom
-    attached_deck = classroom.attached_student_decks.filter(user=request.user).first()
-    if attached_deck is None:
-        attached_deck = classroom.shared_deck.copy(request.user, classroom.shared_deck.title)
-        attached_deck.student_attached_to = classroom
-        attached_deck.save()
-    else:
-        # Update the deck if needed
-        if not attached_deck.is_updated():
-            attached_deck, _ = SharedDeck.pull(attached_deck)
+    # Update/clone the deck the student attached to the classroom
+    classroom.get_student_copied_deck(request.user, copy_if_missing=False)
 
     # Get the sub section to study
     try:
@@ -54,7 +46,7 @@ def get_student_sub_section(request, classroom_id, sub_section):
 
 
 @permissions()
-def classroom_assignment_study(request, classroom_id, sub_section, *args, **kwargs):
+def classroom_study_sub_section(request, classroom_id, sub_section):
     student_sub_section = get_student_sub_section(request, classroom_id, sub_section)
 
     url = f'/deck/{student_sub_section.main_section.deck_id}/study/{sub_section}/'

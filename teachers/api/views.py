@@ -1,7 +1,9 @@
 import re
 
 from decks.models import Deck
+from decks.serializers import DeckSerializer
 from django.db.models.query_utils import Q
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -256,6 +258,16 @@ def edit_assignment_view(request, assignment_id):
         assignment.sub_sections.set(sub_sections)
 
     return Response(AssignmentSerializer(assignment).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def assignment_get_deck_view(request, assignment_id):
+    assignment = get_object_or_404(Assignment, pk=assignment_id)
+    classroom = assignment.classrooms.first()
+    deck = classroom.get_student_copied_deck(request.user, copy_if_missing=True)
+
+    return Response(DeckSerializer(deck).data, status=200)
 
 
 @api_view(['GET'])

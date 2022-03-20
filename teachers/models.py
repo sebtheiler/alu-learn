@@ -68,18 +68,18 @@ class Classroom(models.Model):
         """
         Returns the deck the specified student copied from this class
         """
-        try:
-            return Deck.objects.get(
-                user=student,
-                student_attached_to=self,
-            )
-        except Deck.DoesNotExist:
-            if copy_if_missing:
-                if self.shared_deck is None:
-                    raise AttributeError('Teacher has not attached deck to this classroom')
-                return self.shared_deck.clone(student)
+        attached_deck = self.attached_student_decks.filter(user=student).first()
+        if copy_if_missing:
+            if attached_deck is None:
+                attached_deck = self.shared_deck.copy(student, self.shared_deck.title)
+                attached_deck.student_attached_to = self
+                attached_deck.save()
             else:
-                return None
+                # Update the deck if needed
+                if not attached_deck.is_updated():
+                    attached_deck, _ = SharedDeck.pull(attached_deck)
+
+        return attached_deck
 
     @staticmethod
     def generate_class_code() -> str:
@@ -100,6 +100,9 @@ class Assignment(models.Model):
     sub_sections = models.ManyToManyField(SubSection, related_name='attached_assignments')
     essential_only = models.BooleanField(default=False)
     due_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('pk',)
 
     def __str__(self) -> str:
         return self.title

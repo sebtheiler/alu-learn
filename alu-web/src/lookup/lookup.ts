@@ -739,12 +739,14 @@ export function apiTodoComplete(
 export async function apiReviewInstanceStudy(
   deckId: number,
   section: string,
+  assignmentId: number,
   studyAhead: boolean,
   essentialOnly: boolean,
 ): Promise<ReviewInstance[]> {
   return backendFetch<ReviewInstance[]>('POST', `decks/reviewinstance/study/`, {
     deck_id: deckId,
     section: section,
+    assignment_id: assignmentId,
     study_ahead: studyAhead,
     essential_only: essentialOnly,
   });

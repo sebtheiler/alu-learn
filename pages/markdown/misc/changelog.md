@@ -6,6 +6,8 @@
 * **Fixed Bug with Long Image URLs:** Fixed a bug when trying to upload images from a source with a very long URL.
 * **Fixed Markdown Rendering:** Fixed markdown rendering, including shared deck descriptions
 * **Fixed Section Order in Shared Decks:** Fixed a bug that screwed up section order in shared decks
+* **Added "Study All" to Assignments:** You can now study all sections in an assignment at once
+* **Changed Page Title Scheme**
 
 # Final Fixes - Mar 02 - 1.0.14
 Next update is launch.  Finally.

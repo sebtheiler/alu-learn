@@ -6,6 +6,7 @@ import uuid
 from typing import List
 
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from pages.models import UploadedImage
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -13,6 +14,7 @@ from rest_framework.response import Response
 from sharing_system.models import FlashCardAction
 from skill_tree.models import AbstractSection, SubSection
 from skill_tree.serializers import SubSectionSerializer
+from teachers.models import Assignment
 from utils import (create_slate_element, get_morning,
                    get_paginated_queryset_response, weighted_sample)
 from utils.api_utils import IsPro, get_obj_or_404
@@ -248,7 +250,6 @@ def deck_txt_import_view(request, *args, **kwargs):
 
 
 # TODO: do something to make functions easily accessable
-# and combine with skill_tree gen et al
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def deck_statistics_view(request, deck_id, *args, **kwargs):
@@ -697,6 +698,7 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
     """
     section = request.data.get('section')
     deck_id = request.data.get('deck_id')
+    assignment_id = request.data.get('assignment_id')
     study_ahead = request.data.get('study_ahead')
     essential_only = request.data.get('essential_only')
     utc_timezone_offset = request.data.get('utc_timezone_offset', 0)
@@ -727,6 +729,16 @@ def review_instance_study_view(request, *args, **kwargs) -> List[ReviewInstance]
 
     if essential_only:
         review_instance_query &= Q(flashcard__data__tags__icontains='essential')
+
+    if assignment_id:
+        Assignment.objects.get(pk=assignment_id)
+        assignment = get_object_or_404(Assignment, pk=assignment_id)
+        sub_section_uuids = assignment.sub_sections.values_list(
+            'universal_sub_section_id', flat=True,
+        )
+        review_instance_query &= Q(
+            flashcard__sub_section__universal_sub_section_id__in=sub_section_uuids,
+        )
 
     # Find review instances that are due
     NUM_FLASHCARDS_PER_LESSON = 25
@@ -783,7 +795,6 @@ def review_instance_update_view(request, review_instance_id) -> dict:
     * `deck_id`: The ID of the deck the review instance is in
     """
     edited_values = request.data.get('edited_values')
-    print(edited_values)
     if msg := assert_dict_data_type(edited_values, RI_EDITABLE_ATTRS, False):
         return Response({'msg': msg}, status=400)
 
