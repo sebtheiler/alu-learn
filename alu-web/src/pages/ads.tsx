@@ -41,6 +41,9 @@ export default function AdComponent({ adType, isPro }: { adType: AdType, isPro: 
         data-ad-format='auto'
         data-full-width-responsive='true'
       />
+      {!adBlockDetected && <p className='mt-2 mb-0'>
+        <a href='/pro/'><strong>REMOVE ADS</strong></a>
+      </p>}
     </div>
   );
 }
