@@ -14,10 +14,9 @@ export default function Meta({ isTeacher, isPro }: { isTeacher: boolean, isPro: 
         cardsJustDone={0}
       />
       <small className='text-secondary'>You can change this goal in the <a href='/settings'>settings</a></small>
-
+      <hr style={{ maxWidth: '300px' }} />
     </>}
-    <hr style={{ maxWidth: '300px' }} />
     <AdComponent adType='meta-sidebar' isPro={isPro} />
-    <SocialMediaComponent />
+    {!isTeacher && <SocialMediaComponent />}
   </>)
 }

@@ -232,7 +232,7 @@ export function getStudyInterval(
     learning_status: learningStatus,
     steps_index: stepsIndex,
     calcFuzz: (interval: Interval) => {
-      if (!applyFuzz || isMinute) return interval;
+      if (!applyFuzz || isMinute) return interval.next_review;
 
       // Fuzz modifier is in the range of 100% +- SCHEDULER_FUZZ%
       const fuzzModifier = (Math.random()*SCHEDULER_FUZZ*2-SCHEDULER_FUZZ)/100 + 1;

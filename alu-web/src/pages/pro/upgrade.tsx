@@ -7,6 +7,7 @@ import { ProPurchaseSuccess } from '.';
 import { backendFetch, useAsyncState } from '../../lookup/lookup';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { useState } from 'react';
+import './upgrade.scss';
 
 type StrBool = 'True' | 'False';
 interface ProUpgradeProps {
@@ -48,46 +49,68 @@ export default function ProUpgrade(props: ProUpgradeProps) {
     <Container className='mt-5'>
       <Row className='text-center'>
         <Col>
-          <h1>Upgrade to Alu Pro</h1>
-          {proTrialExpires.length > 4 && <h4>
+          <h1>Take Studying to the Next Level</h1>
+          {proTrialExpires.length > 4 && <p>
             Your free-trial of Alu Pro ends {proTrialExpires.split(',').slice(0, 2).join(',')}.{' '}
             Upgrade now to make it permanent.
-          </h4>}
-          {isAnonymous && <h4>
+          </p>}
+          {isAnonymous && <p>
             Get a free week of Alu Pro when you <a href='/?showLoginRequired=true'>Sign Up</a>.{' '}
             No credit card required.
-          </h4>}
-          <p>flashy description</p>
+          </p>}
         </Col>
       </Row>
-      <hr />
-      <Row>
-        <Col>
-          <h1>$3/mo</h1>
-          <ul>
-            <li>a</li>
-            <li>b</li>
-            <li>c</li>
-          </ul>
-          {isAnonymous
-            ? <Button href='/?showLoginRequired=true'>Upgrade</Button>
-            : <LoadingButton clickFunc={purchase('monthly')}>Upgrade</LoadingButton>
-          }
-        </Col>
-        <Col>
-          <h1>$30/yr</h1>
-          <p>Save over 15%</p>
-          <ul>
-            <li>a</li>
-            <li>b</li>
-            <li>c</li>
-          </ul>
-          {isAnonymous
-            ? <Button href='/?showLoginRequired=true'>Upgrade</Button>
-            : <LoadingButton clickFunc={purchase('yearly')}>Upgrade</LoadingButton>
-          }
-        </Col>
-      </Row>
+      <div className='pro-mode-container mt-5'>
+        <Row>
+          <Col className='pro-mode-basic'>
+            <div className='pro-card-head'>
+              <h3>Basic</h3>
+              <p>Free</p>
+            </div>
+            <div className='pro-mode-body'>
+              <ul className="fa-ul">
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Personalized spaced repetition flashcards</li>
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Rich text formatting</li>
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Upload custom images</li>
+                <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>No ads</li>
+                <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Study with games</li>
+                <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Identify difficult flashcards and topics</li>
+                <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Unlimited flashcards</li>
+                <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Support Alu and free education</li>
+              </ul>
+            </div>
+          </Col>
+          <Col className='pro-mode-pro'>
+            <div className='pro-card-head'>
+              <h3>Pro</h3>
+              <p>$3/mo or $30/yr</p>
+            </div>
+            <div className='pro-mode-body'>
+              <ul className="fa-ul">
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Personalized spaced repetition flashcards</li>
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Rich text formatting</li>
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Upload custom images</li>
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>No ads</li>
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Study with games</li>
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Identify difficult flashcards and topics</li>
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Unlimited flashcards</li>
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Support Alu and free education</li>
+              </ul>
+            </div>
+          </Col>
+        </Row>
+        <Row className='mt-3 text-center'>
+          <div className='text-center w-100'>
+            {isAnonymous ? <>
+              <Button href='/?showLoginRequired=true' block>Start My Free Trial</Button>
+              <p className='mt-1'>No Credit Card Required</p>
+            </> : <>
+              <LoadingButton clickFunc={purchase('monthly')} block>Upgrade to Pro ($3/mo)</LoadingButton>
+              <LoadingButton clickFunc={purchase('yearly')} block>Upgrade to Pro ($30/yr)</LoadingButton>
+            </>}
+          </div>
+        </Row>
+      </div>
     </Container>
   );
 }

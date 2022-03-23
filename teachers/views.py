@@ -1,6 +1,5 @@
 from django.http.response import Http404
 from django.shortcuts import redirect
-from sharing_system.models import SharedDeck
 from skill_tree.models import AbstractSection, SubSection
 from utils import permissions
 

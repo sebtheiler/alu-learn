@@ -1,0 +1,48 @@
+@import '../../decks/shared.scss';
+
+.pro-mode-container {
+  max-width: 700px;
+  margin: 0 auto !important;
+
+  >div >div.col {
+    background: $lightBackground;
+    border: $grayBorder;
+    border-radius: $cardBorderRadius;
+
+    padding: 0;
+    overflow: hidden;
+
+    >.pro-card-head {
+      background: #343A40;
+      color: white;
+      padding: 25px;
+      padding-bottom: 5px;
+      margin-bottom: 25px;
+    }
+
+    >.pro-mode-body >ul >li {
+      &.check {
+        >span {
+          color: green;
+        }
+      }
+      &.xmark {
+        color: lighten(gray, 10%);
+      }
+    }
+
+    &.pro-mode-basic {
+      transform: scale(0.85) translateX(25px);
+    }
+  }
+}
+
+li.list-check {
+  list-style-type: '✔️';
+  padding-inline-start: 1ch;
+}
+
+li.list-cross {
+  list-style-type: '❌';
+  padding-inline-start: 1ch;
+}

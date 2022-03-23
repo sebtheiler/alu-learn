@@ -115,9 +115,6 @@ export default function NavbarComponent(props: NavbarComponentProps) {
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>
         <Nav className='mr-auto'>
-          <Navbar.Text className='mr-3'>
-            Good {(new Date()).getHours() < 12 ? 'morning' : 'evening'}{firstName ? ` ${firstName}` : ''}!
-          </Navbar.Text>
           <Nav.Link href='/explore/'>
             <i className='fa fa-compass'></i>{' '}
             Explore
@@ -126,10 +123,14 @@ export default function NavbarComponent(props: NavbarComponentProps) {
             <i className='fa fa-book'></i>{' '}
             Changelog
           </Nav.Link>
-          {/* <Nav.Link href='/pro/'>
+          <Nav.Link href='/pro/'>
             <i className='fa fa-award'></i>{' '}
             Pro
-          </Nav.Link> */}
+          </Nav.Link>
+          <Nav.Link href='/about/'>
+            <i className='fa fa-info-circle'></i>{' '}
+            About
+          </Nav.Link>
           {congratulationsMessage}
         </Nav>
         <Nav className='ml-auto'>
@@ -147,7 +148,7 @@ export default function NavbarComponent(props: NavbarComponentProps) {
                   color: doneReviewsToday ? '#fd9626' : '#e5e5e5',
                 }}
               >
-                <i className='fas fa-fire-alt fa-2x' />
+                <i className='fas fa-fire fa-2x' />
                 <span
                   className='streak-number'
                   style={{

@@ -14,8 +14,7 @@ export default function ProPurchaseSuccess() {
 
   return (
     <Container className='text-center mt-5'>
-      <h1>Thank You!</h1>
-      <h3>For Upgrading to Alu Pro!</h3>
+      <h1>Thank You for Upgrading to Alu Pro!</h1>
       <br />
       <p>You've just improved your Alu experience while supporting free education!</p>
       <p>Your payment is being processed and might take a couple of minutes to complete</p>
