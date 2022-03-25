@@ -76,7 +76,6 @@ export default function ProUpgrade(props: ProUpgradeProps) {
                 <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Study with games</li>
                 <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Identify difficult flashcards and topics</li>
                 <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Unlimited flashcards</li>
-                <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Support Alu and free education</li>
               </ul>
             </div>
           </Col>

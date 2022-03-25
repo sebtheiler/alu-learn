@@ -96,7 +96,7 @@ export function getStudyInterval(
     ease,
   } = card;
   let minutesInterval = daysToMinutes(dateDiff(new Date(last_review), new Date()));
-  let applyFuzz = false;
+  let applyFuzz = false;  // true if passing grade when learned
   if (DEBUG) console.log('Minutes interval', minutesInterval);
 
   // Algorithm
