@@ -16,7 +16,7 @@ from sharing_system.serializers import SharedDeckSerializer
 from simple_email_confirmation.models import EmailAddress
 from utils import get_paginated_queryset_response
 
-from ..models import Notification, Profile
+from ..models import Notification, Profile, ProfileTutorialProgress
 from ..serializers import (MinifiedProfileSerializer, NotificationSerializer,
                            PublicProfileSerializer)
 
@@ -616,3 +616,29 @@ def list_profile_decks(request, username, *args, **kwargs):
     ]
 
     return Response(SharedDeckSerializer(shared_decks, many=True).data, status=200)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profile_tutorial_progress(request, attr):
+    if attr not in ProfileTutorialProgress.PROGRESS_ATTRS:
+        return Response({'msg': 'Invalid attr'}, status=400)
+
+    profile_tutorial_progress = request.user.profile.tutorial_progress
+    value = getattr(profile_tutorial_progress, attr)
+
+    return Response({'value': value}, status=200)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def set_profile_tutorial_progress(request, attr):
+    if attr not in ProfileTutorialProgress.PROGRESS_ATTRS:
+        return Response({'msg': 'Invalid attr'}, status=400)
+
+    value = request.data.get('value')
+    profile_tutorial_progress = request.user.profile.tutorial_progress
+    setattr(profile_tutorial_progress, attr, value)
+    profile_tutorial_progress.save()
+
+    return Response({'msg': 'Set attr'}, status=200)

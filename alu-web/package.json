@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@popperjs/core": "^2.11.4",
     "@robinedman/slate-history": "^1.0.1",
     "@stripe/react-stripe-js": "^1.7.0",
     "@stripe/stripe-js": "^1.23.0",
@@ -29,6 +30,7 @@
     "react-katex": "^2.0.2",
     "react-likert-scale": "^4.1.2",
     "react-markdown": "^7.1.2",
+    "react-popper": "^2.2.5",
     "react-scripts": "^4.0.3",
     "react-slick": "^0.28.1",
     "react-tooltip": "^4.2.21",

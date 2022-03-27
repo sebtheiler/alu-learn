@@ -24,4 +24,6 @@ urlpatterns = [
     path('read-popup/', views.read_changelog_popup_api_view),
     path('staff-force-login/', views.staff_force_login),
     path('streak-review-info/', views.streak_review_info),
+    path('tutorials/get/<str:attr>/', views.get_profile_tutorial_progress),
+    path('tutorials/set/<str:attr>/', views.set_profile_tutorial_progress),
 ]

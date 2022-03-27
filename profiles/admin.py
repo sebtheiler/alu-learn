@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Profile, Notification, ProfileBadge, ProfileHistorySegment, ProfileSettings
+
+from .models import (Notification, Profile, ProfileBadge,
+                     ProfileHistorySegment, ProfileSettings,
+                     ProfileTutorialProgress)
 
 
 def new_update(modeladmin, request, queryset):
@@ -60,3 +63,4 @@ admin.site.register(Notification)
 admin.site.register(ProfileBadge)
 admin.site.register(ProfileHistorySegment, ProfileHistorySegmentAdmin)
 admin.site.register(ProfileSettings, ProfileSettingsAdmin)
+admin.site.register(ProfileTutorialProgress)

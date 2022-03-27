@@ -1,5 +1,7 @@
+import AboutPage from './about';
 import ContactUs from './contactus';
 import ExploreComponent from './explore';
+import LandingComponent from './landing';
 import NavbarComponent from './navbar';
 import UserCustomization from './customization';
 import {
@@ -8,10 +10,6 @@ import {
   SendPasswordReset,
   SettingsPage,
 } from './settings';
-import {
-  AboutPage,
-  LandingComponent,
-} from './landing';
 import {
   ProUpgrade,
   ProPurchaseCancelled,

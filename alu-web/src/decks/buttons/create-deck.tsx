@@ -8,9 +8,11 @@ import { HomeActionDispatch } from '../context';
 import { QuestionBubble } from '../../utils';
 import { apiObjectCreate } from '../../lookup/lookup';
 import { useContext, useState  } from 'react';
+import TutorialPopup from '../../pages/tutorial';
 
 export default function CreateDeckButton() {
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createDeck, setCreateDeck] = useState<Element | null>(null)
 
   return (<>
     <div className='deck-selection-item mb-5'>
@@ -18,6 +20,7 @@ export default function CreateDeckButton() {
         className='deck-selection-main mb-0'
         role='button'
         onClick={() => setShowCreateModal(true)}
+        ref={setCreateDeck}
       >
         <p>
           <span className='title-text'>Create New Deck</span>
@@ -29,6 +32,9 @@ export default function CreateDeckButton() {
       show={showCreateModal}
       close={() => setShowCreateModal(false)}
     />
+    <TutorialPopup referenceElement={createDeck} tutorialAttr={'created_first_deck'}>
+      Click here to create your first deck
+    </TutorialPopup>
   </>);
 }
 

@@ -245,11 +245,25 @@ class ProfileSettings(models.Model):
         return f'Settings for {self.profile.user.username}'
 
 
+class ProfileTutorialProgress(models.Model):
+    profile = models.OneToOneField(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name='tutorial_progress',
+    )
+    created_first_deck = models.BooleanField(default=False)
+
+    PROGRESS_ATTRS = [
+        'created_first_deck',
+    ]
+
+
 # When a user is saved, create a corresponding Profile object and an initial notification
 def user_did_save(sender, instance, created, *args, **kwargs):
     if created:
         profile, _ = Profile.objects.get_or_create(user=instance)
         ProfileSettings.objects.create(profile=profile)
+        ProfileTutorialProgress.objects.create(profile=profile)
 
 
 post_save.connect(user_did_save, sender=User)
