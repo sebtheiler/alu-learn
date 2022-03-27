@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { DeckImportComponent, StatisticsPage, SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges, ArchivedDecks } from './decks';
 import { GameComponent, MatchingGame } from './decks/games';
 import { Habits } from './habits';
-import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent, ProUpgrade, ProPurchaseSuccess, ProPurchaseCancelled } from './pages';
+import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent, AboutPage, ProUpgrade, ProPurchaseSuccess, ProPurchaseCancelled } from './pages';
 import { NotificationComponent } from './profiles/notifications';
 import { ProfileDetail, LoginComponent, StaffForceLogin } from './profiles';
 import './index.css';
@@ -29,6 +29,7 @@ const renderElement = (Component: FunctionComponent | string, htmlName: string, 
 
 type ElementRow = [FunctionComponent, string, boolean?];
 ([
+  [AboutPage, 'about-page'],
   [ArchivedDecks, 'archived-decks'],
   [ChangePasswordEmail, 'update-password-email'],
   [ConfirmEmail, 'confirm-email'],

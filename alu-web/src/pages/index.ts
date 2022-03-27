@@ -1,6 +1,5 @@
 import ContactUs from './contactus';
 import ExploreComponent from './explore';
-import LandingComponent from './landing';
 import NavbarComponent from './navbar';
 import UserCustomization from './customization';
 import {
@@ -10,12 +9,17 @@ import {
   SettingsPage,
 } from './settings';
 import {
+  AboutPage,
+  LandingComponent,
+} from './landing';
+import {
   ProUpgrade,
   ProPurchaseCancelled,
   ProPurchaseSuccess,
 } from './pro';
 
 export {
+  AboutPage,
   ChangePasswordEmail,
   ConfirmEmail,
   ContactUs,

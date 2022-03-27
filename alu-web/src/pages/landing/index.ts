@@ -1,3 +1,7 @@
 import LandingComponent from './landing';
+import AboutPage from './about';
 
-export default LandingComponent;
+export {
+  AboutPage,
+  LandingComponent,
+};

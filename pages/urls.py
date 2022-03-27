@@ -1,11 +1,14 @@
-from utils import render_basic_view
 from django.urls import path
+from django.views.generic.base import RedirectView
+from utils import render_basic_view
 
 from . import views
+
 urlpatterns = [
     # General pages
     path('', views.landing_page),
     path('home/', render_basic_view('misc/home.html')),
+    path('about/', render_basic_view('misc/about.html')),
     path('profile/', views.profile_redirect_view),
     path('login/', views.login_view),
     path('eli/', render_basic_view('misc/eli.html', False, False)),
@@ -34,4 +37,8 @@ urlpatterns = [
     path('contactus/finished/', views.contact_finished_view_wrapper(is_legal_issue=False)),
     path('legal/contactus/', views.contact_view_wrapper(is_legal_issue=True)),
     path('legal/contactus/finished/', views.contact_finished_view_wrapper(is_legal_issue=True)),
+
+    # Redirects
+    path('info/', RedirectView.as_view(url='/about/')),
+    path('mission/', RedirectView.as_view(url='/about/')),
 ]
