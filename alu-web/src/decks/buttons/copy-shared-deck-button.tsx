@@ -6,6 +6,7 @@ import { Deck } from '../types';
 import { SharedDeck } from '../types';
 import { backendFetch } from '../../lookup/lookup';
 import { useState } from 'react';
+import TutorialPopup from '../../pages/tutorial';
 
 interface CopySharedDeckButtonProps {
   sharedDeck: SharedDeck;
@@ -13,6 +14,7 @@ interface CopySharedDeckButtonProps {
 }
 export default function CopySharedDeckButton({ sharedDeck, isLoggedIn }: CopySharedDeckButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [copyBtn, setCopyBtn] = useState<Element | null>(null);
 
   const cloneDeck = async () => {
     const deck = await backendFetch<Deck>('POST', `sharing_system/shareddeck/${sharedDeck.id}/copy/`, {
@@ -27,9 +29,18 @@ export default function CopySharedDeckButton({ sharedDeck, isLoggedIn }: CopySha
       onClick={() => setIsOpen(true)}
       disabled={!isLoggedIn}
       className='w-100'
+      ref={setCopyBtn}
     >
       Copy {!isLoggedIn && <a href='/login/' className='text-white'>(Log-in)</a>}
     </Button>
+    {isLoggedIn && <TutorialPopup
+      referenceElement={copyBtn}
+      tutorialAttr='copied_shared_deck'
+      placement='top'
+    >
+      Click here to copy the deck
+    </TutorialPopup>}
+
     <Modal show={isOpen} onHide={() => setIsOpen(false)}>
       <Modal.Header>
         <Modal.Title>Copying "{sharedDeck.title}"</Modal.Title>

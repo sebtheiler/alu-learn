@@ -5,7 +5,16 @@ import { useCallback, useMemo, useState } from 'react';
 import { usePopper } from 'react-popper';
 import './tutorial.scss';
 
-type TutorialAttr = 'created_first_deck';
+type TutorialAttr =
+  | 'created_first_deck'
+  | 'created_first_classroom'
+  | 'explored_shared_decks'
+  | 'copied_shared_deck'
+  | 'clicked_sub_section'
+  | 'created_flashcard'
+  | 'clicked_study'
+  | 'studied_flashcard'
+  | 'created_sub_section';
 
 interface TutorialPopupProps {
   referenceElement: Element | null;
@@ -65,7 +74,7 @@ export default function TutorialPopup(props: TutorialPopupProps) {
         ref={setPopperElement}
         style={popperInstance.styles.popper}
         {...popperInstance.attributes.popper}
-        className='tutorial-popper'
+        className='tutorial-popper text-center'
       >
         {children}
         <Button className='mt-2' onClick={hide} variant='outline-light' block>

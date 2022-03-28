@@ -8,7 +8,7 @@ urlpatterns = [
     # General pages
     path('', views.landing_page),
     path('home/', render_basic_view('misc/home.html')),
-    path('about/', render_basic_view('misc/about.html')),
+    path('about/', render_basic_view('misc/about.html', False, False)),
     path('profile/', views.profile_redirect_view),
     path('login/', views.login_view),
     path('eli/', render_basic_view('misc/eli.html', False, False)),

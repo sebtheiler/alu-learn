@@ -1,16 +1,17 @@
 import BrowserInteractionTime from 'browser-interaction-time';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import TutorialPopup from '../../pages/tutorial';
+import { RenderFlashcardImage } from '../render-flashcard';
 import { ReviewInstance } from '../types';
 import { StudyAnswerDispatch } from './context';
 import { apiReviewInstanceUpdate } from '../../lookup/lookup';
-import { processFront, processBack } from './process-text';
-import { getStudyInterval } from './algorithm';
 import { getMinNum } from './utils';
+import { getStudyInterval } from './algorithm';
+import { processFront, processBack } from './process-text';
 import { range, RenderRichText } from '../../utils';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import './flashcard.scss';
-import { RenderFlashcardImage } from '../render-flashcard';
 
 interface ReviewInstanceStudyProps {
   reviewInstance: ReviewInstance;
@@ -19,6 +20,7 @@ interface ReviewInstanceStudyProps {
   studyAhead: boolean;
 }
 export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhead }: ReviewInstanceStudyProps) {
+  const [studyChoicesRef, setStudyChoicesRef] = useState<Element | null>(null);
   const [isFlipped, setIsFlipped] = useState(false);
   const studyAnswerDispatch = useContext(StudyAnswerDispatch);
   const intervals = useMemo(
@@ -168,7 +170,7 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
         <small>Tap the card or press space to reveal the other side</small>
       </div>
       <div className={'other-study-els answer-choices' + (isFlipped ? ' is-flipped' : '')}>
-        <ButtonGroup className='w-100'>
+        <ButtonGroup className='w-100' ref={setStudyChoicesRef}>
           {['Again', 'Hard', 'Good', 'Easy'].map((difficulty, i) =>
             <Button
               onClick={studyFlashcard((i + 1) as 1 | 2 | 3 | 4)}
@@ -185,6 +187,13 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
             </Button>
           )}
         </ButtonGroup>
+        <TutorialPopup
+          referenceElement={studyChoicesRef}
+          tutorialAttr='studied_flashcard'
+        >
+          Choose a response to indicate how well you remembered the flashcard.
+          If you forgot, click "Again".  If you found it easy, click "Easy".
+        </TutorialPopup>
         <div className='other-study-els text-secondary text-center'>
           <small>
             Tap a button or use the number keys 1-{intervals.filter(timing => getMinNum(timing) > 0).length}

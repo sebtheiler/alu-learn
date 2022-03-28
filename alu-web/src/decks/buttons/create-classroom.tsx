@@ -5,9 +5,11 @@ import { Classroom } from '../../teachers/types';
 import { HomeActionDispatch } from '../context';
 import { apiObjectCreate } from '../../lookup/lookup';
 import { useContext, useState } from 'react';
+import TutorialPopup from '../../pages/tutorial';
 
 export default function CreateClassroomButton() {
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createClassroomBtn, setCreateClassroomBtn] = useState<Element | null>(null);
 
   return (<>
     <div className='deck-selection-item mb-5'>
@@ -15,6 +17,7 @@ export default function CreateClassroomButton() {
         className='deck-selection-main mb-0'
         role='button'
         onClick={() => setShowCreateModal(true)}
+        ref={setCreateClassroomBtn}
       >
         <p>
           <span className='title-text'>Create New Classroom</span>
@@ -26,6 +29,12 @@ export default function CreateClassroomButton() {
       show={showCreateModal}
       close={() => setShowCreateModal(false)}
     />
+    <TutorialPopup
+      referenceElement={createClassroomBtn}
+      tutorialAttr='created_first_classroom'
+    >
+      Click here to create a new classroom
+    </TutorialPopup>
   </>);
 }
 

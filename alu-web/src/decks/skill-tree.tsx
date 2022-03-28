@@ -1,13 +1,14 @@
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import RenderMainSection from './main-section';
+import TutorialPopup from '../pages/tutorial';
 import UpdateDeck from './update-deck';
 import useMountEffect from '../utils/useMountEffect';
 import { CreateMainSectionButton } from './buttons/section-buttons';
 import { Deck } from './types';
 import { HomeActionDispatch } from './context';
 import { useAsyncDispatch, getDeckSectionsPercentComplete, MainSectionPercentComplete } from '../lookup/lookup';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 const updateDeckWithPercentComplete = (deck: Deck, sectionsPercentComplete: MainSectionPercentComplete[]) => {
   let deckCopy = deck;
@@ -50,6 +51,7 @@ export default function SkillTree({ deck, readOnly }: { deck: Deck, readOnly?: b
     }),
     !!deck,
   );
+  const [studyBtn, setStudyBtn] = useState<Element | null>(null);
 
   useMountEffect(
     () => setPercentCompleteDidSet(false),
@@ -64,9 +66,21 @@ export default function SkillTree({ deck, readOnly }: { deck: Deck, readOnly?: b
       </h1>
       <div className='my-2'>
         <ButtonGroup>
-          {!readOnly && <Button href={`study/`} style={{ width: '100px' }}>
-            Study
-          </Button>}
+          {!readOnly && <>
+            <Button
+              href='study/'
+              style={{ width: '100px' }}
+              ref={setStudyBtn}
+            >
+              Study
+            </Button>
+            <TutorialPopup
+              referenceElement={studyBtn}
+              tutorialAttr='clicked_study'
+            >
+              Study your flashcards
+            </TutorialPopup>
+          </>}
           <Button
             href={`flashcards/`}
             style={{ width: '100px', marginLeft: '5px' }}

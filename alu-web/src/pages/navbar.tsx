@@ -6,7 +6,9 @@ import { NavbarPopup } from './navbar-popup';
 import { NotificationComponent } from '../profiles/notifications';
 import { apiProfileLogout } from '../lookup';
 import { errorHandler, Jdenticon } from '../utils';
+import { useState } from 'react';
 import './navbar.scss';
+import TutorialPopup from './tutorial';
 
 interface NavbarComponentProps {
   firstName: string;
@@ -23,6 +25,7 @@ export default function NavbarComponent(props: NavbarComponentProps) {
   const doneReviewsToday = props.doneReviewsToday === 'True';
   const showUpdateModal = props.showUpdateModal === 'True';
   const isPro = props.isPro === 'True';
+  const [exploreLink, setExploreLink] = useState<Element | null>(null);
 
   const logoutHandler = event => {
     event.preventDefault();
@@ -115,10 +118,18 @@ export default function NavbarComponent(props: NavbarComponentProps) {
       <Navbar.Toggle aria-controls='responsive-navbar-nav' />
       <Navbar.Collapse id='responsive-navbar-nav'>
         <Nav className='mr-auto'>
-          <Nav.Link href='/explore/'>
+          <Nav.Link href='/explore/' ref={setExploreLink}>
             <i className='fa fa-compass'></i>{' '}
             Explore
           </Nav.Link>
+          <TutorialPopup
+            referenceElement={exploreLink}
+            tutorialAttr='explored_shared_decks'
+            placement='bottom'
+          >
+            Explore shared decks created by others
+          </TutorialPopup>
+
           <Nav.Link href='/changelog/'>
             <i className='fa fa-book'></i>{' '}
             Changelog

@@ -1,9 +1,9 @@
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Row from 'react-bootstrap/Row';
 import RenderSubSection, { cleanTitle } from './sub-section';
-import { MainSectionButtons, CreateSubSectionButton } from './buttons/section-buttons';
+import Row from 'react-bootstrap/Row';
 import { MainSection } from './types';
+import { MainSectionButtons, CreateSubSectionButton } from './buttons/section-buttons';
 
 interface MainSectionProps {
   mainSection: MainSection;
@@ -23,7 +23,10 @@ export default function RenderMainSection({ mainSection, numMainSections, readOn
       </div>
       <div className='mt-2'>
         <ButtonGroup>
-          {!readOnly && <Button href={`study/${cleanTitle(mainSection.data.title)}/`} style={{ width: '100px' }}>
+          {!readOnly && <Button
+            href={`study/${cleanTitle(mainSection.data.title)}/`}
+            style={{ width: '100px' }}
+          >
             Study
           </Button>}
           <Button

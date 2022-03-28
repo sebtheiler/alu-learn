@@ -4,9 +4,10 @@ import { useState } from 'react';
 
 interface LoadingButtonProps extends ButtonProps {
   clickFunc(event): Promise<any>;
+  ref?: React.LegacyRef<HTMLDivElement>;
 }
 export default function LoadingButton(props: LoadingButtonProps) {
-  const { clickFunc } = props;
+  const { clickFunc, ref } = props;
   let defaultProps = {...props as any};
   delete defaultProps.clickFunc;
 
@@ -21,7 +22,7 @@ export default function LoadingButton(props: LoadingButtonProps) {
   }
 
   return (
-    <Button {...defaultProps} onClick={onClick}>
+    <Button {...defaultProps} onClick={onClick} ref={ref}>
       {props.children}
       {loading && <Spinner
         animation='border'

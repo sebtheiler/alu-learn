@@ -252,9 +252,25 @@ class ProfileTutorialProgress(models.Model):
         related_name='tutorial_progress',
     )
     created_first_deck = models.BooleanField(default=False)
+    created_first_classroom = models.BooleanField(default=False)
+    explored_shared_decks = models.BooleanField(default=False)
+    copied_shared_deck = models.BooleanField(default=False)
+    clicked_sub_section = models.BooleanField(default=False)
+    created_flashcard = models.BooleanField(default=False)
+    clicked_study = models.BooleanField(default=False)
+    studied_flashcard = models.BooleanField(default=False)
+    created_sub_section = models.BooleanField(default=False)
 
     PROGRESS_ATTRS = [
         'created_first_deck',
+        'created_first_classroom',
+        'explored_shared_decks',
+        'copied_shared_deck',
+        'clicked_sub_section',
+        'created_flashcard',
+        'clicked_study',
+        'studied_flashcard',
+        'created_sub_section',
     ]
 
 

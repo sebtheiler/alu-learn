@@ -5,6 +5,8 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import { MainSection, SubSection } from './types';
 import { SubSectionButtons } from './buttons/section-buttons';
+import { useState } from 'react';
+import TutorialPopup from '../pages/tutorial';
 
 export const cleanTitle = (title: string) => encodeURIComponent(title.toLowerCase().replaceAll('-', '.d.').replaceAll(' ', '-'));
 export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll('__', ' AND ').replace('.d.', '-')
@@ -18,6 +20,8 @@ interface SubSectionProps {
   essentialOnly?: boolean;
 }
 export default function RenderSubSection({ subSection, mainSection, numSubSections, readOnly, studyable, essentialOnly }: SubSectionProps) {
+  const [subSectionDiv, setSubSectionDiv] = useState<Element | null>(null);
+
   return (
     <Col
       xl={3}
@@ -41,18 +45,21 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
             <Popover.Content>
               {/* <p>{subSection.data.description}</p> */}
               <div>
-                {studyable && <LoadingButton
-                  clickFunc={async () => {window.location.href = (
-                    `study/\
-                    ${cleanTitle(mainSection.data.title)}__\
-                    ${cleanTitle(subSection.data.title)}/\
-                    ${essentialOnly ? '?essentialOnly=true' : ''}\
-                    `.replaceAll(' ', '')
-                  ); await new Promise(r => setTimeout(r, 100000))}}
-                  block
-                >
-                  Study
-                </LoadingButton>}
+                {studyable && <>
+                  <LoadingButton
+                    clickFunc={async () => {window.location.href = (
+                      `study/\
+                      ${cleanTitle(mainSection.data.title)}__\
+                      ${cleanTitle(subSection.data.title)}/\
+                      ${essentialOnly ? '?essentialOnly=true' : ''}\
+                      `.replaceAll(' ', '')
+                    ); await new Promise(r => setTimeout(r, 100000))}}
+                    block
+                  >
+                    Study
+                  </LoadingButton>
+                </>}
+
                 {!readOnly && <Button
                   href={
                     `/deck/${mainSection.deck}/flashcards/create/\
@@ -86,6 +93,7 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
           className='sub-section'
           role='button'
           style={{ background: `conic-gradient(rgba(94, 209, 73, 1) ${(subSection.total_percent_complete ?? 0)*100}%, transparent 0%)` }}
+          ref={setSubSectionDiv}
         >
           <div
             className='sub-section-percent-complete'
@@ -108,6 +116,12 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
           </div>
         </div>
       </OverlayTrigger>
+      {subSection.order_num === 0 && mainSection.order_num === 0 && <TutorialPopup
+        referenceElement={subSectionDiv}
+        tutorialAttr='clicked_sub_section'
+      >
+        Click here to add flashcards or study your deck
+      </TutorialPopup>}
     </Col>
   );
 }

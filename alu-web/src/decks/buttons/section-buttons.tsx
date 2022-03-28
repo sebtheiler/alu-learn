@@ -8,6 +8,7 @@ import { HomeActionDispatch } from '../context';
 import { MainSection, SubSection } from '../types';
 import { apiObjectCreate, apiObjectDelete, apiObjectEdit, apiObjectRearrange } from '../../lookup/lookup';
 import { useContext, useState } from 'react';
+import TutorialPopup from '../../pages/tutorial';
 
 export function MainSectionButtons({ mainSection, numMainSections }: { mainSection: MainSection, numMainSections: number }) {
   const { decksDispatch } = useContext(HomeActionDispatch);
@@ -253,6 +254,7 @@ export function CreateMainSectionButton({ deckId }: { deckId: number }) {
 }
 
 export function CreateSubSectionButton({ mainSection }: { mainSection: MainSection }) {
+  const [createBtn, setCreateBtn] = useState<Element | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { decksDispatch } = useContext(HomeActionDispatch);
 
@@ -278,6 +280,7 @@ export function CreateSubSectionButton({ mainSection }: { mainSection: MainSecti
         <Button
           variant='secondary'
           onClick={() => setIsCreateModalOpen(true)}
+          ref={setCreateBtn}
         >
           Create Subsection
         </Button>
@@ -289,6 +292,14 @@ export function CreateSubSectionButton({ mainSection }: { mainSection: MainSecti
           </Modal.Header>
           <AbstractSectionCreateForm callback={createSubSectionCallback} />
         </Modal>
+        <TutorialPopup
+          referenceElement={createBtn}
+          tutorialAttr='created_sub_section'
+          placement='bottom'
+        >
+          You can organize your decks into sections and sub sections.
+          Click here to create a sub section.
+        </TutorialPopup>
       </ButtonGroup>
     </div>
   );
