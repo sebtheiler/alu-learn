@@ -9,6 +9,7 @@ favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
 
 
 urlpatterns = [
+    path('super-secret-admin-123/login/', RedirectView.as_view(url='/login/', permanent=True)),
     path('super-secret-admin-123/', admin.site.urls),
     path('admin/', RedirectView.as_view(url='https://www.youtube.com/watch?v=dQw4w9WgXcQ', permanent=True)),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
