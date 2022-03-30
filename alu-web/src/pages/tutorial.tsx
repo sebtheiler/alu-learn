@@ -25,6 +25,10 @@ interface TutorialPopupProps {
 export default function TutorialPopup(props: TutorialPopupProps) {
   const { referenceElement, children, placement='right', tutorialAttr } = props;
 
+  const [tutorialProgress, setTutorialProgress] = useState(() => {
+    const val = localStorage.getItem('tutorialProgress');
+    return val ? JSON.parse(val) : {};
+  });
   const [eventListenersEnabled, setEventListenersEnabled] = useState(false);
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
   const [arrowElement, setArrowElement] = useState<HTMLElement | null>(null);
@@ -38,8 +42,16 @@ export default function TutorialPopup(props: TutorialPopupProps) {
   });
   useAsyncState<{ value: boolean }>(
     getProfileTutorialProgress, [tutorialAttr],
-    attr => !attr.value && show(),
-    !!popperElement,
+    attr => {
+      if (!attr.value) show();
+      let tutorialProgressCopy = tutorialProgress;
+      tutorialProgressCopy[tutorialAttr] = attr.value;
+      localStorage.setItem(
+        'tutorialProgress',
+        JSON.stringify(tutorialProgressCopy),
+      );
+    },
+    !!popperElement && !tutorialProgress[tutorialAttr],
   );
 
   // Show and hide the element
@@ -57,8 +69,21 @@ export default function TutorialPopup(props: TutorialPopupProps) {
   const hide = useCallback(() => {
     if (!popperElement) return;
     popperElement.removeAttribute('data-show');
-    setProfileTutorialProgress(tutorialAttr, true);
     setEventListenersEnabled(false);
+
+    // Cache this in local storage so that no more requests are sent
+    let tutorialProgressCopy = JSON.parse(
+      localStorage.getItem('tutorialProgress') ?? '{}'
+    );  // refetch because it may have changed by now
+    if (tutorialProgressCopy[tutorialAttr]) return;
+
+    setProfileTutorialProgress(tutorialAttr, true);
+    tutorialProgressCopy[tutorialAttr] = true;
+    setTutorialProgress(tutorialProgressCopy);
+    localStorage.setItem(
+      'tutorialProgress',
+      JSON.stringify(tutorialProgressCopy),
+    );
   }, [popperElement, tutorialAttr]);
 
 
