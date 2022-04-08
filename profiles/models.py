@@ -10,6 +10,11 @@ from django.db.models.signals import post_save
 User = settings.AUTH_USER_MODEL
 
 
+class ProfileModelManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related('user')
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -31,6 +36,9 @@ class Profile(models.Model):
         default='1970-01-01',
         null=True, blank=True,
     )  # expires after this specified date
+
+    _base_objects = ProfileModelManager()
+    objects = ProfileModelManager()
 
     def __str__(self) -> str:
         if self.user.first_name and self.user.last_name:
@@ -251,27 +259,26 @@ class ProfileTutorialProgress(models.Model):
         on_delete=models.CASCADE,
         related_name='tutorial_progress',
     )
-    created_first_deck = models.BooleanField(default=False)
-    created_first_classroom = models.BooleanField(default=False)
-    explored_shared_decks = models.BooleanField(default=False)
-    copied_shared_deck = models.BooleanField(default=False)
-    clicked_sub_section = models.BooleanField(default=False)
-    created_flashcard = models.BooleanField(default=False)
     clicked_study = models.BooleanField(default=False)
-    studied_flashcard = models.BooleanField(default=False)
+    clicked_sub_section = models.BooleanField(default=False)
+    copied_shared_deck = models.BooleanField(default=False)
+    created_first_deck = models.BooleanField(default=False)
     created_sub_section = models.BooleanField(default=False)
+    explored_shared_decks = models.BooleanField(default=False)
+    studied_flashcard = models.BooleanField(default=False)
 
     PROGRESS_ATTRS = [
-        'created_first_deck',
-        'created_first_classroom',
-        'explored_shared_decks',
-        'copied_shared_deck',
-        'clicked_sub_section',
-        'created_flashcard',
         'clicked_study',
-        'studied_flashcard',
+        'clicked_sub_section',
+        'copied_shared_deck',
+        'created_first_deck',
         'created_sub_section',
+        'explored_shared_decks',
+        'studied_flashcard',
     ]
+
+    def __str__(self) -> str:
+        return self.profile.user.username
 
 
 # When a user is saved, create a corresponding Profile object and an initial notification

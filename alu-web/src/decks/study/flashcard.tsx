@@ -190,6 +190,7 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
         <TutorialPopup
           referenceElement={studyChoicesRef}
           tutorialAttr='studied_flashcard'
+          placement='top'
         >
           Choose a response to indicate how well you remembered the flashcard.
           If you forgot, click "Again".  If you found it easy, click "Easy".

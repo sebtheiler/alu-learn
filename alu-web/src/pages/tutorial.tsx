@@ -6,15 +6,19 @@ import { usePopper } from 'react-popper';
 import './tutorial.scss';
 
 type TutorialAttr =
-  | 'created_first_deck'
-  | 'created_first_classroom'
-  | 'explored_shared_decks'
-  | 'copied_shared_deck'
-  | 'clicked_sub_section'
-  | 'created_flashcard'
   | 'clicked_study'
-  | 'studied_flashcard'
-  | 'created_sub_section';
+  | 'clicked_sub_section'
+  | 'copied_shared_deck'
+  | 'created_first_deck'
+  | 'created_sub_section'
+  | 'explored_shared_decks'
+  | 'studied_flashcard';
+
+const requirements = {
+  'created_first_classroom': ['created_first_deck'],
+  'created_sub_section': ['studied_flashcard'],
+  'clicked_study': ['created_sub_section'],
+}
 
 interface TutorialPopupProps {
   referenceElement: Element | null;
@@ -25,9 +29,22 @@ interface TutorialPopupProps {
 export default function TutorialPopup(props: TutorialPopupProps) {
   const { referenceElement, children, placement='right', tutorialAttr } = props;
 
+  const [requirementsMet, setRequirementsMet] = useState(false);
   const [tutorialProgress, setTutorialProgress] = useState(() => {
-    const val = localStorage.getItem('tutorialProgress');
-    return val ? JSON.parse(val) : {};
+    const raw = localStorage.getItem('tutorialProgress');
+    const val = raw ? JSON.parse(raw) : {};
+
+    const attrRequirements = requirements[tutorialAttr] ?? [];
+    var passed = true;
+    for (const requirement of attrRequirements) {
+      if (!val[requirement]) {
+        passed = false;
+        break;
+      }
+    }
+    setRequirementsMet(passed)
+
+    return val;
   });
   const [eventListenersEnabled, setEventListenersEnabled] = useState(false);
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null);
@@ -51,7 +68,7 @@ export default function TutorialPopup(props: TutorialPopupProps) {
         JSON.stringify(tutorialProgressCopy),
       );
     },
-    !!popperElement && !tutorialProgress[tutorialAttr],
+    !!popperElement && !tutorialProgress[tutorialAttr] && requirementsMet,
   );
 
   // Show and hide the element

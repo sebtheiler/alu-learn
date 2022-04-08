@@ -58,9 +58,23 @@ class ProfileHistorySegmentAdmin(admin.ModelAdmin):
             return 0
 
 
+class ProfileTutorialProgressAdmin(admin.ModelAdmin):
+    search_fields = (
+        'profile__user__first_name',
+        'profile__user__last_name',
+        'profile__user__username',
+    )
+
+    def get_queryset(self, request):
+        # TODO: make use less queries
+        queryset = super(ProfileTutorialProgressAdmin, self).get_queryset(request)
+        queryset = queryset.prefetch_related('profile__user')
+        return queryset
+
+
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Notification)
 admin.site.register(ProfileBadge)
 admin.site.register(ProfileHistorySegment, ProfileHistorySegmentAdmin)
 admin.site.register(ProfileSettings, ProfileSettingsAdmin)
-admin.site.register(ProfileTutorialProgress)
+admin.site.register(ProfileTutorialProgress, ProfileTutorialProgressAdmin)

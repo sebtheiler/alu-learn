@@ -78,7 +78,7 @@ export default function SkillTree({ deck, readOnly }: { deck: Deck, readOnly?: b
               referenceElement={studyBtn}
               tutorialAttr='clicked_study'
             >
-              Study your flashcards
+              Study all main sections and sub sections at once
             </TutorialPopup>
           </>}
           <Button
