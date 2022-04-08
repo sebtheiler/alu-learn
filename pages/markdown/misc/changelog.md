@@ -7,7 +7,8 @@
 * **Fixed Markdown Rendering:** Fixed markdown rendering, including shared deck descriptions
 * **Fixed Section Order in Shared Decks:** Fixed a bug that screwed up section order in shared decks
 * **Added "Study All" to Assignments:** You can now study all sections in an assignment at once
-* **Changed Page Title Scheme**
+* **Changed Page Title Scheme:** Page titles are now slightly fancier, with bars "|" instead of "at"
+* **Login With Email:** You can now login with your email instead of your username
 
 # Final Fixes - Mar 02 - 1.0.14
 Next update is launch.  Finally.

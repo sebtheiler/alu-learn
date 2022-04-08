@@ -360,11 +360,14 @@ export function apiProfileCreate(
 
 // Logs a user in
 export function apiProfileLogin(
-  username: string,
+  usernameOrEmail: string,
   password: string,
   callback: (response: Message, status: number) => void,
 ) {
-  backendLookup('POST', 'profiles/login/', callback, {username: username.toLowerCase(), password: password});
+  backendLookup('POST', 'profiles/login/', callback, {
+    username_or_email: usernameOrEmail.toLowerCase(),
+    password: password,
+  });
 }
 
 // Logs a user out

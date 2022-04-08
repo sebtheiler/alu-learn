@@ -23,7 +23,7 @@ export function LoginForm(props) {
 
     // Log the user in
     apiProfileLogin(
-      form.elements.loginUsername.value,
+      form.elements.loginUsernameOrEmail.value,
       form.elements.loginPassword.value,
       (response, status) => {
         if (status === 200) {
@@ -44,12 +44,12 @@ export function LoginForm(props) {
     <Form onSubmit={loginHandler}>
       <p id='loginAuthFail' className='text-danger mb-0'></p>
       <Form.Group>
-        <Form.Label className='mb-0'>Username</Form.Label>
+        <Form.Label className='mb-0'>Username or Email</Form.Label>
         <Form.Control
           type='text'
-          name='loginUsername'
+          name='loginUsernameOrEmail'
           autoComplete='current-username'
-          maxLength={15}
+          maxLength={75}
           style={{textTransform: 'lowercase'}}
           required
         />

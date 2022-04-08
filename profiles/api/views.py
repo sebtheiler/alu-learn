@@ -291,13 +291,19 @@ def login_api_view(request, *args, **kwargs):
     Logs a user in - POST
 
     Required information:
-        `username`: Username of user
+        `username_or_email`: Username or email of user
         `password`: Raw password of user
     """
-    username = request.data.get('username').lower()
+    username_or_email = request.data.get('username_or_email').lower()
     password = request.data.get('password')
-    if None in (username, password):
+    if None in (username_or_email, password):
         return Response({'message': 'Please specify a username and password'}, status=400)
+
+    # If the user gave their email, get their username
+    if '@' in username_or_email:
+        username = User.objects.get(email=username_or_email).username
+    else:
+        username = username_or_email
 
     user = authenticate(request, username=username, password=password)
     if user is None:
