@@ -19,7 +19,6 @@ export default function CardsDoneSVG(props: CardsDoneSVGProps) {
   const NUMBER_COLOR = '#d9d9d9';
   const TARGET_COLOR = '#d52b2c';
   const LINE_TICK_COLOR = '#a3a3a3';
-  const BAR_COLOR = '#337BFF';
 
   const calcY = (i: number) => (DIV_HEIGHT - 30) - i*((DIV_HEIGHT - 20)/lineTickIntervalRange.length) + 5;
   const lineTickIntervalRange = Array.from(Array(Math.floor(targetCardsDone / LINE_TICK_INTERVAL) + NUM_EXTRA_BARS + 1).keys());
@@ -57,7 +56,7 @@ export default function CardsDoneSVG(props: CardsDoneSVGProps) {
           x='50%'
           y={calcY((cardsDone - cardsJustDone)/LINE_TICK_INTERVAL) + 5}
           transform={`translate(-${BAR_WIDTH/2})`}
-          fill={BAR_COLOR}
+          id='studying-target-bar'
           rx='10'
         >
           <animateTransform

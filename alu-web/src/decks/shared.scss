@@ -1,14 +1,14 @@
+@import './colors';
+
 // === VARIABLES ===
-$lightGray: #E2E2E2;
-$darkGray: #343A40;
 $grayBorder: 4px solid $lightGray;
-$lightBackground: #fafafa;
-$unlitBackground: #e5e5e5;
-$litBackground: #fd9626;
 $subSectionSize: 130px;
-$primaryBlue: #337BFF;
 $cardShadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 4px 8px 0 rgba(0, 0, 0, 0.19);
 $cardBorderRadius: 20px;
+
+html * {
+  font-family: "Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+}
 
 // === GLOBAL CLASSES ===
 .invisible { opacity: 0 }

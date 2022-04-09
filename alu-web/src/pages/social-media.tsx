@@ -22,8 +22,8 @@ export default function SocialMediaComponent() {
           </a>
         </Col>
         <Col>
-          <a href='https://facebook.com' target='_blank' rel='noreferrer'>
-            <i className='fa-brands fa-facebook fa-2x' />
+          <a href='https://reddit.com' target='_blank' rel='noreferrer'>
+            <i className='fa-brands fa-reddit fa-2x' />
           </a>
         </Col>
       </Row>

@@ -100,7 +100,7 @@ export default function NavbarComponent(props: NavbarComponentProps) {
   })();
 
   return (
-    <Navbar bg='dark' variant='dark' expand='md' collapseOnSelect>
+    <Navbar variant='dark' expand='md' collapseOnSelect>
       <NavbarPopup showUpdateModal={showUpdateModal} firstName={firstName} />
       <Navbar.Brand href='/home/'>
         <img
@@ -200,6 +200,11 @@ export default function NavbarComponent(props: NavbarComponentProps) {
             </>
             :
             <>
+              <Nav.Link href={`/login/`}>
+                <Button variant='outline-light' id='login-navbar-btn'>
+                  Log-in
+                </Button>
+              </Nav.Link>
               <Nav.Link href={window.location.pathname.length > 1
                 ? `/?showLoginRequired=true&returnUrl=${window.location.href}` // anywhere but homepage
                 : (window.location.href.includes('showLoginRequired')
@@ -207,20 +212,8 @@ export default function NavbarComponent(props: NavbarComponentProps) {
                   : '/?showLoginRequired=true'
                 )
               }>
-                <Button
-                  variant='light'
-                  className='text-primary mr-1'
-                >
+                <Button variant='light'>
                   Sign-up
-                </Button>
-              </Nav.Link>
-              <Nav.Link href={`/login/`}>
-                <Button
-                  variant='outline-light'
-                  className='text-white'
-                  id='login-navbar-btn'
-                >
-                  Log-in
                 </Button>
               </Nav.Link>
             </>

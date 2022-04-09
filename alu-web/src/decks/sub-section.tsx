@@ -8,6 +8,9 @@ import { SubSectionButtons } from './buttons/section-buttons';
 import { useState } from 'react';
 import TutorialPopup from '../pages/tutorial';
 
+const currentlyStudiedColor = '#5ed149';
+const previouslyStudiedColor = '#FDCE29';
+
 export const cleanTitle = (title: string) => encodeURIComponent(title.toLowerCase().replaceAll('-', '.d.').replaceAll(' ', '-'));
 export const uncleanTag = (tags: string) => tags.replaceAll('-', ' ').replaceAll('__', ' AND ').replace('.d.', '-')
 
@@ -92,25 +95,14 @@ export default function RenderSubSection({ subSection, mainSection, numSubSectio
         <div
           className='sub-section'
           role='button'
-          style={{ background: `conic-gradient(rgba(94, 209, 73, 1) ${(subSection.total_percent_complete ?? 0)*100}%, transparent 0%)` }}
+          style={{ background: `conic-gradient(${previouslyStudiedColor} ${(subSection.total_percent_complete ?? 0)*100}%, transparent 0%)` }}
           ref={setSubSectionDiv}
         >
           <div
             className='sub-section-percent-complete'
-            style={{ background: `conic-gradient(rgba(42, 157, 244, 1) ${(subSection.percent_complete ?? 0)*100}%, transparent 0%)` }}
+            style={{ background: `conic-gradient(${currentlyStudiedColor} ${(subSection.percent_complete ?? 0)*100}%, transparent 0%)` }}
           >
             <div className='sub-section-inner'>
-              {/* <div className='sub-section-assignment-indicator'>
-                <OverlayTrigger
-                  overlay={
-                    <Tooltip id={`sub-section-assigned-tooltip-${subSection.id}`}>
-                      This sub section is assigned as work
-                    </Tooltip>
-                  }
-                >
-                  <i className='far fa-star fa-lg' />
-                </OverlayTrigger>
-              </div> */}
               <p className='sub-section-text'>{subSection.data.title}</p>
             </div>
           </div>

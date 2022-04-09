@@ -45,6 +45,9 @@ export function SendPasswordReset(props) {
       <p className='text-center'>
         Please specify your email below so Alu can send you a reset-password link.
       </p>
+      <p className='text-center'>
+        Struggling to reset your password?  Contact <a href='mailto:support@alulearn.com'>support@alulearn.com</a>.
+      </p>
       <Form onSubmit={handleSubmit}>
         <Form.Group>
           <Form.Label as='h3'>Email</Form.Label>

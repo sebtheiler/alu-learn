@@ -73,6 +73,27 @@ export default function LandingComponent({ showLoginRequired, returnUrl }: Landi
         </Col>
       </Row>
       <hr />
+      <h1 className='text-center mb-3'>Community Flashcard Decks</h1>
+      <Row className='text-center'>
+        {exampleDecks.map((deckInfo, i) =>
+          <a
+            href={deckInfo.link}
+            className='col-md-3 mx-auto'
+            key={i}
+          >
+            <div className='example-deck'>
+              <div className='example-deck-icon'>
+                <i className={`fas ${deckInfo.icon} fa-5x`} />
+              </div>
+              <div className='example-deck-text'>
+                <p className='example-deck-title'>{deckInfo.title}</p>
+              </div>
+            </div>
+          </a>
+        )}
+        <span className='stretch' />
+      </Row>
+      <hr />
       <Row className='how-alu-helps'>
         <h1 className='mx-auto'>How Alu Can Help You</h1>
         <Row>
@@ -117,27 +138,6 @@ export default function LandingComponent({ showLoginRequired, returnUrl }: Landi
             />
           </Col>
         </Row>
-      </Row>
-      <hr />
-      <h1 className='text-center mb-3'>Community Decks</h1>
-      <Row className='text-center'>
-        {exampleDecks.map((deckInfo, i) =>
-          <a
-            href={deckInfo.link}
-            className='col-md-3 mx-auto'
-            key={i}
-          >
-            <div className='example-deck'>
-              <div className='example-deck-icon'>
-                <i className={`fas ${deckInfo.icon} fa-5x`} />
-              </div>
-              <div className='example-deck-text'>
-                <p className='example-deck-title'>{deckInfo.title}</p>
-              </div>
-            </div>
-          </a>
-        )}
-        <span className='stretch' />
       </Row>
     </Container>
     <div className='text-center'>

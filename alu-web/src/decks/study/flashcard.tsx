@@ -175,7 +175,7 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
             <Button
               onClick={studyFlashcard((i + 1) as 1 | 2 | 3 | 4)}
               className={'other-study-els mr-1 mt-5' + (getMinNum(intervals[i]) < 0 ? ' d-none': '')}
-              variant={['danger', 'warning', 'success', 'primary'][i]}
+              variant={['danger', 'warning', 'success', 'primary-blue'][i]}
               style={isFlipped ? {} : { cursor: 'default' }}
               key={i}
             >

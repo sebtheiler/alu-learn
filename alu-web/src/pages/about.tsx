@@ -4,6 +4,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { DisplayProfileInline } from '../profiles';
 import { MinifiedProfile } from '../profiles/types';
+import './about.scss';
 
 const sebProfile: MinifiedProfile = {
   first_name: 'Sebastian',
@@ -159,8 +160,9 @@ export default function AboutPage() {
         </Col>
         <Col md={4} style={{ transform: 'translateY("-35px")' }}>
           <img
-            src='/static/images/sebastian.png'
+            src='/static/images/sebastian.jpg'
             alt='Sebastian, the creator of Alu'
+            id='sebastian-img'
             className='w-100'
           />
           <div className='social-media'>
