@@ -57,9 +57,10 @@ export default function TutorialPopup(props: TutorialPopupProps) {
     ],
     placement: placement,
   });
-  useAsyncState<{ value: boolean }>(
+  useAsyncState<{ value: boolean, detail?: string }>(
     getProfileTutorialProgress, [tutorialAttr],
     attr => {
+      if (attr.detail) return;
       if (!attr.value) show();
       let tutorialProgressCopy = tutorialProgress;
       tutorialProgressCopy[tutorialAttr] = attr.value;

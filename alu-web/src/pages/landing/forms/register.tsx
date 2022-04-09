@@ -1,15 +1,12 @@
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import ReCAPTCHA from 'react-google-recaptcha';
-import { RECAPTCHA_PUBLIC_SITEKEY } from '.';
 import { apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin } from '../../../lookup';
 import { isAlphaNumeric, errorHandler, FormCheckbox, dateDiff, getMonthNumber, PasswordInput } from '../../../utils';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 export function ModalRegisterForm(props: { returnUrl?: string }) {
   const returnUrl = props.returnUrl ? new URL(props.returnUrl).pathname : null;
-  const recaptchaRef = useRef<ReCAPTCHA | null>(null); 
   const [isLoading, setIsLoading] = useState(false);
   const [isChild, setIsChild] = useState(false);
   const [birthMonth, setBirthMonth] = useState('UNSELECTED');
@@ -49,11 +46,8 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
 
   const registerHandler = (event) => {
     event.preventDefault();
-    if (isLoading || !recaptchaRef.current) return;
+    if (isLoading) return;
     const form = event.target;
-
-    // Test recaptcha
-    recaptchaRef.current.execute();
 
     // Everything has to be done in the callback because of async
     setIsLoading(true);
@@ -289,11 +283,6 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
         <Button type='submit' id='register-signup' block>
           {isLoading ? 'Creating your account...' : 'Sign Up'}
         </Button>
-        <ReCAPTCHA
-          ref={recaptchaRef}
-          size='invisible'
-          sitekey={RECAPTCHA_PUBLIC_SITEKEY}
-        />
       </Modal.Footer>
     </Form>
   );
