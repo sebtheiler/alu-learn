@@ -9,6 +9,7 @@
 * **Added "Study All" to Assignments:** You can now study all sections in an assignment at once
 * **Changed Page Title Scheme:** Page titles are now slightly fancier, with bars "|" instead of "at"
 * **Login With Email:** You can now login with your email instead of your username
+* **Improved Login Error Messages:** Improved the error message when a login fails to help users who have forgotten their passwords or usernames.
 * **Added Mini-Tutorials:** Added a series of popups that serve as mini-tutorials for new users, and as guides to new/advanced features for returning users
 * **Revamped Color Scheme:** Purple.
 

@@ -26,16 +26,24 @@ export function LoginForm(props) {
       form.elements.loginUsernameOrEmail.value,
       form.elements.loginPassword.value,
       (response, status) => {
+        let errorMsg;
+
         if (status === 200) {
           window.location.href = returnUrl ? returnUrl : '/home/';
-        } else if (response.message === 'Invalid credentials') {
-          document.getElementById('loginAuthFail')!.innerText =
-            `Alu doesn't recognize your username and password.  Maybe try typing it again?`
+        } else if (response.message === 'Incorrect password') {
+          errorMsg = 'Your password is incorrect.  Click <a href="/reset-password/">here</a> to reset it.';
+        } else if (response.message === 'Unrecognized username') {
+          errorMsg = 'Alu doesn\'t recognize your username.  Perhaps try using your email instead?';
+        } else if (response.message === 'Unrecognized email') {
+          errorMsg = 'Alu doesn\'t recognize your email.  You can create an account <a href="/?showLoginRequired=true">here</a>.';
         } else {
           // Error logging-in the user
           errorHandler(response, status, 3006);
         }
         setIsLoading(false);
+
+        if (errorMsg)
+          document.getElementById('loginAuthFail')!.innerHTML = errorMsg;
       },
     );
   }

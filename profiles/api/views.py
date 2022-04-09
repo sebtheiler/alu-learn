@@ -301,13 +301,19 @@ def login_api_view(request, *args, **kwargs):
 
     # If the user gave their email, get their username
     if '@' in username_or_email:
-        username = User.objects.get(email=username_or_email).username
+        try:
+            username = User.objects.get(email=username_or_email).username
+        except User.DoesNotExist:
+            return Response({'message': 'Unrecognized email'}, status=401)
     else:
         username = username_or_email
 
     user = authenticate(request, username=username, password=password)
     if user is None:
-        return Response({'message': 'Invalid credentials'}, status=401)
+        if User.objects.filter(username=username).exists():
+            return Response({'message': 'Incorrect password'}, status=401)
+        return Response({'message': 'Unrecognized username'}, status=401)
+
     login(request, user)
 
     return Response({'message': 'Successfully authenticated user'}, status=200)
