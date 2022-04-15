@@ -21,9 +21,10 @@ interface EditorButtonProps {
   className?: string;
   untabbable?: boolean;
   isFlashCard?: boolean;
+  isPro?: boolean;
 }
 export function EditorButtons(props: EditorButtonProps) {
-  const { editor, saveHandler=undefined, className='', untabbable=false, isFlashCard=false } = props;
+  const { editor, saveHandler=undefined, className='', untabbable=false, isFlashCard=false, isPro=false } = props;
 
   return (
     <ButtonGroup style={{ flexWrap: 'wrap' }} className={className}>
@@ -36,7 +37,11 @@ export function EditorButtons(props: EditorButtonProps) {
 
       {isFlashCard && <>
         <span className='mx-2' />
-        <FlashCardLinkButton editor={editor} untabbable={untabbable} />
+        <FlashCardLinkButton
+          editor={editor}
+          untabbable={untabbable}
+          enabled={isPro}
+        />
       </>}
 
       <span className='mx-2' />
@@ -45,7 +50,7 @@ export function EditorButtons(props: EditorButtonProps) {
       {!untabbable &&
         <DropdownButton
           id="dropdown-basic-button"
-          variant='light'
+          variant='editor'
           title={
             <i className={'fas fa-heading fa-xs'} tabIndex={untabbable ? -1 : undefined} />
           }
@@ -63,7 +68,7 @@ export function EditorButtons(props: EditorButtonProps) {
       <span className='mx-2' />
 
       {saveHandler && <Button
-        variant='light'
+        variant='editor'
         onClick={saveHandler}
       >
         <i className='far fa-save' />
@@ -88,7 +93,7 @@ function MarkButton({ format, icon, editor, untabbable }: MarkButtonProps) {
       }
     >
       <Button
-        variant='light'
+        variant='editor'
         onClick={event => {
           event.preventDefault();
           toggleMark(editor, format);
@@ -98,6 +103,7 @@ function MarkButton({ format, icon, editor, untabbable }: MarkButtonProps) {
           border: 'none',
         }}
         tabIndex={untabbable ? -1 : undefined}
+        className='text-dark'
       >
         <i className={`fas fa-${icon}`} />
       </Button>
@@ -121,7 +127,7 @@ function BlockButton({ format, icon, editor, untabbable }: BlockButtonProps) {
       }
     >
       <Button
-        variant={'light'}
+        variant='editor'
         onClick={event => {
           event.preventDefault();
           toggleBlock(editor, format);
@@ -131,6 +137,7 @@ function BlockButton({ format, icon, editor, untabbable }: BlockButtonProps) {
           border: 'none',
         }}
         tabIndex={untabbable ? -1 : undefined}
+        className='text-dark'
       >
         <i className={`fas fa-${icon}`} />
       </Button>

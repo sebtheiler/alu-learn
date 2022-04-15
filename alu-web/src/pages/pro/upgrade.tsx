@@ -62,7 +62,7 @@ export default function ProUpgrade(props: ProUpgradeProps) {
       </Row>
       <div className='pro-mode-container mt-5'>
         <Row>
-          <Col className='pro-mode-basic'>
+          <Col className='pro-mode-basic' md={5} xs={12}>
             <div className='pro-card-head'>
               <h3>Basic</h3>
               <p>Free</p>
@@ -75,11 +75,12 @@ export default function ProUpgrade(props: ProUpgradeProps) {
                 <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>No ads</li>
                 <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Study with games</li>
                 <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Identify difficult flashcards and topics</li>
+                <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Create links between flashcards</li>
                 <li className='xmark'><span className='fa-li'><i className='fa-solid fa-xmark'></i></span>Unlimited flashcards</li>
               </ul>
             </div>
           </Col>
-          <Col className='pro-mode-pro'>
+          <Col className='pro-mode-pro' md={5} xs={12}>
             <div className='pro-card-head'>
               <h3>Pro</h3>
               <p>$3/mo or $30/yr</p>
@@ -92,6 +93,7 @@ export default function ProUpgrade(props: ProUpgradeProps) {
                 <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>No ads</li>
                 <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Study with games</li>
                 <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Identify difficult flashcards and topics</li>
+                <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Create links between flashcards</li>
                 <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Unlimited flashcards</li>
                 <li className='check'><span className='fa-li'><i className='fa-solid fa-check'></i></span>Support Alu and free education</li>
               </ul>

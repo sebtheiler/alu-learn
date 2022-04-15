@@ -26,8 +26,12 @@ interface CreateFlashcardProps {
   deckId: string;
   subSection: string;
   flashcardId?: string;
+  isPro: 'true' | 'false';
 }
-export default function CreateFlashcard({ deckId, flashcardId, subSection }: CreateFlashcardProps) {
+export default function CreateFlashcard(props: CreateFlashcardProps) {
+  const { deckId, flashcardId, subSection } = props;
+  const isPro = props.isPro.toLowerCase() === 'true';
+
   const [section] = useAsyncState<Section>(() => backendFetch(
     'GET',
     `skill_tree/abstractsection/${subSection}/`,
@@ -205,6 +209,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
                   editor={frontEditor}
                   value={frontValue}
                   setValue={setFrontValue}
+                  isPro={isPro}
                   isFlashCard
                 />
               </div>
@@ -226,6 +231,7 @@ export default function CreateFlashcard({ deckId, flashcardId, subSection }: Cre
                   editor={backEditor}
                   value={backValue}
                   setValue={setBackValue}
+                  isPro={isPro}
                   isFlashCard
                 />
               </div>
@@ -324,13 +330,15 @@ interface RenderEditorProps {
   setValue: (value: SlateNode[]) => void;
   isFlashCard?: boolean;
   editor: ReactEditor;
+  isPro?: boolean;
 }
-function RenderEditor({ editor, value, setValue, isFlashCard }: RenderEditorProps) {
+function RenderEditor({ editor, value, setValue, isFlashCard, isPro }: RenderEditorProps) {
   return (<div className='editor'>
     <div className='editor-head'>
       <EditorButtons
         editor={editor}
         isFlashCard={isFlashCard}
+        isPro={isPro}
         untabbable
       />
     </div>

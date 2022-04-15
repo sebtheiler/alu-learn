@@ -24,6 +24,10 @@ $previouslyStudiedColor: #FDCE29;
 .btn-primary {
   background-color: $primaryPurple!important;
   border-color: $primaryPurple!important;
+
+  &:hover {
+    background-color: darken($primaryPurple, 5%)!important;
+  }
 }
 
 .btn-primary-blue {

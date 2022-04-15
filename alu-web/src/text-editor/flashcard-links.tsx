@@ -113,7 +113,7 @@ const wrapFlashCardLink = (editor: ReactEditor, flashcard: FlashCard) => {
   }
 }
 
-export function FlashCardLinkButton({ editor, untabbable }) {
+export function FlashCardLinkButton({ editor, untabbable, enabled }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchedFlashcards, setSearchedFlashcards] = useState<FlashCard[]>([]);
@@ -148,6 +148,7 @@ export function FlashCardLinkButton({ editor, untabbable }) {
               <Popover id='study-section-popover'>
                 <Popover.Title as='h3' className='text-center'>
                   Insert Flashcard Link<br />
+                  {!enabled && <small><strong><a href='/pro/'>(pro-only)</a></strong><br /></small>}
                   <small>This will allow you to see a preview on hover when studying</small>
                 </Popover.Title>
                 <Popover.Content>
@@ -155,7 +156,9 @@ export function FlashCardLinkButton({ editor, untabbable }) {
                     <Form.Label>Search for Flashcard</Form.Label>
                     <Form.Control
                       onChange={e => setSearchTerm(e.target.value)}
+                      disabled={!enabled}
                     />
+                    {!enabled && <p><strong>Upgrade to <a href='/pro/'>pro</a> to use flashcard links</strong></p>}
                     {isSearching && <p className='mt-3'>Loading…</p>}
                   </div>
                   <hr />
@@ -178,12 +181,13 @@ export function FlashCardLinkButton({ editor, untabbable }) {
             rootClose
           >
             <Button
-              variant='light'
+              variant='editor'
               style={{
                 background: 'rgba(0, 0, 0, 0)',
                 border: 'none',
               }}
               tabIndex={untabbable ? -1 : undefined}
+              className='text-dark'
             >
               <i className='fas fa-anchor' />
             </Button>

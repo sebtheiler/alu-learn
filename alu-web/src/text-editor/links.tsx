@@ -36,7 +36,6 @@ export const withLinks = (editor: ReactEditor) => {
 }
 
 export const LinkElement = ({ attributes, children, element }) => {
-  // console.log('lleeee', children)
   return (
     <OverlayTrigger
       overlay={
@@ -107,7 +106,7 @@ export function LinkButton({ editor, untabbable }) {
       }
     >
       <Button
-        variant='light'
+        variant='editor'
         onClick={event => {
           event.preventDefault();
           const url = window.prompt('Enter the URL of the link:');
@@ -119,6 +118,7 @@ export function LinkButton({ editor, untabbable }) {
           border: 'none',
         }}
         tabIndex={untabbable && '-1'}
+        className='text-dark'
       >
         <i className='fas fa-link' />
       </Button>
