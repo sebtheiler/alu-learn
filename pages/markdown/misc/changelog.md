@@ -1,4 +1,8 @@
-# LAUNCH - Mar 20 - ???
+# Launch - Apr 14 - 1.0.0
+Alu has launched!  We look forward to new users from around the world.
+
+
+To celebrate the occasion, we've revamped the color scheme
 
 
 * **Added Editing Button When Studying:** There is now a button to easily edit flashcards when studying.
@@ -11,9 +15,10 @@
 * **Login With Email:** You can now login with your email instead of your username
 * **Improved Login Error Messages:** Improved the error message when a login fails to help users who have forgotten their passwords or usernames.
 * **Added Mini-Tutorials:** Added a series of popups that serve as mini-tutorials for new users, and as guides to new/advanced features for returning users
+* **Center-Aligned Shared Deck Subsections:** Center aligned subsection titles in shared decks.
 * **Revamped Color Scheme:** Purple.
 
-# Final Fixes - Mar 02 - 1.0.14
+# Final Fixes - Mar 02 - 0.8.14
 Next update is launch.  Finally.
 
 
@@ -23,14 +28,14 @@ Next update is launch.  Finally.
 * **Essential Only:** Added an "Essential Only" option to assignments.
 * **Made Assignments Editable:** Teachers can now edit the assignments they create.
 
-## Streak & Reminder Email Fix - Feb 13 - 1.0.13
+## Streak & Reminder Email Fix - Feb 13 - 0.8.13
 ...
 
 * **Fixed Streak Resets:** Streaks will now properly reset at midnight.
 * **Fixed Reminder Emails:** Reminder emails will now be properly sent at 6 PM to everyone signed up.
 * **Fixed Settings:** Fixed a bug that broke settings changes.
 
-## Final Fixes - Dec 29 - 1.0.12
+## Final Fixes - Dec 29 - 0.8.12
 New Year's.
 
 * **Fixed Habits Streak Display:** Fixed habits streak display to no longer show streak icons on neutral habits
@@ -41,13 +46,13 @@ New Year's.
 * **Added Report Buttons:** Added buttons for reporting harmful shared decks and users
 * **Fixed Profile Deck Order:** Decks on a profile-page are now properly ordered number of clones
 
-## Shared Deck Hotfix - Dec 08 - 1.0.11
+## Shared Deck Hotfix - Dec 08 - 0.8.11
 Quick hotfix for shared decks.
 
 * **Fixed Image Sharing in Flashcards:** Fixed a bug that caused sharing a deck to fail if flashcards contained images
 * **Fixed Friends Sharing Setting:** Fixed a bug that caused sharing a deck with friends to not allow the owner themselves to edit the deck
 
-## Still Getting There - Dec 05 - 1.0.10
+## Still Getting There - Dec 05 - 0.8.10
 I promise we're getting closer to launch this time.  Close now.  For real.
 
 
@@ -56,11 +61,11 @@ I promise we're getting closer to launch this time.  Close now.  For real.
 * **Shuffled Flashcard Order:** Shuffled the order of flashcards when studying to avoid repeats
 * **Improved Quizlet Importing:** Improved Quizlet import to allow for flashcards with multiple lines (Quizlet _oddly_ exports flashcards with return-breaks as multiple lines rather than escaping the character with `\n`).  Also added a short demonstration video.
 
-## Reversed Flashcards Hotfix - Nov 10 - 1.0.9
+## Reversed Flashcards Hotfix - Nov 10 - 0.8.9
 * **Fixed Titles with Dashes:** You can now use dashes in titles for main sections and sub sections.
 * **Fixed Reversed Flashcards:** Fixed a bug that caused basic-and-reversed flashcards to only display in a single direction
 
-## Getting There - Nov 07 - 1.0.8
+## Getting There - Nov 07 - 0.8.8
 Launch?  We'll get there.
 
 
@@ -77,7 +82,7 @@ Launch?  We'll get there.
 * **Changed Default Flashcards per Day:** Changed the default flashcards per day to 20
 
 
-## More Small Bug Fixes - Oct 26 - 1.0.7
+## More Small Bug Fixes - Oct 26 - 0.8.7
 More fixes.  That's it.  More features (and public launch announcements!) coming soon.  For real this time...
 
 
@@ -90,13 +95,13 @@ More fixes.  That's it.  More features (and public launch announcements!) coming
 * **Fixed Studying Repeat Bug:** Fixed a bug where pressing "Again" sometimes caused the same card to be displayed twice
 * **Improved Studying Order:** Improved the studying order of flashcards when studying an entire deck.  Now, new flashcards are always shown in order of main section and sub section, rather than displaying them all at once.
 
-## Scheduling Algorithm Fix - Oct 18 - 1.0.6
+## Scheduling Algorithm Fix - Oct 18 - 0.8.6
 Small fix to the scheduling algorithm.
 
 
 * **Fixed Late-night Studying:** Fixed a bug that caused studying to break after 10 PM.
 
-## Small Bug Fixes - Oct 17 - 1.0.5
+## Small Bug Fixes - Oct 17 - 0.8.5
 Fixes.  That's it.
 
 * **Fixed Flashcard Editing:** Fixed a bug that caused the flashcard editor to redirect to creating a new flashcard
@@ -105,7 +110,7 @@ Fixes.  That's it.
 * **Improved Email Changing:** Improved error handling for email changing, so you get more descriptive messages when you take an invalid action (like changing your email to an email that is already in use)
 * **Slight Improvement to Studying Backend:** You can now technically have multiple copies of a deck attached to a classroom, which will at least suppress some errors
 
-## Assignments, Merging Decks, & More Features - Oct 12 - 1.0.4
+## Assignments, Merging Decks, & More Features - Oct 12 - 0.8.4
 Getting closer to final launch!
 
 
@@ -125,7 +130,7 @@ You can now **merge** a deck that remixed from another deck with the original de
 * **Added Spinner for Studying Loading:** There is now a spinner that activates when you click study, preventing you from accidentally clicking the button multiple times
 
 
-## Classroom Fixes & Identicons - Oct 05 - 1.0.3
+## Classroom Fixes & Identicons - Oct 05 - 0.8.3
 Classrooms are getting closer to final release with a bunch of improvements and fixes to the current system.  This update is mostly just fixes, but also introduces "remixing" shared decks to create a totally new "branch," and gives everyone a unique identicon for their profile picture.
 
 
@@ -139,7 +144,7 @@ Classrooms are getting closer to final release with a bunch of improvements and 
 * **Fixed Image Loading from URLs:** You can now load images directly from a URL, rather than having to download the file manually
 * **Fixed Issue with Flashcard Links:** Fixed an issue where Alu would crash if a flashcard link linked to a deleted flashcard.
 
-## Flashcard Links - Sep 28 - 1.0.2
+## Flashcard Links - Sep 28 - 0.8.2
 Flashcard links!  You can now format text in a flashcard to provide a link to another flashcard.  When hovering over this text, you will be able to see a preview of the linked flashcard.
 
 
@@ -151,7 +156,7 @@ Flashcard links!  You can now format text in a flashcard to provide a link to an
   * **Fixed Student List Rendering:** There is now a list of students in a classroom for teachers.  This list is extremely rudimentary and I'll improve it in a few days.
 
 
-## Explore and Profiles Fix - Sep 23 - 1.0.1
+## Explore and Profiles Fix - Sep 23 - 0.8.1
 Minor fixes.
 
 
@@ -160,7 +165,7 @@ Minor fixes.
 * **Fixed Flashcards Progress Indicator:** Before, if you studied too many flashcards, the bar indicating your progress would leave the ground (lol).  Now the y-range scales to show all the flashcards you've done today.
 
 
-# Skill Tree, Sharing System, and Other Words that Start with "S" - Sep 21 - 1.0.0
+# Skill Tree, Sharing System, and Other Words that Start with "S" - Sep 21 - 0.8.0
 I've completely revamped Alu in this update, redoing the way that decks are organized and the way you study them.
 
 

@@ -92,7 +92,7 @@ def get_image_with_proxy(request, *args, **kwargs):
     if not url or len(url) > 150:
         return Response({'message': '`url` invalid'}, status=400)
 
-    cache_key = f'IMAGEPROXY__{url}'
+    cache_key = f'IMAGEPROXY__{url[:200]}'
     uri = cache.get(cache_key)
     if not uri:
         # Get response

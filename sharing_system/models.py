@@ -1044,6 +1044,9 @@ class MainSectionAction(AbstractAction):
                 ms_data.pull(ms_origin.data)
                 sections_data_to_edit.append(ms_data)
             elif action.action == 'DELETE':
+                if ms_origin is None:
+                    continue
+
                 main_section_uids_to_delete.append(ms_origin.universal_main_section_id)
                 MainSection.objects.filter(
                     order_num__gt=ms_origin.order_num,
