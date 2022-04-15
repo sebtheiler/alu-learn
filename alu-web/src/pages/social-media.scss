@@ -13,10 +13,10 @@
 
   >div.row {
     text-align: center;
-    >div.col {
+    >div.col-4 {
       margin: 0 auto;
 
-      &:hover {
+      >a>i:hover {
         transform: scale(1.15);
         transition-duration: 0.2s;
       }

@@ -6,6 +6,7 @@ $unlitBackground: #e5e5e5;
 $litBackground: #fd9626;
 $primaryBlue: #337BFF;
 $primaryPurple: #6a21bc;
+$lightPurple: #e2d1f1;
 $navbarColor: #290254;
 $currentlyStudiedColor: #5ed149;
 $previouslyStudiedColor: #FDCE29;
@@ -54,3 +55,7 @@ $previouslyStudiedColor: #FDCE29;
   color: $primaryPurple!important;
 }
 
+.alert-info {
+  background: $lightPurple;
+  border: darken($lightPurple, 10%);
+}

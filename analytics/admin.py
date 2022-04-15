@@ -13,6 +13,7 @@ class UrlHitAdmin(admin.ModelAdmin):
         'timestamp',
         'user_agent',
         'ip_address',
+        'referer',
     )
 
     def get_queryset(self, request):

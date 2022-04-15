@@ -6,17 +6,17 @@ export default function SocialMediaComponent() {
     <div className='social-media'>
       <p className='mt-1'><strong>Follow Alu</strong></p>
       <Row className='mx-2'>
-        <Col>
+        <Col xs={4}>
           <a href='https://www.instagram.com/alu_learn/' target='_blank' rel='noreferrer'>
             <i className='fa-brands fa-instagram fa-2x' />
           </a>
         </Col>
-        <Col>
+        <Col xs={4}>
           <a href='https://twitter.com/AluLearn' target='_blank' rel='noreferrer'>
             <i className='fa-brands fa-twitter fa-2x' />
           </a>
         </Col>
-        <Col>
+        <Col xs={4}>
           <a href='https://www.reddit.com/r/AluLearn' target='_blank' rel='noreferrer'>
             <i className='fa-brands fa-reddit fa-2x' />
           </a>

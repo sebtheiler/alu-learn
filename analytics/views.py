@@ -33,6 +33,7 @@ def short_url_redirect(request, code, *args, **kwargs) -> redirect:
         user=user,
         user_agent=request.user_agent,
         ip_address=get_client_ip(request),
+        referer=request.META.get('HTTP_REFERER'),
     )
 
     return redirect(short_url.destination)

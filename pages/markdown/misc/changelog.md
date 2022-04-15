@@ -1,3 +1,11 @@
+# Tiny Display Fixes - Apr 15 - 1.0.1
+Tiny fixes and improvements to the display.
+
+
+* **Changed Color of Tip:** Changes the color of the tip on the home screen to be light purple instead of light blue
+* **Improved Social Media Icons:** Improved the social media icons to display better on small screens
+
+
 # Launch - Apr 14 - 1.0.0
 Alu has launched!  We look forward to new users from around the world.
 
