@@ -37,7 +37,7 @@ export default function AboutPage() {
           To help you memorize efficiently, Alu uses spaced repetition, a technique that optimizes your memory retention
           by putting intervals between when you study material.  Alu's sharing system also allows you to collaborate with
           others on a deck, so that you don't need to make flashcards all by yourself.  Some
-          <a href='/explore/' target='_blank'>community decks</a> even allow for contributions from everyone
+          {' '}<a href='/explore/' target='_blank'>community decks</a> even allow for contributions from everyone
           (with approval), so that learning is a team effort.
         </p>
         <p>

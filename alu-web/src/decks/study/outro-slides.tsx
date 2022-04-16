@@ -24,13 +24,13 @@ export function OutroSlides({ originalInfo, deckId }: OutroSlidesProps) {
     (originalInfo.reviewInfo?.streak !== reviewInfo.streak ? [(<Row style={{ height: '270px' }}>
       <h4 className='text-center mx-auto mb-5' style={{ height: '50px' }}>Streak Increase!</h4>
       <div className='streak unlit'>
-        <i className='fas fa-fire-alt fa-10x' />
+        <i className='fas fa-fire fa-10x' />
         <span className='streak-number'>
           {reviewInfo.streak - 1}
         </span>
       </div>
       <div className='streak lit'>
-        <i className='fas fa-fire-alt fa-10x' />
+        <i className='fas fa-fire fa-10x' />
         <span
           className='streak-number'
           style={{

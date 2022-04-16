@@ -44,7 +44,7 @@ def send_email_reminders(email_for):
     )
 
     connection = mail.get_connection()
-    connection.open()
+    connection.open(from_email='alu@alulearn.com')
 
     for user in users_to_notify:
         streak = user.current_streak
@@ -110,7 +110,7 @@ def expire_pro_mode_trial():
     )
 
     connection = mail.get_connection()
-    connection.open()
+    connection.open(from_email='alu@alulearn.com')
     for user in users:
         context = {
             'name': user.first_name,
