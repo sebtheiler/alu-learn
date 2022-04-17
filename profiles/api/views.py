@@ -11,6 +11,7 @@ from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from alu.slack_app import post_slack_message
 from sharing_system.models import SharedDeck
 from sharing_system.serializers import SharedDeckSerializer
 from simple_email_confirmation.models import EmailAddress
@@ -281,6 +282,9 @@ If this wasn't you, you can safely ignore this email.
         recipient_list,
         fail_silently=False,
     )
+
+    # Create notification on Slack
+    post_slack_message(f'*New User:* {user.first_name} {user.last_name}')
 
     return Response(PublicProfileSerializer(user.profile).data, status=201)
 

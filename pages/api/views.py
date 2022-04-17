@@ -8,6 +8,7 @@ from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from alu.slack_app import post_slack_message
 from sharing_system.models import SharedDeck
 from sharing_system.serializers import SharedDeckSerializer
 
@@ -46,9 +47,10 @@ def contact_us_api_view(request, *args, **kwargs):
     )
 
     mail_admins(
-        'New Contact Feedback',
-        f"{title}: {description}",
+        f'New Contact Feedback - {title}',
+        f"{description}",
     )
+    post_slack_message(f'*New Contact Feedback:* {title}')
 
     return Response({'message': 'Feedback submitted successfully'}, status=201)
 

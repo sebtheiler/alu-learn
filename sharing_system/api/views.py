@@ -1,3 +1,4 @@
+from alu.slack_app import post_slack_message
 from decks.models import Deck, FlashCard
 from decks.serializers import (DeckSerializer, FlashcardActionSerializer,
                                FlashCardSerializer)
@@ -116,6 +117,8 @@ def shared_deck_create_view(request, deck_id: int, *args, **kwargs):
             user__username__in=request.data.get('owners').split(', ')
         ),
     )
+
+    post_slack_message(f'*New Shared Deck:* {shared_deck.title}')
 
     return Response(SharedDeckSerializer(shared_deck).data, status=200)
 
