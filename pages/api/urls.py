@@ -10,5 +10,6 @@ urlpatterns = [
     path('explore/lists/', views.api_explore_lists_view),
     path('image-proxy/', views.get_image_with_proxy),
     path('feedback/get-question/', analytics_views.get_quick_feedback_question),
-    path('feedback/<int:quick_feedback_id>/respond/', analytics_views.respond_to_feedback_question)
+    path('feedback/<int:quick_feedback_id>/respond/', analytics_views.respond_to_feedback_question),
+    path('welcome-info/', analytics_views.collect_user_welcome_info),
 ]

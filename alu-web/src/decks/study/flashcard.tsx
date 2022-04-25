@@ -1,6 +1,7 @@
 import BrowserInteractionTime from 'browser-interaction-time';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Row from 'react-bootstrap/Row';
 import TutorialPopup from '../../pages/tutorial';
 import { RenderFlashcardImage } from '../render-flashcard';
 import { ReviewInstance } from '../types';
@@ -202,6 +203,17 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
           </small>
         </div>
       </div>
+      <Row className='w-100'>
+        <p className={'flashcard-tags ' + (isFlipped ? 'show' : 'hide')}>Tags: {reviewInstance.data?.tags}</p>
+        <Button
+          href={`/deck/${deckId}/flashcards/${reviewInstance.flashcard}/edit/`}
+          target='_blank'
+          className='ml-auto'
+          variant='secondary'
+        >
+          Edit
+        </Button>
+      </Row>
     </div>
   );
 }

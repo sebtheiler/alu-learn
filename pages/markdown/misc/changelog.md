@@ -1,3 +1,8 @@
+# Added Tags Display - Apr 25 - 1.0.2
+* **Flashcard Tags:** Flashcard tags now display when studying.
+* **Fixed Adblock Bug:** Fixed a bug caused by some adblockers on sign-up.
+
+
 # Tiny Display Fixes - Apr 15 - 1.0.1
 Tiny fixes and improvements to the display.
 

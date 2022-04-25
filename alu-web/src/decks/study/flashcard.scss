@@ -83,3 +83,14 @@
     transition: 1s;
   }
 }
+
+.flashcard-tags {
+  transition: 0.2s;
+
+  &.show {
+    color: black;
+  }
+  &.hide {
+    color: white;
+  }
+}

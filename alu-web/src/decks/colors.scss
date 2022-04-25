@@ -8,13 +8,13 @@ $primaryBlue: #337BFF;
 $primaryPurple: #6a21bc;
 $lightPurple: #8166ee;
 $ultraLightPurple: #e2d1f1;
-$navbarColor: #290254;
+$darkPurple: #290254;
 $currentlyStudiedColor: #5ed149;
 $previouslyStudiedColor: #FDCE29;
 
 // General
 .navbar {
-  background-color: $navbarColor!important;
+  background-color: $darkPurple!important;
 }
 
 // Studying Target Bar
@@ -59,4 +59,5 @@ $previouslyStudiedColor: #FDCE29;
 .alert-info {
   background: $ultraLightPurple;
   border: darken($ultraLightPurple, 10%);
+  color: $darkPurple;
 }

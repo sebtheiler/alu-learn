@@ -27,7 +27,7 @@ ALUDIR = '/home/aluadmin/aludir'
 PYTHON_PATH = settings.env('PYTHON_PATH')
 
 
-def build_react_into_django(is_for_production: bool = False):
+def build_react_into_django(is_for_production: bool = False, confirm_send_files: bool = False):
     # Compile react
     if is_for_production:
         print('Compiling React for production...')
@@ -114,6 +114,9 @@ def build_react_into_django(is_for_production: bool = False):
     print('Finished building')
 
     if is_for_production:
+        if confirm_send_files:
+            input('Press enter when you are ready to send the files.')
+
         print('Sending files to production...')
         for CHANGED_FILE in CHANGED_FILES:
             if CHANGED_FILE == 'static-root':
@@ -155,6 +158,7 @@ if __name__ == '__main__':
 
         delete_react_files()
     else:
-        options = ('-y', '--yes', '-p', '--production')
-        is_for_production = len(sys.argv) > 1 and sys.argv[1] in options
-        build_react_into_django(is_for_production)
+        arg = sys.argv[1] if len(sys.argv) > 1 else None
+        is_for_production = arg == '-y' or arg == '-yy'
+        confirm_send_files = arg == '-yy'
+        build_react_into_django(is_for_production, confirm_send_files)

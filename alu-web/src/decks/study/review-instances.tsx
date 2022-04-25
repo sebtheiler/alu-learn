@@ -67,14 +67,6 @@ export function StudyReviewInstances({ reviewInstances, numTotal, deckId, sectio
           section={section}
           studyAhead={studyAhead}
         />
-        <Button
-          href={`/deck/${deckId}/flashcards/${reviewInstances[0].flashcard}/edit/`}
-          target='_blank'
-          className='float-right'
-          variant='secondary'
-        >
-          Edit
-        </Button>
       </div>}
       {reviewInstances.length === 0 &&
         <FinishedStudying

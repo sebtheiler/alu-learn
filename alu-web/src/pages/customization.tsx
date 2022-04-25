@@ -20,7 +20,7 @@ export default function UserCustomization({ isProFromOrg }) {
 
       if (slideNum === slides.length - 1) {
         await backendFetch(
-          'POST', 'analytics/collect-welcome-info/', answers,
+          'POST', 'pages/welcome-info/', answers,
         ).then(() => window.location.replace('/home/'));
       } else {
         setSlideNum(slideNum + 1);
@@ -100,7 +100,7 @@ export default function UserCustomization({ isProFromOrg }) {
       {isProFromOrg.toLowerCase() === 'true' ? <p>
         Since your organization is partnered with Alu, you have free and unlimited access to pro-mode.
       </p> : <p>
-        You now have access to Alu's upgraded pro-mode for a week, <strong>no credit card required.</strong>{' '}
+        You now have access to Alu's upgraded pro-mode for three days, <strong>no credit card required.</strong>{' '}
         You can extend your subscription any time for <a href='/pro/'>$3/mo or $30/yr</a>.
       </p>}
       <LoadingButton clickFunc={handleNext(null)}>Awesome!</LoadingButton>
