@@ -226,7 +226,7 @@ def create_profile_api_view(request, *args, **kwargs):
     last_name = request.data.get('last_name')
     first_name = request.data.get('first_name')
     username = request.data.get('username')
-    email = request.data.get('email')
+    email = request.data.get('email').lower()
     password = request.data.get('password')
 
     if None in (birthdate, last_name, first_name, username, email, password):
@@ -284,7 +284,7 @@ If this wasn't you, you can safely ignore this email.
     )
 
     # Create notification on Slack
-    post_slack_message(f'*New User:* {user.first_name} {user.last_name}')
+    post_slack_message(f'*New User:* {user.first_name} {user.last_name} ({email})')
 
     return Response(PublicProfileSerializer(user.profile).data, status=201)
 
@@ -318,6 +318,10 @@ def login_api_view(request, *args, **kwargs):
             return Response({'message': 'Incorrect password'}, status=401)
         return Response({'message': 'Unrecognized username'}, status=401)
 
+    # If user is not active, fail
+    if not user.is_active:
+        return Response({'message': 'Account not active'}, status=401)
+
     login(request, user)
 
     return Response({'message': 'Successfully authenticated user'}, status=200)
@@ -347,7 +351,7 @@ def change_email(request, *args, **kwargs):
         Password invalid: 401, Invalid credentials
     """
     password = request.data.get('password')
-    new_email = request.data.get('new_email')
+    new_email = request.data.get('new_email').lower()
     user = authenticate(username=request.user.username, password=password)
     if user is None:
         return Response({'message': 'Invalid credentials'}, status=401)
@@ -401,7 +405,7 @@ def change_password(request, *args, **kwargs):
     if not request.user.is_authenticated:
         # If the user is resetting their password,
         # confirm that the key they supplied was valid
-        email = request.data.get('email')
+        email = request.data.get('email').lower()
         reset_key = request.data.get('reset_key')
         new_password = request.data.get('new_password')
 
@@ -449,7 +453,7 @@ def password_reset_email_api_view(request, email, *args, **kwargs):
         Invalid username: 404, User not found
     """
     try:
-        profile = Profile.objects.get(user__email=email)
+        profile = Profile.objects.get(user__email=email.lower())
     except Profile.DoesNotExist:
         return Response({'message': 'User not found'}, status=404)
 

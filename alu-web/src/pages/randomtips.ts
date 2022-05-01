@@ -49,6 +49,7 @@ const randomTips = [
   'Hover over purple links in flashcards to preview that term',
   // 'Most people find doing Alu reviews in the morning (before school) more efficient and enjoyable',
   // 'Be honest with your Alu reviews, it\'s only designed to help you',
+  'You can archive decks you are no longer using by clicking "Edit > Archive"',
   // Random stuff
   'Hermann Ebbinghaus discovered the forgetting curve, which Alu is based on, in the 1800s',
   'Dr. Piotr Wozniak developed one of the first digital SR apps in the 1990s. His work has made Alu possible.',

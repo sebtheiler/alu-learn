@@ -34,6 +34,7 @@ export default function TutorialPopup(props: TutorialPopupProps) {
     const raw = localStorage.getItem('tutorialProgress');
     const val = raw ? JSON.parse(raw) : {};
 
+    // Check if the requirements to show this tutorial poup are met
     const attrRequirements = requirements[tutorialAttr] ?? [];
     var passed = true;
     for (const requirement of attrRequirements) {
@@ -42,7 +43,7 @@ export default function TutorialPopup(props: TutorialPopupProps) {
         break;
       }
     }
-    setRequirementsMet(passed)
+    setRequirementsMet(passed);
 
     return val;
   });
@@ -62,6 +63,8 @@ export default function TutorialPopup(props: TutorialPopupProps) {
     attr => {
       if (attr.detail) return;
       if (!attr.value) show();
+
+      // Save fetched tutorial progress in localStorage
       let tutorialProgressCopy = tutorialProgress;
       tutorialProgressCopy[tutorialAttr] = attr.value;
       localStorage.setItem(
@@ -120,10 +123,19 @@ export default function TutorialPopup(props: TutorialPopupProps) {
         className='tutorial-popper text-center'
       >
         {children}
-        <Button className='mt-2' onClick={hide} variant='outline-light' block>
+        <Button
+          className='mt-2'
+          onClick={hide}
+          variant='outline-light'
+          block
+        >
           Got it
         </Button>
-        <div ref={setArrowElement} style={popperInstance.styles.arrow} className='tutorial-popper-arrow' />
+        <div
+          ref={setArrowElement}
+          style={popperInstance.styles.arrow}
+          className='tutorial-popper-arrow'
+        />
       </div>
     </>
   );

@@ -204,7 +204,11 @@ export function ReviewInstanceStudy({ reviewInstance, deckId, section, studyAhea
         </div>
       </div>
       <Row className='w-100'>
-        <p className={'flashcard-tags ' + (isFlipped ? 'show' : 'hide')}>Tags: {reviewInstance.data?.tags}</p>
+        {reviewInstance.data?.tags &&
+          <p className={'flashcard-tags ' + (isFlipped ? 'show' : 'hide')}>
+            Tags: {reviewInstance.data?.tags}
+          </p>
+        }
         <Button
           href={`/deck/${deckId}/flashcards/${reviewInstance.flashcard}/edit/`}
           target='_blank'

@@ -30,6 +30,8 @@ export function LoginForm(props) {
           errorMsg = 'Alu doesn\'t recognize your username.  Perhaps try using your email instead?';
         } else if (response.message === 'Unrecognized email') {
           errorMsg = 'Alu doesn\'t recognize your email.  You can create an account <a href="/?showLoginRequired=true">here</a>.';
+        } else if (response.message === 'Account not active') {
+          errorMsg = 'Your account has been deactivated due to suspicious activity.  Contact support at <a href="mailto:support@alulearn.com">support@alulearn.com</a> if you believe this was a mistake.';
         } else {
           // Error logging-in the user
           errorHandler(response, status, 3006);

@@ -1,3 +1,8 @@
+# Minor Fixes - Apr 30 - 1.0.3
+* **Email Bugs:** Fixed some bugs regarding emails and capitalization
+* **Fixed Email Color Scheme:** Fixed the color scheme of emails to now be up to date with the rest of Alu
+
+
 # Added Tags Display - Apr 25 - 1.0.2
 * **Flashcard Tags:** Flashcard tags now display when studying.
 * **Fixed Adblock Bug:** Fixed a bug caused by some adblockers on sign-up.

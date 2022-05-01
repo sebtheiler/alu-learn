@@ -38,7 +38,7 @@ body {
 }
 
 .dark-background {
-  background-color: #343a40;
+  background-color: #290254;
   color: white;
 }
 
@@ -69,7 +69,7 @@ p {
   font-size: 24px;
   font-style: bold;
   font-weight: bold;
-  color:#111111;
+  color: #111111;
 }
 
 .text-chunk {
@@ -87,7 +87,7 @@ a {
 }
 
 .block-button {
-  background: #007bff;
+  background: #6a21bc;
   border-radius: 8px;
   width: auto;
 }
@@ -98,10 +98,10 @@ a {
   color: #FFFFFF;
   font-size: 20px;
   border-style: solid;
-  border-color: #007bff;
+  border-color: #6a21bc;
   border-width: 15px 5px;
   display: block;
-  background: #007bff;
+  background: #6a21bc;
   border-radius: 8px;
   font-weight: normal;
   font-style: normal;

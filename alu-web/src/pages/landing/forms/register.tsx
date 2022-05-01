@@ -120,10 +120,10 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
           birthYear,
           birthMonth,
           birthDate,
-          isChild ? '' : form.elements.registerFirstName.value,
-          isChild ? '' : form.elements.registerLastName.value,
-          form.elements.registerUsername.value,
-          form.elements.registerEmail.value,
+          isChild ? '' : form.elements.registerFirstName.value.trim(),
+          isChild ? '' : form.elements.registerLastName.value.trim(),
+          form.elements.registerUsername.value.trim(),
+          form.elements.registerEmail.value.trim().toLowerCase(),
           form.elements.password.value,
           (response, status) => {
             if (status === 201) {
