@@ -244,12 +244,12 @@ class FlashCard(models.Model):
                 i += 1
                 continue
 
-            contains_query = Q(tags__icontains=separated_tags[i])
+            contains_query = Q(data__tags__icontains=separated_tags[i])
 
             # Invert the query if it starts with NOT
             if separated_tags[i].startswith('NOT '):
                 contains_query = ~Q(
-                    tags__icontains=separated_tags[i].replace(
+                    data__tags__icontains=separated_tags[i].replace(
                         'NOT ', ''
                     )
                 )

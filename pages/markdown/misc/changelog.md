@@ -1,3 +1,10 @@
+# Fixed Playing Games with Tags - May 05 - 1.0.4
+Good luck on your AP Exams!
+
+
+* **Fixed Playing Games with Tags:** Fixed a bug that caused an error when attempting to play games (Deck > Games) with flashcards from a tag search.
+
+
 # Minor Fixes - Apr 30 - 1.0.3
 * **Email Bugs:** Fixed some bugs regarding emails and capitalization
 * **Fixed Email Color Scheme:** Fixed the color scheme of emails to now be up to date with the rest of Alu
