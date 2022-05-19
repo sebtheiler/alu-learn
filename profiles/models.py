@@ -247,6 +247,8 @@ class ProfileSettings(models.Model):
     is_opted_dev = models.BooleanField(default=False)
     show_update_modal = models.BooleanField(default=False)
 
+    send_marketing_research = models.BooleanField(default=True)
+
     timezone = models.SmallIntegerField(default=0)  # GMT-5 = 300
 
     def __str__(self) -> str:

@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 class ShortUrl(models.Model):
-    code = models.CharField(max_length=6, unique=True)
+    code = models.CharField(max_length=8, unique=True)
     destination = models.CharField(max_length=256)
 
     def __str__(self) -> str:

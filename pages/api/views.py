@@ -82,6 +82,11 @@ def update_settings_api_view(request, *args, **kwargs):
         settings.get('is_opted_dev', request.user.profile.settings.is_opted_dev)
     request.user.profile.settings.timezone = \
         settings.get('timezone', request.user.profile.settings.timezone)
+    request.user.profile.settings.send_marketing_research = \
+        settings.get(
+            'send_marketing_research',
+            request.user.profile.settings.send_marketing_research,
+        )
 
     request.user.profile.settings.save()
     return Response({'message': 'Updated account settings'}, status=200)

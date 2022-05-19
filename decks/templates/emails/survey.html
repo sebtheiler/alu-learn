@@ -1,0 +1,26 @@
+{% extends "emails/base.html" %}
+
+{% block title %}{% endblock %}
+{% block entrance %}Feedback Survey{% endblock %}
+
+{% block content %}
+<tr>
+  <td class="text-chunk">
+    <p>Hi {{ name }}!</p>
+    <br>
+    <p>
+      You've been selected to participate in a feedback survey for Alu Learn.
+      Filling out this survey will take less than five minutes
+      and helps me develop to new features in Alu to better suit your studying needs.
+    </p>
+  </td>
+</tr>
+
+<tr>
+  <td class="px-3 py-3">
+    <span class="block-button">
+      <a href="https://www.alulearn.com/l/srvy2022/" target="_blank">Take Survey (&#60;5 minutes)</a>
+    </span>
+  </td>
+</tr>
+{% endblock content %}

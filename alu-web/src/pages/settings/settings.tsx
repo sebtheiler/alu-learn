@@ -22,6 +22,7 @@ export function SettingsPage({ username }) {
         user_type: form.elements.userType.value,
         target_num_cards: form.elements.targetNumCards.value,
         timezone: form.elements.timezone.value,
+        send_marketing_research: form.elements.sendMarketingResearch.checked,
       },
       (response, status) => {
         if (status === 200) {
@@ -91,6 +92,11 @@ export function SettingsPage({ username }) {
       <Form.Group>
         <Form.Label>Timezone (for resetting flashcards daily)</Form.Label>
         <TZSelect />
+      </Form.Group>
+      <Form.Group>
+        <FormCheckbox name='sendMarketingResearch' defaultChecked={profile.settings.send_marketing_research}>
+          Send marketing research emails (e.g., feedback surveys).  No spam!
+        </FormCheckbox>
       </Form.Group>
       <Form.Group>
         <Button type='submit' id='save-changes-btn' block>

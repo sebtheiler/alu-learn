@@ -8,6 +8,7 @@ class ProfileSettingsSerializer(serializers.ModelSerializer):
         model = ProfileSettings
         fields = [
             'send_reminders',
+            'send_marketing_research',
             'user_type',
             'target_num_cards',
             'is_opted_dev',

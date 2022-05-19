@@ -1,9 +1,11 @@
 import os
+from typing import List
 
+from accounts.models import User
 from django.conf import settings
 from django.core import mail
 from django.db import models
-from django.db.models import Sum, Q
+from django.db.models import Q, Sum
 from django.db.models.signals import post_delete
 from django.template.loader import render_to_string
 from profiles.models import Profile, ProfileHistorySegment
@@ -97,6 +99,35 @@ def send_years_summary(send: bool = False, test_num_users: int = None):
                 fail_silently=False,
                 connection=connection,
             )
+
+    connection.close()
+
+
+def send_feedback_survey(emails: List[str]):
+    connection = mail.get_connection()
+    connection.open()
+
+    for email in emails:
+        user = User.objects.get(email=email)
+        name = user.first_name.strip()
+        name = name[0].capitalize() + name[1:]
+
+        context = {
+            'name': name,
+        }
+
+        mail.send_mail(
+            'Alu Learn Feedback Survey',
+            'Please use an HTML-capable browser to view this summary',
+            settings.EMAIL_HOST_USER,
+            [email],
+            html_message=render_to_string(
+                'emails/survey.html',
+                context,
+            ),
+            fail_silently=False,
+            connection=connection,
+        )
 
     connection.close()
 

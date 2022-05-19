@@ -1,3 +1,7 @@
+# Marketing Research - May 18 - 1.0.5
+Added the option to opt-out of marketing research emails (e.g., feedback surveys).  Everyone who studied flashcards for a past AP exam will also receive a quick feedback survey about how Alu has impacted them.
+
+
 # Fixed Playing Games with Tags - May 05 - 1.0.4
 Good luck on your AP Exams!
 
