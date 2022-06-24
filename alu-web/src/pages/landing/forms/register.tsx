@@ -1,9 +1,9 @@
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
+import GoogleLoginComponent from './google-login-component';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
-import { GoogleLogin } from '@react-oauth/google';
 import { apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin } from '../../../lookup';
 import { isAlphaNumeric, errorHandler, FormCheckbox, dateDiff, getMonthNumber, PasswordInput } from '../../../utils';
 import { useState } from 'react';
@@ -161,11 +161,7 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
     <div>
       <Row className='w-100 mb-3'>
         <Col className='text-center'>
-          <GoogleLogin
-            onSuccess={r => console.log(r)}
-            onError={() => console.log('error')}
-            text='continue_with'
-          />
+          <GoogleLoginComponent type='signup' />
         </Col>
       </Row>
       <Row className='w-100'>

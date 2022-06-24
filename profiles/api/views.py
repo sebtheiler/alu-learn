@@ -1,6 +1,8 @@
 import datetime
+from random import randint
 import re
 
+from alu.slack_app import post_slack_message
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.mail import send_mail
@@ -8,10 +10,10 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.views.decorators.cache import cache_page
+from google.auth import jwt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from alu.slack_app import post_slack_message
 from sharing_system.models import SharedDeck
 from sharing_system.serializers import SharedDeckSerializer
 from simple_email_confirmation.models import EmailAddress
@@ -458,8 +460,7 @@ def password_reset_email_api_view(request, email, *args, **kwargs):
         return Response({'message': 'User not found'}, status=404)
 
     # Generate impossible to guess, one-time-password
-    allowed_chars = 'bcdfghjkmpqrtvwxyBCDFGHJKMPQRTVWXY346789-_'
-    password = get_random_string(128, allowed_chars)
+    password = get_random_string(128, settings.ALLOWED_CHARS)
 
     # Update the user's profile with the one-time-password
     profile.user.password_reset_key = password
@@ -662,3 +663,45 @@ def set_profile_tutorial_progress(request, attr):
     profile_tutorial_progress.save()
 
     return Response({'msg': 'Set attr'}, status=200)
+
+
+@api_view(['POST'])
+def google_oauth_login(request):
+    credential_response = request.data.get('cred_resp')
+    credential = credential_response.get('credential')
+    decoded = jwt.decode(credential, verify=False)
+    first_name = decoded['given_name']
+    last_name = decoded['family_name']
+    email = decoded['email']
+
+    # Try logging in the user from their email
+    user = User.objects.filter(email=email).first()
+    if user is not None:
+        login(request, user)
+        return Response({'msg': 'Logged in'}, status=200)
+
+    # Create a new account
+    base_username = email.split('@')[0]
+    username = base_username
+    while User.objects.filter(username=username).exists():
+        username = f'{base_username}_{randint(1, 100)}'
+
+    password = get_random_string(32, settings.ALLOWED_CHARS)
+
+    user = User.objects.create_user(
+        first_name=first_name,
+        last_name=last_name,
+        username=username,
+        password=password,
+        email=email,
+        created_with_google=True,
+    )
+
+    # Confirm email
+    email = user.confirm_email(user.confirmation_key)
+    user.set_primary_email(email)
+    user.save()
+
+    login(request, user)
+
+    return Response({'msg': 'Created account'}, status=200)

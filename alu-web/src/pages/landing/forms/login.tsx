@@ -1,7 +1,7 @@
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import GoogleLoginComponent from './google-login-component';
 import Modal from 'react-bootstrap/Modal';
-import { GoogleLogin } from '@react-oauth/google';
 import { apiProfileLogin } from '../../../lookup';
 import { errorHandler } from '../../../utils';
 import { useState } from 'react';
@@ -48,11 +48,7 @@ export function LoginForm(props) {
   return (
     <Form onSubmit={loginHandler}>
       <div className='w-100 text-center'>
-        <GoogleLogin
-          onSuccess={r => console.log(r)}
-          onError={() => console.log('error')}
-          text='signin_with'
-        />
+        <GoogleLoginComponent type='signin' />
       </div>
       <hr />
       <p id='loginAuthFail' className='text-danger mb-0'></p>

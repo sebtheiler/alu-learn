@@ -7,9 +7,21 @@ import { NavbarPopup } from './navbar-popup';
 import { NotificationComponent } from '../profiles/notifications';
 import { apiProfileLogout } from '../lookup';
 import { errorHandler, Jdenticon } from '../utils';
-import { useGoogleOneTapLogin } from '@react-oauth/google';
+import { googleLogout, useGoogleOneTapLogin } from '@react-oauth/google';
+import { onGoogleLoginSuccess } from './landing/forms/google-login-component';
 import { useState } from 'react';
 import './navbar.scss';
+
+function GoogleOneTapLogin() {
+  useGoogleOneTapLogin({
+    onSuccess: onGoogleLoginSuccess,
+    onError: () => {
+      console.log('Login Failed')
+    },
+  });
+
+  return <></>;
+}
 
 
 interface NavbarComponentProps {
@@ -29,17 +41,9 @@ export default function NavbarComponent(props: NavbarComponentProps) {
   const isPro = props.isPro === 'True';
   const [exploreLink, setExploreLink] = useState<Element | null>(null);
 
-  useGoogleOneTapLogin({
-    onSuccess: credentialResponse => {
-      console.log(credentialResponse);
-    },
-    onError: () => {
-      console.log('Login Failed')
-    }
-  });
-
   const logoutHandler = event => {
     event.preventDefault();
+    googleLogout();
     apiProfileLogout((response, status) => {
       if (status === 200) {
         window.location.href = '/login/';
@@ -227,6 +231,7 @@ export default function NavbarComponent(props: NavbarComponentProps) {
                   Sign-up
                 </Button>
               </Nav.Link>
+              <GoogleOneTapLogin />
             </>
           }
         </Nav>

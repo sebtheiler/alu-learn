@@ -17,6 +17,7 @@ urlpatterns = [
     path('create/', views.create_profile_api_view),
     path('login/', views.login_api_view),
     path('logout/', views.logout_api_view),
+    path('google/login/', views.google_oauth_login),
     path('changeemail/', views.change_email),
     path('changepassword/', views.change_password),
     path('resetpassword/<str:email>/', views.password_reset_email_api_view),
