@@ -2,13 +2,15 @@ import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Navbar from 'react-bootstrap/Navbar';
+import TutorialPopup from './tutorial';
 import { NavbarPopup } from './navbar-popup';
 import { NotificationComponent } from '../profiles/notifications';
 import { apiProfileLogout } from '../lookup';
 import { errorHandler, Jdenticon } from '../utils';
+import { useGoogleOneTapLogin } from '@react-oauth/google';
 import { useState } from 'react';
 import './navbar.scss';
-import TutorialPopup from './tutorial';
+
 
 interface NavbarComponentProps {
   firstName: string;
@@ -27,6 +29,15 @@ export default function NavbarComponent(props: NavbarComponentProps) {
   const isPro = props.isPro === 'True';
   const [exploreLink, setExploreLink] = useState<Element | null>(null);
 
+  useGoogleOneTapLogin({
+    onSuccess: credentialResponse => {
+      console.log(credentialResponse);
+    },
+    onError: () => {
+      console.log('Login Failed')
+    }
+  });
+
   const logoutHandler = event => {
     event.preventDefault();
     apiProfileLogout((response, status) => {
@@ -42,58 +53,57 @@ export default function NavbarComponent(props: NavbarComponentProps) {
   const congratulationsMessage = (() => {
     if (doneReviewsToday) return null;
 
-    // let text: string;
-    // switch (currentStreak) {
-    //   case 10:
-    //     text = 'Congratulations on a 10 day streak!';
-    //     break;
-    //   case 30:
-    //     text = 'Congratulations on a month-long streak!';
-    //     break;
-    //   case 42:
-    //     text = 'The answer to life, the universe, and everything';
-    //     break;
-    //   case 50:
-    //     text = 'Half-way to 100 days!  Congratulations!';
-    //     break;
-    //   case 75:
-    //     text = '¾!'
-    //     break;
-    //   case 100:
-    //     text = 'CONGRATULATIONS ON 100 DAYS OF ALU!!!';
-    //     break;
-    //   case 111:
-    //     text = 'You are eleventy-one today! (or at least your streak is)';
-    //     break;
-    //   case 128:
-    //     text = '2^7';
-    //     break;
-    //   case 200:
-    //     text = '20 0(00) days under the flashcards';
-    //     break;
-    //   case 250:
-    //     text = '250 DAYS! YOU\'RE AMAZING!';
-    //     break;
-    //   case 365:
-    //     text = 'A WHOLE YEAR OF ALU!  AMAZING!'
-    //     break;
-    //   case 500:
-    //     text = '500 DAYS!  HALF-WAY TO FOUR DIGITS!  YOU\'RE AMAZING!';
-    //     break;
-    //   case 666:
-    //     text = 'I\'d be careful about this streak number...';
-    //     return <span className='navbar-text'>
-    //       <i className='fas fa-skull' />{' '}
-    //       {text}
-    //     </span>
-    //   case 1000:
-    //     text = '1000 DAYS!  4 DIGITS!  THANK YOU FOR BEING A PART OF ALU!';
-    //     break;
-    //   default:
-    //     text = '';
-    //     break;
-    // }
-    let text = 'Good luck on your AP Exams!'
+    let text: string;
+    switch (currentStreak) {
+      case 10:
+        text = 'Congratulations on a 10 day streak!';
+        break;
+      case 30:
+        text = 'Congratulations on a month-long streak!';
+        break;
+      case 42:
+        text = 'The answer to life, the universe, and everything';
+        break;
+      case 50:
+        text = 'Half-way to 100 days!  Congratulations!';
+        break;
+      case 75:
+        text = '¾!'
+        break;
+      case 100:
+        text = 'CONGRATULATIONS ON 100 DAYS OF ALU!!!';
+        break;
+      case 111:
+        text = 'You are eleventy-one today! (or at least your streak is)';
+        break;
+      case 128:
+        text = '2^7';
+        break;
+      case 200:
+        text = '20 0(00) days under the flashcards';
+        break;
+      case 250:
+        text = '250 DAYS! YOU\'RE AMAZING!';
+        break;
+      case 365:
+        text = 'A WHOLE YEAR OF ALU!  AMAZING!'
+        break;
+      case 500:
+        text = '500 DAYS!  HALF-WAY TO FOUR DIGITS!  YOU\'RE AMAZING!';
+        break;
+      case 666:
+        text = 'I\'d be careful about this streak number...';
+        return <span className='navbar-text'>
+          <i className='fas fa-skull' />{' '}
+          {text}
+        </span>
+      case 1000:
+        text = '1000 DAYS!  4 DIGITS!  THANK YOU FOR BEING A PART OF ALU!';
+        break;
+      default:
+        text = '';
+        break;
+    }
     return text && <span className='navbar-text'>
       <i className='fas fa-crown' />{' '}
       {text}

@@ -15,8 +15,9 @@ uploads/
 
 mysite.log
 
-alu/.env
+.env
 alu/gsuite-creds.json
+alu/oauth-client-secret.json
 
 # --- React ---
 

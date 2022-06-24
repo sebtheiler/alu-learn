@@ -1,5 +1,4 @@
 amqp==2.6.1
-anyjson==0.3.3
 asgiref==3.4.1
 async-generator==1.10
 attrs==21.4.0
@@ -59,7 +58,6 @@ packaging==21.3
 Pillow==9.0.0
 pip-review==1.1.1
 pip-upgrader==1.4.15
-pkg_resources==0.0.0
 prompt-toolkit==3.0.24
 protobuf==3.19.3
 psycopg2==2.9.3

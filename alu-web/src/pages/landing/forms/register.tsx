@@ -1,12 +1,16 @@
 import Button from 'react-bootstrap/Button';
+import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import Row from 'react-bootstrap/Row';
+import { GoogleLogin } from '@react-oauth/google';
 import { apiCheckUsernameAvailable, apiProfileCreate, apiProfileLogin } from '../../../lookup';
 import { isAlphaNumeric, errorHandler, FormCheckbox, dateDiff, getMonthNumber, PasswordInput } from '../../../utils';
 import { useState } from 'react';
 
 export function ModalRegisterForm(props: { returnUrl?: string }) {
   const returnUrl = props.returnUrl ? new URL(props.returnUrl).pathname : null;
+  const [continuingWithEmail, setContinuingWithEmail] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isChild, setIsChild] = useState(false);
   const [birthMonth, setBirthMonth] = useState('UNSELECTED');
@@ -153,8 +157,31 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
     });
   }
 
-  return (
-    <Form onSubmit={registerHandler}>
+  return (<div>
+    <div>
+      <Row className='w-100 mb-3'>
+        <Col className='text-center'>
+          <GoogleLogin
+            onSuccess={r => console.log(r)}
+            onError={() => console.log('error')}
+            text='continue_with'
+          />
+        </Col>
+      </Row>
+      <Row className='w-100'>
+        <Col>
+          <Button
+            onClick={() => setContinuingWithEmail(!continuingWithEmail)}
+            variant='outline-primary'
+            block
+          >
+            <i className='fa-solid fa-envelope mr-2' />
+            Continue with Email
+          </Button>
+        </Col>
+      </Row>
+    </div>
+    {continuingWithEmail && <><hr /><Form onSubmit={registerHandler}>
       <Form.Group>
         <Form.Label className='mb-0'>
           Date of Birth<br />
@@ -284,6 +311,6 @@ export function ModalRegisterForm(props: { returnUrl?: string }) {
           {isLoading ? 'Creating your account...' : 'Sign Up'}
         </Button>
       </Modal.Footer>
-    </Form>
-  );
+    </Form></>}
+  </div>);
 }

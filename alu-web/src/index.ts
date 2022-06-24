@@ -3,6 +3,7 @@ import React, { FunctionComponent } from 'react';
 import ReactDOM from 'react-dom';
 import { DeckImportComponent, StatisticsPage, SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges, ArchivedDecks } from './decks';
 import { GameComponent, MatchingGame } from './decks/games';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Habits } from './habits';
 import { NavbarComponent, ContactUs, SettingsPage, ChangePasswordEmail, ConfirmEmail, SendPasswordReset, UserCustomization, ExploreComponent, LandingComponent, AboutPage, ProUpgrade, ProPurchaseSuccess, ProPurchaseCancelled } from './pages';
 import { NotificationComponent } from './profiles/notifications';
@@ -10,13 +11,19 @@ import { ProfileDetail, LoginComponent, StaffForceLogin } from './profiles';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const e = React.createElement;
+const e = (type, props) => React.createElement(
+  GoogleOAuthProvider,  // wrap application in `GoogleOAuthProvider`
+  {
+    clientId: process.env.REACT_APP_GOOGLE_OAUTH_CLIENT_ID as string,
+    children: React.createElement(type, props),
+  },
+);
 
 const renderElement = (Component: FunctionComponent | string, htmlName: string, isClass=false) => {
   if (isClass) {
     const els: NodeListOf<HTMLElement> = document.querySelectorAll(`.${htmlName}`);
-    els.forEach(container => {
-      ReactDOM.render(e(Component, container.dataset), container);
+    els.forEach(el => {
+      ReactDOM.render(e(Component, el.dataset), el);
     });
   } else {
     const el = document.getElementById(htmlName);

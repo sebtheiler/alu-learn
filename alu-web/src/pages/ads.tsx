@@ -1,18 +1,10 @@
 import { useDetectAdBlock } from 'adblock-detect-react';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import './ads.scss';
 
 type AdType = 'meta-sidebar' | 'finished-studying';
 export default function AdComponent({ adType, isPro }: { adType: AdType, isPro: boolean}) {
   const adBlockDetected = useDetectAdBlock();
-  const slot = useMemo(() => {
-    switch (adType) {
-      case 'meta-sidebar':
-        return '5982440524';
-      case 'finished-studying':
-        return '5954520366';
-    }
-  }, [adType]);
 
   useEffect(()=>{
     if (!isPro) {
@@ -35,9 +27,9 @@ export default function AdComponent({ adType, isPro }: { adType: AdType, isPro: 
       <ins
         className='adsbygoogle'
         style={{ display: 'block' }}
-        data-ad-test='on'
-        data-ad-client='ca-pub-8039497825015260'
-        data-ad-slot={slot}
+        data-ad-test={process.env.REACT_APP_DEBUG ? 'on' : 'off'}
+        data-ad-client={process.env.REACT_APP_AD_CLIENT_ID}
+        data-ad-slot={process.env.REACT_APP_AD_SLOTS && process.env.REACT_APP_AD_SLOTS[adType]}
         data-ad-format='auto'
         data-full-width-responsive='true'
       />
