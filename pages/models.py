@@ -66,7 +66,7 @@ def send_years_summary(send: bool = False, test_num_users: int = None):
     ).order_by('-total_cards')
 
     connection = mail.get_connection()
-    connection.open()
+    connection.open(from_email=settings.EMAIL_HOST_USER)
 
     print(total_flashcards, total_milliseconds, profiles.count())
     for i, profile in enumerate(profiles):
@@ -105,7 +105,7 @@ def send_years_summary(send: bool = False, test_num_users: int = None):
 
 def send_feedback_survey(emails: List[str]):
     connection = mail.get_connection()
-    connection.open()
+    connection.open(from_email=settings.EMAIL_HOST_USER)
 
     for email in emails:
         user = User.objects.get(email=email)

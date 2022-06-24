@@ -541,16 +541,16 @@ def flashcard_search_view(request, *args, **kwargs):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def find_universal_flashcard(request, universal_flashcard_id, *args, **kwargs):
-    try:
-        flashcard = FlashCard.objects.get(
-            Q(sub_section__main_section__deck__user_id=request.user.pk) &
-            (
-                Q(universal_flashcard_id=universal_flashcard_id)
-                |
-                Q(pk=universal_flashcard_id)
-            )
+    flashcard = FlashCard.objects.filter(
+        Q(sub_section__main_section__deck__user_id=request.user.pk) &
+        (
+            Q(universal_flashcard_id=universal_flashcard_id)
+            |
+            Q(pk=universal_flashcard_id)
         )
-    except FlashCard.DoesNotExist:
+    ).first()
+
+    if flashcard is None:
         return Response({'message': 'Flashcard not found'}, status=404)
 
     return Response(FlashCardSerializer(flashcard).data, status=200)
