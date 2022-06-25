@@ -1,22 +1,26 @@
 @import '../decks/shared';
 
 .choice-select {
-  border: $grayBorder;
-  border-radius: $cardBorderRadius;
-  background-color: $lightBackground;
-  overflow: hidden;
+  >.choice-col {
+    padding: 10px;
+    text-align: center;
 
-  >.choice-selection {
-    padding: 15px;
-    border-bottom: 3px solid $lightGray;
+    >.choice-selection {
+      padding: 20px;
+      border: $grayBorder;
+      border-radius: $cardBorderRadius;
+      min-height: 200px;
+      background: $lightBackground;
 
-    &:hover {
-      cursor: pointer;
-      background-color: darken($lightBackground, 5%);
-    }
-
-    &:last-child {
-      border-bottom: none;
+      >.choice-select-text {
+        font-size: 1.25rem;
+        font-weight: bold;
+      }
+  
+      &:hover {
+        cursor: pointer;
+        background-color: darken($lightBackground, 5%);
+      }
     }
   }
 }

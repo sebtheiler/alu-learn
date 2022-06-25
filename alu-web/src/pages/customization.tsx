@@ -1,16 +1,16 @@
-import Button from 'react-bootstrap/Button';
 import ChoiceSelect from '../utils/ChoiceSelect';
 import Container from 'react-bootstrap/Container';
 import LoadingButton from '../decks/buttons/LoadingButton';
 import ProgressBar from '../utils/ProgressBar';
-import TZSelect from '../utils/timezone';
 import { useState } from 'react';
 import { backendFetch } from '../lookup/lookup';
 
 
 export default function UserCustomization({ isProFromOrg }) {
   const [slideNum, setSlideNum] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState({
+    timezone: new Date().getTimezoneOffset(),
+  });
 
   const handleNext = (question: string | null) => {
     return async (response: any) => {
@@ -32,21 +32,22 @@ export default function UserCustomization({ isProFromOrg }) {
     (<>
       <h4>Are you a student or a teacher?</h4>
       <ChoiceSelect choices={[
-        { value: 'STUDENT', display: 'Student' },
-        { value: 'TEACHER', display: 'Teacher' },
+        { value: 'STUDENT', display: 'Student', icon: 'fa-solid fa-graduation-cap', iconColor: 'dodgerblue' },
+        { value: 'TEACHER', display: 'Teacher', icon: 'fa-solid fa-person-chalkboard', iconColor: 'indigo' },
       ]} onClick={handleNext('userType')} />
     </>),
     (<>
       <h4>How did you hear about Alu?</h4>
       <ChoiceSelect choices={[
-        { value: 'FRIENDS', display: 'Friends/Family' },
-        { value: 'TEACHER', display: 'Teacher' },
-        { value: 'SOCIAL', display: 'Social Media' },
-        { value: 'YOUTUBE', display: 'YouTube' },
-        { value: 'NEWS', display: 'News/article/blog' },
-        { value: 'SEARCH', display: 'Web Search' },
-        { value: 'OTHER', display: 'Other' },
-      ]} onClick={handleNext('referrer')} />
+        { value: 'FRIENDS', display: 'Friends/Family', icon: 'fa-solid fa-user-group', iconColor: 'orange' },
+        { value: 'TEACHER', display: 'Teacher', icon: 'fa-solid fa-person-chalkboard', iconColor: 'indigo' },
+        { value: 'INSTA', display: 'Instagram', icon: '/static/images/instagram-logo.svg' },
+        { value: 'REDDIT', display: 'Reddit', icon: 'fa-brands fa-reddit' },
+        { value: 'TIKTOK', display: 'TikTok', icon: 'fa-brands fa-tiktok' },
+        { value: 'YOUTUBE', display: 'YouTube', icon: 'fa-brands fa-youtube' },
+        { value: 'NEWS', display: 'News', icon: 'fa-solid fa-newspaper', iconColor: 'royalblue' },
+        { value: 'SEARCH', display: 'Web Search', icon: '/static/images/google-logo.svg' },
+      ]} onClick={handleNext('referrer')} shuffle includeOther />
     </>),
     (<>
       <h4>Why did you join Alu?</h4>
@@ -55,7 +56,7 @@ export default function UserCustomization({ isProFromOrg }) {
         { value: 'GRADES', display: 'I want to improve my grades' },
         { value: 'CONCEPT', display: 'I think it\'s an interesting concept' },
         { value: 'TEACHER', display: 'My teacher told me to' },
-      ]} onClick={handleNext('joinReason')} />
+      ]} onClick={handleNext('joinReason')} shuffle />
     </>),
     (<>
       <h4>What is your goal number of flashcards per day?</h4>
@@ -78,22 +79,6 @@ export default function UserCustomization({ isProFromOrg }) {
         { value: true, display: 'Yes, send me reminder emails' },
         { value: false, display: 'No, I\'m not interested in reminder emails'},
       ]} onClick={handleNext('sendReminders')} />
-    </>),
-    (<>
-      <h4>What timezone are you in?</h4>
-      <p>This is used to keep track of your streak</p>
-      <TZSelect />
-      <Button
-        onClick={() => {
-          const tzSelect = document.getElementsByName('timezone')[0] as HTMLFormElement;
-          const tz = tzSelect.value;
-          handleNext('timezone')(tz);
-        }}
-        className='mt-3'
-        block
-      >
-        Confirm
-      </Button>
     </>),
     (<>
       <h4>Pro-mode for free!</h4>

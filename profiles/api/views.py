@@ -7,7 +7,6 @@ from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.core.mail import send_mail
 from django.shortcuts import redirect
-from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.views.decorators.cache import cache_page
 from google.auth import jwt
@@ -513,6 +512,17 @@ def get_user_friends_api_view(request, *args, **kwargs):
     )
 
 
+def give_user_organization_pro_mode(user: User):
+    email_domain = re.search(r'@[\w.]+', user.email).group()[1:]
+
+    if email_domain in map(lambda x: x['DOMAIN'], settings.PRO_MODE_PARTNERS):
+        user.is_pro = True
+        user.is_pro_from_org = True
+        user.pro_trial_expires = None  # infinite
+
+        user.save()
+
+
 @api_view(['POST'])
 def confirm_email_api_view(request, username, *args, **kwargs):
     """
@@ -545,22 +555,8 @@ def confirm_email_api_view(request, username, *args, **kwargs):
     except (Profile.DoesNotExist, EmailAddress.DoesNotExist):
         return Response({'message': 'Confirmation key invalid'}, status=400)
 
-    # Give the user a free trial of pro-mode, if they've joined within the last week
-    week_ago = timezone.now() - datetime.timedelta(days=7)
-    if request.user.date_joined > week_ago:
-        request.user.is_pro = True
-
-        # If the user is a member of a partnered organization, they get a longer free-trial
-        domain = re.search(r'@[\w]+', email).group()[1:]
-        if domain in map(lambda x: x['DOMAIN'], settings.PRO_MODE_PARTNERS):
-            request.is_pro_from_org = True
-            request.user.pro_trial_expires = None  # infinite
-        else:
-            request.user.pro_trial_expires = (
-                timezone.now() + datetime.timedelta(days=settings.FREE_TRIAL_LENGTH)
-            )
-
-        request.user.save()
+    # If the user is a member of a partnered organization, they get pro for free
+    give_user_organization_pro_mode(profile.user)
 
     return Response({'message': 'Email authenticated'})
 
@@ -696,6 +692,9 @@ def google_oauth_login(request):
         email=email,
         created_with_google=True,
     )
+
+    # Give pro mode if they are from a partnered organization
+    give_user_organization_pro_mode(user)
 
     # Confirm email
     email = user.confirm_email(user.confirmation_key)

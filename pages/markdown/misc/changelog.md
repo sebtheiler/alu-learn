@@ -1,3 +1,16 @@
+# Better Sign-up - Jun ?? - 1.1.0
+Improved the sign-up experience.
+
+* **Sign-in with Google:** You may now sign-in to your existing account (or create a new account) with Google authentication.  One less password to remember!
+* **Improved Welcome Info:** Improved the welcome info collection upon sign-up.
+  * Added multiple options to type of social media (Instagram, Reddit, TikTok)
+  * Changed interface to display large buttons with icons rather than a list
+  * Removed timezone question (Alu automatically figures this out)
+* **Fixed Logo:** Fixed the Instagram logo under the "Follow Alu" section
+* **Fixed Partnered Organizations Pro-mode:** Fixed a bug that caused users from partnered organizations not to receive pro-mode when signing up
+* **Removed Free Trial on Sign-up:** Removed the free trial on sign-up.  A free trial will soon be available again when the user first purchases pro-mode.
+
+
 # Marketing Research - May 18 - 1.0.5
 Added the option to opt-out of marketing research emails (e.g., feedback surveys).  Everyone who studied flashcards for a past AP exam will also receive a quick feedback survey about how Alu has impacted them.
 
