@@ -6,6 +6,7 @@ Improved the sign-up experience.
   * Added multiple options to type of social media (Instagram, Reddit, TikTok)
   * Changed interface to display large buttons with icons rather than a list
   * Removed timezone question (Alu automatically figures this out)
+  * Added choice between creating your own deck or copying an existing one
 * **Fixed Logo:** Fixed the Instagram logo under the "Follow Alu" section
 * **Fixed Partnered Organizations Pro-mode:** Fixed a bug that caused users from partnered organizations not to receive pro-mode when signing up
 * **Removed Free Trial on Sign-up:** Removed the free trial on sign-up.  A free trial will soon be available again when the user first purchases pro-mode.

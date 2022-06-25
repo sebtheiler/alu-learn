@@ -98,4 +98,5 @@ class WelcomeInfo(models.Model):
     join_reason = models.CharField(max_length=8)
     target_flashcards = models.PositiveSmallIntegerField()
     send_reminders = models.BooleanField()
+    deck_choice = models.CharField(max_length=16)
     timezone = models.SmallIntegerField()

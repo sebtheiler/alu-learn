@@ -110,6 +110,7 @@ def collect_user_welcome_info(request):
         join_reason=request.data.get('joinReason'),
         target_flashcards=target_flashcards,
         send_reminders=send_reminders,
+        deck_choice=request.data.get('deckChoice'),
         timezone=timezone,
     )
 

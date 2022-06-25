@@ -1,6 +1,5 @@
 import ChoiceSelect from '../utils/ChoiceSelect';
 import Container from 'react-bootstrap/Container';
-import LoadingButton from '../decks/buttons/LoadingButton';
 import ProgressBar from '../utils/ProgressBar';
 import { useState } from 'react';
 import { backendFetch } from '../lookup/lookup';
@@ -8,7 +7,7 @@ import { backendFetch } from '../lookup/lookup';
 
 export default function UserCustomization({ isProFromOrg }) {
   const [slideNum, setSlideNum] = useState(0);
-  const [answers, setAnswers] = useState({
+  const [answers, setAnswers] = useState<any>({
     timezone: new Date().getTimezoneOffset(),
   });
 
@@ -21,7 +20,12 @@ export default function UserCustomization({ isProFromOrg }) {
       if (slideNum === slides.length - 1) {
         await backendFetch(
           'POST', 'pages/welcome-info/', answers,
-        ).then(() => window.location.replace('/home/'));
+        ).then(() => {
+          if (answers.deckChoice === 'CREATE_OWN')
+            window.location.replace('/home/')
+          else
+            window.location.replace('/explore/')
+        });
       } else {
         setSlideNum(slideNum + 1);
       }
@@ -81,14 +85,11 @@ export default function UserCustomization({ isProFromOrg }) {
       ]} onClick={handleNext('sendReminders')} />
     </>),
     (<>
-      <h4>Pro-mode for free!</h4>
-      {isProFromOrg.toLowerCase() === 'true' ? <p>
-        Since your organization is partnered with Alu, you have free and unlimited access to pro-mode.
-      </p> : <p>
-        You now have access to Alu's upgraded pro-mode for three days, <strong>no credit card required.</strong>{' '}
-        You can extend your subscription any time for <a href='/pro/'>$3/mo or $30/yr</a>.
-      </p>}
-      <LoadingButton clickFunc={handleNext(null)}>Awesome!</LoadingButton>
+      <h4>Would you like to create your own deck or copy an existing deck?</h4>
+      <ChoiceSelect choices={[
+        { value: 'CREATE_OWN', display: 'Create My Own', icon: 'fa-solid fa-plus', iconColor: 'navy' },
+        { value: 'COPY_EXISTING', display: 'Copy Existing Deck', icon: 'fa-solid fa-window-restore', iconColor: 'peru' },
+      ]} onClick={handleNext('deckChoice')} />
     </>),
   ];
 
