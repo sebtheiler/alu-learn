@@ -308,7 +308,14 @@ export default function CreateFlashcard(props: CreateFlashcardProps) {
               href={`/deck/${deckId}/flashcards/` + (subSection ? `sections/${subSection}/` : '')}
               target='_blank'
             >
-              View All Flashcards
+              View Flashcards
+            </Button>
+            <Button
+              href={`/deck/${deckId}/study/${(subSection ? subSection : '')}/`}
+              target='_blank'
+              className='ml-1'
+            >
+              Study Flashcards
             </Button>
             {flashcardId && <LoadingButton
               clickFunc={deleteFlashcard}

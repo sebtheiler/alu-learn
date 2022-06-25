@@ -1,10 +1,17 @@
 from django.urls import path
+from teachers.serializers import AssignmentSerializer
+
+from utils.api_gen import delete_object_view
 
 from . import views
 
 urlpatterns = [
     path('assignment/create/', views.create_assignment),
     path('assignment/<int:assignment_id>/edit/', views.edit_assignment_view),
+    path('assignment/<int:obj_id>/delete/', delete_object_view(
+        Serializer=AssignmentSerializer,
+        owner_path='classrooms__teachers__user',
+    )),
     path('assignment/<int:assignment_id>/get-deck/', views.assignment_get_deck_view),
     path('classroom/create/', views.create_classroom_view),
     path('classroom/join/', views.student_join_class_view),

@@ -66,11 +66,6 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class AssignmentSerializer(serializers.ModelSerializer):
-    # sub_sections = SubSectionSerializer(
-    #     'sub_sections',
-    #     many=True,
-    #     context={'get_main_section': True},
-    # )
     sub_sections = serializers.SerializerMethodField(read_only=True)
     percent_complete = serializers.SerializerMethodField(read_only=True)
 

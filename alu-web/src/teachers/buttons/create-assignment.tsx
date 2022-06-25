@@ -53,9 +53,10 @@ interface CreateEditAssignmentModalProps {
   classroom: Classroom;
   createAssignment?(): Promise<void>;
   editAssignment?(): Promise<void>;
+  deleteAssignment?(): Promise<void>;
   assignment?: Assignment;
 }
-export function CreateEditAssignmentModal({ modalIsOpen, setModalIsOpen, classroom, createAssignment, editAssignment, assignment }: CreateEditAssignmentModalProps) {
+export function CreateEditAssignmentModal({ modalIsOpen, setModalIsOpen, classroom, createAssignment, editAssignment, deleteAssignment, assignment }: CreateEditAssignmentModalProps) {
   const { classroomsTaught } = useContext(HomeActionDispatch)
   const mainSections = useMemo(() => {
     if (!classroom.shared_deck) return [];
@@ -143,6 +144,9 @@ export function CreateEditAssignmentModal({ modalIsOpen, setModalIsOpen, classro
             </LoadingButton>}
             {editAssignment && <LoadingButton clickFunc={editAssignment}>
               Edit
+            </LoadingButton>}
+            {deleteAssignment && <LoadingButton clickFunc={deleteAssignment} variant='danger' className='ml-1'>
+              Delete
             </LoadingButton>}
             <Button
               onClick={() => setModalIsOpen(false)}

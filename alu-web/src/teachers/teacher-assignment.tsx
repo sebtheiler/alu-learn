@@ -2,8 +2,8 @@ import Button from 'react-bootstrap/Button';
 import Chart from 'react-google-charts';
 import { Assignment, Classroom } from './types';
 import { CreateEditAssignmentModal } from './buttons/create-assignment';
-import { apiObjectEdit, backendFetch, useAsyncState } from '../lookup/lookup';
-import React, { useState } from 'react';
+import { apiObjectDelete, apiObjectEdit, backendFetch, useAsyncState } from '../lookup/lookup';
+import { useState } from 'react';
 import './teacher-assignment.scss';
 
 interface StudentPercentComplete {
@@ -68,6 +68,13 @@ export default function TeacherAssignment({ classroom, assignment, assignments, 
     );
   }
 
+  const deleteAssignment = async () => {
+    if (!window.confirm('Are you sure you want to delete this assignment?')) return;
+
+    await apiObjectDelete('teachers', 'assignment', assignment.id)
+      .then(() => window.location.reload());
+  }
+
   return (
     <div
       className='assignment-row'
@@ -88,6 +95,7 @@ export default function TeacherAssignment({ classroom, assignment, assignments, 
           setModalIsOpen={setEditModalIsOpen}
           classroom={classroom}
           editAssignment={editAssignment}
+          deleteAssignment={deleteAssignment}
           assignment={assignment}
         />
         <small>(click to {showFullDetail ? 'collapse' : 'expand'})</small>
