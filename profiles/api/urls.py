@@ -21,7 +21,6 @@ urlpatterns = [
     path('changeemail/', views.change_email),
     path('changepassword/', views.change_password),
     path('resetpassword/<str:email>/', views.password_reset_email_api_view),
-    path('confirmemail/<str:username>/', views.confirm_email_api_view),
     path('read-popup/', views.read_changelog_popup_api_view),
     path('staff-force-login/', views.staff_force_login),
     path('streak-review-info/', views.streak_review_info),

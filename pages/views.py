@@ -4,6 +4,7 @@ from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import cache_control, cache_page
 from django.views.decorators.vary import vary_on_cookie
+from profiles.api.views import give_user_organization_pro_mode
 from utils import permissions
 
 
@@ -51,12 +52,17 @@ def change_reset_password_view_wrapper(is_reset):
 
 
 def confirm_email_view(request, *args, **kwargs):
-    if not request.user.is_authenticated or (request.user.is_confirmed and len(request.user.unconfirmed_emails) == 0):
+    if confirmation_key := request.GET.get('confirmation_key'):
+        if request.user.confirm_email(confirmation_key):
+            # If the user is a member of a partnered organization, they get pro for free
+            give_user_organization_pro_mode(request.user)
+
         return redirect('/home/')
 
-    return render(request, 'misc/settings/confirm-email.html', {
-        'email': request.user.unconfirmed_emails[0] if request.user.unconfirmed_emails else request.user.email
-    })
+    if not request.user.is_authenticated or request.user.is_confirmed:
+        return redirect('/home/')
+
+    return render(request, 'misc/settings/confirm-email.html')
 
 
 def send_password_reset(request, *args, **kwargs):

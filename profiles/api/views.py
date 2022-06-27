@@ -15,7 +15,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from sharing_system.models import SharedDeck
 from sharing_system.serializers import SharedDeckSerializer
-from simple_email_confirmation.models import EmailAddress
 from utils import get_paginated_queryset_response
 
 from ..models import Notification, Profile, ProfileTutorialProgress
@@ -265,24 +264,7 @@ def create_profile_api_view(request, *args, **kwargs):
     user.profile.birthdate = birthdate
     user.profile.save()
 
-    # Send confirmation email
-    subject = 'Welcome to Alu!'
-    message = f"""
-We're glad you signed up!
-
-Here's a confirmation code, to make sure this email is really you: {user.confirmation_key}
-If this wasn't you, you can safely ignore this email.
-    """
-    email_from = settings.EMAIL_HOST_USER
-    recipient_list = [email]
-
-    send_mail(
-        subject,
-        message,
-        email_from,
-        recipient_list,
-        fail_silently=False,
-    )
+    user.signup_email_confirmation()
 
     # Create notification on Slack
     post_slack_message(f'*New User:* {user.first_name} {user.last_name} ({email})')
@@ -521,44 +503,6 @@ def give_user_organization_pro_mode(user: User):
         user.pro_trial_expires = None  # infinite
 
         user.save()
-
-
-@api_view(['POST'])
-def confirm_email_api_view(request, username, *args, **kwargs):
-    """
-    Confirms an email with a verification code - POST
-
-    Required information:
-        `username`: (ULR) Username of the profile to confirm
-        `confirmation_key`: (Data) Key to confirm email
-
-    Possible errors:
-        Profile does not exist: 404, User not found
-        Invalid key: 400, Confirmation key invalid
-    """
-    # Get user
-    try:
-        profile = Profile.objects.get(user__username=username)
-    except Profile.DoesNotExist:
-        return Response({'message': 'User not found'}, status=404)
-
-    # Check key
-    try:
-        email = profile.user.confirm_email(request.data.get('confirmation_key').replace(' ', ''))
-
-        if email:
-            profile.user.email = email
-            profile.user.set_primary_email(email)
-            profile.user.save()
-        else:
-            raise EmailAddress.DoesNotExist
-    except (Profile.DoesNotExist, EmailAddress.DoesNotExist):
-        return Response({'message': 'Confirmation key invalid'}, status=400)
-
-    # If the user is a member of a partnered organization, they get pro for free
-    give_user_organization_pro_mode(profile.user)
-
-    return Response({'message': 'Email authenticated'})
 
 
 @api_view(['POST'])

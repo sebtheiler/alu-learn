@@ -466,14 +466,6 @@ export function apiSendPasswordReset(email, callback) {
   backendLookup('POST', `profiles/resetpassword/${email}/`, callback);
 }
 
-// Confirm user's email
-export function apiEmailConfirm(username, confirmationKey, email, callback) {
-  backendLookup('POST', `profiles/confirmemail/${username}/`, callback, {
-    confirmation_key: confirmationKey,
-    email: email,
-  });
-}
-
 // Sends a confirmation email to the specified email
 export function apiEmailChange(password, newEmail, callback) {
   backendLookup('POST', 'profiles/changeemail/', callback, {
