@@ -10,6 +10,7 @@ Improved the sign-up experience.
 * **Fixed Logo:** Fixed the Instagram logo under the "Follow Alu" section
 * **Fixed Partnered Organizations Pro-mode:** Fixed a bug that caused users from partnered organizations not to receive pro-mode when signing up
 * **Removed Free Trial on Sign-up:** Removed the free trial on sign-up.  A free trial will soon be available again when the user first purchases pro-mode.
+* **Improved Email Confirmation:** Users who sign-up with an email may now confirm their email with the click of a button, rather than by entering a code
 
 
 # Marketing Research - May 18 - 1.0.5

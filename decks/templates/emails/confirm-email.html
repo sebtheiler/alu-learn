@@ -1,0 +1,22 @@
+{% extends "emails/base.html" %}
+
+{% block title %}{% endblock %}
+{% block entrance %}Confirm Email{% endblock %}
+
+{% block content %}
+<tr>
+  <td class="text-chunk">
+    <p>Welcome to Alu, {{ name }}!  We're glad you signed up.</p>
+    <br>
+    <p>Confirm your email by clicking the button bellow.  If you didn't create an account with Alu, someone may have entered your email by accident.</p>
+  </td>
+</tr>
+
+<tr>
+  <td class="px-3 py-3">
+    <span class="block-button">
+      <a href="https://www.alulearn.com/confirm-email/?confirmation_key={{ confirmation_key }}" target="_blank">Confirm Email</a>
+    </span>
+  </td>
+</tr>
+{% endblock content %}
