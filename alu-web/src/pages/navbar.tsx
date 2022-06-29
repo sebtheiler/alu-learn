@@ -15,9 +15,7 @@ import './navbar.scss';
 function GoogleOneTapLogin() {
   useGoogleOneTapLogin({
     onSuccess: onGoogleLoginSuccess,
-    onError: () => {
-      console.log('Login Failed')
-    },
+    onError: () => console.log('Login Failed'),
   });
 
   return <></>;

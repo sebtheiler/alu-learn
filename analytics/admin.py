@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.db.models import Q
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from .models import (QuickFeedback, QuickFeedbackResponse, ShortUrl, UrlHit,
                      WelcomeInfo)
@@ -32,7 +32,7 @@ class UrlHitOtherFilter(SimpleListFilter):
     def choices(self, changelist):
         for lookup, title in self.lookup_choices:
             yield {
-                'selected': self.value() == force_text(lookup),
+                'selected': self.value() == force_str(lookup),
                 'query_string': changelist.get_query_string({self.parameter_name: lookup}, []),
                 'display': title,
             }
