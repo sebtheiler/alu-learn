@@ -1,5 +1,6 @@
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import IconTooltip from '../decks/buttons/IconTooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -11,12 +12,12 @@ import { backendFetch, PaginatedResponse, useAsyncState } from '../lookup/lookup
 import { flattenNodes } from '.';
 import { useEffect, useState } from 'react';
 import './editor.scss';
-import IconTooltip from '../decks/buttons/IconTooltip';
 
 export const withFlashCardLinks = (editor: ReactEditor) => {
   const { isInline } = editor;
 
   editor.isInline = element => {
+    // @ts-ignore
     return element.type === 'flashcard-link' ? true : isInline(element);
   }
 
@@ -73,7 +74,9 @@ export const FlashCardLinkElement = ({ attributes, children, element }) => {
 }
 
 const insertFlashCardLink = (editor: ReactEditor, flashcard: FlashCard) => {
+  // @ts-ignore
   if (editor.blurSelection) {
+    // @ts-ignore
     Transforms.select(editor, editor.blurSelection as Location);
   }
   if (editor.selection) {
@@ -84,11 +87,13 @@ const insertFlashCardLink = (editor: ReactEditor, flashcard: FlashCard) => {
 }
 
 const isFlashCardLinkActive = (editor: ReactEditor) => {
+  // @ts-ignore
   const [flashcardLink] = Editor.nodes(editor, { match: n => n.type === 'flashcard-link' });
   return !!flashcardLink;
 }
 
 const unwrapFlashCardLink = (editor: ReactEditor) => {
+  // @ts-ignore
   Transforms.unwrapNodes(editor, { match: n => n.type === 'flashcard-link' });
 }
 

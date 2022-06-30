@@ -1,6 +1,6 @@
 import * as serviceWorker from './serviceWorker';
 import React, { FunctionComponent } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { DeckImportComponent, StatisticsPage, SkillTreeHome, StudySkillTree, ViewFlashcards, CreateFlashcard, ShareDeck, SharedDeckDetail, SubmittedList, RenderSubmittedChanges, ArchivedDecks } from './decks';
 import { GameComponent, MatchingGame } from './decks/games';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -19,16 +19,19 @@ const e = (type, props) => React.createElement(
   },
 );
 
+const container = document.getElementById('app');
 const renderElement = (Component: FunctionComponent | string, htmlName: string, isClass=false) => {
   if (isClass) {
     const els: NodeListOf<HTMLElement> = document.querySelectorAll(`.${htmlName}`);
     els.forEach(el => {
-      ReactDOM.render(e(Component, el.dataset), el);
+      const root = createRoot(el);
+      root.render(e(Component, el.dataset));
     });
   } else {
     const el = document.getElementById(htmlName);
     if (el) {
-      ReactDOM.render(e(Component, el.dataset), el);
+      const root = createRoot(el);
+      root.render(e(Component, el.dataset));
     }
   }
 }

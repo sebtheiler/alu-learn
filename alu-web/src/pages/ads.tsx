@@ -1,4 +1,4 @@
-import { useDetectAdBlock } from 'adblock-detect-react';
+import useDetectAdBlock from '../utils/useDetectAdBlock';
 import { useEffect } from 'react';
 import './ads.scss';
 

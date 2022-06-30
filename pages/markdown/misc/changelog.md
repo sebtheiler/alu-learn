@@ -1,3 +1,5 @@
+* **Changed Paragraph Breaks:** Paragraph no longer have a bottom margin.  This makes the editor more consistent with other editors, such as Google Docs.
+
 # Better Sign-up - Jun ?? - 1.1.0
 Improved the sign-up experience.
 

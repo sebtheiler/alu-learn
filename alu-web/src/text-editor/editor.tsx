@@ -1,6 +1,6 @@
 import isHotKey from 'is-hotkey';
 import { Editable, ReactEditor } from 'slate-react';
-import { Editor, Transforms } from 'slate';
+import { Element as SlateElement, BaseSelection, Editor, Transforms } from 'slate';
 import { Element, Leaf } from './renderer';
 import { createEditor } from 'slate';
 import { useCallback } from 'react';
@@ -11,7 +11,13 @@ import { withReact } from 'slate-react';
 import { withShortcuts } from './shortcuts';
 import './editor.scss';
 
-function withSaveSelectionOnBlur(editor: ReactEditor) {
+interface ExtendedReactEditor extends ReactEditor {
+  saveSelectionOnBlur?: () => void;
+  blurSelection?: BaseSelection;
+}
+
+// When focus is lost, save a copy of what the editor has selected
+function withSaveSelectionOnBlur(editor: ExtendedReactEditor) {
   editor.saveSelectionOnBlur = () => {
     editor.blurSelection = editor.selection;
   }
@@ -20,6 +26,7 @@ function withSaveSelectionOnBlur(editor: ReactEditor) {
 }
 
 export function createFullEditor() {
+  // @ts-ignore
   return withFlashCardLinks(withSaveSelectionOnBlur(withShortcuts(withLinks(withHistory(withReact(createEditor()))))));
 }
 
@@ -33,7 +40,7 @@ const HOTKEYS = {
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 
 interface FullEditorProps {
-  editor: ReactEditor;
+  editor: ExtendedReactEditor;
   readOnly?: boolean;
   styleOptions?: {
     minHeight?: string; /**E.g., 200px */
@@ -55,6 +62,7 @@ export function FullEditor(props: FullEditorProps) {
       renderElement={renderElement}
       renderLeaf={renderLeaf}
       className='rich-text-editor'
+      spellCheck
       style={{
         borderStyle: showBorder ? 'solid' : 'none',
         minHeight: minHeight ? minHeight : '600px',
@@ -69,7 +77,6 @@ export function FullEditor(props: FullEditorProps) {
         }
       }}
 
-      // @ts-expect-error
       onBlur={editor.saveSelectionOnBlur}
     />
   );
@@ -80,12 +87,17 @@ export const toggleBlock = (editor: ReactEditor, format: string) => {
   const isList = LIST_TYPES.includes(format);
 
   Transforms.unwrapNodes(editor, {
-    match: n => LIST_TYPES.includes(n.type as string),
+    match: n =>
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      // @ts-ignore
+      LIST_TYPES.includes(n.type as string),
     split: true,
   });
 
   Transforms.setNodes(editor, {
-    type: isActive ? 'paragraph' : isList ? 'list-item' : format,
+    // @ts-ignore
+    type: isActive ? 'paragraph' : (isList ? 'list-item' : format),
   });
 
   if (!isActive && isList) {
@@ -106,6 +118,7 @@ export const toggleMark = (editor, format) => {
 
 export const isBlockActive = (editor, format) => {
   const [match] = Editor.nodes(editor, {
+    // @ts-ignore
     match: n => n.type === format,
   });
 

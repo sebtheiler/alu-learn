@@ -41,6 +41,7 @@ export const withShortcuts = editor => {
         Transforms.select(editor, range);
         Transforms.delete(editor);
         const newProperties: Partial<SlateElement> = {
+          // @ts-ignore
           type,
         };
         Transforms.setNodes(editor, newProperties, {
@@ -56,6 +57,7 @@ export const withShortcuts = editor => {
             match: n =>
               !Editor.isEditor(n) &&
               SlateElement.isElement(n) &&
+              // @ts-ignore
               n.type === 'list-item',
           });
         }
@@ -82,19 +84,23 @@ export const withShortcuts = editor => {
         if (
           !Editor.isEditor(block) &&
           SlateElement.isElement(block) &&
+          // @ts-ignore
           block.type !== 'paragraph' &&
           Point.equals(selection.anchor, start)
         ) {
           const newProperties: Partial<SlateElement> = {
+            // @ts-ignore
             type: 'paragraph',
           };
           Transforms.setNodes(editor, newProperties);
 
+          // @ts-ignore
           if (block.type === 'list-item') {
             Transforms.unwrapNodes(editor, {
               match: n =>
                 !Editor.isEditor(n) &&
                 SlateElement.isElement(n) &&
+                // @ts-ignore
                 (n.type === 'bulleted-list' || n.type === 'numbered-list'),
               split: true,
             });

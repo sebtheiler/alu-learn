@@ -358,7 +358,6 @@ function RenderEditor({ editor, value, setValue, isFlashCard, isPro }: RenderEdi
     >
       <div className='editor-body'>
         <FullEditor
-          id='frontText'
           editor={editor}
           styleOptions={{ minHeight: '200px' }}
         />

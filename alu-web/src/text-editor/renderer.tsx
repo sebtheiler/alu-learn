@@ -1,9 +1,9 @@
-import React from 'react';
-import { LinkElement } from './links';
-import { BlockMath, InlineMath } from 'react-katex';
-import { Node } from 'slate';
-import './renderer.css';
+import TeX from '../utils/TeX';
 import { FlashCardLinkElement } from './flashcard-links';
+import { LinkElement } from './links';
+import { Node } from 'slate';
+import 'katex/dist/katex.min.css';
+import './renderer.css';
 
 export const Element = (props) => {
   const { attributes, children, element, readOnly } = props;
@@ -38,10 +38,10 @@ export const Element = (props) => {
       </p>
     case 'math-block':
       if (readOnly)
-        return <BlockMath {...attributes}>{Node.string(props.element)}</BlockMath>
+        return <TeX math={Node.string(props.element)} block />
       return <p className='math-block' {...attributes}>{children}</p>
     default:
-      return <p {...attributes}>{children}</p>
+      return <p {...attributes} className='mb-0'>{children}</p>
   }
 }
 
@@ -60,15 +60,7 @@ export const Leaf = ({ attributes, children, leaf, readOnly }) => {
 
   if (leaf.math_inline) {
     if (readOnly) {
-      // TODO: I'm sure there's some way like Node.string(...) to avoid this parse error
-      // and allow for rich text ignoring, but I can't find it at the moment
-      // is it flattenNodes???
-      const text = children?.props?.text?.text;
-      if (!text) {
-        children = <strong>KaTeX Parse Error: Please make sure the equation has no rich text formatting in it</strong>
-      } else {
-        children = <InlineMath>{text}</InlineMath>
-      }
+      children = <TeX math={children.props.text.text} />
     } else {
       children = <span className='math-inline'>{children}</span>
     }

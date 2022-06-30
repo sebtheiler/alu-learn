@@ -9,6 +9,7 @@ export const withLinks = (editor: ReactEditor) => {
   const { insertData, insertText, isInline } = editor;
 
   editor.isInline = element => {
+    // @ts-ignore
     return element.type === 'link' ? true : isInline(element);
   }
 
@@ -23,7 +24,6 @@ export const withLinks = (editor: ReactEditor) => {
 
   editor.insertData = data => {
     const text = data.getData('text/plain');
-    console.log('qwoeijdqpeowijdpoeqwijdq', data, text)
 
     if (text && isUrl(text)) {
       wrapLink(editor, text);
@@ -65,11 +65,13 @@ const insertLink = (editor: ReactEditor, url: string) => {
 }
 
 const isLinkActive = (editor: ReactEditor) => {
+  // @ts-ignore
   const [link] = Editor.nodes(editor, { match: n => n.type === 'link' });
   return !!link;
 }
 
 const unwrapLink = (editor: ReactEditor) => {
+  // @ts-ignore
   Transforms.unwrapNodes(editor, { match: n => n.type === 'link' });
 }
 
