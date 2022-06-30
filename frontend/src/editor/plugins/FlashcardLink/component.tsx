@@ -1,0 +1,55 @@
+import IconTooltip from '@components/IconTooltip';
+import OverlayTrigger from '@components/OverlayTrigger';
+import Popover from '@components/Popover';
+import RenderRichText from '../../RenderRichText';
+import { useState } from 'react';
+
+export const FlashCardLinkComponent = ({ attributes, children, element }) => {
+  const [popoverIsOpen, setPopoverIsOpen] = useState(false);
+  // const [flashcard] = useAsyncState<FlashCard>(
+  //   () => backendFetch('GET', `decks/flashcard/find-universal/${element.flashcardUID}/`),
+  //   [], undefined,
+  //   popoverIsOpen,
+  // );
+  const flashcard = {} as any;
+
+  const editFlashcard = async (e: MouseEvent) => {
+    e.preventDefault();
+    window.open(`/deck/${flashcard?.parent_deck_id}/flashcards/${flashcard?.id}/edit/`, '_blank');
+  }
+
+  return (
+    <OverlayTrigger
+      overlay={
+        <Popover id='flashcard-preview-popover' style={{ minWidth: '200px' }}>
+          <div>
+            <Popover.Title as='h3' className='text-center'>
+              Flashcard Preview
+              {flashcard?.id && <IconTooltip
+                tooltip='Edit this flashcard'
+                onClick={editFlashcard}
+                faClass='fas fa-external-link-alt'
+                className='float-right'
+                id={`edit-flashcard-${flashcard.id}`}
+              />}
+            </Popover.Title>
+            {flashcard?.data ? <Popover.Content>
+              {flashcard && flashcard.data.fields.map((field, i) => <>
+                <RenderRichText text={field} />
+                {i !== flashcard.data.fields.length - 1 && <hr />}
+              </>)}
+              {!flashcard && <p>Loading…</p>}
+            </Popover.Content> : <Popover.Content>Flashcard not found</Popover.Content>}
+          </div>
+        </Popover>
+      }
+      delay={{ show: 0, hide: 1000 }}
+      onToggle={show => setPopoverIsOpen(show)}
+      placement='bottom'
+    >
+      <span {...attributes} className='flashcard-link'>
+        {children}
+      </span>
+    </OverlayTrigger>
+  );
+}
