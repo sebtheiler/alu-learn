@@ -1,23 +1,23 @@
 # --- Django ---
 __pycache__/
-*/migrations/
+migrations/
 
-static/*
-!static/favicon.ico
-!static/logo.svg
-!static/email_base.css
-!static/images/
-static-root/
-decks/templates/react.html
-decks/templates/react/
+backend/static/*
+!backend/static/favicon.ico
+!backend/static/logo.svg
+!backend/static/email_base.css
+!backend/static/images/
+backend/static-root/
+backend/decks/templates/react.html
+backend/decks/templates/react/
 
 uploads/
 
 mysite.log
 
 .env
-alu/gsuite-creds.json
-alu/oauth-client-secret.json
+gsuite-creds.json
+oauth-client-secret.json
 
 # --- React ---
 
