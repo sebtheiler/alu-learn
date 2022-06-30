@@ -59,6 +59,7 @@ editor_deck_ids.json
 # --- Production Things ---
 sites-enabled
 aluenv
+aluenv-pypy
 Pipfile
 backups/
 
