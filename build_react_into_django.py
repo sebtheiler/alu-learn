@@ -9,15 +9,15 @@ import alu.settings as settings
 # Changed files:
 # * static/css/*
 # * static/js/*
-# * decks/templates/react/*
-# * decks/templates/react.html
+# * templates/react/*
+# * templates/react.html
 # * static-root/*  (via ./manage.py collectstatic)
 CHANGED_FILES = [
     'static-root',
     'static/css',
     'static/js',
-    'decks/templates/react',
-    'decks/templates/react.html',
+    'templates/react',
+    'templates/react.html',
 ]
 
 BASE_DIR = os.getcwd()
@@ -72,12 +72,12 @@ def build_react_into_django(is_for_production: bool = False, confirm_send_files:
     print('Copying HTML files...')
     copyfile(
         os.path.join(BASE_DIR, 'alu-web/build/index.html'),
-        os.path.join(BASE_DIR, 'decks/templates/react.html'),
+        os.path.join(BASE_DIR, 'templates/react.html'),
     )
-    if not os.path.isdir(os.path.join(BASE_DIR, 'decks/templates/react/')):
-        os.mkdir(os.path.join(BASE_DIR, 'decks/templates/react/'))
+    if not os.path.isdir(os.path.join(BASE_DIR, 'templates/react/')):
+        os.mkdir(os.path.join(BASE_DIR, 'templates/react/'))
 
-    with open(os.path.join(BASE_DIR, 'decks/templates/react.html'), 'r') as f:
+    with open(os.path.join(BASE_DIR, 'templates/react.html'), 'r') as f:
         contents = f.read()
 
         # <script>!function(e){function r(r) .......... r(a[i]);var p=f;t()}([])</script>
@@ -103,9 +103,9 @@ def build_react_into_django(is_for_production: bool = False, confirm_send_files:
         with open(os.path.join(BASE_DIR, filename), 'w+') as f:
             f.write(contents)
 
-    write_file('decks/templates/react/base_embed.html', base_embed_html)
-    write_file('decks/templates/react/js.html', js_html)
-    write_file('decks/templates/react/css.html', css_html)
+    write_file('templates/react/base_embed.html', base_embed_html)
+    write_file('templates/react/js.html', js_html)
+    write_file('templates/react/css.html', css_html)
 
     print('Clearing cache...')
     clear_cache = 'from django.core.cache import cache; cache.clear()'

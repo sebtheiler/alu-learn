@@ -8,8 +8,8 @@ backend/static/*
 !backend/static/email_base.css
 !backend/static/images/
 backend/static-root/
-backend/decks/templates/react.html
-backend/decks/templates/react/
+backend/templates/react.html
+backend/templates/react/
 
 uploads/
 
@@ -22,7 +22,7 @@ oauth-client-secret.json
 # --- React ---
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
 
