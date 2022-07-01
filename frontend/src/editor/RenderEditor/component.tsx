@@ -1,32 +1,47 @@
 import EditorButtons from '../EditorButtons';
-import FullEditor from '../FullEditor';
+import FullEditable from '../FullEditable';
 import { Node as SlateNode } from 'slate';
 import { ReactEditor, Slate } from 'slate-react';
 
 interface RenderEditorProps {
-  value: SlateNode[];
-  setValue: (value: SlateNode[]) => void;
-  isFlashCard?: boolean;
+  /**
+   * SlateJS editor to render
+   */
   editor: ReactEditor;
+  /**
+   * Content of the editor
+   */
+  value: SlateNode[];
+  /**
+   * Function to update the content of the editor
+   */
+  setValue: (value: SlateNode[]) => void;
+  /**
+   * Should the flashcard link button be displayed?
+   */
+  displayFlashCardLinkButton?: boolean;
+  /**
+   * Is the user a pro user?
+   */
   isPro?: boolean;
+  /**
+   * Is the content of the editor read only?
+   */
+  readOnly?: boolean;
 }
 
+/**
+ * Render a full SlateJS editor, including buttons
+ */
 export default function RenderEditor({
   editor,
   value,
   setValue,
-  isFlashCard,
+  displayFlashCardLinkButton,
   isPro,
+  readOnly,
 }: RenderEditorProps) {
   return (<div className='editor'>
-    <div className='editor-head'>
-      <EditorButtons
-        editor={editor}
-        isFlashCard={isFlashCard}
-        isPro={isPro}
-        untabbable
-      />
-    </div>
     <Slate
       editor={editor}
       value={value}
@@ -34,10 +49,21 @@ export default function RenderEditor({
         setValue(newValue);
       }}
     >
-      <div className='editor-body'>
-        <FullEditor
+      <div className='editor-head'>
+        <EditorButtons
           editor={editor}
-          styleOptions={{ minHeight: '200px' }}
+          displayFlashCardLinkButton={displayFlashCardLinkButton}
+          isPro={isPro}
+          tabbable={false}
+          className='mb-1'
+          
+        />
+      </div>
+      <div className='editor-body'>
+        <FullEditable
+          editor={editor}
+          className='p-3 border rounded-lg'
+          readOnly={readOnly}
         />
       </div>
     </Slate>

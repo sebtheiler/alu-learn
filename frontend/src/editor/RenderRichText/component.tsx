@@ -1,21 +1,28 @@
-import FullEditor, { createFullEditor } from '../FullEditor';
+import FullEditable, { createFullEditor } from '../FullEditable';
 import { Node as SlateNode } from 'slate';
 import { Slate } from 'slate-react';
 import { useState, useMemo, useEffect } from 'react';
 
 // Renders Slate rich text
 interface RenderRichTextProps {
+  /**
+   * Rich text to be rendered
+   */
   text: SlateNode[];
+  /**
+   * Apply a fix to automatically update when the `text` prop is changed
+   */
   fixSlateLazy?: boolean;
 }
+
+/**
+ * Render SlateJS rich text
+ */
 export default function RenderRichText(props: RenderRichTextProps) {
   const { text, fixSlateLazy } = props;
 
   const [value, setValue] = useState(text);
-  const editor = useMemo(
-    () => createFullEditor(),
-    []
-  );
+  const editor = useMemo(() => createFullEditor(), []);
 
   useEffect(() => {
     try {
@@ -39,11 +46,7 @@ export default function RenderRichText(props: RenderRichTextProps) {
       value={value}
       onChange={newValue => setValue(newValue)}
     >
-      <FullEditor
-        editor={editor}
-        styleOptions={{ minHeight: '0' }}
-        readOnly
-      />
+      <FullEditable editor={editor} readOnly />
     </Slate>
   );
 }

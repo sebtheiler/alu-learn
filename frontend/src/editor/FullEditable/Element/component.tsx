@@ -1,11 +1,39 @@
-import TeX from '@components/TeX';
-import { FlashCardLinkComponent } from "@slate-plugins/FlashcardLink/component";
-import { LinkComponent } from "@slate-plugins/Link";
+import React, { Suspense } from 'react';
 import { Node } from 'slate';
+import { ExtendedSlateElement } from 'editor/types';
 
-const Element = (props) => {
-  const { attributes, children, element, readOnly } = props;
+const TeX = React.lazy(() => import('components/TeX'));
+const FlashCardLinkComponent = React.lazy(() => import('@slate-plugins/FlashcardLink/component'));
+const LinkComponent = React.lazy(() => import('@slate-plugins/Link/component'));
 
+interface ElementProps {
+  /**
+   * Attributes to be passed to the rendered element
+   */
+  attributes: any;
+  /**
+   * Children of the rendered element
+   */
+  children: JSX.Element | JSX.Element[];
+  /**
+   * Slate element to render
+   */
+  element: ExtendedSlateElement;
+  /**
+   * Is the element read only?
+   */
+  readOnly: boolean;
+}
+
+/**
+ * Render an element for the SlateJS editor
+ */
+const Element = ({
+  attributes,
+  children,
+  element,
+  readOnly
+}: ElementProps) => {
   switch (element.type) {
     case 'bulleted-list':
       return <ul {...attributes} style={{ listStylePosition: 'inside' }}>{children}</ul>
@@ -26,17 +54,22 @@ const Element = (props) => {
     case 'numbered-list':
       return <ol {...attributes} style={{ listStylePosition: 'inside' }}>{children}</ol>
     case 'link':
-      return <LinkComponent {...props} />
+      return <LinkComponent attributes={attributes} children={children} element={element} />
     case 'flashcard-link':
-      return <FlashCardLinkComponent {...props} />
+      return <FlashCardLinkComponent attributes={attributes} children={children} element={element} />
     case 'image':
       return <p>
         The image choice is now deprecated.
         Please change <a target='_blank' rel='noreferrer' href={element.url}>{element.url.slice(0, 50)}</a> to use the new image uploading system.
       </p>
     case 'math-block':
-      if (readOnly)
-        return <TeX math={Node.string(props.element)} block />
+      if (readOnly) {
+        return (
+          <Suspense fallback={<p>Loading KaTeX...</p>}>
+            <TeX math={Node.string(element)} block />
+          </Suspense>
+        );
+      }
       return <p className='math-block' {...attributes}>{children}</p>
     default:
       return <p {...attributes} className='mb-0'>{children}</p>

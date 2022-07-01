@@ -1,4 +1,5 @@
 const path = require("path");
+const tsconfigPaths = require("vite-tsconfig-paths").default;
 
 module.exports = {
   "stories": [
@@ -26,7 +27,16 @@ module.exports = {
   "features": {
     "storyStoreV7": true
   },
-  "alias": [
-    { find: '@', replacement: path.resolve(__dirname, '/src') }
-  ],
+  viteFinal: async (config) => {
+    config.plugins.push(
+      /** @see https://github.com/aleclarson/vite-tsconfig-paths */
+      tsconfigPaths({
+        // My tsconfig.json isn't simply in viteConfig.root,
+        // so I've passed an explicit path to it:
+        projects: [path.resolve(path.dirname(__dirname), "tsconfig.json")],
+      })
+    );
+    
+    return config;
+  },
 }

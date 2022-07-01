@@ -9,18 +9,26 @@ import { useCallback } from 'react';
 import './style.scss';
 
 interface FullEditorProps {
+  /**
+   * SlateJS editor to display
+   */
   editor: ExtendedReactEditor;
+  /**
+   * Is the editor read only?
+   */
   readOnly?: boolean;
-  styleOptions?: {
-    minHeight?: string; /**E.g., 200px */
-    showBorder?: boolean;
-  };
+  /**
+   * Classname passed to the `<Editable>`
+   */
+  className?: string;
   id?: string;
 }
-export default function FullEditor(props: FullEditorProps) {
-  const { editor, readOnly, styleOptions, id } = props;
-  const { minHeight, showBorder } = styleOptions ? styleOptions : { showBorder: true, minHeight: undefined };
 
+/**
+ * Renders an editable editor.
+ * Does not include buttons, a toolbar, or other features
+ */
+export default function FullEditable({ editor, readOnly, className, id }: FullEditorProps) {
   const renderElement = useCallback(props => <Element {...props} readOnly={readOnly} />, [readOnly]);
   const renderLeaf = useCallback(props => <Leaf {...props} readOnly={readOnly} />, [readOnly]);
 
@@ -30,12 +38,8 @@ export default function FullEditor(props: FullEditorProps) {
       readOnly={readOnly}
       renderElement={renderElement}
       renderLeaf={renderLeaf}
-      className='rich-text-editor'
+      className={className}
       spellCheck
-      style={{
-        borderStyle: showBorder ? 'solid' : 'none',
-        minHeight: minHeight ? minHeight : '600px',
-      }}
       onKeyDown={event => {
         for (const hotkey in HOTKEYS) {
           if (isHotKey(hotkey, event as any)) {

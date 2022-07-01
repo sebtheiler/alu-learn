@@ -1,146 +1,78 @@
-import Button from '@components/Button';
-import ButtonGroup from '@components/ButtonGroup';
-import Dropdown from '@components/Dropdown';
-import DropdownButton from '@components/DropdownButton';
+import BlockButton from './BlockButton';
 import FlashCardLinkButton from '@slate-plugins/FlashcardLink/button';
 import LinkButton from '@slate-plugins/Link/button';
-import OverlayTrigger from '@components/OverlayTrigger';
-import Tooltip from '@components/Tooltip';
-import capitalize from '@helpers/capitalize';
+import MarkButton from './MarkButton';
 import { ReactEditor } from 'slate-react';
-import { isMarkActive, toggleMark, isBlockActive, toggleBlock } from '../FullEditor/helpers';
-
-type numbers = 'one' | 'two' | 'three' | 'four' | 'five' | 'six';
-
-type MarkFormat = 'bold' | 'italic' | 'underline' | 'code' | 'math_inline' | 'link' | 'flashcard_link';
-type BlockFormat = `heading-${numbers}` | 'numbered-list' | 'bulleted-list' | 'math-block' | 'list-item' | 'image';
+import { faBold, faItalic, faUnderline, faCode, faDivide, faHeading, faListOl, faListUl, faSquareRootAlt } from '@fortawesome/free-solid-svg-icons'
 
 interface EditorButtonProps {
+  /**
+   * SlateJS editor that the buttons will affect
+   */
   editor: ReactEditor;
-  saveHandler?(): void;
+  /**
+   * Classname to apply to the ButtonGroup
+   */
   className?: string;
-  untabbable?: boolean;
-  isFlashCard?: boolean;
+  /**
+   * Is the button selectable with tab?
+   */
+  tabbable?: boolean;
+  /**
+   * Should the flashcard link button be displayed?
+   */
+  displayFlashCardLinkButton?: boolean;
+  /**
+   * Should the heading button be displayed?
+   */
+  displayHeadingButton?: boolean;
+  /**
+   * Is the current use a pro-user? If not, some buttons are inaccessible
+   */
   isPro?: boolean;
 }
-export default function EditorButtons(props: EditorButtonProps) {
-  const { editor, saveHandler=undefined, className='', untabbable=false, isFlashCard=false, isPro=false } = props;
 
+/**
+ * Displays a row of buttons that apply rich text formatting to an editor
+ */
+export default function EditorButtons({
+  editor,
+  className='',
+  tabbable=false,
+  displayFlashCardLinkButton=true,
+  displayHeadingButton=false,
+  isPro=false,
+}: EditorButtonProps) {
   return (
-    <ButtonGroup style={{ flexWrap: 'wrap' }} className={className}>
-      <MarkButton format='bold' icon='bold' editor={editor} untabbable={untabbable} />
-      <MarkButton format='italic' icon='italic' editor={editor} untabbable={untabbable} />
-      <MarkButton format='underline' icon='underline' editor={editor} untabbable={untabbable} />
-      <MarkButton format='code' icon='code' editor={editor} untabbable={untabbable} />
-      <MarkButton format='math_inline' icon='divide' editor={editor} untabbable={untabbable} />
-      <LinkButton editor={editor} untabbable={untabbable} />
+    <div className={'divide-x ' + className}>
+      <div className='inline px-2'>
+        <MarkButton format='bold' faIcon={faBold} editor={editor} tabbable={tabbable} />
+        <MarkButton format='italic' faIcon={faItalic} editor={editor} tabbable={tabbable} />
+        <MarkButton format='underline' faIcon={faUnderline} editor={editor} tabbable={tabbable} />
+        <MarkButton format='code' faIcon={faCode} editor={editor} tabbable={tabbable} />
+        <MarkButton format='math_inline' faIcon={faDivide} editor={editor} tabbable={tabbable} />
+        <LinkButton editor={editor} tabbable={tabbable} />
+      </div>
 
-      {isFlashCard && <>
-        <span className='mx-2' />
+      {displayFlashCardLinkButton && <div className='inline px-2'>
         <FlashCardLinkButton
           editor={editor}
-          untabbable={untabbable}
+          tabbable={tabbable}
           enabled={isPro}
         />
-      </>}
+      </div>}
 
-      <span className='mx-2' />
-
-      {!isFlashCard && <BlockButton format='heading-one' icon='heading' editor={editor} untabbable={untabbable} />}
-      {!untabbable &&
-        <DropdownButton
-          id="dropdown-basic-button"
-          variant='editor'
-          title={
-            <i className={'fas fa-heading fa-xs'} tabIndex={untabbable ? -1 : undefined} />
-          }
-        >
-        <Dropdown.Item onClick={() => toggleBlock(editor, 'heading-two')}>H2</Dropdown.Item>
-        <Dropdown.Item onClick={() => toggleBlock(editor, 'heading-three')}>H3</Dropdown.Item>
-        <Dropdown.Item onClick={() => toggleBlock(editor, 'heading-four')}>H4</Dropdown.Item>
-        <Dropdown.Item onClick={() => toggleBlock(editor, 'heading-five')}>H5</Dropdown.Item>
-        <Dropdown.Item onClick={() => toggleBlock(editor, 'heading-six')}>H6</Dropdown.Item>
-      </DropdownButton>}
-      <BlockButton format='numbered-list' icon='list-ol' editor={editor} untabbable={untabbable} />
-      <BlockButton format='bulleted-list' icon='list-ul' editor={editor} untabbable={untabbable} />
-      <BlockButton format='math-block' icon='square-root-alt' editor={editor} untabbable={untabbable} />
-
-      <span className='mx-2' />
-
-      {saveHandler && <Button
-        variant='editor'
-        onClick={saveHandler}
-      >
-        <i className='far fa-save' />
-      </Button>}
-    </ButtonGroup>
-  );
-}
-
-interface MarkButtonProps {
-  format: MarkFormat;
-  icon: string;
-  editor: ReactEditor;
-  untabbable: boolean;
-}
-function MarkButton({ format, icon, editor, untabbable }: MarkButtonProps) {
-  return (
-    <OverlayTrigger
-      overlay={
-        <Tooltip id={`mark-tooltip-${format}`}>
-          {capitalize(format.replace('_', ' '), true)}
-        </Tooltip>
-      }
-    >
-      <Button
-        variant='editor'
-        onClick={event => {
-          event.preventDefault();
-          toggleMark(editor, format);
-        }}
-        style={{
-          background: isMarkActive(editor, format) ? '#e1e6ed' : 'rgba(0, 0, 0, 0)',
-          border: 'none',
-        }}
-        tabIndex={untabbable ? -1 : undefined}
-        className='text-dark'
-      >
-        <i className={`fas fa-${icon}`} />
-      </Button>
-    </OverlayTrigger>
-  );
-}
-
-interface BlockButtonProps {
-  format: BlockFormat;
-  icon: string;
-  editor: ReactEditor;
-  untabbable: boolean;
-}
-function BlockButton({ format, icon, editor, untabbable }: BlockButtonProps) {
-  return (
-    <OverlayTrigger
-      overlay={
-        <Tooltip id={`block-tooltip-${format}`}>
-          {capitalize(format.replace('-', ' '), true)}
-        </Tooltip>
-      }
-    >
-      <Button
-        variant='editor'
-        onClick={event => {
-          event.preventDefault();
-          toggleBlock(editor, format);
-        }}
-        style={{
-          background: isBlockActive(editor, format) ? '#e1e6ed' : 'rgba(0, 0, 0, 0)',
-          border: 'none',
-        }}
-        tabIndex={untabbable ? -1 : undefined}
-        className='text-dark'
-      >
-        <i className={`fas fa-${icon}`} />
-      </Button>
-    </OverlayTrigger>
+      <div className='inline px-2'>
+        {displayHeadingButton && <BlockButton
+          format='heading-one'
+          faIcon={faHeading}
+          editor={editor}
+          tabbable={tabbable}
+        />}
+        <BlockButton format='numbered-list' faIcon={faListOl} editor={editor} tabbable={tabbable} />
+        <BlockButton format='bulleted-list' faIcon={faListUl} editor={editor} tabbable={tabbable} />
+        <BlockButton format='math-block' faIcon={faSquareRootAlt} editor={editor} tabbable={tabbable} />
+      </div>
+    </div>
   );
 }

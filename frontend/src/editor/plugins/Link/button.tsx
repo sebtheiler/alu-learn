@@ -1,6 +1,8 @@
-import OverlayTrigger from '@components/OverlayTrigger';
-import Tooltip from '@components/Tooltip';
+import OverlayTrigger from 'components/OverlayTrigger';
+import Tooltip from 'components/Tooltip';
 import { ExtendedReactEditor } from '../../types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLink } from '@fortawesome/free-solid-svg-icons'
 import { insertLink } from './helpers';
 
 interface LinkButtonProps {
@@ -11,13 +13,13 @@ interface LinkButtonProps {
   /**
    * Is the button selectable with tab?
    */
-  untabbable: boolean;
+  tabbable: boolean;
 }
 
 /**
  * Display a button to insert a link into a SlateJS editor
  */
-export default function LinkButton({ editor, untabbable }: LinkButtonProps) {
+export default function LinkButton({ editor, tabbable=true }: LinkButtonProps) {
   return (
     <OverlayTrigger
       overlay={
@@ -37,10 +39,10 @@ export default function LinkButton({ editor, untabbable }: LinkButtonProps) {
           background: 'rgba(0, 0, 0, 0)',
           border: 'none',
         }}
-        tabIndex={untabbable ? -1 : undefined}
-        className='text-dark'
+        tabIndex={tabbable ? undefined : -1}
+        className='px-2 py-1'
       >
-        <i className='fas fa-link' />
+        <FontAwesomeIcon icon={faLink} />
       </button>
     </OverlayTrigger>
   );

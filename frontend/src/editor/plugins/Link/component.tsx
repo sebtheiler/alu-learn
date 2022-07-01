@@ -1,5 +1,5 @@
-import OverlayTrigger from '@components/OverlayTrigger';
-import Tooltip from '@components/Tooltip';
+import OverlayTrigger from 'components/OverlayTrigger';
+import Tooltip from 'components/Tooltip';
 import { ExtendedSlateElement } from '../../types';
 
 interface LinkComponentProps {
@@ -23,7 +23,7 @@ interface LinkComponentProps {
 export default function LinkComponent({
   attributes,
   children,
-  element
+  element,
 }: LinkComponentProps) {
   return (
     <OverlayTrigger
@@ -40,7 +40,7 @@ export default function LinkComponent({
       placement='top'
       delay={{ show: 20, hide: 550 }}
     >
-      <a {...attributes} href={element.url} target='_blank' rel='noreferrer'>
+      <a {...attributes} className='underline text-blue-600 hover:text-blue-800' href={element.url} target='_blank' rel='noreferrer'>
         {children}
       </a>
     </OverlayTrigger>

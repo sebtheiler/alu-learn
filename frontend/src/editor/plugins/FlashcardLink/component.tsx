@@ -1,10 +1,33 @@
-import IconTooltip from '@components/IconTooltip';
-import OverlayTrigger from '@components/OverlayTrigger';
-import Popover from '@components/Popover';
+import IconTooltip from 'components/IconTooltip';
+import OverlayTrigger from 'components/OverlayTrigger';
+import Popover from 'components/Popover';
 import RenderRichText from '../../RenderRichText';
+import { ExtendedSlateElement } from 'editor/types';
 import { useState } from 'react';
 
-export const FlashCardLinkComponent = ({ attributes, children, element }) => {
+interface FlashCardLinkComponentProps {
+  /**
+   * Attributes passed to the `<span>` element
+   */
+  attributes: any;
+  /**
+   * Children of the `<span>` element
+   */
+  children: JSX.Element[] | JSX.Element;
+  /**
+   * SlateJS Element to render
+   */
+  element: ExtendedSlateElement;
+}
+
+/**
+ * Render a link component in the SlateJS editor
+ */
+export default function FlashCardLinkComponent({
+  attributes,
+  children,
+  element,
+}: FlashCardLinkComponentProps) {
   const [popoverIsOpen, setPopoverIsOpen] = useState(false);
   // const [flashcard] = useAsyncState<FlashCard>(
   //   () => backendFetch('GET', `decks/flashcard/find-universal/${element.flashcardUID}/`),

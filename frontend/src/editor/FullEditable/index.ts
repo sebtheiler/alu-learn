@@ -1,5 +1,5 @@
-import FullEditor from './component';
+import FullEditable from './component';
 import { createFullEditor } from './helpers';
 
-export default FullEditor;
+export default FullEditable;
 export { createFullEditor };
