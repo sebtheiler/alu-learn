@@ -1,4 +1,4 @@
-import { ExtendedReactEditor, ExtendedSlateElement } from '../../types';
+import { ExtendedReactEditor } from '../../types';
 
 const withFlashCardLinks = (editor: ExtendedReactEditor) => {
   const { isInline } = editor;

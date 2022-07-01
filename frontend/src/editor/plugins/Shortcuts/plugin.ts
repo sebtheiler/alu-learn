@@ -38,10 +38,7 @@ const withShortcuts = (editor: ExtendedReactEditor) => {
       const start = Editor.start(editor, path);
       const range = { anchor, focus: start };
       const beforeText = Editor.string(editor, range);
-      if (SHORTCUTS.hasOwnProperty(beforeText)) {
-
-      }
-    const { type, extra } = SHORTCUTS[beforeText as Shortcut] ?? {};
+      const { type, extra } = SHORTCUTS[beforeText as Shortcut] ?? {};
 
       if (type) {
         Transforms.select(editor, range);

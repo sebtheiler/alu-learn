@@ -14,7 +14,7 @@ export const TrashIcon = Template.bind({});
 TrashIcon.args = {
   tooltip: 'Delete',
   onClick: async (e) => {
-    console.log('Deleting...');
+    console.log('Deleting...', e);
     await new Promise(r => setTimeout(r, 2000));
   },
   faIcon: faTrash,

@@ -10,7 +10,8 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
   ],
-  alias: [
-    { find: '@', replacement: path.resolve(__dirname, '/src') }
-  ],
+  rules: {
+    "@typescript-eslint/ban-ts-ignore": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+  }
 };

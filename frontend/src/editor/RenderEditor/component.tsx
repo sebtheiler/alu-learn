@@ -1,6 +1,6 @@
 import EditorButtons from '../EditorButtons';
 import FullEditable from '../FullEditable';
-import { Node as SlateNode } from 'slate';
+import { Descendant } from 'slate';
 import { ReactEditor, Slate } from 'slate-react';
 
 interface RenderEditorProps {
@@ -11,11 +11,11 @@ interface RenderEditorProps {
   /**
    * Content of the editor
    */
-  value: SlateNode[];
+  value: Descendant[];
   /**
    * Function to update the content of the editor
    */
-  setValue: (value: SlateNode[]) => void;
+  setValue: (value: Descendant[]) => void;
   /**
    * Should the flashcard link button be displayed?
    */
