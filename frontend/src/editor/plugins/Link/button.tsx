@@ -37,7 +37,7 @@ export default function LinkButton({ editor, untabbable }: LinkButtonProps) {
           background: 'rgba(0, 0, 0, 0)',
           border: 'none',
         }}
-        tabIndex={untabbable && '-1'}
+        tabIndex={untabbable ? -1 : undefined}
         className='text-dark'
       >
         <i className='fas fa-link' />

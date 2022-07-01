@@ -27,6 +27,7 @@ export const FlashCardLinkComponent = ({ attributes, children, element }) => {
               Flashcard Preview
               {flashcard?.id && <IconTooltip
                 tooltip='Edit this flashcard'
+                // @ts-ignore
                 onClick={editFlashcard}
                 faClass='fas fa-external-link-alt'
                 className='float-right'

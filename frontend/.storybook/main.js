@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {
   "stories": [
     "../src/**/*.stories.mdx",
@@ -6,7 +8,15 @@ module.exports = {
   "addons": [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
-    "@storybook/addon-interactions"
+    "@storybook/addon-interactions",
+    {
+      name: 'storybook-addon-sass-postcss',
+      options: {
+        postcssLoaderOptions: {
+          implementation: require('postcss'),
+        },
+      },
+    },
   ],
   "framework": "@storybook/react",
   "core": {
@@ -15,5 +25,8 @@ module.exports = {
   },
   "features": {
     "storyStoreV7": true
-  }
+  },
+  "alias": [
+    { find: '@', replacement: path.resolve(__dirname, '/src') }
+  ],
 }

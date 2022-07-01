@@ -1,0 +1,25 @@
+import { Meta, Story } from '@storybook/addon-docs';
+
+import TeX from '.';
+
+<Meta title="Components/TeX" component={TeX} />
+
+export const Template = (args) => <TeX {...args} />;
+
+<Story
+  name="Quadratic Equation"
+  args={{
+    math: String.raw`\frac{-b \pm \sqrt{b^2 - 4ab}}{2a}`,
+    block: true,
+  }}>
+  {Template.bind({})}
+</Story>
+
+<Story
+  name="Invalid Equation"
+  args={{
+    math: String.raw`\frac{ a^2`,
+    errorColor: '#D73737',
+  }}>
+  {Template.bind({})}
+</Story>

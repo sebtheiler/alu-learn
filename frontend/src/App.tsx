@@ -4,7 +4,9 @@ import { ReactEditor } from 'slate-react';
 import { createFullEditor } from 'editor/FullEditor';
 import { useMemo, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './style.scss'
+import 'main.scss';
+import 'index.scss';
+import TeX from '@components/TeX';
 
 function App() {
   const editor = useMemo<ReactEditor>(createFullEditor, []);
@@ -12,6 +14,7 @@ function App() {
 
   return (
     <div className="App">
+      <TeX math='a^2 + b^2' />
       <RenderEditor
         editor={editor}
         value={value}

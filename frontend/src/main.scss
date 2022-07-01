@@ -1,4 +1,6 @@
-@import './colors';
+@import "./colors";
+@import "../node_modules/bootstrap/scss/bootstrap";
+@import "./index.scss";
 
 // === VARIABLES ===
 $grayBorder: 4px solid $lightGray;
@@ -8,6 +10,11 @@ $cardBorderRadius: 20px;
 
 html * {
   font-family: "Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+}
+
+// Don't let the global font affect the KaTeX
+.katex * {
+  font-family: KaTeX_Main, "Times New Roman", serif;
 }
 
 // === GLOBAL CLASSES ===
@@ -41,7 +48,7 @@ html * {
 
 .hr-separator::before,
 .hr-separator::after {
-  content: '';
+  content: "";
   flex: 1;
   border-bottom: 1px solid #000;
 }

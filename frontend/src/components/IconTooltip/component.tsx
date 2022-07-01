@@ -1,20 +1,42 @@
-import OverlayTrigger from '@components/OverlayTrigger';
-import Spinner from '@components/Spinner';
-import Tooltip from '@components/Tooltip';
-import { useState } from 'react';
+import OverlayTrigger from '../OverlayTrigger';
+import Spinner from '../Spinner';
+import Tooltip from '../Tooltip';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { MouseEventHandler, useState } from 'react';
 
 interface IconTooltipProps {
+  /**
+   * Tooltip to display when hovering the icon
+   */
   tooltip: string;
-  onClick(e: MouseEvent): Promise<void>;
-  faClass: string;
+  /**
+   * Called when the icon is clicked
+   */
+  onClick(e: React.MouseEvent<HTMLElement, MouseEvent>): Promise<void>;
+  /**
+   * Font Awesome icon to display
+   */
+  faIcon: IconProp;
   className?: string;
   style?: React.CSSProperties;
   id: string;
 }
-export default function IconTooltip({ tooltip, onClick, faClass, className, style, id }: IconTooltipProps) {
+
+/**
+ * Displays a Font Awesome icon with a tooltip
+ */
+export default function IconTooltip({
+  tooltip,
+  onClick,
+  faIcon,
+  className,
+  style,
+  id,
+}: IconTooltipProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleClick = async (e: MouseEvent) => {
+  const handleClick: MouseEventHandler<HTMLElement> = async (e) => {
     setIsLoading(true);
     await onClick(e);
     setIsLoading(false);
@@ -38,13 +60,13 @@ export default function IconTooltip({ tooltip, onClick, faClass, className, styl
           />
         )
         : (
-          <i
-            className={faClass + ` ${className}`}
-            role='button'
-            // @ts-ignore
-            onClick={handleClick}
-            style={style}
-          />
+          <span onClick={handleClick} className='cursor-pointer'>
+            <FontAwesomeIcon
+              icon={faIcon}
+              style={style}
+              className={className}
+            />
+          </span>
         )
       }
     </OverlayTrigger>
