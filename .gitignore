@@ -19,6 +19,8 @@ mysite.log
 gsuite-creds.json
 oauth-client-secret.json
 
+argparse
+
 # --- React ---
 
 # dependencies
@@ -31,6 +33,7 @@ node_modules
 
 # production
 /build
+frontend/dist
 
 # misc
 .DS_Store
