@@ -1,3 +1,5 @@
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 import IconTooltip from 'components/IconTooltip';
 import RenderRichText from '../../RenderRichText';
 import { ExtendedSlateElement } from 'editor/types';
@@ -44,7 +46,7 @@ export default function FlashCardLinkComponent({
       overlay={
         <Popover id='flashcard-preview-popover' style={{ minWidth: '200px' }}>
           <div>
-            <Popover.Title as='h3' className='text-center'>
+            <Popover.Header as='h3' className='text-center'>
               Flashcard Preview
               {flashcard?.id && <IconTooltip
                 tooltip='Edit this flashcard'
@@ -54,14 +56,14 @@ export default function FlashCardLinkComponent({
                 className='float-right'
                 id={`edit-flashcard-${flashcard.id}`}
               />}
-            </Popover.Title>
-            {flashcard?.data ? <Popover.Content>
+            </Popover.Header>
+            {flashcard?.data ? <Popover.Body>
               {flashcard && flashcard.data.fields.map((field, i) => <>
                 <RenderRichText text={field} />
                 {i !== flashcard.data.fields.length - 1 && <hr />}
               </>)}
               {!flashcard && <p>Loading…</p>}
-            </Popover.Content> : <Popover.Content>Flashcard not found</Popover.Content>}
+            </Popover.Body> : <Popover.Body>Flashcard not found</Popover.Body>}
           </div>
         </Popover>
       }
