@@ -1,3 +1,7 @@
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import Popover from 'react-bootstrap/Popover';
+import Form from 'react-bootstrap/Form';
 import flattenNodes from '@helpers/flattenNodes';
 import { FlashCard } from '@types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -57,12 +61,12 @@ export default function FlashCardLinkButton({ editor, tabbable, isPro }: FlashCa
         <OverlayTrigger
           overlay={
             <Popover id='study-section-popover'>
-              <Popover.Title as='h3' className='text-center'>
+              <Popover.Header as='h3' className='text-center'>
                 Insert Flashcard Link<br />
                 {!isPro && <small><strong><a href='/pro/'>(pro-only)</a></strong><br /></small>}
                 <small>This will allow you to see a preview on hover when studying</small>
-              </Popover.Title>
-              <Popover.Content>
+              </Popover.Header>
+              <Popover.Body>
                 <div>
                   <Form.Label>Search for Flashcard</Form.Label>
                   <Form.Control
@@ -84,7 +88,7 @@ export default function FlashCardLinkButton({ editor, tabbable, isPro }: FlashCa
                     </p>
                   )}
                 </div>
-              </Popover.Content>
+              </Popover.Body>
             </Popover>
           }
           placement='bottom'

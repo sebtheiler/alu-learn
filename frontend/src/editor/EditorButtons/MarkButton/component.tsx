@@ -1,3 +1,5 @@
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import capitalize from '@helpers/capitalize';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { ReactEditor } from 'slate-react';

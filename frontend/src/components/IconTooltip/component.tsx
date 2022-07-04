@@ -1,8 +1,11 @@
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Spinner from 'react-bootstrap/Spinner';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { createRef, MouseEventHandler, useState } from 'react';
-import { usePopper } from 'react-popper';
-import Tooltip from '@components/Tooltip';
+import 'bootstrap/dist/css/bootstrap.min.css';
+// import { usePopper } from 'react-popper';
 
 
 interface IconTooltipProps {
@@ -43,15 +46,42 @@ export default function IconTooltip({
   }
 
   return (
-    <Tooltip>
-      <span onClick={handleClick} className={'cursor-pointer ' + className}>
-        <FontAwesomeIcon
-          icon={faIcon}
-          style={style}
-          className={className}
-          data-tooltip-target='tooltip-animation'
-        />
-      </span>
-    </Tooltip>
+    <OverlayTrigger
+      overlay={
+        <Tooltip id={id}>
+          {tooltip}
+        </Tooltip>
+      }
+    >
+      {isLoading
+        ? (
+          <Spinner
+            animation='border'
+            size='sm'
+            className={className}
+            variant='primary'
+          />
+        )
+        : (
+          <span onClick={handleClick} className='cursor-pointer'>
+            <FontAwesomeIcon
+              icon={faIcon}
+              style={style}
+              className={className}
+            />
+          </span>
+        )
+      }
+    </OverlayTrigger>
+    // <Tooltip>
+    //   <span onClick={handleClick} className={'cursor-pointer ' + className}>
+    //     <FontAwesomeIcon
+    //       icon={faIcon}
+    //       style={style}
+    //       className={className}
+    //       data-tooltip-target='tooltip-animation'
+    //     />
+    //   </span>
+    // </Tooltip>
   );
 }

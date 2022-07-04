@@ -8,7 +8,8 @@
     "preview": "vite preview",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "architecture": "depcruise --include-only \"^src\" --output-type dot src --exclude \"stories.tsx$\" | dot -T svg > dependencygraph.svg"
+    "architecture": "depcruise --include-only \"^src\" --output-type dot src --exclude \"stories.tsx$\" | dot -T svg > dependencygraph.svg",
+    "chromatic": "npx chromatic --project-token=fa2baf6e07e8"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
@@ -27,6 +28,7 @@
     "jdenticon": "^3.1.1",
     "katex": "^0.16.0",
     "react": "^17.0.0",
+    "react-bootstrap": "^2.4.0",
     "react-calendar-heatmap": "^1.9.0",
     "react-confetti": "^6.1.0",
     "react-dom": "^17.0.0",
@@ -62,6 +64,7 @@
     "@vitejs/plugin-react": "^1.3.0",
     "autoprefixer": "^10.4.7",
     "babel-loader": "^8.2.5",
+    "chromatic": "^6.7.0",
     "css-loader": "^6.7.1",
     "dependency-cruiser": "^11.11.0",
     "eslint": "^8.18.0",
@@ -75,5 +78,7 @@
     "typescript": "^4.7.4",
     "vite": "^2.9.9",
     "vite-tsconfig-paths": "^3.5.0"
-  }
+  },
+  "readme": "ERROR: No README data found!",
+  "_id": "frontend@0.0.0"
 }

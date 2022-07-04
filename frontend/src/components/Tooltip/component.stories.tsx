@@ -13,6 +13,6 @@ const Template: ComponentStory<typeof Tooltip> = (args) => <>
   to see a tooltip
 </>;
 
-export const TooltipExample = Template.bind({});
-TooltipExample.args = {
-};
+// export const TooltipExample = Template.bind({});
+// TooltipExample.args = {
+// };
