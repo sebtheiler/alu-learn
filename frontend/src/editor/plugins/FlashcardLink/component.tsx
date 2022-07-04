@@ -1,6 +1,4 @@
 import IconTooltip from 'components/IconTooltip';
-import OverlayTrigger from 'components/OverlayTrigger';
-import Popover from 'components/Popover';
 import RenderRichText from '../../RenderRichText';
 import { ExtendedSlateElement } from 'editor/types';
 import { useState } from 'react';

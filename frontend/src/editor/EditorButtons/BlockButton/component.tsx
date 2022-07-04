@@ -1,5 +1,3 @@
-import OverlayTrigger from '@components/OverlayTrigger';
-import Tooltip from '@components/Tooltip';
 import capitalize from 'helpers/capitalize';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';

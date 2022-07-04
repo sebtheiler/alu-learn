@@ -1,2 +1,2 @@
-import DropDown from 'react-bootstrap/Dropdown';
-export default DropDown;
+import Dropdown from './component';
+export default Dropdown;

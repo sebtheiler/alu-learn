@@ -1,5 +1,3 @@
-import OverlayTrigger from 'components/OverlayTrigger';
-import Tooltip from 'components/Tooltip';
 import capitalize from '@helpers/capitalize';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { ReactEditor } from 'slate-react';

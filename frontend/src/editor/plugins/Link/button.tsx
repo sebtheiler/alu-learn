@@ -1,5 +1,3 @@
-import OverlayTrigger from 'components/OverlayTrigger';
-import Tooltip from 'components/Tooltip';
 import { ExtendedReactEditor } from '../../types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLink } from '@fortawesome/free-solid-svg-icons'

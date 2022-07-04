@@ -1,7 +1,3 @@
-import Form from 'components/Form';
-import OverlayTrigger from 'components/OverlayTrigger';
-import Popover from 'components/Popover';
-import Tooltip from 'components/Tooltip';
 import flattenNodes from '@helpers/flattenNodes';
 import { FlashCard } from '@types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

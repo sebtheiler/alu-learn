@@ -1,0 +1,17 @@
+// Taken from https://codesandbox.io/s/react-material-design-ripple-effect-kn1tr?file=/src/Ripple.jsx
+.ripple {
+  transform: scale(0);
+  border-radius: 100%;
+  position: absolute;
+  opacity: 0.75;
+  transform: scale(0);
+  animation-name: ripple;
+  animation-duration: 800ms;
+}
+  
+@keyframes ripple {
+  to {
+    opacity: 0;
+    transform: scale(2);
+  }
+}

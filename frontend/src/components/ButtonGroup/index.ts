@@ -1,2 +1,2 @@
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import ButtonGroup from './component';
 export default ButtonGroup;

@@ -1,5 +1,3 @@
-import OverlayTrigger from 'components/OverlayTrigger';
-import Tooltip from 'components/Tooltip';
 import { ExtendedSlateElement } from '../../types';
 
 interface LinkComponentProps {

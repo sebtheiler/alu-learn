@@ -11,7 +11,7 @@ interface EditorButtonProps {
    */
   editor: ReactEditor;
   /**
-   * Classname to apply to the ButtonGroup
+   * Classname to apply to the div
    */
   className?: string;
   /**
@@ -58,7 +58,7 @@ export default function EditorButtons({
         <FlashCardLinkButton
           editor={editor}
           tabbable={tabbable}
-          enabled={isPro}
+          isPro={isPro}
         />
       </div>}
 

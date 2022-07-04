@@ -1,7 +1,24 @@
 module.exports = {
+  mode: 'jit',
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
+  purge: [
+    './public/**/*.html',
+    './src/**/*.{js,jsx,ts,tsx,vue}',
+  ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'alu-primary-purple': '#6a21bc',
+        'alu-primary-purple-darkened': '#5e1da6',
+        'alu-light-purple': '#8166ee',
+        'alu-dark-purple': '#290254',
+        'alu-streak-unlit': '#e5e5e5',
+        'alu-streak-lit': '#fd9626',
+      },
+      rotate: {
+        '360': '360deg',
+      },
+    },
   },
   variants: {
     extend: {},
