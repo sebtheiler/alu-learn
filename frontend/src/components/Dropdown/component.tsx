@@ -59,7 +59,7 @@ export default function Dropdown({
 }: DropdownProps) {
   return (
     <Menu as='div' className={classNames(className, 'inline-block text-left')} style={style}>
-      <Menu.Button>
+      <Menu.Button className='focus:outline-none'>
         {children}
       </Menu.Button>
 

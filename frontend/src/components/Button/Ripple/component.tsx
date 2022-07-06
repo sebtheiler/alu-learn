@@ -1,4 +1,4 @@
-// Taken from https://codesandbox.io/s/react-material-design-ripple-effect-kn1tr?file=/src/Ripple.jsx
+// Adapted from https://codesandbox.io/s/react-material-design-ripple-effect-kn1tr?file=/src/Ripple.jsx
 import { useLayoutEffect, useState } from 'react';
 import './style.scss';
 
@@ -37,12 +37,15 @@ export default function Ripple({ color='white' }: RippleProps) {
 
   const addRipple = (event: React.MouseEvent<HTMLElement>) => {
     const rippleContainer = event.currentTarget.getBoundingClientRect();
+    const scrollTop = document.documentElement.scrollTop;
+
     const size =
       rippleContainer.width > rippleContainer.height
         ? rippleContainer.width
         : rippleContainer.height;
     const x = event.pageX - rippleContainer.x - size / 2;
-    const y = event.pageY - rippleContainer.y - size / 2;
+    const y = event.pageY - rippleContainer.y - size / 2 - scrollTop;
+
     const newRipple = {
       x,
       y,

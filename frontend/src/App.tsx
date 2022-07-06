@@ -1,4 +1,5 @@
 import GlobalContext from './global';
+import LandingPage from 'pages/LandingPage';
 import Navbar from '@components/Navbar';
 import { useMemo, useState } from 'react';
 import 'index.scss';
@@ -18,6 +19,7 @@ function App() {
     <div className="App">
       <GlobalContext.Provider value={contextVal}>
         <Navbar isLoggedIn={false} />
+        <LandingPage />
       </GlobalContext.Provider>
     </div>
   );

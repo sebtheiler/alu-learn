@@ -43,7 +43,9 @@ export default function Navbar({
   const [expandedMenu, setExpandedMenu] = useState(false);
 
   return (
-    <nav className='fixed top-0 left-0 w-screen flex items-center bg-alu-dark-purple p-3 flex-wrap shadow-lg'>
+    <nav className='fixed top-0 left-0 w-screen flex items-center
+                  bg-alu-dark-purple p-3 flex-wrap shadow-lg z-50'
+    >
       <Link to='/' className='p-2 mr-2 inline-flex items-center'>
         <img
           src={logoUrl}

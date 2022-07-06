@@ -54,9 +54,22 @@ export interface ButtonProps {
 }
 
 const colors = {
-  primary: { className: 'bg-alu-primary-purple hover:bg-alu-primary-purple-darkened text-white', rippleColor: 'white' },
-  'primary-outline': { className: 'bg-white hover:bg-alu-primary-purple text-alu-primary-purple hover:text-white border-2 border-alu-primary-purple', rippleColor: 'lightgray' },
-  white: { className: 'bg-white hover:bg-gray-100 text-alu-primary-purple', rippleColor: 'lightgray' },
+  primary: {
+    className: `bg-alu-primary-purple hover:bg-alu-primary-purple-darkened border-2 border-alu-primary-purple
+                text-white focus:outline-none focus:ring focus:ring-violet-400`,
+    rippleColor: 'white'
+  },
+  'primary-outline': {
+    className: `bg-white hover:bg-alu-primary-purple text-alu-primary-purple
+                hover:text-white border-2 border-alu-primary-purple
+                focus:outline-none focus:ring focus:ring-violet-400`,
+    rippleColor: 'lightgray',
+  },
+  white: {
+    className: `bg-white hover:bg-gray-100 text-black border-2 border-gray-200
+                focus:outline-none focus:ring focus:ring-gray-400/20`,
+    rippleColor: 'lightgray',
+  },
   gradient: { className: 'bg-gradient-to-br from-purple-600 to-blue-500 hover:from-purple-700 hover:to-blue-600 text-white', rippleColor: 'white' },
 }
 

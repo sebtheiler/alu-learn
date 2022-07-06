@@ -43,7 +43,7 @@ export default function Checkbox({
           id={id}
           name={name}
           type='checkbox'
-          className='focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded'
+          className='ring-indigo-500 h-4 w-4 accent-alu-primary-purple rounded-full focus:outline-none focus:ring focus:ring-violet-400/20'
           required={required}
         />
       </div>

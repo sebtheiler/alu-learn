@@ -28,7 +28,7 @@ export default function SignUpModal() {
 
   return (
     <Modal open={signUpModalOpen} close={() => setSignUpModalOpen(false)} title='Sign-up'>
-      <Button onClick={() => login()} variant='white' className='border-2 border-gray-200 text-black' block>
+      <Button onClick={() => login()} variant='white' block>
         <img src={googleLogoUrl} alt='Google Logo' width={30} className='inline absolute left-5 top-2' />
         Continue with Google
       </Button>

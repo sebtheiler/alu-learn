@@ -17,7 +17,7 @@ export default function LoggedOut() {
   });
 
   return (
-    <div className='ml-auto'>
+    <div className='ml-auto mr-5'>
       <ButtonGroup spaced>
         <Button onClick={() => setLogInModalOpen(true)} variant='white'>Log-in</Button>
         <Button onClick={() => setSignUpModalOpen(true)}>Sign-up</Button>
