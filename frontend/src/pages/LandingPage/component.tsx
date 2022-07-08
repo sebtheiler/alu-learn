@@ -6,7 +6,7 @@ import spacedRepetitionUrl from 'assets/spaced-repetition.png';
 import useWindowDimensions from 'helpers/useWindowDimensions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBrain, faDna, faLandmarkDome, faMonument, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import './style.scss';
 
 /**
@@ -26,13 +26,13 @@ export default function LandingPage() {
   const { height } = useWindowDimensions();
   const { setSignUpModalOpen, setLogInModalOpen } = useContext(GlobalContext);
 
-  const exampleDecks = [
+  const exampleDecks = useMemo(() => [
     { title: 'AP World History', link: '/l/world', icon: faMonument },
     { title: 'AP Psychology', link: '/l/psych', icon: faBrain },
     { title: 'AP US Government', link: '/l/usgov', icon: faLandmarkDome },
     { title: 'AP Biology', link: '/l/bio', icon: faDna },
-    { title: 'Create Your Own!', onClick: () => {setSignUpModalOpen(true); console.log('wqidjhqed')}, icon: faPlus },
-  ];
+    { title: 'Create Your Own!', onClick: () => setSignUpModalOpen(true), icon: faPlus },
+  ], [setSignUpModalOpen]);
 
   return (<div>
     <div style={{ height: `${height - 100}px` }} className='bg-alu-dark-purple w-100'>
@@ -92,9 +92,9 @@ export default function LandingPage() {
     <div className='px-2 container mx-auto mt-10'>
       <div className='text-center mb-5'>
         <h1 className='text-2xl font-semibold mb-5'>What People Are Saying</h1>
-        <div className='grid grid-cols-8'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4'>
           {testimonials.map((testimonial, i) =>
-            <div key={i} className='border-4 border-alu-primary-purple rounded-xl p-4 mx-4 mb-4 items-center flex col-span-2'>
+            <div key={i} className='border-4 border-alu-primary-purple rounded-xl p-4 mx-4 mb-4 items-center flex'>
               <p className='italic'>"{testimonial}"</p>
             </div>
           )}

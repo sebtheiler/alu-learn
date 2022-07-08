@@ -52,7 +52,7 @@ export default function Navbar({
           alt='Alu Learn Logo'
           className='h-8 w-8 mr-2 hover:scale-x-[-1] transition duration-700'
         />
-        <span className='text-xl font-bold text-white no-underline'>Alu Learn</span>
+        <span className='text-2xl font-bold text-white no-underline'>Alu Learn</span>
         {isPro && <img
           src={proBannerUrl}
           alt='Pro Banner'

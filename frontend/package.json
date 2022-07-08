@@ -9,7 +9,8 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "architecture": "depcruise --include-only \"^src\" --output-type dot src --exclude \"stories.tsx$\" | dot -T svg > dependencygraph.svg",
-    "chromatic": "npx chromatic --project-token=fa2baf6e07e8"
+    "chromatic": "npx chromatic --project-token=fa2baf6e07e8",
+    "chromatic-frb": "npx chromatic --project-token=fa2baf6e07e8 --force-rebuild"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",

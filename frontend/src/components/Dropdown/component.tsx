@@ -1,11 +1,8 @@
-import { Menu, Transition } from '@headlessui/react';
-import { Link } from 'react-router-dom';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import classNames from '@helpers/classNames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
+import { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { Link } from 'react-router-dom';
+import { Menu, Transition } from '@headlessui/react';
 
 /**
  * Option to be supplied in the dropdown menu

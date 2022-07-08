@@ -1,6 +1,8 @@
+import Ripple from './Ripple';
+import classNames from '@helpers/classNames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import Ripple from './Ripple';
+import { useMemo } from 'react';
 
 export interface ButtonProps {
   /**
@@ -53,7 +55,10 @@ export interface ButtonProps {
   _unroundLeft?: boolean;
 }
 
-const colors = {
+/**
+ * Maps button variants to classnames and ripple colors
+ */
+export const buttonVariantsLookup = {
   primary: {
     className: `bg-alu-primary-purple hover:bg-alu-primary-purple-darkened border-2 border-alu-primary-purple
                 text-white focus:outline-none focus:ring focus:ring-violet-400`,
@@ -74,6 +79,29 @@ const colors = {
 }
 
 /**
+ * Generates the classname for a button, given some props
+ * @returns The generated class name
+ */
+export const generateButtonClassName = ({
+  className='',
+  variant='primary',
+  pill=true,
+  block=false,
+  _unroundRight=false,
+  _unroundLeft=false,
+}: Partial<ButtonProps>) => {
+  return (classNames(
+    className,
+    'px-6 py-2.5 hover:shadow-md transition relative overflow-hidden',   
+    buttonVariantsLookup[variant].className,
+    pill ? ' rounded-full' : ' rounded',
+    block ? ' w-full' : '',
+    _unroundRight ? ' rounded-r-none' : '',
+    _unroundLeft ? ' rounded-l-none' : '',
+  ));
+}
+
+/**
  * Renders a button
  */
 export default function Button({
@@ -90,19 +118,18 @@ export default function Button({
   _unroundRight=false,
   _unroundLeft=false,
 }: ButtonProps) {
+  const generatedClassName = useMemo(
+    () => generateButtonClassName({ className, variant, pill, block, _unroundRight, _unroundLeft }),
+    [className, variant, pill, block, _unroundRight, _unroundLeft],
+  );
+
   return (
     <button
-      className={className + ' px-6 py-2.5 hover:shadow-md transition relative overflow-hidden '
-                  + colors[variant].className
-                  + (pill ? ' rounded-full' : ' rounded')
-                  + (block ? ' w-full' : '')
-                  + (_unroundRight ? ' rounded-r-none' : '')
-                  + (_unroundLeft ? ' rounded-l-none' : '')
-                }
+      className={generatedClassName}
       onClick={onClick}
       type={type}
     >
-      {ripples && <Ripple color={colors[variant].rippleColor} />}
+      {ripples && <Ripple color={buttonVariantsLookup[variant].rippleColor} />}
       {faIcon && <FontAwesomeIcon icon={faIcon} className='mr-1' spin={_spin} />}
       {children}
     </button>

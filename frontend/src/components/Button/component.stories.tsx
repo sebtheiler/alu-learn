@@ -1,5 +1,5 @@
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { ComponentStory } from '@storybook/react';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import Button from '.';
 
