@@ -1,5 +1,4 @@
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import Tooltip from '@components/Tooltip';
 import capitalize from 'helpers/capitalize';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -33,13 +32,7 @@ interface BlockButtonProps {
  */
 export default function BlockButton({ format, faIcon, editor, tabbable=true }: BlockButtonProps) {
   return (
-    <OverlayTrigger
-      overlay={
-        <Tooltip id={`block-tooltip-${format}`}>
-          {capitalize(format.replace('-', ' '), true)}
-        </Tooltip>
-      }
-    >
+    <Tooltip tooltip={capitalize(format.replace('-', ' '), true)} className='w-24'>
       <button
         onClick={event => {
           event.preventDefault();
@@ -53,6 +46,6 @@ export default function BlockButton({ format, faIcon, editor, tabbable=true }: B
       >
         <FontAwesomeIcon icon={faIcon} />
       </button>
-    </OverlayTrigger>
+    </Tooltip>
   );
 }

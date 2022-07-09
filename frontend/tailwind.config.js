@@ -14,6 +14,8 @@ module.exports = {
         'alu-dark-purple': '#290254',
         'alu-streak-unlit': '#e5e5e5',
         'alu-streak-lit': '#fd9626',
+        'alu-mid-gray': '#E2E2E2',
+        'alu-light-gray': '#FAFAFA',
       },
       rotate: {
         '360': '360deg',

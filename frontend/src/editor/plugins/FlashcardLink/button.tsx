@@ -1,7 +1,3 @@
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import Popover from 'react-bootstrap/Popover';
-import Form from 'react-bootstrap/Form';
 import flattenNodes from '@helpers/flattenNodes';
 import { FlashCard } from '@types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,6 +6,10 @@ import { faAnchor } from '@fortawesome/free-solid-svg-icons';
 import { insertFlashCardLink } from './helpers';
 import { useDebounce } from 'hooks/useDebounce';
 import { useState } from 'react';
+import Tooltip from '@components/Tooltip';
+import Popover from '@components/Popover';
+import TextInput from '@components/Form/TextInput';
+import { Link } from 'react-router-dom';
 
 interface FlashCardLinkButtonProps {
   /**
@@ -50,63 +50,58 @@ export default function FlashCardLinkButton({ editor, tabbable, isPro }: FlashCa
   // }, [debouncedSearchTerm, searchTerm]);
 
   return (
-    <OverlayTrigger
-      overlay={
-        <Tooltip id='flashcard-link-tooltip'>
-          Insert Flashcard Link
-        </Tooltip>
-      }
+    <Popover
+      popover={<div>
+        <div className='text-center'>
+          <h3 className='text-md font-bold'>Insert Flashcard Link</h3>
+          {!isPro && <small className='text-blue-500 hover:underline'>
+            <Link to='/pro'>(pro-only)</Link><br />
+          </small>}
+          <p className='text-sm mt-2 text-gray-700'>This will allow you to see a preview of a flashcard when studying by hovering the flashcard link</p>
+          <hr className='my-3' />
+        </div>
+        <div>
+          <div className='text-center'>
+            <p className='mb-1'>Search for Flashcard</p>
+            <TextInput
+              onChange={e => setSearchTerm(e.target.value)}
+              label='Search'
+              className='bg-white'
+              disabled={!isPro}
+            />
+            {!isPro && <p className='mt-3'>Upgrade to <a href='/pro' className='text-blue-500'>pro</a> to use flashcard links</p>}
+            {isSearching && <p className='mt-3'>Loading…</p>}
+          </div>
+          {searchedFlashcards.length > 0 && <hr />}
+          <div>
+            {searchedFlashcards.map(flashcard =>
+              <p
+                className='searched-item'
+                onClick={() => insertFlashCardLink(editor, flashcard)}
+                key={flashcard.id}
+              >
+                {flattenNodes(flashcard.data.fields[0])}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>}
+      trigger='click'
+      className='w-96'
+      placement='bottom'
     >
-      <div className='inline'>
-        <OverlayTrigger
-          overlay={
-            <Popover id='study-section-popover'>
-              <Popover.Header as='h3' className='text-center'>
-                Insert Flashcard Link<br />
-                {!isPro && <small><strong><a href='/pro/'>(pro-only)</a></strong><br /></small>}
-                <small>This will allow you to see a preview on hover when studying</small>
-              </Popover.Header>
-              <Popover.Body>
-                <div>
-                  <Form.Label>Search for Flashcard</Form.Label>
-                  <Form.Control
-                    onChange={e => setSearchTerm(e.target.value)}
-                    disabled={!isPro}
-                  />
-                  {!isPro && <p><strong>Upgrade to <a href='/pro/'>pro</a> to use flashcard links</strong></p>}
-                  {isSearching && <p className='mt-3'>Loading…</p>}
-                </div>
-                <hr />
-                <div>
-                  {searchedFlashcards.map(flashcard =>
-                    <p
-                      className='searched-item'
-                      onClick={() => insertFlashCardLink(editor, flashcard)}
-                      key={flashcard.id}
-                    >
-                      {flattenNodes(flashcard.data.fields[0])}
-                    </p>
-                  )}
-                </div>
-              </Popover.Body>
-            </Popover>
-          }
-          placement='bottom'
-          trigger='click'
-          rootClose
+      <Tooltip tooltip='Insert Flashcard Link' className='w-36'>
+        <button
+          style={{
+            background: 'rgba(0, 0, 0, 0)',
+            border: 'none',
+          }}
+          tabIndex={tabbable ? undefined : -1}
+          className='text-dark'
         >
-          <button
-            style={{
-              background: 'rgba(0, 0, 0, 0)',
-              border: 'none',
-            }}
-            tabIndex={tabbable ? undefined : -1}
-            className='text-dark'
-          >
-            <FontAwesomeIcon icon={faAnchor} />
-          </button>
-        </OverlayTrigger>
-      </div>
-    </OverlayTrigger>
+          <FontAwesomeIcon icon={faAnchor} />
+        </button>
+      </Tooltip>
+    </Popover>
   );
 }

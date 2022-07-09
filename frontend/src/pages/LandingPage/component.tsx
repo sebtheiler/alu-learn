@@ -3,7 +3,7 @@ import GlobalContext from '@global';
 import globalSharingSystemUrl from 'assets/global-sharing-system.png';
 import skillTreeUrl from 'assets/skill-tree.png';
 import spacedRepetitionUrl from 'assets/spaced-repetition.png';
-import useWindowDimensions from 'helpers/useWindowDimensions';
+import useWindowDimensions from 'hooks/useWindowDimensions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBrain, faDna, faLandmarkDome, faMonument, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useContext, useMemo } from 'react';

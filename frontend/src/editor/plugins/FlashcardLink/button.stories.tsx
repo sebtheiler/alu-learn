@@ -1,3 +1,4 @@
+import withFullContext from '@helpers/withFullContext';
 import { ComponentStory } from '@storybook/react';
 import { ReactEditor } from 'slate-react';
 import { createFullEditor } from 'editor/FullEditable';
@@ -8,6 +9,7 @@ import { FlashCardLinkButton } from '.';
 export default {
   title: 'editor/plugins/FlashCardLinkButton',
   component: FlashCardLinkButton,
+  decorators: [withFullContext],
 }
 
 const Template: ComponentStory<typeof FlashCardLinkButton> = (args) => {

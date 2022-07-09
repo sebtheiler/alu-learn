@@ -1,9 +1,8 @@
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
+import Popover from '@components/Popover';
 import IconTooltip from 'components/IconTooltip';
 import RenderRichText from '../../RenderRichText';
 import { ExtendedSlateElement } from 'editor/types';
-import { useState } from 'react';
+import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface FlashCardLinkComponentProps {
   /**
@@ -28,7 +27,6 @@ export default function FlashCardLinkComponent({
   children,
   element,
 }: FlashCardLinkComponentProps) {
-  const [popoverIsOpen, setPopoverIsOpen] = useState(false);
   // const [flashcard] = useAsyncState<FlashCard>(
   //   () => backendFetch('GET', `decks/flashcard/find-universal/${element.flashcardUID}/`),
   //   [], undefined,
@@ -36,44 +34,36 @@ export default function FlashCardLinkComponent({
   // );
   const flashcard = {} as any;
 
-  const editFlashcard = async (e: MouseEvent) => {
+  const editFlashcard = async (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.preventDefault();
     window.open(`/deck/${flashcard?.parent_deck_id}/flashcards/${flashcard?.id}/edit/`, '_blank');
   }
 
   return (
-    <OverlayTrigger
-      overlay={
-        <Popover id='flashcard-preview-popover' style={{ minWidth: '200px' }}>
-          <div>
-            <Popover.Header as='h3' className='text-center'>
-              Flashcard Preview
-              {flashcard?.id && <IconTooltip
-                tooltip='Edit this flashcard'
-                // @ts-ignore
-                onClick={editFlashcard}
-                faClass='fas fa-external-link-alt'
-                className='float-right'
-                id={`edit-flashcard-${flashcard.id}`}
-              />}
-            </Popover.Header>
-            {flashcard?.data ? <Popover.Body>
-              {flashcard && flashcard.data.fields.map((field, i) => <>
-                <RenderRichText text={field} />
-                {i !== flashcard.data.fields.length - 1 && <hr />}
-              </>)}
-              {!flashcard && <p>Loading…</p>}
-            </Popover.Body> : <Popover.Body>Flashcard not found</Popover.Body>}
-          </div>
-        </Popover>
+    <Popover
+      popover={
+        <div>
+          <h3 className='text-md text-center font-bold'>Flashcard Preview</h3>
+          <hr className='my-3' />
+          {flashcard?.id && <IconTooltip
+            tooltip='Edit this flashcard'
+            onClick={editFlashcard}
+            faIcon={faExternalLinkAlt}
+            className='float-right'
+          />}
+          {flashcard?.data ?
+            flashcard.data.fields.map((field, i) => <>
+              <RenderRichText text={field} />
+              {i !== flashcard.data.fields.length - 1 && <hr />}
+            </>)
+          : <p>Flashcard not found</p>
+          }
+        </div>
       }
-      delay={{ show: 0, hide: 1000 }}
-      onToggle={show => setPopoverIsOpen(show)}
-      placement='bottom'
     >
       <span {...attributes} className='flashcard-link'>
         {children}
       </span>
-    </OverlayTrigger>
+    </Popover>
   );
 }

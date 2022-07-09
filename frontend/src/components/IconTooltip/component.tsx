@@ -1,18 +1,16 @@
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Spinner from 'react-bootstrap/Spinner';
-import Tooltip from 'react-bootstrap/Tooltip';
+import Tooltip from '@components/Tooltip';
+import classNames from '@helpers/classNames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { createRef, MouseEventHandler, useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-// import { usePopper } from 'react-popper';
+import { MouseEventHandler, useMemo, useState } from 'react';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 
 interface IconTooltipProps {
   /**
    * Tooltip to display when hovering the icon
    */
-  tooltip: string;
+  tooltip: React.ReactNode;
   /**
    * Called when the icon is clicked
    */
@@ -23,7 +21,6 @@ interface IconTooltipProps {
   faIcon: IconProp;
   className?: string;
   style?: React.CSSProperties;
-  id: string;
 }
 
 /**
@@ -35,53 +32,29 @@ export default function IconTooltip({
   faIcon,
   className,
   style,
-  id,
 }: IconTooltipProps) {
   const [isLoading, setIsLoading] = useState(false);
-
   const handleClick: MouseEventHandler<HTMLElement> = async (e) => {
     setIsLoading(true);
     await onClick(e);
     setIsLoading(false);
   }
 
+  const icon = useMemo(
+    () => isLoading ? faSpinner : faIcon,
+    [isLoading, faIcon],
+  );
+
   return (
-    <OverlayTrigger
-      overlay={
-        <Tooltip id={id}>
-          {tooltip}
-        </Tooltip>
-      }
-    >
-      {isLoading
-        ? (
-          <Spinner
-            animation='border'
-            size='sm'
-            className={className}
-            variant='primary'
-          />
-        )
-        : (
-          <span onClick={handleClick} className='cursor-pointer'>
-            <FontAwesomeIcon
-              icon={faIcon}
-              style={style}
-              className={className}
-            />
-          </span>
-        )
-      }
-    </OverlayTrigger>
-    // <Tooltip>
-    //   <span onClick={handleClick} className={'cursor-pointer ' + className}>
-    //     <FontAwesomeIcon
-    //       icon={faIcon}
-    //       style={style}
-    //       className={className}
-    //       data-tooltip-target='tooltip-animation'
-    //     />
-    //   </span>
-    // </Tooltip>
+    <Tooltip tooltip={tooltip}>
+      <span onClick={handleClick} className='cursor-pointer text-center'>
+        <FontAwesomeIcon
+          icon={icon}
+          style={style}
+          className={classNames(className, 'mx-auto')}
+          spin={isLoading}
+        />
+      </span>
+    </Tooltip>
   );
 }

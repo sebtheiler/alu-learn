@@ -8,7 +8,7 @@ export default {
   component: IconTooltip,
 }
 
-const Template: ComponentStory<typeof IconTooltip> = (args) => <IconTooltip {...args} />;
+const Template: ComponentStory<typeof IconTooltip> = (args) => <div className='container mx-auto mt-20'><IconTooltip {...args} /></div>;
 
 export const TrashIcon = Template.bind({});
 TrashIcon.args = {
@@ -19,5 +19,5 @@ TrashIcon.args = {
   },
   faIcon: faTrash,
   id: 'delete-icon',
-  className: 'mt-5'
+  className: 'color-blue-500',
 };

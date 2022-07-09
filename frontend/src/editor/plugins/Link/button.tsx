@@ -1,5 +1,4 @@
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import Tooltip from '@components/Tooltip';
 import { ExtendedReactEditor } from '../../types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLink } from '@fortawesome/free-solid-svg-icons'
@@ -21,13 +20,7 @@ interface LinkButtonProps {
  */
 export default function LinkButton({ editor, tabbable=true }: LinkButtonProps) {
   return (
-    <OverlayTrigger
-      overlay={
-        <Tooltip id='link-button-tooltip'>
-          Insert Link
-        </Tooltip>
-      }
-    >
+    <Tooltip tooltip='Insert Link'>
       <button
         onClick={event => {
           event.preventDefault();
@@ -44,7 +37,7 @@ export default function LinkButton({ editor, tabbable=true }: LinkButtonProps) {
       >
         <FontAwesomeIcon icon={faLink} />
       </button>
-    </OverlayTrigger>
+    </Tooltip>
   );
 }
 

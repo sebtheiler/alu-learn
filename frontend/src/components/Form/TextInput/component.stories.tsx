@@ -22,3 +22,18 @@ Number.args = {
   type: 'number',
   pill: true,
 };
+
+export const NoLabel = Template.bind({});
+NoLabel.args = {
+  label: '',
+  type: 'text',
+  pill: true,
+}
+
+export const Disabled = Template.bind({});
+Disabled.args = {
+  label: 'Example Label',
+  type: 'text',
+  pill: true,
+  disabled: true,
+}

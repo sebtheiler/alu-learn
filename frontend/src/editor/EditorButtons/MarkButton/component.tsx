@@ -1,5 +1,4 @@
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import Tooltip from 'components/Tooltip';
 import capitalize from '@helpers/capitalize';
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { ReactEditor } from 'slate-react';
@@ -32,13 +31,7 @@ interface MarkButtonProps {
  */
 export default function MarkButton({ format, faIcon, editor, tabbable }: MarkButtonProps) {
   return (
-    <OverlayTrigger
-      overlay={
-        <Tooltip id={`mark-tooltip-${format}`}>
-          {capitalize(format.replace('_', ' '), true)}
-        </Tooltip>
-      }
-    >
+    <Tooltip tooltip={capitalize(format.replace('_', ' '), true)}>
       <button
         onClick={event => {
           event.preventDefault();
@@ -52,6 +45,6 @@ export default function MarkButton({ format, faIcon, editor, tabbable }: MarkBut
       >
         <FontAwesomeIcon icon={faIcon} />
       </button>
-    </OverlayTrigger>
+    </Tooltip>
   );
 }

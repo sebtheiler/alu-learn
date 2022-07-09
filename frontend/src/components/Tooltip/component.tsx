@@ -1,56 +1,89 @@
-import { useState } from 'react';
+import classNames from '@helpers/classNames';
+import { Transition } from '@headlessui/react';
 import { usePopper } from 'react-popper';
+import { useState } from 'react';
+import { Placement } from '@popperjs/core';
 
 interface TooltipProps {
-  children;
+  /**
+   * Elements that, when hovered, will display the tooltip
+   */
+  children: React.ReactNode;
+  /**
+   * Tooltip to display when hovering children
+   */
+  tooltip: React.ReactNode;
+  /**
+   * Additional class for the tooltip
+   */
+  className?: string;
+  /**
+   * Placement for the tooltip
+   */
+  placement?: Placement;
 }
 
 /**
- * 
+ * Renders a tooltip over some elements
  */
 export default function Tooltip({
   children,
+  tooltip,
+  className,
+  placement='top',
 }: TooltipProps) {
-  const [referenceElement, setReferenceElement] = useState(null);
-  const [popperElement, setPopperElement] = useState(null);
-  const [showTooltip, setShowTooltip] = useState(false);
-  const { styles, attributes, update } = usePopper(referenceElement, popperElement);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
-  function show() {
-    popperElement.setAttribute('data-show', '');
-    setShowTooltip(true);
-    update();
-  }
-
-  function hide() {
-    popperElement.removeAttribute('data-show');
-    setShowTooltip(false);
-  }
-
-  const showEvents = ['mouseenter', 'focus'];
-  const hideEvents = ['mouseleave', 'blur'];
-
-  showEvents.forEach((event) => {
-    if (referenceElement) referenceElement.addEventListener(event, show);
-  });
-
-  hideEvents.forEach((event) => {
-    if (referenceElement) referenceElement.addEventListener(event, hide);
+  const [refEl, setRefEl] = useState<HTMLElement>();
+  const [popEl, setPopEl] = useState<HTMLElement>();
+  const { styles, attributes } = usePopper(refEl, popEl, {
+    placement: placement,
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, 8],
+        },
+      },
+    ],
   });
 
   return (
-    <div className='inline group'>
-      <span ref={setReferenceElement}>
+    <div className='inline'>
+      <span
+        ref={setRefEl}
+        onMouseEnter={() => setIsTooltipOpen(true)}
+        onMouseLeave={() => setIsTooltipOpen(false)}
+      >
         {children}
       </span>
-      <div
-        ref={setPopperElement}
-        style={styles.popper}
-        className={'bg-gray-800 bg-opacity-80 text-white font-bold py-1 px-2 rounded hidden' + (showTooltip ? ' block' : '')}
-        {...attributes.popper}
+      <Transition
+        show={isTooltipOpen}
+        enter='ease-out duration-300'
+        enterFrom='opacity-0'
+        enterTo='opacity-100'
+        leave='ease-in duration-200'
+        leaveFrom='opacity-100'
+        leaveTo='opacity-0'
+        className='absolute'
       >
-        Popper element
-      </div>
+        <div
+          ref={setPopEl}
+          role='tooltip'
+          className={classNames('bg-gray-900 bg-opacity-90 text-white px-2 py-1\
+                                  rounded-lg absolute text-sm select-none text-center',
+                                  className)}
+          // Keep tooltip open when hovered
+          onMouseEnter={() => setIsTooltipOpen(true)}
+          onMouseLeave={() => setIsTooltipOpen(false)}
+
+          // Popper style and attributes
+          style={styles.popper}
+          {...attributes.popper}
+        >
+          {tooltip}
+        </div>
+      </Transition>
     </div>
   );
 }
