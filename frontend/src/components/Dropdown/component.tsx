@@ -1,8 +1,12 @@
 import classNames from '@helpers/classNames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { Link } from 'react-router-dom';
 import { Menu, Transition } from '@headlessui/react';
+import { lazy, Suspense } from 'react';
+
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
+
+const FontAwesomeIcon = lazy(()=> import('@fortawesome/react-fontawesome').then(module=>({default:module.FontAwesomeIcon})))
+
 
 /**
  * Option to be supplied in the dropdown menu
@@ -79,7 +83,9 @@ export default function Dropdown({
                     'block px-4 py-2 text-sm'
                   )}
                 >
-                  <FontAwesomeIcon icon={option.faIcon} className='mr-1' />
+                  <Suspense fallback=''>
+                    <FontAwesomeIcon icon={option.faIcon} className='mr-1' />
+                  </Suspense>
                   {option.text}
                 </Link>
               )}

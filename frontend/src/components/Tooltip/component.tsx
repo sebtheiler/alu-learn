@@ -2,7 +2,8 @@ import classNames from '@helpers/classNames';
 import { Transition } from '@headlessui/react';
 import { usePopper } from 'react-popper';
 import { useState } from 'react';
-import { Placement } from '@popperjs/core';
+
+import type { Placement } from '@popperjs/core';
 
 interface TooltipProps {
   /**
@@ -71,7 +72,7 @@ export default function Tooltip({
           ref={setPopEl}
           role='tooltip'
           className={classNames('bg-gray-900 bg-opacity-90 text-white px-2 py-1\
-                                  rounded-lg absolute text-sm select-none text-center',
+                                  rounded-lg absolute text-sm select-none text-center z-50',
                                   className)}
           // Keep tooltip open when hovered
           onMouseEnter={() => setIsTooltipOpen(true)}

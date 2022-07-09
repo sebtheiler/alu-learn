@@ -7,7 +7,9 @@ import React, {
   ElementType,
   memo,
 } from 'react';
-import KaTeX, { KatexOptions } from 'katex';
+import KaTeX from 'katex';
+
+import type { KatexOptions } from 'katex';
 
 
 interface TeXProps {

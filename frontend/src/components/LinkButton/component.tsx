@@ -1,9 +1,11 @@
 import Ripple from '@components/Button/Ripple';
 import classNames from '@helpers/classNames';
-import { ButtonProps } from '@components/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { buttonVariantsLookup, generateButtonClassName } from '@components/Button/component';
-import { useMemo } from 'react';
+import { useMemo, lazy, Suspense } from 'react';
+
+import type { ButtonProps } from '@components/Button';
+
+const FontAwesomeIcon = lazy(()=> import('@fortawesome/react-fontawesome').then(module=>({default:module.FontAwesomeIcon})))
 
 interface LinkButtonProps extends ButtonProps {
   /**
@@ -27,7 +29,9 @@ export default function LinkButton(props: LinkButtonProps) {
       href={props.href}
     >
       {props.ripples && <Ripple color={buttonVariantsLookup[props.variant].rippleColor} />}
-      {props.faIcon && <FontAwesomeIcon icon={props.faIcon} className='mr-1' spin={props._spin} />}
+      {props.faIcon && <Suspense fallback=''>
+        <FontAwesomeIcon icon={props.faIcon} className='mr-1' spin={props._spin} />
+      </Suspense>}
       {props.children}
     </a>
   );

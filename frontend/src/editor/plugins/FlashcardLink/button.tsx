@@ -1,15 +1,16 @@
+import Popover from '@components/Popover';
+import TextInput from '@components/Form/TextInput';
+import Tooltip from '@components/Tooltip';
 import flattenNodes from '@helpers/flattenNodes';
-import { FlashCard } from '@types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ReactEditor } from 'slate-react';
+import { Link } from 'react-router-dom';
 import { faAnchor } from '@fortawesome/free-solid-svg-icons';
 import { insertFlashCardLink } from './helpers';
 import { useDebounce } from 'hooks/useDebounce';
 import { useState } from 'react';
-import Tooltip from '@components/Tooltip';
-import Popover from '@components/Popover';
-import TextInput from '@components/Form/TextInput';
-import { Link } from 'react-router-dom';
+
+import type { FlashCard } from '@types';
+import type { ReactEditor } from 'slate-react';
 
 interface FlashCardLinkButtonProps {
   /**

@@ -1,9 +1,10 @@
 import Tooltip from '@components/Tooltip';
 import classNames from '@helpers/classNames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { MouseEventHandler, useMemo, useState } from 'react';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 
 interface IconTooltipProps {

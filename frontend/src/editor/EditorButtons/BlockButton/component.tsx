@@ -1,9 +1,10 @@
 import Tooltip from '@components/Tooltip';
 import capitalize from 'helpers/capitalize';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { ReactEditor } from 'slate-react';
 import { isBlockActive, toggleBlock } from '../../FullEditable/helpers';
+
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 type numbers = 'one' | 'two' | 'three' | 'four' | 'five' | 'six';
 type BlockFormat = `heading-${numbers}` | 'numbered-list' | 'bulleted-list' | 'math-block' | 'list-item' | 'image';

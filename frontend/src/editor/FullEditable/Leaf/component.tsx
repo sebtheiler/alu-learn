@@ -1,4 +1,6 @@
-import TeX from '@components/TeX';
+import { lazy, Suspense } from 'react';
+
+const TeX = lazy(() => import('@components/TeX'));
 
 const Leaf = ({ attributes, children, leaf, readOnly }) => {
   if (leaf.bold)
@@ -15,7 +17,7 @@ const Leaf = ({ attributes, children, leaf, readOnly }) => {
 
   if (leaf.math_inline) {
     if (readOnly) {
-      children = <TeX math={children.props.text.text} />
+      children = <Suspense fallback='Loading KaTeX'><TeX math={children.props.text.text} /></Suspense>
     } else {
       children = <span className='math-inline'>{children}</span>
     }

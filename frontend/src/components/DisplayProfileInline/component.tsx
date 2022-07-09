@@ -19,7 +19,7 @@ export default function DisplayProfileInline({ profile }: DisplayProfileInlinePr
         style={{ transform: 'translateY(-1px)' }}
         className='inline'
       />
-      <a href={`/profiles/u/${profile.username}`} className='inline'>
+      <a href={`/profiles/u/${profile.username}`} className='inline text-blue-500'>
         {profile.firstName} {profile.lastName}
       </a>
     </span>

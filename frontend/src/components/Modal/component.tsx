@@ -1,6 +1,7 @@
-import { ButtonProps } from 'components/Button';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
+
+import type { ButtonProps } from 'components/Button';
 
 interface ModalProps {
   /**

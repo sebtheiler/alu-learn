@@ -1,4 +1,4 @@
-import { Node as SlateNode } from 'slate';
+import type { Node as SlateNode } from 'slate';
 
 export type UUID = string;  // Just a more clear representation
 

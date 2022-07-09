@@ -85,6 +85,7 @@ export default function AboutPage({ isLoggedIn }: AboutPageProps) {
             src={spacedRepetitionUrl}
             alt='Graph depicting how memory decays over time, and how spaced repetition can be used to combat that'
             className='w-100'
+            loading='lazy'
           />
           <div className='text-center'>
             <small className='text-secondary'>Spaced repetition stops you from forgetting information as fast</small>
@@ -98,6 +99,7 @@ export default function AboutPage({ isLoggedIn }: AboutPageProps) {
             src={globalSharingSystemUrl}
             alt="Illustration of Alu's sharing system, and how people from around the world can contribute to a deck"
             className='w-100'
+            loading='lazy'
           />
         </div>
         <div>
@@ -131,6 +133,7 @@ export default function AboutPage({ isLoggedIn }: AboutPageProps) {
             src={skillTreeUrl}
             alt='Illustration of an example skill tree'
             className='w-100'
+            loading='lazy'
           />
         </div>
       </div>
@@ -171,6 +174,7 @@ export default function AboutPage({ isLoggedIn }: AboutPageProps) {
             src={sebastianUrl}
             alt='Sebastian, the creator of Alu'
             className='rounded-xl mb-2 mx-auto sm:max-w-sm'
+            loading='lazy'
           />
           <div className='w-full'>
             <p className='my-0 text-center'><strong>Follow Sebastian</strong></p>

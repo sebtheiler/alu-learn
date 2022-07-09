@@ -1,7 +1,8 @@
 import FullEditable, { createFullEditor } from '../FullEditable';
-import { Node as SlateNode } from 'slate';
 import { Slate } from 'slate-react';
 import { useState, useMemo, useEffect } from 'react';
+
+import type { Node as SlateNode } from 'slate';
 
 // Renders Slate rich text
 interface RenderRichTextProps {

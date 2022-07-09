@@ -1,10 +1,10 @@
-import React, { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { Node } from 'slate';
 import { ExtendedSlateElement } from 'editor/types';
 
-const TeX = React.lazy(() => import('components/TeX'));
-const FlashCardLinkComponent = React.lazy(() => import('@slate-plugins/FlashcardLink/component'));
-const LinkComponent = React.lazy(() => import('@slate-plugins/Link/component'));
+const TeX = lazy(() => import('components/TeX'));
+const FlashCardLinkComponent = lazy(() => import('@slate-plugins/FlashcardLink/component'));
+const LinkComponent = lazy(() => import('@slate-plugins/Link/component'));
 
 interface ElementProps {
   /**
@@ -14,7 +14,7 @@ interface ElementProps {
   /**
    * Children of the rendered element
    */
-  children: JSX.Element | JSX.Element[];
+  children: React.ReactNode;
   /**
    * Slate element to render
    */

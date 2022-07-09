@@ -1,8 +1,9 @@
 import Popover from '@components/Popover';
 import IconTooltip from 'components/IconTooltip';
 import RenderRichText from '../../RenderRichText';
-import { ExtendedSlateElement } from 'editor/types';
 import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+
+import type { ExtendedSlateElement } from 'editor/types';
 
 interface FlashCardLinkComponentProps {
   /**
@@ -12,7 +13,7 @@ interface FlashCardLinkComponentProps {
   /**
    * Children of the `<span>` element
    */
-  children: JSX.Element[] | JSX.Element;
+  children: React.ReactNode;
   /**
    * SlateJS Element to render
    */

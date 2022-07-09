@@ -1,7 +1,9 @@
 import EditorButtons from '../EditorButtons';
 import FullEditable from '../FullEditable';
-import { Descendant } from 'slate';
-import { ReactEditor, Slate } from 'slate-react';
+import { Slate } from 'slate-react';
+
+import type { Descendant } from 'slate';
+import type { ReactEditor } from 'slate-react';
 
 interface RenderEditorProps {
   /**

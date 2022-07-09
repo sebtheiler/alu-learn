@@ -1,5 +1,6 @@
 import Tooltip from 'components/Tooltip';
-import { ExtendedSlateElement } from '../../types';
+
+import type { ExtendedSlateElement } from '../../types';
 
 interface LinkComponentProps {
   /**

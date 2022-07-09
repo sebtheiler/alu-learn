@@ -1,5 +1,5 @@
 import LinkButton from '@components/LinkButton';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 /**
  * Displays the page for after a user has cancelled their pro subscription

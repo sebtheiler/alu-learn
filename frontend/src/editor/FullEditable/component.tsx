@@ -2,11 +2,12 @@ import Element from './Element';
 import Leaf from './Leaf';
 import isHotKey from 'is-hotkey';
 import { Editable } from 'slate-react';
-import { ExtendedReactEditor } from 'editor/types';
 import { HOTKEYS } from './constants';
 import { toggleMark } from './helpers';
 import { useCallback } from 'react';
 import './style.scss';
+
+import type { ExtendedReactEditor } from 'editor/types';
 
 interface FullEditorProps {
   /**

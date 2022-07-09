@@ -1,8 +1,9 @@
 import Ripple from './Ripple';
 import classNames from '@helpers/classNames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { useMemo } from 'react';
+
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 export interface ButtonProps {
   /**

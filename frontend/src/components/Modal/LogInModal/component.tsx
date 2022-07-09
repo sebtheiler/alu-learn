@@ -18,7 +18,6 @@ const onLogIn = async (e) => {
  * Renders the global log-in modal. Only instantiate in `Navbar`!
  */
 export default function LogInModal() {
-  console.log(GlobalContext)
   const { logInModalOpen, setLogInModalOpen } = useContext(GlobalContext);
   const login = useGoogleLogin({
     onSuccess: tokenResponse => console.log(tokenResponse),

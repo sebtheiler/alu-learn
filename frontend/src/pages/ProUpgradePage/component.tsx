@@ -1,13 +1,13 @@
 import AsyncButton from '@components/AsyncButton';
 import Button from '@components/Button';
-import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GlobalContext from '@global';
-import daysBetween from '@helpers/daysBetween';
-import ProPurchaseSuccessPage from 'pages/ProPurchaseSuccessPage';
-import { useContext } from 'react';
 import ProFeaturesCard from './ProFeaturesCard';
 import ProFromOrganization from './ProFromOrganization';
+import ProPurchaseSuccessPage from 'pages/ProPurchaseSuccessPage';
+import daysBetween from '@helpers/daysBetween';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { useContext } from 'react';
 import './style.scss';
 
 interface ProUpgradePageProps {

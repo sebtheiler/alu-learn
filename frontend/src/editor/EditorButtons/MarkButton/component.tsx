@@ -1,9 +1,10 @@
 import Tooltip from 'components/Tooltip';
 import capitalize from '@helpers/capitalize';
-import { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { ReactEditor } from 'slate-react';
 import { isMarkActive, toggleMark } from '../../FullEditable/helpers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import type { ReactEditor } from 'slate-react';
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 
 type MarkFormat = 'bold' | 'italic' | 'underline' | 'code' | 'math_inline' | 'link' | 'flashcard_link';
 

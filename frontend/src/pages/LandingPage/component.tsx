@@ -114,6 +114,7 @@ export default function LandingPage() {
             <img
               src={spacedRepetitionUrl}
               alt='Graph depicting how memory decays over time, and how spaced repetition can be used to combat that'
+              loading='lazy'
             />
           </div>
         </div>
@@ -123,6 +124,7 @@ export default function LandingPage() {
               src={globalSharingSystemUrl}
               alt="Illustration of Alu's sharing system, and how people from around the world can contribute to a deck"
               className='ml-auto'
+              loading='lazy'
             />
           </div>
           <div className='help-section-text'>
@@ -143,6 +145,7 @@ export default function LandingPage() {
             <img
               src={skillTreeUrl}
               alt='Illustration of an example skill tree'
+              loading='lazy'
             />
           </div>
         </div>

@@ -1,6 +1,5 @@
 import logoUrl from 'assets/logo.svg';
 import proBannerUrl from 'assets/pro-banner.svg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import { faBars, faCompass, faStar, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { Suspense, useState, lazy } from 'react';
@@ -8,6 +7,8 @@ import './style.scss';
 
 const LoggedIn = lazy(() => import('./LoggedIn'));
 const LoggedOut = lazy(() => import('./LoggedOut'));
+const FontAwesomeIcon = lazy(()=> import('@fortawesome/react-fontawesome').then(module=>({default:module.FontAwesomeIcon})));
+
 
 interface NavbarProps {
   /**
@@ -63,20 +64,20 @@ export default function Navbar({
                          hover:bg-opacity-20 rounded-full lg:hidden ml-auto'
               onClick={() => setExpandedMenu(!expandedMenu)}
       >
-        <FontAwesomeIcon icon={faBars} />
+        <Suspense fallback=''><FontAwesomeIcon icon={faBars} /></Suspense>
       </button>
       <div className={'w-full lg:inline-flex lg:flex-grow lg:w-auto' + (expandedMenu ? ' block' : ' hidden')} id='navigation'>
         <div className='lg:inline-flex lg:flex-row flex flex-col flex-grow'>
           <Link to='/explore' className='nav-item'>
-            <FontAwesomeIcon icon={faCompass} />
+            <Suspense fallback=''><FontAwesomeIcon icon={faCompass} /></Suspense>
             <span>Explore</span>
           </Link>
           <Link to='/pro' className='nav-item'>
-            <FontAwesomeIcon icon={faStar} />
+            <Suspense fallback=''><FontAwesomeIcon icon={faStar} /></Suspense>
             <span>Pro</span>
           </Link>
           <Link to='/about' className='nav-item'>
-            <FontAwesomeIcon icon={faInfoCircle} />
+            <Suspense fallback=''><FontAwesomeIcon icon={faInfoCircle} /></Suspense>
             <span>About</span>
           </Link>
           <Suspense fallback={<></>}>
