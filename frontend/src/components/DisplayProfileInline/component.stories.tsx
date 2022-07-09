@@ -1,3 +1,4 @@
+import withFullContext from '@helpers/withFullContext';
 import { ComponentStory } from '@storybook/react';
 
 import DisplayProfileInline from '.';
@@ -5,6 +6,7 @@ import DisplayProfileInline from '.';
 export default {
   title: 'Components/DisplayProfileInline',
   component: DisplayProfileInline,
+  decorators: [withFullContext],
 }
 
 const Template: ComponentStory<typeof DisplayProfileInline> = (args) => <DisplayProfileInline {...args} />;

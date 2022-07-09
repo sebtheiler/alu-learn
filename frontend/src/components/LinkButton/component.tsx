@@ -1,5 +1,6 @@
 import Ripple from '@components/Button/Ripple';
 import classNames from '@helpers/classNames';
+import { Link } from 'react-router-dom';
 import { buttonVariantsLookup, generateButtonClassName } from '@components/Button/component';
 import { useMemo, lazy, Suspense } from 'react';
 
@@ -24,15 +25,15 @@ export default function LinkButton(props: LinkButtonProps) {
   );
 
   return (
-    <a
+    <Link
       className={generatedClassName}
-      href={props.href}
+      to={props.href}
     >
       {props.ripples && <Ripple color={buttonVariantsLookup[props.variant].rippleColor} />}
       {props.faIcon && <Suspense fallback=''>
         <FontAwesomeIcon icon={props.faIcon} className='mr-1' spin={props._spin} />
       </Suspense>}
       {props.children}
-    </a>
+    </Link>
   );
 }

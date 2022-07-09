@@ -1,3 +1,4 @@
+import withFullContext from '@helpers/withFullContext';
 import { ComponentStory } from '@storybook/react';
 
 import LinkButton from '.';
@@ -5,6 +6,7 @@ import LinkButton from '.';
 export default {
   title: 'Components/LinkButton',
   component: LinkButton,
+  decorators: [withFullContext],
 }
 
 const Template: ComponentStory<typeof LinkButton> = (args) => <LinkButton {...args}>Hello World</LinkButton>;

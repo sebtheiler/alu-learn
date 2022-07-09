@@ -1,7 +1,9 @@
 import AboutPage from 'pages/AboutPage';
+import ExploreDecksPage from 'pages/ExploreDecksPage';
 import GlobalContext from './global';
 import LandingPage from 'pages/LandingPage';
 import Navbar from '@components/Navbar';
+import NotFoundPage from 'pages/NotFoundPage';
 import ProPurchaseCancelledPage from 'pages/ProPurchaseCancelledPage';
 import ProPurchaseSuccessPage from 'pages/ProPurchaseSuccessPage';
 import ProUpgradePage from 'pages/ProUpgradePage';
@@ -31,6 +33,8 @@ function App() {
           <Route path='/pro' element={<ProUpgradePage isPro={false} isProFromOrg={false} isLoggedIn={isLoggedIn} />} />
           <Route path='/pro/success' element={<ProPurchaseSuccessPage />} />
           <Route path='/pro/cancelled' element={<ProPurchaseCancelledPage />} />
+          <Route path='/community/decks' element={<ExploreDecksPage />} />
+          <Route path='*' element={<NotFoundPage />} />
         </Routes>
       </GlobalContext.Provider>
     </div>

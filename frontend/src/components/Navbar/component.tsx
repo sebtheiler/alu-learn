@@ -9,7 +9,6 @@ const LoggedIn = lazy(() => import('./LoggedIn'));
 const LoggedOut = lazy(() => import('./LoggedOut'));
 const FontAwesomeIcon = lazy(()=> import('@fortawesome/react-fontawesome').then(module=>({default:module.FontAwesomeIcon})));
 
-
 interface NavbarProps {
   /**
    * Is the user currently logged in?
@@ -68,7 +67,7 @@ export default function Navbar({
       </button>
       <div className={'w-full lg:inline-flex lg:flex-grow lg:w-auto' + (expandedMenu ? ' block' : ' hidden')} id='navigation'>
         <div className='lg:inline-flex lg:flex-row flex flex-col flex-grow'>
-          <Link to='/explore' className='nav-item'>
+          <Link to='/community/decks' className='nav-item'>
             <Suspense fallback=''><FontAwesomeIcon icon={faCompass} /></Suspense>
             <span>Explore</span>
           </Link>

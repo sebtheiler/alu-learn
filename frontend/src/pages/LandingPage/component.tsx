@@ -39,7 +39,7 @@ export default function LandingPage() {
       <div className='grid md:grid-cols-1 text-center lg:grid-cols-2 lg:text-left h-full items-center'>
         <div className='bg-white py-10 rounded-2xl mx-6 md:mx-16 text-alu-dark-purple shadow-lg shadow-violet-400/40'>
           <div className='sm:px-5 md:px-6 xl:px-9'>
-            <h1 className='text-2xl md:text-4xl xl:text-5xl font-medium mb-3 md:mb-8'>
+            <h1 className='text-2xl md:text-4xl xl:text-5xl font-bold mb-3 md:mb-8'>
               Learn Anything.<br />
               Remember Everything.
             </h1>

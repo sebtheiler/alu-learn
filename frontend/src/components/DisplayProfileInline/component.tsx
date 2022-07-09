@@ -1,4 +1,5 @@
 import Jdenticon from '@components/Jdenticon';
+import { Link } from 'react-router-dom';
 
 interface DisplayProfileInlineProps {
   /**
@@ -19,9 +20,9 @@ export default function DisplayProfileInline({ profile }: DisplayProfileInlinePr
         style={{ transform: 'translateY(-1px)' }}
         className='inline'
       />
-      <a href={`/profiles/u/${profile.username}`} className='inline text-blue-500'>
+      <Link to={`/profiles/u/${profile.username}`} className='inline text-blue-500 hover:text-blue-600'>
         {profile.firstName} {profile.lastName}
-      </a>
+      </Link>
     </span>
   );
 }

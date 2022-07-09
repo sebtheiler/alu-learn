@@ -1,14 +1,5 @@
-import { ExtendedSlateElement } from 'editor/types';
+import createSlateElement from './createSlateElement';
 
-const blankSlateElement = [
-  {
-    "type": "paragraph",
-    "children": [
-      {
-        "text": "",
-      },
-    ],
-  },
-] as ExtendedSlateElement[];
+const blankSlateElement = createSlateElement('');
 
 export default blankSlateElement;
