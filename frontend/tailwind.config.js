@@ -16,6 +16,7 @@ module.exports = {
         'alu-streak-lit': '#fd9626',
         'alu-mid-gray': '#E2E2E2',
         'alu-light-gray': '#FAFAFA',
+        'alu-light-gray-darker': '#F0F0F0',
       },
       rotate: {
         '360': '360deg',

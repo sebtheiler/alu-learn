@@ -3,7 +3,7 @@ import Button from '@components/Button';
 import GlobalContext from '@global';
 import Modal from 'components/Modal';
 import TextInput from '@components/Form/TextInput';
-import googleLogoUrl from 'assets/google-logo.svg';
+import googleLogoUrl from 'assets/logos/google.svg';
 import { getElementsVals } from '@helpers/getElementsVals';
 import { useContext, useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';

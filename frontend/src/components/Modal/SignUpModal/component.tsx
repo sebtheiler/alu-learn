@@ -4,7 +4,7 @@ import Checkbox from 'components/Form/Checkbox';
 import GlobalContext from '@global';
 import Modal from 'components/Modal';
 import TextInput from 'components/Form/TextInput';
-import googleLogoUrl from 'assets/google-logo.svg';
+import googleLogoUrl from 'assets/logos/google.svg';
 import { useContext, useState } from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { getElementsVals } from '../../../helpers/getElementsVals';
