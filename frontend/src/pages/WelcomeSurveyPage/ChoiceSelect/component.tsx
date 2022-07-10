@@ -1,3 +1,4 @@
+import classNames from '@helpers/classNames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
 
@@ -68,7 +69,10 @@ export default function ChoiceSelect({
   const cols = numCols ?? Math.min(shuffledChoices.length, 3);
 
   return (
-    <div className={`text-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${cols}`}>
+    <div className={classNames('text-center grid grid-cols-1 md:grid-cols-2',
+                                cols === 3 && 'lg:grid-cols-3',
+                                cols === 4 && 'lg:grid-cols-4')}
+    >
       {shuffledChoices.map((choice, i) =>
         <div className='p-3 text-center' key={i}>
           <div

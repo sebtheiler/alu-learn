@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Node } from 'slate';
-import { ExtendedSlateElement } from 'editor/types';
+
+import type { ExtendedSlateElement } from 'editor/types';
 
 const TeX = lazy(() => import('components/TeX'));
 const FlashCardLinkComponent = lazy(() => import('@slate-plugins/FlashcardLink/component'));

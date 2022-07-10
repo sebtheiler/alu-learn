@@ -15,6 +15,7 @@ export default function WelcomeSurveyPage() {
   const [slideNum, setSlideNum] = useState(0);
   const [answers, setAnswers] = useState({
     timezone: new Date().getTimezoneOffset(),
+    userType: undefined,
   });
 
   /**
@@ -58,7 +59,7 @@ export default function WelcomeSurveyPage() {
           { value: 'YOUTUBE', display: 'YouTube', icon: youtubeLogoUrl },
           { value: 'NEWS', display: 'News', icon: faNewspaper, iconColor: 'royalblue' },
           { value: 'SEARCH', display: 'Web Search', icon: googleLogoUrl },
-        ]} onClick={handleNext('referrer')} shuffle includeOther />
+        ]} onClick={handleNext('referrer')} numCols={3} shuffle includeOther />
       </>),
     ];
 

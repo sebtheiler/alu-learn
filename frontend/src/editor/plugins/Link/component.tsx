@@ -10,7 +10,7 @@ interface LinkComponentProps {
   /**
    * Children of the `<a>` element
    */
-  children: JSX.Element[] | JSX.Element;
+  children: React.ReactNode;
   /**
    * SlateJS Element to render
    */
