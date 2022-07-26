@@ -34,24 +34,24 @@ export default function Checkbox({
   id,
   name,
   required,
-  className='',
+  className = "",
 }: CheckboxProps) {
   return (
-    <div className={'flex items-start ' + className}>
-      <div className='flex items-center h-5'>
+    <div className={"flex items-start " + className}>
+      <div className="flex items-center h-5">
         <input
           id={id}
           name={name}
-          type='checkbox'
-          className='ring-indigo-500 h-4 w-4 accent-alu-primary-purple rounded-full focus:outline-none focus:ring focus:ring-violet-400/20'
+          type="checkbox"
+          className="ring-indigo-500 h-4 w-4 accent-alu-primary-purple rounded-full focus:outline-none focus:ring focus:ring-violet-400/20"
           required={required}
         />
       </div>
-      <div className='ml-3 text-sm'>
-        <label htmlFor={id} className='font-medium text-gray-700'>
+      <div className="ml-3 text-sm">
+        <label htmlFor={id} className="font-medium text-gray-700">
           {label}
         </label>
-        {description && <p className='text-gray-500'>{description}</p>}
+        {description && <p className="text-gray-500">{description}</p>}
       </div>
     </div>
   );

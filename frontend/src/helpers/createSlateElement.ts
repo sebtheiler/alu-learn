@@ -1,12 +1,14 @@
-import type { ExtendedSlateElement } from 'editor/types';
+import type { ExtendedSlateElement } from "editor/types";
 
-export default function createSlateElement(text: string): ExtendedSlateElement[] {
+export default function createSlateElement(
+  text: string
+): ExtendedSlateElement[] {
   return [
     {
-      "type": "paragraph",
-      "children": [
+      type: "paragraph",
+      children: [
         {
-          "text": text,
+          text: text,
         },
       ],
     },

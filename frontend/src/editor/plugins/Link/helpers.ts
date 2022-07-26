@@ -1,5 +1,5 @@
-import { Editor, Transforms, Range } from 'slate';
-import { ReactEditor } from 'slate-react';
+import { Editor, Transforms, Range } from "slate";
+import { ReactEditor } from "slate-react";
 
 /**
  * Inserts a link into an editor
@@ -10,7 +10,7 @@ const insertLink = (editor: ReactEditor, url: string) => {
   if (editor.selection) {
     wrapLink(editor, url);
   }
-}
+};
 
 /**
  * Returns if a link is active for an editor
@@ -19,9 +19,9 @@ const insertLink = (editor: ReactEditor, url: string) => {
  */
 const isLinkActive = (editor: ReactEditor) => {
   // @ts-ignore
-  const [link] = Editor.nodes(editor, { match: n => n.type === 'link' });
+  const [link] = Editor.nodes(editor, { match: (n) => n.type === "link" });
   return !!link;
-}
+};
 
 /**
  * Unwraps a link in an editor
@@ -29,8 +29,8 @@ const isLinkActive = (editor: ReactEditor) => {
  */
 const unwrapLink = (editor: ReactEditor) => {
   // @ts-ignore
-  Transforms.unwrapNodes(editor, { match: n => n.type === 'link' });
-}
+  Transforms.unwrapNodes(editor, { match: (n) => n.type === "link" });
+};
 
 /**
  * Wraps a link into an editor
@@ -45,7 +45,7 @@ const wrapLink = (editor: ReactEditor, url: string) => {
   const { selection } = editor;
   const isCollapsed = selection && Range.isCollapsed(selection);
   const link = {
-    type: 'link',
+    type: "link",
     url,
     children: isCollapsed ? [{ text: url }] : [],
   };
@@ -54,13 +54,8 @@ const wrapLink = (editor: ReactEditor, url: string) => {
     Transforms.insertNodes(editor, link);
   } else {
     Transforms.wrapNodes(editor, link, { split: true });
-    Transforms.collapse(editor, { edge: 'end' });
+    Transforms.collapse(editor, { edge: "end" });
   }
-}
+};
 
-export {
-  insertLink,
-  isLinkActive,
-  unwrapLink,
-  wrapLink,
-}
+export { insertLink, isLinkActive, unwrapLink, wrapLink };

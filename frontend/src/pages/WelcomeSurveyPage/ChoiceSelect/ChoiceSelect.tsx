@@ -1,8 +1,8 @@
-import classNames from '@helpers/classNames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
+import classNames from "helpers/classNames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 
-import type { IconProp } from '@fortawesome/fontawesome-svg-core';
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 /**
  * Possible values for a choice in `ChoiceSelect`
@@ -56,11 +56,11 @@ export default function ChoiceSelect({
   let shuffledChoices = shuffle
     ? choices.sort(() => 0.5 - Math.random())
     : choices;
-  shuffledChoices = shuffledChoices.filter(c => c.value !== 'OTHER');
+  shuffledChoices = shuffledChoices.filter((c) => c.value !== "OTHER");
   if (includeOther) {
     shuffledChoices.push({
-      value: 'OTHER',
-      display: 'Other',
+      value: "OTHER",
+      display: "Other",
       icon: faEllipsis,
     });
   }
@@ -69,31 +69,45 @@ export default function ChoiceSelect({
   const cols = numCols ?? Math.min(shuffledChoices.length, 3);
 
   return (
-    <div className={classNames('text-center grid grid-cols-1 md:grid-cols-2',
-                                cols === 3 && 'lg:grid-cols-3',
-                                cols === 4 && 'lg:grid-cols-4')}
+    <div
+      className={classNames(
+        "text-center grid grid-cols-1 md:grid-cols-2",
+        cols === 3 && "lg:grid-cols-3",
+        cols === 4 && "lg:grid-cols-4"
+      )}
     >
-      {shuffledChoices.map((choice, i) =>
-        <div className='p-3 text-center' key={i}>
+      {shuffledChoices.map((choice, i) => (
+        <div className="p-3 text-center" key={i}>
           <div
             onClick={() => onClick(choice.value)}
-            role='button'
-            className='border-4 border-alu-mid-gray bg-alu-light-gray hover:bg-alu-light-gray-darker
-                       rounded-xl p-5 h-48 overflow-hidden flex flex-col grow'
+            role="button"
+            className="border-4 border-alu-mid-gray bg-alu-light-gray hover:bg-alu-light-gray-darker
+                       rounded-xl p-5 h-48 overflow-hidden flex flex-col grow"
           >
-            {choice.icon && <div>
-              {typeof(choice.icon) === 'string'
-                ? <img src={choice.icon} alt={`${choice.display} logo`} className='w-20 mx-auto' />
-                : <FontAwesomeIcon icon={choice.icon} size='5x' style={{ color: choice.iconColor }} />
-              }
-              <hr className='my-3' />
-            </div>}
-            <div className='flex grow items-center'>
-              <p className='text-xl font-semibold mx-auto'>{choice.display}</p>
+            {choice.icon && (
+              <div>
+                {typeof choice.icon === "string" ? (
+                  <img
+                    src={choice.icon}
+                    alt={`${choice.display} logo`}
+                    className="w-20 mx-auto"
+                  />
+                ) : (
+                  <FontAwesomeIcon
+                    icon={choice.icon}
+                    size="5x"
+                    style={{ color: choice.iconColor }}
+                  />
+                )}
+                <hr className="my-3" />
+              </div>
+            )}
+            <div className="flex grow items-center">
+              <p className="text-xl font-semibold mx-auto">{choice.display}</p>
             </div>
           </div>
         </div>
-      )}
+      ))}
     </div>
   );
 }

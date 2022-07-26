@@ -1,2 +1,2 @@
-import withShortcuts from './plugin';
+import withShortcuts from "./plugin";
 export default withShortcuts;

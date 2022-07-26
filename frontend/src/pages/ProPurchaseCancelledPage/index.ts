@@ -1,2 +1,2 @@
-import ProPurchaseCancelledPage from './ProPurchaseCancelledPage';
+import ProPurchaseCancelledPage from "./ProPurchaseCancelledPage";
 export default ProPurchaseCancelledPage;

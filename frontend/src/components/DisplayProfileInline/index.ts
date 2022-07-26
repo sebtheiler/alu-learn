@@ -1,2 +1,2 @@
-import DisplayProfileInline from './DisplayProfileInline';
+import DisplayProfileInline from "./DisplayProfileInline";
 export default DisplayProfileInline;

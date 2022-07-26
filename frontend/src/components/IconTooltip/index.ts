@@ -1,2 +1,2 @@
-import IconTooltip from './IconTooltip';
+import IconTooltip from "./IconTooltip";
 export default IconTooltip;

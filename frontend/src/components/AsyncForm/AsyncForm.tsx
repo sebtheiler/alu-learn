@@ -1,8 +1,8 @@
-import Button from 'components/Button';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { useCallback, useMemo, useState } from 'react';
+import Button from "components/Button";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useCallback, useMemo, useState } from "react";
 
-import type { ButtonProps } from 'components/Button';
+import type { ButtonProps } from "components/Button";
 
 interface AsyncFormProps {
   /**
@@ -29,23 +29,31 @@ export default function AsyncForm({
 }: AsyncFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmitWrapper = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (isLoading) return;
-    setIsLoading(true);
-    await onSubmit(e)
-    setIsLoading(false);
-  }, [onSubmit, isLoading]);
+  const onSubmitWrapper = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (isLoading) return;
+      setIsLoading(true);
+      await onSubmit(e);
+      setIsLoading(false);
+    },
+    [onSubmit, isLoading]
+  );
 
   const faIcon = useMemo(
-    () => isLoading ? faSpinner : buttonProps?.faIcon,
-    [isLoading, buttonProps?.faIcon],
+    () => (isLoading ? faSpinner : buttonProps?.faIcon),
+    [isLoading, buttonProps?.faIcon]
   );
 
   return (
     <form onSubmit={onSubmitWrapper}>
       {children}
-      <Button {...buttonProps} type='submit' faIcon={faIcon} _spin={isLoading} />
+      <Button
+        {...buttonProps}
+        type="submit"
+        faIcon={faIcon}
+        _spin={isLoading}
+      />
     </form>
   );
 }

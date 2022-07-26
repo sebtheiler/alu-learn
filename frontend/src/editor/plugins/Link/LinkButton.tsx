@@ -1,9 +1,9 @@
-import Tooltip from '@components/Tooltip';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLink } from '@fortawesome/free-solid-svg-icons'
-import { insertLink } from './helpers';
+import Tooltip from "components/Tooltip";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { insertLink } from "./helpers";
 
-import type { ExtendedReactEditor } from '../../types';
+import type { ExtendedReactEditor } from "../../types";
 
 interface LinkButtonProps {
   /**
@@ -19,26 +19,28 @@ interface LinkButtonProps {
 /**
  * Display a button to insert a link into a SlateJS editor
  */
-export default function LinkButton({ editor, tabbable=true }: LinkButtonProps) {
+export default function LinkButton({
+  editor,
+  tabbable = true,
+}: LinkButtonProps) {
   return (
-    <Tooltip tooltip='Insert Link'>
+    <Tooltip tooltip="Insert Link">
       <button
-        onClick={event => {
+        onClick={(event) => {
           event.preventDefault();
-          const url = window.prompt('Enter the URL of the link:');
+          const url = window.prompt("Enter the URL of the link:");
           if (!url) return;
           insertLink(editor, url);
         }}
         style={{
-          background: 'rgba(0, 0, 0, 0)',
-          border: 'none',
+          background: "rgba(0, 0, 0, 0)",
+          border: "none",
         }}
         tabIndex={tabbable ? undefined : -1}
-        className='px-2 py-1'
+        className="px-2 py-1"
       >
         <FontAwesomeIcon icon={faLink} />
       </button>
     </Tooltip>
   );
 }
-

@@ -1,2 +1,2 @@
-import TeX from './TeX';
+import TeX from "./TeX";
 export default TeX;

@@ -1,29 +1,33 @@
-import Button from 'components/Button';
-import ButtonGroup from 'components/ButtonGroup';
-import GlobalContext from '@global';
-import LogInModal from 'components/Modal/LogInModal';
-import SignUpModal from 'components/Modal/SignUpModal';
-import { CredentialResponse, useGoogleOneTapLogin } from '@react-oauth/google';
-import { useContext } from 'react';
+import Button from "components/Button";
+import ButtonGroup from "components/ButtonGroup";
+import GlobalContext from "global";
+import LogInModal from "components/Modal/LogInModal";
+import SignUpModal from "components/Modal/SignUpModal";
+import { CredentialResponse, useGoogleOneTapLogin } from "@react-oauth/google";
+import { useContext } from "react";
 
-
-const onGoogleLoginSuccess = (credResp: CredentialResponse) => console.log(credResp);
+const onGoogleLoginSuccess = (credResp: CredentialResponse) =>
+  console.log(credResp);
 
 export default function LoggedOut() {
-  const { setSignUpModalOpen, setLogInModalOpen } = useContext(GlobalContext);
+  const { setSignUpModalOpen, setLogInModalOpen } =
+    useContext(GlobalContext) ?? {};
+  console.log("??????????????????", setSignUpModalOpen);
   useGoogleOneTapLogin({
     onSuccess: onGoogleLoginSuccess,
-    onError: () => console.log('Error'),
+    onError: () => console.log("Error"),
   });
 
   return (
-    <div className='ml-auto mr-5'>
+    <div className="ml-auto mr-5">
       <ButtonGroup spaced>
-        <Button onClick={() => setLogInModalOpen(true)} variant='white'>Log-in</Button>
+        <Button onClick={() => setLogInModalOpen(true)} variant="white">
+          Log-in
+        </Button>
         <Button onClick={() => setSignUpModalOpen(true)}>Sign-up</Button>
       </ButtonGroup>
-      <SignUpModal />
-      <LogInModal />
+      {/* <SignUpModal />
+      <LogInModal /> */}
     </div>
   );
 }

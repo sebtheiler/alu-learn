@@ -1,20 +1,20 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer components {
   .help-section {
     @apply grid grid-cols-2 border-b-2 border-gray-300 py-3 my-4;
 
-    >.help-section-text {
+    > .help-section-text {
       @apply max-w-md mx-auto flex items-center;
 
-      >div h2 {
+      > div h2 {
         @apply text-xl font-semibold;
       }
     }
 
-    >.help-section-image >img {
+    > .help-section-image > img {
       @apply max-h-96;
     }
   }

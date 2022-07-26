@@ -1,5 +1,5 @@
-import { update } from 'jdenticon';
-import { useRef, useEffect } from 'react';
+import { update } from "jdenticon";
+import { useRef, useEffect } from "react";
 
 interface JdenticonProps {
   /**
@@ -24,9 +24,23 @@ interface JdenticonProps {
  * Renders a Jdenticon icon
  * @see https://github.com/jmcudd/react-jdenticon/blob/master/src/index.js
  */
-export default function Jdenticon({ value, size, style, className }: JdenticonProps) {
+export default function Jdenticon({
+  value,
+  size,
+  style,
+  className,
+}: JdenticonProps) {
   const icon = useRef<SVGSVGElement>(null);
   useEffect(() => update(icon.current as Element, value), [value]);
 
-  return <svg data-jdenticon-value={value} height={size} ref={icon} width={size} style={style} className={className} />;
+  return (
+    <svg
+      data-jdenticon-value={value}
+      height={size}
+      ref={icon}
+      width={size}
+      style={style}
+      className={className}
+    />
+  );
 }

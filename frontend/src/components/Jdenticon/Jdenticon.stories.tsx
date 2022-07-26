@@ -1,16 +1,18 @@
-import { ComponentStory } from '@storybook/react';
+import { ComponentStory } from "@storybook/react";
 
-import Jdenticon from '.';
+import Jdenticon from ".";
 
 export default {
-  title: 'Components/Jdenticon',
+  title: "Components/Jdenticon",
   component: Jdenticon,
-}
+};
 
-const Template: ComponentStory<typeof Jdenticon> = (args) => <Jdenticon {...args} />;
+const Template: ComponentStory<typeof Jdenticon> = (args) => (
+  <Jdenticon {...args} />
+);
 
 export const Example = Template.bind({});
 Example.args = {
-  value: 'whatever',
+  value: "whatever",
   size: 400,
 };

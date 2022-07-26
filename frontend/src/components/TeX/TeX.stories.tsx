@@ -1,11 +1,11 @@
-import { ComponentStory } from '@storybook/react';
+import { ComponentStory } from "@storybook/react";
 
-import TeX from '.';
+import TeX from ".";
 
 export default {
-  title: 'Components/TeX',
+  title: "Components/TeX",
   component: TeX,
-}
+};
 
 const Template: ComponentStory<typeof TeX> = (args) => <TeX {...args} />;
 
@@ -18,5 +18,5 @@ QuadraticEquation.args = {
 export const InvalidEquation = Template.bind({});
 InvalidEquation.args = {
   math: String.raw`\frac{ a^2`,
-  errorColor: '#D73737',
+  errorColor: "#D73737",
 };

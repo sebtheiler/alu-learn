@@ -1,20 +1,20 @@
 // Variables
-$lightGray: #E2E2E2;
-$darkGray: #343A40;
+$lightGray: #e2e2e2;
+$darkGray: #343a40;
 $lightBackground: #fafafa;
 $unlitBackground: #e5e5e5;
 $litBackground: #fd9626;
-$primaryBlue: #337BFF;
+$primaryBlue: #337bff;
 $primaryPurple: #6a21bc;
 $lightPurple: #8166ee;
 $ultraLightPurple: #e2d1f1;
 $darkPurple: #290254;
 $currentlyStudiedColor: #5ed149;
-$previouslyStudiedColor: #FDCE29;
+$previouslyStudiedColor: #fdce29;
 
 // General
 .navbar {
-  background-color: $darkPurple!important;
+  background-color: $darkPurple !important;
 }
 
 // Studying Target Bar
@@ -24,36 +24,36 @@ $previouslyStudiedColor: #FDCE29;
 
 // Buttons
 .btn-primary {
-  background-color: $primaryPurple!important;
-  border-color: $primaryPurple!important;
+  background-color: $primaryPurple !important;
+  border-color: $primaryPurple !important;
 
   &:hover {
-    background-color: darken($primaryPurple, 5%)!important;
+    background-color: darken($primaryPurple, 5%) !important;
   }
 }
 
 .btn-primary-blue {
-  background-color: $primaryBlue!important;
-  border-color: $primaryBlue!important;
-  color: white!important;
+  background-color: $primaryBlue !important;
+  border-color: $primaryBlue !important;
+  color: white !important;
 }
 
 .btn-outline-primary {
-  color: $primaryPurple!important;
-  border-color: $primaryPurple!important;
+  color: $primaryPurple !important;
+  border-color: $primaryPurple !important;
 
   &:hover {
-    color: white!important;
-    background-color: $primaryPurple!important;
+    color: white !important;
+    background-color: $primaryPurple !important;
   }
 }
 
 .btn-light {
-  color: $primaryPurple!important;
+  color: $primaryPurple !important;
 }
 
 .btn-outline-light:hover {
-  color: $primaryPurple!important;
+  color: $primaryPurple !important;
 }
 
 .alert-info {

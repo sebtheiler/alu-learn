@@ -1,11 +1,10 @@
-import Tooltip from '@components/Tooltip';
-import classNames from '@helpers/classNames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { MouseEventHandler, useMemo, useState } from 'react';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import Tooltip from "components/Tooltip";
+import classNames from "helpers/classNames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { MouseEventHandler, useMemo, useState } from "react";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
-import type { IconProp } from '@fortawesome/fontawesome-svg-core';
-
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 interface IconTooltipProps {
   /**
@@ -39,20 +38,20 @@ export default function IconTooltip({
     setIsLoading(true);
     await onClick(e);
     setIsLoading(false);
-  }
+  };
 
   const icon = useMemo(
-    () => isLoading ? faSpinner : faIcon,
-    [isLoading, faIcon],
+    () => (isLoading ? faSpinner : faIcon),
+    [isLoading, faIcon]
   );
 
   return (
     <Tooltip tooltip={tooltip}>
-      <span onClick={handleClick} className='cursor-pointer text-center'>
+      <span onClick={handleClick} className="cursor-pointer text-center">
         <FontAwesomeIcon
           icon={icon}
           style={style}
-          className={classNames(className, 'mx-auto')}
+          className={classNames(className, "mx-auto")}
           spin={isLoading}
         />
       </span>

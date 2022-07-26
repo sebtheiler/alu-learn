@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html * {
+  font-family: "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
+}
+
+/* Don't let the global font affect the KaTeX */
+.katex * {
+  font-family: KaTeX_Main, "Times New Roman", serif;
+}

@@ -1,16 +1,18 @@
-import withFullContext from '@helpers/withFullContext';
-import withNavbar from '@helpers/withNavbar';
-import { ComponentStory } from '@storybook/react';
+import withFullContext from "helpers/withFullContext";
+import withNavbar from "helpers/withNavbar";
+import { ComponentStory } from "@storybook/react";
 
-import ProUpgradePage from '.';
+import ProUpgradePage from ".";
 
 export default {
-  title: 'Pages/ProUpgradePage',
+  title: "Pages/ProUpgradePage",
   component: ProUpgradePage,
-  decorators: [withNavbar, withFullContext]
-}
+  decorators: [withNavbar, withFullContext],
+};
 
-const Template: ComponentStory<typeof ProUpgradePage> = (args) => <ProUpgradePage {...args} />;
+const Template: ComponentStory<typeof ProUpgradePage> = (args) => (
+  <ProUpgradePage {...args} />
+);
 
 export const NotLoggedIn = Template.bind({});
 NotLoggedIn.args = {
@@ -54,4 +56,3 @@ ProFromOrganization.args = {
   isLoggedIn: true,
   proTrialExpires: null,
 };
-

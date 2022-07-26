@@ -1,11 +1,12 @@
-@import '../../colors';
+@import "../../colors";
 
 .flashcard-link {
   color: $lightPurple;
   font-weight: bold;
 }
 
-.math-block, .math-inline {
+.math-block,
+.math-inline {
   * {
     font-family: Courier, monospace;
   }

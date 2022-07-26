@@ -1,2 +1,2 @@
-import LinkButton from './LinkButton';
+import LinkButton from "./LinkButton";
 export default LinkButton;

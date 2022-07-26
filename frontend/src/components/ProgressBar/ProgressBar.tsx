@@ -17,16 +17,18 @@ export default function ProgressBar({
   totalNumSteps,
 }: ProgressBarProps) {
   const width = Math.floor(
-    (Math.min(stepNum, totalNumSteps)/totalNumSteps) * 100
+    (Math.min(stepNum, totalNumSteps) / totalNumSteps) * 100
   );
 
   return (
-    <div className='w-full h-8 p-0 border-4 border-alu-mid-gray rounded-full bg-alu-light-gray overflow-hidden'>
+    <div className="w-full h-8 p-0 border-4 border-alu-mid-gray rounded-full bg-alu-light-gray overflow-hidden">
       <div
-        className='bg-gradient-to-r from-lime-600 to-lime-400 h-full rounded-full'
-        style={{ width: `${width}%`, transition: '0.5s cubic-bezier(.21, .59, .56, 1.29)' }}
-      >
-      </div>
+        className="bg-gradient-to-r from-lime-600 to-lime-400 h-full rounded-full"
+        style={{
+          width: `${width}%`,
+          transition: "0.5s cubic-bezier(.21, .59, .56, 1.29)",
+        }}
+      ></div>
     </div>
   );
 }

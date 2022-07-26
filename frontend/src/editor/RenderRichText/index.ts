@@ -1,2 +1,2 @@
-import RenderRichText from './RenderRichText';
+import RenderRichText from "./RenderRichText";
 export default RenderRichText;

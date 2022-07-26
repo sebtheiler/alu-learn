@@ -1,12 +1,19 @@
-import Tooltip from 'components/Tooltip';
-import capitalize from '@helpers/capitalize';
-import { isMarkActive, toggleMark } from '../../FullEditable/helpers';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Tooltip from "components/Tooltip";
+import capitalize from "helpers/capitalize";
+import { isMarkActive, toggleMark } from "../../FullEditable/helpers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import type { ReactEditor } from 'slate-react';
-import type { IconProp } from '@fortawesome/fontawesome-svg-core';
+import type { ReactEditor } from "slate-react";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 
-type MarkFormat = 'bold' | 'italic' | 'underline' | 'code' | 'math_inline' | 'link' | 'flashcard_link';
+type MarkFormat =
+  | "bold"
+  | "italic"
+  | "underline"
+  | "code"
+  | "math_inline"
+  | "link"
+  | "flashcard_link";
 
 interface MarkButtonProps {
   /**
@@ -30,19 +37,26 @@ interface MarkButtonProps {
 /**
  * Displays a button to apply mark rich text formatting to an editor
  */
-export default function MarkButton({ format, faIcon, editor, tabbable }: MarkButtonProps) {
+export default function MarkButton({
+  format,
+  faIcon,
+  editor,
+  tabbable,
+}: MarkButtonProps) {
   return (
-    <Tooltip tooltip={capitalize(format.replace('_', ' '), true)}>
+    <Tooltip tooltip={capitalize(format.replace("_", " "), true)}>
       <button
-        onClick={event => {
+        onClick={(event) => {
           event.preventDefault();
           toggleMark(editor, format);
         }}
         style={{
-          background: isMarkActive(editor, format) ? '#e1e6ed' : 'rgba(0, 0, 0, 0)',
+          background: isMarkActive(editor, format)
+            ? "#e1e6ed"
+            : "rgba(0, 0, 0, 0)",
         }}
         tabIndex={tabbable ? undefined : -1}
-        className='background-dark px-2 py-1'
+        className="background-dark px-2 py-1"
       >
         <FontAwesomeIcon icon={faIcon} />
       </button>

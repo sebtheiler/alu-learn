@@ -6,11 +6,10 @@ import React, {
   ReactElement,
   ElementType,
   memo,
-} from 'react';
-import KaTeX from 'katex';
+} from "react";
+import KaTeX from "katex";
 
-import type { KatexOptions } from 'katex';
-
+import type { KatexOptions } from "katex";
 
 interface TeXProps {
   /**
@@ -35,17 +34,17 @@ interface TeXProps {
  */
 const TeX: React.FC<TeXProps> = ({
   math,
-  block=false,
-  errorColor='#D73737',
+  block = false,
+  errorColor = "#D73737",
   renderError,
   settings,
   as: asComponent,
   ...props
 }) => {
-  const Component = asComponent || (block ? 'div' : 'span');
+  const Component = asComponent || (block ? "div" : "span");
   const [state, setState] = useState<
     { innerHtml: string } | { errorElement: React.ReactElement }
-  >({ innerHtml: '' });
+  >({ innerHtml: "" });
 
   useEffect(() => {
     try {
@@ -66,14 +65,14 @@ const TeX: React.FC<TeXProps> = ({
     }
   }, [block, math, errorColor, renderError, settings]);
 
-  if ('errorElement' in state) {
+  if ("errorElement" in state) {
     return state.errorElement;
   }
 
   return (
     <Component
       {...props}
-      style={{ 'fontFamily': 'KaTeX_Main, "Times New Roman", serif' }}
+      style={{ fontFamily: 'KaTeX_Main, "Times New Roman", serif' }}
       dangerouslySetInnerHTML={{ __html: state.innerHtml }}
     />
   );

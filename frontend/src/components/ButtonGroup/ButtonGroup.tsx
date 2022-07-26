@@ -1,5 +1,5 @@
-import Button, { ButtonProps } from 'components/Button';
-import { ReactElement } from 'react';
+import Button, { ButtonProps } from "components/Button";
+import { ReactElement } from "react";
 
 interface ButtonGroupProps {
   /**
@@ -24,10 +24,10 @@ export default function ButtonGroup({
   return (
     <div className={className}>
       {children.map((button, i) => {
-        const newProps = {...button.props}
+        const newProps = { ...button.props };
         if (i !== children.length - 1) {
           newProps._unroundRight = true;
-          if (spaced) newProps.className += ' mr-1';
+          if (spaced) newProps.className += " mr-1";
         }
         if (i !== 0) {
           newProps._unroundLeft = true;

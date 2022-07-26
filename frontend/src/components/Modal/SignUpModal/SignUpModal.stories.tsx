@@ -1,26 +1,26 @@
-import GlobalContext from '@global';
-import { ComponentStory } from '@storybook/react';
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import { withReactContext } from 'storybook-react-context';
+import GlobalContext from "global";
+import { ComponentStory } from "@storybook/react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { withReactContext } from "storybook-react-context";
 
-import SignUpModal from '.';
+import SignUpModal from ".";
 
 export default {
-  title: 'Components/Modal/SignUpModal',
+  title: "Components/Modal/SignUpModal",
   decorators: [
     withReactContext({
       Context: GlobalContext,
-      initialState: { 
+      initialState: {
         signUpModalOpen: true,
-        setSignUpModalOpen: () => console.log('setting value'),
+        setSignUpModalOpen: () => console.log("setting value"),
       },
     }),
   ],
   component: SignUpModal,
-}
+};
 
 const Template: ComponentStory<typeof SignUpModal> = () => (
-  <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID as string}>
+  <GoogleOAuthProvider clientId={process.env.GOOGLE_OAUTH_CLIENT_ID as string}>
     <SignUpModal />
   </GoogleOAuthProvider>
 );

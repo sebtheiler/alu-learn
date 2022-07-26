@@ -1,2 +1,2 @@
-import AsyncForm from './AsyncForm';
+import AsyncForm from "./AsyncForm";
 export default AsyncForm;

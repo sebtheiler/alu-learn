@@ -1,21 +1,23 @@
-import withFullContext from '@helpers/withFullContext';
-import { ComponentStory } from '@storybook/react';
+import withFullContext from "helpers/withFullContext";
+import { ComponentStory } from "@storybook/react";
 
-import DisplayProfileInline from '.';
+import DisplayProfileInline from ".";
 
 export default {
-  title: 'Components/DisplayProfileInline',
+  title: "Components/DisplayProfileInline",
   component: DisplayProfileInline,
   decorators: [withFullContext],
-}
+};
 
-const Template: ComponentStory<typeof DisplayProfileInline> = (args) => <DisplayProfileInline {...args} />;
+const Template: ComponentStory<typeof DisplayProfileInline> = (args) => (
+  <DisplayProfileInline {...args} />
+);
 
 export const ExampleUser = Template.bind({});
 ExampleUser.args = {
   profile: {
-    firstName: 'Example',
-    lastName: 'User',
-    username: 'exampleuser',
-  }
+    firstName: "Example",
+    lastName: "User",
+    username: "exampleuser",
+  },
 };

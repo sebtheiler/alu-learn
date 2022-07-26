@@ -1,25 +1,30 @@
 // Adapted from https://codesandbox.io/s/react-material-design-ripple-effect-kn1tr?file=/src/Ripple.jsx
-import { useLayoutEffect, useState } from 'react';
-import './Ripple.scss';
+import { useLayoutEffect, useState } from "react";
 
 const useDebouncedRippleCleanUp = (
   rippleCount: number,
   duration: number,
-  cleanUpFunction: () => void,
+  cleanUpFunction: () => void
 ) => {
   useLayoutEffect(() => {
-    let bounce = null;
+    let bounce: NodeJS.Timeout | null = null;
     if (rippleCount > 0) {
-      clearTimeout(bounce);
+      clearTimeout(bounce ?? undefined);
 
       bounce = setTimeout(() => {
         cleanUpFunction();
-        clearTimeout(bounce);
+        clearTimeout(bounce ?? undefined);
       }, duration * 4);
     }
 
-    return () => clearTimeout(bounce);
+    return () => clearTimeout(bounce ?? undefined);
   }, [rippleCount, duration, cleanUpFunction]);
+};
+
+interface RippleType {
+  x: number;
+  y: number;
+  size: number;
 }
 
 interface RippleProps {
@@ -28,8 +33,8 @@ interface RippleProps {
    */
   color?: string;
 }
-export default function Ripple({ color='white' }: RippleProps) {
-  const [rippleArray, setRippleArray] = useState([]);
+export default function Ripple({ color = "white" }: RippleProps) {
+  const [rippleArray, setRippleArray] = useState<RippleType[]>([]);
 
   useDebouncedRippleCleanUp(rippleArray.length, 800, () => {
     setRippleArray([]);
@@ -49,19 +54,19 @@ export default function Ripple({ color='white' }: RippleProps) {
     const newRipple = {
       x,
       y,
-      size
+      size,
     };
 
     setRippleArray([...rippleArray, newRipple]);
-  }
+  };
 
   return (
-    <div className='absolute top-0 right-0 bottom-0 left-0' onClick={addRipple}>
+    <div className="absolute top-0 right-0 bottom-0 left-0" onClick={addRipple}>
       {rippleArray.length > 0 &&
-        rippleArray.map((ripple, index) =>
+        rippleArray.map((ripple, index) => (
           <span
-            key={'span' + index}
-            className='ripple'
+            key={"span" + index}
+            className="ripple"
             style={{
               top: ripple.y,
               left: ripple.x,
@@ -70,8 +75,7 @@ export default function Ripple({ color='white' }: RippleProps) {
               background: color,
             }}
           />
-        )
-      }
+        ))}
     </div>
   );
 }

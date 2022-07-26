@@ -1,2 +1,2 @@
-import RenderEditor from './RenderEditor';
+import RenderEditor from "./RenderEditor";
 export default RenderEditor;

@@ -1,13 +1,15 @@
-import { ComponentStory } from '@storybook/react';
+import { ComponentStory } from "@storybook/react";
 
-import ProgressBar from '.';
+import ProgressBar from ".";
 
 export default {
-  title: 'Components/ProgressBar',
+  title: "Components/ProgressBar",
   component: ProgressBar,
-}
+};
 
-const Template: ComponentStory<typeof ProgressBar> = (args) => <ProgressBar {...args} />;
+const Template: ComponentStory<typeof ProgressBar> = (args) => (
+  <ProgressBar {...args} />
+);
 
 export const Empty = Template.bind({});
 Empty.args = {

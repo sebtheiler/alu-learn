@@ -2,16 +2,11 @@ const path = require("path");
 
 module.exports = {
   root: true,
-  parser: '@typescript-eslint/parser',
-  plugins: [
-    '@typescript-eslint',
-  ],
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-  ],
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint"],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   rules: {
     "@typescript-eslint/ban-ts-ignore": "off",
     "@typescript-eslint/ban-ts-comment": "off",
-  }
+  },
 };

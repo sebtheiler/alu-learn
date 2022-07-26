@@ -1,9 +1,9 @@
-import classNames from '@helpers/classNames';
-import { Transition } from '@headlessui/react';
-import { usePopper } from 'react-popper';
-import { useState } from 'react';
+import classNames from "helpers/classNames";
+import { Transition } from "@headlessui/react";
+import { usePopper } from "react-popper";
+import { useState } from "react";
 
-import type { Placement } from '@popperjs/core';
+import type { Placement } from "@popperjs/core";
 
 interface TooltipProps {
   /**
@@ -31,7 +31,7 @@ export default function Tooltip({
   children,
   tooltip,
   className,
-  placement='top',
+  placement = "top",
 }: TooltipProps) {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
@@ -41,7 +41,7 @@ export default function Tooltip({
     placement: placement,
     modifiers: [
       {
-        name: 'offset',
+        name: "offset",
         options: {
           offset: [0, 8],
         },
@@ -50,7 +50,7 @@ export default function Tooltip({
   });
 
   return (
-    <div className='inline'>
+    <div className="inline">
       <span
         ref={setRefEl}
         onMouseEnter={() => setIsTooltipOpen(true)}
@@ -60,24 +60,25 @@ export default function Tooltip({
       </span>
       <Transition
         show={isTooltipOpen}
-        enter='ease-out duration-300'
-        enterFrom='opacity-0'
-        enterTo='opacity-100'
-        leave='ease-in duration-200'
-        leaveFrom='opacity-100'
-        leaveTo='opacity-0'
-        className='absolute'
+        enter="ease-out duration-300"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="ease-in duration-200"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+        className="absolute"
       >
         <div
           ref={setPopEl}
-          role='tooltip'
-          className={classNames('bg-gray-900 bg-opacity-90 text-white px-2 py-1\
-                                  rounded-lg absolute text-sm select-none text-center z-50',
-                                  className)}
+          role="tooltip"
+          className={classNames(
+            "bg-gray-900 bg-opacity-90 text-white px-2 py-1\
+                                  rounded-lg absolute text-sm select-none text-center z-50",
+            className
+          )}
           // Keep tooltip open when hovered
           onMouseEnter={() => setIsTooltipOpen(true)}
           onMouseLeave={() => setIsTooltipOpen(false)}
-
           // Popper style and attributes
           style={styles.popper}
           {...attributes.popper}

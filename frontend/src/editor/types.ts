@@ -1,5 +1,5 @@
-import { BaseSelection, Element as SlateElement } from 'slate';
-import { ReactEditor } from 'slate-react';
+import { BaseSelection, Element as SlateElement } from "slate";
+import { ReactEditor } from "slate-react";
 
 /**
  * Extended implementation of SlateJS's `ReactEditor`
@@ -20,7 +20,4 @@ interface ExtendedSlateElement extends SlateElement {
   type?: string;
 }
 
-export type {
-  ExtendedReactEditor,
-  ExtendedSlateElement,
-}
+export type { ExtendedReactEditor, ExtendedSlateElement };

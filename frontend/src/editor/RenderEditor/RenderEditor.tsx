@@ -1,9 +1,9 @@
-import EditorButtons from '../EditorButtons';
-import FullEditable from '../FullEditable';
-import { Slate } from 'slate-react';
+import EditorButtons from "../EditorButtons";
+import FullEditable from "../FullEditable";
+import { Slate } from "slate-react";
 
-import type { Descendant } from 'slate';
-import type { ReactEditor } from 'slate-react';
+import type { Descendant } from "slate";
+import type { ReactEditor } from "slate-react";
 
 interface RenderEditorProps {
   /**
@@ -43,31 +43,32 @@ export default function RenderEditor({
   isPro,
   readOnly,
 }: RenderEditorProps) {
-  return (<div className='editor'>
-    <Slate
-      editor={editor}
-      value={value}
-      onChange={newValue => {
-        setValue(newValue);
-      }}
-    >
-      <div className='editor-head'>
-        <EditorButtons
-          editor={editor}
-          displayFlashCardLinkButton={displayFlashCardLinkButton}
-          isPro={isPro}
-          tabbable={false}
-          className='mb-1'
-          
-        />
-      </div>
-      <div className='editor-body'>
-        <FullEditable
-          editor={editor}
-          className='p-3 border rounded-lg'
-          readOnly={readOnly}
-        />
-      </div>
-    </Slate>
-  </div>);
+  return (
+    <div className="editor">
+      <Slate
+        editor={editor}
+        value={value}
+        onChange={(newValue) => {
+          setValue(newValue);
+        }}
+      >
+        <div className="editor-head">
+          <EditorButtons
+            editor={editor}
+            displayFlashCardLinkButton={displayFlashCardLinkButton}
+            isPro={isPro}
+            tabbable={false}
+            className="mb-1"
+          />
+        </div>
+        <div className="editor-body">
+          <FullEditable
+            editor={editor}
+            className="p-3 border rounded-lg"
+            readOnly={readOnly}
+          />
+        </div>
+      </Slate>
+    </div>
+  );
 }

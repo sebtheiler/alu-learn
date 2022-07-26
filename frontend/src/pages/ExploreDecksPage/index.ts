@@ -1,2 +1,2 @@
-import ExploreDecksPage from './ExploreDecksPage';
+import ExploreDecksPage from "./ExploreDecksPage";
 export default ExploreDecksPage;

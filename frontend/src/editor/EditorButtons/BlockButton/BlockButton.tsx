@@ -1,13 +1,19 @@
-import Tooltip from '@components/Tooltip';
-import capitalize from 'helpers/capitalize';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ReactEditor } from 'slate-react';
-import { isBlockActive, toggleBlock } from '../../FullEditable/helpers';
+import Tooltip from "components/Tooltip";
+import capitalize from "helpers/capitalize";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ReactEditor } from "slate-react";
+import { isBlockActive, toggleBlock } from "../../FullEditable/helpers";
 
-import type { IconProp } from '@fortawesome/fontawesome-svg-core';
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 
-type numbers = 'one' | 'two' | 'three' | 'four' | 'five' | 'six';
-type BlockFormat = `heading-${numbers}` | 'numbered-list' | 'bulleted-list' | 'math-block' | 'list-item' | 'image';
+type numbers = "one" | "two" | "three" | "four" | "five" | "six";
+type BlockFormat =
+  | `heading-${numbers}`
+  | "numbered-list"
+  | "bulleted-list"
+  | "math-block"
+  | "list-item"
+  | "image";
 
 interface BlockButtonProps {
   /**
@@ -31,19 +37,27 @@ interface BlockButtonProps {
 /**
  * Displays a button to apply block rich text formatting to an editor
  */
-export default function BlockButton({ format, faIcon, editor, tabbable=true }: BlockButtonProps) {
+export default function BlockButton({
+  format,
+  faIcon,
+  editor,
+  tabbable = true,
+}: BlockButtonProps) {
   return (
-    <Tooltip tooltip={capitalize(format.replace('-', ' '), true)} className='w-24'>
+    <Tooltip
+      tooltip={capitalize(format.replace("-", " "), true)}
+      className="w-24"
+    >
       <button
-        onClick={event => {
+        onClick={(event) => {
           event.preventDefault();
           toggleBlock(editor, format);
         }}
         style={{
-          background: isBlockActive(editor, format) ? '#e1e6ed' : 'transparent',
+          background: isBlockActive(editor, format) ? "#e1e6ed" : "transparent",
         }}
         tabIndex={tabbable ? undefined : -1}
-        className='p-1 mx-1'
+        className="p-1 mx-1"
       >
         <FontAwesomeIcon icon={faIcon} />
       </button>

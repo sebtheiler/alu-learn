@@ -1,15 +1,15 @@
-import withFullContext from '@helpers/withFullContext';
-import { ComponentStory } from '@storybook/react';
+import withFullContext from "helpers/withFullContext";
+import { ComponentStory } from "@storybook/react";
 
-import Navbar from '.';
+import Navbar from ".";
 
 export default {
-  title: 'Components/Navbar',
+  title: "Components/Navbar",
   component: Navbar,
   decorators: [withFullContext],
-}
+};
 
-const Template: ComponentStory<typeof Navbar> = args => <Navbar {...args} />
+const Template: ComponentStory<typeof Navbar> = (args) => <Navbar {...args} />;
 
 export const NotLoggedIn = Template.bind({});
 NotLoggedIn.args = {
@@ -23,6 +23,6 @@ LoggedIn.args = {
     currentStreak: 10,
     doneReviewsToday: true,
   },
-  username: 'username',
+  username: "username",
   isPro: true,
 };

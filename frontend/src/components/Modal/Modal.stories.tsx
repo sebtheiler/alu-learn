@@ -1,26 +1,28 @@
-import { ComponentStory } from '@storybook/react';
-import { useState } from 'react';
+import { ComponentStory } from "@storybook/react";
+import { useState } from "react";
 
-import Modal from '.';
-import Button from 'components/Button';
+import Modal from ".";
+import Button from "components/Button";
 
 export default {
-  title: 'Components/Modal',
+  title: "Components/Modal",
   component: Modal,
-}
+};
 
 const Template: ComponentStory<typeof Modal> = (args) => {
   const [open, setOpen] = useState(true);
-  return (<>
-    <Button onClick={() => setOpen(true)}>Open Modal</Button>
-    <Modal open={open} close={() => setOpen(false)} {...args} />
-  </>);
-}
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open Modal</Button>
+      <Modal open={open} close={() => setOpen(false)} {...args} />
+    </>
+  );
+};
 
 export const Example = Template.bind({});
 Example.args = {
   children: <>Example text</>,
-  title: 'Example Modal',
+  title: "Example Modal",
   buttons: <Button block>Example button</Button>,
-  maxWidth: 'xl',
+  maxWidth: "xl",
 };

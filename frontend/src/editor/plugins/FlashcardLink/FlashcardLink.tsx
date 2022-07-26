@@ -1,9 +1,9 @@
-import Popover from '@components/Popover';
-import IconTooltip from 'components/IconTooltip';
-import RenderRichText from '../../RenderRichText';
-import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import Popover from "components/Popover";
+import IconTooltip from "components/IconTooltip";
+import RenderRichText from "../../RenderRichText";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
-import type { ExtendedSlateElement } from 'editor/types';
+import type { ExtendedSlateElement } from "editor/types";
 
 interface FlashCardLinkComponentProps {
   /**
@@ -35,34 +35,44 @@ export default function FlashCardLinkComponent({
   // );
   const flashcard = {} as any;
 
-  const editFlashcard = async (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const editFlashcard = async (
+    e: React.MouseEvent<HTMLElement, MouseEvent>
+  ) => {
     e.preventDefault();
-    window.open(`/deck/${flashcard?.parent_deck_id}/flashcards/${flashcard?.id}/edit/`, '_blank');
-  }
+    window.open(
+      `/deck/${flashcard?.parent_deck_id}/flashcards/${flashcard?.id}/edit/`,
+      "_blank"
+    );
+  };
 
   return (
     <Popover
       popover={
         <div>
-          <h3 className='text-md text-center font-bold'>Flashcard Preview</h3>
-          <hr className='my-3' />
-          {flashcard?.id && <IconTooltip
-            tooltip='Edit this flashcard'
-            onClick={editFlashcard}
-            faIcon={faExternalLinkAlt}
-            className='float-right'
-          />}
-          {flashcard?.data ?
-            flashcard.data.fields.map((field, i) => <>
-              <RenderRichText text={field} />
-              {i !== flashcard.data.fields.length - 1 && <hr />}
-            </>)
-          : <p>Flashcard not found</p>
-          }
+          <h3 className="text-md text-center font-bold">Flashcard Preview</h3>
+          <hr className="my-3" />
+          {flashcard?.id && (
+            <IconTooltip
+              tooltip="Edit this flashcard"
+              onClick={editFlashcard}
+              faIcon={faExternalLinkAlt}
+              className="float-right"
+            />
+          )}
+          {flashcard?.data ? (
+            flashcard.data.fields.map((field, i) => (
+              <>
+                <RenderRichText text={field} />
+                {i !== flashcard.data.fields.length - 1 && <hr />}
+              </>
+            ))
+          ) : (
+            <p>Flashcard not found</p>
+          )}
         </div>
       }
     >
-      <span {...attributes} className='flashcard-link'>
+      <span {...attributes} className="flashcard-link">
         {children}
       </span>
     </Popover>

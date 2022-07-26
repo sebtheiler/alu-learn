@@ -4,35 +4,35 @@ import {
   Range,
   Point,
   Element as SlateElement,
-} from 'slate';
-import { ExtendedReactEditor, ExtendedSlateElement } from '../../types';
+} from "slate";
+import { ExtendedReactEditor, ExtendedSlateElement } from "../../types";
 
-type Shortcut = '*' | '1.' | '$$' | '#' | '##' | '###';
+type Shortcut = "*" | "1." | "$$" | "#" | "##" | "###";
 const SHORTCUTS = {
-  '*':      { type: 'list-item', extra: 'bulleted-list' },
-  '1.':     { type: 'list-item', extra: 'numbered-list' },
-  '$$':     { type: 'math-block', extra: null },
-  '#':      { type: 'heading-one', extra: null },
-  '##':     { type: 'heading-two', extra: null },
-  '###':    { type: 'heading-three', extra: null },
+  "*": { type: "list-item", extra: "bulleted-list" },
+  "1.": { type: "list-item", extra: "numbered-list" },
+  $$: { type: "math-block", extra: null },
+  "#": { type: "heading-one", extra: null },
+  "##": { type: "heading-two", extra: null },
+  "###": { type: "heading-three", extra: null },
 };
 
 // Taken from https://github.com/ianstormtaylor/slate/blob/cb1db7fca914854a61c8f05dca416500d18ce7d3/site/examples/markdown-shortcuts.tsx
 
 /**
- * 
+ *
  * @param editor Edit
- * @returns 
+ * @returns
  */
 const withShortcuts = (editor: ExtendedReactEditor) => {
   const { deleteBackward, insertText } = editor;
 
-  editor.insertText = text => {
+  editor.insertText = (text) => {
     const { selection } = editor;
-    if (text === ' ' && selection && Range.isCollapsed(selection)) {
+    if (text === " " && selection && Range.isCollapsed(selection)) {
       const { anchor } = selection;
       const block = Editor.above(editor, {
-        match: n => Editor.isBlock(editor, n),
+        match: (n) => Editor.isBlock(editor, n),
       });
       const path = block ? block[1] : [];
       const start = Editor.start(editor, path);
@@ -47,20 +47,20 @@ const withShortcuts = (editor: ExtendedReactEditor) => {
           type,
         };
         Transforms.setNodes(editor, newProperties, {
-          match: n => Editor.isBlock(editor, n),
+          match: (n) => Editor.isBlock(editor, n),
         });
 
-        if (type === 'list-item') {
+        if (type === "list-item") {
           const list = {
             type: extra,
             children: [],
           };
           Transforms.wrapNodes(editor, list, {
-            match: n =>
+            match: (n) =>
               !Editor.isEditor(n) &&
               SlateElement.isElement(n) &&
               // @ts-ignore
-              n.type === 'list-item',
+              n.type === "list-item",
           });
         }
 
@@ -69,14 +69,14 @@ const withShortcuts = (editor: ExtendedReactEditor) => {
     }
 
     insertText(text);
-  }
+  };
 
   editor.deleteBackward = (...args) => {
     const { selection } = editor;
 
     if (selection && Range.isCollapsed(selection)) {
       const match = Editor.above(editor, {
-        match: n => Editor.isBlock(editor, n),
+        match: (n) => Editor.isBlock(editor, n),
       });
 
       if (match) {
@@ -87,23 +87,23 @@ const withShortcuts = (editor: ExtendedReactEditor) => {
           !Editor.isEditor(block) &&
           SlateElement.isElement(block) &&
           // @ts-ignore
-          block.type !== 'paragraph' &&
+          block.type !== "paragraph" &&
           Point.equals(selection.anchor, start)
         ) {
           const newProperties: Partial<SlateElement> = {
             // @ts-ignore
-            type: 'paragraph',
+            type: "paragraph",
           };
           Transforms.setNodes(editor, newProperties);
 
           // @ts-ignore
-          if (block.type === 'list-item') {
+          if (block.type === "list-item") {
             Transforms.unwrapNodes(editor, {
-              match: n =>
+              match: (n) =>
                 !Editor.isEditor(n) &&
                 SlateElement.isElement(n) &&
                 // @ts-ignore
-                (n.type === 'bulleted-list' || n.type === 'numbered-list'),
+                (n.type === "bulleted-list" || n.type === "numbered-list"),
               split: true,
             });
           }
@@ -114,9 +114,9 @@ const withShortcuts = (editor: ExtendedReactEditor) => {
 
       deleteBackward(...args);
     }
-  }
+  };
 
   return editor;
-}
+};
 
 export default withShortcuts;

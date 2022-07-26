@@ -1,20 +1,22 @@
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { ComponentStory } from '@storybook/react';
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { ComponentStory } from "@storybook/react";
 
-import AsyncButton from '.';
+import AsyncButton from ".";
 
 export default {
-  title: 'Components/AsyncButton',
+  title: "Components/AsyncButton",
   component: AsyncButton,
-}
+};
 
-const Template: ComponentStory<typeof AsyncButton> = (args) => <AsyncButton {...args}>Hello World</AsyncButton>;
+const Template: ComponentStory<typeof AsyncButton> = (args) => (
+  <AsyncButton {...args}>Hello World</AsyncButton>
+);
 
 export const Primary = Template.bind({});
 Primary.args = {
-  variant: 'primary',
+  variant: "primary",
   pill: true,
   block: false,
   faIcon: faPlus,
-  onClick: async () => await new Promise(r => setTimeout(r, 2000)),
+  onClick: async () => await new Promise((r) => setTimeout(r, 2000)),
 };

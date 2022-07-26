@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 /**
  * Hook that calls a function when there is a click outside of the passed ref
@@ -8,9 +8,9 @@ import { useEffect } from 'react';
  */
 export default function useOutsideClick(
   ref: React.RefObject<HTMLElement> | HTMLElement,
-  onOutsideClick: (event: React.MouseEvent<MouseEvent, HTMLElement>) => void,
+  onOutsideClick: (event: React.MouseEvent<MouseEvent, HTMLElement>) => void
 ) {
-  const el = ref && ('current' in ref ? ref.current : ref);
+  const el = ref && ("current" in ref ? ref.current : ref);
 
   useEffect(() => {
     /**
@@ -23,10 +23,10 @@ export default function useOutsideClick(
     }
 
     // Bind the event listener
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       // Unbind the event listener on clean up
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [ref]);
 }

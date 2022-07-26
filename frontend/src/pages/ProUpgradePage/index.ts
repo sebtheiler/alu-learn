@@ -1,2 +1,2 @@
-import ProUpgradePage from './ProUpgradePage';
+import ProUpgradePage from "./ProUpgradePage";
 export default ProUpgradePage;

@@ -1,2 +1,2 @@
-import ChoiceSelect from './ChoiceSelect';
+import ChoiceSelect from "./ChoiceSelect";
 export default ChoiceSelect;

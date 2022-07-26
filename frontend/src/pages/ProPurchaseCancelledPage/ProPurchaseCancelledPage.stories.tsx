@@ -1,15 +1,17 @@
-import withFullContext from '@helpers/withFullContext';
-import withNavbar from '@helpers/withNavbar';
-import { ComponentStory } from '@storybook/react';
+import withFullContext from "helpers/withFullContext";
+import withNavbar from "helpers/withNavbar";
+import { ComponentStory } from "@storybook/react";
 
-import ProPurchaseCancelledPage from '.';
+import ProPurchaseCancelledPage from ".";
 
 export default {
-  title: 'Pages/ProPurchaseCancelledPage',
+  title: "Pages/ProPurchaseCancelledPage",
   component: ProPurchaseCancelledPage,
-  layout: 'fullscreen',
+  layout: "fullscreen",
   decorators: [withNavbar, withFullContext],
-}
+};
 
-const Template: ComponentStory<typeof ProPurchaseCancelledPage> = () => <ProPurchaseCancelledPage />;
+const Template: ComponentStory<typeof ProPurchaseCancelledPage> = () => (
+  <ProPurchaseCancelledPage />
+);
 export const ProPurchaseCancelledPageExample = Template.bind({});

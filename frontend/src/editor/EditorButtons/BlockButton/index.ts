@@ -1,2 +1,2 @@
-import BlockButton from './BlockButton';
+import BlockButton from "./BlockButton";
 export default BlockButton;

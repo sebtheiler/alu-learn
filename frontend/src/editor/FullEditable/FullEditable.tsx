@@ -1,13 +1,13 @@
-import Element from './Element';
-import Leaf from './Leaf';
-import isHotKey from 'is-hotkey';
-import { Editable } from 'slate-react';
-import { HOTKEYS } from './constants';
-import { toggleMark } from './helpers';
-import { useCallback } from 'react';
-import './FullEditable.scss';
+import Element from "./Element";
+import Leaf from "./Leaf";
+import isHotKey from "is-hotkey";
+import { Editable } from "slate-react";
+import { HOTKEYS } from "./constants";
+import { toggleMark } from "./helpers";
+import { useCallback } from "react";
+import "./FullEditable.scss";
 
-import type { ExtendedReactEditor } from 'editor/types';
+import type { ExtendedReactEditor } from "editor/types";
 
 interface FullEditorProps {
   /**
@@ -29,9 +29,20 @@ interface FullEditorProps {
  * Renders an editable editor.
  * Does not include buttons, a toolbar, or other features
  */
-export default function FullEditable({ editor, readOnly, className, id }: FullEditorProps) {
-  const renderElement = useCallback(props => <Element {...props} readOnly={readOnly} />, [readOnly]);
-  const renderLeaf = useCallback(props => <Leaf {...props} readOnly={readOnly} />, [readOnly]);
+export default function FullEditable({
+  editor,
+  readOnly,
+  className,
+  id,
+}: FullEditorProps) {
+  const renderElement = useCallback(
+    (props) => <Element {...props} readOnly={readOnly} />,
+    [readOnly]
+  );
+  const renderLeaf = useCallback(
+    (props) => <Leaf {...props} readOnly={readOnly} />,
+    [readOnly]
+  );
 
   return (
     <Editable
@@ -41,7 +52,7 @@ export default function FullEditable({ editor, readOnly, className, id }: FullEd
       renderLeaf={renderLeaf}
       className={className}
       spellCheck
-      onKeyDown={event => {
+      onKeyDown={(event) => {
         for (const hotkey in HOTKEYS) {
           if (isHotKey(hotkey, event as any)) {
             event.preventDefault();
@@ -50,7 +61,6 @@ export default function FullEditable({ editor, readOnly, className, id }: FullEd
           }
         }
       }}
-
       onBlur={editor.saveSelectionOnBlur}
     />
   );

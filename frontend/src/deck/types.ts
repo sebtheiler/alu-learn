@@ -1,11 +1,11 @@
-import type { Node as SlateNode } from 'slate';
+import type { Node as SlateNode } from "slate";
 
-export type UUID = string;  // Just a more clear representation
+export type UUID = string; // Just a more clear representation
 
-export type EditAccess = 'PERSONAL' | 'FRIENDS' | 'EVERYBODY' | 'STUDENTS';
-export type FlashCardTypes = 'BASIC' | 'REVERSED' | 'CLOZE';
-export type SchedulingAlgorithm = 'ANKI' | 'ANKING';
-export type ViewAccess = 'PUBLIC' | 'FRIENDS' | 'STUDENT';
+export type EditAccess = "PERSONAL" | "FRIENDS" | "EVERYBODY" | "STUDENTS";
+export type FlashCardTypes = "BASIC" | "REVERSED" | "CLOZE";
+export type SchedulingAlgorithm = "ANKI" | "ANKING";
+export type ViewAccess = "PUBLIC" | "FRIENDS" | "STUDENT";
 
 export interface FlashCard {
   flashcard_type: FlashCardTypes;

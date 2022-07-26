@@ -1,5 +1,5 @@
-import createSlateElement from './createSlateElement';
+import createSlateElement from "./createSlateElement";
 
-const blankSlateElement = createSlateElement('');
+const blankSlateElement = createSlateElement("");
 
 export default blankSlateElement;

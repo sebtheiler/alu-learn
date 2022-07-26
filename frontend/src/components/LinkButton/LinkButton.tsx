@@ -1,12 +1,14 @@
-import Ripple from '@components/Button/Ripple';
-import classNames from '@helpers/classNames';
-import { Link } from 'react-router-dom';
-import { buttonVariantsLookup, generateButtonClassName } from '@components/Button';
-import { useMemo, lazy, Suspense } from 'react';
+import Link from "next/link";
+import Ripple from "components/Button/Ripple";
+import classNames from "helpers/classNames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  buttonVariantsLookup,
+  generateButtonClassName,
+} from "components/Button";
+import { useMemo } from "react";
 
-import type { ButtonProps } from '@components/Button';
-
-const FontAwesomeIcon = lazy(()=> import('@fortawesome/react-fontawesome').then(module=>({default:module.FontAwesomeIcon})))
+import type { ButtonProps } from "components/Button";
 
 interface LinkButtonProps extends ButtonProps {
   /**
@@ -20,20 +22,35 @@ interface LinkButtonProps extends ButtonProps {
  */
 export default function LinkButton(props: LinkButtonProps) {
   const generatedClassName = useMemo(
-    () => classNames(generateButtonClassName(props), 'text-white no-underline hover:no-underline'),
-    [props],
+    () =>
+      classNames(
+        generateButtonClassName(props),
+        "text-white no-underline hover:no-underline"
+      ),
+    [props]
   );
 
   return (
-    <Link
-      className={generatedClassName}
-      to={props.href}
-    >
-      {props.ripples && <Ripple color={buttonVariantsLookup[props.variant].rippleColor} />}
-      {props.faIcon && <Suspense fallback=''>
-        <FontAwesomeIcon icon={props.faIcon} className='mr-1' spin={props._spin} />
-      </Suspense>}
-      {props.children}
+    <Link className={generatedClassName} href={props.href}>
+      <>
+        {props.ripples && (
+          <Ripple
+            color={
+              props.variant
+                ? buttonVariantsLookup[props.variant].rippleColor
+                : "white"
+            }
+          />
+        )}
+        {props.faIcon && (
+          <FontAwesomeIcon
+            icon={props.faIcon}
+            className="mr-1"
+            spin={props._spin}
+          />
+        )}
+        {props.children}
+      </>
     </Link>
   );
 }

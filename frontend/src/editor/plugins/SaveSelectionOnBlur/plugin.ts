@@ -1,4 +1,4 @@
-import { ExtendedReactEditor } from '../../types';
+import { ExtendedReactEditor } from "../../types";
 
 /**
  * SlateJS plugin to save the current selection when the editor is blurred
@@ -8,9 +8,9 @@ import { ExtendedReactEditor } from '../../types';
 const withSaveSelectionOnBlur = (editor: ExtendedReactEditor) => {
   editor.saveSelectionOnBlur = () => {
     editor.blurSelection = editor.selection;
-  }
+  };
 
   return editor;
-}
+};
 
 export default withSaveSelectionOnBlur;

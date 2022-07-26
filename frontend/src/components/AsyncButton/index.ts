@@ -1,2 +1,2 @@
-import AsyncButton from './AsyncButton';
+import AsyncButton from "./AsyncButton";
 export default AsyncButton;

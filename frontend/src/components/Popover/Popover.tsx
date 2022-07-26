@@ -1,10 +1,10 @@
-import classNames from '@helpers/classNames';
-import useOutsideClick from 'hooks/useClickOutside';
-import { Transition } from '@headlessui/react';
-import { useMemo, useState } from 'react';
-import { usePopper } from 'react-popper';
+import classNames from "helpers/classNames";
+import useOutsideClick from "hooks/useClickOutside";
+import { Transition } from "@headlessui/react";
+import { useMemo, useState } from "react";
+import { usePopper } from "react-popper";
 
-import type { Placement } from '@popperjs/core';
+import type { Placement } from "@popperjs/core";
 
 interface PopoverProps {
   /**
@@ -26,7 +26,7 @@ interface PopoverProps {
   /**
    * What mouse action triggers the popover
    */
-  trigger?: 'hover' | 'click';
+  trigger?: "hover" | "click";
 }
 
 /**
@@ -37,8 +37,8 @@ export default function Popover({
   children,
   popover,
   className,
-  placement='top',
-  trigger='hover',
+  placement = "top",
+  trigger = "hover",
 }: PopoverProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -48,7 +48,7 @@ export default function Popover({
     placement: placement,
     modifiers: [
       {
-        name: 'offset',
+        name: "offset",
         options: {
           offset: [0, 8],
         },
@@ -58,12 +58,12 @@ export default function Popover({
 
   const triggetAttrs = useMemo(() => {
     switch (trigger) {
-      case 'hover':
+      case "hover":
         return {
           onMouseEnter: () => setIsPopoverOpen(true),
           onMouseLeave: () => setIsPopoverOpen(false),
         };
-      case 'click':
+      case "click":
         return {
           onClick: () => setIsPopoverOpen(true),
         };
@@ -71,35 +71,33 @@ export default function Popover({
   }, [trigger]);
 
   useOutsideClick(popEl, () => {
-    if (trigger === 'click') {
+    if (trigger === "click") {
       setIsPopoverOpen(false);
     }
   });
 
   return (
-    <div className='inline'>
-      <span
-        ref={setRefEl}
-        {...triggetAttrs}
-      >
+    <div className="inline">
+      <span ref={setRefEl} {...triggetAttrs}>
         {children}
       </span>
       <Transition
         show={isPopoverOpen}
-        enter='ease-out duration-300'
-        enterFrom='opacity-0'
-        enterTo='opacity-100'
-        leave='ease-in duration-200'
-        leaveFrom='opacity-100'
-        leaveTo='opacity-0'
-        className='absolute'
+        enter="ease-out duration-300"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="ease-in duration-200"
+        leaveFrom="opacity-100"
+        leaveTo="opacity-0"
+        className="absolute"
       >
         <div
           ref={setPopEl}
-          className={classNames('border-4 border-alu-mid-gray bg-alu-light-gray\
-                                 px-4 py-3 w-64 rounded-xl z-50',
-                                 className)}
-
+          className={classNames(
+            "border-4 border-alu-mid-gray bg-alu-light-gray\
+                                 px-4 py-3 w-64 rounded-xl z-50",
+            className
+          )}
           // Popper style, attributes, and trigger attributes
           style={styles.popper}
           {...triggetAttrs}

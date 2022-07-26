@@ -1,2 +1,2 @@
-import WelcomeSurveyPage from './WelcomeSurveyPage';
+import WelcomeSurveyPage from "./WelcomeSurveyPage";
 export default WelcomeSurveyPage;

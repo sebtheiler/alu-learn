@@ -1,2 +1,2 @@
-import withSaveSelectionOnBlur from './plugin';
+import withSaveSelectionOnBlur from "./plugin";
 export default withSaveSelectionOnBlur;

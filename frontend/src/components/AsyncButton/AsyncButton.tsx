@@ -1,6 +1,6 @@
-import Button, { ButtonProps } from '@components/Button';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { useCallback, useMemo, useState } from 'react';
+import Button, { ButtonProps } from "components/Button";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useCallback, useMemo, useState } from "react";
 
 interface AsyncButtonProps extends ButtonProps {
   /**
@@ -15,17 +15,27 @@ interface AsyncButtonProps extends ButtonProps {
 export default function AsyncButton(props: AsyncButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const onClickWrapper = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (isLoading) return;
-    setIsLoading(true);
-    await props.onClick(e);
-    setIsLoading(false);
-  }, [props.onClick, isLoading]);
-
-  const faIcon = useMemo(
-    () => isLoading ? faSpinner : props.faIcon,
-    [isLoading, props.faIcon],
+  const onClickWrapper = useCallback(
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (isLoading) return;
+      setIsLoading(true);
+      await props.onClick(e);
+      setIsLoading(false);
+    },
+    [props.onClick, isLoading]
   );
 
-  return <Button {...props} onClick={onClickWrapper} faIcon={faIcon} _spin={isLoading} />
+  const faIcon = useMemo(
+    () => (isLoading ? faSpinner : props.faIcon),
+    [isLoading, props.faIcon]
+  );
+
+  return (
+    <Button
+      {...props}
+      onClick={onClickWrapper}
+      faIcon={faIcon}
+      _spin={isLoading}
+    />
+  );
 }

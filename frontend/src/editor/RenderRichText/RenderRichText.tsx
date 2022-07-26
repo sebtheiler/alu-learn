@@ -1,8 +1,8 @@
-import FullEditable, { createFullEditor } from '../FullEditable';
-import { Slate } from 'slate-react';
-import { useState, useMemo, useEffect } from 'react';
+import FullEditable, { createFullEditor } from "../FullEditable";
+import { Slate } from "slate-react";
+import { useState, useMemo, useEffect } from "react";
 
-import type { Node as SlateNode } from 'slate';
+import type { Node as SlateNode } from "slate";
 
 // Renders Slate rich text
 interface RenderRichTextProps {
@@ -45,7 +45,7 @@ export default function RenderRichText(props: RenderRichTextProps) {
     <Slate
       editor={editor}
       value={value}
-      onChange={newValue => setValue(newValue)}
+      onChange={(newValue) => setValue(newValue)}
     >
       <FullEditable editor={editor} readOnly />
     </Slate>

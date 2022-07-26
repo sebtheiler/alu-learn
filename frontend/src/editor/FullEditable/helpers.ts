@@ -1,29 +1,44 @@
-import withFlashcardLinks from '@slate-plugins/FlashcardLink';
-import withLinks from '@slate-plugins/Link';
-import withSaveSelectionOnBlur from '@slate-plugins/SaveSelectionOnBlur';
-import withShortcuts from '@slate-plugins/Shortcuts';
-import { ExtendedReactEditor } from '../types';
-import { LIST_TYPES } from './constants';
-import { createEditor, Element as SlateElement, Editor, Transforms } from 'slate';
-import { withHistory } from 'slate-history';
-import { withReact } from 'slate-react';
+import withFlashcardLinks from "@slate-plugins/FlashcardLink";
+import withLinks from "@slate-plugins/Link";
+import withSaveSelectionOnBlur from "@slate-plugins/SaveSelectionOnBlur";
+import withShortcuts from "@slate-plugins/Shortcuts";
+import { ExtendedReactEditor } from "../types";
+import { LIST_TYPES } from "./constants";
+import {
+  createEditor,
+  Element as SlateElement,
+  Editor,
+  Transforms,
+} from "slate";
+import { withHistory } from "slate-history";
+import { withReact } from "slate-react";
 
 /**
  * Create an editor with all plugins
  * @returns Editor with full functionality from plugins
  */
 const createFullEditor = () =>
-  withFlashcardLinks(withSaveSelectionOnBlur(withShortcuts(withLinks(withHistory(withReact(
-    // @ts-ignore
-    createEditor()
-  ))))));
+  withFlashcardLinks(
+    withSaveSelectionOnBlur(
+      withShortcuts(
+        withLinks(
+          withHistory(
+            withReact(
+              // @ts-ignore
+              createEditor()
+            )
+          )
+        )
+      )
+    )
+  );
 
 const toggleBlock = (editor: ExtendedReactEditor, format: string) => {
   const isActive = isBlockActive(editor, format);
   const isList = LIST_TYPES.includes(format);
 
   Transforms.unwrapNodes(editor, {
-    match: n =>
+    match: (n) =>
       !Editor.isEditor(n) &&
       SlateElement.isElement(n) &&
       // @ts-ignore
@@ -33,14 +48,14 @@ const toggleBlock = (editor: ExtendedReactEditor, format: string) => {
 
   Transforms.setNodes(editor, {
     // @ts-ignore
-    type: isActive ? 'paragraph' : (isList ? 'list-item' : format),
+    type: isActive ? "paragraph" : isList ? "list-item" : format,
   });
 
   if (!isActive && isList) {
     const block = { type: format, children: [] };
     Transforms.wrapNodes(editor, block);
   }
-}
+};
 
 const toggleMark = (editor, format) => {
   const isActive = isMarkActive(editor, format);
@@ -50,21 +65,21 @@ const toggleMark = (editor, format) => {
   } else {
     Editor.addMark(editor, format, true);
   }
-}
+};
 
 const isBlockActive = (editor, format) => {
   const [match] = Editor.nodes(editor, {
     // @ts-ignore
-    match: n => n.type === format,
+    match: (n) => n.type === format,
   });
 
   return !!match;
-}
+};
 
 const isMarkActive = (editor, format) => {
   const marks = Editor.marks(editor);
   return marks ? marks[format] === true : false;
-}
+};
 
 export {
   createFullEditor,
@@ -72,4 +87,4 @@ export {
   toggleMark,
   isBlockActive,
   isMarkActive,
-}
+};

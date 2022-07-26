@@ -15,7 +15,13 @@ function treatAsUTC(date: Date | string) {
  * @param endDate Later date
  * @returns Number of days between the two dates
  */
-export default function daysBetween(startDate: Date | string, endDate: Date | string) {
+export default function daysBetween(
+  startDate: Date | string,
+  endDate: Date | string
+) {
   const millisecondsPerDay = 24 * 60 * 60 * 1000;
-  return (treatAsUTC(endDate).valueOf() - treatAsUTC(startDate).valueOf()) / millisecondsPerDay;
+  return (
+    (treatAsUTC(endDate).valueOf() - treatAsUTC(startDate).valueOf()) /
+    millisecondsPerDay
+  );
 }

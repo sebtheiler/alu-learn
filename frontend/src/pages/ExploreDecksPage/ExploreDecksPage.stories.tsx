@@ -1,16 +1,18 @@
-import withFullContext from '@helpers/withFullContext';
-import withNavbar from '@helpers/withNavbar';
-import { ComponentStory } from '@storybook/react';
+import withFullContext from "helpers/withFullContext";
+import withNavbar from "helpers/withNavbar";
+import { ComponentStory } from "@storybook/react";
 
-import ExploreDecksPage from '.';
+import ExploreDecksPage from ".";
 
 export default {
-  title: 'Pages/ExploreDecksPage',
+  title: "Pages/ExploreDecksPage",
   component: ExploreDecksPage,
-  layout: 'fullscreen',
+  layout: "fullscreen",
   decorators: [withNavbar, withFullContext],
-}
+};
 
-const Template: ComponentStory<typeof ExploreDecksPage> = () => <ExploreDecksPage />;
+const Template: ComponentStory<typeof ExploreDecksPage> = () => (
+  <ExploreDecksPage />
+);
 
 export const ExploreDecksPageExample = Template.bind({});
