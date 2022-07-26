@@ -5,7 +5,7 @@ import { Editable } from 'slate-react';
 import { HOTKEYS } from './constants';
 import { toggleMark } from './helpers';
 import { useCallback } from 'react';
-import './style.scss';
+import './FullEditable.scss';
 
 import type { ExtendedReactEditor } from 'editor/types';
 

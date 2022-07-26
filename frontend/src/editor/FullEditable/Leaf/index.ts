@@ -1,2 +1,2 @@
-import Leaf from './component';
+import Leaf from './Leaf';
 export default Leaf;

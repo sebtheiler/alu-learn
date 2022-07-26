@@ -1,2 +1,2 @@
-import MarkButton from './component';
+import MarkButton from './MarkButton';
 export default MarkButton;

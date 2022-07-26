@@ -1,2 +1,2 @@
-import LogInModal from './component';
+import LogInModal from './LoginModal';
 export default LogInModal;

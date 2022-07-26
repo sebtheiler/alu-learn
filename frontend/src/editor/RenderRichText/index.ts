@@ -1,2 +1,2 @@
-import RenderRichText from './component';
+import RenderRichText from './RenderRichText';
 export default RenderRichText;

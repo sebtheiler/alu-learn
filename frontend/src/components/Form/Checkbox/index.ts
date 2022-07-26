@@ -1,2 +1,2 @@
-import Checkbox from './component';
+import Checkbox from './Checkbox';
 export default Checkbox;

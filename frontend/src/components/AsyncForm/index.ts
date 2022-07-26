@@ -1,2 +1,2 @@
-import AsyncForm from './component';
+import AsyncForm from './AsyncForm';
 export default AsyncForm;

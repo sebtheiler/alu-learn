@@ -1,2 +1,2 @@
-import WelcomeSurveyPage from './component';
+import WelcomeSurveyPage from './WelcomeSurveyPage';
 export default WelcomeSurveyPage;

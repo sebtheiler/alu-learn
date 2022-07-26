@@ -1,2 +1,2 @@
-import Element from './component';
+import Element from './Element';
 export default Element;

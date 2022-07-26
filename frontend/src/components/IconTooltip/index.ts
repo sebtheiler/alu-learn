@@ -1,2 +1,2 @@
-import IconTooltip from './component';
+import IconTooltip from './IconTooltip';
 export default IconTooltip;

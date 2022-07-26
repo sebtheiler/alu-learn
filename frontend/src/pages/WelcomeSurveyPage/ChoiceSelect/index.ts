@@ -1,2 +1,2 @@
-import ChoiceSelect from './component';
+import ChoiceSelect from './ChoiceSelect';
 export default ChoiceSelect;

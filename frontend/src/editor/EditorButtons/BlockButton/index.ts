@@ -1,2 +1,2 @@
-import BlockButton from './component';
+import BlockButton from './BlockButton';
 export default BlockButton;

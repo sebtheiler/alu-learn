@@ -1,2 +1,2 @@
-import AboutPage from './component';
+import AboutPage from './AboutPage';
 export default AboutPage;

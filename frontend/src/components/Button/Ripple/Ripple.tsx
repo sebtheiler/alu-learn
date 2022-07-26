@@ -1,6 +1,6 @@
 // Adapted from https://codesandbox.io/s/react-material-design-ripple-effect-kn1tr?file=/src/Ripple.jsx
 import { useLayoutEffect, useState } from 'react';
-import './style.scss';
+import './Ripple.scss';
 
 const useDebouncedRippleCleanUp = (
   rippleCount: number,

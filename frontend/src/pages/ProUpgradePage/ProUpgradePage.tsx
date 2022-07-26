@@ -8,7 +8,7 @@ import daysBetween from '@helpers/daysBetween';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useContext } from 'react';
-import './style.scss';
+import './ProUpgradePage.scss';
 
 interface ProUpgradePageProps {
   isPro: boolean;

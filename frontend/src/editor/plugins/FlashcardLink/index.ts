@@ -1,6 +1,6 @@
 import withFlashcardLinks from './plugin';
-import FlashCardLinkButton from './button';
-import FlashCardLinkComponent from './component';
+import FlashcardLinkButton from './FlashcardLinkButton';
+import FlashCardLinkComponent from './FlashcardLink';
 
 export default withFlashcardLinks;
-export { FlashCardLinkButton, FlashCardLinkComponent };
+export { FlashcardLinkButton as FlashCardLinkButton, FlashCardLinkComponent };

@@ -1,7 +1,7 @@
 import Ripple from '@components/Button/Ripple';
 import classNames from '@helpers/classNames';
 import { Link } from 'react-router-dom';
-import { buttonVariantsLookup, generateButtonClassName } from '@components/Button/component';
+import { buttonVariantsLookup, generateButtonClassName } from '@components/Button';
 import { useMemo, lazy, Suspense } from 'react';
 
 import type { ButtonProps } from '@components/Button';

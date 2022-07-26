@@ -4,8 +4,8 @@ import { Node } from 'slate';
 import type { ExtendedSlateElement } from 'editor/types';
 
 const TeX = lazy(() => import('components/TeX'));
-const FlashCardLinkComponent = lazy(() => import('@slate-plugins/FlashcardLink/component'));
-const LinkComponent = lazy(() => import('@slate-plugins/Link/component'));
+const FlashCardLinkComponent = lazy(() => import('@slate-plugins/FlashcardLink'));
+const LinkComponent = lazy(() => import('@slate-plugins/Link'));
 
 interface ElementProps {
   /**

@@ -3,7 +3,7 @@ import proBannerUrl from 'assets/pro-banner.svg';
 import { Link } from 'react-router-dom';
 import { faBars, faCompass, faStar, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import { Suspense, useState, lazy } from 'react';
-import './style.scss';
+import './Navbar.scss';
 
 const LoggedIn = lazy(() => import('./LoggedIn'));
 const LoggedOut = lazy(() => import('./LoggedOut'));

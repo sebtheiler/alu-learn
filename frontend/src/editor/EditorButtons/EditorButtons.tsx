@@ -1,6 +1,6 @@
 import BlockButton from './BlockButton';
 import FlashCardLinkButton from '@slate-plugins/FlashcardLink/button';
-import LinkButton from '@slate-plugins/Link/button';
+import LinkButton from '@slate-plugins/Link/LinkButton';
 import MarkButton from './MarkButton';
 import { faBold, faItalic, faUnderline, faCode, faDivide, faHeading, faListOl, faListUl, faSquareRootAlt } from '@fortawesome/free-solid-svg-icons'
 

@@ -1,2 +1,2 @@
-import DisplayProfileInline from './component';
+import DisplayProfileInline from './DisplayProfileInline';
 export default DisplayProfileInline;

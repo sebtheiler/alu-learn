@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 import { FlashCardLinkButton } from '.';
 
 export default {
-  title: 'editor/plugins/FlashCardLinkButton',
+  title: 'editor/plugins/FlashcardLinkButton',
   component: FlashCardLinkButton,
   decorators: [withFullContext],
 }

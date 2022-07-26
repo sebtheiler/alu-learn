@@ -1,2 +1,2 @@
-import TextInput from './component';
+import TextInput from './TextInput';
 export default TextInput;

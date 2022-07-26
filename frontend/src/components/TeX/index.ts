@@ -1,2 +1,2 @@
-import TeX from './component';
+import TeX from './TeX';
 export default TeX;

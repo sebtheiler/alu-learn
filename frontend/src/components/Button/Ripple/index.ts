@@ -1,2 +1,2 @@
-import Ripple from './component';
+import Ripple from './Ripple';
 export default Ripple;

@@ -1,6 +1,6 @@
 import LinkButton from '@components/LinkButton';
 import ProFeaturesCard from 'pages/ProUpgradePage/ProFeaturesCard';
-import '../ProUpgradePage/style.scss';
+import '../ProUpgradePage/ProUpgradePage.scss';
 
 /**
  * Displays after a user has successfully upgraded to Alu pro

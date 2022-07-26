@@ -15,7 +15,7 @@ def create_component():
     os.mkdir(comp_dir)
 
     index_ts = f"""
-import {comp_name} from './component';
+import {comp_name} from './{comp_name}';
 export default {comp_name};
     """.strip()
     with open(os.path.join(comp_dir, 'index.ts'), 'w+') as f:
@@ -34,7 +34,7 @@ export default function {comp_name}({{
   );
 }}
     """.strip()
-    with open(os.path.join(comp_dir, 'component.tsx'), 'w+') as f:
+    with open(os.path.join(comp_dir, f'{comp_name}.tsx'), 'w+') as f:
         f.write(component_tsx)
 
     component_stories_tsx = f"""
@@ -53,7 +53,7 @@ export const {comp_name}Example = Template.bind({{}});
 {comp_name}Example.args = {{
 }};
     """.strip()
-    with open(os.path.join(comp_dir, 'component.stories.tsx'), 'w+') as f:
+    with open(os.path.join(comp_dir, f'{comp_name}.stories.tsx'), 'w+') as f:
         f.write(component_stories_tsx)
 
     print('Created component.')

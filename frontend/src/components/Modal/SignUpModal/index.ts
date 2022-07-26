@@ -1,2 +1,2 @@
-import SignUpModal from './component';
+import SignUpModal from './SignUpModal';
 export default SignUpModal;

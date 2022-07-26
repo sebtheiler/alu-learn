@@ -1,2 +1,2 @@
-import ExploreDecksPage from './component';
+import ExploreDecksPage from './ExploreDecksPage';
 export default ExploreDecksPage;

@@ -7,7 +7,7 @@ import useWindowDimensions from 'hooks/useWindowDimensions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBrain, faDna, faLandmarkDome, faMonument, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { useContext, useMemo } from 'react';
-import './style.scss';
+import './LandingPage.scss';
 
 /**
  * Shuffled list of testimonials from users

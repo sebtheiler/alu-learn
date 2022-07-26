@@ -1,2 +1,2 @@
-import Popover from './component';
+import Popover from './Popover';
 export default Popover;

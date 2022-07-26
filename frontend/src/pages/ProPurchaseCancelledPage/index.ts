@@ -1,2 +1,2 @@
-import ProPurchaseCancelledPage from './component';
+import ProPurchaseCancelledPage from './ProPurchaseCancelledPage';
 export default ProPurchaseCancelledPage;

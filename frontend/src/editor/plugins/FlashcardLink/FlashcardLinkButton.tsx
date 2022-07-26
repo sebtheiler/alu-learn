@@ -12,7 +12,7 @@ import { useState } from 'react';
 import type { FlashCard } from '@types';
 import type { ReactEditor } from 'slate-react';
 
-interface FlashCardLinkButtonProps {
+interface FlashcardLinkButtonProps {
   /**
    * Editor into which to insert the flashcard link
    */
@@ -30,7 +30,7 @@ interface FlashCardLinkButtonProps {
 /**
  * Displays a button to insert a flashcard link into an editor
  */
-export default function FlashCardLinkButton({ editor, tabbable, isPro }: FlashCardLinkButtonProps) {
+export default function FlashcardLinkButton({ editor, tabbable, isPro }: FlashcardLinkButtonProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchedFlashcards, setSearchedFlashcards] = useState<FlashCard[]>([]);

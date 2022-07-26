@@ -1,2 +1,2 @@
-import Tooltip from './component';
+import Tooltip from './Tooltip';
 export default Tooltip;

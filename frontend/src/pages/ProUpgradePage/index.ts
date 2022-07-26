@@ -1,2 +1,2 @@
-import ProUpgradePage from './component';
+import ProUpgradePage from './ProUpgradePage';
 export default ProUpgradePage;

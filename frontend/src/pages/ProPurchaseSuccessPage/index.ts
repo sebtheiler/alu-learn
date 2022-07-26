@@ -1,2 +1,2 @@
-import ProPurchaseSuccessPage from './component';
+import ProPurchaseSuccessPage from './ProPurchaseSuccessPage';
 export default ProPurchaseSuccessPage;

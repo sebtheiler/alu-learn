@@ -1,2 +1,2 @@
-import Jdenticon from './component';
+import Jdenticon from './Jdenticon';
 export default Jdenticon;
