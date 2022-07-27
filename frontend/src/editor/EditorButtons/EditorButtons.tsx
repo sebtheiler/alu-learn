@@ -1,6 +1,6 @@
 import BlockButton from "./BlockButton";
-import FlashCardLinkButton from "@slate-plugins/FlashcardLink/FlashcardLinkButton";
-import LinkButton from "@slate-plugins/Link/LinkButton";
+import FlashCardLinkButton from "editor/plugins/FlashcardLink/FlashcardLinkButton";
+import LinkButton from "editor/plugins/Link/LinkButton";
 import MarkButton from "./MarkButton";
 import {
   faBold,

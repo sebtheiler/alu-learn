@@ -1,9 +1,9 @@
 import AsyncForm from "components/AsyncForm";
 import Button from "components/Button";
 import GlobalContext from "global";
+import Image from "next/image";
 import Modal from "components/Modal";
 import TextInput from "components/Form/TextInput";
-import googleLogoUrl from "assets/logos/google.svg";
 import { getElementsVals } from "helpers/getElementsVals";
 import { useContext, useState } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
@@ -36,8 +36,8 @@ export default function LogInModal() {
         className="border-2 border-gray-200 text-black"
         block
       >
-        <img
-          src={googleLogoUrl}
+        <Image
+          src="/assets/logos/google.svg"
           alt="Google Logo"
           width={30}
           className="inline absolute left-5 top-2"

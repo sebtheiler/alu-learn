@@ -1,10 +1,6 @@
-import ChoiceSelect from "./ChoiceSelect";
+import type { NextPage } from "next";
+import ChoiceSelect from "components/ChoiceSelect";
 import ProgressBar from "components/ProgressBar";
-import googleLogoUrl from "assets/logos/google.svg";
-import instagramLogoUrl from "assets/logos/instagram.svg";
-import redditLogoUrl from "assets/logos/reddit.svg";
-import tiktokLogoUrl from "assets/logos/tiktok.svg";
-import youtubeLogoUrl from "assets/logos/youtube.svg";
 import {
   faGraduationCap,
   faNewspaper,
@@ -15,10 +11,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useMemo, useState } from "react";
 
-/**
- * Renders a survey that is displayed to the user after they sign up
- */
-export default function WelcomeSurveyPage() {
+const Welcome: NextPage = () => {
   const [slideNum, setSlideNum] = useState(0);
   const [answers, setAnswers] = useState({
     timezone: new Date().getTimezoneOffset(),
@@ -84,17 +77,37 @@ export default function WelcomeSurveyPage() {
               icon: faPersonChalkboard,
               iconColor: "indigo",
             },
-            { value: "INSTA", display: "Instagram", icon: instagramLogoUrl },
-            { value: "REDDIT", display: "Reddit", icon: redditLogoUrl },
-            { value: "TIKTOK", display: "TikTok", icon: tiktokLogoUrl },
-            { value: "YOUTUBE", display: "YouTube", icon: youtubeLogoUrl },
+            {
+              value: "INSTA",
+              display: "Instagram",
+              icon: "/assets/logos/instagram.svg",
+            },
+            {
+              value: "REDDIT",
+              display: "Reddit",
+              icon: "/assets/logos/reddit.svg",
+            },
+            {
+              value: "TIKTOK",
+              display: "TikTok",
+              icon: "/assets/logos/tiktok.svg",
+            },
+            {
+              value: "YOUTUBE",
+              display: "YouTube",
+              icon: "/assets/logos/youtube.svg",
+            },
             {
               value: "NEWS",
               display: "News",
               icon: faNewspaper,
               iconColor: "royalblue",
             },
-            { value: "SEARCH", display: "Web Search", icon: googleLogoUrl },
+            {
+              value: "SEARCH",
+              display: "Web Search",
+              icon: "/assets/logos/google.svg",
+            },
           ]}
           onClick={handleNext("referrer")}
           numCols={3}
@@ -220,4 +233,6 @@ export default function WelcomeSurveyPage() {
       <div className="text-lg mt-5">{slides[slideNum]}</div>
     </div>
   );
-}
+};
+
+export default Welcome;

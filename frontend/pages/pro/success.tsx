@@ -1,17 +1,14 @@
+import type { NextPage } from "next";
 import LinkButton from "components/LinkButton";
-import ProFeaturesCard from "pages/ProUpgradePage/ProFeaturesCard";
-import "../ProUpgradePage/ProUpgradePage.scss";
+import ProFeaturesCard from "components/ProFeaturesCard";
 
-/**
- * Displays after a user has successfully upgraded to Alu pro
- */
-export default function ProPurchaseSuccessPage() {
+const ProPurchaseSuccess: NextPage = () => {
   // const [subscriptionProduct] = useAsyncState<{ subscription: any, product: any }>(
   //   () => backendFetch('GET', 'accounts/stripe-get-subscription/'),
   // );
 
   return (
-    <div className="container mx-auto text-center mt-20">
+    <div className="container mx-auto text-center mt-28">
       <div className="prose max-w-2xl mx-auto">
         <h1>Thank You for Upgrading to Alu Pro!</h1>
         <p>
@@ -42,4 +39,6 @@ export default function ProPurchaseSuccessPage() {
       </div>
     </div>
   );
-}
+};
+
+export default ProPurchaseSuccess;

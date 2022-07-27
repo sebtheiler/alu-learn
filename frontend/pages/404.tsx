@@ -1,9 +1,7 @@
+import type { NextPage } from "next";
 import LinkButton from "components/LinkButton";
 
-/**
- * Renders a 404 page
- */
-export default function NotFoundPage() {
+const NotFound: NextPage = () => {
   return (
     <div className="mt-28 prose mx-auto text-center">
       <h1>404</h1>
@@ -12,4 +10,6 @@ export default function NotFoundPage() {
       <LinkButton href="/">Return Home</LinkButton>
     </div>
   );
-}
+};
+
+export default NotFound;

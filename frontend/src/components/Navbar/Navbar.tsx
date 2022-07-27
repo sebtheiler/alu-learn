@@ -2,8 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import LoggedIn from "./LoggedIn";
 import LoggedOut from "./LoggedOut";
-import logoUrl from "assets/logo.svg";
-import proBannerUrl from "assets/pro-banner.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -63,7 +61,7 @@ export default function Navbar({
         <a>
           <div className="flex items-center">
             <Image
-              src={logoUrl}
+              src="/assets/logo.svg"
               alt="Alu Learn Logo"
               height={40}
               width={40}
@@ -73,8 +71,8 @@ export default function Navbar({
               Alu Learn
             </span>
             {isPro && (
-              <img
-                src={proBannerUrl}
+              <Image
+                src="/assets/pro-banner.svg"
                 alt="Pro Banner"
                 className="w-14 ml-1 hover:rotate-360 transition duration-700"
               />

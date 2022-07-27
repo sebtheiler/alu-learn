@@ -1,3 +1,4 @@
+import type { NextPage } from "next";
 import DisplayProfileInline from "components/DisplayProfileInline";
 import RenderRichText from "editor/RenderRichText";
 import createSlateElement from "helpers/createSlateElement";
@@ -20,10 +21,7 @@ const sharedDecks = [
   },
 ];
 
-/**
- * Renders the explore deck page for finding shared decks
- */
-export default function ExploreDecksPage() {
+const CommunityDecksHome: NextPage = () => {
   return (
     <div className="container px-48 mx-auto mt-28">
       <div>
@@ -67,4 +65,6 @@ export default function ExploreDecksPage() {
       </div>
     </div>
   );
-}
+};
+
+export default CommunityDecksHome;

@@ -5,9 +5,9 @@ import type { ExtendedSlateElement } from "editor/types";
 
 const TeX = lazy(() => import("components/TeX"));
 const FlashCardLinkComponent = lazy(
-  () => import("@slate-plugins/FlashcardLink")
+  () => import("editor/plugins/FlashcardLink")
 );
-const LinkComponent = lazy(() => import("@slate-plugins/Link"));
+const LinkComponent = lazy(() => import("editor/plugins/Link"));
 
 interface ElementProps {
   /**

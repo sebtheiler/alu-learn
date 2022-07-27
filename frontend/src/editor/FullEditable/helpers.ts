@@ -1,7 +1,7 @@
-import withFlashcardLinks from "@slate-plugins/FlashcardLink";
-import withLinks from "@slate-plugins/Link";
-import withSaveSelectionOnBlur from "@slate-plugins/SaveSelectionOnBlur";
-import withShortcuts from "@slate-plugins/Shortcuts";
+import withFlashcardLinks from "editor/plugins/FlashcardLink";
+import withLinks from "editor/plugins/Link";
+import withSaveSelectionOnBlur from "editor/plugins/SaveSelectionOnBlur";
+import withShortcuts from "editor/plugins/Shortcuts";
 import { ExtendedReactEditor } from "../types";
 import { LIST_TYPES } from "./constants";
 import {

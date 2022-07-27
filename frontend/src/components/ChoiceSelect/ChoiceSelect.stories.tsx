@@ -1,8 +1,3 @@
-import googleLogoUrl from "assets/logos/google.svg";
-import instagramLogoUrl from "assets/logos/instagram.svg";
-import redditLogoUrl from "assets/logos/reddit.svg";
-import tiktokLogoUrl from "assets/logos/tiktok.svg";
-import youtubeLogoUrl from "assets/logos/youtube.svg";
 import { ComponentStory } from "@storybook/react";
 import {
   faGraduationCap,
@@ -58,17 +53,25 @@ ManyChoices.args = {
       icon: faPersonChalkboard,
       iconColor: "indigo",
     },
-    { value: "INSTA", display: "Instagram", icon: instagramLogoUrl },
-    { value: "REDDIT", display: "Reddit", icon: redditLogoUrl },
-    { value: "TIKTOK", display: "TikTok", icon: tiktokLogoUrl },
-    { value: "YOUTUBE", display: "YouTube", icon: youtubeLogoUrl },
+    {
+      value: "INSTA",
+      display: "Instagram",
+      icon: "/assets/logos/instagram.svg",
+    },
+    { value: "REDDIT", display: "Reddit", icon: "/assets/logos/reddit.svg" },
+    { value: "TIKTOK", display: "TikTok", icon: "/assets/logos/tiktok.svg" },
+    { value: "YOUTUBE", display: "YouTube", icon: "/assets/logos/youtube.svg" },
     {
       value: "NEWS",
       display: "News",
       icon: faNewspaper,
       iconColor: "royalblue",
     },
-    { value: "SEARCH", display: "Web Search", icon: googleLogoUrl },
+    {
+      value: "SEARCH",
+      display: "Web Search",
+      icon: "/assets/logos/google.svg",
+    },
   ],
   onClick: console.log,
   shuffle: true,

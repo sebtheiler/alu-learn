@@ -1,8 +1,5 @@
 import Button from "components/Button";
 import GlobalContext from "global";
-import globalSharingSystemUrl from "assets/global-sharing-system.png";
-import skillTreeUrl from "assets/skill-tree.png";
-import spacedRepetitionUrl from "assets/spaced-repetition.png";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,11 +10,9 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useMemo } from "react";
-import "./LandingPage.scss";
+import Image from "next/image";
+import type { NextPage } from "next";
 
-/**
- * Shuffled list of testimonials from users
- */
 const testimonials = [
   "Alu has been a tool that has made studying much less of a burden for me since it is so engaging and straightforward. When studying with Alu, it always truly feels like I am able to take in and understand the material and not just memorize content.", // I completely owe the success I have had on the AP exams I have taken to Alu.',
   "With Alu, I'm able to remember the content [better than with cramming], and it really sticks in your brain after",
@@ -25,12 +20,9 @@ const testimonials = [
   "Really useful. Learned a lot of stuff that we didn't cover in class.",
 ].sort(() => 0.5 - Math.random());
 
-/**
- * Renders the landing page
- */
-export default function LandingPage() {
+const Index: NextPage = () => {
   const { height } = useWindowDimensions();
-  const { setSignUpModalOpen, setLogInModalOpen } = useContext(GlobalContext);
+  // const { setSignUpModalOpen, setLogInModalOpen } = useContext(GlobalContext);
 
   const exampleDecks = useMemo(
     () => [
@@ -44,7 +36,8 @@ export default function LandingPage() {
         icon: faPlus,
       },
     ],
-    [setSignUpModalOpen]
+    // [setSignUpModalOpen]
+    []
   );
 
   return (
@@ -153,20 +146,24 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="help-section-image">
-              <img
-                src={spacedRepetitionUrl}
+              <Image
+                src="/assets/spaced-repetition.png"
                 alt="Graph depicting how memory decays over time, and how spaced repetition can be used to combat that"
                 loading="lazy"
+                width={973}
+                height={731}
               />
             </div>
           </div>
           <div className="help-section">
             <div className="help-section-image">
-              <img
-                src={globalSharingSystemUrl}
+              <Image
+                src="/assets/global-sharing-system.png"
                 alt="Illustration of Alu's sharing system, and how people from around the world can contribute to a deck"
                 className="ml-auto"
                 loading="lazy"
+                width={960}
+                height={720}
               />
             </div>
             <div className="help-section-text">
@@ -187,10 +184,12 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="help-section-image">
-              <img
-                src={skillTreeUrl}
+              <Image
+                src="/assets/skill-tree.png"
                 alt="Illustration of an example skill tree"
                 loading="lazy"
+                width={960}
+                height={720}
               />
             </div>
           </div>
@@ -210,4 +209,6 @@ export default function LandingPage() {
       </div>
     </div>
   );
-}
+};
+
+export default Index;

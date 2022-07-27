@@ -1,33 +1,24 @@
+import type { NextPage } from "next";
 import AsyncButton from "components/AsyncButton";
 import Button from "components/Button";
 import GlobalContext from "global";
-import ProFeaturesCard from "./ProFeaturesCard";
-import ProFromOrganization from "./ProFromOrganization";
-import ProPurchaseSuccessPage from "pages/ProPurchaseSuccessPage";
+import ProFeaturesCard from "components/ProFeaturesCard";
+import ProFromOrganization from "components/ProFromOrganization";
 import daysBetween from "helpers/daysBetween";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "react";
-import "./ProUpgradePage.scss";
+import { useRouter } from "next/router";
 
-interface ProUpgradePageProps {
-  isPro: boolean;
-  isProFromOrg: boolean;
-  isLoggedIn: boolean;
-  proTrialExpires?: string;
-}
+const ProUpgrade: NextPage = () => {
+  const proTrialExpires = "2023-01-01";
+  const isPro = false;
+  const isProFromOrg = false;
+  const isLoggedIn = true;
 
-/**
- * Displays the page for a user to upgrade to pro-mode.
- * If the user already has pro, displays information about their subscription.
- */
-export default function ProUpgradePage({
-  isPro,
-  isProFromOrg,
-  isLoggedIn,
-  proTrialExpires,
-}: ProUpgradePageProps) {
-  const { setSignUpModalOpen } = useContext(GlobalContext);
+  const router = useRouter();
+
+  // const { setSignUpModalOpen } = useContext(GlobalContext);
   // const [stripe, setStripe] = useState<Stripe | null>(null);
   // useAsyncState<{ publishableKey: string }>(
   //   () => backendFetch('GET', 'accounts/stripe-config/'), [],
@@ -55,7 +46,10 @@ export default function ProUpgradePage({
   const expiresInDays = Math.floor(daysBetween(new Date(), proTrialExpires));
 
   if (isProFromOrg) return <ProFromOrganization />;
-  if (isPro && !proTrialExpires) return <ProPurchaseSuccessPage />;
+  if (isPro && !proTrialExpires) {
+    router.push("/pro/success");
+    return <p>Redirecting...</p>;
+  }
 
   return (
     <div className="container mx-auto px-20 mt-28 max-w-6xl">
@@ -137,4 +131,6 @@ export default function ProUpgradePage({
       </div>
     </div>
   );
-}
+};
+
+export default ProUpgrade;

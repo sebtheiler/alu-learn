@@ -31,8 +31,8 @@ export default function LinkButton(props: LinkButtonProps) {
   );
 
   return (
-    <Link className={generatedClassName} href={props.href}>
-      <>
+    <Link href={props.href}>
+      <a className={generatedClassName}>
         {props.ripples && (
           <Ripple
             color={
@@ -50,7 +50,7 @@ export default function LinkButton(props: LinkButtonProps) {
           />
         )}
         {props.children}
-      </>
+      </a>
     </Link>
   );
 }

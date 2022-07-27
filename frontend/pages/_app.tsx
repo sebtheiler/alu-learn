@@ -6,7 +6,10 @@ import { useContext, useMemo, useState } from "react";
 import type { AppProps } from "next/app";
 
 import "../styles/globals.css";
+import "../styles/LandingPage.scss";
+import "../styles/ProUpgradePage.scss";
 import "../src/components/Button/Ripple/Ripple.scss";
+import "../src/editor/FullEditable/FullEditable.scss";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [signUpModalOpen, setSignUpModalOpen] = useState(false);
