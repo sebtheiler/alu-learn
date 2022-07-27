@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 
 interface ButtonGroupProps {
   /**
-   * Buttons in the group. Must be instances of `components/Button`
+   * Buttons in the group. Must be instances of `atoms/Button`
    */
   children: Array<ReactElement<ButtonProps>>;
   /**

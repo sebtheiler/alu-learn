@@ -6,7 +6,7 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "components/Button";
+import Button from "atoms/Button";
 import GlobalContext from "global";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import type { NextPage } from "next";

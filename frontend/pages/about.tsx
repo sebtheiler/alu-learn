@@ -1,4 +1,4 @@
-import Button from "components/Button";
+import Button from "atoms/Button";
 import DisplayProfileInline from "components/DisplayProfileInline";
 import GlobalContext from "global";
 import type { NextPage } from "next";

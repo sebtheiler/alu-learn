@@ -1,4 +1,4 @@
-import LinkButton from "components/LinkButton";
+import LinkButton from "atoms/LinkButton";
 import ProFeaturesCard from "components/ProFeaturesCard";
 import type { NextPage } from "next";
 

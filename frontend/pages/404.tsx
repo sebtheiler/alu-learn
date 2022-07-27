@@ -1,4 +1,4 @@
-import LinkButton from "components/LinkButton";
+import LinkButton from "atoms/LinkButton";
 import type { NextPage } from "next";
 
 const NotFound: NextPage = () => {

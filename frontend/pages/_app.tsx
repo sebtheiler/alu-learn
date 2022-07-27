@@ -1,4 +1,4 @@
-import "../src/components/Button/Ripple/Ripple.scss";
+import "../src/atoms/Button/Ripple/Ripple.scss";
 import Navbar from "../src/components/Navbar";
 import "../src/editor/FullEditable/FullEditable.scss";
 import GlobalContext from "../src/global";

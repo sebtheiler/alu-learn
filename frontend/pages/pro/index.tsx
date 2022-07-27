@@ -1,7 +1,7 @@
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AsyncButton from "components/AsyncButton";
-import Button from "components/Button";
+import AsyncButton from "atoms/AsyncButton";
+import Button from "atoms/Button";
 import ProFeaturesCard from "components/ProFeaturesCard";
 import ProFromOrganization from "components/ProFromOrganization";
 import GlobalContext from "global";
