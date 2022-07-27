@@ -1,5 +1,6 @@
 // Taken from https://github.com/MatejBransky/react-katex/blob/master/src/index.tsx
-
+import KaTeX from "katex";
+import type { KatexOptions } from "katex";
 import React, {
   useState,
   useEffect,
@@ -7,9 +8,6 @@ import React, {
   ElementType,
   memo,
 } from "react";
-import KaTeX from "katex";
-
-import type { KatexOptions } from "katex";
 
 interface TeXProps {
   /**

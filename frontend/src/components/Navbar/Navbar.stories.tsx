@@ -1,7 +1,6 @@
-import withFullContext from "helpers/withFullContext";
-import { ComponentStory } from "@storybook/react";
-
 import Navbar from ".";
+import { ComponentStory } from "@storybook/react";
+import withFullContext from "helpers/withFullContext";
 
 export default {
   title: "Components/Navbar",

@@ -1,7 +1,6 @@
-import Button from "components/Button";
-import { ComponentStory } from "@storybook/react";
-
 import Popover from ".";
+import { ComponentStory } from "@storybook/react";
+import Button from "components/Button";
 
 export default {
   title: "Components/Popover",

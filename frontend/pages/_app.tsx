@@ -1,15 +1,13 @@
-import GlobalContext from "../src/global";
+import "../src/components/Button/Ripple/Ripple.scss";
 import Navbar from "../src/components/Navbar";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { useContext, useMemo, useState } from "react";
-
-import type { AppProps } from "next/app";
-
-import "../styles/globals.css";
+import "../src/editor/FullEditable/FullEditable.scss";
+import GlobalContext from "../src/global";
 import "../styles/LandingPage.scss";
 import "../styles/ProUpgradePage.scss";
-import "../src/components/Button/Ripple/Ripple.scss";
-import "../src/editor/FullEditable/FullEditable.scss";
+import "../styles/globals.css";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import type { AppProps } from "next/app";
+import { useContext, useMemo, useState } from "react";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [signUpModalOpen, setSignUpModalOpen] = useState(false);

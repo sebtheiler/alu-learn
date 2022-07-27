@@ -1,6 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-
 import ButtonGroup from ".";
+import { ComponentStory } from "@storybook/react";
 import Button from "components/Button";
 
 export default {

@@ -1,10 +1,9 @@
-import blankSlateElement from "helpers/blankSlateElement";
-import { ComponentStory } from "@storybook/react";
-import { ReactEditor } from "slate-react";
-import { createFullEditor } from "../FullEditable";
-import { useMemo, useState } from "react";
-
 import RenderEditor from ".";
+import { createFullEditor } from "../FullEditable";
+import { ComponentStory } from "@storybook/react";
+import blankSlateElement from "helpers/blankSlateElement";
+import { useMemo, useState } from "react";
+import { ReactEditor } from "slate-react";
 
 export default {
   title: "editor/RenderEditor",

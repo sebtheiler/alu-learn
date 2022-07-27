@@ -1,5 +1,5 @@
-import GlobalContext from "global";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import GlobalContext from "global";
 import { useMemo, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 

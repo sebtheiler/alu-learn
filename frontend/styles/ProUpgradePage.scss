@@ -4,13 +4,13 @@
 
 @layer components {
   .pro-card {
-    @apply col-span-12 lg:col-span-5 overflow-hidden rounded-xl border-4 border-gray-200;
+    @apply col-span-12 overflow-hidden rounded-xl border-4 border-gray-200 lg:col-span-5;
 
     &.pro-card-basic {
-      @apply scale-100 lg:scale-90 lg:ml-6 lg:mr-3;
+      @apply scale-100 lg:ml-6 lg:mr-3 lg:scale-90;
     }
     &.pro-card-pro {
-      @apply scale-100 lg:scale-110 mt-5 lg:mt-0 lg:mr-6;
+      @apply mt-5 scale-100 lg:mt-0 lg:mr-6 lg:scale-110;
       overflow: visible;
 
       // Rainbow background effect
@@ -40,20 +40,20 @@
     }
 
     > .pro-card-head {
-      @apply bg-alu-dark-purple px-6 py-4 text-white rounded-t-xl;
+      @apply rounded-t-xl bg-alu-dark-purple px-6 py-4 text-white;
       > h3 {
         @apply text-2xl font-bold;
       }
       > p {
-        @apply text-lg mb-3;
+        @apply mb-3 text-lg;
       }
     }
     > .pro-card-body {
-      @apply px-6 py-4 bg-white rounded-b-xl;
+      @apply rounded-b-xl bg-white px-6 py-4;
 
       > ul > li {
         &.check > svg {
-          @apply text-green-600 mr-2;
+          @apply mr-2 text-green-600;
         }
         &.xmark {
           @apply text-gray-400 line-through;

@@ -1,6 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-
 import Jdenticon from ".";
+import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Components/Jdenticon",

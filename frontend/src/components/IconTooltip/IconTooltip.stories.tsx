@@ -1,7 +1,6 @@
-import { ComponentStory } from "@storybook/react";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-
 import IconTooltip from ".";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Components/IconTooltip",

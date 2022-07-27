@@ -1,6 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-
 import RenderRichText from ".";
+import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "editor/RenderRichText",

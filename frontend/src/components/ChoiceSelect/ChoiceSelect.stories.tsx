@@ -1,12 +1,11 @@
-import { ComponentStory } from "@storybook/react";
+import ChoiceSelect from ".";
 import {
   faGraduationCap,
   faNewspaper,
   faPersonChalkboard,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
-
-import ChoiceSelect from ".";
+import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Pages/WelcomeSurveyPage/ChoiceSelect",

@@ -12,7 +12,7 @@
     "architecture": "depcruise --include-only \"^src\" --output-type dot src --exclude \"stories.tsx$\" | dot -T svg > dependencygraph.svg",
     "chromatic": "npx chromatic --project-token=fa2baf6e07e8",
     "chromatic-frb": "npx chromatic --project-token=fa2baf6e07e8 --force-rebuild",
-    "prepare": "husky install"
+    "prettify": "prettier --write ."
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
@@ -51,6 +51,7 @@
     "@storybook/react": "^6.5.9",
     "@storybook/testing-library": "^0.0.13",
     "@tailwindcss/typography": "^0.5.4",
+    "@trivago/prettier-plugin-sort-imports": "^3.3.0",
     "@types/katex": "^0.14.0",
     "@types/node": "18.6.1",
     "@types/react": "^18.0.15",
@@ -65,11 +66,12 @@
     "dependency-cruiser": "^11.11.0",
     "eslint": "8.20.0",
     "eslint-config-next": "12.2.3",
-    "husky": "^8.0.1",
+    "install-peers": "^1.0.4",
     "lint-staged": "^13.0.3",
     "postcss": "^8.4.14",
     "postcss-nested": "^5.0.6",
     "prettier": "2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.13",
     "react-docgen-typescript": "^2.2.2",
     "storybook-addon-next": "^1.6.7",
     "storybook-addon-sass-postcss": "^0.1.3",

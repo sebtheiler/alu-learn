@@ -1,7 +1,6 @@
+import AsyncButton from ".";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { ComponentStory } from "@storybook/react";
-
-import AsyncButton from ".";
 
 export default {
   title: "Components/AsyncButton",

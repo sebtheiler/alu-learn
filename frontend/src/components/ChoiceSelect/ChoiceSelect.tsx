@@ -1,8 +1,7 @@
-import classNames from "helpers/classNames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
-
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import classNames from "helpers/classNames";
 
 /**
  * Possible values for a choice in `ChoiceSelect`
@@ -71,7 +70,7 @@ export default function ChoiceSelect({
   return (
     <div
       className={classNames(
-        "text-center grid grid-cols-1 md:grid-cols-2",
+        "grid grid-cols-1 text-center md:grid-cols-2",
         cols === 3 && "lg:grid-cols-3",
         cols === 4 && "lg:grid-cols-4"
       )}
@@ -81,8 +80,7 @@ export default function ChoiceSelect({
           <div
             onClick={() => onClick(choice.value)}
             role="button"
-            className="border-4 border-alu-mid-gray bg-alu-light-gray hover:bg-alu-light-gray-darker
-                       rounded-xl p-5 h-48 overflow-hidden flex flex-col grow"
+            className="flex h-48 grow flex-col overflow-hidden rounded-xl border-4 border-alu-mid-gray bg-alu-light-gray p-5 hover:bg-alu-light-gray-darker"
           >
             {choice.icon && (
               <div>
@@ -90,7 +88,7 @@ export default function ChoiceSelect({
                   <img
                     src={choice.icon}
                     alt={`${choice.display} logo`}
-                    className="w-20 mx-auto"
+                    className="mx-auto w-20"
                   />
                 ) : (
                   <FontAwesomeIcon
@@ -103,7 +101,7 @@ export default function ChoiceSelect({
               </div>
             )}
             <div className="flex grow items-center">
-              <p className="text-xl font-semibold mx-auto">{choice.display}</p>
+              <p className="mx-auto text-xl font-semibold">{choice.display}</p>
             </div>
           </div>
         </div>

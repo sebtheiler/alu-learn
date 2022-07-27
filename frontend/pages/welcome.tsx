@@ -1,6 +1,3 @@
-import type { NextPage } from "next";
-import ChoiceSelect from "components/ChoiceSelect";
-import ProgressBar from "components/ProgressBar";
 import {
   faGraduationCap,
   faNewspaper,
@@ -9,6 +6,9 @@ import {
   faUserGroup,
   faWindowRestore,
 } from "@fortawesome/free-solid-svg-icons";
+import ChoiceSelect from "components/ChoiceSelect";
+import ProgressBar from "components/ProgressBar";
+import type { NextPage } from "next";
 import { useMemo, useState } from "react";
 
 const Welcome: NextPage = () => {
@@ -227,10 +227,10 @@ const Welcome: NextPage = () => {
   }, [answers, slideNum]);
 
   return (
-    <div className="container md:px-14 lg:px-28 mt-28 mx-auto">
-      <h1 className="text-3xl font-bold text-center mb-3">Welcome to Alu!</h1>
+    <div className="container mx-auto mt-28 md:px-14 lg:px-28">
+      <h1 className="mb-3 text-center text-3xl font-bold">Welcome to Alu!</h1>
       <ProgressBar stepNum={slideNum} totalNumSteps={slides.length - 1} />
-      <div className="text-lg mt-5">{slides[slideNum]}</div>
+      <div className="mt-5 text-lg">{slides[slideNum]}</div>
     </div>
   );
 };

@@ -1,10 +1,9 @@
-import { ComponentStory } from "@storybook/react";
-import { ReactEditor } from "slate-react";
+import MarkButton from ".";
 import { createFullEditor } from "../../FullEditable";
 import { faBold } from "@fortawesome/free-solid-svg-icons";
+import { ComponentStory } from "@storybook/react";
 import { useMemo } from "react";
-
-import MarkButton from ".";
+import { ReactEditor } from "slate-react";
 
 export default {
   title: "editor/EditorButtons/MarkButton",

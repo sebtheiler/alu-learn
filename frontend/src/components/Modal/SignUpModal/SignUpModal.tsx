@@ -1,13 +1,13 @@
+import { getElementsVals } from "../../../helpers/getElementsVals";
+import { useGoogleLogin } from "@react-oauth/google";
 import AsyncForm from "components/AsyncForm";
 import Button from "components/Button";
 import Checkbox from "components/Form/Checkbox";
+import TextInput from "components/Form/TextInput";
+import Modal from "components/Modal";
 import GlobalContext from "global";
 import Image from "next/image";
-import Modal from "components/Modal";
-import TextInput from "components/Form/TextInput";
-import { getElementsVals } from "../../../helpers/getElementsVals";
 import { useContext, useState } from "react";
-import { useGoogleLogin } from "@react-oauth/google";
 
 const onSignUp = async (e) => {
   e.preventDefault();
@@ -46,7 +46,7 @@ export default function SignUpModal() {
           src="/assets/logos/google.svg"
           alt="Google Logo"
           width={30}
-          className="inline absolute left-5 top-2"
+          className="absolute left-5 top-2 inline"
         />
         Continue with Google
       </Button>
@@ -78,7 +78,7 @@ export default function SignUpModal() {
             }
           />
           {age >= 13 && (
-            <div className="grid grid-cols-2 gap-3 mb-2">
+            <div className="mb-2 grid grid-cols-2 gap-3">
               <TextInput
                 label="First Name"
                 name="firstName"

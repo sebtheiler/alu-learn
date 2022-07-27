@@ -1,7 +1,6 @@
-import TextInput from "components/Form/TextInput";
-import { ComponentStory } from "@storybook/react";
-
 import AsyncForm from ".";
+import { ComponentStory } from "@storybook/react";
+import TextInput from "components/Form/TextInput";
 
 export default {
   title: "Components/AsyncForm",

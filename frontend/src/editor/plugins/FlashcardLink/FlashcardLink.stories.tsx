@@ -1,6 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-
 import { FlashCardLinkComponent } from ".";
+import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "editor/plugins/FlashCardLinkComponent",

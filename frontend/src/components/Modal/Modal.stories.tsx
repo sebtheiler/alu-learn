@@ -1,8 +1,7 @@
-import { ComponentStory } from "@storybook/react";
-import { useState } from "react";
-
 import Modal from ".";
+import { ComponentStory } from "@storybook/react";
 import Button from "components/Button";
+import { useState } from "react";
 
 export default {
   title: "Components/Modal",

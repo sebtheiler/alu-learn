@@ -1,7 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
-
 import type { ButtonProps } from "components/Button";
+import { Fragment } from "react";
 
 interface ModalProps {
   /**
@@ -54,8 +53,8 @@ export default function Modal({
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </Transition.Child>
 
-        <div className="fixed z-10 inset-0 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-full p-4 text-center">
+        <div className="fixed inset-0 z-10 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -66,14 +65,14 @@ export default function Modal({
               leaveTo="opacity-0 translate-y-4"
             >
               <Dialog.Panel
-                className={`relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8 max-w-xl w-full`}
+                className={`relative my-8 w-full max-w-xl transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all`}
               >
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="mt-3 sm:mt-0 sm:ml-4 sm:text-left">
                     {title && (
                       <Dialog.Title
                         as="h3"
-                        className="text-xl text-center leading-6 font-medium text-gray-900"
+                        className="text-center text-xl font-medium leading-6 text-gray-900"
                       >
                         {title}
                       </Dialog.Title>
@@ -82,7 +81,7 @@ export default function Modal({
                   </div>
                 </div>
                 {buttons && (
-                  <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     {buttons}
                   </div>
                 )}

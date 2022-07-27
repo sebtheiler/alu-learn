@@ -1,8 +1,7 @@
-import Button from "components/Button";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { useCallback, useMemo, useState } from "react";
-
+import Button from "components/Button";
 import type { ButtonProps } from "components/Button";
+import { useCallback, useMemo, useState } from "react";
 
 interface AsyncFormProps {
   /**

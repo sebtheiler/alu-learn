@@ -3,6 +3,7 @@ import Button, {
   buttonVariantsLookup,
   generateButtonClassName,
 } from "./Button";
+
 export type { ButtonProps };
 export { buttonVariantsLookup, generateButtonClassName };
 export default Button;

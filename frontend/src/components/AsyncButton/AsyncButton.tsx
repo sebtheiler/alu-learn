@@ -1,5 +1,5 @@
-import Button, { ButtonProps } from "components/Button";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import Button, { ButtonProps } from "components/Button";
 import { useCallback, useMemo, useState } from "react";
 
 interface AsyncButtonProps extends ButtonProps {

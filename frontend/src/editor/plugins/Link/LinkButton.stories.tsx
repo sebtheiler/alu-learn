@@ -1,9 +1,8 @@
+import { LinkButton } from ".";
 import { ComponentStory } from "@storybook/react";
-import { ReactEditor } from "slate-react";
 import { createFullEditor } from "editor/FullEditable";
 import { useMemo } from "react";
-
-import { LinkButton } from ".";
+import { ReactEditor } from "slate-react";
 
 export default {
   title: "editor/plugins/LinkButton",

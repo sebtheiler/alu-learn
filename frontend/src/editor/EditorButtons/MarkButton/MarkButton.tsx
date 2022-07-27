@@ -1,10 +1,9 @@
+import { isMarkActive, toggleMark } from "../../FullEditable/helpers";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tooltip from "components/Tooltip";
 import capitalize from "helpers/capitalize";
-import { isMarkActive, toggleMark } from "../../FullEditable/helpers";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 import type { ReactEditor } from "slate-react";
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type MarkFormat =
   | "bold"

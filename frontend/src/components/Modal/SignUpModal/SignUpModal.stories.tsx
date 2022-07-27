@@ -1,9 +1,8 @@
-import GlobalContext from "global";
-import { ComponentStory } from "@storybook/react";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { withReactContext } from "storybook-react-context";
-
 import SignUpModal from ".";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { ComponentStory } from "@storybook/react";
+import GlobalContext from "global";
+import { withReactContext } from "storybook-react-context";
 
 export default {
   title: "Components/Modal/SignUpModal",

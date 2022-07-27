@@ -1,17 +1,17 @@
-import Image from "next/image";
-import Link from "next/link";
 import LoggedIn from "./LoggedIn";
 import LoggedOut from "./LoggedOut";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
   faCompass,
   faStar,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { useContext, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import NavItem from "components/NavItem";
 import GlobalContext from "global";
+import Image from "next/image";
+import Link from "next/link";
+import { useContext, useState } from "react";
 
 // TODO: dynamically import LoggedIn and LoggedOut
 
@@ -54,10 +54,10 @@ export default function Navbar({
   return (
     <nav
       className="
-      fixed top-0 left-0 w-screen flex items-center
-      bg-alu-dark-purple p-4 flex-wrap shadow-lg z-50"
+      fixed top-0 left-0 z-50 flex w-screen
+      flex-wrap items-center bg-alu-dark-purple p-4 shadow-lg"
     >
-      <Link href="/" className="p-2 mr-2 inline-flex items-center">
+      <Link href="/" className="mr-2 inline-flex items-center p-2">
         <a>
           <div className="flex items-center">
             <Image
@@ -65,7 +65,7 @@ export default function Navbar({
               alt="Alu Learn Logo"
               height={40}
               width={40}
-              className="hover:scale-x-[-1] transition duration-700"
+              className="transition duration-700 hover:scale-x-[-1]"
             />
             <span className="ml-2 text-2xl font-bold text-white no-underline">
               Alu Learn
@@ -74,7 +74,7 @@ export default function Navbar({
               <Image
                 src="/assets/pro-banner.svg"
                 alt="Pro Banner"
-                className="w-14 ml-1 hover:rotate-360 transition duration-700"
+                className="ml-1 w-14 transition duration-700 hover:rotate-360"
               />
             )}
           </div>
@@ -82,8 +82,8 @@ export default function Navbar({
       </Link>
       <button
         className="
-          inline-flex p-3 bg-white text-white bg-opacity-0
-          hover:bg-opacity-20 rounded-full lg:hidden ml-auto
+          ml-auto inline-flex rounded-full bg-white bg-opacity-0
+          p-3 text-white hover:bg-opacity-20 lg:hidden
         "
         onClick={() => setExpandedMenu(!expandedMenu)}
       >
@@ -91,12 +91,12 @@ export default function Navbar({
       </button>
       <div
         className={
-          "w-full lg:inline-flex lg:flex-grow lg:w-auto ml-5" +
+          "ml-5 w-full lg:inline-flex lg:w-auto lg:flex-grow" +
           (expandedMenu ? " block" : " hidden")
         }
         id="navigation"
       >
-        <div className="lg:inline-flex lg:flex-row flex flex-col flex-grow">
+        <div className="flex flex-grow flex-col lg:inline-flex lg:flex-row">
           <NavItem href="/community/decks" icon={faCompass}>
             Explore
           </NavItem>

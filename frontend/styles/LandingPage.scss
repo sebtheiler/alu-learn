@@ -4,10 +4,10 @@
 
 @layer components {
   .help-section {
-    @apply grid grid-cols-2 border-b-2 border-gray-300 py-3 my-4;
+    @apply my-4 grid grid-cols-2 border-b-2 border-gray-300 py-3;
 
     > .help-section-text {
-      @apply max-w-md mx-auto flex items-center;
+      @apply mx-auto flex max-w-md items-center;
 
       > div h2 {
         @apply text-xl font-semibold;

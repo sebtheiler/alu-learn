@@ -1,10 +1,9 @@
+import { Transition } from "@headlessui/react";
+import type { Placement } from "@popperjs/core";
 import classNames from "helpers/classNames";
 import useOutsideClick from "hooks/useClickOutside";
-import { Transition } from "@headlessui/react";
 import { useMemo, useState } from "react";
 import { usePopper } from "react-popper";
-
-import type { Placement } from "@popperjs/core";
 
 interface PopoverProps {
   /**
@@ -94,8 +93,7 @@ export default function Popover({
         <div
           ref={setPopEl}
           className={classNames(
-            "border-4 border-alu-mid-gray bg-alu-light-gray\
-                                 px-4 py-3 w-64 rounded-xl z-50",
+            "z-50 w-64 rounded-xl border-4 border-alu-mid-gray bg-alu-light-gray px-4 py-3",
             className
           )}
           // Popper style, attributes, and trigger attributes

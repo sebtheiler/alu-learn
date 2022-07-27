@@ -38,12 +38,12 @@ export default function Checkbox({
 }: CheckboxProps) {
   return (
     <div className={"flex items-start " + className}>
-      <div className="flex items-center h-5">
+      <div className="flex h-5 items-center">
         <input
           id={id}
           name={name}
           type="checkbox"
-          className="ring-indigo-500 h-4 w-4 accent-alu-primary-purple rounded-full focus:outline-none focus:ring focus:ring-violet-400/20"
+          className="h-4 w-4 rounded-full accent-alu-primary-purple ring-indigo-500 focus:outline-none focus:ring focus:ring-violet-400/20"
           required={required}
         />
       </div>

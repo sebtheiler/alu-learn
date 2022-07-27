@@ -1,7 +1,3 @@
-import Button from "components/Button";
-import GlobalContext from "global";
-import useWindowDimensions from "hooks/useWindowDimensions";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBrain,
   faDna,
@@ -9,9 +5,13 @@ import {
   faMonument,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import { useContext, useMemo } from "react";
-import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "components/Button";
+import GlobalContext from "global";
+import useWindowDimensions from "hooks/useWindowDimensions";
 import type { NextPage } from "next";
+import Image from "next/image";
+import { useContext, useMemo } from "react";
 
 const testimonials = [
   "Alu has been a tool that has made studying much less of a burden for me since it is so engaging and straightforward. When studying with Alu, it always truly feels like I am able to take in and understand the material and not just memorize content.", // I completely owe the success I have had on the AP exams I have taken to Alu.',
@@ -44,19 +44,19 @@ const Index: NextPage = () => {
     <div>
       <div
         style={{ height: `${height - 100}px` }}
-        className="bg-alu-dark-purple w-100"
+        className="w-100 bg-alu-dark-purple"
       >
-        <div className="grid md:grid-cols-1 text-center lg:grid-cols-2 lg:text-left h-full items-center">
-          <div className="bg-white py-10 rounded-2xl mx-6 md:mx-16 text-alu-dark-purple shadow-lg shadow-violet-400/40">
+        <div className="grid h-full items-center text-center md:grid-cols-1 lg:grid-cols-2 lg:text-left">
+          <div className="mx-6 rounded-2xl bg-white py-10 text-alu-dark-purple shadow-lg shadow-violet-400/40 md:mx-16">
             <div className="sm:px-5 md:px-6 xl:px-9">
-              <h1 className="text-2xl md:text-4xl xl:text-5xl font-bold mb-3 md:mb-8">
+              <h1 className="mb-3 text-2xl font-bold md:mb-8 md:text-4xl xl:text-5xl">
                 Learn Anything.
                 <br />
                 Remember Everything.
               </h1>
             </div>
             <div className="px-10">
-              <p className="text-md xl:text-xl 2xl:text-2xl mb-10">
+              <p className="text-md mb-10 xl:text-xl 2xl:text-2xl">
                 Flashcards that automatically optimize when you should review
                 them.
                 <br />
@@ -73,7 +73,7 @@ const Index: NextPage = () => {
                 <p className="mt-4 text-sm md:text-base">
                   Already have an account?{" "}
                   <span
-                    className="text-blue-400 hover:text-blue-500 underline cursor-pointer"
+                    className="cursor-pointer text-blue-400 underline hover:text-blue-500"
                     onClick={() => setLogInModalOpen(true)}
                   >
                     Log-in
@@ -86,23 +86,23 @@ const Index: NextPage = () => {
         </div>
       </div>
       <div
-        className="w-100 bg-alu-dark-purple flex"
+        className="w-100 flex bg-alu-dark-purple"
         style={{ height: "100px" }}
       >
-        <div className="w-full bg-white/10 hidden lg:block">
-          <div className="relative text-center top-1/2 -translate-y-1/2 text-lg">
+        <div className="hidden w-full bg-white/10 lg:block">
+          <div className="relative top-1/2 -translate-y-1/2 text-center text-lg">
             <ul>
               {exampleDecks.map((exampleDeck, i) => (
                 <li
                   key={i}
-                  className="inline-block rounded-full mx-2 p-0
-                         text-white text-opacity-60 bg-white bg-opacity-20
-                         hover:text-opacity-100 hover:bg-opacity-30 cursor-pointer"
+                  className="mx-2 inline-block cursor-pointer rounded-full
+                         bg-white bg-opacity-20 p-0 text-white
+                         text-opacity-60 hover:bg-opacity-30 hover:text-opacity-100"
                 >
                   <a
                     href={exampleDeck.link}
                     onClick={exampleDeck.onClick}
-                    className="px-4 py-2 block"
+                    className="block px-4 py-2"
                   >
                     <FontAwesomeIcon icon={exampleDeck.icon} className="mr-2" />
                     {exampleDeck.title}
@@ -113,16 +113,16 @@ const Index: NextPage = () => {
           </div>
         </div>
       </div>
-      <div className="px-2 container mx-auto mt-10">
-        <div className="text-center mb-5">
-          <h1 className="text-2xl font-semibold mb-5">
+      <div className="container mx-auto mt-10 px-2">
+        <div className="mb-5 text-center">
+          <h1 className="mb-5 text-2xl font-semibold">
             What People Are Saying
           </h1>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
             {testimonials.map((testimonial, i) => (
               <div
                 key={i}
-                className="border-4 border-alu-primary-purple rounded-xl p-4 mx-4 mb-4 items-center flex"
+                className="mx-4 mb-4 flex items-center rounded-xl border-4 border-alu-primary-purple p-4"
               >
                 <p className="italic">"{testimonial}"</p>
               </div>
@@ -195,12 +195,12 @@ const Index: NextPage = () => {
           </div>
         </div>
       </div>
-      <div className="text-center max-w-xl mx-auto mb-10 px-3">
+      <div className="mx-auto mb-10 max-w-xl px-3 text-center">
         <p className="text-xl font-bold">
           Ready to memorize more of what you learn?
         </p>
         <Button
-          className="mt-1 mx-auto text-center"
+          className="mx-auto mt-1 text-center"
           onClick={() => setSignUpModalOpen(true)}
           block
         >

@@ -1,15 +1,14 @@
-import Popover from "components/Popover";
+import { insertFlashCardLink } from "./helpers";
+import { faAnchor } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { FlashCard } from "@types";
 import TextInput from "components/Form/TextInput";
+import Popover from "components/Popover";
 import Tooltip from "components/Tooltip";
 import flattenNodes from "helpers/flattenNodes";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Link from "next/link";
-import { faAnchor } from "@fortawesome/free-solid-svg-icons";
-import { insertFlashCardLink } from "./helpers";
 import { useDebounce } from "hooks/useDebounce";
+import Link from "next/link";
 import { useState } from "react";
-
-import type { FlashCard } from "@types";
 import type { ReactEditor } from "slate-react";
 
 interface FlashcardLinkButtonProps {
@@ -66,7 +65,7 @@ export default function FlashcardLinkButton({
                 <br />
               </small>
             )}
-            <p className="text-sm mt-2 text-gray-700">
+            <p className="mt-2 text-sm text-gray-700">
               This will allow you to see a preview of a flashcard when studying
               by hovering the flashcard link
             </p>

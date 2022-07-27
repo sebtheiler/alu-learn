@@ -1,10 +1,9 @@
+import { isBlockActive, toggleBlock } from "../../FullEditable/helpers";
+import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tooltip from "components/Tooltip";
 import capitalize from "helpers/capitalize";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactEditor } from "slate-react";
-import { isBlockActive, toggleBlock } from "../../FullEditable/helpers";
-
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type numbers = "one" | "two" | "three" | "four" | "five" | "six";
 type BlockFormat =
@@ -57,7 +56,7 @@ export default function BlockButton({
           background: isBlockActive(editor, format) ? "#e1e6ed" : "transparent",
         }}
         tabIndex={tabbable ? undefined : -1}
-        className="p-1 mx-1"
+        className="mx-1 p-1"
       >
         <FontAwesomeIcon icon={faIcon} />
       </button>

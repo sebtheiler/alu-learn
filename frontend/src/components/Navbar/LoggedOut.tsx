@@ -1,9 +1,9 @@
+import { CredentialResponse, useGoogleOneTapLogin } from "@react-oauth/google";
 import Button from "components/Button";
 import ButtonGroup from "components/ButtonGroup";
-import GlobalContext from "global";
 import LogInModal from "components/Modal/LogInModal";
 import SignUpModal from "components/Modal/SignUpModal";
-import { CredentialResponse, useGoogleOneTapLogin } from "@react-oauth/google";
+import GlobalContext from "global";
 import { useContext } from "react";
 
 const onGoogleLoginSuccess = (credResp: CredentialResponse) =>

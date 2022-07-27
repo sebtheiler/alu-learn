@@ -1,6 +1,5 @@
-import Tooltip from "components/Tooltip";
-
 import type { ExtendedSlateElement } from "../../types";
+import Tooltip from "components/Tooltip";
 
 interface LinkComponentProps {
   /**
@@ -41,11 +40,11 @@ export default function LinkComponent({
             : element.url}
         </a>
       }
-      className="underline text-blue-300"
+      className="text-blue-300 underline"
     >
       <a
         {...attributes}
-        className="underline text-blue-600 hover:text-blue-800"
+        className="text-blue-600 underline hover:text-blue-800"
         href={element.url}
         target="_blank"
         rel="noreferrer"

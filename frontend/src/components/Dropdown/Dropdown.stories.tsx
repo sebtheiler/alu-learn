@@ -1,5 +1,4 @@
-import { ComponentStory } from "@storybook/react";
-import { withRouter } from "storybook-addon-react-router-v6";
+import Dropdown from ".";
 import {
   faBell,
   faBook,
@@ -8,9 +7,9 @@ import {
   faSignOut,
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
-
-import Dropdown from ".";
+import { ComponentStory } from "@storybook/react";
 import Button from "components/Button";
+import { withRouter } from "storybook-addon-react-router-v6";
 
 export default {
   title: "Components/Dropdown",

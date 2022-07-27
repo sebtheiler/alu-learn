@@ -1,10 +1,10 @@
-import type { NextPage } from "next";
 import LinkButton from "components/LinkButton";
+import type { NextPage } from "next";
 import Link from "next/link";
 
 const NotFound: NextPage = () => {
   return (
-    <div className="prose mx-auto text-center mt-28">
+    <div className="prose mx-auto mt-28 text-center">
       <h1>You've Cancelled Your Purchase</h1>
       <p>Sorry to see you go!</p>
       <p>

@@ -1,9 +1,9 @@
-import type { NextPage } from "next";
 import DisplayProfileInline from "components/DisplayProfileInline";
 import RenderRichText from "editor/RenderRichText";
 import createSlateElement from "helpers/createSlateElement";
-import { Fragment } from "react";
+import type { NextPage } from "next";
 import Link from "next/link";
+import { Fragment } from "react";
 
 const exampleUser = {
   firstName: "Example",
@@ -23,9 +23,9 @@ const sharedDecks = [
 
 const CommunityDecksHome: NextPage = () => {
   return (
-    <div className="container px-48 mx-auto mt-28">
+    <div className="container mx-auto mt-28 px-48">
       <div>
-        <h1 className="text-4xl font-bold mb-3">Explore</h1>
+        <h1 className="mb-3 text-4xl font-bold">Explore</h1>
         <p className="text-lg">
           Find top decks created by others to help you study
         </p>
@@ -34,7 +34,7 @@ const CommunityDecksHome: NextPage = () => {
       <div>
         {sharedDecks.map((sharedDeck) => (
           <div
-            className="bg-alu-light-gray border-4 border-alu-mid-gray px-6 py-4 rounded-xl"
+            className="rounded-xl border-4 border-alu-mid-gray bg-alu-light-gray px-6 py-4"
             key={sharedDeck.id}
           >
             <div>
@@ -50,7 +50,7 @@ const CommunityDecksHome: NextPage = () => {
                 {sharedDeck.numCopies}{" "}
                 {sharedDeck.numCopies === 1 ? "copy" : "copies"}
               </p>
-              <h1 className="text-4xl font-bold my-2 text-blue-500 hover:text-blue-600 hover:underline">
+              <h1 className="my-2 text-4xl font-bold text-blue-500 hover:text-blue-600 hover:underline">
                 <Link href={`/community/decks/${sharedDeck.id}/`}>
                   {sharedDeck.title}
                 </Link>

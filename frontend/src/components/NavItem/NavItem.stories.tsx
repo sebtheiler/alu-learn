@@ -1,6 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-
 import NavItem from ".";
+import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Components/NavItem",

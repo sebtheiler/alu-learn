@@ -1,7 +1,7 @@
-import type { NextPage } from "next";
 import Button from "components/Button";
 import DisplayProfileInline from "components/DisplayProfileInline";
 import GlobalContext from "global";
+import type { NextPage } from "next";
 import Image from "next/image";
 import { useContext } from "react";
 
@@ -15,8 +15,8 @@ const About: NextPage = () => {
   const isLoggedIn = false;
 
   return (
-    <article className="container prose prose-a:no-underline prose-a:text-blue-500 mx-auto max-w-4xl mt-28">
-      <h1 className="text-center mx-auto mb-2 text-4xl font-bold">
+    <article className="container prose mx-auto mt-28 max-w-4xl prose-a:text-blue-500 prose-a:no-underline">
+      <h1 className="mx-auto mb-2 text-center text-4xl font-bold">
         Make Memory a Choice.
       </h1>
       <div className="text-center">
@@ -67,7 +67,7 @@ const About: NextPage = () => {
 
       <h1 className="text-center">Alu's Key Features</h1>
       <h2 className="text-center">Spaced Repetition</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 mt-2">
+      <div className="mt-2 grid grid-cols-1 md:grid-cols-2">
         <div>
           <p>
             Memorizing information is boring, but important. Alu seeks to make
@@ -103,7 +103,7 @@ const About: NextPage = () => {
         </div>
       </div>
       <h2 className="text-center">Global Sharing System</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 mt-5">
+      <div className="mt-5 grid grid-cols-1 md:grid-cols-2">
         <div>
           <Image
             src="/assets/global-sharing-system.png"
@@ -130,7 +130,7 @@ const About: NextPage = () => {
         </div>
       </div>
       <h2 className="text-center">Skill Tree</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 mt-5">
+      <div className="mt-5 grid grid-cols-1 md:grid-cols-2">
         <div>
           <p>
             In psychology, one of the major models for how memories are
@@ -158,8 +158,8 @@ const About: NextPage = () => {
       </div>
       <hr />
 
-      <h1 className="text-center mx-auto">The Story of Alu</h1>
-      <div className="grid grid-cols-1 md:grid-cols-5 mt-2 mb-5">
+      <h1 className="mx-auto text-center">The Story of Alu</h1>
+      <div className="mt-2 mb-5 grid grid-cols-1 md:grid-cols-5">
         <div className="md:col-span-3">
           <p>
             Hi! I'm
@@ -218,7 +218,7 @@ const About: NextPage = () => {
           <Image
             src="/assets/sebastian.jpg"
             alt="Sebastian, the creator of Alu"
-            className="rounded-xl mb-2 mx-auto sm:max-w-sm"
+            className="mx-auto mb-2 rounded-xl sm:max-w-sm"
             width={1875}
             height={1974}
           />
@@ -227,15 +227,15 @@ const About: NextPage = () => {
               <strong>Follow Sebastian</strong>
             </p>
             <div
-              className="mx-2 border-2 border-gray-400 bg-gray-100 rounded-xl
-                            px-4 py-3 grid grid-cols-3 text-center"
+              className="mx-2 grid grid-cols-3 rounded-xl border-2
+                            border-gray-400 bg-gray-100 px-4 py-3 text-center"
             >
               <div className="flex items-center">
                 <a
                   href="https://twitter.com/seb_theiler"
                   target="_blank"
                   rel="noreferrer"
-                  className="mx-auto hover:scale-125 transition"
+                  className="mx-auto transition hover:scale-125"
                 >
                   {/* https://github.com/johan/svg-cleanups/blob/master/logos/twitter.svg */}
                   <svg
@@ -253,7 +253,7 @@ const About: NextPage = () => {
                   href="https://github.com/sebtheiler"
                   target="_blank"
                   rel="noreferrer"
-                  className="mx-auto hover:scale-125 transition"
+                  className="mx-auto transition hover:scale-125"
                 >
                   {/* https://iconmonstr.com/github-1-svg/ */}
                   <svg
@@ -271,7 +271,7 @@ const About: NextPage = () => {
                   href="https://medium.com/@sebastiankt9"
                   target="_blank"
                   rel="noreferrer"
-                  className="mx-auto hover:scale-125 transition"
+                  className="mx-auto transition hover:scale-125"
                 >
                   {/* https://markentier.tech/posts/2020/10/medium-icon-svg/ */}
                   <svg

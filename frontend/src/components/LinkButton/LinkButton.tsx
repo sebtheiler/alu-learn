@@ -1,14 +1,13 @@
-import Link from "next/link";
-import Ripple from "components/Button/Ripple";
-import classNames from "helpers/classNames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   buttonVariantsLookup,
   generateButtonClassName,
 } from "components/Button";
-import { useMemo } from "react";
-
 import type { ButtonProps } from "components/Button";
+import Ripple from "components/Button/Ripple";
+import classNames from "helpers/classNames";
+import Link from "next/link";
+import { useMemo } from "react";
 
 interface LinkButtonProps extends ButtonProps {
   /**

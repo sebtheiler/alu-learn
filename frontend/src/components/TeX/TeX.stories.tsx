@@ -1,6 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-
 import TeX from ".";
+import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Components/TeX",

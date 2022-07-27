@@ -1,9 +1,9 @@
+import { ExtendedReactEditor } from "../types";
+import { LIST_TYPES } from "./constants";
 import withFlashcardLinks from "editor/plugins/FlashcardLink";
 import withLinks from "editor/plugins/Link";
 import withSaveSelectionOnBlur from "editor/plugins/SaveSelectionOnBlur";
 import withShortcuts from "editor/plugins/Shortcuts";
-import { ExtendedReactEditor } from "../types";
-import { LIST_TYPES } from "./constants";
 import {
   createEditor,
   Element as SlateElement,

@@ -1,8 +1,7 @@
 import EditorButtons from "../EditorButtons";
 import FullEditable from "../FullEditable";
-import { Slate } from "slate-react";
-
 import type { Descendant } from "slate";
+import { Slate } from "slate-react";
 import type { ReactEditor } from "slate-react";
 
 interface RenderEditorProps {
@@ -64,7 +63,7 @@ export default function RenderEditor({
         <div className="editor-body">
           <FullEditable
             editor={editor}
-            className="p-3 border rounded-lg"
+            className="rounded-lg border p-3"
             readOnly={readOnly}
           />
         </div>

@@ -1,9 +1,8 @@
-import Tooltip from "components/Tooltip";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
-import { insertLink } from "./helpers";
-
 import type { ExtendedReactEditor } from "../../types";
+import { insertLink } from "./helpers";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Tooltip from "components/Tooltip";
 
 interface LinkButtonProps {
   /**

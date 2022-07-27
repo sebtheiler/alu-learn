@@ -1,6 +1,5 @@
-import { ComponentStory } from "@storybook/react";
-
 import TextInput from ".";
+import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Components/Form/TextInput",

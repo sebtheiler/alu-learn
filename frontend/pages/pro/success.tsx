@@ -1,6 +1,6 @@
-import type { NextPage } from "next";
 import LinkButton from "components/LinkButton";
 import ProFeaturesCard from "components/ProFeaturesCard";
+import type { NextPage } from "next";
 
 const ProPurchaseSuccess: NextPage = () => {
   // const [subscriptionProduct] = useAsyncState<{ subscription: any, product: any }>(
@@ -8,8 +8,8 @@ const ProPurchaseSuccess: NextPage = () => {
   // );
 
   return (
-    <div className="container mx-auto text-center mt-28">
-      <div className="prose max-w-2xl mx-auto">
+    <div className="container mx-auto mt-28 text-center">
+      <div className="prose mx-auto max-w-2xl">
         <h1>Thank You for Upgrading to Alu Pro!</h1>
         <p>
           You've just improved your Alu experience while supporting free
@@ -34,7 +34,7 @@ const ProPurchaseSuccess: NextPage = () => {
         subscription={subscriptionProduct.subscription}
         product={subscriptionProduct.product}
       />} */}
-      <div className="max-w-lg mx-auto mt-10 text-left">
+      <div className="mx-auto mt-10 max-w-lg text-left">
         <ProFeaturesCard />
       </div>
     </div>

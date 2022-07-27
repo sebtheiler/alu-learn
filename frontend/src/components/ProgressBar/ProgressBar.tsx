@@ -21,9 +21,9 @@ export default function ProgressBar({
   );
 
   return (
-    <div className="w-full h-8 p-0 border-4 border-alu-mid-gray rounded-full bg-alu-light-gray overflow-hidden">
+    <div className="h-8 w-full overflow-hidden rounded-full border-4 border-alu-mid-gray bg-alu-light-gray p-0">
       <div
-        className="bg-gradient-to-r from-lime-600 to-lime-400 h-full rounded-full"
+        className="h-full rounded-full bg-gradient-to-r from-lime-600 to-lime-400"
         style={{
           width: `${width}%`,
           transition: "0.5s cubic-bezier(.21, .59, .56, 1.29)",

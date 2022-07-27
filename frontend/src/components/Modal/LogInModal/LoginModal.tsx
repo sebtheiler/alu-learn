@@ -1,12 +1,12 @@
+import { useGoogleLogin } from "@react-oauth/google";
 import AsyncForm from "components/AsyncForm";
 import Button from "components/Button";
-import GlobalContext from "global";
-import Image from "next/image";
-import Modal from "components/Modal";
 import TextInput from "components/Form/TextInput";
+import Modal from "components/Modal";
+import GlobalContext from "global";
 import { getElementsVals } from "helpers/getElementsVals";
+import Image from "next/image";
 import { useContext, useState } from "react";
-import { useGoogleLogin } from "@react-oauth/google";
 
 const onLogIn = async (e) => {
   console.log(
@@ -40,7 +40,7 @@ export default function LogInModal() {
           src="/assets/logos/google.svg"
           alt="Google Logo"
           width={30}
-          className="inline absolute left-5 top-2"
+          className="absolute left-5 top-2 inline"
         />
         Log-in with Google
       </Button>

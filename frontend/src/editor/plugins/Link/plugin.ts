@@ -1,6 +1,6 @@
-import { ReactEditor } from "slate-react";
 import { wrapLink } from "./helpers";
 import isUrl from "helpers/isUrl";
+import { ReactEditor } from "slate-react";
 
 const withLinks = (editor: ReactEditor) => {
   const { insertData, insertText, isInline } = editor;

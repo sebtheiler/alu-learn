@@ -1,9 +1,8 @@
-import { ComponentStory } from "@storybook/react";
-import { ReactEditor } from "slate-react";
-import { createFullEditor } from "../FullEditable";
-import { useMemo } from "react";
-
 import EditorButtons from ".";
+import { createFullEditor } from "../FullEditable";
+import { ComponentStory } from "@storybook/react";
+import { useMemo } from "react";
+import { ReactEditor } from "slate-react";
 
 export default {
   title: "editor/EditorButtons",

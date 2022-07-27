@@ -1,7 +1,7 @@
-import { Editor, Transforms, Range, Location } from "slate";
 import { FlashCard } from "@types";
-import { ReactEditor } from "slate-react";
 import flattenNodes from "helpers/flattenNodes";
+import { Editor, Transforms, Range, Location } from "slate";
+import { ReactEditor } from "slate-react";
 
 const insertFlashCardLink = (editor: ReactEditor, flashcard: FlashCard) => {
   // @ts-ignore

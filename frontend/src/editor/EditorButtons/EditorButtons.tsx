@@ -1,6 +1,4 @@
 import BlockButton from "./BlockButton";
-import FlashCardLinkButton from "editor/plugins/FlashcardLink/FlashcardLinkButton";
-import LinkButton from "editor/plugins/Link/LinkButton";
 import MarkButton from "./MarkButton";
 import {
   faBold,
@@ -13,7 +11,8 @@ import {
   faListUl,
   faSquareRootAlt,
 } from "@fortawesome/free-solid-svg-icons";
-
+import FlashCardLinkButton from "editor/plugins/FlashcardLink/FlashcardLinkButton";
+import LinkButton from "editor/plugins/Link/LinkButton";
 import type { ReactEditor } from "slate-react";
 
 interface EditorButtonProps {

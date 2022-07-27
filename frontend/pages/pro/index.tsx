@@ -1,14 +1,14 @@
-import type { NextPage } from "next";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "components/AsyncButton";
 import Button from "components/Button";
-import GlobalContext from "global";
 import ProFeaturesCard from "components/ProFeaturesCard";
 import ProFromOrganization from "components/ProFromOrganization";
+import GlobalContext from "global";
 import daysBetween from "helpers/daysBetween";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useContext } from "react";
+import type { NextPage } from "next";
 import { useRouter } from "next/router";
+import { useContext } from "react";
 
 const ProUpgrade: NextPage = () => {
   const proTrialExpires = "2023-01-01";
@@ -52,8 +52,8 @@ const ProUpgrade: NextPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-20 mt-28 max-w-6xl">
-      <div className="prose text-center mx-auto">
+    <div className="container mx-auto mt-28 max-w-6xl px-20">
+      <div className="prose mx-auto text-center">
         <h1 className="mb-0">Take Studying to the Next Level</h1>
         <p className="mb-1">Gain access to Alu's most powerful features</p>
         {proTrialExpires && (
@@ -64,7 +64,7 @@ const ProUpgrade: NextPage = () => {
           </p>
         )}
       </div>
-      <div className="grid grid-cols-12 mt-10">
+      <div className="mt-10 grid grid-cols-12">
         <div className="pro-card pro-card-basic">
           <div className="pro-card-head">
             <h3>Basic</h3>
@@ -110,7 +110,7 @@ const ProUpgrade: NextPage = () => {
         <ProFeaturesCard />
       </div>
       <div className="mt-8 text-center">
-        <div className="text-center w-100">
+        <div className="w-100 text-center">
           {!isLoggedIn ? (
             <>
               <Button onClick={() => setSignUpModalOpen(true)} block>

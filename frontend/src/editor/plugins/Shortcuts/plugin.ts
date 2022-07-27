@@ -1,3 +1,4 @@
+import { ExtendedReactEditor, ExtendedSlateElement } from "../../types";
 import {
   Editor,
   Transforms,
@@ -5,7 +6,6 @@ import {
   Point,
   Element as SlateElement,
 } from "slate";
-import { ExtendedReactEditor, ExtendedSlateElement } from "../../types";
 
 type Shortcut = "*" | "1." | "$$" | "#" | "##" | "###";
 const SHORTCUTS = {
