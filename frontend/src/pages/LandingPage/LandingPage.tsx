@@ -8,10 +8,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "atoms/Button";
-import GlobalContext from "global";
+// import GlobalContext from "global";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import Image from "next/image";
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 
 const testimonials = [
   "Alu has been a tool that has made studying much less of a burden for me since it is so engaging and straightforward. When studying with Alu, it always truly feels like I am able to take in and understand the material and not just memorize content.", // I completely owe the success I have had on the AP exams I have taken to Alu.',
@@ -124,7 +124,7 @@ export default function IndexPage() {
                 key={i}
                 className="mx-4 mb-4 flex items-center rounded-xl border-4 border-alu-primary-purple p-4"
               >
-                <p className="italic">"{testimonial}"</p>
+                <p className="italic">&quot;{testimonial}&quot;</p>
               </div>
             ))}
           </div>

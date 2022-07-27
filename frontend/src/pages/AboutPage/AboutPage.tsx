@@ -1,8 +1,9 @@
 import Button from "atoms/Button";
 import DisplayProfileInline from "components/DisplayProfileInline";
-import GlobalContext from "global";
+// import GlobalContext from "global";
 import Image from "next/image";
-import { useContext } from "react";
+
+// import { useContext } from "react";
 
 const sebProfile = {
   firstName: "Sebastian",
@@ -32,19 +33,19 @@ export default function AboutPage() {
       <div>
         <h2>Why memory? Why Alu?</h2>
         <p>
-          Memory isn't just about cramming. It's about storing information in
-          your mind so that you can make insightful connections and have novel
-          ideas. Although it can get a bad rap, memory is vital to the creative
-          process. On top of this, by using Alu to reduce the amount of time you
-          spend memorizing, you are able to spend more time critically engaging
-          with content and working creatively.
+          Memory isn&apos;t just about cramming. It&apos;s about storing
+          information in your mind so that you can make insightful connections
+          and have novel ideas. Although it can get a bad rap, memory is vital
+          to the creative process. On top of this, by using Alu to reduce the
+          amount of time you spend memorizing, you are able to spend more time
+          critically engaging with content and working creatively.
         </p>
         <p>
           To help you memorize efficiently, Alu uses spaced repetition, a
           technique that optimizes your memory retention by putting intervals
-          between when you study material. Alu's sharing system also allows you
-          to collaborate with others on a deck, so that you don't need to make
-          flashcards all by yourself. Some{" "}
+          between when you study material. Alu&apos;s sharing system also allows
+          you to collaborate with others on a deck, so that you don&apos;t need
+          to make flashcards all by yourself. Some{" "}
           <a href="/explore" target="_blank">
             community decks
           </a>{" "}
@@ -64,7 +65,7 @@ export default function AboutPage() {
       </div>
       <hr />
 
-      <h1 className="text-center">Alu's Key Features</h1>
+      <h1 className="text-center">Alu&apos;s Key Features</h1>
       <h2 className="text-center">Spaced Repetition</h2>
       <div className="mt-2 grid grid-cols-1 md:grid-cols-2">
         <div>
@@ -82,7 +83,8 @@ export default function AboutPage() {
             you struggle with more often.
           </p>
           <p>
-            If you don't review content, you will forget it. Alu stops that.
+            If you don&apos;t review content, you will forget it. Alu stops
+            that.
           </p>
         </div>
         <div>
@@ -116,15 +118,15 @@ export default function AboutPage() {
         <div>
           <p>
             With Alu, you can share flashcards with (or use flashcards from!)
-            anyone around the world. Alu's sharing system also allows you to
-            collaborate with friends to build a deck, or even to let anyone
+            anyone around the world. Alu&apos;s sharing system also allows you
+            to collaborate with friends to build a deck, or even to let anyone
             submit an edit.
           </p>
           <p>
             One of my dreams for Alu is to build engaged and eager communities
             around different subjects, where anyone and everyone can help
-            improve decks for subjects that interest them. Alu's sharing system
-            is a step in that direction.
+            improve decks for subjects that interest them. Alu&apos;s sharing
+            system is a step in that direction.
           </p>
         </div>
       </div>
@@ -161,11 +163,11 @@ export default function AboutPage() {
       <div className="mt-2 mb-5 grid grid-cols-1 md:grid-cols-5">
         <div className="md:col-span-3">
           <p>
-            Hi! I'm
+            Hi! I&apos;m
             <span className="ml-1" />
             <DisplayProfileInline profile={sebProfile} />, a New York high
-            school junior, and I created Alu. I've been a life-long learner and,
-            in the summer of 2020, I sought out to create a tool to help me
+            school junior, and I created Alu. I&apos;ve been a life-long learner
+            and, in the summer of 2020, I sought out to create a tool to help me
             learn more effectively. Inspired by{" "}
             <a
               href="https://supermemo.guru/wiki/SuperMemo_Guru"
@@ -174,9 +176,9 @@ export default function AboutPage() {
             >
               Dr. Piotr Wozniak
             </a>
-            's philosophy of free schooling and self-guided learning, I designed
-            Alu with the core principles of enabling people to learn whatever
-            they want and to remember all of it.
+            &apos;s philosophy of free schooling and self-guided learning, I
+            designed Alu with the core principles of enabling people to learn
+            whatever they want and to remember all of it.
           </p>
           <p>
             In the fall of 2020, when I returned to school, I realized how much

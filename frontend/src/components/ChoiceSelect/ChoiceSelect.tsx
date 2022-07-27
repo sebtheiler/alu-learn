@@ -2,6 +2,7 @@ import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "helpers/classNames";
+import Image from "next/image";
 
 /**
  * Possible values for a choice in `ChoiceSelect`
@@ -85,7 +86,7 @@ export default function ChoiceSelect({
             {choice.icon && (
               <div>
                 {typeof choice.icon === "string" ? (
-                  <img
+                  <Image
                     src={choice.icon}
                     alt={`${choice.display} logo`}
                     className="mx-auto w-20"

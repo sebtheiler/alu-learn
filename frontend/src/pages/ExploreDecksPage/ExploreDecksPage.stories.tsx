@@ -9,7 +9,7 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof ExploreDecksPage> = (args) => (
+const Template: ComponentStory<typeof ExploreDecksPage> = () => (
   <ExploreDecksPage />
 );
 

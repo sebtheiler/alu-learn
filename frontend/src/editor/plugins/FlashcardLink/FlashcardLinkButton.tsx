@@ -1,15 +1,15 @@
 import { insertFlashCardLink } from "./helpers";
 import { faAnchor } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { FlashCard } from "@types";
 import Popover from "atoms/Popover";
 import TextInput from "atoms/TextInput";
 import Tooltip from "atoms/Tooltip";
 import flattenNodes from "helpers/flattenNodes";
 import { useDebounce } from "hooks/useDebounce";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactEditor } from "slate-react";
+import type { FlashCard } from "types";
 
 interface FlashcardLinkButtonProps {
   /**
@@ -39,19 +39,19 @@ export default function FlashcardLinkButton({
   const [searchedFlashcards, setSearchedFlashcards] = useState<FlashCard[]>([]);
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 750);
 
-  // useEffect(() => {
-  //   if (debouncedSearchTerm === searchTerm && searchTerm.length > 0) {
-  //     setIsSearching(true);
-  //     backendFetch<PaginatedResponse<FlashCard>>('POST', 'decks/flashcard/search/', {
-  //       contains_text: searchTerm,
-  //     }).then(resp => {
-  //       setSearchedFlashcards(resp.results);
-  //       setIsSearching(false);
-  //     });
-  //   } else {
-  //     setSearchedFlashcards([]);
-  //   }
-  // }, [debouncedSearchTerm, searchTerm]);
+  useEffect(() => {
+    if (debouncedSearchTerm === searchTerm && searchTerm.length > 0) {
+      setIsSearching(true);
+      // backendFetch<PaginatedResponse<FlashCard>>('POST', 'decks/flashcard/search/', {
+      //   contains_text: searchTerm,
+      // }).then(resp => {
+      //   setSearchedFlashcards(resp.results);
+      //   setIsSearching(false);
+      // });
+    } else {
+      setSearchedFlashcards([]);
+    }
+  }, [debouncedSearchTerm, searchTerm]);
 
   return (
     <Popover
@@ -83,9 +83,9 @@ export default function FlashcardLinkButton({
               {!isPro && (
                 <p className="mt-3">
                   Upgrade to{" "}
-                  <a href="/pro" className="text-blue-500">
+                  <Link href="/pro" className="text-blue-500">
                     pro
-                  </a>{" "}
+                  </Link>{" "}
                   to use flashcard links
                 </p>
               )}

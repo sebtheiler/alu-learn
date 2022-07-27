@@ -1,6 +1,7 @@
 import Element from "./Element";
 import Leaf from "./Leaf";
 import { HOTKEYS } from "./constants";
+import type { Hotkey } from "./constants";
 import { toggleMark } from "./helpers";
 import type { ExtendedReactEditor } from "editor/types";
 import isHotKey from "is-hotkey";
@@ -52,9 +53,9 @@ export default function FullEditable({
       spellCheck
       onKeyDown={(event) => {
         for (const hotkey in HOTKEYS) {
-          if (isHotKey(hotkey, event as any)) {
+          if (isHotKey(hotkey, event)) {
             event.preventDefault();
-            const mark = HOTKEYS[hotkey];
+            const mark = HOTKEYS[hotkey as Hotkey];
             toggleMark(editor, mark);
           }
         }

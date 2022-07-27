@@ -5,7 +5,10 @@ interface LinkComponentProps {
   /**
    * Attributes passed to the `<a>` element
    */
-  attributes: any;
+  attributes: React.DetailedHTMLProps<
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    HTMLAnchorElement
+  >;
   /**
    * Children of the `<a>` element
    */
@@ -33,11 +36,15 @@ export default function LinkComponent({
           target="_blank"
           rel="noreferrer"
         >
-          {element.url.length > 50
-            ? element.url.substring(0, 15) +
-              "   ...   " +
-              element.url.substring(element.url.length - 10, element.url.length)
-            : element.url}
+          {element.url &&
+            (element.url.length > 50
+              ? element.url.substring(0, 15) +
+                "   ...   " +
+                element.url.substring(
+                  element.url.length - 10,
+                  element.url.length
+                )
+              : element.url)}
         </a>
       }
       className="text-blue-300 underline"

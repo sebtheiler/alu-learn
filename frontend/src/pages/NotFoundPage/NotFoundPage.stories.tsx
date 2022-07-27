@@ -9,9 +9,7 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof NotFoundPage> = (args) => (
-  <NotFoundPage />
-);
+const Template: ComponentStory<typeof NotFoundPage> = () => <NotFoundPage />;
 
 export const NotFoundPageExample = Template.bind({});
 NotFoundPageExample.parameters = {

@@ -9,7 +9,7 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof AboutPage> = (args) => <AboutPage />;
+const Template: ComponentStory<typeof AboutPage> = () => <AboutPage />;
 
 export const AboutPageExample = Template.bind({});
 AboutPageExample.parameters = {

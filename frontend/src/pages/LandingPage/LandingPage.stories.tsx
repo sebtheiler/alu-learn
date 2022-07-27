@@ -9,7 +9,7 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof LandingPage> = (args) => <LandingPage />;
+const Template: ComponentStory<typeof LandingPage> = () => <LandingPage />;
 
 export const LandingPageExample = Template.bind({});
 LandingPageExample.parameters = {

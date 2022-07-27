@@ -1,3 +1,4 @@
+import type { Question } from "./types";
 import {
   faGraduationCap,
   faNewspaper,
@@ -7,38 +8,28 @@ import {
   faWindowRestore,
 } from "@fortawesome/free-solid-svg-icons";
 import ChoiceSelect from "components/ChoiceSelect";
-import ProgressBar from "components/ProgressBar";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
-export default function WelcomePage() {
-  const [slideNum, setSlideNum] = useState(0);
-  const [answers, setAnswers] = useState({
-    timezone: new Date().getTimezoneOffset(),
-    userType: undefined,
-  });
-
-  /**
-   * Generates a function to save the answer from the user's choice in `answers`
-   * @param question Unique ID of the question. Saves as a key in `answers`
-   * @returns A function to save the user's choice and move to the next question
-   */
-  const handleNext = (question: string | null) => {
-    return async (response: string | number | boolean) => {
-      const newAnswers = answers;
-      if (question) newAnswers[question] = response;
-      setAnswers(newAnswers);
-
-      if (slideNum === slides.length - 1) {
-        console.log(answers);
-        setSlideNum(0);
-      } else {
-        setSlideNum(slideNum + 1);
-      }
-    };
-  };
-
+/**
+ * Generates slides for the new user survey
+ * @param handleNext
+ * @returns
+ */
+export default function useSlides(
+  handleNext: (
+    question: Question | null,
+    numSlides: number
+  ) => (response: string | number | boolean) => Promise<void>,
+  userType: "STUDENT" | "TEACHER" | undefined
+) {
   // The value of slides depends on the answers to questions in the slides
   const slides = useMemo(() => {
+    /**
+     * Total, predetermined number of slides
+     * Must be predetermined to avoid circular depndency
+     */
+    const numSlides = 2 + (userType === "STUDENT" ? 3 : 1) + 1;
+
     let slides = [
       <>
         <h4>Are you a student or a teacher?</h4>
@@ -57,7 +48,7 @@ export default function WelcomePage() {
               iconColor: "indigo",
             },
           ]}
-          onClick={handleNext("userType")}
+          onClick={handleNext("userType", numSlides)}
         />
       </>,
       <>
@@ -108,7 +99,7 @@ export default function WelcomePage() {
               icon: "/assets/logos/google.svg",
             },
           ]}
-          onClick={handleNext("referrer")}
+          onClick={handleNext("referrer", numSlides)}
           numCols={3}
           shuffle
           includeOther
@@ -116,7 +107,7 @@ export default function WelcomePage() {
       </>,
     ];
 
-    if (answers.userType === "STUDENT") {
+    if (userType === "STUDENT") {
       // Questions only shown if the user is a student
       slides = slides.concat([
         <>
@@ -134,7 +125,7 @@ export default function WelcomePage() {
               },
               { value: "TEACHER", display: "My teacher told me to" },
             ]}
-            onClick={handleNext("joinReason")}
+            onClick={handleNext("joinReason", numSlides)}
             shuffle
             numCols={4}
           />
@@ -148,15 +139,15 @@ export default function WelcomePage() {
               { value: 50, display: "50 flashcards" },
               { value: 100, display: "100 flashcards" },
             ]}
-            onClick={handleNext("targetFlashcards")}
+            onClick={handleNext("targetFlashcards", numSlides)}
             numCols={4}
           />
         </>,
         <>
           <h4>Would you like a reminder email if you forget to study?</h4>
           <p className="mb-3 italic">
-            Studying is most effective when it's done every day. Alu can send
-            reminder emails to help you build your study habits.
+            Studying is most effective when it&apos;s done every day. Alu can
+            send reminder emails to help you build your study habits.
           </p>
           <p className="italic">
             You can unsubscribe at any time. We will never spam you.
@@ -169,11 +160,11 @@ export default function WelcomePage() {
                 display: "No, I'm not interested in reminder emails",
               },
             ]}
-            onClick={handleNext("sendReminders")}
+            onClick={handleNext("sendReminders", numSlides)}
           />
         </>,
       ]);
-    } else if (answers.userType === "TEACHER") {
+    } else if (userType === "TEACHER") {
       // Questions only shown if the user is a teacher
       slides.push(
         <>
@@ -189,7 +180,7 @@ export default function WelcomePage() {
                 display: "I think it's an interesting concept",
               },
             ]}
-            onClick={handleNext("joinReason")}
+            onClick={handleNext("joinReason", numSlides)}
             shuffle
             includeOther
           />
@@ -217,19 +208,13 @@ export default function WelcomePage() {
               iconColor: "peru",
             },
           ]}
-          onClick={handleNext("deckChoice")}
+          onClick={handleNext("deckChoice", numSlides)}
         />
       </>
     );
 
     return slides;
-  }, [answers, slideNum]);
+  }, [handleNext, userType]);
 
-  return (
-    <div className="container mx-auto mt-28 md:px-14 lg:px-28">
-      <h1 className="mb-3 text-center text-3xl font-bold">Welcome to Alu!</h1>
-      <ProgressBar stepNum={slideNum} totalNumSteps={slides.length - 1} />
-      <div className="mt-5 text-lg">{slides[slideNum]}</div>
-    </div>
-  );
+  return slides;
 }

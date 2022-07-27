@@ -4,15 +4,31 @@ import { Node } from "slate";
 
 const TeX = lazy(() => import("components/TeX"));
 const FlashCardLinkComponent = lazy(
-  () => import("editor/plugins/FlashcardLink")
+  () => import("editor/plugins/FlashcardLink/FlashcardLink")
 );
-const LinkComponent = lazy(() => import("editor/plugins/Link"));
+const LinkComponent = lazy(() => import("editor/plugins/Link/Link"));
 
 interface ElementProps {
   /**
    * Attributes to be passed to the rendered element
    */
-  attributes: any;
+  attributes: React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLUListElement>,
+    HTMLUListElement
+  > &
+    React.DetailedHTMLProps<
+      React.HTMLAttributes<HTMLHeadingElement>,
+      HTMLHeadingElement
+    > &
+    React.DetailedHTMLProps<
+      React.HTMLAttributes<HTMLAnchorElement>,
+      HTMLAnchorElement
+    > &
+    React.DetailedHTMLProps<
+      React.HTMLAttributes<HTMLOListElement>,
+      HTMLOListElement
+    > &
+    React.DetailedHTMLProps<React.HTMLAttributes<HTMLLIElement>, HTMLLIElement>;
   /**
    * Children of the rendered element
    */
@@ -60,26 +76,22 @@ const Element = ({ attributes, children, element, readOnly }: ElementProps) => {
       );
     case "link":
       return (
-        <LinkComponent
-          attributes={attributes}
-          children={children}
-          element={element}
-        />
+        <LinkComponent attributes={attributes} element={element}>
+          {children}
+        </LinkComponent>
       );
     case "flashcard-link":
       return (
-        <FlashCardLinkComponent
-          attributes={attributes}
-          children={children}
-          element={element}
-        />
+        <FlashCardLinkComponent attributes={attributes} element={element}>
+          {children}
+        </FlashCardLinkComponent>
       );
     case "image":
       return (
         <p>
           The image choice is now deprecated. Please change{" "}
           <a target="_blank" rel="noreferrer" href={element.url}>
-            {element.url.slice(0, 50)}
+            {element.url && element.url.slice(0, 50)}
           </a>{" "}
           to use the new image uploading system.
         </p>

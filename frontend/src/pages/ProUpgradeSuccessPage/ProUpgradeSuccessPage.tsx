@@ -11,7 +11,7 @@ export default function ProUpgradeSuccessPage() {
       <div className="prose mx-auto max-w-2xl">
         <h1>Thank You for Upgrading to Alu Pro!</h1>
         <p>
-          You've just improved your Alu experience while supporting free
+          You&apos;ve just improved your Alu experience while supporting free
           education!
         </p>
         <p>

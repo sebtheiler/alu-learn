@@ -5,11 +5,12 @@ import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "atoms/AsyncButton";
 import Button from "atoms/Button";
-import GlobalContext from "global";
+// import GlobalContext from "global";
 import classNames from "helpers/classNames";
 import daysBetween from "helpers/daysBetween";
 import { useRouter } from "next/router";
-import { useContext } from "react";
+
+// import { useContext } from "react";
 
 export default function ProUpgradePage() {
   const proTrialExpires = "2023-01-01";
@@ -56,7 +57,7 @@ export default function ProUpgradePage() {
     <div className="container mx-auto mt-28 max-w-6xl px-20">
       <div className="prose mx-auto text-center">
         <h1 className="mb-0">Take Studying to the Next Level</h1>
-        <p className="mb-1">Gain access to Alu's most powerful features</p>
+        <p className="mb-1">Gain access to Alu&apos;s most powerful features</p>
         {proTrialExpires && (
           <p className="mt-0">
             Your free-trial of Alu Pro ends in{" "}

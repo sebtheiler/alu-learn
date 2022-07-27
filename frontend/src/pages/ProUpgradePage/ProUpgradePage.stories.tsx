@@ -9,7 +9,7 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof ProUpgradePage> = (args) => (
+const Template: ComponentStory<typeof ProUpgradePage> = () => (
   <ProUpgradePage />
 );
 

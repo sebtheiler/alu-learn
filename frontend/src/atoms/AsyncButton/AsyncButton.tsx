@@ -13,28 +13,29 @@ interface AsyncButtonProps extends ButtonProps {
  * Renders a button that displays a spinner while `onClick` is loading
  */
 export default function AsyncButton(props: AsyncButtonProps) {
+  const { faIcon, onClick } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   const onClickWrapper = useCallback(
     async (e: React.MouseEvent<HTMLButtonElement>) => {
       if (isLoading) return;
       setIsLoading(true);
-      await props.onClick(e);
+      await onClick(e);
       setIsLoading(false);
     },
-    [props.onClick, isLoading]
+    [onClick, isLoading]
   );
 
-  const faIcon = useMemo(
-    () => (isLoading ? faSpinner : props.faIcon),
-    [isLoading, props.faIcon]
+  const faIconToRender = useMemo(
+    () => (isLoading ? faSpinner : faIcon),
+    [isLoading, faIcon]
   );
 
   return (
     <Button
       {...props}
       onClick={onClickWrapper}
-      faIcon={faIcon}
+      faIcon={faIconToRender}
       _spin={isLoading}
     />
   );

@@ -3,12 +3,16 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Popover from "atoms/Popover";
 import IconTooltip from "components/IconTooltip";
 import type { ExtendedSlateElement } from "editor/types";
+import { FlashCard } from "types";
 
 interface FlashCardLinkComponentProps {
   /**
    * Attributes passed to the `<span>` element
    */
-  attributes: any;
+  attributes: React.DetailedHTMLProps<
+    React.HTMLAttributes<HTMLSpanElement>,
+    HTMLSpanElement
+  >;
   /**
    * Children of the `<span>` element
    */
@@ -25,14 +29,13 @@ interface FlashCardLinkComponentProps {
 export default function FlashCardLinkComponent({
   attributes,
   children,
-  element,
 }: FlashCardLinkComponentProps) {
   // const [flashcard] = useAsyncState<FlashCard>(
   //   () => backendFetch('GET', `decks/flashcard/find-universal/${element.flashcardUID}/`),
   //   [], undefined,
   //   popoverIsOpen,
   // );
-  const flashcard = {} as any;
+  const flashcard = {} as Partial<FlashCard>;
 
   const editFlashcard = async (
     e: React.MouseEvent<HTMLElement, MouseEvent>
@@ -62,7 +65,7 @@ export default function FlashCardLinkComponent({
             flashcard.data.fields.map((field, i) => (
               <>
                 <RenderRichText text={field} />
-                {i !== flashcard.data.fields.length - 1 && <hr />}
+                {i !== (flashcard.data?.fields.length ?? 0) - 1 && <hr />}
               </>
             ))
           ) : (

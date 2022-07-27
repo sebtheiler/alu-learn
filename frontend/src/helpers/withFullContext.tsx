@@ -1,24 +1,25 @@
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import GlobalContext from "global";
-import { useMemo, useState } from "react";
+// import GlobalContext from "global";
+// import { useMemo, useState } from "react";
+import type { Story } from "@storybook/react";
 
 /**
  * Storybook decorator that provides full context for all components.
  * `export default { ..., decorators: [withFullContext] }`.
  * Provides React Router, Global, and Google OAuth contexts
  */
-export default function withFullContext(Story) {
-  const [signUpModalOpen, setSignUpModalOpen] = useState(false);
-  const [logInModalOpen, setLogInModalOpen] = useState(false);
-  const contextVal = useMemo(
-    () => ({
-      signUpModalOpen,
-      setSignUpModalOpen,
-      logInModalOpen,
-      setLogInModalOpen,
-    }),
-    [signUpModalOpen, setSignUpModalOpen, logInModalOpen, setLogInModalOpen]
-  );
+export default function withFullContext(Story: Story) {
+  // const [signUpModalOpen, setSignUpModalOpen] = useState(false);
+  // const [logInModalOpen, setLogInModalOpen] = useState(false);
+  // const contextVal = useMemo(
+  //   () => ({
+  //     signUpModalOpen,
+  //     setSignUpModalOpen,
+  //     logInModalOpen,
+  //     setLogInModalOpen,
+  //   }),
+  //   [signUpModalOpen, setSignUpModalOpen, logInModalOpen, setLogInModalOpen]
+  // );
 
   return (
     // <GlobalContext.Provider value={contextVal}>

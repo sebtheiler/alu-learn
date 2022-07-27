@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function ProUpgradeCancelledPage() {
   return (
     <div className="prose mx-auto mt-28 text-center">
-      <h1>You've Cancelled Your Purchase</h1>
+      <h1>You&apos;ve Cancelled Your Purchase</h1>
       <p>Sorry to see you go!</p>
       <p>
         If you ever change your mind, you can upgrade to Pro{" "}
