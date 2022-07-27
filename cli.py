@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import os
+import re
 
 
 def create_component():
@@ -15,7 +16,7 @@ def create_component():
     os.mkdir(comp_dir)
 
     index_ts = f"""
-import {comp_name} from './{comp_name}';
+import {comp_name} from "./{comp_name}";
 export default {comp_name};
     """.strip()
     with open(os.path.join(comp_dir, 'index.ts'), 'w+') as f:
@@ -38,12 +39,12 @@ export default function {comp_name}({{
         f.write(component_tsx)
 
     component_stories_tsx = f"""
-import {{ ComponentStory }} from '@storybook/react';
+import {{ ComponentStory }} from "@storybook/react";
 
-import {comp_name} from '.';
+import {comp_name} from ".";
 
 export default {{
-  title: '{'/'.join([p.capitalize() for p in comp_base_dir.split('/')])}/{comp_name}',
+  title: "{'/'.join([p.capitalize() for p in comp_base_dir.split('/')])}/{comp_name}",
   component: {comp_name},
 }}
 
@@ -59,9 +60,96 @@ export const {comp_name}Example = Template.bind({{}});
     print('Created component.')
 
 
+def create_page():
+    page_name = input('Page name: ')
+    page_url = input('Page url: ')
+    foo = '/'.join(page_url.split('/')[:-1])
+    bar = page_url.split('/')[-1]
+
+    if not page_name.endswith('Page'):
+        page_name += 'Page'
+
+    page_raw_name = page_name.replace('Page', '')
+
+    cwd = os.getcwd()
+    if not cwd.endswith('frontend'):
+        page_dir = os.path.join(cwd, 'frontend', 'src', 'pages', page_name)
+        page_url_dir = os.path.join(cwd, 'frontend', 'pages', foo)
+    else:
+        page_dir = os.path.join(cwd, 'src', 'pages', page_name)
+        page_url_dir = os.path.join(cwd, 'pages', foo)
+
+    os.mkdir(page_dir)
+    if not os.path.isdir(page_url_dir):
+        os.mkdir(page_url_dir)
+
+    index_ts = f"""
+import {page_name} from "./{page_name}";
+export default {page_name};
+    """.strip()
+    with open(os.path.join(page_dir, 'index.ts'), 'w+') as f:
+        f.write(index_ts)
+
+    page_title = re.sub(r"\B([A-Z])", r" \1", page_raw_name)
+    page_tsx = f"""
+import Head from "next/head";
+
+export default function {page_name}({{
+}}: {page_name}Props) {{
+  return (
+    <div>
+      <Head>
+        <title>{page_title}</title>
+      </Head>
+    </div>
+  );
+}}
+    """.strip()
+    with open(os.path.join(page_dir, f'{page_name}.tsx'), 'w+') as f:
+        f.write(page_tsx)
+
+    page_stories_tsx = f"""
+import {{ ComponentStory }} from "@storybook/react";
+import withNavbar from "helpers/withNavbar";
+import withFullContext from "helpers/withFullContext";
+
+import {page_name} from ".";
+
+export default {{
+  title: "pages/{page_name}",
+  component: {page_name},
+  decorators: [withNavbar, withFullContext],
+}}
+
+const Template: ComponentStory<typeof {page_name}> = (args) => <{page_name} {{...args}} />;
+
+export const {page_name}Example = Template.bind({{}});
+{page_name}Example.parameters = {{
+  layout: "fullscreen",
+}};
+    """.strip()
+    with open(os.path.join(page_dir, f'{page_name}.stories.tsx'), 'w+') as f:
+        f.write(page_stories_tsx)
+
+    page_url_tsx = f"""
+import type {{ NextPage }} from "next";
+import {page_name} from "pages/{page_name}";
+
+const {page_raw_name}: NextPage = () => <{page_name} />;
+
+export default {page_raw_name};
+""".strip()
+    with open(os.path.join(page_url_dir, f'{bar}.tsx'), 'w+') as f:
+        f.write(page_url_tsx)
+
+    print('Created page.')
+
+
 FUNCTION_MAP = {
     'create-component': create_component,
     'cc': create_component,
+    'create-page': create_page,
+    'cp': create_page,
 }
 
 parser = argparse.ArgumentParser(description='Quickly run various commands in Alu')
