@@ -7,26 +7,28 @@ import Link from "next/link";
 /**
  * Option to be supplied in the dropdown menu
  */
-export type MenuOption = {
-  divider?: false;
-  /**
-   * Text to display in the option
-   */
-  text: string;
-  /**
-   * Where does the option link to?
-   */
-  href: string;
-  /**
-   * Display a Font Awesome icon next to the option
-   */
-  faIcon?: IconProp;
-} | {
-  /**
-   * If true, ignore other options and place a horizontal line in the dropdown
-   */
-  divider: true;
-}
+export type MenuOption =
+  | {
+      divider?: false;
+      /**
+       * Text to display in the option
+       */
+      text: string;
+      /**
+       * Where does the option link to?
+       */
+      href: string;
+      /**
+       * Display a Font Awesome icon next to the option
+       */
+      faIcon?: IconProp;
+    }
+  | {
+      /**
+       * If true, ignore other options and place a horizontal line in the dropdown
+       */
+      divider: true;
+    };
 
 interface DropdownProps {
   /**

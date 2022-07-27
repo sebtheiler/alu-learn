@@ -8,7 +8,7 @@ const sebProfile = {
   firstName: "Sebastian",
   lastName: "Theiler",
   username: "sebtheiler",
-}
+};
 
 export default function AboutPage() {
   const isLoggedIn = false;

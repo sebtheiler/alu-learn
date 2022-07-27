@@ -3,6 +3,7 @@ import RenderRichText from "editor/RenderRichText";
 import createSlateElement from "helpers/createSlateElement";
 import Link from "next/link";
 import { Fragment } from "react";
+
 const exampleUser = {
   firstName: "Example",
   lastName: "User",
@@ -18,7 +19,6 @@ const sharedDecks = [
     id: 1,
   },
 ];
-
 
 export default function ExploreDecksPage() {
   return (

@@ -1,7 +1,7 @@
+import styles from "./ProUpgradePage.module.scss";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import classNames from "helpers/classNames";
-import styles from './ProUpgradePage.module.scss';
 
 /**
  * Displays a fancy card with features included with pro mode

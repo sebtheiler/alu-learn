@@ -1,15 +1,15 @@
+import ProFeaturesCard from "./ProFeaturesCard";
+import ProFromOrganization from "./ProFromOrganization";
+import styles from "./ProUpgradePage.module.scss";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AsyncButton from "atoms/AsyncButton";
 import Button from "atoms/Button";
-import ProFeaturesCard from "./ProFeaturesCard";
-import ProFromOrganization from "./ProFromOrganization";
 import GlobalContext from "global";
+import classNames from "helpers/classNames";
 import daysBetween from "helpers/daysBetween";
 import { useRouter } from "next/router";
 import { useContext } from "react";
-import styles from './ProUpgradePage.module.scss';
-import classNames from "helpers/classNames";
 
 export default function ProUpgradePage() {
   const proTrialExpires = "2023-01-01";

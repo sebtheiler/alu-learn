@@ -13,7 +13,8 @@
     "chromatic": "npx chromatic --project-token=fa2baf6e07e8",
     "chromatic-frb": "npx chromatic --project-token=fa2baf6e07e8 --force-rebuild",
     "prettify": "prettier --write .",
-    "cypress": "cypress open"
+    "cypress": "cypress open",
+    "prepare": "cd .. && husky install frontend/.husky"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
@@ -76,6 +77,7 @@
     "eslint-config-next": "12.2.3",
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-storybook": "^0.6.1",
+    "husky": "^8.0.1",
     "install-peers": "^1.0.4",
     "lint-staged": "^13.0.3",
     "postcss": "^8.4.14",

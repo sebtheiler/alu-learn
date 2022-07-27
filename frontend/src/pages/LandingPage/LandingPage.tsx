@@ -1,5 +1,4 @@
-import Image from "next/image";
-import { useContext, useMemo } from "react";
+import styles from "./LandingPage.module.scss";
 import {
   faBrain,
   faDna,
@@ -11,7 +10,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "atoms/Button";
 import GlobalContext from "global";
 import useWindowDimensions from "hooks/useWindowDimensions";
-import styles from './LandingPage.module.scss';
+import Image from "next/image";
+import { useContext, useMemo } from "react";
 
 const testimonials = [
   "Alu has been a tool that has made studying much less of a burden for me since it is so engaging and straightforward. When studying with Alu, it always truly feels like I am able to take in and understand the material and not just memorize content.", // I completely owe the success I have had on the AP exams I have taken to Alu.',

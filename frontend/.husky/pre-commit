@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+cd frontend
+
+yarn prettify
+# yarn lint
+yarn cypress
+# yarn chromatic

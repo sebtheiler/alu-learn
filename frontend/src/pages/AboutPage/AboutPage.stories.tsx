@@ -1,7 +1,7 @@
 import AboutPage from ".";
 import { ComponentStory } from "@storybook/react";
-import withNavbar from "helpers/withNavbar";
 import withFullContext from "helpers/withFullContext";
+import withNavbar from "helpers/withNavbar";
 
 export default {
   title: "Pages/AboutPage",
@@ -14,4 +14,4 @@ const Template: ComponentStory<typeof AboutPage> = (args) => <AboutPage />;
 export const AboutPageExample = Template.bind({});
 AboutPageExample.parameters = {
   layout: "fullscreen",
-}
+};

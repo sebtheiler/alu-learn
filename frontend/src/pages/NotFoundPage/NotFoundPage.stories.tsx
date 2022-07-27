@@ -1,7 +1,7 @@
 import NotFoundPage from ".";
 import { ComponentStory } from "@storybook/react";
-import withNavbar from "helpers/withNavbar";
 import withFullContext from "helpers/withFullContext";
+import withNavbar from "helpers/withNavbar";
 
 export default {
   title: "Pages/NotFoundPage",
@@ -9,9 +9,11 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof NotFoundPage> = (args) => <NotFoundPage />;
+const Template: ComponentStory<typeof NotFoundPage> = (args) => (
+  <NotFoundPage />
+);
 
 export const NotFoundPageExample = Template.bind({});
 NotFoundPageExample.parameters = {
   layout: "fullscreen",
-}
+};

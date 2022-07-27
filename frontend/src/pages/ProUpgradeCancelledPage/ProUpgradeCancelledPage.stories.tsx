@@ -1,7 +1,7 @@
 import ProUpgradeCancelledPage from ".";
 import { ComponentStory } from "@storybook/react";
-import withNavbar from "helpers/withNavbar";
 import withFullContext from "helpers/withFullContext";
+import withNavbar from "helpers/withNavbar";
 
 export default {
   title: "Pages/ProUpgradeCancelledPage",
@@ -9,9 +9,11 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof ProUpgradeCancelledPage> = (args) => <ProUpgradeCancelledPage />;
+const Template: ComponentStory<typeof ProUpgradeCancelledPage> = (args) => (
+  <ProUpgradeCancelledPage />
+);
 
 export const ProUpgradeCancelledPageExample = Template.bind({});
 ProUpgradeCancelledPageExample.parameters = {
   layout: "fullscreen",
-}
+};

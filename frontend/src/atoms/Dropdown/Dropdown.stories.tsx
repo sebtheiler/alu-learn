@@ -1,4 +1,5 @@
 import Dropdown from ".";
+import type { MenuOption } from "./Dropdown";
 import {
   faBell,
   faBook,
@@ -9,7 +10,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { ComponentStory } from "@storybook/react";
 import Button from "atoms/Button";
-import type { MenuOption } from "./Dropdown";
 
 export default {
   title: "Atoms/Dropdown",

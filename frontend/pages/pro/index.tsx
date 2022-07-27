@@ -1,4 +1,3 @@
-
 import type { NextPage } from "next";
 import ProUpgradePage from "pages/ProUpgradePage";
 

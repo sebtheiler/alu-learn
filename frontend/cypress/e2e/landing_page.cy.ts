@@ -1,5 +1,5 @@
-describe('Landing Page', () => {
-  it('successfully loads', () => {
-    cy.visit('/');
+describe("Landing Page", () => {
+  it("successfully loads", () => {
+    cy.visit("/");
   });
 });

@@ -1,8 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  buttonVariantsLookup,
-  generateButtonClassName,
-} from "atoms/Button";
+import { buttonVariantsLookup, generateButtonClassName } from "atoms/Button";
 import type { ButtonProps } from "atoms/Button";
 import Ripple from "atoms/Button/Ripple";
 import classNames from "helpers/classNames";

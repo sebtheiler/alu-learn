@@ -1,7 +1,7 @@
 import ExploreDecksPage from ".";
 import { ComponentStory } from "@storybook/react";
-import withNavbar from "helpers/withNavbar";
 import withFullContext from "helpers/withFullContext";
+import withNavbar from "helpers/withNavbar";
 
 export default {
   title: "Pages/ExploreDecksPage",
@@ -9,9 +9,11 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof ExploreDecksPage> = (args) => <ExploreDecksPage />;
+const Template: ComponentStory<typeof ExploreDecksPage> = (args) => (
+  <ExploreDecksPage />
+);
 
 export const ExploreDecksPageExample = Template.bind({});
 ExploreDecksPageExample.parameters = {
   layout: "fullscreen",
-}
+};
