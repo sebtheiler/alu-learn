@@ -21,12 +21,12 @@ export default function withFullContext(Story) {
   );
 
   return (
-    <GlobalContext.Provider value={contextVal}>
+    // <GlobalContext.Provider value={contextVal}>
       <GoogleOAuthProvider
         clientId={process.env.GOOGLE_OAUTH_CLIENT_ID as string}
       >
         <Story />
       </GoogleOAuthProvider>
-    </GlobalContext.Provider>
+    // </GlobalContext.Provider>
   );
 }

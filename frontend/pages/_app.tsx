@@ -2,8 +2,6 @@ import "../src/atoms/Button/Ripple/Ripple.scss";
 import Navbar from "../src/components/Navbar";
 import "../src/editor/FullEditable/FullEditable.scss";
 import GlobalContext from "../src/global";
-import "../styles/LandingPage.scss";
-import "../styles/ProUpgradePage.scss";
 import "../styles/globals.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import type { AppProps } from "next/app";

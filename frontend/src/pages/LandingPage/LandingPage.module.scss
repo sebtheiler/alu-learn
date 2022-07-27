@@ -1,0 +1,15 @@
+.helpSection {
+  @apply my-4 grid grid-cols-2 border-b-2 border-gray-300 py-3;
+}
+
+.helpSection__Text {
+  @apply mx-auto flex max-w-md items-center;
+
+  > div h2 {
+    @apply text-xl font-semibold;
+  }
+}
+
+.helpSection__Image > img {
+  @apply max-h-96;
+}

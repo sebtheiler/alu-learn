@@ -1,17 +1,19 @@
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import classNames from "helpers/classNames";
+import styles from './ProUpgradePage.module.scss';
 
 /**
  * Displays a fancy card with features included with pro mode
  */
 export default function ProFeaturesCard() {
   return (
-    <div className="pro-card pro-card-pro">
-      <div className="pro-card-head">
+    <div className={classNames(styles.proCard, styles.proCardPro)}>
+      <div className={styles.proCardHead}>
         <h3>Pro</h3>
         <p>$3/mo or $30/yr</p>
       </div>
-      <div className="pro-card-body">
+      <div className={styles.proCardBody}>
         <ul>
           <li className="check">
             <FontAwesomeIcon icon={faCheck} />

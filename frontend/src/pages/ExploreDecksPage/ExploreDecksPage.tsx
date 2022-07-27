@@ -1,10 +1,8 @@
 import DisplayProfileInline from "components/DisplayProfileInline";
 import RenderRichText from "editor/RenderRichText";
 import createSlateElement from "helpers/createSlateElement";
-import type { NextPage } from "next";
 import Link from "next/link";
 import { Fragment } from "react";
-
 const exampleUser = {
   firstName: "Example",
   lastName: "User",
@@ -21,7 +19,8 @@ const sharedDecks = [
   },
 ];
 
-const CommunityDecksHome: NextPage = () => {
+
+export default function ExploreDecksPage() {
   return (
     <div className="container mx-auto mt-28 px-48">
       <div>
@@ -65,6 +64,4 @@ const CommunityDecksHome: NextPage = () => {
       </div>
     </div>
   );
-};
-
-export default CommunityDecksHome;
+}

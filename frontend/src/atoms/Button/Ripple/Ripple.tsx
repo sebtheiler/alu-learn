@@ -1,12 +1,12 @@
 // Adapted from https://codesandbox.io/s/react-material-design-ripple-effect-kn1tr?file=/src/Ripple.jsx
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const useDebouncedRippleCleanUp = (
   rippleCount: number,
   duration: number,
   cleanUpFunction: () => void
 ) => {
-  useLayoutEffect(() => {
+  useEffect(() => {
     let bounce: NodeJS.Timeout | null = null;
     if (rippleCount > 0) {
       clearTimeout(bounce ?? undefined);
