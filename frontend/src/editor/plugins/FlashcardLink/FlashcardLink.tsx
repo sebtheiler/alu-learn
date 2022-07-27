@@ -1,7 +1,7 @@
 import RenderRichText from "../../RenderRichText";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import IconTooltip from "components/IconTooltip";
-import Popover from "components/Popover";
+import Popover from "atoms/Popover";
 import type { ExtendedSlateElement } from "editor/types";
 
 interface FlashCardLinkComponentProps {

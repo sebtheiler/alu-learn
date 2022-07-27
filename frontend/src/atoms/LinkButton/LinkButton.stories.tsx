@@ -3,7 +3,7 @@ import { ComponentStory } from "@storybook/react";
 import withFullContext from "helpers/withFullContext";
 
 export default {
-  title: "Components/LinkButton",
+  title: "Atoms/LinkButton",
   component: LinkButton,
   decorators: [withFullContext],
 };

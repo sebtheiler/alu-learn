@@ -2,9 +2,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   buttonVariantsLookup,
   generateButtonClassName,
-} from "components/Button";
-import type { ButtonProps } from "components/Button";
-import Ripple from "components/Button/Ripple";
+} from "atoms/Button";
+import type { ButtonProps } from "atoms/Button";
+import Ripple from "atoms/Button/Ripple";
 import classNames from "helpers/classNames";
 import Link from "next/link";
 import { useMemo } from "react";

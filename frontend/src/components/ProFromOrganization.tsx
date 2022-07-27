@@ -1,5 +1,5 @@
 import ProFeaturesCard from "./ProFeaturesCard";
-import LinkButton from "components/LinkButton";
+import LinkButton from "atoms/LinkButton";
 
 /**
  * Displays if a user has pro mode due to an organization partnership

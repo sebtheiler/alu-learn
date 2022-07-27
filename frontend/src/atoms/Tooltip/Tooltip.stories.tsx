@@ -2,7 +2,7 @@ import Tooltip from ".";
 import { ComponentStory } from "@storybook/react";
 
 export default {
-  title: "Components/Tooltip",
+  title: "Atoms/Tooltip",
   component: Tooltip,
 };
 

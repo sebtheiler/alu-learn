@@ -1,7 +1,7 @@
 import { useGoogleLogin } from "@react-oauth/google";
-import AsyncForm from "components/AsyncForm";
-import Button from "components/Button";
-import TextInput from "components/Form/TextInput";
+import AsyncForm from "atoms/AsyncForm";
+import Button from "atoms/Button";
+import TextInput from "atoms/TextInput";
 import Modal from "components/Modal";
 import GlobalContext from "global";
 import { getElementsVals } from "helpers/getElementsVals";

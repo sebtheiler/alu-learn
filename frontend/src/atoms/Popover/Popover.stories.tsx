@@ -1,9 +1,9 @@
 import Popover from ".";
 import { ComponentStory } from "@storybook/react";
-import Button from "components/Button";
+import Button from "atoms/Button";
 
 export default {
-  title: "Components/Popover",
+  title: "Atoms/Popover",
   component: Popover,
 };
 

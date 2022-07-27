@@ -1,9 +1,9 @@
 import AsyncForm from ".";
 import { ComponentStory } from "@storybook/react";
-import TextInput from "components/Form/TextInput";
+import TextInput from "atoms/TextInput";
 
 export default {
-  title: "Components/AsyncForm",
+  title: "Atoms/AsyncForm",
   component: AsyncForm,
 };
 
@@ -16,7 +16,9 @@ const Template: ComponentStory<typeof AsyncForm> = (args) => (
 export const AsyncFormExample = Template.bind({});
 AsyncFormExample.args = {
   onSubmit: async (e) => {
-    console.log(e.target.elements.myInput.value);
+    const target = e.target as HTMLFormElement;
+    // @ts-ignore
+    console.log(target.elements.myInput.value);
     await new Promise((r) => setTimeout(r, 2000));
   },
   buttonProps: {

@@ -7,11 +7,12 @@ import Link from "next/link";
 /**
  * Option to be supplied in the dropdown menu
  */
-interface MenuOption {
+export type MenuOption = {
+  divider?: false;
   /**
    * Text to display in the option
    */
-  text?: string;
+  text: string;
   /**
    * Where does the option link to?
    */
@@ -20,10 +21,11 @@ interface MenuOption {
    * Display a Font Awesome icon next to the option
    */
   faIcon?: IconProp;
+} | {
   /**
    * If true, ignore other options and place a horizontal line in the dropdown
    */
-  divider?: boolean;
+  divider: true;
 }
 
 interface DropdownProps {

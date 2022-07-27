@@ -1,7 +1,7 @@
 import { isBlockActive, toggleBlock } from "../../FullEditable/helpers";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Tooltip from "components/Tooltip";
+import Tooltip from "atoms/Tooltip";
 import capitalize from "helpers/capitalize";
 import { ReactEditor } from "slate-react";
 

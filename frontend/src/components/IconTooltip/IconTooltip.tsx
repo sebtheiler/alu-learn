@@ -1,7 +1,7 @@
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Tooltip from "components/Tooltip";
+import Tooltip from "atoms/Tooltip";
 import classNames from "helpers/classNames";
 import { MouseEventHandler, useMemo, useState } from "react";
 

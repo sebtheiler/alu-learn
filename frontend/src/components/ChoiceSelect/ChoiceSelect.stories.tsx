@@ -8,7 +8,7 @@ import {
 import { ComponentStory } from "@storybook/react";
 
 export default {
-  title: "Pages/WelcomeSurveyPage/ChoiceSelect",
+  title: "Components/ChoiceSelect",
   component: ChoiceSelect,
 };
 

@@ -3,7 +3,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { ComponentStory } from "@storybook/react";
 
 export default {
-  title: "Components/Button",
+  title: "Atoms/Button",
   component: Button,
 };
 

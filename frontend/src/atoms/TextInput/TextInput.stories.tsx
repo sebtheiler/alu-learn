@@ -2,7 +2,7 @@ import TextInput from ".";
 import { ComponentStory } from "@storybook/react";
 
 export default {
-  title: "Components/Form/TextInput",
+  title: "Atoms/TextInput",
   component: TextInput,
 };
 

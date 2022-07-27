@@ -34,8 +34,8 @@ export default function Tooltip({
 }: TooltipProps) {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
-  const [refEl, setRefEl] = useState<HTMLElement>();
-  const [popEl, setPopEl] = useState<HTMLElement>();
+  const [refEl, setRefEl] = useState<HTMLElement | null>(null);
+  const [popEl, setPopEl] = useState<HTMLElement | null>(null);
   const { styles, attributes } = usePopper(refEl, popEl, {
     placement: placement,
     modifiers: [

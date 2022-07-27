@@ -8,12 +8,11 @@ import {
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { ComponentStory } from "@storybook/react";
-import Button from "components/Button";
-import { withRouter } from "storybook-addon-react-router-v6";
+import Button from "atoms/Button";
+import type { MenuOption } from "./Dropdown";
 
 export default {
-  title: "Components/Dropdown",
-  decorators: [withRouter],
+  title: "Atoms/Dropdown",
   component: Dropdown,
 };
 
@@ -25,7 +24,7 @@ const options = [
   { text: "Changelog", href: "/changelog", faIcon: faBook },
   { text: "Log-out", href: "/logout", faIcon: faSignOut },
   { text: "Contact Us", href: "/contactus", faIcon: faEnvelope },
-];
+] as MenuOption[];
 
 const ButtonTemplate: ComponentStory<typeof Dropdown> = (args) => (
   <Dropdown {...args}>

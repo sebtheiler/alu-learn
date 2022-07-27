@@ -1,6 +1,6 @@
 import Modal from ".";
 import { ComponentStory } from "@storybook/react";
-import Button from "components/Button";
+import Button from "atoms/Button";
 import { useState } from "react";
 
 export default {

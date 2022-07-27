@@ -8,7 +8,7 @@ import {
   faFire,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Dropdown from "components/Dropdown";
+import Dropdown from "atoms/Dropdown";
 import Jdenticon from "components/Jdenticon";
 
 const profileDropdownOptions = [

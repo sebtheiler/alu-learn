@@ -1,4 +1,4 @@
-import Button, { ButtonProps } from "components/Button";
+import Button, { ButtonProps } from "atoms/Button";
 import { ReactElement } from "react";
 
 interface ButtonGroupProps {
