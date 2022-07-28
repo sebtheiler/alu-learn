@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(uuid())
+  username String
+  name     String
+  email    String?
+  role     Role     @default(USER)
+  userType UserType
+
+  signupSurvey SignUpSurveyResponse?
+}
+
+enum Role {
+  USER
+  STAFF
+  ADMIN
+}
+
+model SignUpSurveyResponse {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  timezoneOffset   Int
+  userType         UserType
+  referrer         Referrer
+  joinReason       JoinReason
+  targetFlashcards Int
+  sendReminders    Boolean
+  deckChoice       DeckChoice
+}
+
+enum UserType {
+  STUDENT
+  TEACHER
+  MIXED
+}
+
+enum Referrer {
+  FRIENDS
+  TEACHER
+  INSTA
+  REDDIT
+  TIKTOK
+  YOUTUBE
+  NEWS
+  SEARCH
+}
+
+enum JoinReason {
+  MEMORY
+  GRADES
+  CONCEPT
+  TEACHER
+  STUDENTS
+}
+
+enum DeckChoice {
+  COPY_EXISTING
+  CREATE_OWN
+}

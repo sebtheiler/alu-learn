@@ -1,7 +1,9 @@
+import apolloClient from "../lib/apollo";
 import "../src/atoms/Button/Ripple/Ripple.scss";
 import Navbar from "../src/components/Navbar";
 import "../src/editor/FullEditable/FullEditable.scss";
 import "../styles/globals.css";
+import { ApolloProvider } from "@apollo/client";
 import type { AppProps } from "next/app";
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -13,10 +15,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   const username = "test";
 
   return (
-    <div id="root">
+    <ApolloProvider client={apolloClient}>
       <Navbar isLoggedIn={isLoggedIn} streak={streak} username={username} />
       <Component {...pageProps} />
-    </div>
+    </ApolloProvider>
   );
 }
 
