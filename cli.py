@@ -63,8 +63,9 @@ export const {comp_name}Example = Template.bind({{}});
 def create_page():
     page_name = input('Page name: ')
     page_url = input('Page url: ')
-    foo = '/'.join(page_url.split('/')[:-1])
-    bar = page_url.split('/')[-1]
+    rendering_method = input('SSR/SSG/None? ')
+    base_page_url_dir = '/'.join(page_url.split('/')[:-1])
+    page_url_file = page_url.split('/')[-1]
 
     if not page_name.endswith('Page'):
         page_name += 'Page'
@@ -74,18 +75,20 @@ def create_page():
     cwd = os.getcwd()
     if not cwd.endswith('frontend'):
         page_dir = os.path.join(cwd, 'frontend', 'src', 'pages', page_name)
-        page_url_dir = os.path.join(cwd, 'frontend', 'pages', foo)
+        page_url_dir = os.path.join(cwd, 'frontend', 'pages', base_page_url_dir)
     else:
         page_dir = os.path.join(cwd, 'src', 'pages', page_name)
-        page_url_dir = os.path.join(cwd, 'pages', foo)
+        page_url_dir = os.path.join(cwd, 'pages', base_page_url_dir)
 
     os.mkdir(page_dir)
     if not os.path.isdir(page_url_dir):
         os.mkdir(page_url_dir)
 
     index_ts = f"""
-import {page_name} from "./{page_name}";
+import {page_name}, {{ {page_name}Props }} from "./{page_name}";
+
 export default {page_name};
+export type {{ {page_name}Props }};
     """.strip()
     with open(os.path.join(page_dir, 'index.ts'), 'w+') as f:
         f.write(index_ts)
@@ -94,6 +97,12 @@ export default {page_name};
     page_tsx = f"""
 import Head from "next/head";
 
+export interface {page_name}Props {{
+}}
+
+/**
+ * 
+ */
 export default function {page_name}({{
 }}: {page_name}Props) {{
   return (
@@ -131,15 +140,43 @@ export const {page_name}Example = Template.bind({{}});
     with open(os.path.join(page_dir, f'{page_name}.stories.tsx'), 'w+') as f:
         f.write(page_stories_tsx)
 
+    if rendering_method.lower() == 'ssr':
+        rendering_page_url_tsx = f"""
+
+export const getServerSideProps: GetServerSideProps = async (context) => {{
+  return {{
+    props: {{}} as {page_name}Props,
+  }}
+}}
+
+"""
+        imports = 'GetServerSideProps, NextPage'
+    elif rendering_method.lower() == 'ssg':
+        rendering_page_url_tsx = f"""
+
+export const getStaticProps: GetStaticProps = async (context) => {{
+  return {{
+    props: {{}} as {page_name}Props,
+  }}
+}}
+"""
+        imports = 'GetStaticProps, NextPage'
+    else:
+        rendering_page_url_tsx = ''
+        imports = 'NextPage'
+
     page_url_tsx = f"""
-import type {{ NextPage }} from "next";
+import type {{ {imports} }} from "next";
 import {page_name} from "pages/{page_name}";
 
-const {page_raw_name}: NextPage = () => <{page_name} />;
+const {page_raw_name}: NextPage = (props: {page_name}Props) => <{page_name} />;
 
 export default {page_raw_name};
+
+{rendering_page_url_tsx}
 """.strip()
-    with open(os.path.join(page_url_dir, f'{bar}.tsx'), 'w+') as f:
+
+    with open(os.path.join(page_url_dir, f'{page_url_file}.tsx'), 'w+') as f:
         f.write(page_url_tsx)
 
     print('Created page.')

@@ -9,18 +9,25 @@ import Button from "atoms/Button";
 import classNames from "helpers/classNames";
 import daysBetween from "helpers/daysBetween";
 import { useRouter } from "next/router";
+import useGlobalModalStore from "stores/globalModalStore";
 
 // import { useContext } from "react";
 
-export default function ProUpgradePage() {
-  const proTrialExpires = "2023-01-01";
-  const isPro = false;
-  const isProFromOrg = false;
-  const isLoggedIn = true;
+export interface ProUpgradePageProps {
+  proTrialExpires: string;
+  isProFromOrg: boolean;
+  isPro: boolean;
+  isLoggedIn: boolean;
+}
 
+export default function ProUpgradePage({
+  proTrialExpires,
+  isProFromOrg,
+  isPro,
+  isLoggedIn,
+}: ProUpgradePageProps) {
   const router = useRouter();
-
-  // const { setSignUpModalOpen } = useContext(GlobalContext);
+  const { setSignUpModalOpen } = useGlobalModalStore();
   // const [stripe, setStripe] = useState<Stripe | null>(null);
   // useAsyncState<{ publishableKey: string }>(
   //   () => backendFetch('GET', 'accounts/stripe-config/'), [],

@@ -8,10 +8,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import NavItem from "components/NavItem";
-import GlobalContext from "global";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext, useState } from "react";
+import { useState } from "react";
 
 // TODO: dynamically import LoggedIn and LoggedOut
 
@@ -47,10 +46,6 @@ export default function Navbar({
   isPro,
 }: NavbarProps) {
   const [expandedMenu, setExpandedMenu] = useState(false);
-  console.log(
-    "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
-    useContext(GlobalContext)
-  );
   return (
     <nav
       className="

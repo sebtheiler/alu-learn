@@ -1,16 +1,18 @@
-import { useGoogleLogin } from "@react-oauth/google";
 import AsyncForm from "atoms/AsyncForm";
 import Button from "atoms/Button";
 import TextInput from "atoms/TextInput";
 import Modal from "components/Modal";
-import GlobalContext from "global";
 import { getElementsVals } from "helpers/getElementsVals";
 import Image from "next/image";
-import { useContext, useState } from "react";
+import { useState } from "react";
+import useGlobalModalStore from "stores/globalModalStore";
 
-const onLogIn = async (e) => {
+const onLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
   console.log(
-    getElementsVals(e.target.elements, ["emailOrUsername", "password"])
+    getElementsVals((e.target as HTMLFormElement).elements, [
+      "emailOrUsername",
+      "password",
+    ])
   );
 };
 
@@ -18,10 +20,10 @@ const onLogIn = async (e) => {
  * Renders the global log-in modal. Only instantiate in `Navbar`!
  */
 export default function LogInModal() {
-  const { logInModalOpen, setLogInModalOpen } = useContext(GlobalContext);
-  const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => console.log(tokenResponse),
-  });
+  const { logInModalOpen, setLogInModalOpen } = useGlobalModalStore();
+  // const login = useGoogleLogin({
+  //   onSuccess: (tokenResponse) => console.log(tokenResponse),
+  // });
   const [loginWithEmail, setLoginWithEmail] = useState(false);
 
   return (
@@ -31,15 +33,16 @@ export default function LogInModal() {
       title="Log-in"
     >
       <Button
-        onClick={() => login()}
+        // onClick={() => login()}
         variant="white"
-        className="border-2 border-gray-200 text-black"
+        className="flex items-center justify-center"
         block
       >
         <Image
           src="/assets/logos/google.svg"
           alt="Google Logo"
-          width={30}
+          width={25}
+          height={25}
           className="absolute left-5 top-2 inline"
         />
         Log-in with Google

@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import SignUpSurveyPage from "pages/SignUpSurveyPage";
 
-const Welcome: NextPage = () => <SignUpSurveyPage />;
+const SignupSurvey: NextPage = () => <SignUpSurveyPage />;
 
-export default Welcome;
+export default SignupSurvey;

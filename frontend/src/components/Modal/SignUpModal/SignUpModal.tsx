@@ -1,18 +1,17 @@
 import { getElementsVals } from "../../../helpers/getElementsVals";
-import { useGoogleLogin } from "@react-oauth/google";
 import AsyncForm from "atoms/AsyncForm";
 import Button from "atoms/Button";
 import Checkbox from "atoms/Checkbox";
 import TextInput from "atoms/TextInput";
 import Modal from "components/Modal";
-import GlobalContext from "global";
 import Image from "next/image";
-import { useContext, useState } from "react";
+import { useState } from "react";
+import useGlobalModalStore from "stores/globalModalStore";
 
-const onSignUp = async (e) => {
+const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   console.log(
-    getElementsVals(e.target.elements, [
+    getElementsVals((e.target as HTMLFormElement).elements, [
       "age",
       "firstName",
       "lastName",
@@ -27,10 +26,10 @@ const onSignUp = async (e) => {
  * Renders the global sign-up modal. Only instantiate in `Navbar`!
  */
 export default function SignUpModal() {
-  const { signUpModalOpen, setSignUpModalOpen } = useContext(GlobalContext);
-  const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => console.log(tokenResponse),
-  });
+  const { signUpModalOpen, setSignUpModalOpen } = useGlobalModalStore();
+  // const login = useGoogleLogin({
+  //   onSuccess: (tokenResponse) => console.log(tokenResponse),
+  // });
 
   const [continueWithEmail, setContinueWithEmail] = useState(false);
   const [age, setAge] = useState<number>(111);
@@ -41,12 +40,16 @@ export default function SignUpModal() {
       close={() => setSignUpModalOpen(false)}
       title="Sign-up"
     >
-      <Button onClick={() => login()} variant="white" block>
+      <Button
+        variant="white"
+        className="flex items-center justify-center"
+        block
+      >
         <Image
           src="/assets/logos/google.svg"
           alt="Google Logo"
-          width={30}
-          className="absolute left-5 top-2 inline"
+          width={25}
+          height={25}
         />
         Continue with Google
       </Button>

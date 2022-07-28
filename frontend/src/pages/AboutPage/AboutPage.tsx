@@ -1,9 +1,5 @@
-import Button from "atoms/Button";
 import DisplayProfileInline from "components/DisplayProfileInline";
-// import GlobalContext from "global";
 import Image from "next/image";
-
-// import { useContext } from "react";
 
 const sebProfile = {
   firstName: "Sebastian",
@@ -12,8 +8,6 @@ const sebProfile = {
 };
 
 export default function AboutPage() {
-  const isLoggedIn = false;
-
   return (
     <article className="container prose mx-auto mt-28 max-w-4xl prose-a:text-blue-500 prose-a:no-underline">
       <h1 className="mx-auto mb-2 text-center text-4xl font-bold">
@@ -200,20 +194,6 @@ export default function AboutPage() {
             sharing knowledge easier, and allows for creating lessons alongside
             flashcards.
           </p>
-          {!isLoggedIn && (
-            <>
-              <p>Want to be a part of that?</p>
-              <div>
-                <Button
-                  className="mt-1"
-                  onClick={() => setSignUpModalOpen(true)}
-                  block
-                >
-                  Get Started with Alu
-                </Button>
-              </div>
-            </>
-          )}
         </div>
         <div className="md:col-span-2">
           <Image
@@ -228,8 +208,8 @@ export default function AboutPage() {
               <strong>Follow Sebastian</strong>
             </p>
             <div
-              className="mx-2 grid grid-cols-3 rounded-xl border-2
-                            border-gray-400 bg-gray-100 px-4 py-3 text-center"
+              className="mx-2 grid grid-cols-3 rounded-full border-4
+                            border-gray-200 bg-gray-100 px-4 py-3 text-center"
             >
               <div className="flex items-center">
                 <a

@@ -1,6 +1,25 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import ProUpgradePage from "pages/ProUpgradePage";
+import type { ProUpgradePageProps } from "pages/ProUpgradePage";
 
-const ProUpgrade: NextPage = () => <ProUpgradePage />;
+const ProUpgrade: NextPage<ProUpgradePageProps> = (
+  props: ProUpgradePageProps
+) => <ProUpgradePage {...props} />;
 
 export default ProUpgrade;
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const proTrialExpires = "2023-01-01";
+  const isPro = false;
+  const isProFromOrg = false;
+  const isLoggedIn = true;
+
+  return {
+    props: {
+      proTrialExpires,
+      isPro,
+      isProFromOrg,
+      isLoggedIn,
+    } as ProUpgradePageProps,
+  };
+};

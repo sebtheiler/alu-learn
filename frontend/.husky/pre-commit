@@ -5,5 +5,5 @@ cd frontend
 
 yarn prettify
 yarn lint
-yarn cypress
+# yarn cypress
 # yarn chromatic

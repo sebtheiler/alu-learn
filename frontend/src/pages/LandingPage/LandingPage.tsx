@@ -8,21 +8,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "atoms/Button";
-// import GlobalContext from "global";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import Image from "next/image";
 import { useMemo } from "react";
+import useGlobalModalStore from "stores/globalModalStore";
 
 const testimonials = [
   "Alu has been a tool that has made studying much less of a burden for me since it is so engaging and straightforward. When studying with Alu, it always truly feels like I am able to take in and understand the material and not just memorize content.", // I completely owe the success I have had on the AP exams I have taken to Alu.',
   "With Alu, I'm able to remember the content [better than with cramming], and it really sticks in your brain after",
   "This is an amazing website. Truly helped me more than I would have been able to do by myself on regular flashcards.",
   "Really useful. Learned a lot of stuff that we didn't cover in class.",
-].sort(() => 0.5 - Math.random());
+];
 
-export default function IndexPage() {
+export default function LandingPage() {
   const { height } = useWindowDimensions();
-  // const { setSignUpModalOpen, setLogInModalOpen } = useContext(GlobalContext);
+  const { setSignUpModalOpen, setLogInModalOpen } = useGlobalModalStore();
 
   const exampleDecks = useMemo(
     () => [
@@ -36,8 +36,7 @@ export default function IndexPage() {
         icon: faPlus,
       },
     ],
-    // [setSignUpModalOpen]
-    []
+    [setSignUpModalOpen]
   );
 
   return (
