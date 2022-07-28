@@ -12,14 +12,14 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const proTrialExpires = "2023-01-01";
   const isPro = false;
   const isProFromOrg = false;
-  const isLoggedIn = true;
+  const isSignedIn = true;
 
   return {
     props: {
       proTrialExpires,
       isPro,
       isProFromOrg,
-      isLoggedIn,
+      isSignedIn,
     } as ProUpgradePageProps,
   };
 };

@@ -3,11 +3,12 @@ import Button from "atoms/Button";
 import TextInput from "atoms/TextInput";
 import Modal from "components/Modal";
 import { getElementsVals } from "helpers/getElementsVals";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 import useGlobalModalStore from "stores/globalModalStore";
 
-const onLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
+const onSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
   console.log(
     getElementsVals((e.target as HTMLFormElement).elements, [
       "emailOrUsername",
@@ -19,8 +20,8 @@ const onLogIn = async (e: React.FormEvent<HTMLFormElement>) => {
 /**
  * Renders the global log-in modal. Only instantiate in `Navbar`!
  */
-export default function LogInModal() {
-  const { logInModalOpen, setLogInModalOpen } = useGlobalModalStore();
+export default function SignInModal() {
+  const { logInModalOpen, setSignInModalOpen } = useGlobalModalStore();
   // const login = useGoogleLogin({
   //   onSuccess: (tokenResponse) => console.log(tokenResponse),
   // });
@@ -29,11 +30,11 @@ export default function LogInModal() {
   return (
     <Modal
       open={logInModalOpen}
-      close={() => setLogInModalOpen(false)}
-      title="Log-in"
+      close={() => setSignInModalOpen(false)}
+      title="Sign-in"
     >
       <Button
-        // onClick={() => login()}
+        onClick={() => signIn("google")}
         variant="white"
         className="flex items-center justify-center"
         block
@@ -45,7 +46,7 @@ export default function LogInModal() {
           height={25}
           className="absolute left-5 top-2 inline"
         />
-        Log-in with Google
+        Sign-in with Google
       </Button>
       <Button
         onClick={() => setLoginWithEmail(!loginWithEmail)}
@@ -53,13 +54,13 @@ export default function LogInModal() {
         className="mt-1"
         block
       >
-        Log-in with Email
+        Sign-in with Email
       </Button>
       {loginWithEmail && (
         <AsyncForm
-          onSubmit={onLogIn}
+          onSubmit={onSignIn}
           buttonProps={{
-            children: "Log-in",
+            children: "Sign-in",
             block: true,
           }}
         >

@@ -9,16 +9,16 @@ import type { Story } from "@storybook/react";
  * Provides React Router, Global, and Google OAuth contexts
  */
 export default function withFullContext(Story: Story) {
-  // const [signUpModalOpen, setSignUpModalOpen] = useState(false);
-  // const [logInModalOpen, setLogInModalOpen] = useState(false);
+  // const [registerModalOpen, setRegisterModalOpen] = useState(false);
+  // const [logInModalOpen, setSignInModalOpen] = useState(false);
   // const contextVal = useMemo(
   //   () => ({
-  //     signUpModalOpen,
-  //     setSignUpModalOpen,
+  //     registerModalOpen,
+  //     setRegisterModalOpen,
   //     logInModalOpen,
-  //     setLogInModalOpen,
+  //     setSignInModalOpen,
   //   }),
-  //   [signUpModalOpen, setSignUpModalOpen, logInModalOpen, setLogInModalOpen]
+  //   [registerModalOpen, setRegisterModalOpen, logInModalOpen, setSignInModalOpen]
   // );
 
   return (

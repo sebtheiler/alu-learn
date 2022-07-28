@@ -10,14 +10,14 @@ export default {
 
 const Template: ComponentStory<typeof Navbar> = (args) => <Navbar {...args} />;
 
-export const NotLoggedIn = Template.bind({});
-NotLoggedIn.args = {
-  isLoggedIn: false,
+export const NotSignedIn = Template.bind({});
+NotSignedIn.args = {
+  isSignedIn: false,
 };
 
-export const LoggedIn = Template.bind({});
-LoggedIn.args = {
-  isLoggedIn: true,
+export const SignedIn = Template.bind({});
+SignedIn.args = {
+  isSignedIn: true,
   streak: {
     currentStreak: 10,
     doneReviewsToday: true,

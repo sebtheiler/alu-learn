@@ -4,11 +4,12 @@ import Button from "atoms/Button";
 import Checkbox from "atoms/Checkbox";
 import TextInput from "atoms/TextInput";
 import Modal from "components/Modal";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 import useGlobalModalStore from "stores/globalModalStore";
 
-const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+const onRegister = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   console.log(
     getElementsVals((e.target as HTMLFormElement).elements, [
@@ -25,8 +26,8 @@ const onSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
 /**
  * Renders the global sign-up modal. Only instantiate in `Navbar`!
  */
-export default function SignUpModal() {
-  const { signUpModalOpen, setSignUpModalOpen } = useGlobalModalStore();
+export default function RegisterModal() {
+  const { registerModalOpen, setRegisterModalOpen } = useGlobalModalStore();
   // const login = useGoogleLogin({
   //   onSuccess: (tokenResponse) => console.log(tokenResponse),
   // });
@@ -36,13 +37,14 @@ export default function SignUpModal() {
 
   return (
     <Modal
-      open={signUpModalOpen}
-      close={() => setSignUpModalOpen(false)}
-      title="Sign-up"
+      open={registerModalOpen}
+      close={() => setRegisterModalOpen(false)}
+      title="Register"
     >
       <Button
         variant="white"
         className="flex items-center justify-center"
+        onClick={() => signIn("google")}
         block
       >
         <Image
@@ -63,7 +65,7 @@ export default function SignUpModal() {
       </Button>
       {continueWithEmail && (
         <AsyncForm
-          onSubmit={onSignUp}
+          onSubmit={onRegister}
           buttonProps={{
             children: "Create Account",
             block: true,

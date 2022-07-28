@@ -1,5 +1,5 @@
-import LoggedIn from "./LoggedIn";
-import LoggedOut from "./LoggedOut";
+import SignedIn from "./SignedIn";
+import SignedOut from "./SignedOut";
 import {
   faBars,
   faCompass,
@@ -8,17 +8,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import NavItem from "components/NavItem";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-// TODO: dynamically import LoggedIn and LoggedOut
+// TODO: dynamically import SignedIn and SignedOut
 
 interface NavbarProps {
-  /**
-   * Is the user currently logged in?
-   */
-  isLoggedIn: boolean;
   /**
    * Information about the user's streak
    */
@@ -39,20 +36,20 @@ interface NavbarProps {
 /**
  * Render a navbar
  */
-export default function Navbar({
-  isLoggedIn,
-  streak,
-  username,
-  isPro,
-}: NavbarProps) {
+export default function Navbar({ streak, username, isPro }: NavbarProps) {
   const [expandedMenu, setExpandedMenu] = useState(false);
+  const { data: session } = useSession();
+
   return (
     <nav
       className="
       fixed top-0 left-0 z-50 flex w-screen
       flex-wrap items-center bg-alu-dark-purple p-4 shadow-lg"
     >
-      <Link href="/" className="mr-2 inline-flex items-center p-2">
+      <Link
+        href={session ? "/home" : "/"}
+        className="mr-2 inline-flex items-center p-2"
+      >
         <a>
           <div className="flex items-center">
             <Image
@@ -102,10 +99,10 @@ export default function Navbar({
             About
           </NavItem>
 
-          {isLoggedIn ? (
-            <LoggedIn streak={streak} username={username} />
+          {session ? (
+            <SignedIn streak={streak} username={username} />
           ) : (
-            <LoggedOut />
+            <SignedOut />
           )}
         </div>
       </div>

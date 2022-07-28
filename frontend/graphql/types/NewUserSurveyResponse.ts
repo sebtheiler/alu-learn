@@ -1,8 +1,8 @@
 import { UserType } from ".";
 import { objectType, extendType } from "nexus";
 
-const SignUpSurveyResponse = objectType({
-  name: "SignUpSurveyResponse",
+const NewUserSurveyResponse = objectType({
+  name: "NewUserSurveyResponse",
   definition(t) {
     // id     String @id @default(uuid())
     // user   User   @relation(fields: [userId], references: [id])

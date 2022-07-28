@@ -9,7 +9,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Dropdown from "atoms/Dropdown";
+import type { MenuOption } from "atoms/Dropdown/Dropdown";
 import Jdenticon from "components/Jdenticon";
+import { signOut, useSession } from "next-auth/react";
+import Image from "next/image";
 
 const profileDropdownOptions = [
   { text: "My Profile", href: "/profile", faIcon: faUserCircle },
@@ -17,21 +20,27 @@ const profileDropdownOptions = [
   { text: "Notifications", href: "/notifications", faIcon: faBell },
   { divider: true },
   { text: "Changelog", href: "/changelog", faIcon: faBook },
-  { text: "Log-out", href: "/logout", faIcon: faSignOut },
+  {
+    text: "Log-out",
+    href: "/",
+    faIcon: faSignOut,
+    onClick: () => signOut({ callbackUrl: "/" }),
+  },
   { text: "Contact Us", href: "/contactus", faIcon: faEnvelope },
-];
+] as MenuOption[];
 
-interface LoggedInProps {
-  username: string;
+interface SignedInProps {
   streak: {
     currentStreak: number;
     doneReviewsToday: boolean;
   };
 }
 
-export default function LoggedIn({ username, streak }: LoggedInProps) {
+export default function SignedIn({ streak }: SignedInProps) {
+  const { data: session } = useSession();
+
   return (
-    <div className="ml-auto">
+    <div className="ml-auto inline-flex items-center">
       <div className="mr-12 inline-flex items-center justify-center px-3 py-2">
         <FontAwesomeIcon
           icon={faFire}
@@ -55,14 +64,24 @@ export default function LoggedIn({ username, streak }: LoggedInProps) {
           {streak.currentStreak}
         </p>
       </div>
-      <div className="inline-flex items-center justify-center px-3 py-2">
+      <div className="inline-flex items-center justify-center mx-3">
         <Dropdown options={profileDropdownOptions}>
-          <Jdenticon
-            value={username}
-            size={32}
-            className="absolute top-0 right-0 mt-3 mr-6 h-12 w-12 rounded-full bg-white
-                     bg-opacity-5 p-1 hover:bg-opacity-10"
-          />
+          {session?.user?.image ? (
+            <span className="h-12 w-12 absolute top-0 right-0 mt-4 mr-6 rounded-full bg-white bg-opacity-5 pt-1 justify-center hover:bg-opacity-10 inline-flex items-center">
+              <Image
+                src={session.user.image}
+                width={40}
+                height={40}
+                alt="Your profile picture"
+              />
+            </span>
+          ) : (
+            <Jdenticon
+              value={session?.user?.email ?? ""}
+              size={32}
+              className="absolute top-0 right-0 mt-4 mr-6 h-12 w-12 rounded-full bg-white bg-opacity-5 p-1 hover:bg-opacity-10"
+            />
+          )}
         </Dropdown>
       </div>
     </div>

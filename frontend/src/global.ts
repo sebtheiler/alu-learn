@@ -2,16 +2,16 @@ import { createContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 
 interface GlobalContextInterface {
-  signUpModalOpen: boolean;
-  setSignUpModalOpen?: Dispatch<SetStateAction<boolean>>;
+  registerModalOpen: boolean;
+  setRegisterModalOpen?: Dispatch<SetStateAction<boolean>>;
   logInModalOpen: boolean;
-  setLogInModalOpen?: Dispatch<SetStateAction<boolean>>;
+  setSignInModalOpen?: Dispatch<SetStateAction<boolean>>;
 }
 
 const GlobalContext = createContext({
-  signUpModalOpen: false,
-  setSignUpModalOpen: undefined,
+  registerModalOpen: false,
+  setRegisterModalOpen: undefined,
   logInModalOpen: false,
-  setLogInModalOpen: undefined,
+  setSignInModalOpen: undefined,
 } as GlobalContextInterface);
 export default GlobalContext;

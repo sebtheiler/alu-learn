@@ -3,7 +3,7 @@ import type { Answers, Question } from "./types";
 import ProgressBar from "components/ProgressBar";
 import { useCallback, useState } from "react";
 
-export default function SignUpSurveyPage() {
+export default function NewUserSurveyPage() {
   const [slideNum, setSlideNum] = useState(0);
   const [answers, setAnswers] = useState<Answers>({
     timezoneOffset: new Date().getTimezoneOffset(),

@@ -19,6 +19,10 @@ export type MenuOption =
        */
       href: string;
       /**
+       * Optionally call a function when the option is clicked
+       */
+      onClick?(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void;
+      /**
        * Display a Font Awesome icon next to the option
        */
       faIcon?: IconProp;
@@ -64,7 +68,9 @@ export default function Dropdown({
       className={classNames(className, "inline-block text-left")}
       style={style}
     >
-      <Menu.Button className="focus:outline-none">{children}</Menu.Button>
+      <Menu.Button className="focus:outline-none inline-flex items-center">
+        {children}
+      </Menu.Button>
 
       <Transition
         enter="transition ease-out duration-100"
@@ -78,18 +84,20 @@ export default function Dropdown({
           <div className="py-1">
             {options.map((option, i) =>
               option.divider ? (
-                <hr className="my-2" />
+                <hr className="my-2" key={i} />
               ) : (
                 <Menu.Item key={i}>
                   {({ active }) => (
-                    <Link
-                      href={option.href}
-                      className={classNames(
-                        active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                        "block px-4 py-2 text-sm"
-                      )}
-                    >
-                      <>
+                    <Link href={option.href}>
+                      <a
+                        className={classNames(
+                          active
+                            ? "bg-gray-100 text-gray-900"
+                            : "text-gray-700",
+                          "block px-4 py-2 text-sm hover:bg-gray-200"
+                        )}
+                        onClick={option.onClick}
+                      >
                         {option.faIcon && (
                           <FontAwesomeIcon
                             icon={option.faIcon}
@@ -97,7 +105,7 @@ export default function Dropdown({
                           />
                         )}
                         {option.text}
-                      </>
+                      </a>
                     </Link>
                   )}
                 </Menu.Item>

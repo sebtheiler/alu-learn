@@ -90,6 +90,8 @@ export default function ChoiceSelect({
                     src={choice.icon}
                     alt={`${choice.display} logo`}
                     className="mx-auto w-20"
+                    width={90}
+                    height={90}
                   />
                 ) : (
                   <FontAwesomeIcon

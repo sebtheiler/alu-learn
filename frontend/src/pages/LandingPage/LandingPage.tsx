@@ -22,7 +22,7 @@ const testimonials = [
 
 export default function LandingPage() {
   const { height } = useWindowDimensions();
-  const { setSignUpModalOpen, setLogInModalOpen } = useGlobalModalStore();
+  const { setRegisterModalOpen, setSignInModalOpen } = useGlobalModalStore();
 
   const exampleDecks = useMemo(
     () => [
@@ -32,11 +32,11 @@ export default function LandingPage() {
       { title: "AP Biology", link: "/l/bio", icon: faDna },
       {
         title: "Create Your Own!",
-        onClick: () => setSignUpModalOpen(true),
+        onClick: () => setRegisterModalOpen(true),
         icon: faPlus,
       },
     ],
-    [setSignUpModalOpen]
+    [setRegisterModalOpen]
   );
 
   return (
@@ -64,18 +64,18 @@ export default function LandingPage() {
               <div className="text-center">
                 <Button
                   block
-                  onClick={() => setSignUpModalOpen(true)}
+                  onClick={() => setRegisterModalOpen(true)}
                   className="max-w-2xl text-lg"
                 >
-                  Get Started
+                  Start Studying Efficiently
                 </Button>
                 <p className="mt-4 text-sm md:text-base">
                   Already have an account?{" "}
                   <span
                     className="cursor-pointer text-blue-400 underline hover:text-blue-500"
-                    onClick={() => setLogInModalOpen(true)}
+                    onClick={() => setSignInModalOpen(true)}
                   >
-                    Log-in
+                    Sign-in
                   </span>{" "}
                   instead
                 </p>
@@ -200,10 +200,10 @@ export default function LandingPage() {
         </p>
         <Button
           className="mx-auto mt-1 text-center"
-          onClick={() => setSignUpModalOpen(true)}
+          onClick={() => setRegisterModalOpen(true)}
           block
         >
-          Get Started
+          Start Studying Efficiently
         </Button>
       </div>
     </div>

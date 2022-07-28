@@ -17,17 +17,17 @@ export interface ProUpgradePageProps {
   proTrialExpires: string;
   isProFromOrg: boolean;
   isPro: boolean;
-  isLoggedIn: boolean;
+  isSignedIn: boolean;
 }
 
 export default function ProUpgradePage({
   proTrialExpires,
   isProFromOrg,
   isPro,
-  isLoggedIn,
+  isSignedIn,
 }: ProUpgradePageProps) {
   const router = useRouter();
-  const { setSignUpModalOpen } = useGlobalModalStore();
+  const { setRegisterModalOpen } = useGlobalModalStore();
   // const [stripe, setStripe] = useState<Stripe | null>(null);
   // useAsyncState<{ publishableKey: string }>(
   //   () => backendFetch('GET', 'accounts/stripe-config/'), [],
@@ -120,10 +120,10 @@ export default function ProUpgradePage({
       </div>
       <div className="mt-8 text-center">
         <div className="w-100 text-center">
-          {!isLoggedIn ? (
+          {!isSignedIn ? (
             <>
-              <Button onClick={() => setSignUpModalOpen(true)} block>
-                Get Started
+              <Button onClick={() => setRegisterModalOpen(true)} block>
+                Start Studying Efficiently
               </Button>
             </>
           ) : (

@@ -1,27 +1,27 @@
-import LogInModal from ".";
+import SignInModal from ".";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ComponentStory } from "@storybook/react";
 import GlobalContext from "global";
 import { withReactContext } from "storybook-react-context";
 
 export default {
-  title: "Components/Modal/LogInModal",
+  title: "Components/Modal/SignInModal",
   decorators: [
     withReactContext({
       Context: GlobalContext,
       initialState: {
         logInModalOpen: true,
-        setLogInModalOpen: () => console.log("setting value"),
+        setSignInModalOpen: () => console.log("setting value"),
       },
     }),
   ],
-  component: LogInModal,
+  component: SignInModal,
 };
 
-const Template: ComponentStory<typeof LogInModal> = () => (
+const Template: ComponentStory<typeof SignInModal> = () => (
   <GoogleOAuthProvider clientId={process.env.GOOGLE_OAUTH_CLIENT_ID as string}>
-    <LogInModal />
+    <SignInModal />
   </GoogleOAuthProvider>
 );
 
-export const LogInModalExample = Template.bind({});
+export const SignInModalExample = Template.bind({});
