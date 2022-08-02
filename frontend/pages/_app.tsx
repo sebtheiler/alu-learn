@@ -3,6 +3,7 @@ import "../styles/globals.css";
 import Auth from "./_auth";
 import Layout from "./_layout";
 import { ApolloProvider } from "@apollo/client";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 import type { NextComponentType, NextPageContext } from "next";
 import { SessionProvider } from "next-auth/react";
 

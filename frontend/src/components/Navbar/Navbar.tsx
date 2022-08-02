@@ -67,7 +67,9 @@ export default function Navbar({ streak, isPro }: NavbarProps) {
               <Image
                 src="/assets/pro-banner.svg"
                 alt="Pro Banner"
-                className="ml-1 w-14 transition duration-700 hover:rotate-360"
+                className="ml-1 -translate-y-0.5 w-14 transition duration-700 hover:rotate-360"
+                width={60}
+                height={25}
               />
             )}
           </div>

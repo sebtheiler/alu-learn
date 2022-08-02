@@ -4,6 +4,7 @@ import { useMutation } from "@apollo/client";
 import ProgressBar from "components/ProgressBar";
 import CreateNewUserSurveyResponse from "graphql/CreateNewUserSurveyResponse";
 import UpdateUser from "graphql/UpdateUser";
+import SEO from "helpers/SEO";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 
@@ -50,14 +51,17 @@ export default function NewUserSurveyPage() {
   const slides = useSlides(handleNext, answers.userType);
 
   return (
-    <div className="container mx-auto mt-28 md:px-14 lg:px-28">
-      <h1 className="mb-3 text-center text-3xl font-bold">Welcome to Alu!</h1>
-      <ProgressBar
-        stepNum={slideNum}
-        totalNumSteps={slides.length - 1}
-        className="mx-2"
-      />
-      <div className="mt-5 text-lg mx-2">{slides[slideNum]}</div>
-    </div>
+    <>
+      <SEO title="Survey" path="/new-user-survey" noindex />
+      <div className="container mx-auto mt-28 md:px-14 lg:px-28">
+        <h1 className="mb-3 text-center text-3xl font-bold">Welcome to Alu!</h1>
+        <ProgressBar
+          stepNum={slideNum}
+          totalNumSteps={slides.length - 1}
+          className="mx-2"
+        />
+        <div className="mt-5 text-lg mx-2">{slides[slideNum]}</div>
+      </div>
+    </>
   );
 }

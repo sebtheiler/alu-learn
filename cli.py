@@ -95,7 +95,7 @@ export type {{ {page_name}Props }};
 
     page_title = re.sub(r"\B([A-Z])", r" \1", page_raw_name)
     page_tsx = f"""
-import Head from "next/head";
+import SEO from "helpers/SEO";
 
 export interface {page_name}Props {{
 }}
@@ -105,13 +105,15 @@ export interface {page_name}Props {{
  */
 export default function {page_name}({{
 }}: {page_name}Props) {{
-  return (
+  return (<>
+    <SEO
+      title={page_title}
+      path={page_url}
+      description=""
+    />
     <div>
-      <Head>
-        <title>{page_title}</title>
-      </Head>
     </div>
-  );
+  </>);
 }}
     """.strip()
     with open(os.path.join(page_dir, f'{page_name}.tsx'), 'w+') as f:
@@ -172,6 +174,7 @@ export const getStaticProps: GetStaticProps = async (context) => {{
 {imports}
 import type {{ NextPage }} from "../lib/types";
 import {page_name} from "pages/{page_name}";
+import type {{ {page_name}Props }} from "pages/{page_name}";
 
 const {page_raw_name}: NextPage = (props: {page_name}Props) => <{page_name} />;
 

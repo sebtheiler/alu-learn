@@ -4,6 +4,7 @@ import Checkbox from "atoms/Checkbox";
 import Select from "atoms/Select";
 import TextInput from "atoms/TextInput";
 import UpdateUser from "graphql/UpdateUser";
+import SEO from "helpers/SEO";
 import { useDebounce } from "hooks/useDebounce";
 import { useEffect } from "react";
 import { useState } from "react";
@@ -86,74 +87,81 @@ export default function SettingsPage({
   }, [debouncedTargetNumCards, targetNumCards, updateUser]);
 
   return (
-    <div className="mt-28 container mx-auto max-w-xl">
-      <h1 className="text-center text-4xl font-bold">Settings</h1>
-      <p className="text-center">
-        All of your preferences are saved automatically
-      </p>
-      <div>
-        <h3 className="text-xl font-bold mb-2">General</h3>
-        <TextInput
-          label="Name"
-          className="mb-4"
-          value={nameState}
-          onChange={(e) => setNameState(e.target.value)}
-          required
-        />
-        <TextInput
-          label="Target Flashcards per Day"
-          type="number"
-          className="mb-4"
-          value={targetNumCardsState}
-          onChange={(e) => setTargetNumCardsState(parseInt(e.target.value))}
-          required
-        />
-        <div className="mb-4">
-          <Select
-            label="User Type"
-            options={userTypeOptions}
-            defaultValue={userType}
-            onChange={(val) => updateUser({ variables: { userType: val } })}
-            id="userType"
-          />
-        </div>
+    <>
+      <SEO
+        title="Settings"
+        path="/settings"
+        // description=""  TODO: (SEO) set description
+      />
+      <div className="mt-28 container mx-auto max-w-xl">
+        <h1 className="text-center text-4xl font-bold">Settings</h1>
+        <p className="text-center">
+          All of your preferences are saved automatically
+        </p>
         <div>
-          <Select
-            label="Timezone"
-            options={timezoneOptions}
-            defaultValue={timezoneOffset}
-            onChange={(val) =>
-              updateUser({ variables: { timezoneOffset: val } })
+          <h3 className="text-xl font-bold mb-2">General</h3>
+          <TextInput
+            label="Name"
+            className="mb-4"
+            value={nameState}
+            onChange={(e) => setNameState(e.target.value)}
+            required
+          />
+          <TextInput
+            label="Target Flashcards per Day"
+            type="number"
+            className="mb-4"
+            value={targetNumCardsState}
+            onChange={(e) => setTargetNumCardsState(parseInt(e.target.value))}
+            required
+          />
+          <div className="mb-4">
+            <Select
+              label="User Type"
+              options={userTypeOptions}
+              defaultValue={userType}
+              onChange={(val) => updateUser({ variables: { userType: val } })}
+              id="userType"
+            />
+          </div>
+          <div>
+            <Select
+              label="Timezone"
+              options={timezoneOptions}
+              defaultValue={timezoneOffset}
+              onChange={(val) =>
+                updateUser({ variables: { timezoneOffset: val } })
+              }
+              id="timezoneOffset"
+            />
+          </div>
+        </div>
+        <br />
+        <div>
+          <h3 className="text-xl font-bold">Emails</h3>
+          <Checkbox
+            label="Send reminder emails"
+            description="Alu will send you a reminder email if you have an active streak and haven't studied that day"
+            onChange={(e) =>
+              updateUser({ variables: { sendReminders: e.target.checked } })
             }
-            id="timezoneOffset"
+            defaultChecked={sendReminders}
+            id="sendReminders"
+          />
+          <br />
+          <Checkbox
+            label="Send marketing research emails"
+            description="Alu will occasionally send you emails for marketing research. We will never spam you."
+            onChange={(e) =>
+              updateUser({
+                variables: { sendMarketingResearch: e.target.checked },
+              })
+            }
+            defaultChecked={sendMarketingResearch}
+            id="sendMarketingResearch"
           />
         </div>
       </div>
-      <br />
-      <div>
-        <h3 className="text-xl font-bold">Emails</h3>
-        <Checkbox
-          label="Send reminder emails"
-          description="Alu will send you a reminder email if you have an active streak and haven't studied that day"
-          onChange={(e) =>
-            updateUser({ variables: { sendReminders: e.target.checked } })
-          }
-          defaultChecked={sendReminders}
-          id="sendReminders"
-        />
-        <br />
-        <Checkbox
-          label="Send marketing research emails"
-          description="Alu will occasionally send you emails for marketing research. We will never spam you."
-          onChange={(e) =>
-            updateUser({
-              variables: { sendMarketingResearch: e.target.checked },
-            })
-          }
-          defaultChecked={sendMarketingResearch}
-          id="sendMarketingResearch"
-        />
-      </div>
-    </div>
+    </>
   );
 }
