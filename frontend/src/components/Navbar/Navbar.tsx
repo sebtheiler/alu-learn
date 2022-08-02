@@ -40,7 +40,6 @@ interface NavbarProps {
 export default function Navbar({ streak, isPro }: NavbarProps) {
   const [expandedMenu, setExpandedMenu] = useState(false);
   const { data: session } = useSession();
-  console.log(session);
 
   return (
     <nav

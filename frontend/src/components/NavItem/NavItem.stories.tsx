@@ -1,4 +1,5 @@
 import NavItem from ".";
+import { faCompass } from "@fortawesome/free-solid-svg-icons";
 import { ComponentStory } from "@storybook/react";
 
 export default {
@@ -6,11 +7,14 @@ export default {
   component: NavItem,
 };
 
-// TODO: add story
-
 const Template: ComponentStory<typeof NavItem> = (args) => (
-  <NavItem {...args} />
+  <div className="bg-alu-dark-purple p-5">
+    <NavItem {...args}>Example</NavItem>
+  </div>
 );
 
 export const NavItemExample = Template.bind({});
-NavItemExample.args = {};
+NavItemExample.args = {
+  icon: faCompass,
+  href: "/explore/decks",
+};

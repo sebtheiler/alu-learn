@@ -1,7 +1,7 @@
 import AsyncForm from "atoms/AsyncForm";
 import Button from "atoms/Button";
+import Modal from "atoms/Modal";
 import TextInput from "atoms/TextInput";
-import Modal from "components/Modal";
 import { getElementsVals } from "helpers/getElementsVals";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
@@ -22,9 +22,6 @@ const onSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
  */
 export default function SignInModal() {
   const { logInModalOpen, setSignInModalOpen } = useGlobalModalStore();
-  // const login = useGoogleLogin({
-  //   onSuccess: (tokenResponse) => console.log(tokenResponse),
-  // });
   const [loginWithEmail, setLoginWithEmail] = useState(false);
 
   return (

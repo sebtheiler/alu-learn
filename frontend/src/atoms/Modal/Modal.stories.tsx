@@ -4,7 +4,7 @@ import Button from "atoms/Button";
 import { useState } from "react";
 
 export default {
-  title: "Components/Modal",
+  title: "Atoms/Modal",
   component: Modal,
 };
 

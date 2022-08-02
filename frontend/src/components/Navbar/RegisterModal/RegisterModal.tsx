@@ -2,8 +2,8 @@ import { getElementsVals } from "../../../helpers/getElementsVals";
 import AsyncForm from "atoms/AsyncForm";
 import Button from "atoms/Button";
 import Checkbox from "atoms/Checkbox";
+import Modal from "atoms/Modal";
 import TextInput from "atoms/TextInput";
-import Modal from "components/Modal";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
@@ -28,9 +28,6 @@ const onRegister = async (e: React.FormEvent<HTMLFormElement>) => {
  */
 export default function RegisterModal() {
   const { registerModalOpen, setRegisterModalOpen } = useGlobalModalStore();
-  // const login = useGoogleLogin({
-  //   onSuccess: (tokenResponse) => console.log(tokenResponse),
-  // });
 
   const [continueWithEmail, setContinueWithEmail] = useState(false);
   const [age, setAge] = useState<number>(111);

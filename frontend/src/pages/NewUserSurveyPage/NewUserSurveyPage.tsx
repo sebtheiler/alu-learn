@@ -35,7 +35,6 @@ export default function NewUserSurveyPage() {
 
         // On the second to last slide (final slide you can submit), record the answers
         if (slideNum === numSlides - 2) {
-          console.log(answers);
           createNewUserSurveyResponse({ variables: answers });
           updateUser({ variables: answers });
           const callbackUrl = router.query.callbackUrl as string | undefined;
