@@ -20,6 +20,14 @@ interface CheckboxProps {
    */
   className?: string;
   /**
+   * Triggers when the state of the checkbox is changed
+   */
+  onChange?(event: React.ChangeEvent<HTMLInputElement>): void;
+  /**
+   * Is the checkbox checked by default?
+   */
+  defaultChecked?: boolean;
+  /**
    * Is the checkbox required?
    */
   required?: boolean;
@@ -34,6 +42,8 @@ export default function Checkbox({
   id,
   name,
   required,
+  onChange,
+  defaultChecked,
   className = "",
 }: CheckboxProps) {
   return (
@@ -44,7 +54,9 @@ export default function Checkbox({
           name={name}
           type="checkbox"
           className="h-4 w-4 rounded-full accent-alu-primary-purple ring-indigo-500 focus:outline-none focus:ring focus:ring-violet-400/20"
+          onChange={onChange}
           required={required}
+          defaultChecked={defaultChecked}
         />
       </div>
       <div className="ml-3 text-sm">

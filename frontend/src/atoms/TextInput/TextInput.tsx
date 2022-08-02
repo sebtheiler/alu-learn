@@ -39,6 +39,14 @@ interface TextInputProps {
    */
   disabled?: boolean;
   /**
+   * Value of the text input
+   */
+  value?: string | number;
+  /**
+   * Default value of the text input
+   */
+  defaultValue?: string | number;
+  /**
    * Function to call when the input changes
    */
   onChange?(event: ChangeEvent<HTMLInputElement>): void;
@@ -62,6 +70,8 @@ export default function TextInput({
   autoComplete,
   required,
   disabled,
+  value,
+  defaultValue,
   onChange,
   onBlur,
 }: TextInputProps) {
@@ -78,10 +88,13 @@ export default function TextInput({
         id={id}
         name={name}
         className={classNames(
-          "border-1 peer block w-full appearance-none rounded-full border-gray-300 bg-transparent p-3 text-sm text-gray-900 focus:border-alu-primary-purple focus:outline-none focus:ring-0",
+          `border-1 peer block w-full appearance-none rounded-full border-gray-300 bg-transparent p-3 text-sm text-gray-900
+          outline-2 focus:ring-alu-primary-purple focus:border-alu-primary-purple focus:outline-alu-primary-purple`,
           disabled && "cursor-not-allowed bg-slate-100"
         )}
         placeholder=" "
+        value={value}
+        defaultValue={defaultValue}
         onChange={onChange}
         onBlur={onBlur}
         autoComplete={autoComplete}
@@ -92,7 +105,10 @@ export default function TextInput({
         <label
           htmlFor={id}
           className={classNames(
-            "pointer-events-none absolute top-2 left-1 z-10 origin-[0] -translate-y-4 translate-x-1.5 scale-75 transform cursor-text rounded bg-white px-1 text-sm text-gray-500 duration-200 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-1 peer-focus:text-alu-primary-purple",
+            `pointer-events-none absolute top-2 left-1 z-10 origin-[0] -translate-y-4 translate-x-1.5 scale-75
+            transform cursor-text rounded bg-white px-1 text-sm text-gray-500 duration-200
+            peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100
+            peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-1 peer-focus:text-alu-primary-purple`,
             disabled && "bg-slate-100"
           )}
         >
