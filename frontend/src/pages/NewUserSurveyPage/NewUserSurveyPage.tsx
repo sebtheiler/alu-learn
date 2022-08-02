@@ -1,51 +1,11 @@
 import useSlides from "./slides";
 import type { Answers, Question } from "./types";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import ProgressBar from "components/ProgressBar";
+import CreateNewUserSurveyResponse from "graphql/CreateNewUserSurveyResponse";
+import UpdateUser from "graphql/UpdateUser";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
-
-const CreateNewUserSurveyResponse = gql`
-  mutation CreateNewUserSurveyResponse(
-    $timezoneOffset: Int!
-    $userType: UserType!
-    $referrer: Referrer!
-    $joinReason: JoinReason!
-    $targetNumCards: Int!
-    $sendReminders: Boolean!
-    $deckChoice: DeckChoice!
-  ) {
-    createNewUserSurveyResponse(
-      timezoneOffset: $timezoneOffset
-      userType: $userType
-      referrer: $referrer
-      joinReason: $joinReason
-      targetNumCards: $targetNumCards
-      sendReminders: $sendReminders
-      deckChoice: $deckChoice
-    ) {
-      id
-    }
-  }
-`;
-
-const UpdateUser = gql`
-  mutation Mutation(
-    $timezoneOffset: Int
-    $targetNumCards: Int
-    $sendReminders: Boolean
-    $userType: UserType
-  ) {
-    updateUser(
-      timezoneOffset: $timezoneOffset
-      targetNumCards: $targetNumCards
-      sendReminders: $sendReminders
-      userType: $userType
-    ) {
-      id
-    }
-  }
-`;
 
 export default function NewUserSurveyPage() {
   const [slideNum, setSlideNum] = useState(0);

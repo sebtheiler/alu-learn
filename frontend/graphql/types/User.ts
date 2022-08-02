@@ -80,13 +80,15 @@ export const UsersMutation = extendType({
         if (!user) return null;
 
         const data: Partial<NonNullableKeys<typeof args>> = {};
-        if (args.name) data.name = args.name;
-        if (args.timezoneOffset) data.timezoneOffset = args.timezoneOffset;
-        if (args.sendMarketingResearch)
+        if (args.name != null) data.name = args.name;
+        if (args.timezoneOffset != null)
+          data.timezoneOffset = args.timezoneOffset;
+        if (args.sendMarketingResearch != null)
           data.sendMarketingResearch = args.sendMarketingResearch;
-        if (args.targetNumCards) data.targetNumCards = args.targetNumCards;
-        if (args.sendReminders) data.sendReminders = args.sendReminders;
-        if (args.userType) data.userType = args.userType;
+        if (args.targetNumCards != null)
+          data.targetNumCards = args.targetNumCards;
+        if (args.sendReminders != null) data.sendReminders = args.sendReminders;
+        if (args.userType != null) data.userType = args.userType;
 
         return ctx.prisma.user.update({
           where: { id: user.id },

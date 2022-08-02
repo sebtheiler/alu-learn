@@ -62,13 +62,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  role     Role     @default(USER)
-  userType UserType @default(STUDENT)
+  role Role @default(USER)
 
-  sendReminders         Boolean @default(false)
-  targetNumCards        Int     @default(20)
-  sendMarketingResearch Boolean @default(true)
-  timezoneOffset        Int     @default(300) // GMT-5 = 300
+  userType              UserType @default(STUDENT)
+  sendReminders         Boolean  @default(false)
+  targetNumCards        Int      @default(20)
+  sendMarketingResearch Boolean  @default(true)
+  timezoneOffset        Int      @default(300) // GMT-5 = 300
 }
 
 enum Role {
