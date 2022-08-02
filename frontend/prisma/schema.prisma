@@ -46,6 +46,7 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// # User
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -56,13 +57,18 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
+  newUserSurveyResponse NewUserSurveyResponse?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
   role     Role     @default(USER)
   userType UserType @default(STUDENT)
 
-  newUserSurvey NewUserSurveyResponse?
+  sendReminders         Boolean @default(false)
+  targetNumCards        Int     @default(20)
+  sendMarketingResearch Boolean @default(true)
+  timezoneOffset        Int     @default(300) // GMT-5 = 300
 }
 
 enum Role {
@@ -71,26 +77,26 @@ enum Role {
   ADMIN
 }
 
-// # Analytics
-// ## New user Survey
-model NewUserSurveyResponse {
-  id     String @id @default(cuid())
-  user   User   @relation(fields: [userId], references: [id])
-  userId String @unique
-
-  timezoneOffset   Int
-  userType         UserType
-  referrer         Referrer
-  joinReason       JoinReason
-  targetFlashcards Int
-  sendReminders    Boolean
-  deckChoice       DeckChoice
-}
-
 enum UserType {
   STUDENT
   TEACHER
   MIXED
+}
+
+// # Analytics
+// ## New user Survey
+model NewUserSurveyResponse {
+  id     String  @id @default(cuid())
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @unique
+
+  timezoneOffset Int
+  userType       UserType
+  referrer       Referrer
+  joinReason     JoinReason
+  targetNumCards Int
+  sendReminders  Boolean
+  deckChoice     DeckChoice
 }
 
 enum Referrer {

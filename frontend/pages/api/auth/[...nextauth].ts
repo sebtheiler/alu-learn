@@ -1,12 +1,11 @@
 import prisma from "../../../lib/prisma";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import type { NextApiRequest, NextApiResponse } from "next";
 import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 
-console.log("wasdwasd", process.env.GOOGLE_ID, process.env.GOOGLE_SECRET);
-
-const options = {
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
   jwt: {},
   secret: process.env.SECRET,
@@ -36,4 +35,5 @@ const options = {
 } as NextAuthOptions;
 
 // eslint-disable-next-line
-export default (req, res) => NextAuth(req, res, options);
+export default (req: NextApiRequest, res: NextApiResponse) =>
+  NextAuth(req, res, authOptions);

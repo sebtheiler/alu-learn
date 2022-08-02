@@ -67,12 +67,13 @@ export default function SignedIn({ streak }: SignedInProps) {
       <div className="inline-flex items-center justify-center mx-3">
         <Dropdown options={profileDropdownOptions}>
           {session?.user?.image ? (
-            <span className="h-12 w-12 absolute top-0 right-0 mt-4 mr-6 rounded-full bg-white bg-opacity-5 pt-1 justify-center hover:bg-opacity-10 inline-flex items-center">
+            <span className="h-12 w-12 absolute top-0 right-0 mt-4 mr-6 rounded-full bg-white bg-opacity-5 justify-center hover:bg-opacity-10 inline-flex items-center">
               <Image
                 src={session.user.image}
                 width={40}
                 height={40}
                 alt="Your profile picture"
+                className="rounded-full"
               />
             </span>
           ) : (

@@ -28,11 +28,11 @@ export default function useSlides(
      * Total, predetermined number of slides
      * Must be predetermined to avoid circular depndency
      */
-    const numSlides = 2 + (userType === "STUDENT" ? 3 : 1) + 1;
+    const numSlides = 2 + (userType === "STUDENT" ? 3 : 1) + 2;
 
     let slides = [
       <>
-        <h4>Are you a student or a teacher?</h4>
+        <h4 className="text-center">Are you a student or a teacher?</h4>
         <ChoiceSelect
           choices={[
             {
@@ -52,7 +52,7 @@ export default function useSlides(
         />
       </>,
       <>
-        <h4>How did you hear about Alu?</h4>
+        <h4 className="text-center">How did you hear about Alu?</h4>
         <ChoiceSelect
           choices={[
             {
@@ -111,7 +111,7 @@ export default function useSlides(
       // Questions only shown if the user is a student
       slides = slides.concat([
         <>
-          <h4>Why did you join Alu?</h4>
+          <h4 className="text-center">Why did you join Alu?</h4>
           <ChoiceSelect
             choices={[
               {
@@ -131,7 +131,9 @@ export default function useSlides(
           />
         </>,
         <>
-          <h4>What is your goal number of flashcards per day?</h4>
+          <h4 className="text-center">
+            What is your goal number of flashcards per day?
+          </h4>
           <ChoiceSelect
             choices={[
               { value: 10, display: "10 flashcards" },
@@ -139,17 +141,19 @@ export default function useSlides(
               { value: 50, display: "50 flashcards" },
               { value: 100, display: "100 flashcards" },
             ]}
-            onClick={handleNext("targetFlashcards", numSlides)}
+            onClick={handleNext("targetNumCards", numSlides)}
             numCols={4}
           />
         </>,
         <>
-          <h4>Would you like a reminder email if you forget to study?</h4>
-          <p className="mb-3 italic">
+          <h4 className="text-center">
+            Would you like a reminder email if you forget to study?
+          </h4>
+          <p className="mb-3 italic text-center">
             Studying is most effective when it&apos;s done every day. Alu can
             send reminder emails to help you build your study habits.
           </p>
-          <p className="italic">
+          <p className="italic text-center">
             You can unsubscribe at any time. We will never spam you.
           </p>
           <ChoiceSelect
@@ -168,7 +172,7 @@ export default function useSlides(
       // Questions only shown if the user is a teacher
       slides.push(
         <>
-          <h4>Why did you join Alu?</h4>
+          <h4 className="text-center">Why did you join Alu?</h4>
           <ChoiceSelect
             choices={[
               {
@@ -188,9 +192,9 @@ export default function useSlides(
       );
     }
 
-    slides.push(
+    slides = slides.concat([
       <>
-        <h4>
+        <h4 className="text-center">
           Would you like to create your own deck or copy an existing deck?
         </h4>
         <ChoiceSelect
@@ -210,8 +214,12 @@ export default function useSlides(
           ]}
           onClick={handleNext("deckChoice", numSlides)}
         />
-      </>
-    );
+      </>,
+      <>
+        <h3 className="text-center">Personalizing your Alu account...</h3>
+        <h4 className="text-center">Hang on just one second</h4>
+      </>,
+    ]);
 
     return slides;
   }, [handleNext, userType]);

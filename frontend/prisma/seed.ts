@@ -9,7 +9,6 @@ async function main() {
       username: "admin",
       name: "Admin",
       role: "ADMIN",
-      userType: "MIXED",
     },
   });
 }

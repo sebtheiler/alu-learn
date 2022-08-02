@@ -150,7 +150,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {{
 }}
 
 """
-        imports = 'GetServerSideProps, NextPage'
+        imports = 'GetServerSideProps'
     elif rendering_method.lower() == 'ssg':
         rendering_page_url_tsx = f"""
 
@@ -160,13 +160,17 @@ export const getStaticProps: GetStaticProps = async (context) => {{
   }}
 }}
 """
-        imports = 'GetStaticProps, NextPage'
+        imports = 'GetStaticProps'
     else:
         rendering_page_url_tsx = ''
-        imports = 'NextPage'
+        imports = ''
+
+    if imports:
+        imports = f"""import type {{ {imports} }} from "next";"""
 
     page_url_tsx = f"""
-import type {{ {imports} }} from "next";
+{imports}
+import type {{ NextPage }} from "../lib/types";
 import {page_name} from "pages/{page_name}";
 
 const {page_raw_name}: NextPage = (props: {page_name}Props) => <{page_name} />;

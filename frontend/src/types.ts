@@ -1,3 +1,10 @@
 import { FlashCard } from "./deck/types";
 
-export type { FlashCard };
+/**
+ * Make each key of a type NonNullable
+ */
+type NonNullableKeys<Type> = {
+  [Key in keyof Type]-?: NonNullableKeys<NonNullable<Type[Key]>>;
+};
+
+export type { FlashCard, NonNullableKeys };

@@ -1,13 +1,62 @@
 import useSlides from "./slides";
 import type { Answers, Question } from "./types";
+import { gql, useMutation } from "@apollo/client";
 import ProgressBar from "components/ProgressBar";
+import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
+
+const CreateNewUserSurveyResponse = gql`
+  mutation CreateNewUserSurveyResponse(
+    $timezoneOffset: Int!
+    $userType: UserType!
+    $referrer: Referrer!
+    $joinReason: JoinReason!
+    $targetNumCards: Int!
+    $sendReminders: Boolean!
+    $deckChoice: DeckChoice!
+  ) {
+    createNewUserSurveyResponse(
+      timezoneOffset: $timezoneOffset
+      userType: $userType
+      referrer: $referrer
+      joinReason: $joinReason
+      targetNumCards: $targetNumCards
+      sendReminders: $sendReminders
+      deckChoice: $deckChoice
+    ) {
+      id
+    }
+  }
+`;
+
+const UpdateUser = gql`
+  mutation Mutation(
+    $timezoneOffset: Int
+    $targetNumCards: Int
+    $sendReminders: Boolean
+    $userType: UserType
+  ) {
+    updateUser(
+      timezoneOffset: $timezoneOffset
+      targetNumCards: $targetNumCards
+      sendReminders: $sendReminders
+      userType: $userType
+    ) {
+      id
+    }
+  }
+`;
 
 export default function NewUserSurveyPage() {
   const [slideNum, setSlideNum] = useState(0);
   const [answers, setAnswers] = useState<Answers>({
     timezoneOffset: new Date().getTimezoneOffset(),
   });
+  const router = useRouter();
+  const [createNewUserSurveyResponse] = useMutation(
+    CreateNewUserSurveyResponse
+  );
+  const [updateUser] = useMutation(UpdateUser);
 
   /**
    * Generates a function to save the answer from the user's choice in `answers`
@@ -24,15 +73,19 @@ export default function NewUserSurveyPage() {
           setAnswers(newAnswers);
         }
 
-        if (slideNum === numSlides - 1) {
+        // On the second to last slide (final slide you can submit), record the answers
+        if (slideNum === numSlides - 2) {
           console.log(answers);
-          setSlideNum(0);
-        } else {
-          setSlideNum(slideNum + 1);
+          createNewUserSurveyResponse({ variables: answers });
+          updateUser({ variables: answers });
+          const callbackUrl = router.query.callbackUrl as string | undefined;
+          router.push(callbackUrl ?? "/home");
         }
+
+        setSlideNum(slideNum + 1);
       };
     },
-    [answers, slideNum]
+    [answers, slideNum, createNewUserSurveyResponse, updateUser, router]
   );
 
   const slides = useSlides(handleNext, answers.userType);
@@ -40,8 +93,12 @@ export default function NewUserSurveyPage() {
   return (
     <div className="container mx-auto mt-28 md:px-14 lg:px-28">
       <h1 className="mb-3 text-center text-3xl font-bold">Welcome to Alu!</h1>
-      <ProgressBar stepNum={slideNum} totalNumSteps={slides.length - 1} />
-      <div className="mt-5 text-lg">{slides[slideNum]}</div>
+      <ProgressBar
+        stepNum={slideNum}
+        totalNumSteps={slides.length - 1}
+        className="mx-2"
+      />
+      <div className="mt-5 text-lg mx-2">{slides[slideNum]}</div>
     </div>
   );
 }
