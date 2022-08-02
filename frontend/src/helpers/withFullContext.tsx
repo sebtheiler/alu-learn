@@ -1,7 +1,7 @@
-import { GoogleOAuthProvider } from "@react-oauth/google";
-// import GlobalContext from "global";
-// import { useMemo, useState } from "react";
+import apolloClient from "../../lib/apollo";
+import { ApolloProvider } from "@apollo/client";
 import type { Story } from "@storybook/react";
+import { SessionProvider } from "next-auth/react";
 
 /**
  * Storybook decorator that provides full context for all components.
@@ -9,25 +9,11 @@ import type { Story } from "@storybook/react";
  * Provides React Router, Global, and Google OAuth contexts
  */
 export default function withFullContext(Story: Story) {
-  // const [registerModalOpen, setRegisterModalOpen] = useState(false);
-  // const [logInModalOpen, setSignInModalOpen] = useState(false);
-  // const contextVal = useMemo(
-  //   () => ({
-  //     registerModalOpen,
-  //     setRegisterModalOpen,
-  //     logInModalOpen,
-  //     setSignInModalOpen,
-  //   }),
-  //   [registerModalOpen, setRegisterModalOpen, logInModalOpen, setSignInModalOpen]
-  // );
-
   return (
-    // <GlobalContext.Provider value={contextVal}>
-    <GoogleOAuthProvider
-      clientId={process.env.GOOGLE_OAUTH_CLIENT_ID as string}
-    >
-      <Story />
-    </GoogleOAuthProvider>
-    // </GlobalContext.Provider>
+    <SessionProvider session={undefined}>
+      <ApolloProvider client={apolloClient}>
+        <Story />
+      </ApolloProvider>
+    </SessionProvider>
   );
 }

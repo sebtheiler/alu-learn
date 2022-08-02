@@ -7,7 +7,12 @@ html * {
     "Helvetica Neue", sans-serif;
 }
 
-/* Don't let the global font affect the KaTeX */
+/* Fonts are different for math elements */
 .katex * {
   font-family: KaTeX_Main, "Times New Roman", serif;
+}
+
+.math-block *,
+.math-inline * {
+  font-family: Courier, monospace;
 }

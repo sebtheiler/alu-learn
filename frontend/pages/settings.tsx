@@ -7,6 +7,7 @@ import SettingsPage, { SettingsPageProps } from "pages/SettingsPage";
 const Settings: NextPage = (props: SettingsPageProps) => (
   <SettingsPage {...props} />
 );
+Settings.authRequired = true;
 
 export default Settings;
 

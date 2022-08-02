@@ -55,7 +55,7 @@ export default function MarkButton({
             : "rgba(0, 0, 0, 0)",
         }}
         tabIndex={tabbable ? undefined : -1}
-        className="background-dark px-2 py-1"
+        className="background-dark px-2 py-1 rounded-lg mr-1"
       >
         <FontAwesomeIcon icon={faIcon} />
       </button>

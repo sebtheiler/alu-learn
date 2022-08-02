@@ -19,7 +19,7 @@ const Leaf = ({ attributes, children, leaf, readOnly }) => {
         </Suspense>
       );
     } else {
-      children = <span className="math-inline">{children}</span>;
+      children = <span className="math-inline bg-gray-300">{children}</span>;
     }
   }
 

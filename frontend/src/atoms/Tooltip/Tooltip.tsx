@@ -65,7 +65,7 @@ export default function Tooltip({
         leave="ease-in duration-200"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-        className="absolute"
+        className="absolute z-50"
       >
         <div
           ref={setPopEl}

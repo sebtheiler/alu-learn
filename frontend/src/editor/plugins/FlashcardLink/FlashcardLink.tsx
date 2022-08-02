@@ -74,7 +74,7 @@ export default function FlashCardLinkComponent({
         </div>
       }
     >
-      <span {...attributes} className="flashcard-link">
+      <span {...attributes} className="text-alu-light-purple font-bold">
         {children}
       </span>
     </Popover>

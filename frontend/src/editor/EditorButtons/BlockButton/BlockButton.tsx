@@ -56,7 +56,7 @@ export default function BlockButton({
           background: isBlockActive(editor, format) ? "#e1e6ed" : "transparent",
         }}
         tabIndex={tabbable ? undefined : -1}
-        className="mx-1 p-1"
+        className="mx-1 p-1 rounded-lg"
       >
         <FontAwesomeIcon icon={faIcon} />
       </button>

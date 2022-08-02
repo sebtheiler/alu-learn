@@ -105,7 +105,10 @@ const Element = ({ attributes, children, element, readOnly }: ElementProps) => {
         );
       }
       return (
-        <p className="math-block" {...attributes}>
+        <p
+          className="math-block bg-gray-300 p-3 text-center rounded-lg"
+          {...attributes}
+        >
           {children}
         </p>
       );

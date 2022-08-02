@@ -1,4 +1,5 @@
 // Adapted from https://codesandbox.io/s/react-material-design-ripple-effect-kn1tr?file=/src/Ripple.jsx
+import styles from "./Ripple.module.scss";
 import { useEffect, useState } from "react";
 
 const useDebouncedRippleCleanUp = (
@@ -66,7 +67,7 @@ export default function Ripple({ color = "white" }: RippleProps) {
         rippleArray.map((ripple, index) => (
           <span
             key={"span" + index}
-            className="ripple"
+            className={styles.ripple}
             style={{
               top: ripple.y,
               left: ripple.x,

@@ -8,6 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import NavItem from "components/NavItem";
+import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,21 +25,22 @@ interface NavbarProps {
     doneReviewsToday: boolean;
   };
   /**
-   * Username of the user (if logged in)
-   */
-  username: string;
-  /**
    * Is the user a pro user?
    */
   isPro?: boolean;
+  /**
+   * NextAuth session
+   */
+  session: Session;
 }
 
 /**
  * Render a navbar
  */
-export default function Navbar({ streak, username, isPro }: NavbarProps) {
+export default function Navbar({ streak, isPro }: NavbarProps) {
   const [expandedMenu, setExpandedMenu] = useState(false);
   const { data: session } = useSession();
+  console.log(session);
 
   return (
     <nav
@@ -99,11 +101,7 @@ export default function Navbar({ streak, username, isPro }: NavbarProps) {
             About
           </NavItem>
 
-          {session ? (
-            <SignedIn streak={streak} username={username} />
-          ) : (
-            <SignedOut />
-          )}
+          {session ? <SignedIn streak={streak} /> : <SignedOut />}
         </div>
       </div>
     </nav>
