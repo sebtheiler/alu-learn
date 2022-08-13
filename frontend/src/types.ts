@@ -7,4 +7,9 @@ type NonNullableKeys<Type> = {
   [Key in keyof Type]-?: NonNullableKeys<NonNullable<Type[Key]>>;
 };
 
-export type { FlashCard, NonNullableKeys };
+interface Streak {
+  currentStreak: number;
+  doneReviewsToday: boolean;
+}
+
+export type { FlashCard, NonNullableKeys, Streak };

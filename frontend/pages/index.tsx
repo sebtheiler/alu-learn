@@ -1,5 +1,6 @@
+import { authOptions } from "./api/auth/[...nextauth]";
 import type { GetServerSideProps, NextPage } from "next";
-import { getSession } from "next-auth/react";
+import { unstable_getServerSession } from "next-auth";
 import LandingPage from "pages/LandingPage";
 
 const Index: NextPage = () => <LandingPage />;
@@ -7,7 +8,11 @@ const Index: NextPage = () => <LandingPage />;
 export default Index;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  );
 
   if (session) {
     return {

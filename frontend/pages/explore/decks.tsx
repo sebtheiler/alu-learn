@@ -1,12 +1,8 @@
-import type { GetStaticProps, NextPage } from "next";
+import type { NextPage } from "next";
 import ExploreDecksPage from "pages/ExploreDecksPage";
+
+export { getServerSideProps } from "../../lib/getSessionSSR";
 
 const CommunityDecksHome: NextPage = () => <ExploreDecksPage />;
 
 export default CommunityDecksHome;
-
-export const getStaticProps: GetStaticProps = async () => {
-  return {
-    props: {},
-  };
-};

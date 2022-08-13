@@ -1,7 +1,9 @@
-import prisma from "../lib/prisma";
+import getUserSSR from "../lib/getUserSSR";
 import type { NextPage } from "../lib/types";
+import { authOptions } from "./api/auth/[...nextauth]";
 import type { GetServerSideProps } from "next";
-import { getSession, signIn } from "next-auth/react";
+import { unstable_getServerSession } from "next-auth";
+import { signIn } from "next-auth/react";
 import SettingsPage, { SettingsPageProps } from "pages/SettingsPage";
 
 const Settings: NextPage = (props: SettingsPageProps) => (
@@ -12,14 +14,16 @@ Settings.authRequired = true;
 export default Settings;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  );
   if (!session) {
     signIn();
   }
 
-  const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email ?? "" },
-  });
+  const user = await getUserSSR(session);
 
   return {
     props: {

@@ -1,14 +1,9 @@
 import { NextPage } from "../lib/types";
-import type { GetServerSideProps } from "next";
 import HomePage from "pages/HomePage";
+
+export { getServerSideProps } from "../lib/getSessionSSR";
 
 const Home: NextPage = () => <HomePage />;
 Home.authRequired = true;
 
 export default Home;
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  return {
-    props: {},
-  };
-};

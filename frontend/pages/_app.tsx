@@ -16,11 +16,14 @@ type AppProps = {
   };
 };
 
-function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+function App({
+  Component,
+  pageProps: { session, streak, ...pageProps },
+}: AppProps) {
   return (
     <SessionProvider session={session}>
       <ApolloProvider client={apolloClient}>
-        <Layout session={session}>
+        <Layout session={session} streak={streak}>
           {Component.authRequired ? (
             <Auth>
               <Component {...pageProps} />

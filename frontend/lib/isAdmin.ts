@@ -1,5 +1,5 @@
 import { Context } from "../graphql/context";
-import getUser from "./getUser";
+import getUserGQL from "./getUserGQL";
 
 /**
  * Is the current user an admin?
@@ -8,7 +8,7 @@ import getUser from "./getUser";
  */
 const isAdmin = async (ctx: Context): Promise<boolean> => {
   if (process.env.NODE_ENV === "development") return true;
-  const user = await getUser(ctx);
+  const user = await getUserGQL(ctx);
   return user?.role === "ADMIN";
 };
 export default isAdmin;

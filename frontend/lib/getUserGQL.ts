@@ -6,7 +6,7 @@ import type { User } from "@prisma/client";
  * @param ctx GraphQL/Nexus context
  * @returns The current user or null
  */
-const getUser = async (ctx: Context): Promise<User | null> => {
+const getUserGQL = async (ctx: Context): Promise<User | null> => {
   if (process.env.NODE_ENV === "development" && !ctx.user) {
     return ctx.prisma.user.findFirst();
   }
@@ -18,4 +18,4 @@ const getUser = async (ctx: Context): Promise<User | null> => {
   });
 };
 
-export default getUser;
+export default getUserGQL;

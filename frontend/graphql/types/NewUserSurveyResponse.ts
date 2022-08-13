@@ -1,5 +1,5 @@
 import { UserType } from ".";
-import getUser from "../../lib/getUser";
+import getUserGQL from "../../lib/getUserGQL";
 import {
   objectType,
   extendType,
@@ -44,7 +44,7 @@ export const NewUserSurveyResponseMutation = extendType({
         deckChoice: nonNull(arg({ type: "DeckChoice" })),
       },
       async resolve(_root, args, ctx) {
-        const user = await getUser(ctx);
+        const user = await getUserGQL(ctx);
         if (!user) return null;
 
         const newUserSurveyResponse = {

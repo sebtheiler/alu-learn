@@ -1,4 +1,4 @@
-import getUser from "../../lib/getUser";
+import getUserGQL from "../../lib/getUserGQL";
 import isAdmin from "../../lib/isAdmin";
 import {
   objectType,
@@ -56,7 +56,7 @@ export const UsersQuery = extendType({
     t.field("me", {
       type: "User",
       resolve(_parent, _args, ctx) {
-        return getUser(ctx);
+        return getUserGQL(ctx);
       },
     });
   },
@@ -76,7 +76,7 @@ export const UsersMutation = extendType({
         userType: arg({ type: "UserType" }),
       },
       async resolve(_parent, args, ctx) {
-        const user = await getUser(ctx);
+        const user = await getUserGQL(ctx);
         if (!user) return null;
 
         const data: Partial<NonNullableKeys<typeof args>> = {};

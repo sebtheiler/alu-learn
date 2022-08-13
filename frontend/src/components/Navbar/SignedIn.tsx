@@ -11,8 +11,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Dropdown from "atoms/Dropdown";
 import type { MenuOption } from "atoms/Dropdown/Dropdown";
 import Jdenticon from "components/Jdenticon";
-import { signOut, useSession } from "next-auth/react";
+import type { Session } from "next-auth";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
+import type { Streak } from "types";
 
 const profileDropdownOptions = [
   { text: "My Profile", href: "/profile", faIcon: faUserCircle },
@@ -30,15 +32,11 @@ const profileDropdownOptions = [
 ] as MenuOption[];
 
 interface SignedInProps {
-  streak: {
-    currentStreak: number;
-    doneReviewsToday: boolean;
-  };
+  session: Session;
+  streak: Streak;
 }
 
-export default function SignedIn({ streak }: SignedInProps) {
-  const { data: session } = useSession();
-
+export default function SignedIn({ session, streak }: SignedInProps) {
   return (
     <div className="ml-auto inline-flex items-center">
       <div className="mr-12 inline-flex items-center justify-center px-3 py-2">

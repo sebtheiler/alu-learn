@@ -9,10 +9,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import NavItem from "components/NavItem";
 import type { Session } from "next-auth";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import type { Streak } from "types";
 
 // TODO: dynamically import SignedIn and SignedOut
 
@@ -20,10 +20,7 @@ interface NavbarProps {
   /**
    * Information about the user's streak
    */
-  streak: {
-    currentStreak: number;
-    doneReviewsToday: boolean;
-  };
+  streak?: Streak;
   /**
    * Is the user a pro user?
    */
@@ -31,15 +28,14 @@ interface NavbarProps {
   /**
    * NextAuth session
    */
-  session: Session;
+  session?: Session;
 }
 
 /**
  * Render a navbar
  */
-export default function Navbar({ streak, isPro }: NavbarProps) {
+export default function Navbar({ session, streak, isPro }: NavbarProps) {
   const [expandedMenu, setExpandedMenu] = useState(false);
-  const { data: session } = useSession();
 
   return (
     <nav
@@ -102,7 +98,11 @@ export default function Navbar({ streak, isPro }: NavbarProps) {
             About
           </NavItem>
 
-          {session ? <SignedIn streak={streak} /> : <SignedOut />}
+          {session && streak ? (
+            <SignedIn session={session} streak={streak} />
+          ) : (
+            <SignedOut />
+          )}
         </div>
       </div>
     </nav>

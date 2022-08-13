@@ -64,6 +64,9 @@ model User {
 
   role Role @default(USER)
 
+  currentStreak    Int     @default(0)
+  doneReviewsToday Boolean @default(false)
+
   userType              UserType @default(STUDENT)
   sendReminders         Boolean  @default(false)
   targetNumCards        Int      @default(20)
