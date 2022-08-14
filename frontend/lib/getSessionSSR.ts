@@ -28,8 +28,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       session,
       streak: {
-        currentStreak: user?.currentStreak,
-        doneReviewsToday: user?.doneReviewsToday,
+        currentStreak: user?.currentStreak ?? null,
+        doneReviewsToday: user?.doneReviewsToday ?? null,
       },
     },
   };
