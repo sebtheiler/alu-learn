@@ -216,7 +216,7 @@ export default function AboutPage() {
               </p>
               <div
                 className="mx-2 grid grid-cols-3 rounded-full border-4
-                            border-gray-200 bg-gray-100 px-4 py-3 text-center"
+                           border-gray-200 bg-gray-100 px-4 py-3 text-center"
               >
                 <div className="flex items-center">
                   <a
