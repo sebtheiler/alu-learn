@@ -5,12 +5,12 @@
  * @returns An object with keys that have the names of the values
  */
 export const getElementsVals = (
-  elements,
+  form: HTMLFormElement,
   valNames: string[]
 ): { [key: string]: string } => {
   const result = {};
   for (const valName of valNames) {
-    result[valName] = elements[valName].value;
+    result[valName] = form.elements[valName].value;
   }
 
   return result;

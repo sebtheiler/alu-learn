@@ -42,7 +42,7 @@ export default function SignedIn({ session, streak }: SignedInProps) {
       <div className="mr-12 inline-flex items-center justify-center px-3 py-2">
         <FontAwesomeIcon
           icon={faFire}
-          size="2x"
+          size="3x"
           className={
             "absolute h-10 w-10" +
             (streak.doneReviewsToday

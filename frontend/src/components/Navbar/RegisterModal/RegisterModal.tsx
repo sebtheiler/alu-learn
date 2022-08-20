@@ -12,7 +12,7 @@ import useGlobalModalStore from "stores/globalModalStore";
 const onRegister = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
   console.log(
-    getElementsVals((e.target as HTMLFormElement).elements, [
+    getElementsVals(e.target as HTMLFormElement, [
       "age",
       "firstName",
       "lastName",

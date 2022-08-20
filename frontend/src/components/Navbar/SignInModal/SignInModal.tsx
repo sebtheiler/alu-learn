@@ -10,7 +10,7 @@ import useGlobalModalStore from "stores/globalModalStore";
 
 const onSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
   console.log(
-    getElementsVals((e.target as HTMLFormElement).elements, [
+    getElementsVals(e.target as HTMLFormElement, [
       "emailOrUsername",
       "password",
     ])

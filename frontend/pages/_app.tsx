@@ -8,7 +8,6 @@ import type { NextComponentType, NextPageContext } from "next";
 import { SessionProvider } from "next-auth/react";
 
 type AppProps = {
-  // eslint-disable-next-line
   pageProps: any;
   // eslint-disable-next-line
   Component: NextComponentType<NextPageContext, any, {}> & {
