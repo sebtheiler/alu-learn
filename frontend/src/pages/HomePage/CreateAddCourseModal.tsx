@@ -5,7 +5,7 @@ import TextInput from "atoms/TextInput";
 import CreateCourse from "graphql/CreateCourse";
 import { getElementsVals } from "helpers/getElementsVals";
 import { useRouter } from "next/router";
-import { Course } from "types";
+import type { Course } from "types";
 
 export default function CreateAddCourseModal({ open, close }) {
   const [createCourse] = useMutation<{ createCourse: Course }>(CreateCourse);

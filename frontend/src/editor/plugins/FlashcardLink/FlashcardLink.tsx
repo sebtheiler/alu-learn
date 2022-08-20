@@ -3,7 +3,7 @@ import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import Popover from "atoms/Popover";
 import IconTooltip from "components/IconTooltip";
 import type { ExtendedSlateElement } from "editor/types";
-import { FlashCard } from "types";
+import type { FlashCard } from "types";
 
 interface FlashCardLinkComponentProps {
   /**

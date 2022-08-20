@@ -1,6 +1,5 @@
-import { authOptions } from "../api/auth/[...nextauth]";
+import { getSessionAndStreak } from "../../lib/getSessionSSR";
 import type { GetServerSideProps, NextPage } from "next";
-import { unstable_getServerSession } from "next-auth";
 import ProUpgradePage from "pages/ProUpgradePage";
 import type { ProUpgradePageProps } from "pages/ProUpgradePage";
 
@@ -15,11 +14,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const isPro = false;
   const isProFromOrg = false;
   const isSignedIn = true;
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const { session, streak } = await getSessionAndStreak(context);
 
   return {
     props: {
@@ -28,6 +23,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       isProFromOrg,
       isSignedIn,
       session,
+      streak,
     } as ProUpgradePageProps,
   };
 };

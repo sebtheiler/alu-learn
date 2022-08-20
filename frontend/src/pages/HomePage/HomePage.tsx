@@ -7,43 +7,17 @@ import SEO from "helpers/SEO";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import type { Course } from "types";
 
-const courses = [
-  {
-    title: "AP World History: Modern",
-    imageBanner:
-      "https://d1whtlypfis84e.cloudfront.net/guides/wp-content/uploads/2018/03/16025228/bell.jpg",
-    teacher: {
-      name: "Dr. Test User",
-    },
-    id: 1,
-  },
-  {
-    title: "AP Psychology",
-    imageBanner: "https://www.mooc.org/hubfs/psych-fields-jpg.jpeg",
-    id: 2,
-  },
-  {
-    title: "AP U.S. Government and Politics",
-    imageBanner:
-      "https://d2v9ipibika81v.cloudfront.net/uploads/sites/22/2016/01/Capitol_west_front750.jpg",
-    id: 3,
-  },
-  {
-    title: "AP Biology",
-    imageBanner:
-      "https://thumbs.dreamstime.com/z/biology-hand-drawn-doodles-lettering-education-science-vector-white-background-135246167.jpg",
-    id: 4,
-  },
-  {
-    title: "AP Statistics",
-    imageBanner:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3DOqLYnHco4T4AmP8lNma8przbed2TPOjGw-Y3bDdwSFUiIkWhiA1Zlighw&s",
-    id: 5,
-  },
-];
+export interface HomePageProps {
+  /**
+   * The courses the user is currently in.
+   * Displays as a list on the homepage
+   */
+  courses: Course[];
+}
 
-export default function HomePage() {
+export default function HomePage({ courses }: HomePageProps) {
   const [addCourseModalOpen, setAddCourseModalOpen] = useState(false);
 
   return (
@@ -71,7 +45,10 @@ export default function HomePage() {
                       >
                         <div className="w-full h-24 relative">
                           <Image
-                            src={course.imageBanner}
+                            src={
+                              course.imageBanner ??
+                              "/assets/default-course-banner.png"
+                            }
                             alt=""
                             layout="fill"
                             className="object-cover"
@@ -81,7 +58,7 @@ export default function HomePage() {
                           <h3 className="text-xl font-bold mt-4">
                             {course.title}
                           </h3>
-                          <p>{course.teacher?.name}</p>
+                          {/* <p>{course.teacher?.name}</p> */}
                         </div>
                       </div>
                     </a>

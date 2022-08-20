@@ -1,7 +1,12 @@
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import getUserSSR from "./getUserSSR";
-import type { GetServerSideProps } from "next";
+import type {
+  GetServerSideProps,
+  GetServerSidePropsContext,
+  PreviewData,
+} from "next";
 import { unstable_getServerSession } from "next-auth";
+import type { ParsedUrlQuery } from "querystring";
 
 /**
  * Helper function to automatically inject a NextAuth `session` and `streak` data
@@ -12,6 +17,23 @@ import { unstable_getServerSession } from "next-auth";
  * @returns Props for the given page that includes the NextAuth `session`
  */
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { session, streak } = await getSessionAndStreak(context);
+
+  return {
+    props: {
+      session,
+      streak,
+    },
+  };
+};
+
+/**
+ * Helper function to the current user's session and streak.
+ * @returns The current user's session and streak
+ */
+export const getSessionAndStreak = async (
+  context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
+) => {
   const session = await unstable_getServerSession(
     context.req,
     context.res,
@@ -25,12 +47,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     : null;
 
   return {
-    props: {
-      session,
-      streak: {
-        currentStreak: user?.currentStreak ?? null,
-        doneReviewsToday: user?.doneReviewsToday ?? null,
-      },
+    session,
+    streak: {
+      currentStreak: user?.currentStreak ?? null,
+      doneReviewsToday: user?.doneReviewsToday ?? null,
     },
   };
 };

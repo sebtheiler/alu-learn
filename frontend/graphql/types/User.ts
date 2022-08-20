@@ -9,7 +9,7 @@ import {
   arg,
   stringArg,
 } from "nexus";
-import { NonNullableKeys } from "types";
+import type { NonNullableKeys } from "types";
 
 const User = objectType({
   name: "User",
