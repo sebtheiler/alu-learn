@@ -5,26 +5,24 @@ import TextInput from "atoms/TextInput";
 import CreateCourse from "graphql/CreateCourse";
 import { getElementsVals } from "helpers/getElementsVals";
 import { useRouter } from "next/router";
+import { Course } from "types";
 
 export default function CreateAddCourseModal({ open, close }) {
-  // TODO: type this
-  const [createCourse] = useMutation<{ createCourse: { id: string } }>(CreateCourse);
+  const [createCourse] = useMutation<{ createCourse: Course }>(CreateCourse);
   const router = useRouter();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     const { data } = await createCourse({
       variables: {
-        title: getElementsVals(e.target as HTMLFormElement, [
-          "courseName",
-        ]).courseName,
+        title: getElementsVals(e.target as HTMLFormElement, ["courseName"])
+          .courseName,
       },
     });
 
     if (data) {
-      router.push(`/course/${data.createCourse.id}`)
+      router.push(`/course/${data.createCourse.id}`);
     }
-  }
-        
+  };
 
   return (
     <Modal open={open} close={close}>

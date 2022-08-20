@@ -15,10 +15,10 @@ const Course = objectType({
             courses: {
               some: {
                 id: course.id as string,
-              }
-            }
-          }
-        })
+              },
+            },
+          },
+        });
       },
     });
     t.field("owners", {
@@ -29,10 +29,10 @@ const Course = objectType({
             coursesOwned: {
               some: {
                 id: course.id as string,
-              }
-            }
-          }
-        })
+              },
+            },
+          },
+        });
       },
     });
   },

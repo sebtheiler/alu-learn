@@ -1,4 +1,4 @@
-import { FlashCard } from "./deck/types";
+import { FlashCard } from "../deck/types";
 
 /**
  * Make each key of a type NonNullable
