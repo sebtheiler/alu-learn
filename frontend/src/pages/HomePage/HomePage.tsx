@@ -41,7 +41,7 @@ export default function HomePage({ courses }: HomePageProps) {
                     <a>
                       <div
                         className="border-gray-200 border-4 bg-gray-50 rounded-xl h-60 min-h-full
-                                      overflow-hidden hover:shadow-lg hover:scale-105 transition"
+                                     overflow-hidden hover:shadow-lg hover:scale-105 transition"
                       >
                         <div className="w-full h-24 relative">
                           <Image

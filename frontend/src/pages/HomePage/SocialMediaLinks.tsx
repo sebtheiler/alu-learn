@@ -6,7 +6,7 @@ export default function SocialMediaLinks() {
       <p className="font-bold">Follow Alu</p>
       <div
         className="grid grid-cols-4 md:grid-cols-2 lg:grid-cols-4 rounded-full md:rounded-xl
-                  lg:rounded-full border-4 border-gray-200 bg-gray-100 p-3 max-w-xs mx-auto"
+                  lg:rounded-full border-4 border-gray-200 bg-gray-50 p-3 max-w-xs mx-auto"
       >
         <a
           href="https://www.instagram.com/alu_learn"
