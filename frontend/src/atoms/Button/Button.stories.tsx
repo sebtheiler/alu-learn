@@ -18,9 +18,16 @@ Primary.args = {
   block: false,
 };
 
-export const Gradient = Template.bind({});
-Gradient.args = {
-  variant: "gradient",
+export const Danger = Template.bind({});
+Danger.args = {
+  variant: "danger",
+  pill: true,
+  block: false,
+};
+
+export const Secondary = Template.bind({});
+Secondary.args = {
+  variant: "secondary",
   pill: true,
   block: false,
 };
@@ -42,7 +49,7 @@ NonPill.args = {
 export const Block = Template.bind({});
 Block.args = {
   variant: "primary",
-  pill: false,
+  pill: true,
   block: true,
 };
 

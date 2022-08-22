@@ -42,8 +42,29 @@ type Mutation {
 
   """Creates a new main section and populates it with a default subsection"""
   createMainSection(courseId: String!, title: String!): MainSection
+
+  """Creates a new NewUserSurveyResponse from a set of responses"""
   createNewUserSurveyResponse(deckChoice: DeckChoice!, joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumCards: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse
+
+  """Creates a new sub section"""
   createSubSection(courseId: String!, mainSectionId: String!, title: String!): SubSection
+
+  """
+  Removes the current user from a course if the course has other users.  If the course has no other users, deletes the course.
+  """
+  deleteCourse(
+    """ID of the course to delete"""
+    courseId: String!
+  ): Course
+
+  """Change a course's settings"""
+  updateCourse(
+    """ID of the course to update"""
+    courseId: String!
+    title: String
+  ): Course
+
+  """Change the user's settings"""
   updateUser(name: String, sendMarketingResearch: Boolean, sendReminders: Boolean, targetNumCards: Int, timezoneOffset: Int, userType: UserType): User
 }
 
@@ -63,10 +84,14 @@ type NewUserSurveyResponse {
 type Query {
   """Gets all available courses"""
   courses: [Course]
+
+  """Get information on the current user"""
   me: User
 
   """Get the current user's courses"""
   myCourses: [Course]
+
+  """List all users"""
   users: [User]
 }
 
@@ -96,6 +121,8 @@ type User {
   email: String
   id: String
   name: String
+
+  """The user's response to the survey launched on sign-up"""
   newUserSurveyResponse: NewUserSurveyResponse
   role: Role
   sendMarketingResearch: Boolean

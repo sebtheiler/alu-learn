@@ -1,5 +1,7 @@
 import getUserGQL from "../../lib/getUserGQL";
+import { isCourseOwner } from "./helpers/isCourseOwner";
 import { extendType, list, nonNull, objectType, stringArg } from "nexus";
+import type { NonNullableKeys } from "types";
 
 const Course = objectType({
   name: "Course",
@@ -128,6 +130,76 @@ export const CoursesMutation = extendType({
         });
 
         return course;
+      },
+    });
+    t.field("updateCourse", {
+      type: "Course",
+      description: "Change a course's settings",
+      args: {
+        title: stringArg(),
+        courseId: nonNull(
+          stringArg({ description: "ID of the course to update" })
+        ),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        if (!user || !isCourseOwner(args.courseId, ctx)) return null;
+
+        const data: Partial<NonNullableKeys<typeof args>> = {};
+        if (args.title != null) data.title = args.title;
+
+        return ctx.prisma.course.update({
+          where: { id: args.courseId },
+          data: data,
+        });
+      },
+    });
+    t.field("deleteCourse", {
+      type: "Course",
+      description:
+        "Removes the current user from a course if the course has other users.  If the course has no other users, deletes the course.",
+      args: {
+        courseId: nonNull(
+          stringArg({ description: "ID of the course to delete" })
+        ),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        if (!user) return null;
+
+        const numUsers = await ctx.prisma.user.count({
+          where: {
+            courses: {
+              some: {
+                id: args.courseId,
+              },
+            },
+          },
+        });
+
+        if (numUsers > 1) {
+          // Remove the current user from the course if the current user is the only user
+          return ctx.prisma.course.update({
+            where: {
+              id: args.courseId,
+            },
+            data: {
+              users: {
+                disconnect: {
+                  id: user.id,
+                },
+              },
+            },
+          });
+        } else {
+          // Delete the course (if the current user is the course owner)
+          if (!isCourseOwner(args.courseId, ctx)) return null;
+          return ctx.prisma.course.delete({
+            where: {
+              id: args.courseId,
+            },
+          });
+        }
       },
     });
   },

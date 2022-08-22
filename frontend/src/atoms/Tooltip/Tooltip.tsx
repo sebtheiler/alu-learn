@@ -4,7 +4,7 @@ import classNames from "helpers/classNames";
 import { useState } from "react";
 import { usePopper } from "react-popper";
 
-interface TooltipProps {
+export interface TooltipProps {
   /**
    * Elements that, when hovered, will display the tooltip
    */

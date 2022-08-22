@@ -1,7 +1,8 @@
-import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import type { IconProp, SizeProp } from "@fortawesome/fontawesome-svg-core";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Tooltip from "atoms/Tooltip";
+import type { TooltipProps } from "atoms/Tooltip/Tooltip";
 import classNames from "helpers/classNames";
 import { MouseEventHandler, useMemo, useState } from "react";
 
@@ -13,13 +14,27 @@ interface IconTooltipProps {
   /**
    * Called when the icon is clicked
    */
-  onClick(e: React.MouseEvent<HTMLElement, MouseEvent>): Promise<void>;
+  onClick(e: React.MouseEvent<HTMLElement, MouseEvent>): Promise<void> | void;
+  /**
+   * Size of the icon
+   */
+  size?: SizeProp;
   /**
    * Font Awesome icon to display
    */
   faIcon: IconProp;
+  /**
+   * Classname of the icon
+   */
   className?: string;
+  /**
+   * Additional styling for the icon
+   */
   style?: React.CSSProperties;
+  /**
+   * Additional props for the tooltip
+   */
+  tooltipProps?: Partial<TooltipProps>;
 }
 
 /**
@@ -29,8 +44,10 @@ export default function IconTooltip({
   tooltip,
   onClick,
   faIcon,
+  size,
   className,
   style,
+  tooltipProps,
 }: IconTooltipProps) {
   const [isLoading, setIsLoading] = useState(false);
   const handleClick: MouseEventHandler<HTMLElement> = async (e) => {
@@ -45,13 +62,18 @@ export default function IconTooltip({
   );
 
   return (
-    <Tooltip tooltip={tooltip}>
-      <span onClick={handleClick} className="cursor-pointer text-center">
+    <Tooltip tooltip={tooltip} {...tooltipProps}>
+      <span
+        onClick={handleClick}
+        className="cursor-pointer text-center"
+        role="button"
+      >
         <FontAwesomeIcon
           icon={icon}
           style={style}
           className={classNames(className, "mx-auto")}
           spin={isLoading}
+          size={size}
         />
       </span>
     </Tooltip>
