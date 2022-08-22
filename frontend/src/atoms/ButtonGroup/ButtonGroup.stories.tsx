@@ -20,6 +20,12 @@ Horizontal.args = {
   spaced: true,
 };
 
+export const Vertical = Template.bind({});
+Vertical.args = {
+  vertical: true,
+  spaced: true,
+};
+
 export const FixedWidth = Template.bind({});
 FixedWidth.args = {
   fixedWidth: "200px",

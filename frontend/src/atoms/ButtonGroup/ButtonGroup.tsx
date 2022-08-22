@@ -1,5 +1,6 @@
 import Button from "atoms/Button";
 import type { ButtonProps } from "atoms/Button";
+import classNames from "helpers/classNames";
 import { ReactElement } from "react";
 
 interface ButtonGroupProps {
@@ -12,14 +13,18 @@ interface ButtonGroupProps {
    */
   spaced?: boolean;
   /**
-   * Classname to apply to the div surrounding the children buttons
-   */
-  className?: string;
-  /**
    * If specified, apply a fixed width to each button
    * E.g., 100px
    */
   fixedWidth?: string;
+  /**
+   * Display the buttons stacked vertically instead of horizontally?
+   */
+  vertical?: boolean;
+  /**
+   * Classname to apply to the div surrounding the children buttons
+   */
+  className?: string;
 }
 
 /**
@@ -28,19 +33,25 @@ interface ButtonGroupProps {
 export default function ButtonGroup({
   children,
   spaced,
-  className,
   fixedWidth,
+  vertical,
+  className,
 }: ButtonGroupProps) {
   return (
-    <div className={className}>
+    <div className={classNames(className, vertical && "text-center")}>
       {children.map((button, i) => {
         const newProps: ButtonProps = { ...button.props };
-        if (i !== children.length - 1) {
-          newProps._unroundRight = true;
-          if (spaced) newProps.className += " mr-1";
-        }
-        if (i !== 0) {
-          newProps._unroundLeft = true;
+        if (vertical) {
+          newProps.style = { ...newProps.style, display: "block" };
+          if (spaced) newProps.className += " mb-1 mx-auto";
+        } else {
+          if (i !== children.length - 1) {
+            newProps._unroundRight = true;
+            if (spaced) newProps.className += " mr-1";
+          }
+          if (i !== 0) {
+            newProps._unroundLeft = true;
+          }
         }
         if (fixedWidth) {
           newProps.style = { ...newProps.style, width: fixedWidth };

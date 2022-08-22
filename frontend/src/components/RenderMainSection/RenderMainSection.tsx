@@ -10,6 +10,7 @@ import Tooltip from "atoms/Tooltip";
 import RenderSubSection from "components/RenderSubSection";
 import CreateSubSection from "graphql/CreateSubSection";
 import { getElementsVals } from "helpers/getElementsVals";
+import useWindowDimensions from "hooks/useWindowDimensions";
 import CoursePageContext from "pages/CoursePage/context";
 import { useContext, useState } from "react";
 import type { MainSection, SubSection } from "types";
@@ -52,6 +53,8 @@ export default function RenderMainSection({
     setCreateSubSectionModalOpen(false);
   };
 
+  const { width } = useWindowDimensions();
+
   return (
     <div className="border-gray-200 border-4 bg-gray-50 rounded-[1rem] px-4 py-3 max-w-5xl mx-auto mb-8">
       <div className="flex items-center mt-4 mb-3">
@@ -61,7 +64,12 @@ export default function RenderMainSection({
         </div>
         <div className="flex-grow bg bg-gray-300 h-0.5"></div>
       </div>
-      <ButtonGroup className="text-center" fixedWidth="200px" spaced>
+      <ButtonGroup
+        className="text-center"
+        fixedWidth="175px"
+        spaced
+        vertical={width < 640}
+      >
         <Button>Learn Content</Button>
         <Button>Flashcards</Button>
         <Button>

@@ -29,7 +29,7 @@ export default function RenderSubSection({
   const { course } = useContext(CoursePageContext);
 
   return (
-    <div className="w-1/4 mx-auto my-1">
+    <div className="md:w-1/3 lg:w-1/4 mx-auto my-1">
       <Popover
         popover={
           <>
