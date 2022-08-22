@@ -1,137 +1,120 @@
-import LinkButton from "atoms/LinkButton";
-import Popover from "atoms/Popover";
+import CoursePageContext from "./context";
+import { useMutation } from "@apollo/client";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import AsyncForm from "atoms/AsyncForm";
+import Button from "atoms/Button";
+import Modal from "atoms/Modal";
+import TextInput from "atoms/TextInput";
+import RenderMainSection from "components/RenderMainSection";
+import CreateMainSection from "graphql/CreateMainSection";
 import SEO from "helpers/SEO";
-import { cleanTitle } from "helpers/cleanTitle";
-import { Course } from "types";
-
-const currentlyStudiedColor = "#5ed149";
-const previouslyStudiedColor = "#FDCE29";
-
-const repeat = (arr, n) => [].concat(...Array(n).fill(arr));
+import { getElementsVals } from "helpers/getElementsVals";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import type { Course, MainSection } from "types";
 
 export interface CoursePageProps {
+  /**
+   * Course to display
+   */
   course: Course;
+  /**
+   * Is the user authorized to view the course? (course is null if true)
+   */
+  authorized: boolean;
 }
-
-const mainSections = [
-  {
-    title: "main section",
-    id: 1,
-    subSections: repeat(
-      [
-        {
-          title: "sub section",
-          id: 1,
-          totalPercentComplete: 0.2,
-          percentComplete: 0.1,
-        },
-        {
-          title: "sub section #2",
-          id: 2,
-          totalPercentComplete: 0.8,
-          percentComplete: 0.1,
-        },
-      ],
-      4
-    ),
-  },
-];
 
 /**
  *
  */
-export default function CoursePage({ course }: CoursePageProps) {
+export default function CoursePage({ course, authorized }: CoursePageProps) {
+  const [createMainSection] = useMutation(CreateMainSection);
+  const [createMainSectionModalOpen, setCreateMainSectionModalOpen] =
+    useState(false);
+
+  const router = useRouter();
+  const refreshData = () => router.replace(router.asPath);
+
+  const handleCreateMainSection = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    const { mainSectionTitle } = getElementsVals(e.target as HTMLFormElement, [
+      "mainSectionTitle",
+    ]);
+
+    await createMainSection({
+      variables: {
+        title: mainSectionTitle,
+        courseId: course.id,
+      },
+    });
+
+    refreshData();
+    setCreateMainSectionModalOpen(false);
+  };
+
   return (
     <>
       <SEO
-        title={course.title ?? "Course"}
-        path={`course/${course.id}`}
+        title={course?.title ?? "Course"}
+        path={`course/${course?.id}`}
         // TODO: Add SEO description (VERY IMPORTANT)
         description=""
       />
-      <div className="mt-28">
-        <h1 className="font-bold text-4xl text-center">{course.title}</h1>
-        <div className="md:container mx-auto px-4 mt-6">
-          {mainSections.map((mainSection) => (
-            <div
-              className="border-gray-200 border-4 bg-gray-50 rounded-[1rem] px-4 py-3 max-w-5xl mx-auto"
-              key={mainSection.id}
+      {authorized && (
+        <div className="mt-28">
+          <h1 className="font-bold text-4xl text-center">{course.title}</h1>
+          <div className="md:container mx-auto px-4 mt-6">
+            <CoursePageContext.Provider value={{ course, refreshData }}>
+              {course?.mainSections?.map((mainSection) => (
+                <RenderMainSection
+                  mainSection={mainSection as MainSection}
+                  key={mainSection?.id as string}
+                />
+              ))}
+            </CoursePageContext.Provider>
+          </div>
+          <div className="text-center">
+            {course.mainSections?.length === 0 && (
+              <p className="mb-3">
+                This course doesn&apos;t have any sections yet. Add one below to
+                start organizing the course!
+              </p>
+            )}
+            <Button
+              onClick={() => setCreateMainSectionModalOpen(true)}
+              faIcon={faPlus}
+              className="mb-3"
             >
-              <div className="flex items-center mt-4 mb-3">
-                <div className="flex-grow bg bg-gray-300 h-0.5"></div>
-                <div className="flex-grow-0 mx-5 text dark:text-white font-bold text-center text-3xl">
-                  {mainSection.title.toUpperCase()}
-                </div>
-                <div className="flex-grow bg bg-gray-300 h-0.5"></div>
-              </div>
-              <div className="flex flex-wrap px-10 py-5">
-                {mainSection.subSections.map((subSection) => (
-                  <div key={subSection.id} className="w-1/4 mx-auto my-1">
-                    <Popover
-                      popover={
-                        <>
-                          <LinkButton
-                            href={`/course/${course.id}/s/${cleanTitle(
-                              mainSection.title
-                            )}/${cleanTitle(subSection.title)}/learn`}
-                            block
-                          >
-                            Learn Content
-                          </LinkButton>
-                          <LinkButton
-                            href={`/course/${course.id}/s/${cleanTitle(
-                              mainSection.title
-                            )}/${cleanTitle(subSection.title)}/flashcards`}
-                            className="mt-2"
-                            block
-                          >
-                            Flashcards
-                          </LinkButton>
-                          <LinkButton
-                            href={`/course/${course.id}/s/${cleanTitle(
-                              mainSection.title
-                            )}/${cleanTitle(subSection.title)}/practice`}
-                            className="mt-2"
-                            block
-                          >
-                            Practice Problems
-                          </LinkButton>
-                        </>
-                      }
-                      trigger="click"
-                      placement="bottom"
-                      arrow
-                    >
-                      <div
-                        className="mx-auto w-40 h-40 rounded-full flex items-center border-4 border-gray-200 hover:scale-110 hover:shadow-lg transition hover:cursor-pointer"
-                        role="button"
-                        style={{
-                          background: `conic-gradient(${previouslyStudiedColor} ${
-                            (subSection.totalPercentComplete ?? 0) * 100
-                          }%, transparent 0%)`,
-                        }}
-                      >
-                        <div
-                          className="w-full h-full flex items-center rounded-full p-2"
-                          style={{
-                            background: `conic-gradient(${currentlyStudiedColor} ${
-                              (subSection.percentComplete ?? 0) * 100
-                            }%, transparent 0%)`,
-                          }}
-                        >
-                          <div className="flex items-center rounded-full h-full w-full bg-gray-100 border-4 border-gray-200">
-                            <p className="mx-auto">{subSection.title}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </Popover>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+              Add Section
+            </Button>
+            <Modal
+              open={createMainSectionModalOpen}
+              close={() => setCreateMainSectionModalOpen(false)}
+            >
+              <h2 className="text-2xl font-bold text-center mb-3">
+                Add Section
+              </h2>
+              <AsyncForm
+                onSubmit={handleCreateMainSection}
+                buttonProps={{ block: true, children: "Add Section" }}
+              >
+                <TextInput
+                  label="Section Title"
+                  className="mb-3"
+                  name="mainSectionTitle"
+                  required
+                />
+              </AsyncForm>
+            </Modal>
+          </div>
         </div>
-      </div>
+      )}
+      {!authorized && (
+        <div className="mt-28 text-center">
+          <p>You are not authorized to view this course</p>
+        </div>
+      )}
     </>
   );
 }

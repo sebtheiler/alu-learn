@@ -137,4 +137,24 @@ model Course {
 
   users  User[] @relation("CourseUsers")
   owners User[] @relation("CourseOwners")
+
+  mainSections MainSection[]
+}
+
+model MainSection {
+  id    String @id @default(cuid())
+  title String
+
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+
+  subSections SubSection[]
+}
+
+model SubSection {
+  id    String @id @default(cuid())
+  title String
+
+  mainSection   MainSection @relation(fields: [mainSectionId], references: [id], onDelete: Cascade)
+  mainSectionId String
 }

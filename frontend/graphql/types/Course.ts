@@ -14,7 +14,7 @@ const Course = objectType({
           where: {
             courses: {
               some: {
-                id: course.id as string,
+                id: course.id ?? "",
               },
             },
           },
@@ -28,9 +28,19 @@ const Course = objectType({
           where: {
             coursesOwned: {
               some: {
-                id: course.id as string,
+                id: course.id ?? "",
               },
             },
+          },
+        });
+      },
+    });
+    t.field("mainSections", {
+      type: list("MainSection"),
+      resolve(course, _args, ctx) {
+        return ctx.prisma.mainSection.findMany({
+          where: {
+            courseId: course.id ?? "",
           },
         });
       },
@@ -78,7 +88,7 @@ export const CoursesMutation = extendType({
 
         return ctx.prisma.course.create({
           data: {
-            title: args.title as string,
+            title: args.title ?? "",
 
             // The current user is a user and an owner of the new course
             users: {

@@ -4,6 +4,7 @@
 
 type Course {
   id: String
+  mainSections: [MainSection]
   owners: [User]
   title: String
   users: [User]
@@ -22,9 +23,17 @@ enum JoinReason {
   TEACHER
 }
 
+type MainSection {
+  id: String
+  subSections: [SubSection]
+  title: String
+}
+
 type Mutation {
   createCourse(title: String!): Course
+  createMainSection(courseId: String!, title: String!): MainSection
   createNewUserSurveyResponse(deckChoice: DeckChoice!, joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumCards: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse
+  createSubSection(courseId: String!, mainSectionId: String!, title: String!): SubSection
   updateUser(name: String, sendMarketingResearch: Boolean, sendReminders: Boolean, targetNumCards: Int, timezoneOffset: Int, userType: UserType): User
 }
 
@@ -63,6 +72,11 @@ enum Role {
   ADMIN
   STAFF
   USER
+}
+
+type SubSection {
+  id: String
+  title: String
 }
 
 type User {

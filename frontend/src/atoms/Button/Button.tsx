@@ -8,7 +8,7 @@ export interface ButtonProps {
   /**
    * Children of the button
    */
-  children: React.ReactNode;
+  children?: React.ReactNode;
   /**
    * Colorscheme variant of the button
    */
@@ -41,6 +41,10 @@ export interface ButtonProps {
    * Type of the button
    */
   type?: "button" | "submit" | "reset";
+  /**
+   * Apply extra styling to the button
+   */
+  style?: React.CSSProperties;
   /**
    * Spin the icon
    */
@@ -118,6 +122,7 @@ export default function Button({
   ripples = true,
   faIcon,
   type = "button",
+  style,
   _spin = false,
   _unroundRight = false,
   _unroundLeft = false,
@@ -125,21 +130,30 @@ export default function Button({
   const generatedClassName = useMemo(
     () =>
       generateButtonClassName({
-        className,
         variant,
         pill,
         block,
         _unroundRight,
         _unroundLeft,
+        className,
       }),
     [className, variant, pill, block, _unroundRight, _unroundLeft]
   );
 
   return (
-    <button className={generatedClassName} onClick={onClick} type={type}>
+    <button
+      className={generatedClassName}
+      onClick={onClick}
+      type={type}
+      style={style}
+    >
       {ripples && <Ripple color={buttonVariantsLookup[variant].rippleColor} />}
       {faIcon && (
-        <FontAwesomeIcon icon={faIcon} className="mr-1" spin={_spin} />
+        <FontAwesomeIcon
+          icon={faIcon}
+          className={children ? "mr-1" : ""}
+          spin={_spin}
+        />
       )}
       {children}
     </button>

@@ -22,6 +22,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       },
     },
+    select: {
+      id: true,
+      title: true,
+    },
   });
 
   return {

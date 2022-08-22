@@ -33,7 +33,7 @@ export default function CreateAddCourseModal({ open, close }) {
 
       <div className="flex items-center mt-4 mb-3">
         <div className="flex-grow bg bg-gray-300 h-0.5"></div>
-        <div className="flex-grow-0 mx-5 text dark:text-white">or</div>
+        <div className="flex-grow-0 mx-5 text">or</div>
         <div className="flex-grow bg bg-gray-300 h-0.5"></div>
       </div>
 

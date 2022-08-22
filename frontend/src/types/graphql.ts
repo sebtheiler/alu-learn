@@ -23,6 +23,7 @@ export type Scalars = {
 export type Course = {
   __typename?: "Course";
   id?: Maybe<Scalars["String"]>;
+  mainSections?: Maybe<Array<Maybe<MainSection>>>;
   owners?: Maybe<Array<Maybe<User>>>;
   title?: Maybe<Scalars["String"]>;
   users?: Maybe<Array<Maybe<User>>>;
@@ -41,14 +42,28 @@ export enum JoinReason {
   Teacher = "TEACHER",
 }
 
+export type MainSection = {
+  __typename?: "MainSection";
+  id?: Maybe<Scalars["String"]>;
+  subSections?: Maybe<Array<Maybe<SubSection>>>;
+  title?: Maybe<Scalars["String"]>;
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   createCourse?: Maybe<Course>;
+  createMainSection?: Maybe<MainSection>;
   createNewUserSurveyResponse?: Maybe<NewUserSurveyResponse>;
+  createSubSection?: Maybe<SubSection>;
   updateUser?: Maybe<User>;
 };
 
 export type MutationCreateCourseArgs = {
+  title: Scalars["String"];
+};
+
+export type MutationCreateMainSectionArgs = {
+  courseId: Scalars["String"];
   title: Scalars["String"];
 };
 
@@ -60,6 +75,12 @@ export type MutationCreateNewUserSurveyResponseArgs = {
   targetNumCards: Scalars["Int"];
   timezoneOffset: Scalars["Int"];
   userType: UserType;
+};
+
+export type MutationCreateSubSectionArgs = {
+  courseId: Scalars["String"];
+  mainSectionId: Scalars["String"];
+  title: Scalars["String"];
 };
 
 export type MutationUpdateUserArgs = {
@@ -109,6 +130,12 @@ export enum Role {
   Staff = "STAFF",
   User = "USER",
 }
+
+export type SubSection = {
+  __typename?: "SubSection";
+  id?: Maybe<Scalars["String"]>;
+  title?: Maybe<Scalars["String"]>;
+};
 
 export type User = {
   __typename?: "User";

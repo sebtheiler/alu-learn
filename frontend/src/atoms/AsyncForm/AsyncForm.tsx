@@ -11,7 +11,7 @@ interface AsyncFormProps {
   /**
    * Function called when the form is submitted
    */
-  onSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void>;
+  onSubmit(event: React.FormEvent<HTMLFormElement>): Promise<any>;
   /**
    * Props to affect the button at the bottom of the form
    */

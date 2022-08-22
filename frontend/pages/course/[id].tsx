@@ -13,15 +13,54 @@ export default Course;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { session, streak } = await getSessionAndStreak(context);
   const { id } = context.query;
-  const course = await prisma.course.findUnique({
+
+  let course = await prisma.course.findUnique({
     where: {
       id: id as string,
     },
+    select: {
+      id: true,
+      title: true,
+      imageBanner: true,
+      mainSections: {
+        select: {
+          id: true,
+          title: true,
+          subSections: {
+            select: {
+              id: true,
+              title: true,
+            },
+          },
+        },
+      },
+    },
   });
+
+  const isCourseUser =
+    (
+      await prisma.user.findMany({
+        where: {
+          email: session?.user?.email ?? null,
+          courses: {
+            some: {
+              id: course?.id ?? "",
+            },
+          },
+        },
+      })
+    ).length > 0;
+
+  let authorized = true;
+  if (!isCourseUser) {
+    course = null;
+    authorized = false;
+  }
 
   return {
     props: {
-      course: course,
+      course,
+      authorized,
       session,
       streak,
     } as CoursePageProps,

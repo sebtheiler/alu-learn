@@ -11,9 +11,9 @@ const getUserSSR = async (
   session: Session | null,
   select: Prisma.UserSelect = {}
 ): Promise<Partial<User> | null> => {
-  if (process.env.NODE_ENV === "development" && !session) {
-    return prisma.user.findFirst();
-  }
+  // if (process.env.NODE_ENV === "development" && !session) {
+  //   return prisma.user.findFirst();
+  // }
 
   if (!session) return null;
 
