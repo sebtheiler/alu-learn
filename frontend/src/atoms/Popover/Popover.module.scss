@@ -1,0 +1,35 @@
+.popoverArrow,
+.popoverArrow::before {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: inherit;
+  z-index: -1;
+}
+
+.popoverArrow {
+  visibility: hidden;
+}
+
+.popoverArrow::before {
+  visibility: visible;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.popover[data-popper-placement^="top"] > .popoverArrow {
+  bottom: -4px;
+}
+
+.popover[data-popper-placement^="bottom"] > .popoverArrow {
+  top: -4px;
+  transform: translateY(-4px);
+}
+
+.popover[data-popper-placement^="left"] > .popoverArrow {
+  right: -4px;
+}
+
+.popover[data-popper-placement^="right"] > .popoverArrow {
+  left: -4px;
+}

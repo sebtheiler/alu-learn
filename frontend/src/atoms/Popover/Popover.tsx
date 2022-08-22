@@ -1,3 +1,4 @@
+import styles from "./Popover.module.scss";
 import { Transition } from "@headlessui/react";
 import type { Placement } from "@popperjs/core";
 import classNames from "helpers/classNames";
@@ -26,6 +27,10 @@ interface PopoverProps {
    * What mouse action triggers the popover
    */
   trigger?: "hover" | "click";
+  /**
+   * Display an arrow connecting the popover to its children?
+   */
+  arrow?: boolean;
 }
 
 /**
@@ -38,18 +43,26 @@ export default function Popover({
   className,
   placement = "top",
   trigger = "hover",
+  arrow,
 }: PopoverProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const [refEl, setRefEl] = useState<HTMLElement>();
   const [popEl, setPopEl] = useState<HTMLElement>();
-  const { styles, attributes } = usePopper(refEl, popEl, {
+  const [arrowEl, setArrowEl] = useState<HTMLElement>();
+  const { styles: popperStyles, attributes } = usePopper(refEl, popEl, {
     placement: placement,
     modifiers: [
       {
         name: "offset",
         options: {
           offset: [0, 8],
+        },
+      },
+      {
+        name: "arrow",
+        options: {
+          element: arrowEl,
         },
       },
     ],
@@ -88,20 +101,28 @@ export default function Popover({
         leave="ease-in duration-200"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-        className="absolute"
+        className="absolute z-50"
       >
         <div
           ref={setPopEl}
           className={classNames(
-            "z-50 w-64 rounded-xl border-4 border-alu-mid-gray bg-alu-light-gray px-4 py-3",
+            "w-64 rounded-xl border-4 bg-alu-light-gray px-4 py-3",
+            styles.popover,
             className
           )}
           // Popper style, attributes, and trigger attributes
-          style={styles.popper}
+          style={popperStyles.popper}
           {...triggetAttrs}
           {...attributes.popper}
         >
           {popover}
+          {arrow && (
+            <div
+              ref={setArrowEl}
+              style={popperStyles.arrow}
+              className={styles.popoverArrow}
+            />
+          )}
         </div>
       </Transition>
     </div>

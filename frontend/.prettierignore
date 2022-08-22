@@ -4,3 +4,4 @@ coverage
 .next
 node_modules
 storybook-static
+schema.graphql

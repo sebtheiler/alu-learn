@@ -2,3 +2,4 @@
 *.cjs
 dist
 !.storybook
+src/types/graphql.ts

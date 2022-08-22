@@ -40,3 +40,16 @@ OnClick.args = {
   trigger: "click",
   className: "w-32",
 };
+
+export const WithArrow = Template.bind({});
+WithArrow.args = {
+  popover: (
+    <div>
+      <p className="mb-3">All sorts of stuff</p>
+      <Button block>wasd</Button>
+    </div>
+  ),
+  trigger: "hover",
+  arrow: true,
+  className: "w-32",
+};

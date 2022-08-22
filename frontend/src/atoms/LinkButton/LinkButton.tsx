@@ -21,7 +21,8 @@ export default function LinkButton(props: LinkButtonProps) {
     () =>
       classNames(
         generateButtonClassName(props),
-        "text-white no-underline hover:no-underline"
+        "text-white no-underline hover:no-underline text-center",
+        props.block && "block"
       ),
     [props]
   );
