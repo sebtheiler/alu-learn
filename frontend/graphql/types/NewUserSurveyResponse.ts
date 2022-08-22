@@ -34,6 +34,8 @@ export const NewUserSurveyResponseMutation = extendType({
   definition(t) {
     t.field("createNewUserSurveyResponse", {
       type: NewUserSurveyResponse,
+      description:
+        "Creates a new NewUserSurveyResponse from a set of responses",
       args: {
         timezoneOffset: nonNull(intArg()),
         userType: nonNull(arg({ type: "UserType" })),

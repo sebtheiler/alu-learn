@@ -25,6 +25,8 @@ export const MainSectionMutation = extendType({
   definition(t) {
     t.field("createMainSection", {
       type: MainSection,
+      description:
+        "Creates a new main section and populates it with a default subsection",
       args: {
         title: nonNull(stringArg()),
         courseId: nonNull(stringArg()),
@@ -33,16 +35,21 @@ export const MainSectionMutation = extendType({
         const user = await getUserGQL(ctx);
         if (!user || !isCourseOwner(args.courseId, ctx)) return null;
 
-        return ctx.prisma.mainSection.create({
+        const mainSection = await ctx.prisma.mainSection.create({
           data: {
             title: args.title as string,
-            course: {
-              connect: {
-                id: args.courseId as string,
-              },
-            },
+            courseId: args.courseId as string,
           },
         });
+
+        await ctx.prisma.subSection.create({
+          data: {
+            title: "Default",
+            mainSectionId: mainSection.id,
+          },
+        });
+
+        return mainSection;
       },
     });
   },

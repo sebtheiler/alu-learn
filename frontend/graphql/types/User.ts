@@ -20,6 +20,7 @@ const User = objectType({
     t.string("email");
     t.field("newUserSurveyResponse", {
       type: "NewUserSurveyResponse",
+      description: "The user's response to the survey launched on sign-up",
       resolve(user, _args, ctx) {
         return ctx.prisma.newUserSurveyResponse.findUnique({
           where: {
@@ -47,6 +48,7 @@ export const UsersQuery = extendType({
   definition(t) {
     t.list.field("users", {
       type: User,
+      description: "List all users",
       async resolve(_parent, _args, ctx) {
         if (!(await isAdmin(ctx))) return null;
 
@@ -55,6 +57,7 @@ export const UsersQuery = extendType({
     });
     t.field("me", {
       type: "User",
+      description: "Get information on the current user",
       resolve(_parent, _args, ctx) {
         return getUserGQL(ctx);
       },
@@ -67,6 +70,7 @@ export const UsersMutation = extendType({
   definition(t) {
     t.field("updateUser", {
       type: "User",
+      description: "Change the user's settings",
       args: {
         name: stringArg(),
         timezoneOffset: intArg(),

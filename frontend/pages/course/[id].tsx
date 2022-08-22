@@ -38,18 +38,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   });
 
   const isCourseUser =
-    (
-      await prisma.user.findMany({
-        where: {
-          email: session?.user?.email ?? null,
-          courses: {
-            some: {
-              id: course?.id ?? "",
-            },
+    (await prisma.user.count({
+      where: {
+        email: session?.user?.email ?? null,
+        courses: {
+          some: {
+            id: course?.id ?? "",
           },
         },
-      })
-    ).length > 0;
+      },
+    })) > 0;
 
   let authorized = true;
   if (!isCourseUser) {

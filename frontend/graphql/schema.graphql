@@ -5,8 +5,12 @@
 type Course {
   id: String
   mainSections: [MainSection]
+
+  """Users who have full privileges on this course"""
   owners: [User]
   title: String
+
+  """Users who have studying or teaching this course"""
   users: [User]
 }
 
@@ -30,7 +34,13 @@ type MainSection {
 }
 
 type Mutation {
-  createCourse(title: String!): Course
+  """Creates a course and populates it with an initial main and sub section"""
+  createCourse(
+    """Title of the course to create"""
+    title: String!
+  ): Course
+
+  """Creates a new main section and populates it with a default subsection"""
   createMainSection(courseId: String!, title: String!): MainSection
   createNewUserSurveyResponse(deckChoice: DeckChoice!, joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumCards: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse
   createSubSection(courseId: String!, mainSectionId: String!, title: String!): SubSection
@@ -51,8 +61,11 @@ type NewUserSurveyResponse {
 }
 
 type Query {
+  """Gets all available courses"""
   courses: [Course]
   me: User
+
+  """Get the current user's courses"""
   myCourses: [Course]
   users: [User]
 }

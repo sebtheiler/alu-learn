@@ -25,6 +25,7 @@ export const SubSectionMutation = extendType({
   definition(t) {
     t.field("createSubSection", {
       type: SubSection,
+      description: "Creates a new sub section",
       args: {
         title: nonNull(stringArg()),
         mainSectionId: nonNull(stringArg()),

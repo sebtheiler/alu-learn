@@ -9,6 +9,7 @@ const Course = objectType({
     // t.string("imageBanner");
     t.field("users", {
       type: list("User"),
+      description: "Users who have studying or teaching this course",
       resolve(course, _args, ctx) {
         return ctx.prisma.user.findMany({
           where: {
@@ -23,6 +24,7 @@ const Course = objectType({
     });
     t.field("owners", {
       type: list("User"),
+      description: "Users who have full privileges on this course",
       resolve(course, _args, ctx) {
         return ctx.prisma.user.findMany({
           where: {
@@ -53,12 +55,14 @@ export const CoursesQuery = extendType({
   definition(t) {
     t.list.field("courses", {
       type: Course,
+      description: "Gets all available courses",
       async resolve(_parent, _args, ctx) {
         return ctx.prisma.course.findMany();
       },
     });
     t.list.field("myCourses", {
       type: Course,
+      description: "Get the current user's courses",
       resolve(_parent, _args, ctx) {
         return ctx.prisma.course.findMany({
           where: {
@@ -79,14 +83,18 @@ export const CoursesMutation = extendType({
   definition(t) {
     t.field("createCourse", {
       type: "Course",
+      description:
+        "Creates a course and populates it with an initial main and sub section",
       args: {
-        title: nonNull(stringArg()),
+        title: nonNull(
+          stringArg({ description: "Title of the course to create" })
+        ),
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
         if (!user) return null;
 
-        return ctx.prisma.course.create({
+        const course = await ctx.prisma.course.create({
           data: {
             title: args.title ?? "",
 
@@ -103,6 +111,23 @@ export const CoursesMutation = extendType({
             },
           },
         });
+
+        // Populate the course with a default main and subsection
+        const mainSection = await ctx.prisma.mainSection.create({
+          data: {
+            title: "Default",
+            courseId: course.id,
+          },
+        });
+
+        await ctx.prisma.subSection.create({
+          data: {
+            title: "Default",
+            mainSectionId: mainSection.id,
+          },
+        });
+
+        return course;
       },
     });
   },
