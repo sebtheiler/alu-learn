@@ -1,11 +1,11 @@
 import type { Context } from "../../context";
 import isCourseOwner from "./isCourseOwner";
 
-const isMainSectionOwner = async (mainSectionId: string, ctx: Context) => {
+const isCourseSectionOwner = async (courseSectionId: string, ctx: Context) => {
   const { courseId } =
-    (await ctx.prisma.mainSection.findUnique({
+    (await ctx.prisma.courseSection.findUnique({
       where: {
-        id: mainSectionId ?? null,
+        id: courseSectionId ?? null,
       },
       select: {
         courseId: true,
@@ -15,4 +15,4 @@ const isMainSectionOwner = async (mainSectionId: string, ctx: Context) => {
   return courseId && isCourseOwner(courseId, ctx);
 };
 
-export default isMainSectionOwner;
+export default isCourseSectionOwner;

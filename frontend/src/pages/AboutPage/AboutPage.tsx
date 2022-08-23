@@ -141,7 +141,7 @@ export default function AboutPage() {
             </p>
             <p>
               Alu builds off of this structure with <em>skill trees.</em> Skill
-              trees are organized into main sections and sub sections, giving
+              trees are organized into course sections and sub sections, giving
               you a greater level of control over how your flashcards are
               organized. You can review each section individually, or study the
               deck as a whole, all powered by spaced repetition.

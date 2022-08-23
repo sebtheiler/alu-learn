@@ -7,56 +7,57 @@ import ButtonGroup from "atoms/ButtonGroup";
 import Modal from "atoms/Modal";
 import TextInput from "atoms/TextInput";
 import IconTooltip from "components/IconTooltip";
-import DeleteMainSection from "graphql/DeleteMainSection";
-import UpdateMainSection from "graphql/UpdateMainSection";
+import DeleteCourseSection from "graphql/DeleteCourseSection";
+import UpdateCourseSection from "graphql/UpdateCourseSection";
 import { getElementsVals } from "helpers/getElementsVals";
 import CoursePageContext from "pages/CoursePage/context";
 import React, { useContext, useState } from "react";
-import type { MainSection } from "types";
+import type { CourseSection } from "types";
 
-interface MainSectionSettingsProps {
-  mainSection: MainSection;
+interface CourseSectionSettingsProps {
+  courseSection: CourseSection;
 }
 
-export default function MainSectionSettings({
-  mainSection,
-}: MainSectionSettingsProps) {
+export default function CourseSectionSettings({
+  courseSection,
+}: CourseSectionSettingsProps) {
   const { refreshData } = useContext(CoursePageContext);
-  const [updateMainSection] = useMutation(UpdateMainSection);
-  const [deleteMainSection] = useMutation(DeleteMainSection);
-  const [mainSectionSettingsModalOpen, setMainSectionSettingsModalOpen] =
+  const [updateCourseSection] = useMutation(UpdateCourseSection);
+  const [deleteCourseSection] = useMutation(DeleteCourseSection);
+  const [courseSectionSettingsModalOpen, setCourseSectionSettingsModalOpen] =
     useState(false);
 
-  const handleUpdateMainSection = async (
+  const handleUpdateCourseSection = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
-    const { mainSectionTitle } = getElementsVals(e.target as HTMLFormElement, [
-      "mainSectionTitle",
-    ]);
+    const { courseSectionTitle } = getElementsVals(
+      e.target as HTMLFormElement,
+      ["courseSectionTitle"]
+    );
 
-    await updateMainSection({
+    await updateCourseSection({
       variables: {
-        title: mainSectionTitle,
-        mainSectionId: mainSection.id,
+        title: courseSectionTitle,
+        courseSectionId: courseSection.id,
       },
     });
 
     refreshData && refreshData();
-    setMainSectionSettingsModalOpen(false);
+    setCourseSectionSettingsModalOpen(false);
   };
 
-  const handleDeleteMainSection = async () => {
+  const handleDeleteCourseSection = async () => {
     if (!window.confirm("Are you sure you want to remove this section?"))
       return;
 
-    await deleteMainSection({
+    await deleteCourseSection({
       variables: {
-        mainSectionId: mainSection.id,
+        courseSectionId: courseSection.id,
       },
     });
 
     refreshData && refreshData();
-    setMainSectionSettingsModalOpen(false);
+    setCourseSectionSettingsModalOpen(false);
   };
 
   return (
@@ -64,7 +65,7 @@ export default function MainSectionSettings({
       <div className="absolute -translate-x-3 -translate-y-10">
         <IconTooltip
           faIcon={faGear}
-          onClick={() => setMainSectionSettingsModalOpen(true)}
+          onClick={() => setCourseSectionSettingsModalOpen(true)}
           size="lg"
           tooltip="Section Settings"
           tooltipProps={{ className: "w-32" }}
@@ -72,20 +73,20 @@ export default function MainSectionSettings({
         />
       </div>
       <Modal
-        open={mainSectionSettingsModalOpen}
-        close={() => setMainSectionSettingsModalOpen(false)}
+        open={courseSectionSettingsModalOpen}
+        close={() => setCourseSectionSettingsModalOpen(false)}
       >
         <h2 className="text-2xl font-bold text-center mb-3">
           Section Settings
         </h2>
         <AsyncForm
-          onSubmit={handleUpdateMainSection}
+          onSubmit={handleUpdateCourseSection}
           buttonProps={{ children: "Save", className: "float-right" }}
         >
           <TextInput
             label="Section Title"
-            name="mainSectionTitle"
-            defaultValue={mainSection.title as string}
+            name="courseSectionTitle"
+            defaultValue={courseSection.title as string}
             required
           />
           <hr className="my-3" />
@@ -93,14 +94,14 @@ export default function MainSectionSettings({
             <AsyncButton
               variant="danger"
               className="w-28"
-              onClick={handleDeleteMainSection}
+              onClick={handleDeleteCourseSection}
             >
               Remove
             </AsyncButton>
             <Button
               variant="secondary"
               className="w-28"
-              onClick={() => setMainSectionSettingsModalOpen(false)}
+              onClick={() => setCourseSectionSettingsModalOpen(false)}
             >
               Close
             </Button>

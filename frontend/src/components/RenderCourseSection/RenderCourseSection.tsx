@@ -1,4 +1,4 @@
-import MainSectionSettings from "./MainSectionSettings";
+import CourseSectionSettings from "./CourseSectionSettings";
 import { useMutation } from "@apollo/client";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import AsyncForm from "atoms/AsyncForm";
@@ -16,22 +16,22 @@ import { getElementsVals } from "helpers/getElementsVals";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import CoursePageContext from "pages/CoursePage/context";
 import { useContext, useState } from "react";
-import type { MainSection, SubSection } from "types";
+import type { CourseSection, SubSection } from "types";
 
-interface RenderMainSectionProps {
+interface RenderCourseSectionProps {
   /**
-   * Main section to render
+   * Course section to render
    */
-  mainSection: MainSection;
+  courseSection: CourseSection;
 }
 
 /**
- * Renders a main section for use in displaying a course.
+ * Renders a course section for use in displaying a course.
  * Needs to have `course` and `refreshData` in the `CoursePageContext` provider.
  */
-export default function RenderMainSection({
-  mainSection,
-}: RenderMainSectionProps) {
+export default function RenderCourseSection({
+  courseSection,
+}: RenderCourseSectionProps) {
   const { course, refreshData } = useContext(CoursePageContext);
   const [createSubSectionModalOpen, setCreateSubSectionModalOpen] =
     useState(false);
@@ -47,7 +47,7 @@ export default function RenderMainSection({
     await createSubSection({
       variables: {
         title: subSectionTitle,
-        mainSectionId: mainSection.id,
+        courseSectionId: courseSection.id,
         courseId: course?.id,
       },
     });
@@ -63,10 +63,10 @@ export default function RenderMainSection({
       <div className="flex items-center mt-4 mb-3">
         <div className="flex-grow bg bg-gray-300 h-0.5"></div>
         <div className="flex-grow-0 mx-5 text font-bold text-center text-3xl">
-          {mainSection?.title?.toUpperCase()}
+          {courseSection?.title?.toUpperCase()}
         </div>
         <div className="flex-grow bg bg-gray-300 h-0.5"></div>
-        <MainSectionSettings mainSection={mainSection} />
+        <CourseSectionSettings courseSection={courseSection} />
       </div>
       <ButtonGroup
         className="text-center"
@@ -76,14 +76,14 @@ export default function RenderMainSection({
       >
         <LinkButton
           href={`/course/${course?.id}/learn/${cleanTitle(
-            mainSection.title as string
+            courseSection.title as string
           )}`}
         >
           Learn Content
         </LinkButton>
         <LinkButton
           href={`/course/${course?.id}/flashcards/${cleanTitle(
-            mainSection.title as string
+            courseSection.title as string
           )}`}
         >
           Flashcards
@@ -94,13 +94,13 @@ export default function RenderMainSection({
               {
                 text: "Games",
                 href: `/course/${course?.id}/games/${cleanTitle(
-                  mainSection.title as string
+                  courseSection.title as string
                 )}`,
               },
               {
                 text: "Practice Problems",
                 href: `/course/${course?.id}/practice/${cleanTitle(
-                  mainSection.title as string
+                  courseSection.title as string
                 )}`,
               },
             ]}
@@ -110,15 +110,15 @@ export default function RenderMainSection({
         </Button>
       </ButtonGroup>
       <div className="flex flex-wrap px-10 py-5">
-        {mainSection?.subSections?.map((subSection) => (
+        {courseSection?.subSections?.map((subSection) => (
           <RenderSubSection
             subSection={subSection as SubSection}
-            mainSection={mainSection}
+            courseSection={courseSection}
             key={subSection?.id}
           />
         ))}
       </div>
-      {mainSection.subSections?.length === 0 && (
+      {courseSection.subSections?.length === 0 && (
         <p className="text-center mb-4">
           This section doesn&apos;t have any sub-sections yet. Create one with
           the &quot;+&quot; icon!

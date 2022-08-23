@@ -11,10 +11,10 @@ const SubSection = objectType({
     t.string("title");
     // t.field("flashcards", {
     //   type: list("User"),
-    //   resolve(mainSection, _args, ctx) {
+    //   resolve(courseSection, _args, ctx) {
     //     return ctx.prisma.subSection.findMany({
     //       where: {
-    //         mainSectionId: mainSection.id as string,
+    //         courseSectionId: courseSection.id as string,
     //       },
     //     });
     //   },
@@ -30,7 +30,7 @@ export const SubSectionMutation = extendType({
       description: "Creates a new sub section",
       args: {
         title: nonNull(stringArg()),
-        mainSectionId: nonNull(stringArg()),
+        courseSectionId: nonNull(stringArg()),
         courseId: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
@@ -40,9 +40,9 @@ export const SubSectionMutation = extendType({
         return ctx.prisma.subSection.create({
           data: {
             title: args.title as string,
-            mainSection: {
+            courseSection: {
               connect: {
-                id: args.mainSectionId as string,
+                id: args.courseSectionId as string,
               },
             },
           },

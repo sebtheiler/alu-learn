@@ -1,8 +1,8 @@
-import RenderMainSection from ".";
+import RenderCourseSection from ".";
 import { ComponentStory } from "@storybook/react";
 import withFullContext from "helpers/withFullContext";
 
-const mainSection = {
+const courseSection = {
   id: "cl74urv9300087ai0udubgndr",
   title: "Hello",
   subSections: [
@@ -22,16 +22,16 @@ const mainSection = {
 };
 
 export default {
-  title: "Components/RenderMainSection",
-  component: RenderMainSection,
+  title: "Components/RenderCourseSection",
+  component: RenderCourseSection,
   decorators: [withFullContext],
 };
 
-const Template: ComponentStory<typeof RenderMainSection> = (args) => (
-  <RenderMainSection {...args} />
+const Template: ComponentStory<typeof RenderCourseSection> = (args) => (
+  <RenderCourseSection {...args} />
 );
 
-export const RenderMainSectionExample = Template.bind({});
-RenderMainSectionExample.args = {
-  mainSection: mainSection,
+export const RenderCourseSectionExample = Template.bind({});
+RenderCourseSectionExample.args = {
+  courseSection: courseSection,
 };

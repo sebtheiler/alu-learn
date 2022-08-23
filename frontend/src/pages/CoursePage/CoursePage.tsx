@@ -1,14 +1,14 @@
 import CourseSettings from "./CourseSettings";
-import CreateMainSectionButton from "./CreateMainSectionButton";
+import CreateCourseSectionButton from "./CreateCourseSectionButton";
 import CoursePageContext from "./context";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import RenderMainSection from "components/RenderMainSection";
+import RenderCourseSection from "components/RenderCourseSection";
 import SEO from "helpers/SEO";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
-import type { Course, MainSection } from "types";
+import type { Course, CourseSection } from "types";
 
 export interface CoursePageProps {
   /**
@@ -22,7 +22,7 @@ export interface CoursePageProps {
 }
 
 /**
- * Renders the page for a course, with all of its main sections and sub sections
+ * Renders the page for a course, with all of its course sections and sub sections
  */
 export default function CoursePage({ course, authorized }: CoursePageProps) {
   const router = useRouter();
@@ -55,23 +55,23 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
           </div>
           <div className="md:container mx-auto px-4 mt-6">
             <CoursePageContext.Provider value={{ course, refreshData }}>
-              {course?.mainSections?.map((mainSection) => (
-                <RenderMainSection
-                  mainSection={mainSection as MainSection}
-                  key={mainSection?.id as string}
+              {course?.courseSections?.map((courseSection) => (
+                <RenderCourseSection
+                  courseSection={courseSection as CourseSection}
+                  key={courseSection?.id as string}
                 />
               ))}
             </CoursePageContext.Provider>
           </div>
           <div className="text-center">
             <p className="text-white">.</p>
-            {course.mainSections?.length === 0 && (
+            {course.courseSections?.length === 0 && (
               <p className="mb-3 mx-auto">
                 This course doesn&apos;t have any sections yet. Add one below to
                 start organizing the course!
               </p>
             )}
-            <CreateMainSectionButton
+            <CreateCourseSectionButton
               course={course}
               refreshData={refreshData}
             />

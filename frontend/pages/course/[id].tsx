@@ -22,7 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       id: true,
       title: true,
       imageBanner: true,
-      mainSections: {
+      courseSections: {
         select: {
           id: true,
           title: true,

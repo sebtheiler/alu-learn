@@ -4,65 +4,66 @@ import AsyncForm from "atoms/AsyncForm";
 import Button from "atoms/Button";
 import Modal from "atoms/Modal";
 import TextInput from "atoms/TextInput";
-import CreateMainSection from "graphql/CreateMainSection";
+import CreateCourseSection from "graphql/CreateCourseSection";
 import { getElementsVals } from "helpers/getElementsVals";
 import { useState } from "react";
 import type { Course } from "types";
 
-interface CreateMainSectionButtonProps {
+interface CreateCourseSectionButtonProps {
   course: Course;
   refreshData(): void;
 }
 
-export default function CreateMainSectionButton({
+export default function CreateCourseSectionButton({
   course,
   refreshData,
-}: CreateMainSectionButtonProps) {
-  const [createMainSection] = useMutation(CreateMainSection);
+}: CreateCourseSectionButtonProps) {
+  const [createCourseSection] = useMutation(CreateCourseSection);
 
-  const [createMainSectionModalOpen, setCreateMainSectionModalOpen] =
+  const [createCourseSectionModalOpen, setCreateCourseSectionModalOpen] =
     useState(false);
 
-  const handleCreateMainSection = async (
+  const handleCreateCourseSection = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
-    const { mainSectionTitle } = getElementsVals(e.target as HTMLFormElement, [
-      "mainSectionTitle",
-    ]);
+    const { courseSectionTitle } = getElementsVals(
+      e.target as HTMLFormElement,
+      ["courseSectionTitle"]
+    );
 
-    await createMainSection({
+    await createCourseSection({
       variables: {
-        title: mainSectionTitle,
+        title: courseSectionTitle,
         courseId: course.id,
       },
     });
 
     refreshData();
-    setCreateMainSectionModalOpen(false);
+    setCreateCourseSectionModalOpen(false);
   };
 
   return (
     <>
       <Button
-        onClick={() => setCreateMainSectionModalOpen(true)}
+        onClick={() => setCreateCourseSectionModalOpen(true)}
         faIcon={faPlus}
         className="mb-3"
       >
         Add Section
       </Button>
       <Modal
-        open={createMainSectionModalOpen}
-        close={() => setCreateMainSectionModalOpen(false)}
+        open={createCourseSectionModalOpen}
+        close={() => setCreateCourseSectionModalOpen(false)}
       >
         <h2 className="text-2xl font-bold text-center mb-3">Add Section</h2>
         <AsyncForm
-          onSubmit={handleCreateMainSection}
+          onSubmit={handleCreateCourseSection}
           buttonProps={{ block: true, children: "Add Section" }}
         >
           <TextInput
             label="Section Title"
             className="mb-3"
-            name="mainSectionTitle"
+            name="courseSectionTitle"
             required
           />
         </AsyncForm>

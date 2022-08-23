@@ -1,18 +1,18 @@
 import type { Context } from "../../context";
-import isMainSectionOwner from "./isMainSectionOwner";
+import isCourseSectionOwner from "./isCourseSectionOwner";
 
 const isSubSectionOwner = async (subSectionId: string, ctx: Context) => {
-  const { mainSectionId } =
+  const { courseSectionId } =
     (await ctx.prisma.subSection.findUnique({
       where: {
         id: subSectionId ?? null,
       },
       select: {
-        mainSectionId: true,
+        courseSectionId: true,
       },
     })) ?? {};
 
-  return mainSectionId && isMainSectionOwner(mainSectionId, ctx);
+  return courseSectionId && isCourseSectionOwner(courseSectionId, ctx);
 };
 
 export default isSubSectionOwner;

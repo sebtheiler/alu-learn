@@ -39,10 +39,10 @@ const Course = objectType({
         });
       },
     });
-    t.field("mainSections", {
-      type: list("MainSection"),
+    t.field("courseSections", {
+      type: list("CourseSection"),
       resolve(course, _args, ctx) {
-        return ctx.prisma.mainSection.findMany({
+        return ctx.prisma.courseSection.findMany({
           where: {
             courseId: course.id ?? "",
           },
@@ -115,7 +115,7 @@ export const CoursesMutation = extendType({
         });
 
         // Populate the course with a default main and subsection
-        const mainSection = await ctx.prisma.mainSection.create({
+        const courseSection = await ctx.prisma.courseSection.create({
           data: {
             title: "Default",
             courseId: course.id,
@@ -125,7 +125,7 @@ export const CoursesMutation = extendType({
         await ctx.prisma.subSection.create({
           data: {
             title: "Default",
-            mainSectionId: mainSection.id,
+            courseSectionId: courseSection.id,
           },
         });
 

@@ -138,10 +138,10 @@ model Course {
   users  User[] @relation("CourseUsers")
   owners User[] @relation("CourseOwners")
 
-  mainSections MainSection[]
+  courseSections CourseSection[]
 }
 
-model MainSection {
+model CourseSection {
   id    String @id @default(cuid())
   title String
 
@@ -155,6 +155,6 @@ model SubSection {
   id    String @id @default(cuid())
   title String
 
-  mainSection   MainSection @relation(fields: [mainSectionId], references: [id], onDelete: Cascade)
-  mainSectionId String
+  courseSection   CourseSection @relation(fields: [courseSectionId], references: [id], onDelete: Cascade)
+  courseSectionId String
 }

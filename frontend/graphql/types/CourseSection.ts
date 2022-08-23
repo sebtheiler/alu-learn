@@ -1,20 +1,20 @@
 import getUserGQL from "../../lib/getUserGQL";
 import isCourseOwner from "./helpers/isCourseOwner";
-import isMainSectionOwner from "./helpers/isMainSectionOwner";
+import isCourseSectionOwner from "./helpers/isCourseSectionOwner";
 import { extendType, list, nonNull, objectType, stringArg } from "nexus";
 import type { NonNullableKeys } from "types";
 
-const MainSection = objectType({
-  name: "MainSection",
+const CourseSection = objectType({
+  name: "CourseSection",
   definition(t) {
     t.string("id");
     t.string("title");
     t.field("subSections", {
       type: list("SubSection"),
-      resolve(mainSection, _args, ctx) {
+      resolve(courseSection, _args, ctx) {
         return ctx.prisma.subSection.findMany({
           where: {
-            mainSectionId: mainSection.id ?? "",
+            courseSectionId: courseSection.id ?? "",
           },
         });
       },
@@ -22,13 +22,13 @@ const MainSection = objectType({
   },
 });
 
-export const MainSectionMutation = extendType({
+export const CourseSectionMutation = extendType({
   type: "Mutation",
   definition(t) {
-    t.field("createMainSection", {
-      type: MainSection,
+    t.field("createCourseSection", {
+      type: CourseSection,
       description:
-        "Creates a new main section and populates it with a default subsection",
+        "Creates a new course section and populates it with a default subsection",
       args: {
         title: nonNull(stringArg()),
         courseId: nonNull(stringArg()),
@@ -37,7 +37,7 @@ export const MainSectionMutation = extendType({
         const user = await getUserGQL(ctx);
         if (!user || !isCourseOwner(args.courseId, ctx)) return null;
 
-        const mainSection = await ctx.prisma.mainSection.create({
+        const courseSection = await ctx.prisma.courseSection.create({
           data: {
             title: args.title as string,
             courseId: args.courseId as string,
@@ -47,53 +47,55 @@ export const MainSectionMutation = extendType({
         await ctx.prisma.subSection.create({
           data: {
             title: "Default",
-            mainSectionId: mainSection.id,
+            courseSectionId: courseSection.id,
           },
         });
 
-        return mainSection;
+        return courseSection;
       },
     });
-    t.field("updateMainSection", {
-      type: "MainSection",
-      description: "Change a main section's settings",
+    t.field("updateCourseSection", {
+      type: "CourseSection",
+      description: "Change a course section's settings",
       args: {
         title: stringArg(),
-        mainSectionId: nonNull(
-          stringArg({ description: "ID of the main section to update" })
+        courseSectionId: nonNull(
+          stringArg({ description: "ID of the course section to update" })
         ),
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isMainSectionOwner(args.mainSectionId, ctx)) return null;
+        if (!user || !isCourseSectionOwner(args.courseSectionId, ctx))
+          return null;
 
         const data: Partial<NonNullableKeys<typeof args>> = {};
         if (args.title != null) data.title = args.title;
 
-        return ctx.prisma.mainSection.update({
-          where: { id: args.mainSectionId },
+        return ctx.prisma.courseSection.update({
+          where: { id: args.courseSectionId },
           data: data,
         });
       },
     });
-    t.field("deleteMainSection", {
-      type: "MainSection",
-      description: "Deletes a main section",
+    t.field("deleteCourseSection", {
+      type: "CourseSection",
+      description: "Deletes a course section",
       args: {
-        mainSectionId: nonNull(
-          stringArg({ description: "ID of the main section to delete" })
+        courseSectionId: nonNull(
+          stringArg({ description: "ID of the course section to delete" })
         ),
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isMainSectionOwner(args.mainSectionId, ctx)) return null;
+        if (!user || !isCourseSectionOwner(args.courseSectionId, ctx))
+          return null;
 
-        return ctx.prisma.mainSection.delete({
-          where: { id: args.mainSectionId },
+        return ctx.prisma.courseSection.delete({
+          where: { id: args.courseSectionId },
         });
       },
     });
   },
 });
 
-export default MainSection;
+export default CourseSection;

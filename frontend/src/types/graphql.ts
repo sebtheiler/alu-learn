@@ -23,7 +23,7 @@ export type Scalars = {
 export type Course = {
   __typename?: "Course";
   id?: Maybe<Scalars["String"]>;
-  mainSections?: Maybe<Array<Maybe<MainSection>>>;
+  courseSections?: Maybe<Array<Maybe<CourseSection>>>;
   owners?: Maybe<Array<Maybe<User>>>;
   title?: Maybe<Scalars["String"]>;
   users?: Maybe<Array<Maybe<User>>>;
@@ -42,8 +42,8 @@ export enum JoinReason {
   Teacher = "TEACHER",
 }
 
-export type MainSection = {
-  __typename?: "MainSection";
+export type CourseSection = {
+  __typename?: "CourseSection";
   id?: Maybe<Scalars["String"]>;
   subSections?: Maybe<Array<Maybe<SubSection>>>;
   title?: Maybe<Scalars["String"]>;
@@ -52,7 +52,7 @@ export type MainSection = {
 export type Mutation = {
   __typename?: "Mutation";
   createCourse?: Maybe<Course>;
-  createMainSection?: Maybe<MainSection>;
+  createCourseSection?: Maybe<CourseSection>;
   createNewUserSurveyResponse?: Maybe<NewUserSurveyResponse>;
   createSubSection?: Maybe<SubSection>;
   updateUser?: Maybe<User>;
@@ -62,7 +62,7 @@ export type MutationCreateCourseArgs = {
   title: Scalars["String"];
 };
 
-export type MutationCreateMainSectionArgs = {
+export type MutationCreateCourseSectionArgs = {
   courseId: Scalars["String"];
   title: Scalars["String"];
 };
@@ -79,7 +79,7 @@ export type MutationCreateNewUserSurveyResponseArgs = {
 
 export type MutationCreateSubSectionArgs = {
   courseId: Scalars["String"];
-  mainSectionId: Scalars["String"];
+  courseSectionId: Scalars["String"];
   title: Scalars["String"];
 };
 

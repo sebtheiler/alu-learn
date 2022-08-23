@@ -3,12 +3,12 @@ import { gql } from "@apollo/client";
 const CreateSubSection = gql`
   mutation CreateSubSection(
     $title: String!
-    $mainSectionId: String!
+    $courseSectionId: String!
     $courseId: String!
   ) {
     createSubSection(
       title: $title
-      mainSectionId: $mainSectionId
+      courseSectionId: $courseSectionId
       courseId: $courseId
     ) {
       title

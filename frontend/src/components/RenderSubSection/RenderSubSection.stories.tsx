@@ -1,7 +1,7 @@
 import RenderSubSection from ".";
 import { ComponentStory } from "@storybook/react";
 
-const mainSection = {
+const courseSection = {
   id: "cl74urv9300087ai0udubgndr",
   title: "Hello",
   subSections: [],
@@ -23,5 +23,5 @@ const Template: ComponentStory<typeof RenderSubSection> = (args) => (
 export const RenderSubSectionExample = Template.bind({});
 RenderSubSectionExample.args = {
   subSection: subSection,
-  mainSection: mainSection,
+  courseSection: courseSection,
 };

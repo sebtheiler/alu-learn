@@ -3,8 +3,8 @@
 
 
 type Course {
+  courseSections: [CourseSection]
   id: String
-  mainSections: [MainSection]
 
   """Users who have full privileges on this course"""
   owners: [User]
@@ -12,6 +12,12 @@ type Course {
 
   """Users who have studying or teaching this course"""
   users: [User]
+}
+
+type CourseSection {
+  id: String
+  subSections: [SubSection]
+  title: String
 }
 
 enum DeckChoice {
@@ -27,12 +33,6 @@ enum JoinReason {
   TEACHER
 }
 
-type MainSection {
-  id: String
-  subSections: [SubSection]
-  title: String
-}
-
 type Mutation {
   """Creates a course and populates it with an initial main and sub section"""
   createCourse(
@@ -41,13 +41,13 @@ type Mutation {
   ): Course
 
   """Creates a new main section and populates it with a default subsection"""
-  createMainSection(courseId: String!, title: String!): MainSection
+  createCourseSection(courseId: String!, title: String!): CourseSection
 
   """Creates a new NewUserSurveyResponse from a set of responses"""
   createNewUserSurveyResponse(deckChoice: DeckChoice!, joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumCards: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse
 
   """Creates a new sub section"""
-  createSubSection(courseId: String!, mainSectionId: String!, title: String!): SubSection
+  createSubSection(courseId: String!, courseSectionId: String!, title: String!): SubSection
 
   """
   Removes the current user from a course if the course has other users.  If the course has no other users, deletes the course.
@@ -58,10 +58,10 @@ type Mutation {
   ): Course
 
   """Deletes a main section"""
-  deleteMainSection(
+  deleteCourseSection(
     """ID of the main section to delete"""
-    mainSectionId: String!
-  ): MainSection
+    courseSectionId: String!
+  ): CourseSection
 
   """Deletes a sub section"""
   deleteSubSection(
@@ -77,11 +77,11 @@ type Mutation {
   ): Course
 
   """Change a main section's settings"""
-  updateMainSection(
+  updateCourseSection(
     """ID of the main section to update"""
-    mainSectionId: String!
+    courseSectionId: String!
     title: String
-  ): MainSection
+  ): CourseSection
 
   """Change a sub section's settings"""
   updateSubSection(

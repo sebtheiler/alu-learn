@@ -3,16 +3,16 @@ import LinkButton from "atoms/LinkButton";
 import { cleanTitle } from "helpers/cleanTitle";
 import CoursePageContext from "pages/CoursePage/context";
 import { useContext } from "react";
-import type { MainSection, SubSection } from "types";
+import type { CourseSection, SubSection } from "types";
 
 interface SubSectionPopoverProps {
   subSection: SubSection;
-  mainSection: MainSection;
+  courseSection: CourseSection;
 }
 
 export default function SubSectionPopover({
   subSection,
-  mainSection,
+  courseSection,
 }: SubSectionPopoverProps) {
   const { course } = useContext(CoursePageContext);
   return (
@@ -25,7 +25,7 @@ export default function SubSectionPopover({
       </div>
       <LinkButton
         href={`/course/${course?.id}/learn/${cleanTitle(
-          mainSection.title as string
+          courseSection.title as string
         )}/${cleanTitle(subSection.title as string)}`}
         block
       >
@@ -33,7 +33,7 @@ export default function SubSectionPopover({
       </LinkButton>
       <LinkButton
         href={`/course/${course?.id}/flashcards/${cleanTitle(
-          mainSection.title as string
+          courseSection.title as string
         )}/${cleanTitle(subSection.title as string)}`}
         className="mt-2"
         block
@@ -42,7 +42,7 @@ export default function SubSectionPopover({
       </LinkButton>
       <LinkButton
         href={`/course/${course?.id}/practice/${cleanTitle(
-          mainSection.title as string
+          courseSection.title as string
         )}/${cleanTitle(subSection.title as string)}`}
         className="mt-2"
         block
@@ -51,7 +51,7 @@ export default function SubSectionPopover({
       </LinkButton>
       <LinkButton
         href={`/course/${course?.id}/games/${cleanTitle(
-          mainSection.title as string
+          courseSection.title as string
         )}/${cleanTitle(subSection.title as string)}`}
         className="mt-2"
         block
