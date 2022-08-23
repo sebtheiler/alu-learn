@@ -1,5 +1,5 @@
 import getUserGQL from "../../lib/getUserGQL";
-import { isCourseOwner } from "./helpers/isCourseOwner";
+import isCourseOwner from "./helpers/isCourseOwner";
 import { extendType, list, nonNull, objectType, stringArg } from "nexus";
 import type { NonNullableKeys } from "types";
 

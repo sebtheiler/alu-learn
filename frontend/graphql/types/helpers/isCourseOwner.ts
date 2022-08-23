@@ -1,6 +1,6 @@
 import type { Context } from "../../context";
 
-export const isCourseOwner = async (courseId: string, ctx: Context) =>
+const isCourseOwner = async (courseId: string, ctx: Context) =>
   (await ctx.prisma.user.count({
     where: {
       email: ctx.user?.email ?? "",
@@ -11,3 +11,5 @@ export const isCourseOwner = async (courseId: string, ctx: Context) =>
       },
     },
   })) > 0;
+
+export default isCourseOwner;

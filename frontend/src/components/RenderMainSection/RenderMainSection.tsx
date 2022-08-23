@@ -1,14 +1,17 @@
+import MainSectionSettings from "./MainSectionSettings";
 import { useMutation } from "@apollo/client";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import AsyncForm from "atoms/AsyncForm";
 import Button from "atoms/Button";
 import ButtonGroup from "atoms/ButtonGroup";
 import Dropdown from "atoms/Dropdown";
+import LinkButton from "atoms/LinkButton";
 import Modal from "atoms/Modal";
 import TextInput from "atoms/TextInput";
 import Tooltip from "atoms/Tooltip";
 import RenderSubSection from "components/RenderSubSection";
 import CreateSubSection from "graphql/CreateSubSection";
+import { cleanTitle } from "helpers/cleanTitle";
 import { getElementsVals } from "helpers/getElementsVals";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import CoursePageContext from "pages/CoursePage/context";
@@ -63,6 +66,7 @@ export default function RenderMainSection({
           {mainSection?.title?.toUpperCase()}
         </div>
         <div className="flex-grow bg bg-gray-300 h-0.5"></div>
+        <MainSectionSettings mainSection={mainSection} />
       </div>
       <ButtonGroup
         className="text-center"
@@ -70,13 +74,35 @@ export default function RenderMainSection({
         spaced
         vertical={width < 640}
       >
-        <Button>Learn Content</Button>
-        <Button>Flashcards</Button>
+        <LinkButton
+          href={`/course/${course?.id}/learn/${cleanTitle(
+            mainSection.title as string
+          )}`}
+        >
+          Learn Content
+        </LinkButton>
+        <LinkButton
+          href={`/course/${course?.id}/flashcards/${cleanTitle(
+            mainSection.title as string
+          )}`}
+        >
+          Flashcards
+        </LinkButton>
         <Button>
           <Dropdown
             options={[
-              { text: "Games", href: "" },
-              { text: "Practice Problems", href: "" },
+              {
+                text: "Games",
+                href: `/course/${course?.id}/games/${cleanTitle(
+                  mainSection.title as string
+                )}`,
+              },
+              {
+                text: "Practice Problems",
+                href: `/course/${course?.id}/practice/${cleanTitle(
+                  mainSection.title as string
+                )}`,
+              },
             ]}
           >
             More

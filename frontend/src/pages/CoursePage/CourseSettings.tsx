@@ -81,9 +81,6 @@ export default function CourseSettings({
             defaultValue={course.title as string}
             required
           />
-          <p className="text-center mt-3 text-gray-600">
-            Changes are saved automatically
-          </p>
           <hr className="my-3" />
           <ButtonGroup className="inline" spaced>
             <AsyncButton
@@ -93,7 +90,11 @@ export default function CourseSettings({
             >
               Remove
             </AsyncButton>
-            <Button variant="secondary" className="w-28">
+            <Button
+              variant="secondary"
+              className="w-28"
+              onClick={() => setCourseSettingsModalOpen(false)}
+            >
               Close
             </Button>
           </ButtonGroup>

@@ -1,6 +1,8 @@
 import getUserGQL from "../../lib/getUserGQL";
-import { isCourseOwner } from "./helpers/isCourseOwner";
+import isCourseOwner from "./helpers/isCourseOwner";
+import isMainSectionOwner from "./helpers/isMainSectionOwner";
 import { extendType, list, nonNull, objectType, stringArg } from "nexus";
+import type { NonNullableKeys } from "types";
 
 const MainSection = objectType({
   name: "MainSection",
@@ -50,6 +52,45 @@ export const MainSectionMutation = extendType({
         });
 
         return mainSection;
+      },
+    });
+    t.field("updateMainSection", {
+      type: "MainSection",
+      description: "Change a main section's settings",
+      args: {
+        title: stringArg(),
+        mainSectionId: nonNull(
+          stringArg({ description: "ID of the main section to update" })
+        ),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        if (!user || !isMainSectionOwner(args.mainSectionId, ctx)) return null;
+
+        const data: Partial<NonNullableKeys<typeof args>> = {};
+        if (args.title != null) data.title = args.title;
+
+        return ctx.prisma.mainSection.update({
+          where: { id: args.mainSectionId },
+          data: data,
+        });
+      },
+    });
+    t.field("deleteMainSection", {
+      type: "MainSection",
+      description: "Deletes a main section",
+      args: {
+        mainSectionId: nonNull(
+          stringArg({ description: "ID of the main section to delete" })
+        ),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        if (!user || !isMainSectionOwner(args.mainSectionId, ctx)) return null;
+
+        return ctx.prisma.mainSection.delete({
+          where: { id: args.mainSectionId },
+        });
       },
     });
   },

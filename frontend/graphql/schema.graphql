@@ -57,12 +57,38 @@ type Mutation {
     courseId: String!
   ): Course
 
+  """Deletes a main section"""
+  deleteMainSection(
+    """ID of the main section to delete"""
+    mainSectionId: String!
+  ): MainSection
+
+  """Deletes a sub section"""
+  deleteSubSection(
+    """ID of the sub section to delete"""
+    subSectionId: String!
+  ): SubSection
+
   """Change a course's settings"""
   updateCourse(
     """ID of the course to update"""
     courseId: String!
     title: String
   ): Course
+
+  """Change a main section's settings"""
+  updateMainSection(
+    """ID of the main section to update"""
+    mainSectionId: String!
+    title: String
+  ): MainSection
+
+  """Change a sub section's settings"""
+  updateSubSection(
+    """ID of the sub section to update"""
+    subSectionId: String!
+    title: String
+  ): SubSection
 
   """Change the user's settings"""
   updateUser(name: String, sendMarketingResearch: Boolean, sendReminders: Boolean, targetNumCards: Int, timezoneOffset: Int, userType: UserType): User

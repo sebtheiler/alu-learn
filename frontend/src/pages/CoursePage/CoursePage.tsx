@@ -1,8 +1,11 @@
 import CourseSettings from "./CourseSettings";
 import CreateMainSectionButton from "./CreateMainSectionButton";
 import CoursePageContext from "./context";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RenderMainSection from "components/RenderMainSection";
 import SEO from "helpers/SEO";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import type { Course, MainSection } from "types";
@@ -19,7 +22,7 @@ export interface CoursePageProps {
 }
 
 /**
- *
+ * Renders the page for a course, with all of its main sections and sub sections
  */
 export default function CoursePage({ course, authorized }: CoursePageProps) {
   const router = useRouter();
@@ -35,7 +38,18 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
       />
       {authorized && (
         <div className="mt-28">
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-5xl px-4">
+            <div className="float-left pt-2">
+              <Link href="/home">
+                <a>
+                  <FontAwesomeIcon
+                    icon={faArrowLeft}
+                    size="2x"
+                    className="text-gray-600 md:absolute md:float-left md:left-10"
+                  />
+                </a>
+              </Link>
+            </div>
             <h1 className="font-bold text-4xl text-center">{course.title}</h1>
             <CourseSettings course={course} refreshData={refreshData} />
           </div>
