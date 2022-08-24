@@ -40,7 +40,9 @@ type Mutation {
     title: String!
   ): Course
 
-  """Creates a new main section and populates it with a default subsection"""
+  """
+  Creates a new course section and populates it with a default subsection
+  """
   createCourseSection(courseId: String!, title: String!): CourseSection
 
   """Creates a new NewUserSurveyResponse from a set of responses"""
@@ -57,9 +59,9 @@ type Mutation {
     courseId: String!
   ): Course
 
-  """Deletes a main section"""
+  """Deletes a course section"""
   deleteCourseSection(
-    """ID of the main section to delete"""
+    """ID of the course section to delete"""
     courseSectionId: String!
   ): CourseSection
 
@@ -76,9 +78,9 @@ type Mutation {
     title: String
   ): Course
 
-  """Change a main section's settings"""
+  """Change a course section's settings"""
   updateCourseSection(
-    """ID of the main section to update"""
+    """ID of the course section to update"""
     courseSectionId: String!
     title: String
   ): CourseSection
@@ -92,6 +94,14 @@ type Mutation {
 
   """Change the user's settings"""
   updateUser(name: String, sendMarketingResearch: Boolean, sendReminders: Boolean, targetNumCards: Int, timezoneOffset: Int, userType: UserType): User
+
+  """Upload a banner image for a course"""
+  uploadCourseBannerImage(
+    bannerImage: Upload
+
+    """ID of the course to add the bannner to"""
+    courseId: String!
+  ): Course
 }
 
 type NewUserSurveyResponse {
@@ -142,6 +152,9 @@ type SubSection {
   id: String
   title: String
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 type User {
   email: String

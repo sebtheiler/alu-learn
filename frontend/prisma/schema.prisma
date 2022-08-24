@@ -133,7 +133,7 @@ enum DeckChoice {
 model Course {
   id          String  @id @default(cuid())
   title       String
-  imageBanner String?
+  bannerImage String?
 
   users  User[] @relation("CourseUsers")
   owners User[] @relation("CourseOwners")

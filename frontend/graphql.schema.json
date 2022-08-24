@@ -24,6 +24,22 @@
         "description": null,
         "fields": [
           {
+            "name": "courseSections",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CourseSection",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "id",
             "description": null,
             "args": [],
@@ -36,24 +52,8 @@
             "deprecationReason": null
           },
           {
-            "name": "mainSections",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "MainSection",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "owners",
-            "description": null,
+            "description": "Users who have full privileges on this course",
             "args": [],
             "type": {
               "kind": "LIST",
@@ -81,7 +81,7 @@
           },
           {
             "name": "users",
-            "description": null,
+            "description": "Users who have studying or teaching this course",
             "args": [],
             "type": {
               "kind": "LIST",
@@ -91,6 +91,57 @@
                 "name": "User",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CourseSection",
+        "description": null,
+        "fields": [
+          {
+            "name": "id",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "subSections",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "SubSection",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "title",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -177,67 +228,16 @@
       },
       {
         "kind": "OBJECT",
-        "name": "MainSection",
-        "description": null,
-        "fields": [
-          {
-            "name": "id",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "subSections",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "SubSection",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "title",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
         "name": "Mutation",
         "description": null,
         "fields": [
           {
             "name": "createCourse",
-            "description": null,
+            "description": "Creates a course and populates it with an initial main and sub section",
             "args": [
               {
                 "name": "title",
-                "description": null,
+                "description": "Title of the course to create",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -261,8 +261,8 @@
             "deprecationReason": null
           },
           {
-            "name": "createMainSection",
-            "description": null,
+            "name": "createCourseSection",
+            "description": "Creates a new course section and populates it with a default subsection",
             "args": [
               {
                 "name": "courseId",
@@ -299,7 +299,7 @@
             ],
             "type": {
               "kind": "OBJECT",
-              "name": "MainSection",
+              "name": "CourseSection",
               "ofType": null
             },
             "isDeprecated": false,
@@ -307,7 +307,7 @@
           },
           {
             "name": "createNewUserSurveyResponse",
-            "description": null,
+            "description": "Creates a new NewUserSurveyResponse from a set of responses",
             "args": [
               {
                 "name": "deckChoice",
@@ -432,7 +432,7 @@
           },
           {
             "name": "createSubSection",
-            "description": null,
+            "description": "Creates a new sub section",
             "args": [
               {
                 "name": "courseId",
@@ -451,7 +451,7 @@
                 "deprecationReason": null
               },
               {
-                "name": "mainSectionId",
+                "name": "courseSectionId",
                 "description": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -492,8 +492,218 @@
             "deprecationReason": null
           },
           {
+            "name": "deleteCourse",
+            "description": "Removes the current user from a course if the course has other users.  If the course has no other users, deletes the course.",
+            "args": [
+              {
+                "name": "courseId",
+                "description": "ID of the course to delete",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Course",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "deleteCourseSection",
+            "description": "Deletes a course section",
+            "args": [
+              {
+                "name": "courseSectionId",
+                "description": "ID of the course section to delete",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "CourseSection",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "deleteSubSection",
+            "description": "Deletes a sub section",
+            "args": [
+              {
+                "name": "subSectionId",
+                "description": "ID of the sub section to delete",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "SubSection",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updateCourse",
+            "description": "Change a course's settings",
+            "args": [
+              {
+                "name": "courseId",
+                "description": "ID of the course to update",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "title",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Course",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updateCourseSection",
+            "description": "Change a course section's settings",
+            "args": [
+              {
+                "name": "courseSectionId",
+                "description": "ID of the course section to update",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "title",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "CourseSection",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "updateSubSection",
+            "description": "Change a sub section's settings",
+            "args": [
+              {
+                "name": "subSectionId",
+                "description": "ID of the sub section to update",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "title",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "SubSection",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "updateUser",
-            "description": null,
+            "description": "Change the user's settings",
             "args": [
               {
                 "name": "name",
@@ -571,6 +781,47 @@
             "type": {
               "kind": "OBJECT",
               "name": "User",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "uploadCourseBannerImage",
+            "description": "Upload a banner image for a course",
+            "args": [
+              {
+                "name": "bannerImage",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Upload",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "courseId",
+                "description": "ID of the course to add the bannner to",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Course",
               "ofType": null
             },
             "isDeprecated": false,
@@ -720,7 +971,7 @@
         "fields": [
           {
             "name": "courses",
-            "description": null,
+            "description": "Gets all available courses",
             "args": [],
             "type": {
               "kind": "LIST",
@@ -736,7 +987,7 @@
           },
           {
             "name": "me",
-            "description": null,
+            "description": "Get information on the current user",
             "args": [],
             "type": {
               "kind": "OBJECT",
@@ -748,7 +999,7 @@
           },
           {
             "name": "myCourses",
-            "description": null,
+            "description": "Get the current user's courses",
             "args": [],
             "type": {
               "kind": "LIST",
@@ -764,7 +1015,7 @@
           },
           {
             "name": "users",
-            "description": null,
+            "description": "List all users",
             "args": [],
             "type": {
               "kind": "LIST",
@@ -918,6 +1169,16 @@
         "possibleTypes": null
       },
       {
+        "kind": "SCALAR",
+        "name": "Upload",
+        "description": "The `Upload` scalar type represents a file upload.",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
         "kind": "OBJECT",
         "name": "User",
         "description": null,
@@ -960,7 +1221,7 @@
           },
           {
             "name": "newUserSurveyResponse",
-            "description": null,
+            "description": "The user's response to the survey launched on sign-up",
             "args": [],
             "type": {
               "kind": "OBJECT",
@@ -2027,7 +2288,11 @@
         "name": "include",
         "description": "Directs the executor to include this field or fragment only when the `if` argument is true.",
         "isRepeatable": false,
-        "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
+        "locations": [
+          "FIELD",
+          "FRAGMENT_SPREAD",
+          "INLINE_FRAGMENT"
+        ],
         "args": [
           {
             "name": "if",
@@ -2051,7 +2316,11 @@
         "name": "skip",
         "description": "Directs the executor to skip this field or fragment when the `if` argument is true.",
         "isRepeatable": false,
-        "locations": ["FIELD", "FRAGMENT_SPREAD", "INLINE_FRAGMENT"],
+        "locations": [
+          "FIELD",
+          "FRAGMENT_SPREAD",
+          "INLINE_FRAGMENT"
+        ],
         "args": [
           {
             "name": "if",
@@ -2075,7 +2344,9 @@
         "name": "specifiedBy",
         "description": "Exposes a URL that specifies the behavior of this scalar.",
         "isRepeatable": false,
-        "locations": ["SCALAR"],
+        "locations": [
+          "SCALAR"
+        ],
         "args": [
           {
             "name": "url",

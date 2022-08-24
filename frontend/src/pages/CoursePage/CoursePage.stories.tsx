@@ -12,7 +12,7 @@ export default {
 const course = {
   id: "cl716cjud0174i2i0sv5xsd5p",
   title: "test",
-  imageBanner: null,
+  bannerImage: null,
   courseSections: [
     {
       id: "cl74urv9300087ai0udubgndr",

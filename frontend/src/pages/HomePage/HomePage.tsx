@@ -46,7 +46,7 @@ export default function HomePage({ courses }: HomePageProps) {
                         <div className="w-full h-24 relative">
                           <Image
                             src={
-                              course.imageBanner ??
+                              course.bannerImage ??
                               "/assets/default-course-banner.png"
                             }
                             alt=""

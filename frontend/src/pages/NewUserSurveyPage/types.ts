@@ -1,3 +1,4 @@
+// TODO: replace these with automatically generated types
 export interface Answers {
   timezoneOffset?: number;
   userType?: "STUDENT" | "TEACHER";

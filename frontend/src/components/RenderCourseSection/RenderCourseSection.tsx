@@ -4,7 +4,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import AsyncForm from "atoms/AsyncForm";
 import Button from "atoms/Button";
 import ButtonGroup from "atoms/ButtonGroup";
-import Dropdown from "atoms/Dropdown";
+// import Dropdown from "atoms/Dropdown";
 import LinkButton from "atoms/LinkButton";
 import Modal from "atoms/Modal";
 import TextInput from "atoms/TextInput";
@@ -89,7 +89,7 @@ export default function RenderCourseSection({
           Flashcards
         </LinkButton>
         <Button>
-          <Dropdown
+          {/* <Dropdown
             options={[
               {
                 text: "Games",
@@ -105,8 +105,8 @@ export default function RenderCourseSection({
               },
             ]}
           >
+          </Dropdown> */}
             More
-          </Dropdown>
         </Button>
       </ButtonGroup>
       <div className="flex flex-wrap px-10 py-5">
