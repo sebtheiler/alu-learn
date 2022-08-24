@@ -1,6 +1,9 @@
 import getUserGQL from "../../lib/getUserGQL";
+import deleteFileFromS3 from "./helpers/deleteFileFromS3";
 import isCourseOwner from "./helpers/isCourseOwner";
-import { extendType, list, nonNull, objectType, stringArg } from "nexus";
+import uploadStreamToS3 from "./helpers/uploadStreamToS3";
+import { ApolloError } from "apollo-server-micro";
+import { arg, extendType, list, nonNull, objectType, stringArg } from "nexus";
 import type { NonNullableKeys } from "types";
 
 const Course = objectType({
@@ -8,7 +11,7 @@ const Course = objectType({
   definition(t) {
     t.string("id");
     t.string("title");
-    // t.string("imageBanner");
+    t.string("bannerImage");
     t.field("users", {
       type: list("User"),
       description: "Users who have studying or teaching this course",
@@ -199,6 +202,79 @@ export const CoursesMutation = extendType({
               id: args.courseId,
             },
           });
+        }
+      },
+    });
+    t.field("uploadCourseBannerImage", {
+      type: "Course",
+      description: "Upload a banner image for a course",
+      args: {
+        bannerImage: arg({
+          type: "Upload",
+          description:
+            "File object to stream upload.  If `null`, removes the course banner image.",
+        }),
+        courseId: nonNull(
+          stringArg({ description: "ID of the course to add the bannner to" })
+        ),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        if (!user || !isCourseOwner(args.courseId, ctx)) return null;
+
+        // If the `bannerImage` is null, remove the course's banner and delete the associated file
+        if (args.bannerImage === null) {
+          const { bannerImage: bannerImageFilename } =
+            (await ctx.prisma.course.findUnique({
+              where: {
+                id: args.courseId,
+              },
+              select: {
+                bannerImage: true,
+              },
+            })) ?? {};
+          if (!bannerImageFilename) return null;
+
+          deleteFileFromS3(bannerImageFilename);
+
+          return ctx.prisma.course.update({
+            where: {
+              id: args.courseId,
+            },
+            data: {
+              bannerImage: null,
+            },
+          });
+        }
+
+        // Get the uploaded image from the client
+        const bannerImage = await args.bannerImage.promise;
+        const { createReadStream, filename } = bannerImage;
+        const fileExt = filename.split(".").pop();
+        if (!["png", "jpg", ".jpeg", ".webm"].includes(fileExt)) {
+          throw new ApolloError(`File extension not supported: ${fileExt}`);
+        }
+
+        // Upload the image to Digital Ocean spaces by piping
+        // the stream from the client
+        const { writeStream, promise } = uploadStreamToS3(
+          `course-${args.courseId}-bannerImage.${fileExt}`
+        );
+        const readStream = createReadStream();
+        readStream.pipe(writeStream);
+
+        try {
+          await promise;
+          return ctx.prisma.course.update({
+            where: {
+              id: args.courseId,
+            },
+            data: {
+              bannerImage: null,
+            },
+          });
+        } catch (error) {
+          throw new ApolloError(`Upload failed: ${(error as any).message}`);
         }
       },
     });

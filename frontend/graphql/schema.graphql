@@ -97,6 +97,9 @@ type Mutation {
 
   """Upload a banner image for a course"""
   uploadCourseBannerImage(
+    """
+    File object to stream upload.  If `null`, removes the course banner image.
+    """
     bannerImage: Upload
 
     """ID of the course to add the bannner to"""

@@ -4,4 +4,8 @@ coverage
 .next
 node_modules
 storybook-static
+
+# Ignore generated GraphQL
 schema.graphql
+graphql.schema.json
+frontend/src/types/graphql.ts

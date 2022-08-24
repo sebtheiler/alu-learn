@@ -4,11 +4,13 @@ import AsyncButton from "atoms/AsyncButton";
 import AsyncForm from "atoms/AsyncForm";
 import Button from "atoms/Button";
 import ButtonGroup from "atoms/ButtonGroup";
+import FileUpload from "atoms/FileUpload";
 import Modal from "atoms/Modal";
 import TextInput from "atoms/TextInput";
 import IconTooltip from "components/IconTooltip";
 import DeleteCourse from "graphql/DeleteCourse";
 import UpdateCourse from "graphql/UpdateCourse";
+import UploadCourseBannerImage from "graphql/UploadCourseBannerImage";
 import { getElementsVals } from "helpers/getElementsVals";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
@@ -24,6 +26,7 @@ export default function CourseSettings({
   refreshData,
 }: CourseSettingsProps) {
   const [updateCourse] = useMutation(UpdateCourse);
+  const [uploadCourseBannerImage] = useMutation(UploadCourseBannerImage);
   const [deleteCourse] = useMutation(DeleteCourse);
   const [courseSettingsModalOpen, setCourseSettingsModalOpen] = useState(false);
   const router = useRouter();
@@ -32,6 +35,12 @@ export default function CourseSettings({
     const { courseTitle } = getElementsVals(e.target as HTMLFormElement, [
       "courseTitle",
     ]);
+
+    if (bannerImage) {
+      await uploadCourseBannerImage({
+        variables: { bannerImage, courseId: course.id },
+      });
+    }
 
     await updateCourse({
       variables: {
@@ -53,6 +62,16 @@ export default function CourseSettings({
     });
     router.push("/home");
   };
+
+  const [bannerImage, setFile] = useState<File>();
+  function onChange({
+    target: {
+      validity,
+      files: [file],
+    },
+  }) {
+    if (validity.valid) setFile(file);
+  }
 
   return (
     <div>
@@ -80,6 +99,13 @@ export default function CourseSettings({
             name="courseTitle"
             defaultValue={course.title as string}
             required
+          />
+          <FileUpload
+            label="Upload course banner image (optional)"
+            accept=".png, .jpg, .jpeg, .webm"
+            className="w-full mt-3"
+            name="bannerImage"
+            onChange={onChange}
           />
           <hr className="my-3" />
           <ButtonGroup className="inline" spaced>

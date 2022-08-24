@@ -106,7 +106,7 @@ export default function RenderCourseSection({
             ]}
           >
           </Dropdown> */}
-            More
+          More
         </Button>
       </ButtonGroup>
       <div className="flex flex-wrap px-10 py-5">
