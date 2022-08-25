@@ -49,7 +49,7 @@ export default function HomePage({ courses }: HomePageProps) {
                               course.bannerImage ??
                               "/assets/default-course-banner.png"
                             }
-                            alt=""
+                            alt="Course banner"
                             layout="fill"
                             className="object-cover"
                           />

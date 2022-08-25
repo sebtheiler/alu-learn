@@ -1,3 +1,4 @@
+import generateSignedS3URL from "../lib/generateSignedS3URL";
 import { getSessionAndStreak } from "../lib/getSessionSSR";
 import prisma from "../lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
@@ -14,7 +15,7 @@ export default Home;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { session, streak } = await getSessionAndStreak(context);
 
-  const courses = await prisma.course.findMany({
+  let courses = await prisma.course.findMany({
     where: {
       users: {
         some: {
@@ -25,8 +26,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     select: {
       id: true,
       title: true,
+      bannerImage: true,
     },
   });
+
+  courses = courses.map((course) => ({
+    ...course,
+    bannerImage: course.bannerImage
+      ? generateSignedS3URL(course.bannerImage)
+      : null,
+  }));
 
   return {
     props: {

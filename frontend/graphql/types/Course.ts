@@ -1,5 +1,7 @@
+import generateSignedS3URL from "../../lib/generateSignedS3URL";
 import getUserGQL from "../../lib/getUserGQL";
 import deleteFileFromS3 from "./helpers/deleteFileFromS3";
+import enforceMaxStreamSize from "./helpers/enforceMaxStreamSize";
 import isCourseOwner from "./helpers/isCourseOwner";
 import uploadStreamToS3 from "./helpers/uploadStreamToS3";
 import { ApolloError } from "apollo-server-micro";
@@ -11,7 +13,12 @@ const Course = objectType({
   definition(t) {
     t.string("id");
     t.string("title");
-    t.string("bannerImage");
+    t.string("bannerImage", {
+      resolve(course) {
+        // @ts-ignore
+        return generateSignedS3URL(course.bannerImage);
+      },
+    });
     t.field("users", {
       type: list("User"),
       description: "Users who have studying or teaching this course",
@@ -249,19 +256,22 @@ export const CoursesMutation = extendType({
 
         // Get the uploaded image from the client
         const bannerImage = await args.bannerImage.promise;
-        const { createReadStream, filename } = bannerImage;
-        const fileExt = filename.split(".").pop();
-        if (!["png", "jpg", ".jpeg", ".webm"].includes(fileExt)) {
-          throw new ApolloError(`File extension not supported: ${fileExt}`);
+        const { createReadStream, mimetype } = bannerImage;
+
+        // Check valid content type
+        if (!mimetype.startsWith("image")) {
+          throw new ApolloError(`Content type not supported: ${mimetype}`);
         }
 
         // Upload the image to Digital Ocean spaces by piping
         // the stream from the client
+        const bannerImageFilename = genCourseBannerFilename(args.courseId);
         const { writeStream, promise } = uploadStreamToS3(
-          `course-${args.courseId}-bannerImage.${fileExt}`
+          bannerImageFilename,
+          mimetype
         );
         const readStream = createReadStream();
-        readStream.pipe(writeStream);
+        enforceMaxStreamSize(readStream.pipe(writeStream), 5e7);
 
         try {
           await promise;
@@ -270,7 +280,7 @@ export const CoursesMutation = extendType({
               id: args.courseId,
             },
             data: {
-              bannerImage: null,
+              bannerImage: bannerImageFilename,
             },
           });
         } catch (error) {
@@ -282,3 +292,6 @@ export const CoursesMutation = extendType({
 });
 
 export default Course;
+
+const genCourseBannerFilename = (courseId: string) =>
+  `courseBannerImages/course-${courseId}-bannerImage`;

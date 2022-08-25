@@ -3,6 +3,7 @@
 
 
 type Course {
+  bannerImage: String
   courseSections: [CourseSection]
   id: String
 

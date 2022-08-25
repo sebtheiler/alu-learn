@@ -24,6 +24,7 @@ export type Scalars = {
 
 export type Course = {
   __typename?: "Course";
+  bannerImage?: Maybe<Scalars["String"]>;
   courseSections?: Maybe<Array<Maybe<CourseSection>>>;
   id?: Maybe<Scalars["String"]>;
   /** Users who have full privileges on this course */

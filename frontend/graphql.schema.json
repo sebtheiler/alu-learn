@@ -24,6 +24,18 @@
         "description": null,
         "fields": [
           {
+            "name": "bannerImage",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "courseSections",
             "description": null,
             "args": [],
@@ -792,7 +804,7 @@
             "args": [
               {
                 "name": "bannerImage",
-                "description": null,
+                "description": "File object to stream upload.  If `null`, removes the course banner image.",
                 "type": {
                   "kind": "SCALAR",
                   "name": "Upload",

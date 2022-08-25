@@ -5,7 +5,8 @@ import stream from "stream";
 /**
  * Allows a read stream to be streamed directly into S3 for file uploads
  * @param filename Location to upload on the bucket. Automatically prefixed into the correct folder.
- * @returns `writeStream` and `promise`
+ * @param contentType Type of file to save (optional)
+ * @returns `writeStream` for writing data and `promise` for checking status
  * @example Pipe readstream to upload
  * ```js
  *  const { writeStream, promise } = uploadStream(filename)
@@ -22,16 +23,19 @@ import stream from "stream";
  * }
  * @see https://stackoverflow.com/a/50291380/10226703
  */
-const uploadStreamToS3 = (filename: string) => {
+const uploadStreamToS3 = (filename: string, contentType?: string) => {
   const pass = new stream.PassThrough();
   const filenamePrefix = getS3FilenamePrefix();
+  const parsedFilename = `${filenamePrefix}/${filename}`;
+
   return {
     writeStream: pass,
     promise: s3
       .upload({
         Bucket: process.env.DO_SPACE_NAME as string,
-        Key: `${filenamePrefix}/${filename}`,
+        Key: parsedFilename,
         Body: pass,
+        ContentType: contentType,
       })
       .promise(),
   };

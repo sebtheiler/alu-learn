@@ -75,14 +75,14 @@ export default function CourseSettings({
 
   return (
     <div>
-      <div className="float-right -translate-y-8">
+      <div className="float-right pt-2 pr-2 z-50" style={{ zIndex: "5000" }}>
         <IconTooltip
           faIcon={faGear}
           onClick={() => setCourseSettingsModalOpen(true)}
           size="2x"
           tooltip="Course Settings"
           tooltipProps={{ className: "w-32" }}
-          className="text-gray-500"
+          className="text-white"
         />
       </div>
       <Modal

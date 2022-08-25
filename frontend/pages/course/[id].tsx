@@ -1,3 +1,4 @@
+import generateSignedS3URL from "../../lib/generateSignedS3URL";
 import { getSessionAndStreak } from "../../lib/getSessionSSR";
 import prisma from "../../lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
@@ -53,6 +54,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!isCourseUser) {
     course = null;
     authorized = false;
+  } else if (course && course.bannerImage) {
+    course.bannerImage = generateSignedS3URL(course.bannerImage);
   }
 
   return {

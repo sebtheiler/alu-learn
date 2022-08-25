@@ -5,6 +5,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RenderCourseSection from "components/RenderCourseSection";
 import SEO from "helpers/SEO";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -38,20 +39,35 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
       />
       {authorized && (
         <div className="mt-28">
-          <div className="mx-auto max-w-5xl px-4">
-            <div className="float-left pt-2">
-              <Link href="/home">
-                <a>
-                  <FontAwesomeIcon
-                    icon={faArrowLeft}
-                    size="2x"
-                    className="text-gray-600 md:absolute md:float-left md:left-10"
-                  />
-                </a>
-              </Link>
+          <div className="mx-auto max-w-5xl">
+            <div className="w-full h-52 relative">
+              <Image
+                src={course.bannerImage ?? "/assets/default-course-banner.png"}
+                alt="Course banner"
+                layout="fill"
+                className="object-cover lg:rounded-xl"
+                style={{ zIndex: "-1" }}
+              />
+              <div className="w-full h-full flex items-center justify-center">
+                <div className="absolute left-3 top-2">
+                  <Link href="/home">
+                    <a>
+                      <FontAwesomeIcon
+                        icon={faArrowLeft}
+                        size="2x"
+                        className="text-white"
+                      />
+                    </a>
+                  </Link>
+                </div>
+                <h1 className="font-bold text-4xl text-center text-white">
+                  {course.title}
+                </h1>
+                <div className="absolute right-0 top-0">
+                  <CourseSettings course={course} refreshData={refreshData} />
+                </div>
+              </div>
             </div>
-            <h1 className="font-bold text-4xl text-center">{course.title}</h1>
-            <CourseSettings course={course} refreshData={refreshData} />
           </div>
           <div className="md:container mx-auto px-4 mt-6">
             <CoursePageContext.Provider value={{ course, refreshData }}>
