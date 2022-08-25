@@ -1,13 +1,12 @@
-import Button from "atoms/Button";
 import type { ButtonProps } from "atoms/Button";
 import classNames from "helpers/classNames";
-import { ReactElement } from "react";
+import { cloneElement } from "react";
 
 interface ButtonGroupProps {
   /**
    * Buttons in the group. Must be instances of `atoms/Button`
    */
-  children: Array<ReactElement<ButtonProps>>;
+  children: Array<React.ReactElement<ButtonProps>>;
   /**
    * Put spaces between each button?
    */
@@ -56,7 +55,7 @@ export default function ButtonGroup({
         if (fixedWidth) {
           newProps.style = { ...newProps.style, width: fixedWidth };
         }
-        return <Button {...newProps} key={i} />;
+        return cloneElement(button, newProps);
       })}
     </div>
   );

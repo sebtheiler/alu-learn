@@ -3,8 +3,12 @@ import CreateCourseSectionButton from "./CreateCourseSectionButton";
 import CoursePageContext from "./context";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ButtonGroup from "atoms/ButtonGroup";
+import DropdownButton from "atoms/DropdownButton";
+import LinkButton from "atoms/LinkButton";
 import RenderCourseSection from "components/RenderCourseSection";
 import SEO from "helpers/SEO";
+import useWindowDimensions from "hooks/useWindowDimensions";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -28,6 +32,7 @@ export interface CoursePageProps {
 export default function CoursePage({ course, authorized }: CoursePageProps) {
   const router = useRouter();
   const refreshData = () => router.replace(router.asPath);
+  const { width } = useWindowDimensions();
 
   return (
     <>
@@ -69,6 +74,36 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
               </div>
             </div>
           </div>
+          <ButtonGroup
+            className="text-center mt-2"
+            fixedWidth="175px"
+            vertical={width < 750}
+            spaced
+          >
+            <LinkButton href={`/course/${course.id}/learn`}>
+              Learn Content
+            </LinkButton>
+            <LinkButton href={`/course/${course.id}/flashcards`}>
+              All Flashcards
+            </LinkButton>
+            <LinkButton href={`/course/${course.id}/study-group`}>
+              Study Group
+            </LinkButton>
+            <DropdownButton
+              options={[
+                {
+                  text: "Games",
+                  href: `/course/${course?.id}/games`,
+                },
+                {
+                  text: "Practice Problems",
+                  href: `/course/${course?.id}/practice`,
+                },
+              ]}
+            >
+              More
+            </DropdownButton>
+          </ButtonGroup>
           <div className="md:container mx-auto px-4 mt-6">
             <CoursePageContext.Provider value={{ course, refreshData }}>
               {course?.courseSections?.map((courseSection) => (

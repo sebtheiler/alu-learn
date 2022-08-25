@@ -4,7 +4,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import AsyncForm from "atoms/AsyncForm";
 import Button from "atoms/Button";
 import ButtonGroup from "atoms/ButtonGroup";
-// import Dropdown from "atoms/Dropdown";
+import DropdownButton from "atoms/DropdownButton";
 import LinkButton from "atoms/LinkButton";
 import Modal from "atoms/Modal";
 import TextInput from "atoms/TextInput";
@@ -88,26 +88,24 @@ export default function RenderCourseSection({
         >
           Flashcards
         </LinkButton>
-        <Button>
-          {/* <Dropdown
-            options={[
-              {
-                text: "Games",
-                href: `/course/${course?.id}/games/${cleanTitle(
-                  courseSection.title as string
-                )}`,
-              },
-              {
-                text: "Practice Problems",
-                href: `/course/${course?.id}/practice/${cleanTitle(
-                  courseSection.title as string
-                )}`,
-              },
-            ]}
-          >
-          </Dropdown> */}
+        <DropdownButton
+          options={[
+            {
+              text: "Games",
+              href: `/course/${course?.id}/games/${cleanTitle(
+                courseSection.title as string
+              )}`,
+            },
+            {
+              text: "Practice Problems",
+              href: `/course/${course?.id}/practice/${cleanTitle(
+                courseSection.title as string
+              )}`,
+            },
+          ]}
+        >
           More
-        </Button>
+        </DropdownButton>
       </ButtonGroup>
       <div className="flex flex-wrap px-10 py-5">
         {courseSection?.subSections?.map((subSection) => (
