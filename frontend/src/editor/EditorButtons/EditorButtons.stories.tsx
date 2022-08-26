@@ -19,7 +19,7 @@ export const EditorButtonsExample = Template.bind({});
 EditorButtonsExample.args = {
   className: "ml-5 mt-5",
   tabbable: true,
-  displayFlashCardLinkButton: true,
+  displayFlashcardLinkButton: true,
   displayHeadingButton: false,
   isPro: true,
 };

@@ -21,7 +21,7 @@ const Template: ComponentStory<typeof RenderEditor> = (args) => {
 
 export const RenderEditorExample = Template.bind({});
 RenderEditorExample.args = {
-  displayFlashCardLinkButton: true,
+  displayFlashcardLinkButton: true,
   isPro: true,
   readOnly: false,
 };

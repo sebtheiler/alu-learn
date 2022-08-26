@@ -22,7 +22,7 @@ interface RenderEditorProps {
   /**
    * Should the flashcard link button be displayed?
    */
-  displayFlashCardLinkButton?: boolean;
+  displayFlashcardLinkButton?: boolean;
   /**
    * Is the user a pro user?
    */
@@ -56,7 +56,7 @@ export default function RenderEditor({
   editor,
   value,
   setValue,
-  displayFlashCardLinkButton,
+  displayFlashcardLinkButton,
   isPro,
   readOnly,
   className,
@@ -75,7 +75,7 @@ export default function RenderEditor({
         <div>
           <EditorButtons
             editor={editor}
-            displayFlashCardLinkButton={displayFlashCardLinkButton}
+            displayFlashcardLinkButton={displayFlashcardLinkButton}
             isPro={isPro}
             tabbable={false}
             className="mb-1"

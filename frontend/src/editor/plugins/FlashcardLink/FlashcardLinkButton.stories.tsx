@@ -1,4 +1,4 @@
-import { FlashCardLinkButton } from ".";
+import { FlashcardLinkButton } from ".";
 import { createFullEditor } from "@/editor/FullEditable";
 import withFullContext from "@/helpers/withFullContext";
 import { ComponentStory } from "@storybook/react";
@@ -7,18 +7,18 @@ import { ReactEditor } from "slate-react";
 
 export default {
   title: "editor/plugins/FlashcardLinkButton",
-  component: FlashCardLinkButton,
+  component: FlashcardLinkButton,
   decorators: [withFullContext],
 };
 
-const Template: ComponentStory<typeof FlashCardLinkButton> = (args) => {
+const Template: ComponentStory<typeof FlashcardLinkButton> = (args) => {
   const editor = useMemo<ReactEditor>(createFullEditor, []);
 
-  return <FlashCardLinkButton editor={editor} {...args} />;
+  return <FlashcardLinkButton {...args} editor={editor} />;
 };
 
-export const FlashCardLinkButtonExample = Template.bind({});
-FlashCardLinkButtonExample.args = {
+export const FlashcardLinkButtonExample = Template.bind({});
+FlashcardLinkButtonExample.args = {
   tabbable: true,
   isPro: true,
 };

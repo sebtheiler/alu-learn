@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 import { Node } from "slate";
 
 const TeX = lazy(() => import("@/components/TeX"));
-const FlashCardLinkComponent = lazy(
+const FlashcardLinkComponent = lazy(
   () => import("@/editor/plugins/FlashcardLink/FlashcardLink")
 );
 const LinkComponent = lazy(() => import("@/editor/plugins/Link/Link"));
@@ -82,9 +82,9 @@ const Element = ({ attributes, children, element, readOnly }: ElementProps) => {
       );
     case "flashcard-link":
       return (
-        <FlashCardLinkComponent attributes={attributes} element={element}>
+        <FlashcardLinkComponent attributes={attributes} element={element}>
           {children}
-        </FlashCardLinkComponent>
+        </FlashcardLinkComponent>
       );
     case "image":
       return (

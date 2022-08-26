@@ -1,11 +1,10 @@
 import RenderRichText from "../../RenderRichText";
 import Popover from "@/atoms/Popover";
 import IconTooltip from "@/components/IconTooltip";
-import type { ExtendedSlateElement } from "@/editor/types";
-import type { FlashCard } from "@/types";
+import type { Flashcard } from "@/types";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
-interface FlashCardLinkComponentProps {
+interface FlashcardLinkComponentProps {
   /**
    * Attributes passed to the `<span>` element
    */
@@ -17,34 +16,31 @@ interface FlashCardLinkComponentProps {
    * Children of the `<span>` element
    */
   children: React.ReactNode;
-  /**
-   * SlateJS Element to render
-   */
-  element: ExtendedSlateElement;
 }
 
 /**
  * Render a link component in the SlateJS editor
  */
-export default function FlashCardLinkComponent({
+export default function FlashcardLinkComponent({
   attributes,
   children,
-}: FlashCardLinkComponentProps) {
-  // const [flashcard] = useAsyncState<FlashCard>(
+}: FlashcardLinkComponentProps) {
+  // const [flashcard] = useAsyncState<Flashcard>(
   //   () => backendFetch('GET', `decks/flashcard/find-universal/${element.flashcardUID}/`),
   //   [], undefined,
   //   popoverIsOpen,
   // );
-  const flashcard = {} as Partial<FlashCard>;
+  const flashcard = {} as Partial<Flashcard>;
 
   const editFlashcard = async (
     e: React.MouseEvent<HTMLElement, MouseEvent>
   ) => {
     e.preventDefault();
-    window.open(
-      `/deck/${flashcard?.parent_deck_id}/flashcards/${flashcard?.id}/edit/`,
-      "_blank"
-    );
+    window
+      .open
+      // `/deck/${flashcard?.parent_deck_id}/flashcards/${flashcard?.id}/edit/`,
+      // "_blank"
+      ();
   };
 
   return (
@@ -61,16 +57,12 @@ export default function FlashCardLinkComponent({
               className="float-right"
             />
           )}
-          {flashcard?.data ? (
-            flashcard.data.fields.map((field, i) => (
-              <>
-                <RenderRichText text={field} />
-                {i !== (flashcard.data?.fields.length ?? 0) - 1 && <hr />}
-              </>
-            ))
-          ) : (
-            <p>Flashcard not found</p>
-          )}
+          {flashcard.fields.map((field, i: number) => (
+            <>
+              <RenderRichText text={field} />
+              {i !== (flashcard.fields.length ?? 0) - 1 && <hr />}
+            </>
+          ))}
         </div>
       }
     >

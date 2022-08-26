@@ -1,10 +1,10 @@
-import { insertFlashCardLink } from "./helpers";
+import { insertFlashcardLink } from "./helpers";
 import Popover from "@/atoms/Popover";
 import TextInput from "@/atoms/TextInput";
 import Tooltip from "@/atoms/Tooltip";
 import flattenNodes from "@/helpers/flattenNodes";
 import { useDebounce } from "@/hooks/useDebounce";
-import type { FlashCard } from "@/types";
+import type { Flashcard } from "@/types";
 import { faAnchor } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
@@ -36,13 +36,13 @@ export default function FlashcardLinkButton({
 }: FlashcardLinkButtonProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [searchedFlashcards, setSearchedFlashcards] = useState<FlashCard[]>([]);
+  const [searchedFlashcards, setSearchedFlashcards] = useState<Flashcard[]>([]);
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 750);
 
   useEffect(() => {
     if (debouncedSearchTerm === searchTerm && searchTerm.length > 0) {
       setIsSearching(true);
-      // backendFetch<PaginatedResponse<FlashCard>>('POST', 'decks/flashcard/search/', {
+      // backendFetch<PaginatedResponse<Flashcard>>('POST', 'decks/flashcard/search/', {
       //   contains_text: searchTerm,
       // }).then(resp => {
       //   setSearchedFlashcards(resp.results);
@@ -96,10 +96,10 @@ export default function FlashcardLinkButton({
               {searchedFlashcards.map((flashcard) => (
                 <p
                   className="searched-item"
-                  onClick={() => insertFlashCardLink(editor, flashcard)}
+                  onClick={() => insertFlashcardLink(editor, flashcard)}
                   key={flashcard.id}
                 >
-                  {flattenNodes(flashcard.data.fields[0])}
+                  {flattenNodes(flashcard.fields[0])}
                 </p>
               ))}
             </div>

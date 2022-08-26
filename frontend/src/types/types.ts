@@ -1,5 +1,3 @@
-import { FlashCard } from "../deck/types";
-
 /**
  * Make each key of a type NonNullable
  */
@@ -12,4 +10,4 @@ interface Streak {
   doneReviewsToday: boolean;
 }
 
-export type { FlashCard, NonNullableKeys, Streak };
+export type { NonNullableKeys, Streak };
