@@ -1,4 +1,4 @@
-import DisplayProfileInline from "components/DisplayProfileInline";
+import DisplayUserInline from "components/DisplayUserInline";
 import RenderRichText from "editor/RenderRichText";
 import SEO from "helpers/SEO";
 import createSlateElement from "helpers/createSlateElement";
@@ -6,9 +6,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 
 const exampleUser = {
-  firstName: "Example",
-  lastName: "User",
-  username: "exampleuser",
+  name: "Example User",
 };
 
 const sharedDecks = [
@@ -48,7 +46,7 @@ export default function ExploreDecksPage() {
                   Created by{" "}
                   {sharedDeck.owners.map((owner, i) => (
                     <Fragment key={i}>
-                      <DisplayProfileInline profile={owner} />
+                      <DisplayUserInline user={owner} />
                       {i !== sharedDeck.owners.length - 1 && ", "}
                     </Fragment>
                   ))}

@@ -222,6 +222,7 @@ export type User = {
   __typename?: "User";
   email?: Maybe<Scalars["String"]>;
   id?: Maybe<Scalars["String"]>;
+  image?: Maybe<Scalars["String"]>;
   name?: Maybe<Scalars["String"]>;
   /** The user's response to the survey launched on sign-up */
   newUserSurveyResponse?: Maybe<NewUserSurveyResponse>;

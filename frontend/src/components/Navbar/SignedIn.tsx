@@ -10,7 +10,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Dropdown from "atoms/Dropdown";
 import type { MenuOption } from "atoms/Dropdown/Dropdown";
-import Jdenticon from "components/Jdenticon";
 import type { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
@@ -64,23 +63,17 @@ export default function SignedIn({ session, streak }: SignedInProps) {
       </div>
       <div className="inline-flex items-center justify-center mx-3">
         <Dropdown options={profileDropdownOptions}>
-          {session?.user?.image ? (
-            <span className="h-12 w-12 absolute top-0 right-0 mt-4 mr-6 rounded-full bg-white bg-opacity-5 justify-center hover:bg-opacity-10 inline-flex items-center">
-              <Image
-                src={session.user.image}
-                width={40}
-                height={40}
-                alt="Your profile picture"
-                className="rounded-full"
-              />
-            </span>
-          ) : (
-            <Jdenticon
-              value={session?.user?.email ?? ""}
-              size={32}
-              className="absolute top-0 right-0 mt-4 mr-6 h-12 w-12 rounded-full bg-white bg-opacity-5 p-1 hover:bg-opacity-10"
+          <span className="h-12 w-12 absolute top-0 right-0 mt-4 mr-6 rounded-full bg-white bg-opacity-5 justify-center hover:bg-opacity-10 inline-flex items-center">
+            <Image
+              src={
+                session?.user?.image ?? "/assets/default-profile-picture.jpg"
+              }
+              width={40}
+              height={40}
+              alt="Your profile picture"
+              className="rounded-full"
             />
-          )}
+          </span>
         </Dropdown>
       </div>
     </div>

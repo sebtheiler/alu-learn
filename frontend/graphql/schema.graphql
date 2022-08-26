@@ -180,6 +180,7 @@ scalar Upload
 type User {
   email: String
   id: String
+  image: String
   name: String
 
   """The user's response to the survey launched on sign-up"""

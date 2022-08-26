@@ -18,6 +18,7 @@ const User = objectType({
     t.string("username");
     t.string("name");
     t.string("email");
+    t.string("image");
     t.field("newUserSurveyResponse", {
       type: "NewUserSurveyResponse",
       description: "The user's response to the survey launched on sign-up",

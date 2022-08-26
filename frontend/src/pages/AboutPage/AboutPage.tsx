@@ -1,11 +1,9 @@
-import DisplayProfileInline from "components/DisplayProfileInline";
+import DisplayUserInline from "components/DisplayUserInline";
 import SEO from "helpers/SEO";
 import Image from "next/image";
 
 const sebProfile = {
-  firstName: "Sebastian",
-  lastName: "Theiler",
-  username: "sebtheiler",
+  name: "Sebastian Theiler",
 };
 
 export default function AboutPage() {
@@ -166,10 +164,10 @@ export default function AboutPage() {
             <p>
               Hi! I&apos;m
               <span className="ml-1" />
-              <DisplayProfileInline profile={sebProfile} />, a New York high
-              school junior, and I created Alu. I&apos;ve been a life-long
-              learner and, in the summer of 2020, I sought out to create a tool
-              to help me learn more effectively. Inspired by{" "}
+              <DisplayUserInline user={sebProfile} />, a New York high school
+              junior, and I created Alu. I&apos;ve been a life-long learner and,
+              in the summer of 2020, I sought out to create a tool to help me
+              learn more effectively. Inspired by{" "}
               <a
                 href="https://supermemo.guru/wiki/SuperMemo_Guru"
                 target="_blank"
