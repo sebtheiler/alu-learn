@@ -144,6 +144,7 @@ model Course {
 model CourseSection {
   id    String @id @default(cuid())
   title String
+  slug  String
 
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId String
@@ -154,6 +155,7 @@ model CourseSection {
 model SubSection {
   id    String @id @default(cuid())
   title String
+  slug  String
 
   courseSection   CourseSection @relation(fields: [courseSectionId], references: [id], onDelete: Cascade)
   courseSectionId String
@@ -161,7 +163,7 @@ model SubSection {
   flashcards Flashcard[]
 }
 
-// ## Flashcarsd
+// ## Flashcards
 model Flashcard {
   id     String @id @default(cuid())
   fields Json

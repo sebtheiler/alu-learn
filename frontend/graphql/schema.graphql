@@ -17,6 +17,7 @@ type Course {
 
 type CourseSection {
   id: String
+  slug: String
   subSections: [SubSection]
   title: String
 }
@@ -175,6 +176,7 @@ enum Role {
 type SubSection {
   flashcards: [Flashcard]
   id: String
+  slug: String
   title: String
 }
 

@@ -1,15 +1,17 @@
+import slugifyText from "../../helpers/slugifyText";
 import getUserGQL from "../../lib/getUserGQL";
 import Flashcard from "./Flashcard";
 import isCourseSectionOwner from "./helpers/isCourseSectionOwner";
 import isSubSectionOwner from "./helpers/isSubSectionOwner";
+import type { SubSection as PrismaSubSection } from "@prisma/client";
 import { extendType, list, nonNull, objectType, stringArg } from "nexus";
-import type { NonNullableKeys } from "types";
 
 const SubSection = objectType({
   name: "SubSection",
   definition(t) {
     t.string("id");
     t.string("title");
+    t.string("slug");
     t.field("flashcards", {
       type: list(Flashcard),
       resolve(subSection, _args, ctx) {
@@ -41,6 +43,7 @@ export const SubSectionMutation = extendType({
         return ctx.prisma.subSection.create({
           data: {
             title: args.title,
+            slug: slugifyText(args.title),
             courseSection: {
               connect: {
                 id: args.courseSectionId,
@@ -63,8 +66,11 @@ export const SubSectionMutation = extendType({
         const user = await getUserGQL(ctx);
         if (!user || !isSubSectionOwner(args.subSectionId, ctx)) return null;
 
-        const data: Partial<NonNullableKeys<typeof args>> = {};
-        if (args.title != null) data.title = args.title;
+        const data: Partial<PrismaSubSection> = {};
+        if (args.title != null) {
+          data.title = args.title;
+          data.slug = slugifyText(args.title);
+        }
 
         return ctx.prisma.subSection.update({
           where: { id: args.subSectionId },

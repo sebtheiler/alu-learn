@@ -2,7 +2,6 @@ import { getSessionAndStreak } from "../../../../../lib/getSessionSSR";
 import isCourseUser from "../../../../../lib/isCourseUser";
 import prisma from "../../../../../lib/prisma";
 import type { NextPage } from "../../../../../lib/types";
-import { cleanTitle } from "helpers/cleanTitle";
 import type { GetServerSideProps } from "next";
 
 const Blank: NextPage = () => <></>;
@@ -30,10 +29,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     },
     select: {
-      title: true,
+      slug: true,
       courseSection: {
         select: {
-          title: true,
+          slug: true,
         },
       },
     },
@@ -42,9 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     redirect: {
       permanent: false,
-      destination: `/course/${courseId}/add-flashcards/${cleanTitle(
-        subSection?.courseSection.title
-      )}/${cleanTitle(subSection?.title)}`,
+      destination: `/course/${courseId}/add-flashcards/${subSection?.courseSection.slug}/${subSection?.slug}`,
     },
   };
 };

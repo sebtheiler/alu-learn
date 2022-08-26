@@ -1,3 +1,4 @@
+import slugifyText from "../../helpers/slugifyText";
 import generateSignedS3URL from "../../lib/generateSignedS3URL";
 import getUserGQL from "../../lib/getUserGQL";
 import deleteFileFromS3 from "./helpers/deleteFileFromS3";
@@ -125,10 +126,13 @@ export const CoursesMutation = extendType({
         });
 
         // Populate the course with a default main and subsection
+        const defaultSectionTitle = "Default";
+
         const courseSection = await ctx.prisma.courseSection.create({
           data: {
-            title: "Default",
+            title: defaultSectionTitle,
             courseId: course.id,
+            slug: slugifyText(defaultSectionTitle),
           },
         });
 
@@ -136,6 +140,7 @@ export const CoursesMutation = extendType({
           data: {
             title: "Default",
             courseSectionId: courseSection.id,
+            slug: slugifyText(defaultSectionTitle),
           },
         });
 

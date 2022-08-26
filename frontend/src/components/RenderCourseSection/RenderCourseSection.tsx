@@ -11,7 +11,6 @@ import TextInput from "atoms/TextInput";
 import Tooltip from "atoms/Tooltip";
 import RenderSubSection from "components/RenderSubSection";
 import CreateSubSection from "graphql/CreateSubSection";
-import { cleanTitle } from "helpers/cleanTitle";
 import { getElementsVals } from "helpers/getElementsVals";
 import useWindowDimensions from "hooks/useWindowDimensions";
 import CoursePageContext from "pages/CoursePage/context";
@@ -73,17 +72,11 @@ export default function RenderCourseSection({
         spaced
         vertical={width < 640}
       >
-        <LinkButton
-          href={`/course/${course?.id}/learn/${cleanTitle(
-            courseSection.title as string
-          )}`}
-        >
+        <LinkButton href={`/course/${course?.id}/learn/${courseSection.slug}`}>
           Learn Content
         </LinkButton>
         <LinkButton
-          href={`/course/${course?.id}/flashcards/${cleanTitle(
-            courseSection.title as string
-          )}`}
+          href={`/course/${course?.id}/flashcards/${courseSection.slug}`}
         >
           Flashcards
         </LinkButton>
@@ -91,15 +84,11 @@ export default function RenderCourseSection({
           options={[
             {
               text: "Games",
-              href: `/course/${course?.id}/games/${cleanTitle(
-                courseSection.title as string
-              )}`,
+              href: `/course/${course?.id}/games/${courseSection.slug}`,
             },
             {
               text: "Practice Problems",
-              href: `/course/${course?.id}/practice/${cleanTitle(
-                courseSection.title as string
-              )}`,
+              href: `/course/${course?.id}/practice/${courseSection.slug}`,
             },
           ]}
         >

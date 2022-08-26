@@ -39,6 +39,7 @@ export type Course = {
 export type CourseSection = {
   __typename?: "CourseSection";
   id?: Maybe<Scalars["String"]>;
+  slug?: Maybe<Scalars["String"]>;
   subSections?: Maybe<Array<Maybe<SubSection>>>;
   title?: Maybe<Scalars["String"]>;
 };
@@ -219,6 +220,7 @@ export type SubSection = {
   __typename?: "SubSection";
   flashcards?: Maybe<Array<Maybe<Flashcard>>>;
   id?: Maybe<Scalars["String"]>;
+  slug?: Maybe<Scalars["String"]>;
   title?: Maybe<Scalars["String"]>;
 };
 

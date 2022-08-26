@@ -28,10 +28,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         select: {
           id: true,
           title: true,
+          slug: true,
           subSections: {
             select: {
               id: true,
               title: true,
+              slug: true,
             },
           },
         },

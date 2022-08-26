@@ -1,14 +1,16 @@
+import slugifyText from "../../helpers/slugifyText";
 import getUserGQL from "../../lib/getUserGQL";
 import isCourseOwner from "./helpers/isCourseOwner";
 import isCourseSectionOwner from "./helpers/isCourseSectionOwner";
+import type { CourseSection as PrismaCourseSection } from "@prisma/client";
 import { extendType, list, nonNull, objectType, stringArg } from "nexus";
-import type { NonNullableKeys } from "types";
 
 const CourseSection = objectType({
   name: "CourseSection",
   definition(t) {
     t.string("id");
     t.string("title");
+    t.string("slug");
     t.field("subSections", {
       type: list("SubSection"),
       resolve(courseSection, _args, ctx) {
@@ -39,15 +41,18 @@ export const CourseSectionMutation = extendType({
 
         const courseSection = await ctx.prisma.courseSection.create({
           data: {
-            title: args.title as string,
-            courseId: args.courseId as string,
+            title: args.title,
+            courseId: args.courseId,
+            slug: slugifyText(args.title),
           },
         });
 
+        const subSectionTitle = "Default";
         await ctx.prisma.subSection.create({
           data: {
-            title: "Default",
+            title: subSectionTitle,
             courseSectionId: courseSection.id,
+            slug: slugifyText(subSectionTitle),
           },
         });
 
@@ -68,8 +73,11 @@ export const CourseSectionMutation = extendType({
         if (!user || !isCourseSectionOwner(args.courseSectionId, ctx))
           return null;
 
-        const data: Partial<NonNullableKeys<typeof args>> = {};
-        if (args.title != null) data.title = args.title;
+        const data: Partial<PrismaCourseSection> = {};
+        if (args.title != null) {
+          data.title = args.title;
+          data.slug = slugifyText(args.title);
+        }
 
         return ctx.prisma.courseSection.update({
           where: { id: args.courseSectionId },

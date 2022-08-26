@@ -8,7 +8,6 @@ import CreateFlashcard from "graphql/CreateFlashcard";
 import SEO from "helpers/SEO";
 import blankSlateElement from "helpers/blankSlateElement";
 import classNames from "helpers/classNames";
-import { cleanTitle } from "helpers/cleanTitle";
 import clearEditor from "helpers/clearEditor";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -129,17 +128,14 @@ export default function CreateFlashcardsPage({
             {course.courseSections?.map((courseSection, i) => (
               <div key={i}>
                 <Link
-                  href={`/course/${course.id}/add-flashcards/${cleanTitle(
-                    courseSection?.title as string
-                  )}`}
+                  href={`/course/${course.id}/add-flashcards/${courseSection?.slug}`}
                 >
                   <a>
                     <div
                       className={classNames(
                         `bg-alu-light-gray hover:bg-alu-light-gray-darker border-2
                         px-3 py-2 max-w-xs rounded-full mt-2`,
-                        courseSectionSlug ===
-                          cleanTitle(courseSection?.title as string) &&
+                        courseSectionSlug === courseSection?.slug &&
                           "bg-alu-light-gray-darker"
                       )}
                     >
@@ -149,9 +145,7 @@ export default function CreateFlashcardsPage({
                 </Link>
                 {courseSection?.subSections?.map((subSection, j) => (
                   <Link
-                    href={`/course/${course.id}/add-flashcards/${cleanTitle(
-                      courseSection?.title as string
-                    )}/${cleanTitle(subSection?.title as string)}`}
+                    href={`/course/${course.id}/add-flashcards/${courseSection.slug}/${subSection?.slug}`}
                     key={j}
                   >
                     <a>
@@ -159,8 +153,7 @@ export default function CreateFlashcardsPage({
                         className={classNames(
                           `bg-alu-light-gray hover:bg-alu-light-gray-darker border-2
                           px-3 py-2 max-w-xs rounded-full ml-5 my-1`,
-                          subSectionSlug ===
-                            cleanTitle(subSection?.title as string) &&
+                          subSectionSlug === subSection?.slug &&
                             "bg-alu-light-gray-darker"
                         )}
                         key={j}
