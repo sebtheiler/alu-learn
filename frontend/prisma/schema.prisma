@@ -157,4 +157,23 @@ model SubSection {
 
   courseSection   CourseSection @relation(fields: [courseSectionId], references: [id], onDelete: Cascade)
   courseSectionId String
+
+  flashcards Flashcard[]
+}
+
+// ## Flashcarsd
+model Flashcard {
+  id     String @id @default(cuid())
+  fields Json
+  tags   String @default("")
+
+  subSection   SubSection @relation(fields: [subSectionId], references: [id], onDelete: Cascade)
+  subSectionId String
+
+  type FlashcardType @default(NORMAL)
+}
+
+enum FlashcardType {
+  NORMAL
+  CLOZE
 }

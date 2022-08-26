@@ -15,7 +15,7 @@ const Template: ComponentStory<typeof RenderEditor> = (args) => {
   const [value, setValue] = useState(blankSlateElement);
 
   return (
-    <RenderEditor editor={editor} value={value} setValue={setValue} {...args} />
+    <RenderEditor {...args} editor={editor} value={value} setValue={setValue} />
   );
 };
 

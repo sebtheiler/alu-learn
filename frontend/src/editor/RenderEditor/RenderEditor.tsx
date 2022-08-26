@@ -1,5 +1,7 @@
 import EditorButtons from "../EditorButtons";
 import FullEditable from "../FullEditable";
+import type { ExtendedSlateElement } from "editor/types";
+import classNames from "helpers/classNames";
 import type { Descendant } from "slate";
 import { Slate } from "slate-react";
 import type { ReactEditor } from "slate-react";
@@ -16,7 +18,7 @@ interface RenderEditorProps {
   /**
    * Function to update the content of the editor
    */
-  setValue: (value: Descendant[]) => void;
+  setValue: React.Dispatch<React.SetStateAction<ExtendedSlateElement[]>>;
   /**
    * Should the flashcard link button be displayed?
    */
@@ -29,6 +31,22 @@ interface RenderEditorProps {
    * Is the content of the editor read only?
    */
   readOnly?: boolean;
+  /**
+   * Additional classes to apply to the full editable
+   */
+  className?: string;
+  /**
+   * Additional styles to apply to the full editable
+   */
+  style?: React.CSSProperties;
+  /**
+   * Automatically focus the editor on page load?
+   */
+  autoFocus?: boolean;
+  /**
+   * Specify an ID for the textbox div
+   */
+  id?: string;
 }
 
 /**
@@ -41,17 +59,20 @@ export default function RenderEditor({
   displayFlashCardLinkButton,
   isPro,
   readOnly,
+  className,
+  style,
+  autoFocus,
+  id,
 }: RenderEditorProps) {
   return (
     <div className="editor">
       <Slate
         editor={editor}
         value={value}
-        onChange={(newValue) => {
-          setValue(newValue);
-        }}
+        // @ts-ignore
+        onChange={(newValue) => setValue(newValue)}
       >
-        <div className="editor-head">
+        <div>
           <EditorButtons
             editor={editor}
             displayFlashCardLinkButton={displayFlashCardLinkButton}
@@ -60,11 +81,14 @@ export default function RenderEditor({
             className="mb-1"
           />
         </div>
-        <div className="editor-body">
+        <div>
           <FullEditable
             editor={editor}
-            className="rounded-lg border p-3"
+            className={classNames("rounded-lg border-2 p-3", className)}
             readOnly={readOnly}
+            style={style}
+            autoFocus={autoFocus}
+            id={id}
           />
         </div>
       </Slate>

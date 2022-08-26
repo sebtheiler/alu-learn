@@ -48,7 +48,6 @@ export default function RenderCourseSection({
       variables: {
         title: subSectionTitle,
         courseSectionId: courseSection.id,
-        courseId: course?.id,
       },
     });
 

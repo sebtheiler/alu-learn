@@ -1,0 +1,180 @@
+import { useMutation } from "@apollo/client";
+import AsyncButton from "atoms/AsyncButton";
+import Select from "atoms/Select";
+import TextInput from "atoms/TextInput";
+import { createFullEditor } from "editor/FullEditable";
+import RenderEditor from "editor/RenderEditor";
+import CreateFlashcard from "graphql/CreateFlashcard";
+import SEO from "helpers/SEO";
+import blankSlateElement from "helpers/blankSlateElement";
+import classNames from "helpers/classNames";
+import { cleanTitle } from "helpers/cleanTitle";
+import clearEditor from "helpers/clearEditor";
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import type { ReactEditor } from "slate-react";
+import type { Course, FlashcardType } from "types";
+
+export interface CreateFlashcardsPageProps {
+  course: Course;
+  courseSectionSlug: string;
+  subSectionSlug: string;
+}
+
+/**
+ * Renders a page to create flashcards
+ */
+export default function CreateFlashcardsPage({
+  course,
+  courseSectionSlug,
+  subSectionSlug,
+}: CreateFlashcardsPageProps) {
+  const frontEditor = useMemo<ReactEditor>(createFullEditor, []);
+  const [frontValue, setFrontValue] = useState(blankSlateElement);
+
+  const backEditor = useMemo<ReactEditor>(createFullEditor, []);
+  const [backValue, setBackValue] = useState(blankSlateElement);
+
+  const [createFlashcard] = useMutation(CreateFlashcard);
+
+  const [flashcardType, setFlashcardType] = useState<FlashcardType>(
+    "NORMAL" as FlashcardType
+  );
+  const [tags, setTags] = useState("");
+
+  const createFlashcardHandler = async () => {
+    await createFlashcard({
+      variables: {
+        fields: { value: [frontValue, backValue] },
+        tags,
+        flashcardType,
+        courseSectionSlug,
+        subSectionSlug,
+      },
+    });
+
+    clearEditor(frontEditor);
+    clearEditor(backEditor);
+    document.getElementById("frontEditor")?.focus();
+  };
+
+  return (
+    <>
+      <SEO
+        title="Create Flashcards"
+        path={`course/${course.id}/add-flashcards`}
+        description=""
+      />
+      <div className="mt-28">
+        <h1 className="text-center font-bold text-4xl">Add Flashcards</h1>
+        <p className="text-center text-gray-700">
+          Use &quot;Tab&quot; to cycle through sides, and use enter to press
+          create once it is selected
+        </p>
+        <div className="grid grid-cols-12">
+          <div className="md:col-start-4 col-span-12 md:col-span-6 mx-10 md:mx-5">
+            <div className="mt-2">
+              <Select
+                label="Flashcard Type"
+                options={[
+                  { value: "NORMAL", label: "Normal" },
+                  { value: "CLOZE", label: "Cloze (fill in the blanks)" },
+                ]}
+                onChange={(type) => setFlashcardType(type as FlashcardType)}
+                id="flashcardType"
+              />
+            </div>
+            <div className="mt-3">
+              <h3 className="font-bold text-xl">
+                {flashcardType === "NORMAL" && "Front"}
+                {flashcardType === "CLOZE" &&
+                  "Text (use the cloze deletion option to hide text)"}
+              </h3>
+              <RenderEditor
+                editor={frontEditor}
+                value={frontValue}
+                setValue={setFrontValue}
+                style={{ minHeight: "200px" }}
+                id="frontEditor"
+                autoFocus
+              />
+            </div>
+            <div className="mt-5">
+              <h3 className="font-bold text-xl">
+                {flashcardType === "NORMAL" && "Back"}
+                {flashcardType === "CLOZE" && "Extra Information (optional)"}
+              </h3>
+              <RenderEditor
+                editor={backEditor}
+                value={backValue}
+                setValue={setBackValue}
+                style={{ minHeight: "200px" }}
+                id="backEditor"
+              />
+            </div>
+            <div className="mt-3">
+              <AsyncButton onClick={createFlashcardHandler} block>
+                Create
+              </AsyncButton>
+            </div>
+            <div className="my-3">
+              <TextInput
+                label="Tags (optional, separate with commas)"
+                onChange={(e) => setTags(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="md:col-start-10 col-span-12 md:col-span-3 mx-5 md:mx-3 mb-3">
+            <h3 className="font-bold text-xl">Select Sub-section</h3>
+            {course.courseSections?.map((courseSection, i) => (
+              <div key={i}>
+                <Link
+                  href={`/course/${course.id}/add-flashcards/${cleanTitle(
+                    courseSection?.title as string
+                  )}`}
+                >
+                  <a>
+                    <div
+                      className={classNames(
+                        `bg-alu-light-gray hover:bg-alu-light-gray-darker border-2
+                        px-3 py-2 max-w-xs rounded-full mt-2`,
+                        courseSectionSlug ===
+                          cleanTitle(courseSection?.title as string) &&
+                          "bg-alu-light-gray-darker"
+                      )}
+                    >
+                      {courseSection?.title}
+                    </div>
+                  </a>
+                </Link>
+                {courseSection?.subSections?.map((subSection, j) => (
+                  <Link
+                    href={`/course/${course.id}/add-flashcards/${cleanTitle(
+                      courseSection?.title as string
+                    )}/${cleanTitle(subSection?.title as string)}`}
+                    key={j}
+                  >
+                    <a>
+                      <div
+                        className={classNames(
+                          `bg-alu-light-gray hover:bg-alu-light-gray-darker border-2
+                          px-3 py-2 max-w-xs rounded-full ml-5 my-1`,
+                          subSectionSlug ===
+                            cleanTitle(subSection?.title as string) &&
+                            "bg-alu-light-gray-darker"
+                        )}
+                        key={j}
+                      >
+                        {subSection?.title}
+                      </div>
+                    </a>
+                  </Link>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

@@ -18,6 +18,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSONObject: any;
   /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };
@@ -46,6 +48,19 @@ export enum DeckChoice {
   CreateOwn = "CREATE_OWN",
 }
 
+export type Flashcard = {
+  __typename?: "Flashcard";
+  fields?: Maybe<Scalars["JSONObject"]>;
+  id?: Maybe<Scalars["String"]>;
+  tags?: Maybe<Scalars["String"]>;
+  type?: Maybe<FlashcardType>;
+};
+
+export enum FlashcardType {
+  Cloze = "CLOZE",
+  Normal = "NORMAL",
+}
+
 export enum JoinReason {
   Concept = "CONCEPT",
   Grades = "GRADES",
@@ -60,6 +75,8 @@ export type Mutation = {
   createCourse?: Maybe<Course>;
   /** Creates a new course section and populates it with a default subsection */
   createCourseSection?: Maybe<CourseSection>;
+  /** Creeates a new flashcard */
+  createFlashcard?: Maybe<Flashcard>;
   /** Creates a new NewUserSurveyResponse from a set of responses */
   createNewUserSurveyResponse?: Maybe<NewUserSurveyResponse>;
   /** Creates a new sub section */
@@ -91,6 +108,14 @@ export type MutationCreateCourseSectionArgs = {
   title: Scalars["String"];
 };
 
+export type MutationCreateFlashcardArgs = {
+  courseSectionSlug: Scalars["String"];
+  fields: Scalars["JSONObject"];
+  flashcardType?: InputMaybe<FlashcardType>;
+  subSectionSlug: Scalars["String"];
+  tags?: InputMaybe<Scalars["String"]>;
+};
+
 export type MutationCreateNewUserSurveyResponseArgs = {
   deckChoice: DeckChoice;
   joinReason: JoinReason;
@@ -102,7 +127,6 @@ export type MutationCreateNewUserSurveyResponseArgs = {
 };
 
 export type MutationCreateSubSectionArgs = {
-  courseId: Scalars["String"];
   courseSectionId: Scalars["String"];
   title: Scalars["String"];
 };
@@ -193,6 +217,7 @@ export enum Role {
 
 export type SubSection = {
   __typename?: "SubSection";
+  flashcards?: Maybe<Array<Maybe<Flashcard>>>;
   id?: Maybe<Scalars["String"]>;
   title?: Maybe<Scalars["String"]>;
 };

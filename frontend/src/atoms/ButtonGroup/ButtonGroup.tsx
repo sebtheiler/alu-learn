@@ -1,6 +1,6 @@
 import type { ButtonProps } from "atoms/Button";
 import classNames from "helpers/classNames";
-import { cloneElement } from "react";
+import { Fragment, cloneElement } from "react";
 
 interface ButtonGroupProps {
   /**
@@ -55,7 +55,7 @@ export default function ButtonGroup({
         if (fixedWidth) {
           newProps.style = { ...newProps.style, width: fixedWidth };
         }
-        return cloneElement(button, newProps);
+        return <Fragment key={i}>{cloneElement(button, newProps)}</Fragment>;
       })}
     </div>
   );

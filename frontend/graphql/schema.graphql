@@ -26,6 +26,23 @@ enum DeckChoice {
   CREATE_OWN
 }
 
+type Flashcard {
+  fields: JSONObject
+  id: String
+  tags: String
+  type: FlashcardType
+}
+
+enum FlashcardType {
+  CLOZE
+  NORMAL
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
 enum JoinReason {
   CONCEPT
   GRADES
@@ -46,11 +63,14 @@ type Mutation {
   """
   createCourseSection(courseId: String!, title: String!): CourseSection
 
+  """Creeates a new flashcard"""
+  createFlashcard(courseSectionSlug: String!, fields: JSONObject!, flashcardType: FlashcardType, subSectionSlug: String!, tags: String): Flashcard
+
   """Creates a new NewUserSurveyResponse from a set of responses"""
   createNewUserSurveyResponse(deckChoice: DeckChoice!, joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumCards: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse
 
   """Creates a new sub section"""
-  createSubSection(courseId: String!, courseSectionId: String!, title: String!): SubSection
+  createSubSection(courseSectionId: String!, title: String!): SubSection
 
   """
   Removes the current user from a course if the course has other users.  If the course has no other users, deletes the course.
@@ -153,6 +173,7 @@ enum Role {
 }
 
 type SubSection {
+  flashcards: [Flashcard]
   id: String
   title: String
 }

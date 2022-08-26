@@ -6,7 +6,7 @@ interface AsyncButtonProps extends ButtonProps {
   /**
    * Async function to run when the button is clicked
    */
-  onClick(event: React.MouseEvent<HTMLButtonElement>): Promise<void>;
+  onClick(event: React.MouseEvent<HTMLButtonElement>): Promise<any>;
 }
 
 /**

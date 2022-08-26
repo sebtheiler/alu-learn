@@ -21,6 +21,17 @@ interface FullEditorProps {
    * Classname passed to the `<Editable>`
    */
   className?: string;
+  /**
+   * Style passed to the editable
+   */
+  style?: React.CSSProperties;
+  /**
+   * Automatically focus the editor on page load?
+   */
+  autoFocus?: boolean;
+  /**
+   * Specify an ID for the textbox div
+   */
   id?: string;
 }
 
@@ -32,6 +43,8 @@ export default function FullEditable({
   editor,
   readOnly,
   className,
+  style,
+  autoFocus,
   id,
 }: FullEditorProps) {
   const renderElement = useCallback(
@@ -50,6 +63,7 @@ export default function FullEditable({
       renderElement={renderElement}
       renderLeaf={renderLeaf}
       className={className}
+      style={style}
       spellCheck
       onKeyDown={(event) => {
         for (const hotkey in HOTKEYS) {
@@ -61,6 +75,7 @@ export default function FullEditable({
         }
       }}
       onBlur={editor.saveSelectionOnBlur}
+      autoFocus={autoFocus}
     />
   );
 }

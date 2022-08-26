@@ -1,6 +1,7 @@
-import generateSignedS3URL from "../../lib/generateSignedS3URL";
-import { getSessionAndStreak } from "../../lib/getSessionSSR";
-import prisma from "../../lib/prisma";
+import generateSignedS3URL from "../../../lib/generateSignedS3URL";
+import { getSessionAndStreak } from "../../../lib/getSessionSSR";
+import isCourseUser from "../../../lib/isCourseUser";
+import prisma from "../../../lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
 import CoursePage from "pages/CoursePage";
 import type { CoursePageProps } from "pages/CoursePage";
@@ -13,11 +14,11 @@ export default Course;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { session, streak } = await getSessionAndStreak(context);
-  const { id } = context.query;
+  const { courseId } = context.query;
 
   let course = await prisma.course.findUnique({
     where: {
-      id: id as string,
+      id: courseId as string,
     },
     select: {
       id: true,
@@ -38,20 +39,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  const isCourseUser =
-    (await prisma.user.count({
-      where: {
-        email: session?.user?.email ?? null,
-        courses: {
-          some: {
-            id: course?.id ?? "",
-          },
-        },
-      },
-    })) > 0;
-
   let authorized = true;
-  if (!isCourseUser) {
+  if (!(await isCourseUser(courseId as string, session?.user?.email))) {
     course = null;
     authorized = false;
   } else if (course && course.bannerImage) {

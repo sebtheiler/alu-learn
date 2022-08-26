@@ -1,7 +1,8 @@
 import getUserGQL from "../../lib/getUserGQL";
-import isCourseOwner from "./helpers/isCourseOwner";
+import Flashcard from "./Flashcard";
+import isCourseSectionOwner from "./helpers/isCourseSectionOwner";
 import isSubSectionOwner from "./helpers/isSubSectionOwner";
-import { extendType, nonNull, objectType, stringArg } from "nexus";
+import { extendType, list, nonNull, objectType, stringArg } from "nexus";
 import type { NonNullableKeys } from "types";
 
 const SubSection = objectType({
@@ -9,16 +10,16 @@ const SubSection = objectType({
   definition(t) {
     t.string("id");
     t.string("title");
-    // t.field("flashcards", {
-    //   type: list("User"),
-    //   resolve(courseSection, _args, ctx) {
-    //     return ctx.prisma.subSection.findMany({
-    //       where: {
-    //         courseSectionId: courseSection.id as string,
-    //       },
-    //     });
-    //   },
-    // });
+    t.field("flashcards", {
+      type: list(Flashcard),
+      resolve(subSection, _args, ctx) {
+        return ctx.prisma.flashcard.findMany({
+          where: {
+            subSectionId: subSection.id as string,
+          },
+        });
+      },
+    });
   },
 });
 
@@ -31,18 +32,18 @@ export const SubSectionMutation = extendType({
       args: {
         title: nonNull(stringArg()),
         courseSectionId: nonNull(stringArg()),
-        courseId: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isCourseOwner(args.courseId, ctx)) return null;
+        if (!user || !isCourseSectionOwner(args.courseSectionId, ctx))
+          return null;
 
         return ctx.prisma.subSection.create({
           data: {
-            title: args.title as string,
+            title: args.title,
             courseSection: {
               connect: {
-                id: args.courseSectionId as string,
+                id: args.courseSectionId,
               },
             },
           },
