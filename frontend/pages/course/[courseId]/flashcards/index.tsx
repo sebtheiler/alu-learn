@@ -1,6 +1,6 @@
 import FlashcardsPage from "@/pages/FlashcardsPage";
 import type { FlashcardsPageProps } from "@/pages/FlashcardsPage";
-import { getSessionAndStreak } from "lib/getSessionSSR";
+import { getSessionAndStreak } from "helpers/getSessionSSR";
 import type { NextPage } from "lib/types";
 import type { GetServerSideProps } from "next";
 

@@ -1,9 +1,9 @@
-import slugifyText from "../../helpers/slugifyText";
-import getUserGQL from "../../lib/getUserGQL";
 import Flashcard from "./Flashcard";
-import isCourseSectionOwner from "./helpers/isCourseSectionOwner";
-import isSubSectionOwner from "./helpers/isSubSectionOwner";
 import type { SubSection as PrismaSubSection } from "@prisma/client";
+import getUserGQL from "helpers/getUserGQL";
+import isCourseSectionOwner from "helpers/isCourseSectionOwner";
+import isSubSectionOwner from "helpers/isSubSectionOwner";
+import slugifyText from "helpers/slugifyText";
 import { extendType, list, nonNull, objectType, stringArg } from "nexus";
 
 const SubSection = objectType({
@@ -37,7 +37,14 @@ export const SubSectionMutation = extendType({
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isCourseSectionOwner(args.courseSectionId, ctx))
+        if (
+          !user ||
+          !isCourseSectionOwner(
+            args.courseSectionId,
+            ctx.user?.email,
+            ctx.prisma
+          )
+        )
           return null;
 
         return ctx.prisma.subSection.create({
@@ -64,7 +71,11 @@ export const SubSectionMutation = extendType({
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isSubSectionOwner(args.subSectionId, ctx)) return null;
+        if (
+          !user ||
+          !isSubSectionOwner(args.subSectionId, ctx.user?.email, ctx.prisma)
+        )
+          return null;
 
         const data: Partial<PrismaSubSection> = {};
         if (args.title != null) {
@@ -88,7 +99,11 @@ export const SubSectionMutation = extendType({
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isSubSectionOwner(args.subSectionId, ctx)) return null;
+        if (
+          !user ||
+          !isSubSectionOwner(args.subSectionId, ctx.user?.email, ctx.prisma)
+        )
+          return null;
 
         return ctx.prisma.subSection.delete({
           where: { id: args.subSectionId },

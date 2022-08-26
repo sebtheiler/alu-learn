@@ -1,5 +1,5 @@
 import { UserType } from ".";
-import getUserGQL from "../../lib/getUserGQL";
+import getUserGQL from "helpers/getUserGQL";
 import {
   objectType,
   extendType,

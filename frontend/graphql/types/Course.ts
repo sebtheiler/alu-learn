@@ -1,13 +1,13 @@
-import slugifyText from "../../helpers/slugifyText";
-import generateSignedS3URL from "../../lib/generateSignedS3URL";
-import getUserGQL from "../../lib/getUserGQL";
-import deleteFileFromS3 from "./helpers/deleteFileFromS3";
-import enforceMaxStreamSize from "./helpers/enforceMaxStreamSize";
-import isCourseOwner from "./helpers/isCourseOwner";
-import uploadStreamToS3 from "./helpers/uploadStreamToS3";
+import type { Course as PrismaCourse } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
+import deleteFileFromS3 from "helpers/deleteFileFromS3";
+import enforceMaxStreamSize from "helpers/enforceMaxStreamSize";
+import generateSignedS3URL from "helpers/generateSignedS3URL";
+import getUserGQL from "helpers/getUserGQL";
+import isCourseOwner from "helpers/isCourseOwner";
+import slugifyText from "helpers/slugifyText";
+import uploadStreamToS3 from "helpers/uploadStreamToS3";
 import { arg, extendType, list, nonNull, objectType, stringArg } from "nexus";
-import type { NonNullableKeys } from "types";
 
 const Course = objectType({
   name: "Course",
@@ -158,9 +158,10 @@ export const CoursesMutation = extendType({
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isCourseOwner(args.courseId, ctx)) return null;
+        if (!user || !isCourseOwner(args.courseId, ctx.user?.email, ctx.prisma))
+          return null;
 
-        const data: Partial<NonNullableKeys<typeof args>> = {};
+        const data: Partial<PrismaCourse> = {};
         if (args.title != null) data.title = args.title;
 
         return ctx.prisma.course.update({
@@ -208,7 +209,8 @@ export const CoursesMutation = extendType({
           });
         } else {
           // Delete the course (if the current user is the course owner)
-          if (!isCourseOwner(args.courseId, ctx)) return null;
+          if (!isCourseOwner(args.courseId, ctx.user?.email, ctx.prisma))
+            return null;
           return ctx.prisma.course.delete({
             where: {
               id: args.courseId,
@@ -232,7 +234,8 @@ export const CoursesMutation = extendType({
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isCourseOwner(args.courseId, ctx)) return null;
+        if (!user || !isCourseOwner(args.courseId, ctx.user?.email, ctx.prisma))
+          return null;
 
         // If the `bannerImage` is null, remove the course's banner and delete the associated file
         if (args.bannerImage === null) {

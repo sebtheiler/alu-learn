@@ -1,5 +1,5 @@
-import prisma from "./prisma";
 import type { User, Prisma } from "@prisma/client";
+import prisma from "lib/prisma";
 import type { Session } from "next-auth";
 
 /**

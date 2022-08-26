@@ -2,7 +2,7 @@ import prisma from "../lib/prisma";
 import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { PrismaClient } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { unstable_getServerSession, User } from "next-auth";
+import { unstable_getServerSession } from "next-auth";
 
 export type Context = {
   user?: {

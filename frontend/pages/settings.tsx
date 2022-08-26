@@ -1,7 +1,7 @@
-import getUserSSR from "../lib/getUserSSR";
-import type { NextPage } from "../lib/types";
+import type { NextPage } from "../types";
 import { authOptions } from "./api/auth/[...nextauth]";
 import SettingsPage, { SettingsPageProps } from "@/pages/SettingsPage";
+import getUserSSR from "helpers/getUserSSR";
 import type { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";

@@ -1,6 +1,6 @@
-import getUserGQL from "../../lib/getUserGQL";
-import isSubSectionOwner from "./helpers/isSubSectionOwner";
 import { JSONData } from "./scalars";
+import getUserGQL from "helpers/getUserGQL";
+import isSubSectionOwner from "helpers/isSubSectionOwner";
 import {
   arg,
   enumType,

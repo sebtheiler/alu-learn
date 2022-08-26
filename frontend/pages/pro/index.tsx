@@ -1,6 +1,6 @@
 import ProUpgradePage from "@/pages/ProUpgradePage";
 import type { ProUpgradePageProps } from "@/pages/ProUpgradePage";
-import { getSessionAndStreak } from "lib/getSessionSSR";
+import { getSessionAndStreak } from "helpers/getSessionSSR";
 import type { GetServerSideProps, NextPage } from "next";
 
 const ProUpgrade: NextPage<ProUpgradePageProps> = (
