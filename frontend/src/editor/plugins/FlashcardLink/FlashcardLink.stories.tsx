@@ -1,18 +1,17 @@
-import { FlashCardLinkComponent } from ".";
+import { FlashcardLinkComponent } from ".";
 import { ComponentStory } from "@storybook/react";
 
 export default {
-  title: "editor/plugins/FlashCardLinkComponent",
-  component: FlashCardLinkComponent,
+  title: "editor/plugins/FlashcardLinkComponent",
+  component: FlashcardLinkComponent,
 };
 
-const Template: ComponentStory<typeof FlashCardLinkComponent> = (args) => (
-  <FlashCardLinkComponent {...args} />
+const Template: ComponentStory<typeof FlashcardLinkComponent> = (args) => (
+  <FlashcardLinkComponent {...args} />
 );
 
-export const ExampleFlashCardLink = Template.bind({});
-ExampleFlashCardLink.args = {
+export const ExampleFlashcardLink = Template.bind({});
+ExampleFlashcardLink.args = {
   attributes: {},
   children: <>Flashcard link text</>,
-  element: { flashcardUUID: "" },
 };

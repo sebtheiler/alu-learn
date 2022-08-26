@@ -1,6 +1,6 @@
 import BlockButton from "./BlockButton";
 import MarkButton from "./MarkButton";
-import FlashCardLinkButton from "@/editor/plugins/FlashcardLink/FlashcardLinkButton";
+import FlashcardLinkButton from "@/editor/plugins/FlashcardLink/FlashcardLinkButton";
 import LinkButton from "@/editor/plugins/Link/LinkButton";
 import {
   faBold,
@@ -31,7 +31,7 @@ interface EditorButtonProps {
   /**
    * Should the flashcard link button be displayed?
    */
-  displayFlashCardLinkButton?: boolean;
+  displayFlashcardLinkButton?: boolean;
   /**
    * Should the heading button be displayed?
    */
@@ -49,7 +49,7 @@ export default function EditorButtons({
   editor,
   className = "",
   tabbable = false,
-  displayFlashCardLinkButton = true,
+  displayFlashcardLinkButton = true,
   displayHeadingButton = false,
   isPro = false,
 }: EditorButtonProps) {
@@ -89,9 +89,9 @@ export default function EditorButtons({
         <LinkButton editor={editor} tabbable={tabbable} />
       </div>
 
-      {displayFlashCardLinkButton && (
+      {displayFlashcardLinkButton && (
         <div className="inline px-2">
-          <FlashCardLinkButton
+          <FlashcardLinkButton
             editor={editor}
             tabbable={tabbable}
             isPro={isPro}

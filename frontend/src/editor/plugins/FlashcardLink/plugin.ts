@@ -1,6 +1,6 @@
 import { ExtendedReactEditor } from "../../types";
 
-const withFlashCardLinks = (editor: ExtendedReactEditor) => {
+const withFlashcardLinks = (editor: ExtendedReactEditor) => {
   const { isInline } = editor;
 
   editor.isInline = (element) => {
@@ -11,4 +11,4 @@ const withFlashCardLinks = (editor: ExtendedReactEditor) => {
   return editor;
 };
 
-export default withFlashCardLinks;
+export default withFlashcardLinks;

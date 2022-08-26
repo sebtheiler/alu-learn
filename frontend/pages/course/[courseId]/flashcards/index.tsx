@@ -1,8 +1,8 @@
 import FlashcardsPage from "@/pages/FlashcardsPage";
 import type { FlashcardsPageProps } from "@/pages/FlashcardsPage";
 import { getSessionAndStreak } from "helpers/getSessionSSR";
-import type { NextPage } from "lib/types";
 import type { GetServerSideProps } from "next";
+import type { NextPage } from "types";
 
 const Flashcards: NextPage = (props: FlashcardsPageProps) => (
   <FlashcardsPage {...props} />
