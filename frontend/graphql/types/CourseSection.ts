@@ -1,8 +1,8 @@
-import slugifyText from "../../helpers/slugifyText";
-import getUserGQL from "../../lib/getUserGQL";
-import isCourseOwner from "./helpers/isCourseOwner";
-import isCourseSectionOwner from "./helpers/isCourseSectionOwner";
 import type { CourseSection as PrismaCourseSection } from "@prisma/client";
+import getUserGQL from "helpers/getUserGQL";
+import isCourseOwner from "helpers/isCourseOwner";
+import isCourseSectionOwner from "helpers/isCourseSectionOwner";
+import slugifyText from "helpers/slugifyText";
 import { extendType, list, nonNull, objectType, stringArg } from "nexus";
 
 const CourseSection = objectType({
@@ -37,7 +37,8 @@ export const CourseSectionMutation = extendType({
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isCourseOwner(args.courseId, ctx)) return null;
+        if (!user || !isCourseOwner(args.courseId, ctx.user?.email, ctx.prisma))
+          return null;
 
         const courseSection = await ctx.prisma.courseSection.create({
           data: {
@@ -70,7 +71,14 @@ export const CourseSectionMutation = extendType({
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isCourseSectionOwner(args.courseSectionId, ctx))
+        if (
+          !user ||
+          !isCourseSectionOwner(
+            args.courseSectionId,
+            ctx.user?.email,
+            ctx.prisma
+          )
+        )
           return null;
 
         const data: Partial<PrismaCourseSection> = {};
@@ -95,7 +103,14 @@ export const CourseSectionMutation = extendType({
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
-        if (!user || !isCourseSectionOwner(args.courseSectionId, ctx))
+        if (
+          !user ||
+          !isCourseSectionOwner(
+            args.courseSectionId,
+            ctx.user?.email,
+            ctx.prisma
+          )
+        )
           return null;
 
         return ctx.prisma.courseSection.delete({

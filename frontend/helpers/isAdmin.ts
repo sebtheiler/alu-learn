@@ -1,5 +1,5 @@
-import { Context } from "../graphql/context";
-import getUserGQL from "./getUserGQL";
+import { Context } from "graphql/context";
+import getUserGQL from "helpers/getUserGQL";
 
 /**
  * Is the current user an admin?

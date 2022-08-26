@@ -1,7 +1,7 @@
 import SignInPage from "@/pages/SignInPage";
-import type { NextPage } from "lib/types";
+import type { NextPage } from "types";
 
-export { getServerSideProps } from "lib/getSessionSSR";
+export { getServerSideProps } from "helpers/getSessionSSR";
 
 const SignIn: NextPage = () => <SignInPage />;
 

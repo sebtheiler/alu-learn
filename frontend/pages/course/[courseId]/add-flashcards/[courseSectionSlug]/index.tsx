@@ -1,8 +1,8 @@
-import { getSessionAndStreak } from "lib/getSessionSSR";
-import isCourseUser from "lib/isCourseUser";
+import { getSessionAndStreak } from "helpers/getSessionSSR";
+import isCourseUser from "helpers/isCourseUser";
 import prisma from "lib/prisma";
-import type { NextPage } from "lib/types";
 import type { GetServerSideProps } from "next";
+import type { NextPage } from "types";
 
 const Blank: NextPage = () => <></>;
 export default Blank;

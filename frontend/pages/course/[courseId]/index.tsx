@@ -1,8 +1,8 @@
 import CoursePage from "@/pages/CoursePage";
 import type { CoursePageProps } from "@/pages/CoursePage";
-import generateSignedS3URL from "lib/generateSignedS3URL";
-import { getSessionAndStreak } from "lib/getSessionSSR";
-import isCourseUser from "lib/isCourseUser";
+import generateSignedS3URL from "helpers/generateSignedS3URL";
+import { getSessionAndStreak } from "helpers/getSessionSSR";
+import isCourseUser from "helpers/isCourseUser";
 import prisma from "lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
 

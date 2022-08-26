@@ -1,5 +1,5 @@
-import s3 from "../../../lib/s3";
 import getS3FilenamePrefix from "./getS3FilenamePrefix";
+import s3 from "lib/s3";
 import stream from "stream";
 
 /**

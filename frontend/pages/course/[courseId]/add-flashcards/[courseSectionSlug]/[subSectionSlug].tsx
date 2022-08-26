@@ -1,9 +1,9 @@
 import CreateFlashcardsPage from "@/pages/CreateFlashcardsPage";
 import type { CreateFlashcardsPageProps } from "@/pages/CreateFlashcardsPage";
-import { getSessionAndStreak } from "lib/getSessionSSR";
+import { getSessionAndStreak } from "helpers/getSessionSSR";
 import prisma from "lib/prisma";
-import { NextPage } from "lib/types";
 import type { GetServerSideProps } from "next";
+import { NextPage } from "types";
 
 const CreateFlashcards: NextPage = (props: CreateFlashcardsPageProps) => (
   <CreateFlashcardsPage {...props} />

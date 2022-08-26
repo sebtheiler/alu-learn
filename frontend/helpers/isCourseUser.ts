@@ -1,4 +1,4 @@
-import prisma from "./prisma";
+import prisma from "lib/prisma";
 
 /**
  * Is the given user (specified by their email) a user of a given course?

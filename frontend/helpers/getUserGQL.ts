@@ -1,5 +1,5 @@
-import type { Context } from "../graphql/context";
 import type { User } from "@prisma/client";
+import type { Context } from "graphql/context";
 
 /**
  * Get the current user

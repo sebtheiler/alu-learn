@@ -1,5 +1,6 @@
-import getUserGQL from "../../lib/getUserGQL";
-import isAdmin from "../../lib/isAdmin";
+import type { User as PrismaUser } from "@prisma/client";
+import getUserGQL from "helpers/getUserGQL";
+import isAdmin from "helpers/isAdmin";
 import {
   objectType,
   enumType,
@@ -9,7 +10,6 @@ import {
   arg,
   stringArg,
 } from "nexus";
-import type { NonNullableKeys } from "types";
 
 const User = objectType({
   name: "User",
@@ -48,7 +48,7 @@ export const UsersQuery = extendType({
   type: "Query",
   definition(t) {
     t.list.field("users", {
-      type: User,
+      type: "User",
       description: "List all users",
       async resolve(_parent, _args, ctx) {
         if (!(await isAdmin(ctx))) return null;
@@ -84,7 +84,7 @@ export const UsersMutation = extendType({
         const user = await getUserGQL(ctx);
         if (!user) return null;
 
-        const data: Partial<NonNullableKeys<typeof args>> = {};
+        const data: Partial<PrismaUser> = {};
         if (args.name != null) data.name = args.name;
         if (args.timezoneOffset != null)
           data.timezoneOffset = args.timezoneOffset;
