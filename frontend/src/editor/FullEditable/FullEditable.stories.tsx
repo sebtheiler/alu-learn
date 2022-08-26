@@ -1,7 +1,7 @@
 import { createFullEditor } from ".";
 import FullEditable from ".";
+import blankSlateElement from "@/helpers/blankSlateElement";
 import { ComponentStory } from "@storybook/react";
-import blankSlateElement from "helpers/blankSlateElement";
 import { useMemo, useState } from "react";
 import { ReactEditor, Slate } from "slate-react";
 

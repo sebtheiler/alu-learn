@@ -1,6 +1,6 @@
 import { LinkButton } from ".";
+import { createFullEditor } from "@/editor/FullEditable";
 import { ComponentStory } from "@storybook/react";
-import { createFullEditor } from "editor/FullEditable";
 import { useMemo } from "react";
 import { ReactEditor } from "slate-react";
 

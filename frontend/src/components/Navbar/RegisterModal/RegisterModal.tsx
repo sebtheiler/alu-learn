@@ -1,13 +1,13 @@
-import { getElementsVals } from "../../../helpers/getElementsVals";
-import AsyncForm from "atoms/AsyncForm";
-import Button from "atoms/Button";
-import Checkbox from "atoms/Checkbox";
-import Modal from "atoms/Modal";
-import TextInput from "atoms/TextInput";
+import AsyncForm from "@/atoms/AsyncForm";
+import Button from "@/atoms/Button";
+import Checkbox from "@/atoms/Checkbox";
+import Modal from "@/atoms/Modal";
+import TextInput from "@/atoms/TextInput";
+import { getElementsVals } from "@/helpers/getElementsVals";
+import useGlobalModalStore from "@/stores/globalModalStore";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
-import useGlobalModalStore from "stores/globalModalStore";
 
 const onRegister = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();

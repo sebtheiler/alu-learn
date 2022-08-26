@@ -1,5 +1,5 @@
+import AboutPage from "@/pages/AboutPage";
 import type { NextPage } from "next";
-import AboutPage from "pages/AboutPage";
 
 export { getServerSideProps } from "../lib/getSessionSSR";
 

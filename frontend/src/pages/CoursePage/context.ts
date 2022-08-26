@@ -1,5 +1,5 @@
+import type { Course } from "@/types";
 import { createContext } from "react";
-import type { Course } from "types";
 
 interface CoursePageContextI {
   course?: Course;

@@ -1,11 +1,11 @@
+import Checkbox from "@/atoms/Checkbox";
+import Select from "@/atoms/Select";
+import TextInput from "@/atoms/TextInput";
+import UpdateUser from "@/graphql/UpdateUser";
+import SEO from "@/helpers/SEO";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useMutation } from "@apollo/client";
 import type { UserType } from "@prisma/client";
-import Checkbox from "atoms/Checkbox";
-import Select from "atoms/Select";
-import TextInput from "atoms/TextInput";
-import UpdateUser from "graphql/UpdateUser";
-import SEO from "helpers/SEO";
-import { useDebounce } from "hooks/useDebounce";
 import { useEffect } from "react";
 import { useState } from "react";
 

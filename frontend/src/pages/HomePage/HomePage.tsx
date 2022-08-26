@@ -1,13 +1,13 @@
 import CreateAddCourseModal from "./CreateAddCourseModal";
 import SocialMediaLinks from "./SocialMediaLinks";
+import CardsDoneSVG from "@/components/CardsDoneSVG";
+import SEO from "@/helpers/SEO";
+import type { Course } from "@/types";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import CardsDoneSVG from "components/CardsDoneSVG";
-import SEO from "helpers/SEO";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import type { Course } from "types";
 
 export interface HomePageProps {
   /**

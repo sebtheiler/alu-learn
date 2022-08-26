@@ -1,13 +1,13 @@
 import useSlides from "./slides";
 import type { Question } from "./types";
+import ProgressBar from "@/components/ProgressBar";
+import CreateNewUserSurveyResponse from "@/graphql/CreateNewUserSurveyResponse";
+import UpdateUser from "@/graphql/UpdateUser";
+import SEO from "@/helpers/SEO";
+import { NewUserSurveyResponse } from "@/types";
 import { useMutation } from "@apollo/client";
-import ProgressBar from "components/ProgressBar";
-import CreateNewUserSurveyResponse from "graphql/CreateNewUserSurveyResponse";
-import UpdateUser from "graphql/UpdateUser";
-import SEO from "helpers/SEO";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
-import { NewUserSurveyResponse } from "types";
 
 export default function NewUserSurveyPage() {
   const [slideNum, setSlideNum] = useState(0);

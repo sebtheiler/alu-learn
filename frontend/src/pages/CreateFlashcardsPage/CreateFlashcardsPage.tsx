@@ -1,18 +1,18 @@
+import AsyncButton from "@/atoms/AsyncButton";
+import Select from "@/atoms/Select";
+import TextInput from "@/atoms/TextInput";
+import { createFullEditor } from "@/editor/FullEditable";
+import RenderEditor from "@/editor/RenderEditor";
+import CreateFlashcard from "@/graphql/CreateFlashcard";
+import SEO from "@/helpers/SEO";
+import blankSlateElement from "@/helpers/blankSlateElement";
+import classNames from "@/helpers/classNames";
+import clearEditor from "@/helpers/clearEditor";
+import type { Course, FlashcardType } from "@/types";
 import { useMutation } from "@apollo/client";
-import AsyncButton from "atoms/AsyncButton";
-import Select from "atoms/Select";
-import TextInput from "atoms/TextInput";
-import { createFullEditor } from "editor/FullEditable";
-import RenderEditor from "editor/RenderEditor";
-import CreateFlashcard from "graphql/CreateFlashcard";
-import SEO from "helpers/SEO";
-import blankSlateElement from "helpers/blankSlateElement";
-import classNames from "helpers/classNames";
-import clearEditor from "helpers/clearEditor";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactEditor } from "slate-react";
-import type { Course, FlashcardType } from "types";
 
 export interface CreateFlashcardsPageProps {
   course: Course;

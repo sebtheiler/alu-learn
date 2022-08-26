@@ -1,5 +1,5 @@
-import LinkButton from "atoms/LinkButton";
-import SEO from "helpers/SEO";
+import LinkButton from "@/atoms/LinkButton";
+import SEO from "@/helpers/SEO";
 import Link from "next/link";
 
 export default function ProUpgradeCancelledPage() {

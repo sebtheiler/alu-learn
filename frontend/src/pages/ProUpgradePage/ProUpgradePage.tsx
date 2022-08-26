@@ -1,15 +1,15 @@
 import ProFeaturesCard from "./ProFeaturesCard";
 import ProFromOrganization from "./ProFromOrganization";
 import styles from "./ProUpgradePage.module.scss";
+import AsyncButton from "@/atoms/AsyncButton";
+import Button from "@/atoms/Button";
+import SEO from "@/helpers/SEO";
+import classNames from "@/helpers/classNames";
+import daysBetween from "@/helpers/daysBetween";
+import useGlobalModalStore from "@/stores/globalModalStore";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AsyncButton from "atoms/AsyncButton";
-import Button from "atoms/Button";
-import SEO from "helpers/SEO";
-import classNames from "helpers/classNames";
-import daysBetween from "helpers/daysBetween";
 import { useRouter } from "next/router";
-import useGlobalModalStore from "stores/globalModalStore";
 
 export interface ProUpgradePageProps {
   proTrialExpires: string;

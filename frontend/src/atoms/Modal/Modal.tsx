@@ -1,5 +1,5 @@
+import type { ButtonProps } from "@/atoms/Button";
 import { Dialog, Transition } from "@headlessui/react";
-import type { ButtonProps } from "atoms/Button";
 import { Fragment } from "react";
 
 interface ModalProps {

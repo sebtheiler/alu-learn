@@ -1,5 +1,5 @@
-import Button from "atoms/Button";
-import type { ButtonProps } from "atoms/Button";
+import Button from "@/atoms/Button";
+import type { ButtonProps } from "@/atoms/Button";
 import Link from "next/link";
 
 interface LinkButtonProps extends ButtonProps {

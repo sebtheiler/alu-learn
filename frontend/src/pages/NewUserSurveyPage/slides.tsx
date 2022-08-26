@@ -1,11 +1,11 @@
 import type { Question } from "./types";
+import ChoiceSelect from "@/components/ChoiceSelect";
 import {
   faGraduationCap,
   faNewspaper,
   faPersonChalkboard,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
-import ChoiceSelect from "components/ChoiceSelect";
 import { useMemo } from "react";
 
 /**

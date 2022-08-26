@@ -1,4 +1,4 @@
-import Navbar from "components/Navbar";
+import Navbar from "@/components/Navbar";
 
 /**
  * Storybook decorator that adds the Navbar to the top of the page.

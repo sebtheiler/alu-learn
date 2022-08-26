@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 
-const TeX = lazy(() => import("components/TeX"));
+const TeX = lazy(() => import("@/components/TeX"));
 
 const Leaf = ({ attributes, children, leaf, readOnly }) => {
   if (leaf.bold) children = <strong>{children}</strong>;

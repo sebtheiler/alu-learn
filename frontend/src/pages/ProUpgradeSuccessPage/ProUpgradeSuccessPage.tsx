@@ -1,6 +1,6 @@
-import LinkButton from "atoms/LinkButton";
-import SEO from "helpers/SEO";
-import ProFeaturesCard from "pages/ProUpgradePage/ProFeaturesCard";
+import LinkButton from "@/atoms/LinkButton";
+import SEO from "@/helpers/SEO";
+import ProFeaturesCard from "@/pages/ProUpgradePage/ProFeaturesCard";
 
 export default function ProUpgradeSuccessPage() {
   // const [subscriptionProduct] = useAsyncState<{ subscription: any, product: any }>(

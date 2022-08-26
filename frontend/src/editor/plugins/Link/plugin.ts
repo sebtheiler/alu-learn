@@ -1,5 +1,5 @@
 import { wrapLink } from "./helpers";
-import isUrl from "helpers/isUrl";
+import isUrl from "@/helpers/isUrl";
 import { ReactEditor } from "slate-react";
 
 const withLinks = (editor: ReactEditor) => {

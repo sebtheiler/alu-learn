@@ -1,9 +1,9 @@
 import generateSignedS3URL from "../lib/generateSignedS3URL";
 import { getSessionAndStreak } from "../lib/getSessionSSR";
 import prisma from "../lib/prisma";
+import HomePage from "@/pages/HomePage";
+import type { HomePageProps } from "@/pages/HomePage";
 import type { GetServerSideProps, NextPage } from "next";
-import HomePage from "pages/HomePage";
-import type { HomePageProps } from "pages/HomePage";
 
 const Home: NextPage<HomePageProps> & { authRequired: boolean } = (
   props: HomePageProps

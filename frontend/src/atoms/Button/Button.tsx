@@ -1,7 +1,7 @@
 import Ripple from "./Ripple/Ripple";
+import classNames from "@/helpers/classNames";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import classNames from "helpers/classNames";
 import { useMemo } from "react";
 
 export interface ButtonProps {

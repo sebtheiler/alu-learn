@@ -1,8 +1,8 @@
 import type { ExtendedReactEditor } from "../../types";
 import { insertLink } from "./helpers";
+import Tooltip from "@/atoms/Tooltip";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Tooltip from "atoms/Tooltip";
 
 interface LinkButtonProps {
   /**

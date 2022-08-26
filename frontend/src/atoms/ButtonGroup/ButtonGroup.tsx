@@ -1,5 +1,5 @@
-import type { ButtonProps } from "atoms/Button";
-import classNames from "helpers/classNames";
+import type { ButtonProps } from "@/atoms/Button";
+import classNames from "@/helpers/classNames";
 import { Fragment, cloneElement } from "react";
 
 interface ButtonGroupProps {

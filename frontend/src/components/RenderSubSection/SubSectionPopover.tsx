@@ -1,8 +1,8 @@
 import SubSectionSettings from "./SubSectionSettings";
-import LinkButton from "atoms/LinkButton";
-import CoursePageContext from "pages/CoursePage/context";
+import LinkButton from "@/atoms/LinkButton";
+import CoursePageContext from "@/pages/CoursePage/context";
+import type { CourseSection, SubSection } from "@/types";
 import { useContext } from "react";
-import type { CourseSection, SubSection } from "types";
 
 interface SubSectionPopoverProps {
   subSection: SubSection;

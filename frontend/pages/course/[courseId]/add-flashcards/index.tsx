@@ -1,7 +1,7 @@
-import { getSessionAndStreak } from "../../../../lib/getSessionSSR";
-import isCourseUser from "../../../../lib/isCourseUser";
-import prisma from "../../../../lib/prisma";
-import type { NextPage } from "../../../../lib/types";
+import { getSessionAndStreak } from "lib/getSessionSSR";
+import isCourseUser from "lib/isCourseUser";
+import prisma from "lib/prisma";
+import type { NextPage } from "lib/types";
 import type { GetServerSideProps } from "next";
 
 const Blank: NextPage = () => <></>;

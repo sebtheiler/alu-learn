@@ -1,4 +1,4 @@
-import classNames from "helpers/classNames";
+import classNames from "@/helpers/classNames";
 import type { ChangeEvent } from "react";
 
 interface TextInputProps {

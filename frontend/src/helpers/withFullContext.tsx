@@ -1,6 +1,6 @@
-import apolloClient from "../../lib/apollo";
 import { ApolloProvider } from "@apollo/client";
 import type { Story } from "@storybook/react";
+import apolloClient from "lib/apollo";
 import { SessionProvider } from "next-auth/react";
 
 /**

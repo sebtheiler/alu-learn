@@ -1,5 +1,5 @@
 import type { NextPage } from "../lib/types";
-import NewUserSurveyPage from "pages/NewUserSurveyPage";
+import NewUserSurveyPage from "@/pages/NewUserSurveyPage";
 
 export { getServerSideProps } from "../lib/getSessionSSR";
 

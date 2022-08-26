@@ -1,5 +1,5 @@
+import flattenNodes from "@/helpers/flattenNodes";
 import { FlashCard } from "@types";
-import flattenNodes from "helpers/flattenNodes";
 import { Editor, Transforms, Range, Location } from "slate";
 import { ReactEditor } from "slate-react";
 

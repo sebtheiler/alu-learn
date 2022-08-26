@@ -1,7 +1,7 @@
 import SettingsPage from ".";
+import withFullContext from "@/helpers/withFullContext";
+import withNavbar from "@/helpers/withNavbar";
 import { ComponentStory } from "@storybook/react";
-import withFullContext from "helpers/withFullContext";
-import withNavbar from "helpers/withNavbar";
 
 export default {
   title: "pages/SettingsPage",

@@ -1,5 +1,5 @@
 import styles from "./FileUpload.module.scss";
-import classNames from "helpers/classNames";
+import classNames from "@/helpers/classNames";
 
 interface FileUploadProps {
   /**

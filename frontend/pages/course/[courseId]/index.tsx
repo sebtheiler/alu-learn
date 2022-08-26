@@ -1,10 +1,10 @@
-import generateSignedS3URL from "../../../lib/generateSignedS3URL";
-import { getSessionAndStreak } from "../../../lib/getSessionSSR";
-import isCourseUser from "../../../lib/isCourseUser";
-import prisma from "../../../lib/prisma";
+import CoursePage from "@/pages/CoursePage";
+import type { CoursePageProps } from "@/pages/CoursePage";
+import generateSignedS3URL from "lib/generateSignedS3URL";
+import { getSessionAndStreak } from "lib/getSessionSSR";
+import isCourseUser from "lib/isCourseUser";
+import prisma from "lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
-import CoursePage from "pages/CoursePage";
-import type { CoursePageProps } from "pages/CoursePage";
 
 const Course: NextPage<CoursePageProps> = (props: CoursePageProps) => (
   <CoursePage {...props} />

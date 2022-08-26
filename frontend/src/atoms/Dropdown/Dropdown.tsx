@@ -1,7 +1,7 @@
+import classNames from "@/helpers/classNames";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menu, Transition } from "@headlessui/react";
-import classNames from "helpers/classNames";
 import Link from "next/link";
 
 /**

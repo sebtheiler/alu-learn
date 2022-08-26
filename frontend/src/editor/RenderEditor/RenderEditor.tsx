@@ -1,7 +1,7 @@
 import EditorButtons from "../EditorButtons";
 import FullEditable from "../FullEditable";
-import type { ExtendedSlateElement } from "editor/types";
-import classNames from "helpers/classNames";
+import type { ExtendedSlateElement } from "@/editor/types";
+import classNames from "@/helpers/classNames";
 import type { Descendant } from "slate";
 import { Slate } from "slate-react";
 import type { ReactEditor } from "slate-react";

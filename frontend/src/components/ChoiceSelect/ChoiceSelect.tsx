@@ -1,7 +1,7 @@
+import classNames from "@/helpers/classNames";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import classNames from "helpers/classNames";
 import Image from "next/image";
 
 /**

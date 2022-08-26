@@ -1,5 +1,5 @@
-import Button from "atoms/Button";
-import SEO from "helpers/SEO";
+import Button from "@/atoms/Button";
+import SEO from "@/helpers/SEO";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";

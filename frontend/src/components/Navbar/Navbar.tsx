@@ -1,5 +1,7 @@
 import SignedIn from "./SignedIn";
 import SignedOut from "./SignedOut";
+import NavItem from "@/components/NavItem";
+import type { Streak } from "@/types";
 import {
   faBars,
   faCompass,
@@ -7,12 +9,10 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import NavItem from "components/NavItem";
 import type { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import type { Streak } from "types";
 
 // TODO: dynamically import SignedIn and SignedOut
 

@@ -1,20 +1,20 @@
+import AsyncButton from "@/atoms/AsyncButton";
+import AsyncForm from "@/atoms/AsyncForm";
+import Button from "@/atoms/Button";
+import ButtonGroup from "@/atoms/ButtonGroup";
+import FileUpload from "@/atoms/FileUpload";
+import Modal from "@/atoms/Modal";
+import TextInput from "@/atoms/TextInput";
+import IconTooltip from "@/components/IconTooltip";
+import DeleteCourse from "@/graphql/DeleteCourse";
+import UpdateCourse from "@/graphql/UpdateCourse";
+import UploadCourseBannerImage from "@/graphql/UploadCourseBannerImage";
+import { getElementsVals } from "@/helpers/getElementsVals";
+import type { Course } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
-import AsyncButton from "atoms/AsyncButton";
-import AsyncForm from "atoms/AsyncForm";
-import Button from "atoms/Button";
-import ButtonGroup from "atoms/ButtonGroup";
-import FileUpload from "atoms/FileUpload";
-import Modal from "atoms/Modal";
-import TextInput from "atoms/TextInput";
-import IconTooltip from "components/IconTooltip";
-import DeleteCourse from "graphql/DeleteCourse";
-import UpdateCourse from "graphql/UpdateCourse";
-import UploadCourseBannerImage from "graphql/UploadCourseBannerImage";
-import { getElementsVals } from "helpers/getElementsVals";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
-import type { Course } from "types";
 
 interface CourseSettingsProps {
   course: Course;

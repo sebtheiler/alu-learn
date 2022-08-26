@@ -1,6 +1,6 @@
 import AsyncForm from ".";
+import TextInput from "@/atoms/TextInput";
 import { ComponentStory } from "@storybook/react";
-import TextInput from "atoms/TextInput";
 
 export default {
   title: "Atoms/AsyncForm",

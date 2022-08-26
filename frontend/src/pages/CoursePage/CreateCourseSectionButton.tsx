@@ -1,13 +1,13 @@
+import AsyncForm from "@/atoms/AsyncForm";
+import Button from "@/atoms/Button";
+import Modal from "@/atoms/Modal";
+import TextInput from "@/atoms/TextInput";
+import CreateCourseSection from "@/graphql/CreateCourseSection";
+import { getElementsVals } from "@/helpers/getElementsVals";
+import type { Course } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import AsyncForm from "atoms/AsyncForm";
-import Button from "atoms/Button";
-import Modal from "atoms/Modal";
-import TextInput from "atoms/TextInput";
-import CreateCourseSection from "graphql/CreateCourseSection";
-import { getElementsVals } from "helpers/getElementsVals";
 import { useState } from "react";
-import type { Course } from "types";
 
 interface CreateCourseSectionButtonProps {
   course: Course;

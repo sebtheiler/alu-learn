@@ -1,21 +1,21 @@
 import CourseSectionSettings from "./CourseSectionSettings";
+import AsyncForm from "@/atoms/AsyncForm";
+import Button from "@/atoms/Button";
+import ButtonGroup from "@/atoms/ButtonGroup";
+import DropdownButton from "@/atoms/DropdownButton";
+import LinkButton from "@/atoms/LinkButton";
+import Modal from "@/atoms/Modal";
+import TextInput from "@/atoms/TextInput";
+import Tooltip from "@/atoms/Tooltip";
+import RenderSubSection from "@/components/RenderSubSection";
+import CreateSubSection from "@/graphql/CreateSubSection";
+import { getElementsVals } from "@/helpers/getElementsVals";
+import useWindowDimensions from "@/hooks/useWindowDimensions";
+import CoursePageContext from "@/pages/CoursePage/context";
+import type { CourseSection, SubSection } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import AsyncForm from "atoms/AsyncForm";
-import Button from "atoms/Button";
-import ButtonGroup from "atoms/ButtonGroup";
-import DropdownButton from "atoms/DropdownButton";
-import LinkButton from "atoms/LinkButton";
-import Modal from "atoms/Modal";
-import TextInput from "atoms/TextInput";
-import Tooltip from "atoms/Tooltip";
-import RenderSubSection from "components/RenderSubSection";
-import CreateSubSection from "graphql/CreateSubSection";
-import { getElementsVals } from "helpers/getElementsVals";
-import useWindowDimensions from "hooks/useWindowDimensions";
-import CoursePageContext from "pages/CoursePage/context";
 import { useContext, useState } from "react";
-import type { CourseSection, SubSection } from "types";
 
 interface RenderCourseSectionProps {
   /**

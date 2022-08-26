@@ -1,9 +1,9 @@
+import Tooltip from "@/atoms/Tooltip";
 import {
   faCircleInfo,
   faCircleQuestion,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Tooltip from "atoms/Tooltip";
 
 interface InfoBubbleProps {
   /**

@@ -1,12 +1,12 @@
-import type { ExtendedSlateElement } from "editor/types";
+import type { ExtendedSlateElement } from "@/editor/types";
 import { Suspense, lazy } from "react";
 import { Node } from "slate";
 
-const TeX = lazy(() => import("components/TeX"));
+const TeX = lazy(() => import("@/components/TeX"));
 const FlashCardLinkComponent = lazy(
-  () => import("editor/plugins/FlashcardLink/FlashcardLink")
+  () => import("@/editor/plugins/FlashcardLink/FlashcardLink")
 );
-const LinkComponent = lazy(() => import("editor/plugins/Link/Link"));
+const LinkComponent = lazy(() => import("@/editor/plugins/Link/Link"));
 
 interface ElementProps {
   /**

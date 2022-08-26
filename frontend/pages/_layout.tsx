@@ -1,4 +1,4 @@
-import Navbar from "components/Navbar";
+import Navbar from "@/components/Navbar";
 import type { Session } from "next-auth";
 import NextNProgress from "nextjs-progressbar";
 import type { Streak } from "types";

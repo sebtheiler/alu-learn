@@ -1,6 +1,6 @@
-import ButtonGroup from "atoms/ButtonGroup";
-import LinkButton from "atoms/LinkButton";
-import SEO from "helpers/SEO";
+import ButtonGroup from "@/atoms/ButtonGroup";
+import LinkButton from "@/atoms/LinkButton";
+import SEO from "@/helpers/SEO";
 
 export interface FlashcardsPageProps {
   courseId: string;

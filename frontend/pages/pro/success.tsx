@@ -1,7 +1,7 @@
+import ProUpgradeSuccessPage from "@/pages/ProUpgradeSuccessPage";
 import type { NextPage } from "next";
-import ProUpgradeSuccessPage from "pages/ProUpgradeSuccessPage";
 
-export { getServerSideProps } from "../../lib/getSessionSSR";
+export { getServerSideProps } from "lib/getSessionSSR";
 
 const ProPurchaseSuccess: NextPage = () => <ProUpgradeSuccessPage />;
 

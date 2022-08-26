@@ -1,4 +1,8 @@
 import styles from "./LandingPage.module.scss";
+import Button from "@/atoms/Button";
+import SEO from "@/helpers/SEO";
+import useWindowDimensions from "@/hooks/useWindowDimensions";
+import useGlobalModalStore from "@/stores/globalModalStore";
 import {
   faBrain,
   faDna,
@@ -7,12 +11,8 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "atoms/Button";
-import SEO from "helpers/SEO";
-import useWindowDimensions from "hooks/useWindowDimensions";
 import Image from "next/image";
 import { useMemo } from "react";
-import useGlobalModalStore from "stores/globalModalStore";
 
 const testimonials = [
   "Alu has been a tool that has made studying much less of a burden for me since it is so engaging and straightforward. When studying with Alu, it always truly feels like I am able to take in and understand the material and not just memorize content.", // I completely owe the success I have had on the AP exams I have taken to Alu.',

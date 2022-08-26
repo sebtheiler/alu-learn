@@ -1,11 +1,11 @@
+import AsyncForm from "@/atoms/AsyncForm";
+import Modal from "@/atoms/Modal";
+import TextInput from "@/atoms/TextInput";
+import CreateCourse from "@/graphql/CreateCourse";
+import { getElementsVals } from "@/helpers/getElementsVals";
+import type { Course } from "@/types";
 import { useMutation } from "@apollo/client";
-import AsyncForm from "atoms/AsyncForm";
-import Modal from "atoms/Modal";
-import TextInput from "atoms/TextInput";
-import CreateCourse from "graphql/CreateCourse";
-import { getElementsVals } from "helpers/getElementsVals";
 import { useRouter } from "next/router";
-import type { Course } from "types";
 
 export default function CreateAddCourseModal({ open, close }) {
   const [createCourse] = useMutation<{ createCourse: Course }>(CreateCourse);

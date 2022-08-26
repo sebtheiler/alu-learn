@@ -1,3 +1,6 @@
+import Dropdown from "@/atoms/Dropdown";
+import type { MenuOption } from "@/atoms/Dropdown/Dropdown";
+import type { Streak } from "@/types";
 import {
   faBell,
   faBook,
@@ -8,12 +11,9 @@ import {
   faFire,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Dropdown from "atoms/Dropdown";
-import type { MenuOption } from "atoms/Dropdown/Dropdown";
 import type { Session } from "next-auth";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
-import type { Streak } from "types";
 
 const profileDropdownOptions = [
   { text: "My Profile", href: "/profile", faIcon: faUserCircle },

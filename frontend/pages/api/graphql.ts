@@ -1,7 +1,7 @@
-import createContext from "../../graphql/context";
-import schema from "../../graphql/schema";
 import { ApolloServer } from "apollo-server-micro";
 import processRequest from "graphql-upload/processRequest.mjs";
+import createContext from "graphql/context";
+import schema from "graphql/schema";
 import Cors from "micro-cors";
 
 const cors = Cors();

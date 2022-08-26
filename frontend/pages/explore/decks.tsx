@@ -1,7 +1,7 @@
+import ExploreDecksPage from "@/pages/ExploreDecksPage";
 import type { NextPage } from "next";
-import ExploreDecksPage from "pages/ExploreDecksPage";
 
-export { getServerSideProps } from "../../lib/getSessionSSR";
+export { getServerSideProps } from "lib/getSessionSSR";
 
 const CommunityDecksHome: NextPage = () => <ExploreDecksPage />;
 

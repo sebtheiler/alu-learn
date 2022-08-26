@@ -1,6 +1,6 @@
 import RenderCourseSection from ".";
+import withFullContext from "@/helpers/withFullContext";
 import { ComponentStory } from "@storybook/react";
-import withFullContext from "helpers/withFullContext";
 
 const courseSection = {
   id: "cl74urv9300087ai0udubgndr",

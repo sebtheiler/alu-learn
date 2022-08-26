@@ -3,7 +3,7 @@ import Leaf from "./Leaf";
 import { HOTKEYS } from "./constants";
 import type { Hotkey } from "./constants";
 import { toggleMark } from "./helpers";
-import type { ExtendedReactEditor } from "editor/types";
+import type { ExtendedReactEditor } from "@/editor/types";
 import isHotKey from "is-hotkey";
 import { useCallback } from "react";
 import { Editable } from "slate-react";

@@ -1,7 +1,7 @@
-import type { ButtonProps } from "atoms/Button";
-import Button from "atoms/Button";
-import Dropdown from "atoms/Dropdown";
-import type { MenuOption } from "atoms/Dropdown";
+import type { ButtonProps } from "@/atoms/Button";
+import Button from "@/atoms/Button";
+import Dropdown from "@/atoms/Dropdown";
+import type { MenuOption } from "@/atoms/Dropdown";
 
 interface DropdownButtonProps extends ButtonProps {
   /**

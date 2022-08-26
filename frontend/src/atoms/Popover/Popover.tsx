@@ -1,8 +1,8 @@
 import styles from "./Popover.module.scss";
+import classNames from "@/helpers/classNames";
+import useOutsideClick from "@/hooks/useClickOutside";
 import { Transition } from "@headlessui/react";
 import type { Placement } from "@popperjs/core";
-import classNames from "helpers/classNames";
-import useOutsideClick from "hooks/useClickOutside";
 import { useMemo, useState } from "react";
 import { usePopper } from "react-popper";
 

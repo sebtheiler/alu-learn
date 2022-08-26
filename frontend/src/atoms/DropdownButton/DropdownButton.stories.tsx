@@ -1,4 +1,5 @@
 import DropdownButton from ".";
+import type { MenuOption } from "@/atoms/Dropdown";
 import {
   faBell,
   faBook,
@@ -8,7 +9,6 @@ import {
   faUserCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { ComponentStory } from "@storybook/react";
-import type { MenuOption } from "atoms/Dropdown";
 
 const options = [
   { text: "My Profile", href: "/profile", faIcon: faUserCircle },

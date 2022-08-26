@@ -1,6 +1,6 @@
 import ButtonGroup from ".";
+import Button from "@/atoms/Button";
 import { ComponentStory } from "@storybook/react";
-import Button from "atoms/Button";
 
 export default {
   title: "Atoms/ButtonGroup",

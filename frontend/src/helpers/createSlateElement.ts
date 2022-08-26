@@ -1,4 +1,4 @@
-import type { ExtendedSlateElement } from "editor/types";
+import type { ExtendedSlateElement } from "@/editor/types";
 
 export default function createSlateElement(
   text: string

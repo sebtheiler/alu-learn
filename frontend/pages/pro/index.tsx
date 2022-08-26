@@ -1,7 +1,7 @@
-import { getSessionAndStreak } from "../../lib/getSessionSSR";
+import ProUpgradePage from "@/pages/ProUpgradePage";
+import type { ProUpgradePageProps } from "@/pages/ProUpgradePage";
+import { getSessionAndStreak } from "lib/getSessionSSR";
 import type { GetServerSideProps, NextPage } from "next";
-import ProUpgradePage from "pages/ProUpgradePage";
-import type { ProUpgradePageProps } from "pages/ProUpgradePage";
 
 const ProUpgrade: NextPage<ProUpgradePageProps> = (
   props: ProUpgradePageProps

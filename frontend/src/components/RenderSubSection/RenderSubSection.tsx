@@ -1,6 +1,6 @@
 import SubSectionPopover from "./SubSectionPopover";
-import Popover from "atoms/Popover";
-import type { CourseSection, SubSection } from "types";
+import Popover from "@/atoms/Popover";
+import type { CourseSection, SubSection } from "@/types";
 
 const currentlyStudiedColor = "#5ed149";
 const previouslyStudiedColor = "#FDCE29";

@@ -1,8 +1,8 @@
 import RegisterModal from ".";
+import withFullContext from "@/helpers/withFullContext";
+import useGlobalModalStore from "@/stores/globalModalStore";
 import { ComponentStory } from "@storybook/react";
-import withFullContext from "helpers/withFullContext";
 import { useEffect } from "react";
-import useGlobalModalStore from "stores/globalModalStore";
 
 export default {
   title: "Components/NavbarModals/RegisterModal",

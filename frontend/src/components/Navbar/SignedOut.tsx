@@ -1,8 +1,8 @@
-import Button from "atoms/Button";
-import ButtonGroup from "atoms/ButtonGroup";
-import RegisterModal from "components/Navbar/RegisterModal";
-import SignInModal from "components/Navbar/SignInModal";
-import useGlobalModalStore from "stores/globalModalStore";
+import Button from "@/atoms/Button";
+import ButtonGroup from "@/atoms/ButtonGroup";
+import RegisterModal from "@/components/Navbar/RegisterModal";
+import SignInModal from "@/components/Navbar/SignInModal";
+import useGlobalModalStore from "@/stores/globalModalStore";
 
 export default function SignedOut() {
   const { setSignInModalOpen, setRegisterModalOpen } = useGlobalModalStore();

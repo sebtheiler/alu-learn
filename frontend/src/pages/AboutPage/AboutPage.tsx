@@ -1,5 +1,5 @@
-import DisplayUserInline from "components/DisplayUserInline";
-import SEO from "helpers/SEO";
+import DisplayUserInline from "@/components/DisplayUserInline";
+import SEO from "@/helpers/SEO";
 import Image from "next/image";
 
 const sebProfile = {

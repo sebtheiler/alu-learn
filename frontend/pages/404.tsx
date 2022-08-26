@@ -1,5 +1,5 @@
+import NotFoundPage from "@/pages/NotFoundPage";
 import type { NextPage } from "next";
-import NotFoundPage from "pages/NotFoundPage";
 
 const NotFound: NextPage = () => <NotFoundPage />;
 

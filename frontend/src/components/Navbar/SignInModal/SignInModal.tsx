@@ -1,12 +1,12 @@
-import AsyncForm from "atoms/AsyncForm";
-import Button from "atoms/Button";
-import Modal from "atoms/Modal";
-import TextInput from "atoms/TextInput";
-import { getElementsVals } from "helpers/getElementsVals";
+import AsyncForm from "@/atoms/AsyncForm";
+import Button from "@/atoms/Button";
+import Modal from "@/atoms/Modal";
+import TextInput from "@/atoms/TextInput";
+import { getElementsVals } from "@/helpers/getElementsVals";
+import useGlobalModalStore from "@/stores/globalModalStore";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
-import useGlobalModalStore from "stores/globalModalStore";
 
 const onSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
   console.log(

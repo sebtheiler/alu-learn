@@ -1,7 +1,7 @@
-import DisplayUserInline from "components/DisplayUserInline";
-import RenderRichText from "editor/RenderRichText";
-import SEO from "helpers/SEO";
-import createSlateElement from "helpers/createSlateElement";
+import DisplayUserInline from "@/components/DisplayUserInline";
+import RenderRichText from "@/editor/RenderRichText";
+import SEO from "@/helpers/SEO";
+import createSlateElement from "@/helpers/createSlateElement";
 import Link from "next/link";
 import { Fragment } from "react";
 

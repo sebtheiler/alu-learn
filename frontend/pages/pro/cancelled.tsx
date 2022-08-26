@@ -1,7 +1,7 @@
+import ProUpgradeCancelledPage from "@/pages/ProUpgradeCancelledPage";
 import type { NextPage } from "next";
-import ProUpgradeCancelledPage from "pages/ProUpgradeCancelledPage";
 
-export { getServerSideProps } from "../../lib/getSessionSSR";
+export { getServerSideProps } from "lib/getSessionSSR";
 
 const ProUpgradeCancelled: NextPage = () => <ProUpgradeCancelledPage />;
 

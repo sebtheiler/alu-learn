@@ -1,7 +1,7 @@
 import CreateFlashcardsPage from ".";
+import withFullContext from "@/helpers/withFullContext";
+import withNavbar from "@/helpers/withNavbar";
 import { ComponentStory } from "@storybook/react";
-import withFullContext from "helpers/withFullContext";
-import withNavbar from "helpers/withNavbar";
 
 const course = {
   id: "cl76ef2sw0097l3i071xv4x9n",

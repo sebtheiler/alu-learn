@@ -1,5 +1,5 @@
 import type { ExtendedSlateElement } from "../../types";
-import Tooltip from "atoms/Tooltip";
+import Tooltip from "@/atoms/Tooltip";
 
 interface LinkComponentProps {
   /**
