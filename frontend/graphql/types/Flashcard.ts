@@ -30,6 +30,7 @@ export const FlashcardMutation = extendType({
         fields: nonNull(arg({ type: JSONData })),
         tags: stringArg(),
         flashcardType: arg({ type: FlashcardType }),
+        courseId: nonNull(stringArg()),
         courseSectionSlug: nonNull(stringArg()),
         subSectionSlug: nonNull(stringArg()),
       },
@@ -37,13 +38,15 @@ export const FlashcardMutation = extendType({
         const user = await getUserGQL(ctx);
         if (!user) return null;
 
-        // TODO: use slugs
-        // const subSection = ctx.prisma.subSection.findUnique({
-        //   where: {
-
-        //   }
-        // })
-        const subSection = await ctx.prisma.subSection.findFirst();
+        const subSection = await ctx.prisma.subSection.findFirst({
+          where: {
+            slug: args.subSectionSlug,
+            courseSection: {
+              slug: args.courseSectionSlug,
+              courseId: args.courseId,
+            },
+          },
+        });
         if (!subSection || !isSubSectionOwner(subSection.id, ctx)) return null;
 
         return ctx.prisma.flashcard.create({

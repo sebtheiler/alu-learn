@@ -105,6 +105,7 @@ export type MutationCreateCourseSectionArgs = {
 };
 
 export type MutationCreateFlashcardArgs = {
+  courseId: Scalars["String"];
   courseSectionSlug: Scalars["String"];
   fields: Scalars["JSONObject"];
   flashcardType?: InputMaybe<FlashcardType>;

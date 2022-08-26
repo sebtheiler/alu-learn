@@ -1,5 +1,5 @@
 import useSlides from "./slides";
-import type { Answers, Question } from "./types";
+import type { Question } from "./types";
 import { useMutation } from "@apollo/client";
 import ProgressBar from "components/ProgressBar";
 import CreateNewUserSurveyResponse from "graphql/CreateNewUserSurveyResponse";
@@ -7,10 +7,11 @@ import UpdateUser from "graphql/UpdateUser";
 import SEO from "helpers/SEO";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
+import { NewUserSurveyResponse } from "types";
 
 export default function NewUserSurveyPage() {
   const [slideNum, setSlideNum] = useState(0);
-  const [answers, setAnswers] = useState<Answers>({
+  const [answers, setAnswers] = useState<NewUserSurveyResponse>({
     timezoneOffset: new Date().getTimezoneOffset(),
   });
   const router = useRouter();
@@ -48,7 +49,10 @@ export default function NewUserSurveyPage() {
     [answers, slideNum, createNewUserSurveyResponse, updateUser, router]
   );
 
-  const slides = useSlides(handleNext, answers.userType);
+  const slides = useSlides(
+    handleNext,
+    answers.userType as "STUDENT" | "TEACHER"
+  );
 
   return (
     <>

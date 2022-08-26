@@ -47,6 +47,7 @@ export default function CreateFlashcardsPage({
         fields: { value: [frontValue, backValue] },
         tags,
         flashcardType,
+        courseId: course.id,
         courseSectionSlug,
         subSectionSlug,
       },
