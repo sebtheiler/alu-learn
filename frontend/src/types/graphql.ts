@@ -44,11 +44,6 @@ export type CourseSection = {
   title?: Maybe<Scalars["String"]>;
 };
 
-export enum DeckChoice {
-  CopyExisting = "COPY_EXISTING",
-  CreateOwn = "CREATE_OWN",
-}
-
 export type Flashcard = {
   __typename?: "Flashcard";
   fields?: Maybe<Scalars["JSONObject"]>;
@@ -118,7 +113,6 @@ export type MutationCreateFlashcardArgs = {
 };
 
 export type MutationCreateNewUserSurveyResponseArgs = {
-  deckChoice: DeckChoice;
   joinReason: JoinReason;
   referrer: Referrer;
   sendReminders: Scalars["Boolean"];
@@ -175,7 +169,6 @@ export type MutationUploadCourseBannerImageArgs = {
 
 export type NewUserSurveyResponse = {
   __typename?: "NewUserSurveyResponse";
-  deckChoice?: Maybe<DeckChoice>;
   id?: Maybe<Scalars["String"]>;
   joinReason?: Maybe<JoinReason>;
   referrer?: Maybe<Referrer>;

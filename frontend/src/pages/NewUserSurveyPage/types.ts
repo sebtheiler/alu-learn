@@ -14,7 +14,6 @@ export interface Answers {
   joinReason?: "MEMORY" | "GRADES" | "CONCEPT" | "TEACHER" | "STUDENTS";
   targetNumCards?: 10 | 25 | 50 | 100;
   sendReminders?: boolean;
-  deckChoice?: "CREATE_OWN" | "COPY_EXISTING";
 }
 
 export type Question = keyof Answers;

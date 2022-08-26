@@ -3,9 +3,7 @@ import {
   faGraduationCap,
   faNewspaper,
   faPersonChalkboard,
-  faPlus,
   faUserGroup,
-  faWindowRestore,
 } from "@fortawesome/free-solid-svg-icons";
 import ChoiceSelect from "components/ChoiceSelect";
 import { useMemo } from "react";
@@ -28,7 +26,7 @@ export default function useSlides(
      * Total, predetermined number of slides
      * Must be predetermined to avoid circular depndency
      */
-    const numSlides = 2 + (userType === "STUDENT" ? 3 : 1) + 2;
+    const numSlides = 2 + (userType === "STUDENT" ? 3 : 1) + 1;
 
     let slides = [
       <>
@@ -193,28 +191,6 @@ export default function useSlides(
     }
 
     slides = slides.concat([
-      <>
-        <h4 className="text-center">
-          Would you like to create your own deck or copy an existing deck?
-        </h4>
-        <ChoiceSelect
-          choices={[
-            {
-              value: "CREATE_OWN",
-              display: "Create My Own",
-              icon: faPlus,
-              iconColor: "navy",
-            },
-            {
-              value: "COPY_EXISTING",
-              display: "Copy Existing Deck",
-              icon: faWindowRestore,
-              iconColor: "peru",
-            },
-          ]}
-          onClick={handleNext("deckChoice", numSlides)}
-        />
-      </>,
       <>
         <h3 className="text-center">Personalizing your Alu account...</h3>
         <h4 className="text-center">Hang on just one second</h4>

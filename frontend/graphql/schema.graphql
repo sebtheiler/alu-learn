@@ -22,11 +22,6 @@ type CourseSection {
   title: String
 }
 
-enum DeckChoice {
-  COPY_EXISTING
-  CREATE_OWN
-}
-
 type Flashcard {
   fields: JSONObject
   id: String
@@ -68,7 +63,7 @@ type Mutation {
   createFlashcard(courseSectionSlug: String!, fields: JSONObject!, flashcardType: FlashcardType, subSectionSlug: String!, tags: String): Flashcard
 
   """Creates a new NewUserSurveyResponse from a set of responses"""
-  createNewUserSurveyResponse(deckChoice: DeckChoice!, joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumCards: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse
+  createNewUserSurveyResponse(joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumCards: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse
 
   """Creates a new sub section"""
   createSubSection(courseSectionId: String!, title: String!): SubSection
@@ -130,7 +125,6 @@ type Mutation {
 }
 
 type NewUserSurveyResponse {
-  deckChoice: DeckChoice
   id: String
   joinReason: JoinReason
   referrer: Referrer

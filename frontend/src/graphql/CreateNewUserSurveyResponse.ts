@@ -8,7 +8,6 @@ const CreateNewUserSurveyResponse = gql`
     $joinReason: JoinReason!
     $targetNumCards: Int!
     $sendReminders: Boolean!
-    $deckChoice: DeckChoice!
   ) {
     createNewUserSurveyResponse(
       timezoneOffset: $timezoneOffset
@@ -17,7 +16,6 @@ const CreateNewUserSurveyResponse = gql`
       joinReason: $joinReason
       targetNumCards: $targetNumCards
       sendReminders: $sendReminders
-      deckChoice: $deckChoice
     ) {
       id
     }

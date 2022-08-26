@@ -23,7 +23,6 @@ const NewUserSurveyResponse = objectType({
     t.field("joinReason", { type: JoinReason });
     t.int("targetNumCards");
     t.boolean("sendReminders");
-    t.field("deckChoice", { type: DeckChoice });
   },
 });
 
@@ -43,7 +42,6 @@ export const NewUserSurveyResponseMutation = extendType({
         joinReason: nonNull(arg({ type: "JoinReason" })),
         targetNumCards: nonNull(intArg()),
         sendReminders: nonNull(booleanArg()),
-        deckChoice: nonNull(arg({ type: "DeckChoice" })),
       },
       async resolve(_root, args, ctx) {
         const user = await getUserGQL(ctx);
@@ -56,7 +54,6 @@ export const NewUserSurveyResponseMutation = extendType({
           joinReason: args.joinReason,
           targetNumCards: args.targetNumCards,
           sendReminders: args.sendReminders,
-          deckChoice: args.deckChoice,
           userId: user.id,
         };
 
@@ -85,9 +82,4 @@ export const Referrer = enumType({
 export const JoinReason = enumType({
   name: "JoinReason",
   members: ["MEMORY", "GRADES", "CONCEPT", "TEACHER", "STUDENTS"],
-});
-
-export const DeckChoice = enumType({
-  name: "DeckChoice",
-  members: ["CREATE_OWN", "COPY_EXISTING"],
 });

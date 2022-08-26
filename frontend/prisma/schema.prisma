@@ -102,7 +102,6 @@ model NewUserSurveyResponse {
   joinReason     JoinReason
   targetNumCards Int
   sendReminders  Boolean
-  deckChoice     DeckChoice
 }
 
 enum Referrer {
@@ -122,11 +121,6 @@ enum JoinReason {
   CONCEPT
   TEACHER
   STUDENTS
-}
-
-enum DeckChoice {
-  COPY_EXISTING
-  CREATE_OWN
 }
 
 // # Courses
