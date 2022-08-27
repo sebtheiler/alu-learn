@@ -1,6 +1,11 @@
-import { lazy, Suspense } from "react";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
-const TeX = lazy(() => import("@/components/TeX"));
+const TeX = dynamic(() => import("@/components/TeX"), {
+  // suspense: true,
+  suspense: false,
+  loading: () => <p>Loading KaTeX...</p>,
+});
 
 const Leaf = ({ attributes, children, leaf, readOnly }) => {
   if (leaf.bold) children = <strong>{children}</strong>;
@@ -14,7 +19,7 @@ const Leaf = ({ attributes, children, leaf, readOnly }) => {
   if (leaf.math_inline) {
     if (readOnly) {
       children = (
-        <Suspense fallback="Loading KaTeX">
+        <Suspense fallback={children.props.text.text}>
           <TeX math={children.props.text.text} />
         </Suspense>
       );

@@ -4,7 +4,7 @@ import CoursePageContext from "./context";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
-import RenderCourseSection from "@/components/RenderCourseSection";
+import RenderCourseSection from "@/courses/RenderCourseSection";
 import SEO from "@/helpers/SEO";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import type { Course, CourseSection } from "@/types";

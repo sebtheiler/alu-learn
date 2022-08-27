@@ -70,8 +70,12 @@ const TeX: React.FC<TeXProps> = ({
   return (
     <Component
       {...props}
-      style={{ fontFamily: 'KaTeX_Main, "Times New Roman", serif' }}
+      style={{
+        fontFamily: 'KaTeX_Main, "Times New Roman", serif',
+        userSelect: "none",
+      }}
       dangerouslySetInnerHTML={{ __html: state.innerHtml }}
+      contentEditable={false}
     />
   );
 };

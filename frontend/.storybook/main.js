@@ -29,8 +29,20 @@ module.exports = {
   webpackFinal: async (config) => {
     config.resolve.modules = [
       ...(config.resolve.modules || []),
-      path.resolve(__dirname, "../src"),
+      path.resolve(__dirname, ".."),
     ];
+
+    config.resolve.alias = {
+      "@/atoms": path.resolve(__dirname, "..", "src", "atoms"),
+      "@/components": path.resolve(__dirname, "..", "src", "components"),
+      "@/courses": path.resolve(__dirname, "..", "src", "courses"),
+      "@/editor": path.resolve(__dirname, "..", "src", "editor"),
+      "@/graphql": path.resolve(__dirname, "..", "src", "graphql"),
+      "@/helpers": path.resolve(__dirname, "..", "src", "helpers"),
+      "@/hooks": path.resolve(__dirname, "..", "src", "hooks"),
+      "@/pages": path.resolve(__dirname, "..", "src", "pages"),
+      "@/stores": path.resolve(__dirname, "..", "src", "stores"),
+    };
 
     config.module.rules.push({
       test: /\.scss$/,

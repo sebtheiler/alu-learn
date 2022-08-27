@@ -14,7 +14,7 @@ interface IconTooltipProps {
   /**
    * Called when the icon is clicked
    */
-  onClick(e: React.MouseEvent<HTMLElement, MouseEvent>): Promise<void> | void;
+  onClick(e: React.MouseEvent<HTMLElement, MouseEvent>): Promise<any> | any;
   /**
    * Size of the icon
    */

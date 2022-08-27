@@ -1,6 +1,7 @@
 import RenderRichText from "../../RenderRichText";
 import Popover from "@/atoms/Popover";
 import IconTooltip from "@/components/IconTooltip";
+import type { ExtendedSlateElement } from "@/editor/types";
 import type { Flashcard } from "@/types";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
@@ -16,6 +17,10 @@ interface FlashcardLinkComponentProps {
    * Children of the `<span>` element
    */
   children: React.ReactNode;
+  /**
+   * SlateJS Element to render
+   */
+  element: ExtendedSlateElement;
 }
 
 /**

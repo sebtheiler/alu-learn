@@ -22,7 +22,7 @@ const courseSection = {
 };
 
 export default {
-  title: "Components/RenderCourseSection",
+  title: "Courses/RenderCourseSection",
   component: RenderCourseSection,
   decorators: [withFullContext],
 };

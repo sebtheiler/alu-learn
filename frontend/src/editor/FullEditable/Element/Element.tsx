@@ -1,12 +1,26 @@
 import type { ExtendedSlateElement } from "@/editor/types";
-import { Suspense, lazy } from "react";
+import dynamic from "next/dynamic";
+// import { Suspense } from "react";
 import { Node } from "slate";
 
-const TeX = lazy(() => import("@/components/TeX"));
-const FlashcardLinkComponent = lazy(
-  () => import("@/editor/plugins/FlashcardLink/FlashcardLink")
+const TeX = dynamic(() => import("@/components/TeX"), {
+  // suspense: true,
+  suspense: false,
+  loading: () => <p>Loading KaTeX...</p>,
+});
+const FlashcardLinkComponent = dynamic(
+  () => import("@/editor/plugins/FlashcardLink/FlashcardLink"),
+  {
+    // suspense: true,
+    suspense: false,
+    loading: () => <p>Loading KaTeX...</p>,
+  }
 );
-const LinkComponent = lazy(() => import("@/editor/plugins/Link/Link"));
+const LinkComponent = dynamic(() => import("@/editor/plugins/Link/Link"), {
+  // suspense: true,
+  suspense: false,
+  loading: () => <p>Loading KaTeX...</p>,
+});
 
 interface ElementProps {
   /**
@@ -99,9 +113,9 @@ const Element = ({ attributes, children, element, readOnly }: ElementProps) => {
     case "math-block":
       if (readOnly) {
         return (
-          <Suspense fallback={<p>Loading KaTeX...</p>}>
-            <TeX math={Node.string(element)} block />
-          </Suspense>
+          // <Suspense fallback={Node.string(element)}>
+          <TeX math={Node.string(element)} block />
+          // </Suspense>
         );
       }
       return (

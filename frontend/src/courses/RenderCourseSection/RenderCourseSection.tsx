@@ -7,7 +7,7 @@ import LinkButton from "@/atoms/LinkButton";
 import Modal from "@/atoms/Modal";
 import TextInput from "@/atoms/TextInput";
 import Tooltip from "@/atoms/Tooltip";
-import RenderSubSection from "@/components/RenderSubSection";
+import RenderSubSection from "@/courses/RenderSubSection";
 import CreateSubSection from "@/graphql/CreateSubSection";
 import { getElementsVals } from "@/helpers/getElementsVals";
 import useWindowDimensions from "@/hooks/useWindowDimensions";

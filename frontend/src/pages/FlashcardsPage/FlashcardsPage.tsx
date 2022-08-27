@@ -1,15 +1,21 @@
 import ButtonGroup from "@/atoms/ButtonGroup";
 import LinkButton from "@/atoms/LinkButton";
+import RenderFlashcard from "@/courses/RenderFlashcard";
 import SEO from "@/helpers/SEO";
+import { Flashcard } from "@/types";
 
 export interface FlashcardsPageProps {
   courseId: string;
+  flashcards: Flashcard[];
 }
 
 /**
  * Renders a page with a list of all flashcards in a specific course, course section, or sub section
  */
-export default function FlashcardsPage({ courseId }: FlashcardsPageProps) {
+export default function FlashcardsPage({
+  courseId,
+  flashcards,
+}: FlashcardsPageProps) {
   return (
     <>
       <SEO
@@ -26,6 +32,16 @@ export default function FlashcardsPage({ courseId }: FlashcardsPageProps) {
             Add Flashcards
           </LinkButton>
         </ButtonGroup>
+        <div className="container mx-auto px-48 mt-4">
+          {flashcards.map((flashcard) => (
+            <RenderFlashcard
+              flashcard={flashcard}
+              courseId={courseId}
+              className="mb-3"
+              key={flashcard.id}
+            />
+          ))}
+        </div>
       </div>
     </>
   );
