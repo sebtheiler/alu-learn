@@ -1,8 +1,15 @@
 import SignInPage from "@/pages/SignInPage";
+import { GetStaticProps } from "next";
 import type { NextPage } from "types";
-
-export { getServerSideProps } from "helpers/getSessionSSR";
 
 const SignIn: NextPage = () => <SignInPage />;
 
 export default SignIn;
+
+export const getStaticProps: GetStaticProps = async () => {
+  {
+    return {
+      props: {},
+    };
+  }
+};

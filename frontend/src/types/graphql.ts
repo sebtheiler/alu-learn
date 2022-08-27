@@ -220,9 +220,12 @@ export type SubSection = {
 
 export type User = {
   __typename?: "User";
+  currentStreak?: Maybe<Scalars["Int"]>;
+  doneReviewsToday?: Maybe<Scalars["Boolean"]>;
   email?: Maybe<Scalars["String"]>;
   id?: Maybe<Scalars["String"]>;
   image?: Maybe<Scalars["String"]>;
+  isPro?: Maybe<Scalars["Boolean"]>;
   name?: Maybe<Scalars["String"]>;
   /** The user's response to the survey launched on sign-up */
   newUserSurveyResponse?: Maybe<NewUserSurveyResponse>;

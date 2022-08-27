@@ -1,9 +1,10 @@
 import prisma from "../lib/prisma";
+import { authOptions } from "./api/auth/[...nextauth]";
 import HomePage from "@/pages/HomePage";
 import type { HomePageProps } from "@/pages/HomePage";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
-import { getSessionAndStreak } from "helpers/getSessionSSR";
 import type { GetServerSideProps, NextPage } from "next";
+import { unstable_getServerSession } from "next-auth";
 
 const Home: NextPage<HomePageProps> & { authRequired: boolean } = (
   props: HomePageProps
@@ -13,7 +14,11 @@ Home.authRequired = true;
 export default Home;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { session, streak } = await getSessionAndStreak(context);
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  );
 
   let courses = await prisma.course.findMany({
     where: {
@@ -38,10 +43,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }));
 
   return {
-    props: {
-      session,
-      streak,
-      courses,
-    } as HomePageProps,
+    props: { courses } as HomePageProps,
   };
 };

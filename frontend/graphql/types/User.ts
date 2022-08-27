@@ -33,12 +33,17 @@ const User = objectType({
 
     t.field("role", { type: Role });
     t.field("userType", { type: "UserType" });
+    t.boolean("isPro");
 
     // Settings
-    t.boolean("sendReminders");
     t.int("targetNumCards");
+    t.boolean("sendReminders");
     t.boolean("sendMarketingResearch");
     t.int("timezoneOffset");
+
+    // Streak
+    t.int("currentStreak");
+    t.boolean("doneReviewsToday");
   },
 });
 
@@ -48,7 +53,7 @@ export const UsersQuery = extendType({
   type: "Query",
   definition(t) {
     t.list.field("users", {
-      type: "User",
+      type: User,
       description: "List all users",
       async resolve(_parent, _args, ctx) {
         if (!(await isAdmin(ctx))) return null;

@@ -1,10 +1,11 @@
 import CoursePage from "@/pages/CoursePage";
 import type { CoursePageProps } from "@/pages/CoursePage";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
-import { getSessionAndStreak } from "helpers/getSessionSSR";
 import isCourseUser from "helpers/isCourseUser";
 import prisma from "lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
+import { unstable_getServerSession } from "next-auth";
+import { authOptions } from "pages/api/auth/[...nextauth]";
 
 const Course: NextPage<CoursePageProps> = (props: CoursePageProps) => (
   <CoursePage {...props} />
@@ -13,7 +14,11 @@ const Course: NextPage<CoursePageProps> = (props: CoursePageProps) => (
 export default Course;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { session, streak } = await getSessionAndStreak(context);
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  );
   const { courseId } = context.query;
 
   let course = await prisma.course.findUnique({
@@ -53,8 +58,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       course,
       authorized,
-      session,
-      streak,
     } as CoursePageProps,
   };
 };

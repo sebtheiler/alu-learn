@@ -178,9 +178,12 @@ type SubSection {
 scalar Upload
 
 type User {
+  currentStreak: Int
+  doneReviewsToday: Boolean
   email: String
   id: String
   image: String
+  isPro: Boolean
   name: String
 
   """The user's response to the survey launched on sign-up"""

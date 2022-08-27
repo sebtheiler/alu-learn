@@ -1,8 +1,12 @@
 import AboutPage from "@/pages/AboutPage";
-import type { NextPage } from "next";
-
-export { getServerSideProps } from "helpers/getSessionSSR";
+import type { GetStaticProps, NextPage } from "next";
 
 const About: NextPage = () => <AboutPage />;
 
 export default About;
+
+export const getStaticProps: GetStaticProps = async () => {
+  return {
+    props: {},
+  };
+};
