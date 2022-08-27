@@ -3,9 +3,10 @@ import { createFullEditor } from "@/editor/FullEditable";
 import RenderEditor from "@/editor/RenderEditor";
 import RenderRichText from "@/editor/RenderRichText";
 import type { ExtendedSlateElement } from "@/editor/types";
+import DeleteFlashcard from "@/graphql/DeleteFlashcard";
 import UpdateFlashcard from "@/graphql/UpdateFlashcard";
 import classNames from "@/helpers/classNames";
-import { Flashcard } from "@/types";
+import type { Flashcard } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faEye, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useMemo, useState } from "react";
@@ -20,6 +21,12 @@ interface RenderFlashcardProps {
    * Additional classes to apply to the flashcard
    */
   className: string;
+  /**
+   *
+   */
+  handlers?: {
+    deleteHandler?(flashcard: Flashcard): void;
+  };
 }
 
 /**
@@ -28,12 +35,14 @@ interface RenderFlashcardProps {
 export default function RenderFlashcard({
   flashcard,
   className,
+  handlers,
 }: RenderFlashcardProps) {
   const [editMode, setEditMode] = useState(false);
   const [fields, setFields] = useState<ExtendedSlateElement[][]>(
     flashcard.fields.value
   );
   const [updateFlashcard] = useMutation(UpdateFlashcard);
+  const [deleteFlashcard] = useMutation(DeleteFlashcard);
 
   const frontEditor = useMemo<ReactEditor>(createFullEditor, []);
   const backEditor = useMemo<ReactEditor>(createFullEditor, []);
@@ -56,8 +65,9 @@ export default function RenderFlashcard({
     setEditMode(!editMode);
   };
 
-  const deleteFlashcardHandler = () => {
-    console.log("deleting...");
+  const deleteFlashcardHandler = async () => {
+    await deleteFlashcard({ variables: { flashcardId: flashcard.id } });
+    handlers?.deleteHandler && handlers.deleteHandler(flashcard);
   };
 
   return (

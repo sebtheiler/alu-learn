@@ -127,7 +127,7 @@ export const FlashcardMutation = extendType({
 
         return ctx.prisma.flashcard.delete({
           where: {
-            id: flashcard.courseId,
+            id: flashcard.id,
           },
         });
       },

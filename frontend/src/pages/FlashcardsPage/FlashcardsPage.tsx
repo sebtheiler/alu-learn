@@ -1,6 +1,6 @@
 import ButtonGroup from "@/atoms/ButtonGroup";
 import LinkButton from "@/atoms/LinkButton";
-import RenderFlashcard from "@/courses/RenderFlashcard";
+import FlashcardList from "@/courses/FlashcardList";
 import SEO from "@/helpers/SEO";
 import { Flashcard } from "@/types";
 
@@ -33,13 +33,7 @@ export default function FlashcardsPage({
           </LinkButton>
         </ButtonGroup>
         <div className="container mx-auto px-48 mt-4">
-          {flashcards.map((flashcard) => (
-            <RenderFlashcard
-              flashcard={flashcard}
-              className="mb-3"
-              key={flashcard.id}
-            />
-          ))}
+          <FlashcardList flashcards={flashcards} />
         </div>
       </div>
     </>
