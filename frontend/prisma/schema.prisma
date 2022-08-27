@@ -134,6 +134,7 @@ model Course {
   owners User[] @relation("CourseOwners")
 
   courseSections CourseSection[]
+  flashcards     Flashcard[]
 }
 
 model CourseSection {
@@ -168,6 +169,11 @@ model Flashcard {
   subSectionId String
 
   type FlashcardType @default(NORMAL)
+
+  // Although this is redundant, it often saves database operations
+  // and is therefore useful
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
 }
 
 enum FlashcardType {

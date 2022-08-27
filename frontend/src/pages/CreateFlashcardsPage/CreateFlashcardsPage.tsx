@@ -10,6 +10,8 @@ import classNames from "@/helpers/classNames";
 import clearEditor from "@/helpers/clearEditor";
 import type { Course, FlashcardType } from "@/types";
 import { useMutation } from "@apollo/client";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { ReactEditor } from "slate-react";
@@ -81,6 +83,22 @@ export default function CreateFlashcardsPage({
           Use &quot;Tab&quot; to cycle through sides, and use enter to press
           create once it is selected
         </p>
+        <div className="absolute left-4 top-24">
+          <Link
+            href={{
+              pathname: `/course/[courseId]/flashcards/[courseSectionSlug]/[subSectionSlug]`,
+              query: { courseId: course.id, courseSectionSlug, subSectionSlug },
+            }}
+          >
+            <a>
+              <FontAwesomeIcon
+                icon={faArrowLeft}
+                size="2x"
+                className="text-gray-600"
+              />
+            </a>
+          </Link>
+        </div>
         <div className="grid grid-cols-12">
           <div className="md:col-start-4 col-span-12 md:col-span-6 mx-10 md:mx-5">
             <div className="mt-2">

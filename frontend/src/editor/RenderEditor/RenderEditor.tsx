@@ -65,7 +65,7 @@ export default function RenderEditor({
   id,
 }: RenderEditorProps) {
   return (
-    <div className="editor">
+    <div className={className}>
       <Slate
         editor={editor}
         value={value}

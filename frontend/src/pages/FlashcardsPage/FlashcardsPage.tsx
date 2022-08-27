@@ -36,7 +36,6 @@ export default function FlashcardsPage({
           {flashcards.map((flashcard) => (
             <RenderFlashcard
               flashcard={flashcard}
-              courseId={courseId}
               className="mb-3"
               key={flashcard.id}
             />

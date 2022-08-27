@@ -1,5 +1,7 @@
 import { JSONData } from "./scalars";
+import { Flashcard as PrismaFlashcard } from "@prisma/client";
 import getUserGQL from "helpers/getUserGQL";
+import isCourseOwner from "helpers/isCourseOwner";
 import isSubSectionOwner from "helpers/isSubSectionOwner";
 import {
   arg,
@@ -25,7 +27,7 @@ export const FlashcardMutation = extendType({
   definition(t) {
     t.field("createFlashcard", {
       type: Flashcard,
-      description: "Creeates a new flashcard",
+      description: "Creates a new flashcard",
       args: {
         fields: nonNull(arg({ type: JSONData })),
         tags: stringArg(),
@@ -47,7 +49,11 @@ export const FlashcardMutation = extendType({
             },
           },
         });
-        if (!subSection || !isSubSectionOwner(subSection.id, ctx)) return null;
+        if (
+          !subSection ||
+          !isSubSectionOwner(subSection.id, ctx.user?.email, ctx.prisma)
+        )
+          return null;
 
         return ctx.prisma.flashcard.create({
           data: {
@@ -58,6 +64,70 @@ export const FlashcardMutation = extendType({
                 id: subSection.id,
               },
             },
+            course: {
+              connect: {
+                id: args.courseId,
+              },
+            },
+          },
+        });
+      },
+    });
+    t.field("updateFlashcard", {
+      type: Flashcard,
+      description: "Change a flashcard's data",
+      args: {
+        fields: arg({ type: JSONData }),
+        tags: stringArg(),
+        flashcardId: nonNull(
+          stringArg({ description: "ID of the flashcard to update" })
+        ),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        const flashcard = await ctx.prisma.flashcard.findUnique({
+          where: { id: args.flashcardId },
+        });
+        if (
+          !user ||
+          !flashcard ||
+          !isCourseOwner(flashcard.courseId, ctx.user?.email, ctx.prisma)
+        )
+          return null;
+
+        const data: Partial<PrismaFlashcard> = {};
+        if (args.fields != null) data.fields = args.fields;
+        if (args.tags != null) data.tags = args.tags;
+
+        return ctx.prisma.flashcard.update({
+          where: { id: args.flashcardId },
+          data: data,
+        });
+      },
+    });
+    t.field("deleteFlashcard", {
+      type: "Flashcard",
+      description: "Deletes the given flashcard",
+      args: {
+        flashcardId: nonNull(
+          stringArg({ description: "ID of the flashcard to delete" })
+        ),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        const flashcard = await ctx.prisma.flashcard.findUnique({
+          where: { id: args.flashcardId },
+        });
+        if (
+          !user ||
+          !flashcard ||
+          !isCourseOwner(flashcard.courseId, ctx.user?.email, ctx.prisma)
+        )
+          return null;
+
+        return ctx.prisma.flashcard.delete({
+          where: {
+            id: flashcard.courseId,
           },
         });
       },

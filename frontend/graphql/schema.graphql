@@ -59,7 +59,7 @@ type Mutation {
   """
   createCourseSection(courseId: String!, title: String!): CourseSection
 
-  """Creeates a new flashcard"""
+  """Creates a new flashcard"""
   createFlashcard(courseId: String!, courseSectionSlug: String!, fields: JSONObject!, flashcardType: FlashcardType, subSectionSlug: String!, tags: String): Flashcard
 
   """Creates a new NewUserSurveyResponse from a set of responses"""
@@ -82,6 +82,12 @@ type Mutation {
     courseSectionId: String!
   ): CourseSection
 
+  """Deletes the given flashcard"""
+  deleteFlashcard(
+    """ID of the flashcard to delete"""
+    flashcardId: String!
+  ): Flashcard
+
   """Deletes a sub section"""
   deleteSubSection(
     """ID of the sub section to delete"""
@@ -101,6 +107,15 @@ type Mutation {
     courseSectionId: String!
     title: String
   ): CourseSection
+
+  """Change a flashcard's data"""
+  updateFlashcard(
+    fields: JSONObject
+
+    """ID of the flashcard to update"""
+    flashcardId: String!
+    tags: String
+  ): Flashcard
 
   """Change a sub section's settings"""
   updateSubSection(
