@@ -8,10 +8,11 @@ import prisma from "lib/prisma";
  */
 const isCourseUser = async (
   courseId: string,
-  email: string | undefined | null
+  email: string | undefined | null,
+  prismaInstance = prisma
 ) =>
   email
-    ? (await prisma.user.count({
+    ? (await prismaInstance.user.count({
         where: {
           email: email ?? null,
           courses: {

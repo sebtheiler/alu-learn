@@ -1,16 +1,16 @@
-import isCourseOwner from "./isCourseOwner";
+import isCourseUser from "./isCourseUser";
 import prisma from "lib/prisma";
 
 /**
- * Is the given user (specified by their email) an owner of the course
+ * Is the given user (specified by their email) a user of the course
  *   for a specific course section?
- * @param courseSectionId Course section to check if the user is an owner of
+ * @param courseSectionId Course section to check if the user is a user of
  * @param email Email of the user to check
  * @param prismaInstance Specify a special instance of the Prisma client.
  *   E.g., `context.prisma`
- * @returns True if the user is an owner of the course section
+ * @returns True if the user is a user of the course section
  */
-const isCourseSectionOwner = async (
+const isCourseSectionUser = async (
   courseSectionId: string,
   email: string | undefined | null,
   prismaInstance = prisma
@@ -25,7 +25,7 @@ const isCourseSectionOwner = async (
       },
     })) ?? {};
 
-  return courseId && isCourseOwner(courseId, email, prismaInstance);
+  return courseId && isCourseUser(courseId, email, prismaInstance);
 };
 
-export default isCourseSectionOwner;
+export default isCourseSectionUser;

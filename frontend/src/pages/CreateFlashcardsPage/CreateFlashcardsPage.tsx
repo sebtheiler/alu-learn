@@ -40,8 +40,18 @@ export default function CreateFlashcardsPage({
     "NORMAL" as FlashcardType
   );
   const [tags, setTags] = useState("");
+  const [error, setError] = useState("");
 
   const createFlashcardHandler = async () => {
+    if (
+      flashcardType !== "CLOZE" &&
+      [frontValue, backValue].includes(blankSlateElement)
+    ) {
+      setError("BLANK_SIDE");
+      return;
+    }
+    setError("");
+
     await createFlashcard({
       variables: {
         fields: { value: [frontValue, backValue] },
@@ -113,6 +123,11 @@ export default function CreateFlashcardsPage({
               />
             </div>
             <div className="mt-3">
+              {error === "BLANK_SIDE" && (
+                <p className="text-red-700 text-center mb-3">
+                  You cannot have a flashcard with blank sides
+                </p>
+              )}
               <AsyncButton onClick={createFlashcardHandler} block>
                 Create
               </AsyncButton>

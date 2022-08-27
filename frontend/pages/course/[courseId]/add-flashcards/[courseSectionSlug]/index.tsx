@@ -8,45 +8,50 @@ import type { NextPage } from "types";
 const Blank: NextPage = () => <></>;
 export default Blank;
 
-// TODO: rewrite this
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { courseId } = context.query;
+  const { courseId, courseSectionSlug } = context.query;
   const session = await unstable_getServerSession(
     context.req,
     context.res,
     authOptions
   );
 
-  if (!isCourseUser(courseId as string, session?.user?.email)) {
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/course/${courseId}`,
+  // Redirect the user if they are not a user of the course or the
+  // course section does not exist in the given course
+  const courseRedirect = {
+    redirect: {
+      permanent: false,
+      destination: `/course/${courseId}`,
+    },
+  };
+  if (
+    !isCourseUser(courseId as string, session?.user?.email) ||
+    !prisma.courseSection.findFirst({
+      where: {
+        slug: courseSectionSlug as string,
+        courseId: courseId as string,
       },
-    };
+    })
+  ) {
+    return courseRedirect;
   }
 
   const subSection = await prisma.subSection.findFirst({
     where: {
-      // Should be course section, not course
       courseSection: {
+        slug: courseSectionSlug as string,
         courseId: courseId as string,
       },
     },
     select: {
       slug: true,
-      courseSection: {
-        select: {
-          slug: true,
-        },
-      },
     },
   });
 
   return {
     redirect: {
       permanent: false,
-      destination: `/course/${courseId}/add-flashcards/${subSection?.courseSection.slug}/${subSection?.slug}`,
+      destination: `/course/${courseId}/add-flashcards/${courseSectionSlug}/${subSection?.slug}`,
     },
   };
 };
