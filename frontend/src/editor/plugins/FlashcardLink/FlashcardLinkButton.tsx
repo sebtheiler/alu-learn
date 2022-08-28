@@ -2,14 +2,16 @@ import { insertFlashcardLink } from "./helpers";
 import Popover from "@/atoms/Popover";
 import TextInput from "@/atoms/TextInput";
 import Tooltip from "@/atoms/Tooltip";
+import SearchFlashcards from "@/graphql/SearchFlashcards";
 import flattenNodes from "@/helpers/flattenNodes";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { Flashcard } from "@/types";
+import { useQuery } from "@apollo/client";
 import { faAnchor } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import type { ReactEditor } from "slate-react";
+import { ReactEditor } from "slate-react";
 
 interface FlashcardLinkButtonProps {
   /**
@@ -32,26 +34,29 @@ interface FlashcardLinkButtonProps {
 export default function FlashcardLinkButton({
   editor,
   tabbable,
-  isPro,
 }: FlashcardLinkButtonProps) {
+  const isPro = true;
+
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-  const [searchedFlashcards, setSearchedFlashcards] = useState<Flashcard[]>([]);
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 750);
+  const { data: searchData, refetch: searchFlashcards } = useQuery<{
+    searchFlashcards: Flashcard[];
+  }>(SearchFlashcards, { skip: debouncedSearchTerm === "" });
+  const { searchFlashcards: searchedFlashcards } = searchData ?? {};
+  console.log(searchedFlashcards);
+
+  // We need to override the popup's `open` state so that we can
+  // close the popup after the user selects a flashcard
+  const [open, setOpen] = useState(false);
+  console.log(open);
 
   useEffect(() => {
     if (debouncedSearchTerm === searchTerm && searchTerm.length > 0) {
       setIsSearching(true);
-      // backendFetch<PaginatedResponse<Flashcard>>('POST', 'decks/flashcard/search/', {
-      //   contains_text: searchTerm,
-      // }).then(resp => {
-      //   setSearchedFlashcards(resp.results);
-      //   setIsSearching(false);
-      // });
-    } else {
-      setSearchedFlashcards([]);
+      searchFlashcards({ text: searchTerm }).then(() => setIsSearching(false));
     }
-  }, [debouncedSearchTerm, searchTerm]);
+  }, [debouncedSearchTerm, searchTerm, searchFlashcards]);
 
   return (
     <Popover
@@ -91,17 +96,25 @@ export default function FlashcardLinkButton({
               )}
               {isSearching && <p className="mt-3">Loading…</p>}
             </div>
-            {searchedFlashcards.length > 0 && <hr />}
+            {searchedFlashcards && searchedFlashcards.length > 0 && (
+              <hr className="my-3" />
+            )}
             <div>
-              {searchedFlashcards.map((flashcard) => (
-                <p
-                  className="searched-item"
-                  onClick={() => insertFlashcardLink(editor, flashcard)}
-                  key={flashcard.id}
-                >
-                  {flattenNodes(flashcard.fields[0])}
-                </p>
-              ))}
+              {searchedFlashcards &&
+                searchedFlashcards.map((flashcard) => (
+                  <div
+                    className="mb-1 bg-gray-100 border-2 border-gray-200 px-3 py-2 rounded-lg hover:cursor-pointer hover:scale-105 transition"
+                    onClick={() => {
+                      insertFlashcardLink(editor, flashcard);
+                      document.body.click();
+                      ReactEditor.focus(editor);
+                      setOpen(false);
+                    }}
+                    key={flashcard.id}
+                  >
+                    {flattenNodes(flashcard.fields.value[0])}
+                  </div>
+                ))}
             </div>
           </div>
         </div>
@@ -109,6 +122,10 @@ export default function FlashcardLinkButton({
       trigger="click"
       className="w-96"
       placement="bottom"
+      onOpenCallback={() => setOpen(true)}
+      onCloseCallback={() => setOpen(false)}
+      open={open}
+      arrow
     >
       <Tooltip tooltip="Insert Flashcard Link" className="w-36">
         <button

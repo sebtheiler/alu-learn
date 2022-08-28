@@ -18,6 +18,7 @@ interface ExtendedReactEditor extends ReactEditor {
 interface ExtendedSlateElement extends SlateElement {
   url?: string;
   type?: string;
+  flashcardId?: string;
 }
 
 export type { ExtendedReactEditor, ExtendedSlateElement };

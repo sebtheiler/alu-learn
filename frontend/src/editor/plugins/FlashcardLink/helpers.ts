@@ -38,7 +38,10 @@ const wrapFlashcardLink = (editor: ReactEditor, flashcard: Flashcard) => {
   const isCollapsed = selection && Range.isCollapsed(selection);
   const flashcardLink = {
     type: "flashcard-link",
-    children: isCollapsed ? [{ text: flattenNodes(flashcard.fields[0]) }] : [],
+    flashcardId: flashcard.id,
+    children: isCollapsed
+      ? [{ text: flattenNodes(flashcard.fields.value[0]) }]
+      : [],
   };
 
   if (isCollapsed) {

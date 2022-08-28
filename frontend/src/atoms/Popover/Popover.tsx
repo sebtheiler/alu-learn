@@ -31,6 +31,19 @@ interface PopoverProps {
    * Display an arrow connecting the popover to its children?
    */
   arrow?: boolean;
+  /**
+   * Call a function when the popover is opened (either by hovering or click)
+   */
+  onOpenCallback?(): void;
+  /**
+   * Call a function when the popover is closed (either by hovering or click)
+   */
+  onCloseCallback?(): void;
+  /**
+   * Override the automatic handling of open/closed state by manually
+   * specifying the `open` attribute.  Do not use unless absolutely required
+   */
+  open?: boolean;
 }
 
 /**
@@ -44,6 +57,9 @@ export default function Popover({
   placement = "top",
   trigger = "hover",
   arrow,
+  onOpenCallback,
+  onCloseCallback,
+  open,
 }: PopoverProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -68,33 +84,45 @@ export default function Popover({
     ],
   });
 
-  const triggetAttrs = useMemo(() => {
+  const triggerAttrs = useMemo(() => {
     switch (trigger) {
       case "hover":
         return {
-          onMouseEnter: () => setIsPopoverOpen(true),
-          onMouseLeave: () => setIsPopoverOpen(false),
+          onMouseEnter: () => {
+            setIsPopoverOpen(true);
+            onOpenCallback && onOpenCallback();
+          },
+          onMouseLeave: () => {
+            setIsPopoverOpen(false);
+            onCloseCallback && onCloseCallback();
+          },
         };
       case "click":
         return {
-          onClick: () => setIsPopoverOpen(true),
+          onClick: () => {
+            setIsPopoverOpen(true);
+            onOpenCallback && onOpenCallback();
+          },
         };
     }
-  }, [trigger]);
+  }, [trigger, onOpenCallback, onCloseCallback]);
 
   useOutsideClick(popEl, () => {
     if (trigger === "click") {
       setIsPopoverOpen(false);
+      onCloseCallback && onCloseCallback();
     }
   });
 
+  console.log("117", open);
+
   return (
     <div className="inline">
-      <span ref={setRefEl} {...triggetAttrs}>
+      <span ref={setRefEl} {...triggerAttrs}>
         {children}
       </span>
       <Transition
-        show={isPopoverOpen}
+        show={open ?? isPopoverOpen}
         enter="ease-out duration-300"
         enterFrom="opacity-0"
         enterTo="opacity-100"
@@ -112,7 +140,7 @@ export default function Popover({
           )}
           // Popper style, attributes, and trigger attributes
           style={popperStyles.popper}
-          {...triggetAttrs}
+          {...triggerAttrs}
           {...attributes.popper}
         >
           {popover}

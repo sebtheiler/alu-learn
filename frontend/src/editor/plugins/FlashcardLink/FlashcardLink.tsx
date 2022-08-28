@@ -1,9 +1,10 @@
 import RenderRichText from "../../RenderRichText";
 import Popover from "@/atoms/Popover";
-import IconTooltip from "@/components/IconTooltip";
 import type { ExtendedSlateElement } from "@/editor/types";
+import GetFlashcard from "@/graphql/GetFlashcard";
 import type { Flashcard } from "@/types";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { useQuery } from "@apollo/client";
+import { useState, Fragment } from "react";
 
 interface FlashcardLinkComponentProps {
   /**
@@ -29,47 +30,43 @@ interface FlashcardLinkComponentProps {
 export default function FlashcardLinkComponent({
   attributes,
   children,
+  element,
 }: FlashcardLinkComponentProps) {
-  // const [flashcard] = useAsyncState<Flashcard>(
-  //   () => backendFetch('GET', `decks/flashcard/find-universal/${element.flashcardUID}/`),
-  //   [], undefined,
-  //   popoverIsOpen,
-  // );
-  const flashcard = {} as Partial<Flashcard>;
-
-  const editFlashcard = async (
-    e: React.MouseEvent<HTMLElement, MouseEvent>
-  ) => {
-    e.preventDefault();
-    window
-      .open
-      // `/deck/${flashcard?.parent_deck_id}/flashcards/${flashcard?.id}/edit/`,
-      // "_blank"
-      ();
-  };
+  const [hasOpened, setHasOpened] = useState(false);
+  const { data, loading } = useQuery<{ getFlashcard: Flashcard }>(
+    GetFlashcard,
+    {
+      variables: {
+        flashcardId: element.flashcardId,
+      },
+      skip: !hasOpened, // only run the query after the user has opened the popup
+    }
+  );
+  const { getFlashcard: flashcard } = data ?? {};
 
   return (
     <Popover
       popover={
         <div>
-          <h3 className="text-md text-center font-bold">Flashcard Preview</h3>
-          <hr className="my-3" />
-          {flashcard?.id && (
-            <IconTooltip
-              tooltip="Edit this flashcard"
-              onClick={editFlashcard}
-              faIcon={faExternalLinkAlt}
-              className="float-right"
-            />
-          )}
-          {flashcard.fields.map((field, i: number) => (
-            <>
-              <RenderRichText text={field} />
-              {i !== (flashcard.fields.length ?? 0) - 1 && <hr />}
-            </>
-          ))}
+          <h3 className="text-md mb-3 text-center font-bold">
+            Flashcard Preview
+          </h3>
+          {!loading &&
+            flashcard &&
+            flashcard.fields.value.map((field, i: number) => (
+              <Fragment key={i}>
+                {i !== 0 && <hr className="my-2" />}
+                <div key={i} className="flex justify-center items-center">
+                  <RenderRichText text={field} />
+                </div>
+              </Fragment>
+            ))}
+          {loading && <p>Loading flashcard...</p>}
         </div>
       }
+      onOpenCallback={() => setHasOpened(true)}
+      className="w-80"
+      arrow
     >
       <span {...attributes} className="text-alu-light-purple font-bold">
         {children}

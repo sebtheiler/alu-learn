@@ -24,6 +24,7 @@ type CourseSection {
 
 type Flashcard {
   fields: JSONObject
+  fieldsString: String
   id: String
   tags: String
   type: FlashcardType
@@ -155,11 +156,17 @@ type Query {
   """Gets all available courses"""
   courses: [Course]
 
+  """Gets a flashcard by its ID"""
+  getFlashcard(flashcardId: String!): Flashcard
+
   """Get information on the current user"""
   me: User
 
   """Get the current user's courses"""
   myCourses: [Course]
+
+  """Finds flashcards based on some criteria"""
+  searchFlashcards(courseId: String, text: String): [Flashcard]
 
   """List all users"""
   users: [User]

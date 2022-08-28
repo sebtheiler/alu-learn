@@ -161,9 +161,11 @@ model SubSection {
 
 // ## Flashcards
 model Flashcard {
-  id     String @id @default(cuid())
-  fields Json
-  tags   String @default("")
+  id String @id @default(cuid())
+
+  fields       Json
+  fieldsString String // Redundant representation of `fields` as a string (for searching)
+  tags         String @default("")
 
   subSection   SubSection @relation(fields: [subSectionId], references: [id], onDelete: Cascade)
   subSectionId String

@@ -74,7 +74,7 @@ export default function CreateFlashcardsPage({
     <>
       <SEO
         title="Create Flashcards"
-        path={`course/${course.id}/add-flashcards`}
+        path={`course/${course?.id}/add-flashcards/${courseSectionSlug}/${subSectionSlug}`}
         description=""
       />
       <div className="mt-28">
