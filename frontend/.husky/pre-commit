@@ -3,7 +3,5 @@
 
 cd frontend
 
-yarn prettify
+npx pretty-quick --staged
 yarn lint
-# yarn cypress
-# yarn chromatic

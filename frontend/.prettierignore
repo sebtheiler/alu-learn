@@ -4,6 +4,7 @@ coverage
 .next
 node_modules
 storybook-static
+dist
 
 # Ignore generated GraphQL
 schema.graphql
