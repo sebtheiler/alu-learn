@@ -12,6 +12,7 @@ import {
 } from "slate";
 import { withHistory } from "slate-history";
 import { withReact } from "slate-react";
+import type { ReactEditor } from "slate-react";
 
 /**
  * Create an editor with all plugins
@@ -57,7 +58,7 @@ const toggleBlock = (editor: ExtendedReactEditor, format: string) => {
   }
 };
 
-const toggleMark = (editor, format) => {
+const toggleMark = (editor: ReactEditor, format: string) => {
   const isActive = isMarkActive(editor, format);
 
   if (isActive) {
@@ -67,7 +68,7 @@ const toggleMark = (editor, format) => {
   }
 };
 
-const isBlockActive = (editor, format) => {
+const isBlockActive = (editor: ReactEditor, format: string) => {
   const [match] = Editor.nodes(editor, {
     // @ts-ignore
     match: (n) => n.type === format,
@@ -76,7 +77,7 @@ const isBlockActive = (editor, format) => {
   return !!match;
 };
 
-const isMarkActive = (editor, format) => {
+const isMarkActive = (editor: ReactEditor, format: string) => {
   const marks = Editor.marks(editor);
   return marks ? marks[format] === true : false;
 };

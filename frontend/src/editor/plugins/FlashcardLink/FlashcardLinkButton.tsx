@@ -44,12 +44,10 @@ export default function FlashcardLinkButton({
     searchFlashcards: Flashcard[];
   }>(SearchFlashcards, { skip: debouncedSearchTerm === "" });
   const { searchFlashcards: searchedFlashcards } = searchData ?? {};
-  console.log(searchedFlashcards);
 
   // We need to override the popup's `open` state so that we can
   // close the popup after the user selects a flashcard
   const [open, setOpen] = useState(false);
-  console.log(open);
 
   useEffect(() => {
     if (debouncedSearchTerm === searchTerm && searchTerm.length > 0) {

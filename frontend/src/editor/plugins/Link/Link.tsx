@@ -1,5 +1,6 @@
 import type { ExtendedSlateElement } from "../../types";
 import Tooltip from "@/atoms/Tooltip";
+import utm from "@/helpers/utm";
 
 interface LinkComponentProps {
   /**
@@ -31,10 +32,12 @@ export default function LinkComponent({
     <Tooltip
       tooltip={
         <a
-          href={element.url}
+          href={
+            element.url && utm(element.url, { source: "alu_learn", medium: "" })
+          }
           style={{ color: "white" }}
           target="_blank"
-          rel="noreferrer"
+          rel="noreferrer ugc nofollow"
         >
           {element.url &&
             (element.url.length > 50
@@ -52,9 +55,11 @@ export default function LinkComponent({
       <a
         {...attributes}
         className="text-blue-600 underline hover:text-blue-800"
-        href={element.url}
+        href={
+          element.url && utm(element.url, { source: "alu_learn", medium: "" })
+        }
         target="_blank"
-        rel="noreferrer"
+        rel="noreferrer ugc nofollow"
       >
         {children}
       </a>

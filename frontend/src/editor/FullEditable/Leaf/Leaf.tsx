@@ -1,3 +1,4 @@
+import ClozeComponent from "@/editor/plugins/Cloze";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
@@ -27,6 +28,9 @@ const Leaf = ({ attributes, children, leaf, readOnly }) => {
       children = <span className="math-inline bg-gray-300">{children}</span>;
     }
   }
+
+  if (leaf.cloze)
+    children = <ClozeComponent revealAnswer={true}>{children}</ClozeComponent>;
 
   return <span {...attributes}>{children}</span>;
 };

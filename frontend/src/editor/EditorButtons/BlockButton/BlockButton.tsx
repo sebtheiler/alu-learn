@@ -52,6 +52,7 @@ export default function BlockButton({
           event.preventDefault();
           toggleBlock(editor, format);
         }}
+        onMouseDown={(e) => e.preventDefault()}
         style={{
           background: isBlockActive(editor, format) ? "#e1e6ed" : "transparent",
         }}

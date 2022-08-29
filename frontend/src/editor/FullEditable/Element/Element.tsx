@@ -1,3 +1,4 @@
+import ClozeComponent from "@/editor/plugins/Cloze";
 import type { ExtendedSlateElement } from "@/editor/types";
 import dynamic from "next/dynamic";
 // import { Suspense } from "react";
@@ -100,6 +101,12 @@ const Element = ({ attributes, children, element, readOnly }: ElementProps) => {
           {children}
         </FlashcardLinkComponent>
       );
+    // case "cloze":
+    //   return (
+    //     <ClozeComponent attributes={attributes} revealAnswer={true}>
+    //       {children}
+    //     </ClozeComponent>
+    //   )
     case "image":
       return (
         <p>

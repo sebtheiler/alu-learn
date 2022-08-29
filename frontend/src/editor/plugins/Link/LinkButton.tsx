@@ -31,6 +31,7 @@ export default function LinkButton({
           if (!url) return;
           insertLink(editor, url);
         }}
+        onMouseDown={(e) => e.preventDefault()}
         style={{
           background: "rgba(0, 0, 0, 0)",
           border: "none",

@@ -13,7 +13,7 @@ const insertLink = (editor: ReactEditor, url: string) => {
 };
 
 /**
- * Returns if a link is active for an editor
+ * Returns true if a link is active for an editor
  * @param editor Editor to check if link is active
  * @returns Whether or not a link is active
  */

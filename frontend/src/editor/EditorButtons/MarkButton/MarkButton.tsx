@@ -49,6 +49,7 @@ export default function MarkButton({
           event.preventDefault();
           toggleMark(editor, format);
         }}
+        onMouseDown={(e) => e.preventDefault()}
         style={{
           background: isMarkActive(editor, format)
             ? "#e1e6ed"

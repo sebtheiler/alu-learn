@@ -1,12 +1,12 @@
 import type { ExtendedReactEditor, ExtendedSlateElement } from "../../types";
 
-const withFlashcardLinks = (editor: ExtendedReactEditor) => {
+const withCloze = (editor: ExtendedReactEditor) => {
   const { isInline } = editor;
 
   editor.isInline = (element: ExtendedSlateElement) =>
-    element.type === "flashcard_link" ? true : isInline(element);
+    element.type === "cloze" ? true : isInline(element);
 
   return editor;
 };
 
-export default withFlashcardLinks;
+export default withCloze;

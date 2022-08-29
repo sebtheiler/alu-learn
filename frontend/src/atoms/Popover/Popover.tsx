@@ -54,7 +54,7 @@ export default function Popover({
   children,
   popover,
   className,
-  placement = "top",
+  placement = "bottom",
   trigger = "hover",
   arrow,
   onOpenCallback,
@@ -113,8 +113,6 @@ export default function Popover({
       onCloseCallback && onCloseCallback();
     }
   });
-
-  console.log("117", open);
 
   return (
     <div className="inline">
