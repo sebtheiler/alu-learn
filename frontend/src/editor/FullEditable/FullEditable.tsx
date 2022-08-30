@@ -52,7 +52,6 @@ export default function FullEditable({
     (props) => <Leaf {...props} readOnly={readOnly} />,
     [readOnly]
   );
-  console.log(editor.children);
 
   return (
     <Editable

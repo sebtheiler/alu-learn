@@ -19,7 +19,7 @@ import stream from "stream";
  *   await promise;
  *   console.log('upload completed successfully');
  * } catch (error) {
- *   console.log('upload failed.', error.message);
+ *   console.error('upload failed.', error.message);
  * }
  * @see https://stackoverflow.com/a/50291380/10226703
  */

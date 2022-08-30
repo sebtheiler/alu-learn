@@ -51,6 +51,10 @@ interface DropdownProps {
    * Class to apply to the outer menu
    */
   className?: string;
+  /**
+   * Apply additional props (e.g., styling) to the menu button
+   */
+  menuButtonProps?: any;
 }
 
 /**
@@ -60,6 +64,7 @@ export default function Dropdown({
   options,
   children,
   style,
+  menuButtonProps,
   className,
 }: DropdownProps) {
   return (
@@ -68,7 +73,10 @@ export default function Dropdown({
       className={classNames(className, "inline-block text-left")}
       style={style}
     >
-      <Menu.Button className="focus:outline-none inline-flex items-center">
+      <Menu.Button
+        className="focus:outline-none inline-flex items-center"
+        {...menuButtonProps}
+      >
         {children}
       </Menu.Button>
 

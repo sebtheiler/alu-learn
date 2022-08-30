@@ -35,7 +35,7 @@ export default function RenderRichText(props: RenderRichTextProps) {
         }
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
     // eslint-disable-next-line
   }, [text, fixSlateLazy]);
