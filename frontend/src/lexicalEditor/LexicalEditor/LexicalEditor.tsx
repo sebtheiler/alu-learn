@@ -1,12 +1,16 @@
 import ToolbarPlugin from "../plugins/ToolbarPlugin";
 import styles from "./LexicalEditor.module.scss";
 import classNames from "@/helpers/classNames";
+import { CodeNode } from "@lexical/code";
+import { ListNode, ListItemNode } from "@lexical/list";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { EditorState } from "lexical";
 import { useEffect, useRef } from "react";
 
@@ -36,7 +40,27 @@ const theme = {
     superscript: styles.textSuperscript,
     underline: styles.textUnderline,
   },
+  heading: {
+    h1: styles.h1,
+    h2: styles.h2,
+    h3: styles.h3,
+    h4: styles.h4,
+    h5: styles.h5,
+    h6: styles.h6,
+  },
+  list: {
+    listitem: styles.listItem,
+    nested: {
+      listitem: styles.nestedListItem,
+    },
+    olDepth: [styles.ol1, styles.ol2, styles.ol3, styles.ol4, styles.ol5],
+    ul: styles.ul,
+  },
+  code: styles.code,
+  quote: styles.quote,
 };
+
+const nodes = [HeadingNode, ListNode, ListItemNode, QuoteNode, CodeNode];
 
 interface LexicalEditorProps {
   namespace: string;
@@ -53,6 +77,7 @@ export default function LexicalEditor({
   const initialConfig = {
     namespace,
     theme,
+    nodes,
     onError,
     readOnly,
   };
@@ -72,6 +97,7 @@ export default function LexicalEditor({
         />
         <HistoryPlugin />
         <AutofocusPlugin />
+        <ListPlugin />
         {/* <Button
           onClick={() => console.log(JSON.stringify(editorStateRef.current))}
           className="mt-2"

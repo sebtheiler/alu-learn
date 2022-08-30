@@ -46,3 +46,12 @@ TextDropdown.args = {
   options: options,
   style: { marginLeft: "400px" },
 };
+
+export const ButtonOptions = ButtonTemplate.bind({});
+ButtonOptions.args = {
+  options: [
+    { text: "Hello World", onClick: () => console.log("Hello World") },
+    { text: "Hello World #2", onClick: () => console.log("Hello World #2") },
+  ],
+  style: { marginLeft: "400px" },
+};

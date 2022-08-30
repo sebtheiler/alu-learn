@@ -1,5 +1,7 @@
+import Dropdown from "@/atoms/Dropdown";
 import EditorButton from "@/lexicalEditor/EditorButton";
 import {
+  faAngleDown,
   faBold,
   faCode,
   faItalic,
@@ -7,8 +9,24 @@ import {
   faUnderline,
   faUndo,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { $isCodeNode, $createCodeNode } from "@lexical/code";
+import {
+  $isListNode,
+  ListNode,
+  INSERT_UNORDERED_LIST_COMMAND,
+  INSERT_ORDERED_LIST_COMMAND,
+  REMOVE_LIST_COMMAND,
+} from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { mergeRegister } from "@lexical/utils";
+import {
+  $isHeadingNode,
+  HeadingTagType,
+  $createHeadingNode,
+  $createQuoteNode,
+} from "@lexical/rich-text";
+import { $wrapLeafNodesInElements } from "@lexical/selection";
+import { mergeRegister, $getNearestNodeOfType } from "@lexical/utils";
 import { $getSelection, $isRangeSelection } from "lexical";
 import {
   COMMAND_PRIORITY_CRITICAL,
@@ -18,8 +36,32 @@ import {
   REDO_COMMAND,
   CAN_REDO_COMMAND,
   FORMAT_TEXT_COMMAND,
+  $createParagraphNode,
 } from "lexical";
+import type { LexicalEditor } from "lexical";
 import { useCallback, useEffect, useState } from "react";
+
+const blockTypeToBlockName = {
+  bullet: "Bulleted List",
+  check: "Check List",
+  code: "Code Block",
+  h1: "Heading 1",
+  h2: "Heading 2",
+  h3: "Heading 3",
+  h4: "Heading 4",
+  h5: "Heading 5",
+  h6: "Heading 6",
+  number: "Numbered List",
+  paragraph: "Normal",
+  quote: "Quote",
+};
+const CODE_LANGUAGE_MAP: Record<string, string> = {
+  javascript: "js",
+  md: "markdown",
+  plaintext: "plain",
+  python: "py",
+  text: "plain",
+};
 
 const VL = () => (
   <div className="border-l-2 border-gray-200 h-full inline mx-2" />
@@ -31,6 +73,7 @@ const VL = () => (
 export default function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
 
+  // Text formatting
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
@@ -38,22 +81,61 @@ export default function ToolbarPlugin() {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
+  // Block formatting
+  const [blockType, setBlockType] =
+    useState<keyof typeof blockTypeToBlockName>("paragraph");
+  const [codeLanguage, setCodeLanguage] = useState("");
+
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
-    if ($isRangeSelection(selection)) {
-      console.log(
-        "updating toolbar",
-        { selection },
-        $isRangeSelection(selection),
-        selection.hasFormat("bold")
-      );
 
+    if ($isRangeSelection(selection)) {
+      const anchorNode = selection.anchor.getNode();
+      const element =
+        anchorNode.getKey() === "root"
+          ? anchorNode
+          : anchorNode.getTopLevelElementOrThrow();
+      const elementKey = element.getKey();
+      const elementDOM = editor.getElementByKey(elementKey);
+
+      // Update text format
       setIsBold(selection.hasFormat("bold"));
       setIsItalic(selection.hasFormat("italic"));
       setIsUnderline(selection.hasFormat("underline"));
       setIsCode(selection.hasFormat("code"));
+
+      // Update block format
+      if (elementDOM !== null) {
+        if ($isListNode(element)) {
+          const parentList = $getNearestNodeOfType<ListNode>(
+            anchorNode,
+            ListNode
+          );
+          const type = parentList
+            ? parentList.getListType()
+            : element.getListType();
+          setBlockType(type);
+        } else {
+          const type = $isHeadingNode(element)
+            ? element.getTag()
+            : element.getType();
+          if (type in blockTypeToBlockName) {
+            setBlockType(type as keyof typeof blockTypeToBlockName);
+          }
+          if ($isCodeNode(element)) {
+            const language =
+              element.getLanguage() as keyof typeof CODE_LANGUAGE_MAP;
+            setCodeLanguage(
+              language ? CODE_LANGUAGE_MAP[language] || language : ""
+            );
+            return;
+          }
+        }
+      }
     }
-  }, []);
+  }, [editor]);
+
+  console.log(blockType);
 
   useEffect(() => {
     return editor.registerCommand(
@@ -140,6 +222,133 @@ export default function ToolbarPlugin() {
         faIcon={faCode}
         isActive={isCode}
       />
+      <VL />
+      <BlockFormatDropdown editor={editor} blockType={blockType} />
     </div>
+  );
+}
+
+interface BlockFormatDropdownProps {
+  editor: LexicalEditor;
+  blockType: keyof typeof blockTypeToBlockName;
+}
+
+function BlockFormatDropdown({ editor, blockType }: BlockFormatDropdownProps) {
+  const formatParagraph = () => {
+    if (blockType !== "paragraph") {
+      editor.update(() => {
+        const selection = $getSelection();
+
+        if ($isRangeSelection(selection)) {
+          $wrapLeafNodesInElements(selection, () => $createParagraphNode());
+        }
+      });
+    }
+  };
+
+  const formatHeading = (headingSize: HeadingTagType) => {
+    if (blockType !== headingSize) {
+      editor.update(() => {
+        const selection = $getSelection();
+
+        if ($isRangeSelection(selection)) {
+          $wrapLeafNodesInElements(selection, () =>
+            $createHeadingNode(headingSize)
+          );
+        }
+      });
+    }
+  };
+
+  const formatBulletList = () => {
+    console.log("e");
+    if (blockType !== "bullet") {
+      editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
+    } else {
+      editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+    }
+  };
+
+  const formatNumberedList = () => {
+    if (blockType !== "number") {
+      editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
+    } else {
+      editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
+    }
+  };
+
+  const formatQuote = () => {
+    if (blockType !== "quote") {
+      editor.update(() => {
+        const selection = $getSelection();
+
+        if ($isRangeSelection(selection)) {
+          $wrapLeafNodesInElements(selection, () => $createQuoteNode());
+        }
+      });
+    }
+  };
+
+  const formatCode = () => {
+    if (blockType !== "code") {
+      editor.update(() => {
+        const selection = $getSelection();
+
+        if ($isRangeSelection(selection)) {
+          if (selection.isCollapsed()) {
+            $wrapLeafNodesInElements(selection, () => $createCodeNode());
+          } else {
+            const textContent = selection.getTextContent();
+            const codeNode = $createCodeNode();
+            selection.insertNodes([codeNode]);
+            selection.insertRawText(textContent);
+          }
+        }
+      });
+    }
+  };
+
+  return (
+    <Dropdown
+      options={[
+        {
+          text: "Normal",
+          onClick: formatParagraph,
+          active: blockType === "paragraph",
+        },
+        {
+          text: "Heading 1",
+          onClick: () => formatHeading("h1"),
+          active: blockType === "h1",
+        },
+        {
+          text: "Heading 2",
+          onClick: () => formatHeading("h2"),
+          active: blockType === "h2",
+        },
+        {
+          text: "Heading 3",
+          onClick: () => formatHeading("h3"),
+          active: blockType === "h3",
+        },
+        {
+          text: "Bulleted List",
+          onClick: formatBulletList,
+          active: blockType === "bullet",
+        },
+        {
+          text: "Numbered List",
+          onClick: formatNumberedList,
+          active: blockType === "number",
+        },
+        { text: "Quote", onClick: formatQuote, active: blockType === "quote" },
+        { text: "Code", onClick: formatCode, active: blockType === "code" },
+      ]}
+      className="-translate-y-1"
+    >
+      <span className="hover:bg-gray-200 p-1 rounded-md">
+        {blockTypeToBlockName[blockType]} <FontAwesomeIcon icon={faAngleDown} />
+      </span>
+    </Dropdown>
   );
 }

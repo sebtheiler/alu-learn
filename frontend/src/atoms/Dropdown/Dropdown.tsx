@@ -17,15 +17,20 @@ export type MenuOption =
       /**
        * Where does the option link to?
        */
-      href: string;
+      href?: string;
       /**
-       * Optionally call a function when the option is clicked
+       * If `href` is not specified, the options are buttons, not links, and will call `onClick` when clicked.
+       * Has no effect if `href` is specified
        */
-      onClick?(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void;
+      onClick?(event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
       /**
        * Display a Font Awesome icon next to the option
        */
       faIcon?: IconProp;
+      /**
+       * Is the option "active"?
+       */
+      active?: boolean;
     }
   | {
       /**
@@ -71,7 +76,7 @@ export default function Dropdown({
     <Menu
       as="div"
       className={classNames(className, "inline-block text-left")}
-      style={style}
+      style={{ ...style, position: "absolute", zIndex: 1000 }}
     >
       <Menu.Button
         className="focus:outline-none inline-flex items-center"
@@ -100,14 +105,33 @@ export default function Dropdown({
                 <hr className="my-2" key={i} />
               ) : (
                 <Menu.Item key={i}>
-                  {({ active }) => (
-                    <Link href={option.href}>
-                      <a
+                  {({ active }) =>
+                    option.href ? (
+                      <Link href={option.href}>
+                        <a
+                          className={classNames(
+                            active || option.active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700",
+                            "block px-4 py-2 text-sm hover:bg-gray-200"
+                          )}
+                        >
+                          {option.faIcon && (
+                            <FontAwesomeIcon
+                              icon={option.faIcon}
+                              className="mr-1"
+                            />
+                          )}
+                          {option.text}
+                        </a>
+                      </Link>
+                    ) : (
+                      <button
                         className={classNames(
-                          active
+                          active || option.active
                             ? "bg-gray-100 text-gray-900"
                             : "text-gray-700",
-                          "block px-4 py-2 text-sm hover:bg-gray-200"
+                          "block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left"
                         )}
                         onClick={option.onClick}
                       >
@@ -118,9 +142,9 @@ export default function Dropdown({
                           />
                         )}
                         {option.text}
-                      </a>
-                    </Link>
-                  )}
+                      </button>
+                    )
+                  }
                 </Menu.Item>
               )
             )}
