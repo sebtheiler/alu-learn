@@ -42,6 +42,7 @@ module.exports = {
       "@/hooks": path.resolve(__dirname, "..", "src", "hooks"),
       "@/pages": path.resolve(__dirname, "..", "src", "pages"),
       "@/stores": path.resolve(__dirname, "..", "src", "stores"),
+      "@/lexicalEditor": path.resolve(__dirname, "..", "src", "lexicalEditor"),
     };
 
     config.module.rules.push({
