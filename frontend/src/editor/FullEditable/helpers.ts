@@ -1,5 +1,4 @@
 import { ExtendedReactEditor } from "../types";
-import { LIST_TYPES } from "./constants";
 import withFlashcardLinks from "@/editor/plugins/FlashcardLink";
 import withLinks from "@/editor/plugins/Link";
 import withSaveSelectionOnBlur from "@/editor/plugins/SaveSelectionOnBlur";
@@ -13,6 +12,8 @@ import {
 import { withHistory } from "slate-history";
 import { withReact } from "slate-react";
 import type { ReactEditor } from "slate-react";
+
+const LIST_TYPES = ["numbered-list", "bulleted-list"];
 
 /**
  * Create an editor with all plugins

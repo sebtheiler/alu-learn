@@ -65,7 +65,11 @@ const Element = ({ attributes, children, element, readOnly }: ElementProps) => {
   switch (element.type) {
     case "bulleted-list":
       return (
-        <ul {...attributes} style={{ listStylePosition: "inside" }}>
+        <ul
+          {...attributes}
+          className="list-disc"
+          style={{ listStylePosition: "inside" }}
+        >
           {children}
         </ul>
       );
@@ -85,7 +89,11 @@ const Element = ({ attributes, children, element, readOnly }: ElementProps) => {
       return <li {...attributes}>{children}</li>;
     case "numbered-list":
       return (
-        <ol {...attributes} style={{ listStylePosition: "inside" }}>
+        <ol
+          {...attributes}
+          className="list-decimal"
+          style={{ listStylePosition: "inside" }}
+        >
           {children}
         </ol>
       );
@@ -101,12 +109,12 @@ const Element = ({ attributes, children, element, readOnly }: ElementProps) => {
           {children}
         </FlashcardLinkComponent>
       );
-    // case "cloze":
-    //   return (
-    //     <ClozeComponent attributes={attributes} revealAnswer={true}>
-    //       {children}
-    //     </ClozeComponent>
-    //   )
+    case "cloze":
+      return (
+        <ClozeComponent attributes={attributes} revealAnswer={true}>
+          {children}
+        </ClozeComponent>
+      );
     case "image":
       return (
         <p>

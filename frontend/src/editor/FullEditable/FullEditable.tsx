@@ -1,10 +1,7 @@
 import Element from "./Element";
 import Leaf from "./Leaf";
-import { HOTKEYS } from "./constants";
-import type { Hotkey } from "./constants";
-import { toggleBlock, toggleMark } from "./helpers";
+import hotkeysHandler from "./hotkeys";
 import type { ExtendedReactEditor } from "@/editor/types";
-import isHotKey from "is-hotkey";
 import { useCallback } from "react";
 import { Editable } from "slate-react";
 
@@ -41,10 +38,10 @@ interface FullEditorProps {
  */
 export default function FullEditable({
   editor,
-  readOnly,
+  readOnly = false,
   className,
   style,
-  autoFocus,
+  autoFocus = false,
   id,
 }: FullEditorProps) {
   const renderElement = useCallback(
@@ -55,6 +52,7 @@ export default function FullEditable({
     (props) => <Leaf {...props} readOnly={readOnly} />,
     [readOnly]
   );
+  console.log(editor.children);
 
   return (
     <Editable
@@ -65,20 +63,7 @@ export default function FullEditable({
       className={className}
       style={style}
       spellCheck
-      onKeyDown={(event) => {
-        for (const hotkey in HOTKEYS) {
-          if (isHotKey(hotkey, event)) {
-            event.preventDefault();
-            const { mark, isBlock } = HOTKEYS[hotkey as Hotkey];
-
-            if (isBlock) {
-              toggleBlock(editor, mark);
-            } else {
-              toggleMark(editor, mark);
-            }
-          }
-        }
-      }}
+      onKeyDown={hotkeysHandler(editor)}
       onBlur={editor.saveSelectionOnBlur}
       autoFocus={autoFocus}
     />
