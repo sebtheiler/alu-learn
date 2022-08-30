@@ -1,12 +1,15 @@
+import FloatingLinkEditorPlugin from "../plugins/FloatingLinkEditorPlugin";
 import ToolbarPlugin from "../plugins/ToolbarPlugin";
 import styles from "./LexicalEditor.module.scss";
 import classNames from "@/helpers/classNames";
 import { CodeNode } from "@lexical/code";
+import { LinkNode } from "@lexical/link";
 import { ListNode, ListItemNode } from "@lexical/list";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -58,9 +61,17 @@ const theme = {
   },
   code: styles.code,
   quote: styles.quote,
+  link: styles.link,
 };
 
-const nodes = [HeadingNode, ListNode, ListItemNode, QuoteNode, CodeNode];
+const nodes = [
+  HeadingNode,
+  ListNode,
+  ListItemNode,
+  QuoteNode,
+  CodeNode,
+  LinkNode,
+];
 
 interface LexicalEditorProps {
   namespace: string;
@@ -98,6 +109,8 @@ export default function LexicalEditor({
         <HistoryPlugin />
         <AutofocusPlugin />
         <ListPlugin />
+        <LinkPlugin />
+        <FloatingLinkEditorPlugin />
         {/* <Button
           onClick={() => console.log(JSON.stringify(editorStateRef.current))}
           className="mt-2"

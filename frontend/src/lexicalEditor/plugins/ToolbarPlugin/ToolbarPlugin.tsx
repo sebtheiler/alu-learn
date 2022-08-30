@@ -1,16 +1,21 @@
 import Dropdown from "@/atoms/Dropdown";
+import classNames from "@/helpers/classNames";
+import { sanitizeUrl } from "@/helpers/sanitizeUrl";
 import EditorButton from "@/lexicalEditor/EditorButton";
+import { getSelectedNode } from "@/lexicalEditor/helpers/getSelectedNode";
 import {
   faAngleDown,
   faBold,
   faCode,
   faItalic,
+  faLink,
   faRedo,
   faUnderline,
   faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { $isCodeNode, $createCodeNode } from "@lexical/code";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import {
   $isListNode,
   ListNode,
@@ -63,8 +68,13 @@ const CODE_LANGUAGE_MAP: Record<string, string> = {
   text: "plain",
 };
 
-const VL = () => (
-  <div className="border-l-2 border-gray-200 h-full inline mx-2" />
+const VL = ({ className }: { className?: string }) => (
+  <div
+    className={classNames(
+      className,
+      "border-l-2 border-gray-200 h-full inline mx-2"
+    )}
+  />
 );
 
 /**
@@ -78,6 +88,7 @@ export default function ToolbarPlugin() {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [isCode, setIsCode] = useState(false);
+  const [isLink, setIsLink] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
@@ -103,6 +114,15 @@ export default function ToolbarPlugin() {
       setIsItalic(selection.hasFormat("italic"));
       setIsUnderline(selection.hasFormat("underline"));
       setIsCode(selection.hasFormat("code"));
+
+      // Update links
+      const node = getSelectedNode(selection);
+      const parent = node.getParent();
+      if ($isLinkNode(parent) || $isLinkNode(node)) {
+        setIsLink(true);
+      } else {
+        setIsLink(false);
+      }
 
       // Update block format
       if (elementDOM !== null) {
@@ -222,8 +242,16 @@ export default function ToolbarPlugin() {
         faIcon={faCode}
         isActive={isCode}
       />
+      <EditorButton
+        command={TOGGLE_LINK_COMMAND}
+        payload={isLink ? null : sanitizeUrl("https://")}
+        faIcon={faLink}
+        title="Link"
+        isActive={isLink}
+      />
       <VL />
       <BlockFormatDropdown editor={editor} blockType={blockType} />
+      <VL className="ml-20" />
     </div>
   );
 }
