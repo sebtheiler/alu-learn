@@ -47,6 +47,7 @@ export type CourseSection = {
 export type Flashcard = {
   __typename?: "Flashcard";
   fields?: Maybe<Scalars["JSONObject"]>;
+  fieldsString?: Maybe<Scalars["String"]>;
   id?: Maybe<Scalars["String"]>;
   tags?: Maybe<Scalars["String"]>;
   type?: Maybe<FlashcardType>;
@@ -71,7 +72,7 @@ export type Mutation = {
   createCourse?: Maybe<Course>;
   /** Creates a new course section and populates it with a default subsection */
   createCourseSection?: Maybe<CourseSection>;
-  /** Creeates a new flashcard */
+  /** Creates a new flashcard */
   createFlashcard?: Maybe<Flashcard>;
   /** Creates a new NewUserSurveyResponse from a set of responses */
   createNewUserSurveyResponse?: Maybe<NewUserSurveyResponse>;
@@ -81,12 +82,16 @@ export type Mutation = {
   deleteCourse?: Maybe<Course>;
   /** Deletes a course section */
   deleteCourseSection?: Maybe<CourseSection>;
+  /** Deletes the given flashcard */
+  deleteFlashcard?: Maybe<Flashcard>;
   /** Deletes a sub section */
   deleteSubSection?: Maybe<SubSection>;
   /** Change a course's settings */
   updateCourse?: Maybe<Course>;
   /** Change a course section's settings */
   updateCourseSection?: Maybe<CourseSection>;
+  /** Change a flashcard's data */
+  updateFlashcard?: Maybe<Flashcard>;
   /** Change a sub section's settings */
   updateSubSection?: Maybe<SubSection>;
   /** Change the user's settings */
@@ -135,6 +140,10 @@ export type MutationDeleteCourseSectionArgs = {
   courseSectionId: Scalars["String"];
 };
 
+export type MutationDeleteFlashcardArgs = {
+  flashcardId: Scalars["String"];
+};
+
 export type MutationDeleteSubSectionArgs = {
   subSectionId: Scalars["String"];
 };
@@ -147,6 +156,12 @@ export type MutationUpdateCourseArgs = {
 export type MutationUpdateCourseSectionArgs = {
   courseSectionId: Scalars["String"];
   title?: InputMaybe<Scalars["String"]>;
+};
+
+export type MutationUpdateFlashcardArgs = {
+  fields?: InputMaybe<Scalars["JSONObject"]>;
+  flashcardId: Scalars["String"];
+  tags?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationUpdateSubSectionArgs = {
@@ -185,12 +200,25 @@ export type Query = {
   __typename?: "Query";
   /** Gets all available courses */
   courses?: Maybe<Array<Maybe<Course>>>;
+  /** Gets a flashcard by its ID */
+  getFlashcard?: Maybe<Flashcard>;
   /** Get information on the current user */
   me?: Maybe<User>;
   /** Get the current user's courses */
   myCourses?: Maybe<Array<Maybe<Course>>>;
+  /** Finds flashcards based on some criteria */
+  searchFlashcards?: Maybe<Array<Maybe<Flashcard>>>;
   /** List all users */
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+export type QueryGetFlashcardArgs = {
+  flashcardId: Scalars["String"];
+};
+
+export type QuerySearchFlashcardsArgs = {
+  courseId?: InputMaybe<Scalars["String"]>;
+  text?: InputMaybe<Scalars["String"]>;
 };
 
 export enum Referrer {

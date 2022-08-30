@@ -2,6 +2,7 @@ import SignedIn from "./SignedIn";
 import SignedOut from "./SignedOut";
 import NavItem from "@/components/NavItem";
 import MeQuery from "@/graphql/MeQuery";
+import type { MeQueryType } from "@/graphql/MeQuery";
 import { useQuery } from "@apollo/client";
 import {
   faBars,
@@ -22,7 +23,7 @@ import { useState } from "react";
  */
 export default function Navbar() {
   const { data: session, status } = useSession();
-  const { data: meData } = useQuery(MeQuery);
+  const { data: meData } = useQuery<MeQueryType>(MeQuery);
   const { isPro, currentStreak, doneReviewsToday } = meData?.me ?? {};
   const [expandedMenu, setExpandedMenu] = useState(false);
 
@@ -87,7 +88,7 @@ export default function Navbar() {
             About
           </NavItem>
 
-          {status === "authenticated" && (
+          {status === "authenticated" && currentStreak && doneReviewsToday && (
             <SignedIn
               session={session}
               streak={{ currentStreak, doneReviewsToday }}

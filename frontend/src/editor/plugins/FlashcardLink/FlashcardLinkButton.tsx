@@ -3,9 +3,9 @@ import Popover from "@/atoms/Popover";
 import TextInput from "@/atoms/TextInput";
 import Tooltip from "@/atoms/Tooltip";
 import SearchFlashcards from "@/graphql/SearchFlashcards";
+import type { SearchFlashcardsType } from "@/graphql/SearchFlashcards";
 import flattenNodes from "@/helpers/flattenNodes";
 import { useDebounce } from "@/hooks/useDebounce";
-import type { Flashcard } from "@/types";
 import { useQuery } from "@apollo/client";
 import { faAnchor } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -40,9 +40,10 @@ export default function FlashcardLinkButton({
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 750);
-  const { data: searchData, refetch: searchFlashcards } = useQuery<{
-    searchFlashcards: Flashcard[];
-  }>(SearchFlashcards, { skip: debouncedSearchTerm === "" });
+  const { data: searchData, refetch: searchFlashcards } =
+    useQuery<SearchFlashcardsType>(SearchFlashcards, {
+      skip: debouncedSearchTerm === "",
+    });
   const { searchFlashcards: searchedFlashcards } = searchData ?? {};
 
   // We need to override the popup's `open` state so that we can
@@ -99,20 +100,23 @@ export default function FlashcardLinkButton({
             )}
             <div>
               {searchedFlashcards &&
-                searchedFlashcards.map((flashcard) => (
-                  <div
-                    className="mb-1 bg-gray-100 border-2 border-gray-200 px-3 py-2 rounded-lg hover:cursor-pointer hover:scale-105 transition"
-                    onClick={() => {
-                      insertFlashcardLink(editor, flashcard);
-                      document.body.click();
-                      ReactEditor.focus(editor);
-                      setOpen(false);
-                    }}
-                    key={flashcard.id}
-                  >
-                    {flattenNodes(flashcard.fields.value[0])}
-                  </div>
-                ))}
+                searchedFlashcards.map(
+                  (flashcard) =>
+                    flashcard && (
+                      <div
+                        className="mb-1 bg-gray-100 border-2 border-gray-200 px-3 py-2 rounded-lg hover:cursor-pointer hover:scale-105 transition"
+                        onClick={() => {
+                          insertFlashcardLink(editor, flashcard);
+                          document.body.click();
+                          ReactEditor.focus(editor);
+                          setOpen(false);
+                        }}
+                        key={flashcard.id}
+                      >
+                        {flattenNodes(flashcard.fields.value[0])}
+                      </div>
+                    )
+                )}
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import type { Query } from "@/types";
 import { gql } from "@apollo/client";
 
 const GetFlashcard = gql`
@@ -10,4 +11,8 @@ const GetFlashcard = gql`
     }
   }
 `;
+
+type GetFlashcardType = { getFlashcard: Query["getFlashcard"] };
+
 export default GetFlashcard;
+export type { GetFlashcardType };

@@ -1,3 +1,4 @@
+import type { Query } from "@/types";
 import { gql } from "@apollo/client";
 
 const SearchFlashcards = gql`
@@ -11,4 +12,7 @@ const SearchFlashcards = gql`
   }
 `;
 
+type SearchFlashcardsType = { searchFlashcards: Query["searchFlashcards"] };
+
 export default SearchFlashcards;
+export type { SearchFlashcardsType };

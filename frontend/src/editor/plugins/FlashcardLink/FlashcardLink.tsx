@@ -2,7 +2,7 @@ import RenderRichText from "../../RenderRichText";
 import Popover from "@/atoms/Popover";
 import type { ExtendedSlateElement } from "@/editor/types";
 import GetFlashcard from "@/graphql/GetFlashcard";
-import type { Flashcard } from "@/types";
+import type { GetFlashcardType } from "@/graphql/GetFlashcard";
 import { useQuery } from "@apollo/client";
 import { useState, Fragment } from "react";
 
@@ -33,15 +33,12 @@ export default function FlashcardLinkComponent({
   element,
 }: FlashcardLinkComponentProps) {
   const [hasOpened, setHasOpened] = useState(false);
-  const { data, loading } = useQuery<{ getFlashcard: Flashcard }>(
-    GetFlashcard,
-    {
-      variables: {
-        flashcardId: element.flashcardId,
-      },
-      skip: !hasOpened, // only run the query after the user has opened the popup
-    }
-  );
+  const { data, loading } = useQuery<GetFlashcardType>(GetFlashcard, {
+    variables: {
+      flashcardId: element.flashcardId,
+    },
+    skip: !hasOpened, // only run the query after the user has opened the popup
+  });
   const { getFlashcard: flashcard } = data ?? {};
 
   return (

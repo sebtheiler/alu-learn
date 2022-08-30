@@ -1,3 +1,4 @@
+import type { Query } from "@/types";
 import { gql } from "@apollo/client";
 
 const MeQuery = gql`
@@ -10,4 +11,7 @@ const MeQuery = gql`
   }
 `;
 
+type MeQueryType = { me: Query["me"] };
+
 export default MeQuery;
+export type { MeQueryType };
