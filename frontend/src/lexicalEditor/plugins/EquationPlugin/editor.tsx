@@ -1,0 +1,88 @@
+import { ChangeEvent, RefObject } from "react";
+
+type BaseEquationEditorProps = {
+  equation: string;
+  inline: boolean;
+  inputRef: { current: null | HTMLInputElement | HTMLTextAreaElement };
+  setEquation: (equation: string) => void;
+};
+
+export default function EquationEditor({
+  equation,
+  setEquation,
+  inline,
+  inputRef,
+}: BaseEquationEditorProps): JSX.Element {
+  const onChange = (event: ChangeEvent) => {
+    setEquation((event.target as HTMLInputElement).value);
+  };
+
+  const props = {
+    equation,
+    inputRef,
+    onChange,
+  };
+
+  return inline ? (
+    <InlineEquationEditor
+      {...props}
+      inputRef={inputRef as RefObject<HTMLInputElement>}
+    />
+  ) : (
+    <BlockEquationEditor
+      {...props}
+      inputRef={inputRef as RefObject<HTMLTextAreaElement>}
+    />
+  );
+}
+
+type EquationEditorImplProps = {
+  equation: string;
+  inputRef: { current: null | HTMLInputElement };
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+};
+
+function InlineEquationEditor({
+  equation,
+  onChange,
+  inputRef,
+}: EquationEditorImplProps): JSX.Element {
+  return (
+    <span className="bg-gray-50">
+      <span className="text-left bg-gray-200">$</span>
+      <input
+        className="p-0 m-0 border-none outline-none text-purple-600 bg-inherit"
+        value={equation}
+        onChange={onChange}
+        autoFocus={true}
+        ref={inputRef}
+      />
+      <span className="text-left bg-gray-200">$</span>
+    </span>
+  );
+}
+
+type BlockEquationEditorImplProps = {
+  equation: string;
+  inputRef: { current: null | HTMLTextAreaElement };
+  onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
+};
+
+function BlockEquationEditor({
+  equation,
+  onChange,
+  inputRef,
+}: BlockEquationEditorImplProps): JSX.Element {
+  return (
+    <div className="EquationEditor_inputBackground">
+      <span className="text-left bg-gray-200">{"$$\n"}</span>
+      <textarea
+        className="p-0 m-0 border-none outline-none text-purple-600 bg-inherit w-full"
+        value={equation}
+        onChange={onChange}
+        ref={inputRef}
+      />
+      <span className="text-left bg-gray-200">{"\n$$"}</span>
+    </div>
+  );
+}

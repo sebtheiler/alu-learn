@@ -25,6 +25,7 @@ interface TeXProps {
   renderError?: (error: Error) => ReactElement;
   settings?: KatexOptions;
   as?: ElementType;
+  onClick?(event: any): any;
 }
 
 /**
@@ -37,6 +38,7 @@ const TeX: React.FC<TeXProps> = ({
   renderError,
   settings,
   as: asComponent,
+  onClick,
   ...props
 }) => {
   const Component = asComponent || (block ? "div" : "span");
@@ -76,6 +78,7 @@ const TeX: React.FC<TeXProps> = ({
       }}
       dangerouslySetInnerHTML={{ __html: state.innerHtml }}
       contentEditable={false}
+      onClick={onClick}
     />
   );
 };

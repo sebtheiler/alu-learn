@@ -1,3 +1,4 @@
+import InsertEquationModal from "../EquationPlugin/modal";
 import Dropdown from "@/atoms/Dropdown";
 import classNames from "@/helpers/classNames";
 import { sanitizeUrl } from "@/helpers/sanitizeUrl";
@@ -7,9 +8,16 @@ import {
   faAngleDown,
   faBold,
   faCode,
+  faHeading,
   faItalic,
   faLink,
+  faListDots,
+  faListNumeric,
+  faParagraph,
+  faPlus,
+  faQuoteLeft,
   faRedo,
+  faSquareRootVariable,
   faUnderline,
   faUndo,
 } from "@fortawesome/free-solid-svg-icons";
@@ -155,8 +163,6 @@ export default function ToolbarPlugin() {
     }
   }, [editor]);
 
-  console.log(blockType);
-
   useEffect(() => {
     return editor.registerCommand(
       SELECTION_CHANGE_COMMAND,
@@ -250,9 +256,44 @@ export default function ToolbarPlugin() {
         isActive={isLink}
       />
       <VL />
-      <BlockFormatDropdown editor={editor} blockType={blockType} />
+      <InsertDropdown editor={editor} />
       <VL className="ml-20" />
+      <BlockFormatDropdown editor={editor} blockType={blockType} />
     </div>
+  );
+}
+
+interface InsertDropdownProps {
+  editor: LexicalEditor;
+}
+
+function InsertDropdown({ editor }: InsertDropdownProps) {
+  const [showEquationModal, setShowEquationModal] = useState(false);
+
+  return (
+    <>
+      <Dropdown
+        options={[
+          {
+            text: "Equation",
+            onClick: () => setShowEquationModal(true),
+            // active: blockType === "paragraph",
+            faIcon: faSquareRootVariable,
+          },
+        ]}
+        className="-translate-y-1"
+      >
+        <span className="hover:bg-gray-200 p-1 rounded-md">
+          <FontAwesomeIcon icon={faPlus} className="mr-1" />
+          Insert
+        </span>
+      </Dropdown>
+      <InsertEquationModal
+        open={showEquationModal}
+        close={() => setShowEquationModal(false)}
+        editor={editor}
+      />
+    </>
   );
 }
 
@@ -289,7 +330,6 @@ function BlockFormatDropdown({ editor, blockType }: BlockFormatDropdownProps) {
   };
 
   const formatBulletList = () => {
-    console.log("e");
     if (blockType !== "bullet") {
       editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
     } else {
@@ -343,34 +383,50 @@ function BlockFormatDropdown({ editor, blockType }: BlockFormatDropdownProps) {
           text: "Normal",
           onClick: formatParagraph,
           active: blockType === "paragraph",
+          faIcon: faParagraph,
         },
         {
           text: "Heading 1",
           onClick: () => formatHeading("h1"),
           active: blockType === "h1",
+          faIcon: faHeading,
         },
         {
           text: "Heading 2",
           onClick: () => formatHeading("h2"),
           active: blockType === "h2",
+          faIcon: faHeading,
         },
         {
           text: "Heading 3",
           onClick: () => formatHeading("h3"),
           active: blockType === "h3",
+          faIcon: faHeading,
         },
         {
           text: "Bulleted List",
           onClick: formatBulletList,
           active: blockType === "bullet",
+          faIcon: faListDots,
         },
         {
           text: "Numbered List",
           onClick: formatNumberedList,
           active: blockType === "number",
+          faIcon: faListNumeric,
         },
-        { text: "Quote", onClick: formatQuote, active: blockType === "quote" },
-        { text: "Code", onClick: formatCode, active: blockType === "code" },
+        {
+          text: "Quote",
+          onClick: formatQuote,
+          active: blockType === "quote",
+          faIcon: faQuoteLeft,
+        },
+        {
+          text: "Code",
+          onClick: formatCode,
+          active: blockType === "code",
+          faIcon: faCode,
+        },
       ]}
       className="-translate-y-1"
     >

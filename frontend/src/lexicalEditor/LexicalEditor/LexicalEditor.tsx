@@ -1,3 +1,5 @@
+import EquationPlugin from "../plugins/EquationPlugin";
+import { EquationNode } from "../plugins/EquationPlugin/nodes";
 import FloatingLinkEditorPlugin from "../plugins/FloatingLinkEditorPlugin";
 import ToolbarPlugin from "../plugins/ToolbarPlugin";
 import styles from "./LexicalEditor.module.scss";
@@ -71,6 +73,7 @@ const nodes = [
   QuoteNode,
   CodeNode,
   LinkNode,
+  EquationNode,
 ];
 
 interface LexicalEditorProps {
@@ -104,13 +107,17 @@ export default function LexicalEditor({
           placeholder={<></>}
         />
         <OnChangePlugin
-          onChange={(editorState) => (editorStateRef.current = editorState)}
+          onChange={(editorState) => {
+            editorStateRef.current = editorState;
+            console.log(editorState);
+          }}
         />
         <HistoryPlugin />
         <AutofocusPlugin />
         <ListPlugin />
         <LinkPlugin />
         <FloatingLinkEditorPlugin />
+        <EquationPlugin />
         {/* <Button
           onClick={() => console.log(JSON.stringify(editorStateRef.current))}
           className="mt-2"

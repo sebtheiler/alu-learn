@@ -1,4 +1,6 @@
 import type { ButtonProps } from "@/atoms/Button";
+import { faClose } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 
@@ -77,11 +79,19 @@ export default function Modal({
                     {title && (
                       <Dialog.Title
                         as="h3"
-                        className="text-center text-xl font-medium leading-6 text-gray-900"
+                        className="text-center text-xl leading-6 text-gray-900 font-bold"
                       >
                         {title}
                       </Dialog.Title>
                     )}
+                    <FontAwesomeIcon
+                      icon={faClose}
+                      className="absolute right-3 top-3 py-2 rounded-full bg-gray-50 hover:bg-gray-100 hover:cursor-pointer"
+                      role="button"
+                      onClick={close}
+                      width={32}
+                      height={32}
+                    />
                     <div className="mt-2">{children}</div>
                   </div>
                 </div>
