@@ -1,13 +1,12 @@
 import EquationEditor from "./editor";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import type {
+import {
+  $setSelection,
   LexicalNode,
   NodeKey,
   SerializedLexicalNode,
   Spread,
-} from "lexical";
-import {
   $getNodeByKey,
   $getSelection,
   $isNodeSelection,
@@ -109,6 +108,17 @@ function EquationComponent({
     }
   }, [editor, nodeKey, onHide, showEquationEditor]);
 
+  const handleShowEquationEditor = () => {
+    setShowEquationEditor(true);
+
+    // We have to set the selection to null so that when the user starts
+    // typing to edit the equation, the editor doesn't try to insert
+    // text outside of the equation editor
+    editor.update(() => {
+      $setSelection(null);
+    });
+  };
+
   return (
     <>
       {showEquationEditor ? (
@@ -122,7 +132,7 @@ function EquationComponent({
         <TeX
           math={equationValue}
           block={!inline}
-          onClick={() => setShowEquationEditor(true)}
+          onClick={handleShowEquationEditor}
         />
       )}
     </>

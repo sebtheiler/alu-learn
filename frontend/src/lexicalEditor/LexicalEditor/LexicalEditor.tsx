@@ -1,6 +1,8 @@
 import EquationPlugin from "../plugins/EquationPlugin";
 import { EquationNode } from "../plugins/EquationPlugin/nodes";
 import FloatingLinkEditorPlugin from "../plugins/FloatingLinkEditorPlugin";
+import ImagePlugin from "../plugins/ImagePlugin";
+import { ImageNode } from "../plugins/ImagePlugin/node";
 import ToolbarPlugin from "../plugins/ToolbarPlugin";
 import styles from "./LexicalEditor.module.scss";
 import classNames from "@/helpers/classNames";
@@ -74,6 +76,7 @@ const nodes = [
   CodeNode,
   LinkNode,
   EquationNode,
+  ImageNode,
 ];
 
 interface LexicalEditorProps {
@@ -118,6 +121,7 @@ export default function LexicalEditor({
         <LinkPlugin />
         <FloatingLinkEditorPlugin />
         <EquationPlugin />
+        <ImagePlugin />
         {/* <Button
           onClick={() => console.log(JSON.stringify(editorStateRef.current))}
           className="mt-2"

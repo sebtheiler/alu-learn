@@ -63,14 +63,14 @@ export default function CourseSettings({
     router.push("/home");
   };
 
-  const [bannerImage, setFile] = useState<File>();
+  const [bannerImage, setBannerImage] = useState<File>();
   function onChange({
     target: {
       validity,
       files: [file],
     },
   }) {
-    if (validity.valid) setFile(file);
+    if (validity.valid) setBannerImage(file);
   }
 
   return (

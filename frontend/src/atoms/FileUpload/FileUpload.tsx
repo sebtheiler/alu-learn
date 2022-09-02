@@ -5,7 +5,7 @@ interface FileUploadProps {
   /**
    * Label to appear above the file upload
    */
-  label: string;
+  label?: string;
   /**
    * File types to accept
    */

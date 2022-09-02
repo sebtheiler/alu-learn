@@ -6,6 +6,7 @@ const nextConfig = {
     domains: [
       "lh3.googleusercontent.com",
       "alu-user-uploads.nyc3.digitaloceanspaces.com",
+      "alulearn.com",
     ],
   },
 };

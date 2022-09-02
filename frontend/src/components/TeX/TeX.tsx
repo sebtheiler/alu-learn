@@ -77,7 +77,6 @@ const TeX: React.FC<TeXProps> = ({
         userSelect: "none",
       }}
       dangerouslySetInnerHTML={{ __html: state.innerHtml }}
-      contentEditable={false}
       onClick={onClick}
     />
   );

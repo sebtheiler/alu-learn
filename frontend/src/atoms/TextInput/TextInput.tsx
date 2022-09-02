@@ -54,6 +54,10 @@ interface TextInputProps {
    * Function to call when the input is blurred
    */
   onBlur?(event: ChangeEvent<HTMLInputElement>): void;
+  /**
+   * Autofocus the input?
+   */
+  autoFocus?: boolean;
 }
 
 /**
@@ -74,6 +78,7 @@ export default function TextInput({
   defaultValue,
   onChange,
   onBlur,
+  autoFocus = false,
 }: TextInputProps) {
   return (
     <div
@@ -100,6 +105,7 @@ export default function TextInput({
         autoComplete={autoComplete}
         required={required}
         disabled={disabled}
+        autoFocus={autoFocus}
       />
       {label && (
         <label

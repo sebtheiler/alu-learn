@@ -1,0 +1,49 @@
+.imageResizer {
+  display: block;
+  width: 7px;
+  height: 7px;
+  position: absolute;
+  background-color: rgb(60, 132, 244);
+  border: 1px solid #fff;
+}
+
+.imageResizerN {
+  top: -6px;
+  left: 48%;
+  cursor: n-resize;
+}
+.imageResizerNE {
+  top: -6px;
+  right: -6px;
+  cursor: ne-resize;
+}
+.imageResizerE {
+  bottom: 48%;
+  right: -6px;
+  cursor: e-resize;
+}
+.imageResizerSE {
+  bottom: -2px;
+  right: -6px;
+  cursor: nwse-resize;
+}
+.imageResizerS {
+  bottom: -2px;
+  left: 48%;
+  cursor: s-resize;
+}
+.imageResizerSW {
+  bottom: -2px;
+  left: -6px;
+  cursor: sw-resize;
+}
+.imageResizerW {
+  bottom: 48%;
+  left: -6px;
+  cursor: w-resize;
+}
+.imageResizerNW {
+  top: -6px;
+  left: -6px;
+  cursor: nw-resize;
+}

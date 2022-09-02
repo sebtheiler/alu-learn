@@ -1,4 +1,5 @@
 import InsertEquationModal from "../EquationPlugin/modal";
+import InsertImageModal from "../ImagePlugin/modal";
 import Dropdown from "@/atoms/Dropdown";
 import classNames from "@/helpers/classNames";
 import { sanitizeUrl } from "@/helpers/sanitizeUrl";
@@ -9,6 +10,7 @@ import {
   faBold,
   faCode,
   faHeading,
+  faImage,
   faItalic,
   faLink,
   faListDots,
@@ -269,15 +271,20 @@ interface InsertDropdownProps {
 
 function InsertDropdown({ editor }: InsertDropdownProps) {
   const [showEquationModal, setShowEquationModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   return (
     <>
       <Dropdown
         options={[
           {
+            text: "Image",
+            onClick: () => setShowImageModal(true),
+            faIcon: faImage,
+          },
+          {
             text: "Equation",
             onClick: () => setShowEquationModal(true),
-            // active: blockType === "paragraph",
             faIcon: faSquareRootVariable,
           },
         ]}
@@ -291,6 +298,11 @@ function InsertDropdown({ editor }: InsertDropdownProps) {
       <InsertEquationModal
         open={showEquationModal}
         close={() => setShowEquationModal(false)}
+        editor={editor}
+      />
+      <InsertImageModal
+        open={showImageModal}
+        close={() => setShowImageModal(false)}
         editor={editor}
       />
     </>
