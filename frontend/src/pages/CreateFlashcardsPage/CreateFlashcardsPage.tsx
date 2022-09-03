@@ -14,7 +14,7 @@ import { useMutation } from "@apollo/client";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { ReactEditor } from "slate-react";
 
 export interface CreateFlashcardsPageProps {
@@ -44,6 +44,8 @@ export default function CreateFlashcardsPage({
   );
   const [tags, setTags] = useState("");
   const [error, setError] = useState("");
+
+  const frontEditorWrappingRef = useRef<HTMLDivElement | null>(null);
 
   const createFlashcardHandler = async () => {
     if (
@@ -113,7 +115,7 @@ export default function CreateFlashcardsPage({
                 id="flashcardType"
               />
             </div>
-            <div className="mt-3">
+            <div className="mt-3" ref={frontEditorWrappingRef}>
               <h3 className="font-bold text-xl">
                 {flashcardType === "NORMAL" && "Front"}
                 {flashcardType === "CLOZE" &&
@@ -122,6 +124,7 @@ export default function CreateFlashcardsPage({
               <LexicalEditor
                 namespace="frontEditor"
                 className={styles.editorMinHeight}
+                verticalOffset={112} // mt-28
                 autoFocus
               />
             </div>
@@ -133,6 +136,7 @@ export default function CreateFlashcardsPage({
               <LexicalEditor
                 namespace="backEditor"
                 className={styles.editorMinHeight}
+                verticalOffset={112}
               />
             </div>
             <div className="mt-3">

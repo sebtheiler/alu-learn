@@ -32,9 +32,11 @@ import { createPortal } from "react-dom";
 function FloatingLinkEditor({
   editor,
   anchorElem,
+  verticalOffset = 0,
 }: {
   editor: LexicalEditor;
   anchorElem: HTMLElement;
+  verticalOffset?: number;
 }): JSX.Element {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -74,7 +76,7 @@ function FloatingLinkEditor({
       rootElement.contains(nativeSelection.anchorNode)
     ) {
       const domRange = nativeSelection.getRangeAt(0);
-      let rect;
+      let rect: DOMRect;
       if (nativeSelection.anchorNode === rootElement) {
         let inner = rootElement;
         while (inner.firstElementChild != null) {
@@ -85,11 +87,14 @@ function FloatingLinkEditor({
         rect = domRange.getBoundingClientRect();
       }
 
-      setFloatingElemPosition(rect, editorElem, anchorElem);
+      console.log(anchorElem);
+      setFloatingElemPosition(rect, editorElem, anchorElem, { verticalOffset });
       setLastSelection(selection);
     } else if (!activeElement || activeElement.className !== styles.linkInput) {
       if (rootElement !== null) {
-        setFloatingElemPosition(null, editorElem, anchorElem);
+        setFloatingElemPosition(null, editorElem, anchorElem, {
+          verticalOffset,
+        });
       }
       setLastSelection(null);
       setEditMode(false);
@@ -97,7 +102,7 @@ function FloatingLinkEditor({
     }
 
     return true;
-  }, [anchorElem, editor]);
+  }, [anchorElem, editor, verticalOffset]);
 
   useEffect(() => {
     const scrollerElem = anchorElem.parentElement;
@@ -210,7 +215,8 @@ function FloatingLinkEditor({
 
 function useFloatingLinkEditorToolbar(
   editor: LexicalEditor,
-  anchorElem: HTMLElement
+  anchorElem: HTMLElement,
+  verticalOffset = 0
 ): JSX.Element | null {
   const [activeEditor, setActiveEditor] = useState(editor);
   const [isLink, setIsLink] = useState(false);
@@ -242,7 +248,11 @@ function useFloatingLinkEditorToolbar(
 
   return isLink
     ? createPortal(
-        <FloatingLinkEditor editor={activeEditor} anchorElem={anchorElem} />,
+        <FloatingLinkEditor
+          editor={activeEditor}
+          anchorElem={anchorElem}
+          verticalOffset={verticalOffset}
+        />,
         anchorElem
       )
     : null;
@@ -250,9 +260,11 @@ function useFloatingLinkEditorToolbar(
 
 export default function FloatingLinkEditorPlugin({
   anchorElem,
+  verticalOffset = 0,
 }: {
   anchorElem: HTMLElement;
+  verticalOffset?: number;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-  return useFloatingLinkEditorToolbar(editor, anchorElem);
+  return useFloatingLinkEditorToolbar(editor, anchorElem, verticalOffset);
 }

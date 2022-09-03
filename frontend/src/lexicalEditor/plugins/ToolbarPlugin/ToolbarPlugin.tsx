@@ -441,6 +441,7 @@ function BlockFormatDropdown({ editor, blockType }: BlockFormatDropdownProps) {
         },
       ]}
       className="-translate-y-1"
+      style={{ maxHeight: "200px" }}
     >
       <span className="hover:bg-gray-200 p-1 rounded-md">
         {blockTypeToBlockName[blockType]} <FontAwesomeIcon icon={faAngleDown} />

@@ -92,6 +92,7 @@ interface LexicalEditorProps {
   autoFocus?: boolean;
   maxIndentLevel?: number | undefined;
   maxLength?: number | undefined;
+  verticalOffset?: number;
 }
 
 /**
@@ -105,6 +106,7 @@ export default function LexicalEditor({
   autoFocus,
   maxIndentLevel = 8,
   maxLength = 2000,
+  verticalOffset = 0,
 }: LexicalEditorProps) {
   const initialConfig = {
     namespace,
@@ -142,7 +144,10 @@ export default function LexicalEditor({
         <ListPlugin />
         <LinkPlugin />
         {typeof window !== "undefined" ? (
-          <FloatingLinkEditorPlugin anchorElem={document.body} />
+          <FloatingLinkEditorPlugin
+            anchorElem={document.body}
+            verticalOffset={verticalOffset}
+          />
         ) : (
           ""
         )}

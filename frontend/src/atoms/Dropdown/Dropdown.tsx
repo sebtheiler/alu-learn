@@ -60,6 +60,10 @@ interface DropdownProps {
    * Apply additional props (e.g., styling) to the menu button
    */
   menuButtonProps?: any;
+  /**
+   * Max height of the options popup
+   */
+  maxHeight?: number;
 }
 
 /**
@@ -70,13 +74,14 @@ export default function Dropdown({
   children,
   style,
   menuButtonProps,
+  maxHeight,
   className,
 }: DropdownProps) {
   return (
     <Menu
       as="div"
       className={classNames(className, "inline-block text-left")}
-      style={{ ...style, position: "absolute", zIndex: 1000 }}
+      style={{ ...style, position: "absolute", zIndex: 1 }}
     >
       <Menu.Button
         className="focus:outline-none inline-flex items-center"
@@ -99,7 +104,7 @@ export default function Dropdown({
                     text-base overflow-auto focus:outline-none shadow-md
                     sm:text-sm max-w-sm border-gray-200 border-2"
         >
-          <div className="py-1">
+          <div className="py-1" style={{ maxHeight }}>
             {options.map((option, i) =>
               option.divider ? (
                 <hr className="my-2" key={i} />
