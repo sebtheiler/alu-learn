@@ -1,13 +1,17 @@
+import AutoLinkPlugin from "../plugins/AutoLinkPlugin";
 import EquationPlugin from "../plugins/EquationPlugin";
 import { EquationNode } from "../plugins/EquationPlugin/nodes";
 import FloatingLinkEditorPlugin from "../plugins/FloatingLinkEditorPlugin";
 import ImagePlugin from "../plugins/ImagePlugin";
 import { ImageNode } from "../plugins/ImagePlugin/node";
+import ListMaxIndentLevelPlugin from "../plugins/ListMaxIndentLevelPlugin";
+import MarkdownShortcutPlugin from "../plugins/MarkdownShortcutPlugin";
+import MaxLengthPlugin from "../plugins/MaxLengthPlugin";
 import ToolbarPlugin from "../plugins/ToolbarPlugin";
 import styles from "./LexicalEditor.module.scss";
 import classNames from "@/helpers/classNames";
 import { CodeNode } from "@lexical/code";
-import { LinkNode } from "@lexical/link";
+import { LinkNode, AutoLinkNode } from "@lexical/link";
 import { ListNode, ListItemNode } from "@lexical/list";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -75,6 +79,7 @@ const nodes = [
   QuoteNode,
   CodeNode,
   LinkNode,
+  AutoLinkNode,
   EquationNode,
   ImageNode,
 ];
@@ -85,6 +90,8 @@ interface LexicalEditorProps {
   className?: string;
   style?: React.CSSProperties;
   autoFocus?: boolean;
+  maxIndentLevel?: number | undefined;
+  maxLength?: number | undefined;
 }
 
 /**
@@ -96,6 +103,8 @@ export default function LexicalEditor({
   className,
   style,
   autoFocus,
+  maxIndentLevel = 8,
+  maxLength = 2000,
 }: LexicalEditorProps) {
   const initialConfig = {
     namespace,
@@ -139,6 +148,11 @@ export default function LexicalEditor({
         )}
         <EquationPlugin />
         <ImagePlugin />
+
+        <ListMaxIndentLevelPlugin maxDepth={maxIndentLevel} />
+        <MaxLengthPlugin maxLength={maxLength} />
+        <MarkdownShortcutPlugin />
+        <AutoLinkPlugin />
         {/* <Button
           onClick={() => console.log(JSON.stringify(editorStateRef.current))}
           className="mt-2"
