@@ -175,6 +175,7 @@
   > div[data-lexical-editor="true"] {
     padding: 0.75rem;
     z-index: 1;
+    overflow: hidden;
 
     > ol {
       list-style-type: decimal;
@@ -183,6 +184,9 @@
     &:focus {
       outline: 2px solid transparent;
       border-color: darken(#e5e7eb, 5%);
+    }
+    &:hover {
+      cursor: text;
     }
   }
 }

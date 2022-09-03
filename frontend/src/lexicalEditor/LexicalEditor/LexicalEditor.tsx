@@ -82,6 +82,9 @@ const nodes = [
 interface LexicalEditorProps {
   namespace: string;
   readOnly?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+  autoFocus?: boolean;
 }
 
 /**
@@ -90,6 +93,9 @@ interface LexicalEditorProps {
 export default function LexicalEditor({
   namespace,
   readOnly = false,
+  className,
+  style,
+  autoFocus,
 }: LexicalEditorProps) {
   const initialConfig = {
     namespace,
@@ -102,7 +108,14 @@ export default function LexicalEditor({
   const editorStateRef = useRef<EditorState>();
 
   return (
-    <div className={classNames(styles.surroundingDiv, "border-2 rounded-lg")}>
+    <div
+      className={classNames(
+        styles.surroundingDiv,
+        "border-2 rounded-lg",
+        className
+      )}
+      style={style}
+    >
       <LexicalComposer initialConfig={initialConfig}>
         <ToolbarPlugin />
         <RichTextPlugin
@@ -116,10 +129,14 @@ export default function LexicalEditor({
           }}
         />
         <HistoryPlugin />
-        <AutofocusPlugin />
+        {autoFocus ? <AutofocusPlugin /> : ""}
         <ListPlugin />
         <LinkPlugin />
-        <FloatingLinkEditorPlugin />
+        {typeof window !== "undefined" ? (
+          <FloatingLinkEditorPlugin anchorElem={document.body} />
+        ) : (
+          ""
+        )}
         <EquationPlugin />
         <ImagePlugin />
         {/* <Button

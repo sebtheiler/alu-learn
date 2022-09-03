@@ -5,8 +5,6 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import type { LexicalCommand, CommandPayloadType } from "lexical";
 import { useMemo } from "react";
 
-const IS_APPLE = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
-
 interface EditorButtonProps {
   command: LexicalCommand<any>;
   payload?: CommandPayloadType<any>;
@@ -30,13 +28,21 @@ export default function EditorButton({
   disabled = false,
 }: EditorButtonProps) {
   const [editor] = useLexicalComposerContext();
+  const IS_APPLE = useMemo(() => {
+    try {
+      return /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+    } catch {
+      // SSR
+      return false;
+    }
+  }, []);
   const formattedTitle = useMemo(
     () =>
       title +
       (shortcut
         ? ` (${shortcut.toUpperCase().replace("MOD", IS_APPLE ? "⌘" : "Ctrl")})`
         : ""),
-    [title, shortcut]
+    [title, shortcut, IS_APPLE]
   );
 
   return (

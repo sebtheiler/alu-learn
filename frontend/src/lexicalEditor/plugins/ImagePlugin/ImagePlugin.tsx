@@ -40,7 +40,15 @@ export default function ImagesPlugin(): JSX.Element | null {
       editor.registerCommand<InsertImagePayload>(
         INSERT_IMAGE_COMMAND,
         (payload) => {
-          const selection = $getSelection();
+          let selection = $getSelection();
+
+          // I don't know why this is needed, but it works (not too well, but it works)
+          if (selection === null) {
+            const rangeSelection = $createRangeSelection();
+            $setSelection(rangeSelection);
+            selection = $getSelection();
+          }
+
           if ($isRangeSelection(selection)) {
             if ($isRootNode(selection.anchor.getNode())) {
               selection.insertParagraph();
@@ -79,11 +87,6 @@ export default function ImagesPlugin(): JSX.Element | null {
   return null;
 }
 
-const TRANSPARENT_IMAGE =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-const img = document.createElement("img");
-img.src = TRANSPARENT_IMAGE;
-
 function onDragStart(event: DragEvent): boolean {
   const node = getImageNodeInSelection();
   if (!node) {
@@ -94,7 +97,7 @@ function onDragStart(event: DragEvent): boolean {
     return false;
   }
   dataTransfer.setData("text/plain", "_");
-  dataTransfer.setDragImage(img, 0, 0);
+  // dataTransfer.setDragImage(img, 0, 0);
   dataTransfer.setData(
     "application/x-lexical-drag",
     JSON.stringify({

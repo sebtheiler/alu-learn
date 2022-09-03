@@ -1,12 +1,11 @@
 import type { Course as PrismaCourse } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
 import deleteFileFromS3 from "helpers/deleteFileFromS3";
-import enforceMaxStreamSize from "helpers/enforceMaxStreamSize";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
 import slugifyText from "helpers/slugifyText";
-import uploadStreamToS3 from "helpers/uploadStreamToS3";
+import uploadImageToS3 from "helpers/uploadImageToS3";
 import { arg, extendType, list, nonNull, objectType, stringArg } from "nexus";
 
 const Course = objectType({
@@ -262,27 +261,11 @@ export const CoursesMutation = extendType({
           });
         }
 
-        // Get the uploaded image from the client
-        const bannerImage = await args.bannerImage.promise;
-        const { createReadStream, mimetype } = bannerImage;
-
-        // Check valid content type
-        if (!mimetype.startsWith("image")) {
-          throw new ApolloError(`Content type not supported: ${mimetype}`);
-        }
-
-        // Upload the image to Digital Ocean spaces by piping
-        // the stream from the client
-        const bannerImageFilename = genCourseBannerFilename(args.courseId);
-        const { writeStream, promise } = uploadStreamToS3(
-          bannerImageFilename,
-          mimetype
-        );
-        const readStream = createReadStream();
-        enforceMaxStreamSize(readStream.pipe(writeStream), 5e7);
-
+        // Upload the image
         try {
-          await promise;
+          const bannerImageFilename = genCourseBannerFilename(args.courseId);
+          await uploadImageToS3(args.bannerImage, bannerImageFilename);
+
           return ctx.prisma.course.update({
             where: {
               id: args.courseId,

@@ -71,6 +71,8 @@ model User {
   courses      Course[] @relation("CourseUsers")
   coursesOwned Course[] @relation("CourseOwners")
 
+  uploadedImages UploadedImage[]
+
   userType              UserType @default(STUDENT)
   sendReminders         Boolean  @default(false)
   targetNumCards        Int      @default(20)
@@ -181,4 +183,16 @@ model Flashcard {
 enum FlashcardType {
   NORMAL
   CLOZE
+}
+
+// # Other
+model UploadedImage {
+  id  String @id @default(cuid())
+  url String
+
+  uploadedBy   User?   @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedById String?
+
+  width  Int?
+  height Int?
 }

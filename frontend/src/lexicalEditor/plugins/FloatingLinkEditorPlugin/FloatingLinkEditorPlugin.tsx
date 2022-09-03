@@ -249,9 +249,9 @@ function useFloatingLinkEditorToolbar(
 }
 
 export default function FloatingLinkEditorPlugin({
-  anchorElem = document.body,
+  anchorElem,
 }: {
-  anchorElem?: HTMLElement;
+  anchorElem: HTMLElement;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
   return useFloatingLinkEditorToolbar(editor, anchorElem);

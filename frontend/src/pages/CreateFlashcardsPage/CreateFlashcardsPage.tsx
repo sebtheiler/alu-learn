@@ -1,13 +1,14 @@
+import styles from "./CreateFlashcardsPage.module.scss";
 import AsyncButton from "@/atoms/AsyncButton";
 import Select from "@/atoms/Select";
 import TextInput from "@/atoms/TextInput";
 import { createFullEditor } from "@/editor/FullEditable";
-import RenderEditor from "@/editor/RenderEditor";
 import CreateFlashcard from "@/graphql/CreateFlashcard";
 import SEO from "@/helpers/SEO";
 import blankSlateElement from "@/helpers/blankSlateElement";
 import classNames from "@/helpers/classNames";
 import clearEditor from "@/helpers/clearEditor";
+import LexicalEditor from "@/lexicalEditor/LexicalEditor";
 import type { Course, FlashcardType } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -118,12 +119,9 @@ export default function CreateFlashcardsPage({
                 {flashcardType === "CLOZE" &&
                   "Text (use the cloze deletion option to hide text)"}
               </h3>
-              <RenderEditor
-                editor={frontEditor}
-                value={frontValue}
-                setValue={setFrontValue}
-                style={{ minHeight: "200px" }}
-                id="frontEditor"
+              <LexicalEditor
+                namespace="frontEditor"
+                className={styles.editorMinHeight}
                 autoFocus
               />
             </div>
@@ -132,12 +130,9 @@ export default function CreateFlashcardsPage({
                 {flashcardType === "NORMAL" && "Back"}
                 {flashcardType === "CLOZE" && "Extra Information (optional)"}
               </h3>
-              <RenderEditor
-                editor={backEditor}
-                value={backValue}
-                setValue={setBackValue}
-                style={{ minHeight: "200px" }}
-                id="backEditor"
+              <LexicalEditor
+                namespace="backEditor"
+                className={styles.editorMinHeight}
               />
             </div>
             <div className="mt-3">

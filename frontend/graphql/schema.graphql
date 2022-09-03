@@ -138,6 +138,15 @@ type Mutation {
     """ID of the course to add the bannner to"""
     courseId: String!
   ): Course
+
+  """Upload an image"""
+  uploadImage(
+    """File object to stream upload"""
+    image: Upload!
+  ): UploadedImage
+
+  """Upload an image from a URL"""
+  uploadImageFromUrl(url: String!): UploadedImage
 }
 
 type NewUserSurveyResponse {
@@ -198,6 +207,14 @@ type SubSection {
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
+type UploadedImage {
+  height: Int
+  id: String
+  uploadedBy: User
+  url: String
+  width: Int
+}
 
 type User {
   currentStreak: Int

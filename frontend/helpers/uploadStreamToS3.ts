@@ -6,6 +6,7 @@ import stream from "stream";
  * Allows a read stream to be streamed directly into S3 for file uploads
  * @param filename Location to upload on the bucket. Automatically prefixed into the correct folder.
  * @param contentType Type of file to save (optional)
+ * @param isPublic Is the file accessible to anyone? Defaults to false
  * @returns `writeStream` for writing data and `promise` for checking status
  * @example Pipe readstream to upload
  * ```js
@@ -23,7 +24,11 @@ import stream from "stream";
  * }
  * @see https://stackoverflow.com/a/50291380/10226703
  */
-const uploadStreamToS3 = (filename: string, contentType?: string) => {
+const uploadStreamToS3 = (
+  filename: string,
+  contentType?: string,
+  isPublic = false
+) => {
   const pass = new stream.PassThrough();
   const filenamePrefix = getS3FilenamePrefix();
   const parsedFilename = `${filenamePrefix}/${filename}`;
@@ -36,6 +41,7 @@ const uploadStreamToS3 = (filename: string, contentType?: string) => {
         Key: parsedFilename,
         Body: pass,
         ContentType: contentType,
+        ACL: isPublic ? "public-read" : "private",
       })
       .promise(),
   };

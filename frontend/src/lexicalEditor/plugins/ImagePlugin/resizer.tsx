@@ -1,11 +1,8 @@
 import styles from "./resizer.module.scss";
+import clamp from "@/helpers/clamp";
 import classNames from "@/helpers/classNames";
 import type { LexicalEditor } from "lexical";
 import { useRef } from "react";
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
-}
 
 const Direction = {
   east: 1 << 0,

@@ -4,6 +4,7 @@ import { ApolloError } from "apollo-server-micro";
  * Destroys a stream if it exceeds a given maximum size
  * @param stream Stream on which to enforce a max size
  * @param maxSize Maximum size in bytes.  5e+7 = 50 MB
+ * @returns The stream and a promise that completes when the stream is done piping
  */
 const enforceMaxStreamSize = (stream, maxSize = 5e7) => {
   let byteLength = 0;
@@ -17,6 +18,11 @@ const enforceMaxStreamSize = (stream, maxSize = 5e7) => {
       );
     }
   });
+
+  return {
+    stream,
+    promise: new Promise((fulfill) => stream.on("finish", fulfill)),
+  };
 };
 
 export default enforceMaxStreamSize;
