@@ -1,4 +1,4 @@
-import styles from "./resizer.module.scss";
+import styles from "./ImageResizer.module.scss";
 import clamp from "@/helpers/clamp";
 import classNames from "@/helpers/classNames";
 import type { LexicalEditor } from "lexical";

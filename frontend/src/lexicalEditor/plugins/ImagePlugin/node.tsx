@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-import ImageResizer from "./resizer";
 import TextInput from "@/atoms/TextInput";
 import classNames from "@/helpers/classNames";
+import ImageResizer from "@/lexicalEditor/ImageResizer";
 import {
   faArrowUpRightFromSquare,
   faEye,
