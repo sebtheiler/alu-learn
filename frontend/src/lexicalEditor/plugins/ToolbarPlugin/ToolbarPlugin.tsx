@@ -203,7 +203,7 @@ export default function ToolbarPlugin() {
   }, [editor, updateToolbar]);
 
   return (
-    <div className="border-b-2 px-3 py-2 bg-gray-50 overflow-hidden rounded-t-lg">
+    <div className="border-b-2 px-3 py-2 bg-gray-50 rounded-t-lg">
       <EditorButton
         command={UNDO_COMMAND}
         title="Undo"
@@ -259,7 +259,7 @@ export default function ToolbarPlugin() {
       />
       <VL />
       <InsertDropdown editor={editor} />
-      <VL className="ml-20" />
+      <VL />
       <BlockFormatDropdown editor={editor} blockType={blockType} />
     </div>
   );
@@ -288,7 +288,6 @@ function InsertDropdown({ editor }: InsertDropdownProps) {
             faIcon: faSquareRootVariable,
           },
         ]}
-        className="-translate-y-1"
       >
         <span className="hover:bg-gray-200 p-1 rounded-md">
           <FontAwesomeIcon icon={faPlus} className="mr-1" />
@@ -440,8 +439,6 @@ function BlockFormatDropdown({ editor, blockType }: BlockFormatDropdownProps) {
           faIcon: faCode,
         },
       ]}
-      className="-translate-y-1"
-      style={{ maxHeight: "200px" }}
     >
       <span className="hover:bg-gray-200 p-1 rounded-md">
         {blockTypeToBlockName[blockType]} <FontAwesomeIcon icon={faAngleDown} />
