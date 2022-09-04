@@ -1,4 +1,5 @@
 import AutoLinkPlugin from "../plugins/AutoLinkPlugin";
+import ClearEditorPlugin from "../plugins/ClearEditorPlugin";
 import EquationPlugin from "../plugins/EquationPlugin";
 import { EquationNode } from "../plugins/EquationPlugin/nodes";
 import FloatingLinkEditorPlugin from "../plugins/FloatingLinkEditorPlugin";
@@ -7,6 +8,7 @@ import { ImageNode } from "../plugins/ImagePlugin/node";
 import ListMaxIndentLevelPlugin from "../plugins/ListMaxIndentLevelPlugin";
 import MarkdownShortcutPlugin from "../plugins/MarkdownShortcutPlugin";
 import MaxLengthPlugin from "../plugins/MaxLengthPlugin";
+import OverrideTabPlugin from "../plugins/OverrideTabPlugin";
 import ToolbarPlugin from "../plugins/ToolbarPlugin";
 import styles from "./LexicalEditor.module.scss";
 import classNames from "@/helpers/classNames";
@@ -22,8 +24,8 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
-import { EditorState } from "lexical";
-import { useEffect, useRef } from "react";
+import type { EditorState, LexicalEditor as Editor } from "lexical";
+import { useEffect } from "react";
 
 const onError = (error: Error) => console.error(error);
 
@@ -93,6 +95,9 @@ interface LexicalEditorProps {
   maxIndentLevel?: number | undefined;
   maxLength?: number | undefined;
   verticalOffset?: number;
+  clearEditorRef?: React.MutableRefObject<HTMLButtonElement | null>;
+  onChange?(editorState: EditorState, editor: Editor): void;
+  overrideTab?: boolean;
 }
 
 /**
@@ -107,6 +112,9 @@ export default function LexicalEditor({
   maxIndentLevel = 8,
   maxLength = 2000,
   verticalOffset = 0,
+  clearEditorRef,
+  onChange,
+  overrideTab = false,
 }: LexicalEditorProps) {
   const initialConfig = {
     namespace,
@@ -116,8 +124,6 @@ export default function LexicalEditor({
     readOnly,
   };
 
-  const editorStateRef = useRef<EditorState>();
-
   return (
     <div
       className={classNames(
@@ -126,19 +132,15 @@ export default function LexicalEditor({
         className
       )}
       style={style}
+      id={namespace}
     >
       <LexicalComposer initialConfig={initialConfig}>
-        <ToolbarPlugin />
+        <ToolbarPlugin clearEditorRef={clearEditorRef} />
         <RichTextPlugin
           contentEditable={<ContentEditable />}
           placeholder={<></>}
         />
-        <OnChangePlugin
-          onChange={(editorState) => {
-            editorStateRef.current = editorState;
-            console.log(editorState);
-          }}
-        />
+        {onChange ? <OnChangePlugin onChange={onChange} /> : ""}
         <HistoryPlugin />
         {autoFocus ? <AutofocusPlugin /> : ""}
         <ListPlugin />
@@ -154,16 +156,12 @@ export default function LexicalEditor({
         <EquationPlugin />
         <ImagePlugin />
 
+        {overrideTab ? <OverrideTabPlugin /> : ""}
         <ListMaxIndentLevelPlugin maxDepth={maxIndentLevel} />
         <MaxLengthPlugin maxLength={maxLength} />
         <MarkdownShortcutPlugin />
         <AutoLinkPlugin />
-        {/* <Button
-          onClick={() => console.log(JSON.stringify(editorStateRef.current))}
-          className="mt-2"
-        >
-          Save
-        </Button> */}
+        <ClearEditorPlugin />
       </LexicalComposer>
     </div>
   );

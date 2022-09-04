@@ -24,7 +24,7 @@ import {
   faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { $isCodeNode, $createCodeNode } from "@lexical/code";
+import { $createCodeNode } from "@lexical/code";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import {
   $isListNode,
@@ -42,7 +42,11 @@ import {
 } from "@lexical/rich-text";
 import { $wrapLeafNodesInElements } from "@lexical/selection";
 import { mergeRegister, $getNearestNodeOfType } from "@lexical/utils";
-import { $getSelection, $isRangeSelection } from "lexical";
+import {
+  $getSelection,
+  $isRangeSelection,
+  CLEAR_EDITOR_COMMAND,
+} from "lexical";
 import {
   COMMAND_PRIORITY_CRITICAL,
   SELECTION_CHANGE_COMMAND,
@@ -70,13 +74,6 @@ const blockTypeToBlockName = {
   paragraph: "Normal",
   quote: "Quote",
 };
-const CODE_LANGUAGE_MAP: Record<string, string> = {
-  javascript: "js",
-  md: "markdown",
-  plaintext: "plain",
-  python: "py",
-  text: "plain",
-};
 
 const VL = ({ className }: { className?: string }) => (
   <div
@@ -90,7 +87,7 @@ const VL = ({ className }: { className?: string }) => (
 /**
  *
  */
-export default function ToolbarPlugin() {
+export default function ToolbarPlugin({ clearEditorRef }) {
   const [editor] = useLexicalComposerContext();
 
   // Text formatting
@@ -105,7 +102,6 @@ export default function ToolbarPlugin() {
   // Block formatting
   const [blockType, setBlockType] =
     useState<keyof typeof blockTypeToBlockName>("paragraph");
-  const [codeLanguage, setCodeLanguage] = useState("");
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -151,14 +147,6 @@ export default function ToolbarPlugin() {
             : element.getType();
           if (type in blockTypeToBlockName) {
             setBlockType(type as keyof typeof blockTypeToBlockName);
-          }
-          if ($isCodeNode(element)) {
-            const language =
-              element.getLanguage() as keyof typeof CODE_LANGUAGE_MAP;
-            setCodeLanguage(
-              language ? CODE_LANGUAGE_MAP[language] || language : ""
-            );
-            return;
           }
         }
       }
@@ -261,6 +249,15 @@ export default function ToolbarPlugin() {
       <InsertDropdown editor={editor} />
       <VL />
       <BlockFormatDropdown editor={editor} blockType={blockType} />
+      {clearEditorRef && (
+        <button
+          onClick={() =>
+            editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined)
+          }
+          ref={clearEditorRef}
+          tabIndex={-1}
+        />
+      )}
     </div>
   );
 }
@@ -288,6 +285,7 @@ function InsertDropdown({ editor }: InsertDropdownProps) {
             faIcon: faSquareRootVariable,
           },
         ]}
+        menuButtonProps={{ tabIndex: "-1" }}
       >
         <span className="hover:bg-gray-200 p-1 rounded-md">
           <FontAwesomeIcon icon={faPlus} className="mr-1" />
@@ -439,6 +437,7 @@ function BlockFormatDropdown({ editor, blockType }: BlockFormatDropdownProps) {
           faIcon: faCode,
         },
       ]}
+      menuButtonProps={{ tabIndex: "-1" }}
     >
       <span className="hover:bg-gray-200 p-1 rounded-md">
         {blockTypeToBlockName[blockType]} <FontAwesomeIcon icon={faAngleDown} />

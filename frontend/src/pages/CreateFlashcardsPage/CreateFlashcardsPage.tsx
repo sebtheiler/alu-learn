@@ -2,20 +2,28 @@ import styles from "./CreateFlashcardsPage.module.scss";
 import AsyncButton from "@/atoms/AsyncButton";
 import Select from "@/atoms/Select";
 import TextInput from "@/atoms/TextInput";
-import { createFullEditor } from "@/editor/FullEditable";
 import CreateFlashcard from "@/graphql/CreateFlashcard";
 import SEO from "@/helpers/SEO";
-import blankSlateElement from "@/helpers/blankSlateElement";
+import blankLexicalElement from "@/helpers/blankLexicalElement";
 import classNames from "@/helpers/classNames";
-import clearEditor from "@/helpers/clearEditor";
 import LexicalEditor from "@/lexicalEditor/LexicalEditor";
-import type { Course, FlashcardType } from "@/types";
+import type {
+  Course,
+  FlashcardType,
+  Mutation,
+  MutationCreateFlashcardArgs,
+} from "@/types";
 import { useMutation } from "@apollo/client";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { EditorState } from "lexical";
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
-import type { ReactEditor } from "slate-react";
+import { useRef, useState } from "react";
+
+interface FlashcardCreateHistory {
+  previewText: string;
+  flashcardId: string;
+}
 
 export interface CreateFlashcardsPageProps {
   course: Course;
@@ -31,13 +39,16 @@ export default function CreateFlashcardsPage({
   courseSectionSlug,
   subSectionSlug,
 }: CreateFlashcardsPageProps) {
-  const frontEditor = useMemo<ReactEditor>(createFullEditor, []);
-  const [frontValue, setFrontValue] = useState(blankSlateElement);
+  const [frontEditorState, setFrontEditorState] = useState<EditorState>();
+  const clearFrontEditorRef = useRef<HTMLButtonElement | null>(null);
 
-  const backEditor = useMemo<ReactEditor>(createFullEditor, []);
-  const [backValue, setBackValue] = useState(blankSlateElement);
+  const [backEditorState, setBackEditorState] = useState<EditorState>();
+  const clearBackEditorRef = useRef<HTMLButtonElement | null>(null);
 
-  const [createFlashcard] = useMutation(CreateFlashcard);
+  const [createFlashcard] = useMutation<
+    { createFlashcard: Mutation["createFlashcard"] },
+    MutationCreateFlashcardArgs
+  >(CreateFlashcard);
 
   const [flashcardType, setFlashcardType] = useState<FlashcardType>(
     "NORMAL" as FlashcardType
@@ -45,32 +56,56 @@ export default function CreateFlashcardsPage({
   const [tags, setTags] = useState("");
   const [error, setError] = useState("");
 
-  const frontEditorWrappingRef = useRef<HTMLDivElement | null>(null);
+  const [history, setHistory] = useState<FlashcardCreateHistory[]>([]);
 
   const createFlashcardHandler = async () => {
     if (
       flashcardType !== "CLOZE" &&
-      [frontValue, backValue].includes(blankSlateElement)
+      (JSON.stringify(frontEditorState) ===
+        JSON.stringify(blankLexicalElement) ||
+        JSON.stringify(backEditorState) === JSON.stringify(blankLexicalElement))
     ) {
       setError("BLANK_SIDE");
       return;
     }
     setError("");
 
-    await createFlashcard({
+    const { data } = await createFlashcard({
       variables: {
-        fields: { value: [frontValue, backValue] },
+        fields: {
+          value: JSON.parse(
+            JSON.stringify([frontEditorState, backEditorState])
+          ),
+        },
         tags,
         flashcardType,
-        courseId: course.id,
+        courseId: course.id as string,
         courseSectionSlug,
         subSectionSlug,
       },
     });
 
-    clearEditor(frontEditor);
-    clearEditor(backEditor);
-    document.getElementById("frontEditor")?.focus();
+    // Add to the history of flashcards created
+    const flashcard = data?.createFlashcard;
+    if (data && flashcard) {
+      const { id } = flashcard;
+
+      const previewText = await new Promise<string | undefined>((resolve) =>
+        frontEditorState?.read(() => {
+          resolve(frontEditorState?._nodeMap.get("root")?.getTextContent());
+        })
+      );
+      setHistory([
+        ...history,
+        {
+          previewText: previewText?.slice(0, 50) ?? "",
+          flashcardId: id as string,
+        },
+      ]);
+    }
+
+    clearBackEditorRef.current?.click();
+    clearFrontEditorRef.current?.click();
   };
 
   return (
@@ -115,7 +150,7 @@ export default function CreateFlashcardsPage({
                 id="flashcardType"
               />
             </div>
-            <div className="mt-3" ref={frontEditorWrappingRef}>
+            <div className="mt-3">
               <h3 className="font-bold text-xl">
                 {flashcardType === "NORMAL" && "Front"}
                 {flashcardType === "CLOZE" &&
@@ -125,6 +160,9 @@ export default function CreateFlashcardsPage({
                 namespace="frontEditor"
                 className={styles.editorMinHeight}
                 verticalOffset={112} // mt-28
+                clearEditorRef={clearFrontEditorRef}
+                onChange={(state) => setFrontEditorState(state)}
+                overrideTab
                 autoFocus
               />
             </div>
@@ -137,6 +175,9 @@ export default function CreateFlashcardsPage({
                 namespace="backEditor"
                 className={styles.editorMinHeight}
                 verticalOffset={112}
+                clearEditorRef={clearBackEditorRef}
+                onChange={(state) => setBackEditorState(state)}
+                overrideTab
               />
             </div>
             <div className="mt-3">
@@ -198,6 +239,25 @@ export default function CreateFlashcardsPage({
                 ))}
               </div>
             ))}
+            {history.length > 0 && (
+              <div>
+                <hr className="my-5 max-w-xs" />
+                <Select
+                  options={[
+                    { value: "", label: "Recent Flashcards" },
+                    ...history.map((hist) => ({
+                      value: hist.flashcardId,
+                      label: hist.previewText,
+                    })),
+                  ]}
+                  onChange={(flashcardId) =>
+                    flashcardId && console.log(flashcardId)
+                  }
+                  className="max-w-xs mb-5"
+                  id="history"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

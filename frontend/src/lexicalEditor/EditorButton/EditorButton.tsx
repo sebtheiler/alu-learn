@@ -56,6 +56,7 @@ export default function EditorButton({
       title={formattedTitle}
       aria-label={formattedTitle}
       disabled={disabled}
+      tabIndex={-1}
     >
       <FontAwesomeIcon icon={faIcon} />
     </button>
