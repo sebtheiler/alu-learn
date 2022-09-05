@@ -1,9 +1,7 @@
 import SignedIn from "./SignedIn";
 import SignedOut from "./SignedOut";
 import NavItem from "@/components/NavItem";
-import MeQuery from "@/graphql/MeQuery";
-import type { MeQueryType } from "@/graphql/MeQuery";
-import { useQuery } from "@apollo/client";
+import type { Streak } from "@/types";
 import {
   faBars,
   faCompass,
@@ -11,20 +9,30 @@ import {
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 // TODO: dynamically import SignedIn and SignedOut
 
+interface NavbarProps {
+  session: Session | null;
+  status: "authenticated" | "unauthenticated" | "loading";
+  isPro: boolean;
+  streak?: Streak;
+}
+
 /**
  * Render a navbar
  */
-export default function Navbar() {
-  const { data: session, status } = useSession();
-  const { data: meData } = useQuery<MeQueryType>(MeQuery);
-  const { isPro, currentStreak, doneReviewsToday } = meData?.me ?? {};
+export default function Navbar({
+  session,
+  status,
+  isPro,
+  streak,
+}: NavbarProps) {
+  console.log({ session, status, isPro, streak });
   const [expandedMenu, setExpandedMenu] = useState(false);
 
   return (
@@ -88,11 +96,8 @@ export default function Navbar() {
             About
           </NavItem>
 
-          {status === "authenticated" && currentStreak && doneReviewsToday && (
-            <SignedIn
-              session={session}
-              streak={{ currentStreak, doneReviewsToday }}
-            />
+          {status === "authenticated" && session !== null && (
+            <SignedIn session={session} streak={streak} />
           )}
           {status === "unauthenticated" && <SignedOut />}
         </div>

@@ -32,48 +32,46 @@ const profileDropdownOptions = [
 
 interface SignedInProps {
   session: Session;
-  streak: Streak;
+  streak?: Streak;
 }
 
 export default function SignedIn({ session, streak }: SignedInProps) {
   return (
     <div className="ml-auto inline-flex items-center">
-      <div className="mr-12 inline-flex items-center justify-center px-3 py-2">
-        <FontAwesomeIcon
-          icon={faFire}
-          size="3x"
-          className={
-            "absolute h-10 w-10" +
-            (streak.doneReviewsToday
-              ? " text-alu-streak-lit"
-              : " text-alu-streak-unlit")
-          }
-        />
-        <p
-          className="mx-auto h-6 w-6 rounded-full text-center"
-          style={{
-            background: streak.doneReviewsToday ? "#fd9626" : "#e5e5e5",
-            color: streak.doneReviewsToday ? "white" : "black",
-            fontSize: streak.currentStreak < 100 ? "16px" : "15px",
-            transform: "translateY(3px)",
-          }}
-        >
-          {streak.currentStreak}
-        </p>
-      </div>
-      <div className="inline-flex items-center justify-center mx-3">
+      {streak && (
+        <div className="mr-12 inline-flex items-center justify-center px-3 py-2">
+          <FontAwesomeIcon
+            icon={faFire}
+            size="3x"
+            className={
+              "absolute h-10 w-10" +
+              (streak.doneReviewsToday
+                ? " text-alu-streak-lit"
+                : " text-alu-streak-unlit")
+            }
+          />
+          <p
+            className="mx-auto h-6 w-6 rounded-full text-center"
+            style={{
+              background: streak.doneReviewsToday ? "#fd9626" : "#e5e5e5",
+              color: streak.doneReviewsToday ? "white" : "black",
+              fontSize: streak.currentStreak < 100 ? "16px" : "15px",
+              transform: "translateY(3px)",
+            }}
+          >
+            {streak.currentStreak}
+          </p>
+        </div>
+      )}
+      <div className="inline-flex items-center justify-center mt-2 mr-8">
         <Dropdown options={profileDropdownOptions}>
-          <span className="h-12 w-12 absolute top-0 right-0 mt-4 mr-6 rounded-full bg-white bg-opacity-5 justify-center hover:bg-opacity-10 inline-flex items-center">
-            <Image
-              src={
-                session?.user?.image ?? "/assets/default-profile-picture.jpg"
-              }
-              width={40}
-              height={40}
-              alt="Your profile picture"
-              className="rounded-full"
-            />
-          </span>
+          <Image
+            src={session?.user?.image ?? "/assets/default-profile-picture.jpg"}
+            width={40}
+            height={40}
+            alt="Your profile picture"
+            className="rounded-full"
+          />
         </Dropdown>
       </div>
     </div>
