@@ -4,7 +4,7 @@ const UpdateFlashcard = gql`
   mutation UpdateFlashcard(
     $flashcardId: String!
     $tags: String
-    $fields: JSONObject
+    $fields: String
   ) {
     updateFlashcard(flashcardId: $flashcardId, tags: $tags, fields: $fields) {
       id

@@ -20,8 +20,7 @@ export default function AsyncButton(props: AsyncButtonProps) {
     async (e: React.MouseEvent<HTMLButtonElement>) => {
       if (isLoading) return;
       setIsLoading(true);
-      await onClick(e);
-      setIsLoading(false);
+      onClick(e).finally(() => setIsLoading(false));
     },
     [onClick, isLoading]
   );

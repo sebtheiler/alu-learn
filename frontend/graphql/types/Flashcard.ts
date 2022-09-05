@@ -1,6 +1,5 @@
 import { JSONData } from "./scalars";
 import type { Flashcard as PrismaFlashcard, Prisma } from "@prisma/client";
-import flattenFlashcardFields from "helpers/flattenFlashcardFields";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
 import isCourseUser from "helpers/isCourseUser";
@@ -19,8 +18,7 @@ const Flashcard = objectType({
   name: "Flashcard",
   definition(t) {
     t.string("id");
-    t.field("fields", { type: JSONData });
-    t.string("fieldsString");
+    t.string("fields");
     t.string("tags");
     t.field("type", { type: FlashcardType });
   },
@@ -76,7 +74,7 @@ export const FlashcardQuery = extendType({
         };
 
         if (args.text) {
-          where.fieldsString = {
+          where.fields = {
             contains: args.text,
           };
         }
@@ -98,7 +96,7 @@ export const FlashcardMutation = extendType({
       type: Flashcard,
       description: "Creates a new flashcard",
       args: {
-        fields: nonNull(arg({ type: JSONData })),
+        fields: nonNull(stringArg()),
         tags: stringArg(),
         flashcardType: arg({ type: FlashcardType }),
         courseId: nonNull(stringArg()),
@@ -127,7 +125,6 @@ export const FlashcardMutation = extendType({
         return ctx.prisma.flashcard.create({
           data: {
             fields: args.fields,
-            fieldsString: flattenFlashcardFields(args.fields),
             tags: args.tags ?? "",
             subSection: {
               connect: {
@@ -166,11 +163,8 @@ export const FlashcardMutation = extendType({
           return null;
 
         const data: Partial<PrismaFlashcard> = {};
-        if (args.fields != null) {
-          data.fields = args.fields;
-          data.fieldsString = flattenFlashcardFields(args.fields);
-        }
-        if (args.tags != null) data.tags = args.tags;
+        if (args.fields !== null) data.fields = args.fields;
+        if (args.tags !== null) data.tags = args.tags;
 
         return ctx.prisma.flashcard.update({
           where: { id: args.flashcardId },

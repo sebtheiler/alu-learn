@@ -23,8 +23,7 @@ type CourseSection {
 }
 
 type Flashcard {
-  fields: JSONObject
-  fieldsString: String
+  fields: String
   id: String
   tags: String
   type: FlashcardType
@@ -61,7 +60,7 @@ type Mutation {
   createCourseSection(courseId: String!, title: String!): CourseSection
 
   """Creates a new flashcard"""
-  createFlashcard(courseId: String!, courseSectionSlug: String!, fields: JSONObject!, flashcardType: FlashcardType, subSectionSlug: String!, tags: String): Flashcard
+  createFlashcard(courseId: String!, courseSectionSlug: String!, fields: String!, flashcardType: FlashcardType, subSectionSlug: String!, tags: String): Flashcard
 
   """Creates a new NewUserSurveyResponse from a set of responses"""
   createNewUserSurveyResponse(joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumCards: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse

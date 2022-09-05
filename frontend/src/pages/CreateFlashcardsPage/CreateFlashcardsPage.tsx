@@ -72,11 +72,7 @@ export default function CreateFlashcardsPage({
 
     const { data } = await createFlashcard({
       variables: {
-        fields: {
-          value: JSON.parse(
-            JSON.stringify([frontEditorState, backEditorState])
-          ),
-        },
+        fields: JSON.stringify([frontEditorState, backEditorState]),
         tags,
         flashcardType,
         courseId: course.id as string,

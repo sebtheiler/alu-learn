@@ -6,7 +6,7 @@ import {
   CLEAR_EDITOR_COMMAND,
   COMMAND_PRIORITY_EDITOR,
 } from "lexical";
-import { useLayoutEffect } from "react";
+import { useEffect } from "react";
 
 type Props = Readonly<{
   onClear?: () => void;
@@ -17,7 +17,7 @@ export default function ClearEditorPlugin({
 }: Props): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     return editor.registerCommand(
       CLEAR_EDITOR_COMMAND,
       () => {

@@ -46,8 +46,7 @@ export type CourseSection = {
 
 export type Flashcard = {
   __typename?: "Flashcard";
-  fields?: Maybe<Scalars["JSONObject"]>;
-  fieldsString?: Maybe<Scalars["String"]>;
+  fields?: Maybe<Scalars["String"]>;
   id?: Maybe<Scalars["String"]>;
   tags?: Maybe<Scalars["String"]>;
   type?: Maybe<FlashcardType>;

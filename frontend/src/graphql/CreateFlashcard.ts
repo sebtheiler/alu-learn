@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 const CreateFlashcard = gql`
   mutation CreateFlashcard(
-    $fields: JSONObject!
+    $fields: String!
     $courseSectionSlug: String!
     $courseId: String!
     $subSectionSlug: String!
