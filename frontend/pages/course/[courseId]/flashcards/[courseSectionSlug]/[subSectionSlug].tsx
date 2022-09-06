@@ -10,10 +10,16 @@ const Flashcards: NextPage<FlashcardsPageProps> = (
 export default Flashcards;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { courseId } = context.query;
+  const { courseId, courseSectionSlug, subSectionSlug } = context.query;
   const flashcards = await prisma.flashcard.findMany({
     where: {
-      courseId: courseId as string,
+      subSection: {
+        slug: subSectionSlug as string,
+        courseSection: {
+          courseId: courseId as string,
+          slug: courseSectionSlug as string,
+        },
+      },
     },
     select: {
       id: true,

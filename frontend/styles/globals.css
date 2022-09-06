@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 html * {
-  font-family: Ubuntu;
+  font-family: "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
 }
 
 /* Fonts are different for math elements */
