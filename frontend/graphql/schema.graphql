@@ -110,7 +110,7 @@ type Mutation {
 
   """Change a flashcard's data"""
   updateFlashcard(
-    fields: JSONObject
+    fields: String
 
     """ID of the flashcard to update"""
     flashcardId: String!

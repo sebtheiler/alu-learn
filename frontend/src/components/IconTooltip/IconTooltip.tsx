@@ -52,8 +52,7 @@ export default function IconTooltip({
   const [isLoading, setIsLoading] = useState(false);
   const handleClick: MouseEventHandler<HTMLElement> = async (e) => {
     setIsLoading(true);
-    await onClick(e);
-    setIsLoading(false);
+    Promise.resolve(onClick(e)).finally(() => setIsLoading(false));
   };
 
   const icon = useMemo(

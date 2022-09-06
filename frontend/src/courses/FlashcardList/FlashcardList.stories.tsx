@@ -1,75 +1,42 @@
 import FlashcardList from ".";
+import withFullContext from "@/helpers/withFullContext";
 import { FlashcardType } from "@/types";
 import { ComponentStory } from "@storybook/react";
 
 const flashcards = [
   {
-    id: "cl7cg9zfp0410xli0y1j21ojg",
-    fields: {
-      value: [
-        [
-          {
-            type: "paragraph",
-            children: [
-              {
-                text: "Test",
-              },
-            ],
-          },
-        ],
-        [
-          {
-            type: "paragraph",
-            children: [
-              {
-                text: "flashcard",
-              },
-            ],
-          },
-        ],
-      ],
-    },
+    id: "cl7phfdxv2281soivdzdotzi9",
+    fields:
+      '[{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"flashcard #1","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}},{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"back #1","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}]',
     tags: "",
-    subSectionId: "cl7c4lw0z2814sxi0tgarj1w2",
+    subSectionId: "cl7dtmpl50116l6ivmr0bz30s",
     type: "NORMAL" as FlashcardType,
-    courseId: "cl7c4lw0s2794sxi0z8f0afsd",
+    courseId: "cl7dtmpku0096l6iv870i9u8r",
   },
   {
-    id: "cl7cga26g0449xli0dhqnxui1",
-    fields: {
-      value: [
-        [
-          {
-            type: "paragraph",
-            children: [
-              {
-                text: "Another",
-              },
-            ],
-          },
-        ],
-        [
-          {
-            type: "paragraph",
-            children: [
-              {
-                text: "test",
-              },
-            ],
-          },
-        ],
-      ],
-    },
+    id: "cl7phfit02319soive8tlsrg4",
+    fields:
+      '[{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"flashcard #2","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}},{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"back #2","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}]',
     tags: "",
-    subSectionId: "cl7c4lw0z2814sxi0tgarj1w2",
+    subSectionId: "cl7dtmpl50116l6ivmr0bz30s",
     type: "NORMAL" as FlashcardType,
-    courseId: "cl7c4lw0s2794sxi0z8f0afsd",
+    courseId: "cl7dtmpku0096l6iv870i9u8r",
+  },
+  {
+    id: "cl7phfltd2358soivo9iflrb0",
+    fields:
+      '[{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"flashcard #3","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}},{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"back #3","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}]',
+    tags: "",
+    subSectionId: "cl7dtmpl50116l6ivmr0bz30s",
+    type: "NORMAL" as FlashcardType,
+    courseId: "cl7dtmpku0096l6iv870i9u8r",
   },
 ];
 
 export default {
   title: "Courses/FlashcardList",
   component: FlashcardList,
+  decorators: [withFullContext],
 };
 
 const Template: ComponentStory<typeof FlashcardList> = (args) => (

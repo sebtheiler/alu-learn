@@ -13,6 +13,7 @@ interface FlashcardListProps {
 export default function FlashcardList({ flashcards }: FlashcardListProps) {
   // We can't directly modify the props, so we duplicate them in a state
   const [_flashcards, _setFlashcards] = useState(flashcards);
+  console.log({ flashcards });
 
   const deleteHandler = (flashcard: Flashcard) => {
     _setFlashcards(_flashcards.filter((f) => f.id !== flashcard.id));

@@ -1,16 +1,17 @@
 import IconTooltip from "@/components/IconTooltip";
-import { createFullEditor } from "@/editor/FullEditable";
-import RenderEditor from "@/editor/RenderEditor";
-import RenderRichText from "@/editor/RenderRichText";
-import type { ExtendedSlateElement } from "@/editor/types";
 import DeleteFlashcard from "@/graphql/DeleteFlashcard";
 import UpdateFlashcard from "@/graphql/UpdateFlashcard";
 import classNames from "@/helpers/classNames";
-import type { Flashcard } from "@/types";
+import LexicalEditor from "@/lexicalEditor/LexicalEditor";
+import type {
+  Flashcard,
+  Mutation,
+  MutationDeleteFlashcardArgs,
+  MutationUpdateFlashcardArgs,
+} from "@/types";
 import { useMutation } from "@apollo/client";
 import { faEye, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { useMemo, useState } from "react";
-import type { ReactEditor } from "slate-react";
+import { useId, useState } from "react";
 
 interface RenderFlashcardProps {
   /**
@@ -38,27 +39,32 @@ export default function RenderFlashcard({
   handlers,
 }: RenderFlashcardProps) {
   const [editMode, setEditMode] = useState(false);
-  const [fields, setFields] = useState<ExtendedSlateElement[][]>(
-    flashcard.fields.value
-  );
-  const [updateFlashcard] = useMutation(UpdateFlashcard);
-  const [deleteFlashcard] = useMutation(DeleteFlashcard);
+  const [fields, setFields] = useState(JSON.parse(flashcard.fields as string));
 
-  const frontEditor = useMemo<ReactEditor>(createFullEditor, []);
-  const backEditor = useMemo<ReactEditor>(createFullEditor, []);
-  const editors = [frontEditor, backEditor];
+  const [frontState, setFrontState] = useState(fields[0]);
+  const [backState, setBackState] = useState(fields[1]);
+  const states = [frontState, backState];
+  const setStates = [setFrontState, setBackState];
 
-  const [frontValue, setFrontValue] = useState(fields[0]);
-  const [backValue, setBackValue] = useState(fields[1]);
-  const values = [frontValue, backValue];
-  const setValues = [setFrontValue, setBackValue];
+  const componentId = useId();
+  const [updateFlashcard] = useMutation<
+    { updateFlashcard: Mutation["updateFlashcard"] },
+    MutationUpdateFlashcardArgs
+  >(UpdateFlashcard);
+  const [deleteFlashcard] = useMutation<
+    { deleteFlashcarc: Mutation["deleteFlashcard"] },
+    MutationDeleteFlashcardArgs
+  >(DeleteFlashcard);
 
   const editModeHandler = async () => {
     // If there has been some change, save it in the DB
-    if (JSON.stringify(fields) !== JSON.stringify(values)) {
-      setFields(values);
+    if (JSON.stringify(fields) !== JSON.stringify(states)) {
+      setFields(states);
       await updateFlashcard({
-        variables: { flashcardId: flashcard.id, fields: { value: values } },
+        variables: {
+          flashcardId: flashcard.id as string,
+          fields: JSON.stringify(states),
+        },
       });
     }
 
@@ -66,7 +72,9 @@ export default function RenderFlashcard({
   };
 
   const deleteFlashcardHandler = async () => {
-    await deleteFlashcard({ variables: { flashcardId: flashcard.id } });
+    await deleteFlashcard({
+      variables: { flashcardId: flashcard.id as string },
+    });
     handlers?.deleteHandler && handlers.deleteHandler(flashcard);
   };
 
@@ -77,37 +85,34 @@ export default function RenderFlashcard({
         className
       )}
     >
-      <IconTooltip
-        faIcon={editMode ? faEye : faPencil}
-        tooltip={editMode ? "Save and View" : "Edit"}
-        className="absolute mt-2 ml-2"
-        tooltipProps={{ className: classNames("ml-4", editMode && "w-28") }}
-        onClick={editModeHandler}
-      />
-      <IconTooltip
-        faIcon={faTrash}
-        tooltip="Delete"
-        className="absolute mt-2 ml-8"
-        tooltipProps={{ className: "ml-10" }}
-        onClick={deleteFlashcardHandler}
-      />
+      <div className="absolute mt-2">
+        <IconTooltip
+          faIcon={editMode ? faEye : faPencil}
+          tooltip={editMode ? "Save and View" : "Edit"}
+          className="ml-2"
+          tooltipProps={{ className: classNames(editMode && "w-28") }}
+          onClick={editModeHandler}
+        />
+        <IconTooltip
+          faIcon={faTrash}
+          tooltip="Delete"
+          className="ml-5"
+          onClick={deleteFlashcardHandler}
+        />
+      </div>
       <div className="w-full h-full flex min-h-[10rem]">
-        {fields.map((field: ExtendedSlateElement[], i: number) => (
+        {fields.map((field: any, i: number) => (
           <div
             key={i}
             className="flex w-1/2 justify-center items-center border-r-4
                      border-r-alu-mid-gray last:border-none py-4 px-5"
           >
-            {editMode ? (
-              <RenderEditor
-                editor={editors[i]}
-                value={values[i]}
-                setValue={setValues[i]}
-                className="w-full"
-              />
-            ) : (
-              <RenderRichText text={field} />
-            )}
+            <LexicalEditor
+              namespace={`${componentId}-field-${i}`}
+              editorState={JSON.stringify(field)}
+              onChange={(state) => setStates[i](state)}
+              readOnly={!editMode}
+            />
           </div>
         ))}
       </div>

@@ -442,7 +442,7 @@
                   "name": null,
                   "ofType": {
                     "kind": "SCALAR",
-                    "name": "JSONObject",
+                    "name": "String",
                     "ofType": null
                   }
                 },
@@ -860,7 +860,7 @@
                 "description": null,
                 "type": {
                   "kind": "SCALAR",
-                  "name": "JSONObject",
+                  "name": "String",
                   "ofType": null
                 },
                 "defaultValue": null,

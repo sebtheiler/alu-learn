@@ -16,6 +16,7 @@ import { CodeNode } from "@lexical/code";
 import { LinkNode, AutoLinkNode } from "@lexical/link";
 import { ListNode, ListItemNode } from "@lexical/list";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
+import type { InitialEditorStateType } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
@@ -29,12 +30,23 @@ import { useEffect } from "react";
 
 const onError = (error: Error) => console.error(error);
 
-function AutofocusPlugin() {
+interface BasicFeaturesPluginProps {
+  autoFocus: boolean;
+  readOnly: boolean;
+}
+function BasicFeaturesPlugin({
+  autoFocus,
+  readOnly,
+}: BasicFeaturesPluginProps) {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    editor.focus();
-  }, [editor]);
+    autoFocus && editor.focus();
+  }, [editor, autoFocus]);
+
+  useEffect(() => {
+    editor.setReadOnly(readOnly);
+  }, [editor, readOnly]);
 
   return null;
 }
@@ -98,6 +110,7 @@ interface LexicalEditorProps {
   clearEditorRef?: React.MutableRefObject<HTMLButtonElement | null>;
   onChange?(editorState: EditorState, editor: Editor): void;
   overrideTab?: boolean;
+  editorState?: InitialEditorStateType;
 }
 
 /**
@@ -115,6 +128,7 @@ export default function LexicalEditor({
   clearEditorRef,
   onChange,
   overrideTab = false,
+  editorState = null,
 }: LexicalEditorProps) {
   const initialConfig = {
     namespace,
@@ -122,27 +136,31 @@ export default function LexicalEditor({
     nodes,
     onError,
     readOnly,
+    editorState,
   };
 
   return (
     <div
       className={classNames(
-        styles.surroundingDiv,
-        "border-2 rounded-lg",
+        !readOnly && styles.surroundingDiv,
+        !readOnly && "border-2 rounded-lg",
         className
       )}
       style={style}
       id={namespace}
     >
       <LexicalComposer initialConfig={initialConfig}>
-        <ToolbarPlugin clearEditorRef={clearEditorRef} />
+        {!readOnly ? <ToolbarPlugin clearEditorRef={clearEditorRef} /> : ""}
         <RichTextPlugin
           contentEditable={<ContentEditable />}
           placeholder={<></>}
         />
         {onChange ? <OnChangePlugin onChange={onChange} /> : ""}
         <HistoryPlugin />
-        {autoFocus ? <AutofocusPlugin /> : ""}
+        <BasicFeaturesPlugin
+          autoFocus={autoFocus ?? false}
+          readOnly={readOnly}
+        />
         <ListPlugin />
         <LinkPlugin />
         {typeof window !== "undefined" ? (

@@ -1,72 +1,22 @@
 import RenderFlashcard from ".";
+import withFullContext from "@/helpers/withFullContext";
 import type { FlashcardType } from "@/types";
 import { ComponentStory } from "@storybook/react";
 
 const flashcard = {
-  id: "cl7bxrozp1243sxi0io3oirm6",
-  fields: {
-    value: [
-      [
-        {
-          type: "paragraph",
-          children: [
-            {
-              text: "Lots of ",
-            },
-            {
-              bold: true,
-              text: "fancy",
-            },
-            {
-              text: " formatting",
-            },
-          ],
-        },
-        {
-          type: "paragraph",
-          children: [
-            {
-              text: "",
-            },
-          ],
-        },
-        {
-          type: "paragraph",
-          children: [
-            {
-              text: "!!",
-            },
-          ],
-        },
-        {
-          type: "paragraph",
-          children: [
-            {
-              text: "Yay!",
-            },
-          ],
-        },
-      ],
-      [
-        {
-          type: "math-block",
-          children: [
-            {
-              text: "\\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}",
-            },
-          ],
-        },
-      ],
-    ],
-  },
+  id: "cl7pfrz030707soivgpz4z5tt",
+  fields:
+    '[{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"front","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}},{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"back","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}]',
   tags: "",
-  subSectionId: "cl7anemos007518i0llge5qs6",
+  subSectionId: "cl7dtmpl50116l6ivmr0bz30s",
   type: "NORMAL" as FlashcardType,
+  courseId: "cl7dtmpku0096l6iv870i9u8r",
 };
 
 export default {
   title: "Courses/RenderFlashcard",
   component: RenderFlashcard,
+  decorators: [withFullContext],
 };
 
 const Template: ComponentStory<typeof RenderFlashcard> = (args) => (

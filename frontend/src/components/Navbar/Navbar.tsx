@@ -32,7 +32,6 @@ export default function Navbar({
   isPro,
   streak,
 }: NavbarProps) {
-  console.log({ session, status, isPro, streak });
   const [expandedMenu, setExpandedMenu] = useState(false);
 
   return (

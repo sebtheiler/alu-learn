@@ -1,4 +1,3 @@
-import { JSONData } from "./scalars";
 import type { Flashcard as PrismaFlashcard, Prisma } from "@prisma/client";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
@@ -144,7 +143,7 @@ export const FlashcardMutation = extendType({
       type: Flashcard,
       description: "Change a flashcard's data",
       args: {
-        fields: arg({ type: JSONData }),
+        fields: stringArg(),
         tags: stringArg(),
         flashcardId: nonNull(
           stringArg({ description: "ID of the flashcard to update" })
