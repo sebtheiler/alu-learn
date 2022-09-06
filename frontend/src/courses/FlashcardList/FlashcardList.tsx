@@ -13,6 +13,9 @@ interface FlashcardListProps {
 export default function FlashcardList({ flashcards }: FlashcardListProps) {
   // We can't directly modify the props, so we duplicate them in a state
   const [_flashcards, _setFlashcards] = useState(flashcards);
+  const [hidden, setHidden] = useState<boolean[]>(() =>
+    Array(flashcards.length).fill(false)
+  );
 
   const deleteHandler = (flashcard: Flashcard) => {
     _setFlashcards(_flashcards.filter((f) => f.id !== flashcard.id));
@@ -20,14 +23,20 @@ export default function FlashcardList({ flashcards }: FlashcardListProps) {
 
   return (
     <div>
-      {_flashcards.map((flashcard) => (
+      {_flashcards.map((flashcard, i) => (
         <RenderFlashcard
           flashcard={flashcard}
           className="mb-3"
           key={flashcard.id}
           handlers={{
             deleteHandler,
+            setHideAllHandler: (val) =>
+              setHidden(Array(flashcards.length).fill(val)),
           }}
+          hidden={hidden[i]}
+          setHidden={(val) =>
+            setHidden([...hidden.slice(0, i), val, ...hidden.slice(i + 1)])
+          }
         />
       ))}
     </div>

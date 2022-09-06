@@ -27,3 +27,9 @@ export const RenderFlashcardExample = Template.bind({});
 RenderFlashcardExample.args = {
   flashcard: flashcard,
 };
+
+export const Hidden = Template.bind({});
+Hidden.args = {
+  flashcard: flashcard,
+  hidden: true,
+};

@@ -4,7 +4,7 @@ import classNames from "@/helpers/classNames";
 import type { IconProp, SizeProp } from "@fortawesome/fontawesome-svg-core";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { MouseEventHandler, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 interface IconTooltipProps {
   /**
@@ -14,7 +14,13 @@ interface IconTooltipProps {
   /**
    * Called when the icon is clicked
    */
-  onClick(e: React.MouseEvent<HTMLElement, MouseEvent>): Promise<any> | any;
+  onClick?(e: React.MouseEvent<HTMLElement, MouseEvent>): Promise<any> | any;
+  /**
+   * Called when the icon is double clicked
+   */
+  onDoubleClick?(
+    e: React.MouseEvent<HTMLElement, MouseEvent>
+  ): Promise<any> | any;
   /**
    * Size of the icon
    */
@@ -43,6 +49,7 @@ interface IconTooltipProps {
 export default function IconTooltip({
   tooltip,
   onClick,
+  onDoubleClick,
   faIcon,
   size,
   className,
@@ -50,9 +57,19 @@ export default function IconTooltip({
   tooltipProps,
 }: IconTooltipProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const handleClick: MouseEventHandler<HTMLElement> = async (e) => {
+
+  const handleClick: React.MouseEventHandler<HTMLSpanElement> = async (e) => {
+    if (!onClick) return;
     setIsLoading(true);
     Promise.resolve(onClick(e)).finally(() => setIsLoading(false));
+  };
+
+  const handleDoubleClick: React.MouseEventHandler<HTMLSpanElement> = async (
+    e
+  ) => {
+    if (!onDoubleClick) return;
+    setIsLoading(true);
+    Promise.resolve(onDoubleClick(e)).finally(() => setIsLoading(false));
   };
 
   const icon = useMemo(
@@ -64,13 +81,14 @@ export default function IconTooltip({
     <Tooltip tooltip={tooltip} {...tooltipProps}>
       <span
         onClick={handleClick}
-        className="cursor-pointer text-center"
+        onDoubleClick={handleDoubleClick}
+        className={classNames(className, "cursor-pointer text-center")}
         role="button"
       >
         <FontAwesomeIcon
           icon={icon}
           style={style}
-          className={classNames(className, "mx-auto")}
+          className="mx-auto"
           spin={isLoading}
           size={size}
         />

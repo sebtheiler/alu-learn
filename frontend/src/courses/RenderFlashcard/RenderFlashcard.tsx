@@ -10,7 +10,12 @@ import type {
   MutationUpdateFlashcardArgs,
 } from "@/types";
 import { useMutation } from "@apollo/client";
-import { faEye, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEye,
+  faEyeSlash,
+  faPencil,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { useId, useState } from "react";
 
 interface RenderFlashcardProps {
@@ -23,11 +28,24 @@ interface RenderFlashcardProps {
    */
   className: string;
   /**
-   *
+   * Functions to be called at various events
    */
   handlers?: {
+    /**
+     * Called when the trash icon is pressed and the flashcard is deleted
+     * @param flashcard Flashcard to be deleted
+     */
     deleteHandler?(flashcard: Flashcard): void;
+    /**
+     * Called when the double clicking "hide" to hide all flashcards
+     */
+    setHideAllHandler?(hidden: boolean): void;
   };
+  /**
+   * Should the flashcard's back be hidden?
+   */
+  hidden?: boolean;
+  setHidden?: React.Dispatch<boolean>;
 }
 
 /**
@@ -37,6 +55,8 @@ export default function RenderFlashcard({
   flashcard,
   className,
   handlers,
+  hidden,
+  setHidden,
 }: RenderFlashcardProps) {
   const [editMode, setEditMode] = useState(false);
   const [fields, setFields] = useState(JSON.parse(flashcard.fields as string));
@@ -81,11 +101,11 @@ export default function RenderFlashcard({
   return (
     <div
       className={classNames(
-        "bg-alu-light-gray border-2 border-alu-mid-gray rounded-xl min-h-[10rem]",
+        "bg-alu-light-gray border-2 border-alu-mid-gray rounded-xl min-h-[10rem] relative",
         className
       )}
     >
-      <div className="absolute mt-2">
+      <div className="absolute mt-2 w-1/2">
         <IconTooltip
           faIcon={editMode ? faEye : faPencil}
           tooltip={editMode ? "Save and View" : "Edit"}
@@ -100,6 +120,22 @@ export default function RenderFlashcard({
           onClick={deleteFlashcardHandler}
         />
       </div>
+      <div className="absolute mt-2 w-1/2 translate-x-full text-right">
+        <IconTooltip
+          faIcon={hidden ? faEye : faEyeSlash}
+          tooltipProps={{ className: "w-40" }}
+          tooltip={
+            hidden
+              ? "Show (double click to show all)"
+              : "Hide (double click to hide all)"
+          }
+          className="text-right mr-2"
+          onClick={() => setHidden && setHidden(!hidden)}
+          onDoubleClick={() =>
+            handlers?.setHideAllHandler && handlers.setHideAllHandler(!hidden)
+          }
+        />
+      </div>
       <div className="w-full h-full flex min-h-[10rem]">
         {fields.map((field: any, i: number) => (
           <div
@@ -107,12 +143,16 @@ export default function RenderFlashcard({
             className="flex w-1/2 justify-center items-center border-r-4
                      border-r-alu-mid-gray last:border-none py-4 px-5"
           >
-            <LexicalEditor
-              namespace={`${componentId}-field-${i}`}
-              editorState={JSON.stringify(field)}
-              onChange={(state) => setStates[i](state)}
-              readOnly={!editMode}
-            />
+            {hidden && i > 0 ? (
+              <span className="font-bold text-4xl">?</span>
+            ) : (
+              <LexicalEditor
+                namespace={`${componentId}-field-${i}`}
+                editorState={JSON.stringify(field)}
+                onChange={(state) => setStates[i](state)}
+                readOnly={!editMode}
+              />
+            )}
           </div>
         ))}
       </div>
