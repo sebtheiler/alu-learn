@@ -1,10 +1,19 @@
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import ProgressBar from "@/components/ProgressBar";
+import StudyReviewInstance from "@/graphql/StudyReviewInstance";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
 import LexicalEditor from "@/lexicalEditor/LexicalEditor";
-import type { Flashcard, NonNullableKeys, ReviewInstance } from "@/types";
+import type {
+  Flashcard,
+  Mutation,
+  MutationStudyReviewInstanceArgs,
+  NonNullableKeys,
+  ReviewInstance,
+  Grade as GQLGrade,
+} from "@/types";
+import { useMutation } from "@apollo/client";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Interval } from "helpers/calculateInterval";
@@ -56,6 +65,14 @@ export default function StudyFlashcardsPage({
 
   const [revealAnswer, setRevealAnswer] = useState(false);
   const [starred, setStarred] = useState(false);
+  const [isTransitioningCorrect, setIsTransitioningCorrect] = useState(false);
+  const [isTransitioningIncorrect, setIsTransitioningIncorrect] =
+    useState(false);
+
+  const [studyReviewInstance] = useMutation<
+    { studyReviewInstance: Mutation["studyReviewInstance"] },
+    MutationStudyReviewInstanceArgs
+  >(StudyReviewInstance);
 
   const onStarred = (e: React.MouseEvent<SVGElement>) => {
     // TODO: implement starring
@@ -67,18 +84,50 @@ export default function StudyFlashcardsPage({
     const interval = intervals[activeReviewInstance.id][grade];
     if (!interval || !revealAnswer) return;
 
-    const newReviewInstances = _reviewInstances.filter(
-      (ri) => ri.id !== activeReviewInstance.id
-    );
+    let newReviewInstances = _reviewInstances;
+    if (interval.minutes >= 1440) {
+      // Remove from the queue if the interval is over a day
+      newReviewInstances = newReviewInstances.filter(
+        (ri) => ri.id !== activeReviewInstance.id
+      );
+    } else if (newReviewInstances.length > 1) {
+      // Make sure the user is never shown the same card twice (unless it's the only card left)
+      while (newReviewInstances[0].id === activeReviewInstance.id) {
+        newReviewInstances = newReviewInstances.sort(() => Math.random() - 0.5);
+      }
+    }
     _setReviewInstances(newReviewInstances);
+
+    // Play "throwing away" animation
     setRevealAnswer(false);
-    setTimeout(
-      () =>
+    if (grade === "AGAIN") {
+      setIsTransitioningIncorrect(true);
+    } else {
+      setIsTransitioningCorrect(true);
+
+      // https://freesound.org/people/ertfelda/sounds/243701/
+      const sound = new Audio("/assets/audio/correct.wav");
+      sound.play();
+    }
+
+    // End "throwing away" animation
+    setTimeout(() => {
+      setIsTransitioningCorrect(false),
+        setIsTransitioningIncorrect(false),
         setActiveReviewInstance(
           newReviewInstances[0] as ExtendedReviewInstance
-        ),
-      TIME_BEFORE_SWAP
-    );
+        );
+    }, 400);
+
+    // Send API request
+    studyReviewInstance({
+      variables: {
+        timezoneOffset: 0,
+        timeTaken: 0,
+        reviewInstanceId: activeReviewInstance.id,
+        grade: grade as GQLGrade,
+      },
+    });
   };
 
   useEffect(() => {
@@ -126,7 +175,13 @@ export default function StudyFlashcardsPage({
           </p>
         )}
         <div
-          className="w-96 h-[28rem] mx-auto mt-8 mb-4 flex flex-col relative hover:cursor-pointer"
+          className={classNames(
+            "w-96 h-[28rem] mx-auto mt-8 mb-4 flex flex-col relative hover:cursor-pointer",
+            (isTransitioningCorrect || isTransitioningIncorrect) &&
+              "transition-all duration-500 scale-75 -translate-y-36 opacity-0",
+            isTransitioningCorrect && "origin-bottom-right rotate-90",
+            isTransitioningIncorrect && "origin-bottom-left -rotate-90"
+          )}
           role="button"
           onClick={() => setRevealAnswer(!revealAnswer)}
         >

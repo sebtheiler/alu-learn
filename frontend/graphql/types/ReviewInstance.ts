@@ -1,4 +1,6 @@
 import DateScalar from "./scalars/DateScalar";
+import { ApolloError } from "apollo-server-micro";
+import calculateInterval from "helpers/calculateInterval";
 import getUserGQL from "helpers/getUserGQL";
 import {
   arg,
@@ -43,8 +45,22 @@ export const UsersMutation = extendType({
         const reviewInstance = await ctx.prisma.reviewInstance.findUnique({
           where: { id: args.reviewInstanceId },
         });
+        if (!reviewInstance || reviewInstance.userId !== user.id)
+          throw new ApolloError(
+            "Unauthorized to access given reviewInstanceId"
+          );
+        const interval = calculateInterval(reviewInstance, args.grade);
 
-        return reviewInstance;
+        if (!interval) throw new ApolloError("Error calculating interval");
+        const { updatedReviewInstance } = interval;
+        console.log(updatedReviewInstance);
+
+        return ctx.prisma.reviewInstance.update({
+          where: {
+            id: args.reviewInstanceId,
+          },
+          data: updatedReviewInstance,
+        });
       },
     });
   },

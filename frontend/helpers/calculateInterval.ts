@@ -86,6 +86,7 @@ const calculateInterval = (
   switch (reviewInstance.learningStatus) {
     case "UNSEEN":
     case "LEARNING":
+      updatedReviewInstance.learningStatus = "LEARNING";
       switch (grade) {
         case "AGAIN":
           updatedReviewInstance.stepsIndex = 0;
