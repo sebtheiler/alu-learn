@@ -16,7 +16,6 @@ import { CodeNode } from "@lexical/code";
 import { LinkNode, AutoLinkNode } from "@lexical/link";
 import { ListNode, ListItemNode } from "@lexical/list";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import type { InitialEditorStateType } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
@@ -33,10 +32,12 @@ const onError = (error: Error) => console.error(error);
 interface BasicFeaturesPluginProps {
   autoFocus: boolean;
   readOnly: boolean;
+  editorState: string | null;
 }
 function BasicFeaturesPlugin({
   autoFocus,
   readOnly,
+  editorState,
 }: BasicFeaturesPluginProps) {
   const [editor] = useLexicalComposerContext();
 
@@ -47,6 +48,11 @@ function BasicFeaturesPlugin({
   useEffect(() => {
     editor.setReadOnly(readOnly);
   }, [editor, readOnly]);
+
+  useEffect(() => {
+    if (!editorState) return;
+    editor.setEditorState(editor.parseEditorState(editorState));
+  }, [editor, editorState]);
 
   return null;
 }
@@ -110,7 +116,7 @@ interface LexicalEditorProps {
   clearEditorRef?: React.MutableRefObject<HTMLButtonElement | null>;
   onChange?(editorState: EditorState, editor: Editor): void;
   overrideTab?: boolean;
-  editorState?: InitialEditorStateType;
+  editorState?: string | null;
 }
 
 /**
@@ -160,6 +166,7 @@ export default function LexicalEditor({
         <BasicFeaturesPlugin
           autoFocus={autoFocus ?? false}
           readOnly={readOnly}
+          editorState={editorState}
         />
         <ListPlugin />
         <LinkPlugin />

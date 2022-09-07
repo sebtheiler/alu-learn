@@ -6,7 +6,7 @@ interface ButtonGroupProps {
   /**
    * Buttons in the group. Must be instances of `atoms/Button`
    */
-  children: Array<React.ReactElement<ButtonProps>>;
+  children: Array<React.ReactElement<ButtonProps> | false | null>;
   /**
    * Put spaces between each button?
    */
@@ -39,6 +39,7 @@ export default function ButtonGroup({
   return (
     <div className={classNames(className, vertical && "text-center")}>
       {children.map((button, i) => {
+        if (!button) return;
         const newProps: ButtonProps = { ...button.props };
         if (vertical) {
           newProps.style = { ...newProps.style, display: "block" };

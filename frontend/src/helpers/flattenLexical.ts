@@ -7,7 +7,6 @@ import type { EditorState } from "lexical";
  */
 const flattenLexical = (editorState: EditorState) =>
   new Promise<string | undefined>((resolve) => {
-    console.log(editorState);
     editorState?.read(() => {
       resolve(editorState?._nodeMap.get("root")?.getTextContent());
     });

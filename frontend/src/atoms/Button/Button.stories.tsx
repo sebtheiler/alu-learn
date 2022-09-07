@@ -18,9 +18,30 @@ Primary.args = {
   block: false,
 };
 
-export const Danger = Template.bind({});
-Danger.args = {
-  variant: "danger",
+export const Red = Template.bind({});
+Red.args = {
+  variant: "red",
+  pill: true,
+  block: false,
+};
+
+export const Yellow = Template.bind({});
+Yellow.args = {
+  variant: "yellow",
+  pill: true,
+  block: false,
+};
+
+export const Green = Template.bind({});
+Green.args = {
+  variant: "green",
+  pill: true,
+  block: false,
+};
+
+export const Blue = Template.bind({});
+Blue.args = {
+  variant: "blue",
   pill: true,
   block: false,
 };

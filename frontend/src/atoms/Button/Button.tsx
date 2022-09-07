@@ -12,7 +12,7 @@ export interface ButtonProps {
   /**
    * Colorscheme variant of the button
    */
-  variant?: "primary" | "primary-outline" | "white" | "danger" | "secondary";
+  variant?: keyof typeof buttonVariantsLookup;
   /**
    * Class to apply to the button
    */
@@ -79,7 +79,7 @@ export const buttonVariantsLookup = {
                 focus:outline-none focus:ring focus:ring-gray-400/20`,
     rippleColor: "lightgray",
   },
-  danger: {
+  red: {
     className: `bg-red-600 hover:bg-red-700 border-2 border-red-600 text-white focus:outline-none
                 focus:ring focus:ring-red-400/50`,
     rippleColor: "white",
@@ -87,6 +87,21 @@ export const buttonVariantsLookup = {
   secondary: {
     className: `bg-gray-600 hover:bg-gray-700 border-2 border-gray-600 text-white focus:outline-none
                 focus:ring focus:ring-gray-400/50`,
+    rippleColor: "white",
+  },
+  yellow: {
+    className: `bg-yellow-500 hover:bg-yellow-600 border-2 border-yellow-500 text-white focus:outline-none
+                focus:ring focus:ring-yellow-300/50`,
+    rippleColor: "white",
+  },
+  green: {
+    className: `bg-green-600 hover:bg-green-700 border-2 border-green-600 text-white focus:outline-none
+                focus:ring focus:ring-green-400/50`,
+    rippleColor: "white",
+  },
+  blue: {
+    className: `bg-blue-600 hover:bg-blue-700 border-2 border-blue-600 text-white focus:outline-none
+                focus:ring focus:ring-blue-400/50`,
     rippleColor: "white",
   },
 };

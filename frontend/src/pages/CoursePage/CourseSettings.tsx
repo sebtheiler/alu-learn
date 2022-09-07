@@ -110,7 +110,7 @@ export default function CourseSettings({
           <hr className="my-3" />
           <ButtonGroup className="inline" spaced>
             <AsyncButton
-              variant="danger"
+              variant="red"
               className="w-28"
               onClick={handleDeleteCourse}
             >

@@ -30,7 +30,7 @@ export default function ProgressBar({
   return (
     <div
       className={classNames(
-        "h-8 w-full overflow-hidden rounded-full border-4 border-alu-mid-gray bg-alu-light-gray p-0",
+        "h-8 w-full overflow-hidden rounded-full border-4 border-alu-mid-gray p-0",
         className
       )}
     >
