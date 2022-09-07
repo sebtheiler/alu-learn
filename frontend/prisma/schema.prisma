@@ -71,7 +71,8 @@ model User {
   courses      Course[] @relation("CourseUsers")
   coursesOwned Course[] @relation("CourseOwners")
 
-  uploadedImages UploadedImage[]
+  uploadedImages  UploadedImage[]
+  reviewInstances ReviewInstance[]
 
   userType              UserType @default(STUDENT)
   sendReminders         Boolean  @default(false)
@@ -173,6 +174,8 @@ model Flashcard {
 
   type FlashcardType @default(NORMAL)
 
+  reviewInstances ReviewInstance[]
+
   // Although this is redundant, it often saves database operations
   // and is therefore useful
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -182,6 +185,31 @@ model Flashcard {
 enum FlashcardType {
   NORMAL
   CLOZE
+}
+
+model ReviewInstance {
+  id String @id @default(cuid())
+
+  flashcard   Flashcard @relation(fields: [flashcardId], references: [id], onDelete: Cascade)
+  flashcardId String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  learningStatus LearningStatus @default(UNSEEN)
+  stepsIndex     Int            @default(0)
+  ease           Int            @default(250)
+  nextReview     DateTime
+  lastReview     DateTime?
+  // isSuspended Boolean
+  // leechIndex Int
+}
+
+enum LearningStatus {
+  UNSEEN
+  LEARNING
+  LEARNED
+  RELEARNING
 }
 
 // # Other

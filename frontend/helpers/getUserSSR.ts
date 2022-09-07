@@ -9,7 +9,7 @@ import type { Session } from "next-auth";
  */
 const getUserSSR = async (
   session: Session | null,
-  select: Prisma.UserSelect = {}
+  select: Prisma.UserSelect | undefined = undefined
 ): Promise<Partial<User> | null> => {
   // if (process.env.NODE_ENV === "development" && !session) {
   //   return prisma.user.findFirst();

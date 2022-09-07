@@ -22,6 +22,9 @@ type CourseSection {
   title: String
 }
 
+"""Date scalar type"""
+scalar Date
+
 type Flashcard {
   fields: String
   id: String
@@ -32,6 +35,13 @@ type Flashcard {
 enum FlashcardType {
   CLOZE
   NORMAL
+}
+
+enum Grade {
+  AGAIN
+  EASY
+  GOOD
+  HARD
 }
 
 """
@@ -45,6 +55,13 @@ enum JoinReason {
   MEMORY
   STUDENTS
   TEACHER
+}
+
+enum LearningStatus {
+  LEARNED
+  LEARNING
+  RELEARNING
+  UNSEEN
 }
 
 type Mutation {
@@ -94,6 +111,16 @@ type Mutation {
     subSectionId: String!
   ): SubSection
 
+  """Change the user's settings"""
+  studyReviewInstance(
+    grade: Grade!
+    reviewInstanceId: String!
+
+    """In ms"""
+    timeTaken: Int!
+    timezoneOffset: Int!
+  ): ReviewInstance
+
   """Change a course's settings"""
   updateCourse(
     """ID of the course to update"""
@@ -123,9 +150,6 @@ type Mutation {
     subSectionId: String!
     title: String
   ): SubSection
-
-  """Change the user's settings"""
-  updateUser(name: String, sendMarketingResearch: Boolean, sendReminders: Boolean, targetNumCards: Int, timezoneOffset: Int, userType: UserType): User
 
   """Upload a banner image for a course"""
   uploadCourseBannerImage(
@@ -189,6 +213,15 @@ enum Referrer {
   TEACHER
   TIKTOK
   YOUTUBE
+}
+
+type ReviewInstance {
+  ease: Int
+  id: String
+  lastReview: Date
+  learningStatus: LearningStatus
+  nextReview: Date
+  stepsIndex: Int
 }
 
 enum Role {

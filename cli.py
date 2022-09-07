@@ -95,7 +95,7 @@ export type {{ {page_name}Props }};
 
     page_title = re.sub(r"\B([A-Z])", r" \1", page_raw_name)
     page_tsx = f"""
-import SEO from "helpers/SEO";
+import SEO from "@/helpers/SEO";
 
 export interface {page_name}Props {{
 }}
@@ -107,8 +107,8 @@ export default function {page_name}({{
 }}: {page_name}Props) {{
   return (<>
     <SEO
-      title={page_title}
-      path={page_url}
+      title="{page_title}"
+      path="{page_url}"
       description=""
     />
     <div>
@@ -152,7 +152,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {{
 }}
 
 """
-        imports = 'GetServerSideProps'
+        imports = 'GetServerSideProps, NextPage'
     elif rendering_method.lower() == 'ssg':
         rendering_page_url_tsx = f"""
 
@@ -172,11 +172,10 @@ export const getStaticProps: GetStaticProps = async (context) => {{
 
     page_url_tsx = f"""
 {imports}
-import type {{ NextPage }} from "../lib/types";
-import {page_name} from "pages/{page_name}";
-import type {{ {page_name}Props }} from "pages/{page_name}";
+import {page_name} from "@/pages/{page_name}";
+import type {{ {page_name}Props }} from "@/pages/{page_name}";
 
-const {page_raw_name}: NextPage = (props: {page_name}Props) => <{page_name} />;
+const {page_raw_name}: NextPage<{page_name}Props> = (props: {page_name}Props) => <{page_name} {{...props}} />;
 
 export default {page_raw_name};
 

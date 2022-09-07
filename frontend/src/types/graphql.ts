@@ -11,6 +11,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** Date scalar type */
+  Date: any;
   /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSONObject: any;
   /** The `Upload` scalar type represents a file upload. */
@@ -50,12 +52,26 @@ export enum FlashcardType {
   Normal = 'NORMAL'
 }
 
+export enum Grade {
+  Again = 'AGAIN',
+  Easy = 'EASY',
+  Good = 'GOOD',
+  Hard = 'HARD'
+}
+
 export enum JoinReason {
   Concept = 'CONCEPT',
   Grades = 'GRADES',
   Memory = 'MEMORY',
   Students = 'STUDENTS',
   Teacher = 'TEACHER'
+}
+
+export enum LearningStatus {
+  Learned = 'LEARNED',
+  Learning = 'LEARNING',
+  Relearning = 'RELEARNING',
+  Unseen = 'UNSEEN'
 }
 
 export type Mutation = {
@@ -78,6 +94,8 @@ export type Mutation = {
   deleteFlashcard?: Maybe<Flashcard>;
   /** Deletes a sub section */
   deleteSubSection?: Maybe<SubSection>;
+  /** Change the user's settings */
+  studyReviewInstance?: Maybe<ReviewInstance>;
   /** Change a course's settings */
   updateCourse?: Maybe<Course>;
   /** Change a course section's settings */
@@ -86,8 +104,6 @@ export type Mutation = {
   updateFlashcard?: Maybe<Flashcard>;
   /** Change a sub section's settings */
   updateSubSection?: Maybe<SubSection>;
-  /** Change the user's settings */
-  updateUser?: Maybe<User>;
   /** Upload a banner image for a course */
   uploadCourseBannerImage?: Maybe<Course>;
   /** Upload an image */
@@ -154,6 +170,14 @@ export type MutationDeleteSubSectionArgs = {
 };
 
 
+export type MutationStudyReviewInstanceArgs = {
+  grade: Grade;
+  reviewInstanceId: Scalars['String'];
+  timeTaken: Scalars['Int'];
+  timezoneOffset: Scalars['Int'];
+};
+
+
 export type MutationUpdateCourseArgs = {
   courseId: Scalars['String'];
   title?: InputMaybe<Scalars['String']>;
@@ -176,16 +200,6 @@ export type MutationUpdateFlashcardArgs = {
 export type MutationUpdateSubSectionArgs = {
   subSectionId: Scalars['String'];
   title?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationUpdateUserArgs = {
-  name?: InputMaybe<Scalars['String']>;
-  sendMarketingResearch?: InputMaybe<Scalars['Boolean']>;
-  sendReminders?: InputMaybe<Scalars['Boolean']>;
-  targetNumCards?: InputMaybe<Scalars['Int']>;
-  timezoneOffset?: InputMaybe<Scalars['Int']>;
-  userType?: InputMaybe<UserType>;
 };
 
 
@@ -254,6 +268,16 @@ export enum Referrer {
   Tiktok = 'TIKTOK',
   Youtube = 'YOUTUBE'
 }
+
+export type ReviewInstance = {
+  __typename?: 'ReviewInstance';
+  ease?: Maybe<Scalars['Int']>;
+  id?: Maybe<Scalars['String']>;
+  lastReview?: Maybe<Scalars['Date']>;
+  learningStatus?: Maybe<LearningStatus>;
+  nextReview?: Maybe<Scalars['Date']>;
+  stepsIndex?: Maybe<Scalars['Int']>;
+};
 
 export enum Role {
   Admin = 'ADMIN',
