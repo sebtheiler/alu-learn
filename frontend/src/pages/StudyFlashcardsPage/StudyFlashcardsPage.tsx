@@ -1,21 +1,20 @@
+import FinishedStudying from "./FinishedStudying";
+import FlashcardSide from "./FlashcardSide";
+import { EASE_FOR_HARD_EXERCISE, formatDate, GRADES } from "./helpers";
+import type { ExtendedReviewInstance, Grade } from "./helpers";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import ProgressBar from "@/components/ProgressBar";
 import StudyReviewInstance from "@/graphql/StudyReviewInstance";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
-import LexicalEditor from "@/lexicalEditor/LexicalEditor";
 import type {
-  Flashcard,
   Mutation,
   MutationStudyReviewInstanceArgs,
-  NonNullableKeys,
   ReviewInstance,
   Grade as GQLGrade,
 } from "@/types";
 import { useMutation } from "@apollo/client";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Interval } from "helpers/calculateInterval";
 import { useEffect, useState } from "react";
 
@@ -32,19 +31,8 @@ export interface StudyFlashcardsPageProps {
   };
 }
 
-const EASE_FOR_HARD_EXERCISE = 180;
-
-type ExtendedReviewInstance = NonNullableKeys<ReviewInstance> & {
-  flashcard: Flashcard;
-};
-
-type Grade = "AGAIN" | "HARD" | "GOOD" | "EASY";
-
-const GRADES: Grade[] = ["AGAIN", "HARD", "GOOD", "EASY"];
-
-const TIME_BEFORE_SWAP = 250;
 /**
- *
+ * Renders a page where the user can study flashcards (in the form of review instances)
  */
 export default function StudyFlashcardsPage({
   courseId,
@@ -55,12 +43,12 @@ export default function StudyFlashcardsPage({
   const [_reviewInstances, _setReviewInstances] = useState(() =>
     reviewInstances.sort(() => Math.random() - 0.5)
   );
-  const [activeReviewInstance, setActiveReviewInstance] =
-    useState<ExtendedReviewInstance>(
-      () => _reviewInstances[0] as ExtendedReviewInstance
-    );
+  const [activeReviewInstance, setActiveReviewInstance] = useState<
+    ExtendedReviewInstance | undefined
+  >(() => _reviewInstances[0] as ExtendedReviewInstance);
   const validGrades: Grade[] = GRADES.filter(
-    (grade) => !!intervals[activeReviewInstance.id][grade]
+    (grade) =>
+      activeReviewInstance && !!intervals[activeReviewInstance.id][grade]
   );
 
   const [revealAnswer, setRevealAnswer] = useState(false);
@@ -81,6 +69,7 @@ export default function StudyFlashcardsPage({
   };
 
   const selectGrade = (grade: Grade) => {
+    if (!activeReviewInstance) return;
     const interval = intervals[activeReviewInstance.id][grade];
     if (!interval || !revealAnswer) return;
 
@@ -163,140 +152,106 @@ export default function StudyFlashcardsPage({
         description=""
       />
       <div className="mt-28">
-        <h1 className="font-bold text-4xl text-center">Study Flashcards</h1>
-        <ProgressBar
-          stepNum={initialNumReviewInstances - _reviewInstances.length}
-          totalNumSteps={initialNumReviewInstances}
-          className="my-3 max-w-4xl mx-auto"
-        />
-        {activeReviewInstance.ease <= EASE_FOR_HARD_EXERCISE && (
-          <p className={"text-red-700 text-center font-bold my-2"}>
-            This flashcard is tough! Good luck!
-          </p>
+        {initialNumReviewInstances > 0 && activeReviewInstance && (
+          <div>
+            <h1 className="font-bold text-4xl text-center">Study Flashcards</h1>
+            <ProgressBar
+              stepNum={initialNumReviewInstances - _reviewInstances.length}
+              totalNumSteps={initialNumReviewInstances}
+              className="my-3 max-w-4xl mx-auto"
+            />
+            {activeReviewInstance.ease <= EASE_FOR_HARD_EXERCISE && (
+              <p className={"text-red-700 text-center font-bold my-2"}>
+                This flashcard is tough! Good luck!
+              </p>
+            )}
+            <div
+              className={classNames(
+                "w-96 h-[28rem] mx-auto mt-8 mb-4 flex flex-col relative hover:cursor-pointer",
+                (isTransitioningCorrect || isTransitioningIncorrect) &&
+                  "transition-all duration-500 scale-75 -translate-y-36 opacity-0",
+                isTransitioningCorrect && "origin-bottom-right rotate-90",
+                isTransitioningIncorrect && "origin-bottom-left -rotate-90"
+              )}
+              role="button"
+              onClick={() => setRevealAnswer(!revealAnswer)}
+            >
+              <FlashcardSide
+                side="front"
+                field={JSON.stringify(
+                  JSON.parse(activeReviewInstance.flashcard.fields as string)[0]
+                )}
+                isShown={!revealAnswer}
+                starred={starred}
+                onStarred={onStarred}
+              />
+              <FlashcardSide
+                side="back"
+                field={JSON.stringify(
+                  JSON.parse(activeReviewInstance.flashcard.fields as string)[1]
+                )}
+                isShown={revealAnswer}
+                starred={starred}
+                onStarred={onStarred}
+              />
+            </div>
+            <p className="text-center text-gray-500">
+              Press &quot;space&quot; to flip the flashcard
+            </p>
+            <div
+              className={classNames(
+                "fixed bottom-0 w-full z-30 h-24 transition-opacity duration-600",
+                revealAnswer ? "opacity-100" : "opacity-0"
+              )}
+            >
+              <ButtonGroup className="text-center" fixedWidth="165px" spaced>
+                {validGrades.includes("AGAIN") && (
+                  <Button onClick={() => selectGrade("AGAIN")} variant="red">
+                    Again (
+                    {formatDate(
+                      intervals[activeReviewInstance.id]["AGAIN"]?.minutes
+                    )}
+                    )
+                  </Button>
+                )}
+                {validGrades.includes("HARD") && (
+                  <Button onClick={() => selectGrade("HARD")} variant="yellow">
+                    Hard (
+                    {formatDate(
+                      intervals[activeReviewInstance.id]["HARD"]?.minutes
+                    )}
+                    )
+                  </Button>
+                )}
+                {validGrades.includes("GOOD") && (
+                  <Button onClick={() => selectGrade("GOOD")} variant="green">
+                    Good (
+                    {formatDate(
+                      intervals[activeReviewInstance.id]["GOOD"]?.minutes
+                    )}
+                    )
+                  </Button>
+                )}
+                {validGrades.includes("EASY") && (
+                  <Button onClick={() => selectGrade("EASY")} variant="blue">
+                    Easy (
+                    {formatDate(
+                      intervals[activeReviewInstance.id]["EASY"]?.minutes
+                    )}
+                    )
+                  </Button>
+                )}
+              </ButtonGroup>
+              <p className="text-center mt-2 text-gray-500">
+                Click a response or use keys 1-{validGrades.length}
+              </p>
+            </div>
+          </div>
         )}
-        <div
-          className={classNames(
-            "w-96 h-[28rem] mx-auto mt-8 mb-4 flex flex-col relative hover:cursor-pointer",
-            (isTransitioningCorrect || isTransitioningIncorrect) &&
-              "transition-all duration-500 scale-75 -translate-y-36 opacity-0",
-            isTransitioningCorrect && "origin-bottom-right rotate-90",
-            isTransitioningIncorrect && "origin-bottom-left -rotate-90"
-          )}
-          role="button"
-          onClick={() => setRevealAnswer(!revealAnswer)}
-        >
-          <FlashcardSide
-            side="front"
-            field={JSON.stringify(
-              JSON.parse(activeReviewInstance.flashcard.fields as string)[0]
-            )}
-            isShown={!revealAnswer}
-            starred={starred}
-            onStarred={onStarred}
-          />
-          <FlashcardSide
-            side="back"
-            field={JSON.stringify(
-              JSON.parse(activeReviewInstance.flashcard.fields as string)[1]
-            )}
-            isShown={revealAnswer}
-            starred={starred}
-            onStarred={onStarred}
-          />
-        </div>
-        <p className="text-center text-gray-500">
-          Press &quot;space&quot; to flip the flashcard
-        </p>
-        <div
-          className={classNames(
-            "fixed bottom-0 w-full z-30 h-24 transition-opacity duration-600",
-            revealAnswer ? "opacity-100" : "opacity-0"
-          )}
-        >
-          <ButtonGroup className="text-center" fixedWidth="150px" spaced>
-            {validGrades.includes("AGAIN") && (
-              <Button onClick={() => selectGrade("AGAIN")} variant="red">
-                Again
-              </Button>
-            )}
-            {validGrades.includes("HARD") && (
-              <Button onClick={() => selectGrade("HARD")} variant="yellow">
-                Hard
-              </Button>
-            )}
-            {validGrades.includes("GOOD") && (
-              <Button onClick={() => selectGrade("GOOD")} variant="green">
-                Good
-              </Button>
-            )}
-            {validGrades.includes("EASY") && (
-              <Button onClick={() => selectGrade("EASY")} variant="blue">
-                Easy
-              </Button>
-            )}
-          </ButtonGroup>
-          <p className="text-center mt-2 text-gray-500">
-            Click a response or use keys 1-{validGrades.length}
-          </p>
-        </div>
+        {!activeReviewInstance && initialNumReviewInstances > 0 && (
+          <FinishedStudying />
+        )}
       </div>
     </>
-  );
-}
-
-interface FlashcardSideProps {
-  side: "front" | "back";
-  field: string;
-  isShown: boolean;
-  starred: boolean;
-  onStarred(event: React.MouseEvent<SVGSVGElement, MouseEvent>): void;
-}
-
-function FlashcardSide({
-  side,
-  field,
-  isShown,
-  starred,
-  onStarred,
-}: FlashcardSideProps) {
-  const [onTop, setOnTop] = useState(isShown);
-
-  // Delay changing the z-index of the side so that the transition does
-  // not abruptly change the text
-  useEffect(() => {
-    setTimeout(() => setOnTop(isShown), TIME_BEFORE_SWAP); // magic number to hide swap
-  }, [isShown]);
-
-  return (
-    <div
-      className={classNames(
-        "absolute w-full h-full bg-white transition-transform duration-700 rounded-xl border-2 border-gray-200 hover:shadow-lg",
-        onTop ? "z-10" : "-z-10"
-      )}
-      style={{ transform: isShown ? "" : "rotateY(180deg)" }}
-    >
-      <div className="absolute w-full">
-        <p className="text-center my-2 text-gray-400 font-bold">
-          {side.toUpperCase()}
-          <FontAwesomeIcon
-            icon={faStar}
-            className={classNames(
-              "absolute right-3 top-3 z-20",
-              starred && "text-yellow-500"
-            )}
-            title="Star Flashcard"
-            onClick={onStarred}
-          />
-        </p>
-        <hr className="mx-5" />
-      </div>
-      <div className="flex flex-1 justify-center items-center w-full h-full relative">
-        <LexicalEditor
-          namespace={`flashcard-${side}`}
-          editorState={field}
-          readOnly
-        />
-      </div>
-    </div>
   );
 }
