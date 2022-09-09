@@ -6,7 +6,7 @@ const CreateNewUserSurveyResponse = gql`
     $userType: UserType!
     $referrer: Referrer!
     $joinReason: JoinReason!
-    $targetNumCards: Int!
+    $targetNumReviews: Int!
     $sendReminders: Boolean!
   ) {
     createNewUserSurveyResponse(
@@ -14,7 +14,7 @@ const CreateNewUserSurveyResponse = gql`
       userType: $userType
       referrer: $referrer
       joinReason: $joinReason
-      targetNumCards: $targetNumCards
+      targetNumReviews: $targetNumReviews
       sendReminders: $sendReminders
     ) {
       id

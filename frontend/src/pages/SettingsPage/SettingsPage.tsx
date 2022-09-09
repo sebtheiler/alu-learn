@@ -57,7 +57,7 @@ export interface SettingsPageProps {
   timezoneOffset?: number;
   userType?: UserType;
   sendReminders?: boolean;
-  targetNumCards?: number;
+  targetNumReviews?: number;
   sendMarketingResearch?: boolean;
 }
 
@@ -66,7 +66,7 @@ export default function SettingsPage({
   timezoneOffset,
   userType,
   sendReminders,
-  targetNumCards,
+  targetNumReviews,
   sendMarketingResearch,
 }: SettingsPageProps) {
   const [updateUser] = useMutation(UpdateUser);
@@ -78,13 +78,18 @@ export default function SettingsPage({
       updateUser({ variables: { name: debouncedName } });
   }, [debouncedName, name, updateUser]);
 
-  const [targetNumCardsState, setTargetNumCardsState] =
-    useState(targetNumCards);
-  const debouncedTargetNumCards = useDebounce(targetNumCardsState, 500);
+  const [targetNumReviewsState, settargetNumReviewsState] =
+    useState(targetNumReviews);
+  const debouncedtargetNumReviews = useDebounce(targetNumReviewsState, 500);
   useEffect(() => {
-    if (debouncedTargetNumCards && debouncedTargetNumCards !== targetNumCards)
-      updateUser({ variables: { targetNumCards: debouncedTargetNumCards } });
-  }, [debouncedTargetNumCards, targetNumCards, updateUser]);
+    if (
+      debouncedtargetNumReviews &&
+      debouncedtargetNumReviews !== targetNumReviews
+    )
+      updateUser({
+        variables: { targetNumReviews: debouncedtargetNumReviews },
+      });
+  }, [debouncedtargetNumReviews, targetNumReviews, updateUser]);
 
   return (
     <>
@@ -111,8 +116,8 @@ export default function SettingsPage({
             label="Target Flashcards per Day"
             type="number"
             className="mb-4"
-            value={targetNumCardsState}
-            onChange={(e) => setTargetNumCardsState(parseInt(e.target.value))}
+            value={targetNumReviewsState}
+            onChange={(e) => settargetNumReviewsState(parseInt(e.target.value))}
             required
           />
           <div className="mb-4">

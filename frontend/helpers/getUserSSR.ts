@@ -21,7 +21,7 @@ const getUserSSR = async (
     where: {
       email: session.user?.email ?? "",
     },
-    select: select,
+    select,
   });
 };
 

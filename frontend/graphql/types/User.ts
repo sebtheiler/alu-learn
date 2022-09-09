@@ -36,7 +36,7 @@ const User = objectType({
     t.boolean("isPro");
 
     // Settings
-    t.int("targetNumCards");
+    t.int("targetNumReviews");
     t.boolean("sendReminders");
     t.boolean("sendMarketingResearch");
     t.int("timezoneOffset");
@@ -44,6 +44,7 @@ const User = objectType({
     // Streak
     t.int("currentStreak");
     t.boolean("doneReviewsToday");
+    t.int("numReviewsDoneToday");
   },
 });
 
@@ -65,7 +66,7 @@ export const UsersQuery = extendType({
       type: "User",
       description: "Get information on the current user",
       resolve(_parent, _args, ctx) {
-        return getUserGQL(ctx);
+        return getUserGQL(ctx, null);
       },
     });
   },
@@ -81,7 +82,7 @@ export const UsersMutation = extendType({
         name: stringArg(),
         timezoneOffset: intArg(),
         sendMarketingResearch: booleanArg(),
-        targetNumCards: intArg(),
+        targetNumReviews: intArg(),
         sendReminders: booleanArg(),
         userType: arg({ type: "UserType" }),
       },
@@ -95,8 +96,8 @@ export const UsersMutation = extendType({
           data.timezoneOffset = args.timezoneOffset;
         if (args.sendMarketingResearch != null)
           data.sendMarketingResearch = args.sendMarketingResearch;
-        if (args.targetNumCards != null)
-          data.targetNumCards = args.targetNumCards;
+        if (args.targetNumReviews != null)
+          data.targetNumReviews = args.targetNumReviews;
         if (args.sendReminders != null) data.sendReminders = args.sendReminders;
         if (args.userType != null) data.userType = args.userType;
 

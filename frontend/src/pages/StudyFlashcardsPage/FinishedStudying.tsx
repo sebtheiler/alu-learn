@@ -1,8 +1,11 @@
 import styles from "./FinishedStudying.module.scss";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
-import CardsDoneSVG from "@/components/CardsDoneSVG";
+import ReviewsDoneSVG from "@/components/ReviewsDoneSVG";
+import StreakInfo from "@/graphql/StreakInfo";
 import classNames from "@/helpers/classNames";
+import type { Query } from "@/types";
+import { useQuery } from "@apollo/client";
 import { faFire } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
@@ -18,6 +21,18 @@ interface FinishedStudyingProps {
    * Function to be called when the user selects to study again
    */
   studyAgain(): void;
+  /**
+   * The user's streak before studying
+   */
+  oldStreak: number;
+  /**
+   * The number of reviews the user did in this study session
+   */
+  reviewsJustDone: number;
+  /**
+   * Was the user's streak "lit" when they started studying?
+   */
+  streakWasActive: boolean;
 }
 
 /**
@@ -26,18 +41,22 @@ interface FinishedStudyingProps {
 export default function FinishedStudying({
   courseId,
   studyAgain,
+  oldStreak,
+  reviewsJustDone,
+  streakWasActive,
 }: FinishedStudyingProps) {
   const [slideIndex, setSlideIndex] = useState(0);
   const [playedSound, setPlayedSound] = useState(false);
 
   const router = useRouter();
 
-  const oldStreak = 0;
-  const newStreak = 1;
-  const totalReviewsDone = 60;
-  const reviewsJustDone = 10;
-  const targetReviews = 50;
-  const streakWasActive = true;
+  const { data: streakData, loading } = useQuery<{ me: Query["me"] }>(
+    StreakInfo
+  );
+  const me = streakData?.me;
+  const newStreak = me?.currentStreak as number;
+  const targetNumReviews = me?.targetNumReviews as number;
+  const totalReviewsDone = me?.numReviewsDoneToday as number;
 
   useEffect(() => {
     if (playedSound) return;
@@ -50,6 +69,8 @@ export default function FinishedStudying({
   }, [playedSound]);
 
   const slides = useMemo(() => {
+    if (loading) return [<p key={0}>Loading...</p>];
+
     const slides: JSX.Element[] = [];
     if (newStreak > oldStreak) {
       slides.push(
@@ -112,15 +133,16 @@ export default function FinishedStudying({
     }
 
     let reviewsDoneText: string;
-    if (totalReviewsDone <= targetReviews / 2) reviewsDoneText = "Great start!";
+    if (totalReviewsDone <= targetNumReviews / 2)
+      reviewsDoneText = "Great start!";
     else if (
-      totalReviewsDone > targetReviews / 2 &&
-      totalReviewsDone < targetReviews
+      totalReviewsDone > targetNumReviews / 2 &&
+      totalReviewsDone < targetNumReviews
     )
       reviewsDoneText = "Almost there! Keep working toward your daily goal!";
     else if (
-      totalReviewsDone >= targetReviews &&
-      totalReviewsDone - reviewsJustDone < targetReviews
+      totalReviewsDone >= targetNumReviews &&
+      totalReviewsDone - reviewsJustDone < targetNumReviews
     )
       reviewsDoneText = "Congratulations on reaching your daily goal!";
     else reviewsDoneText = "Nice work on exceeding your daily goal!";
@@ -128,10 +150,10 @@ export default function FinishedStudying({
     slides.push(
       <div>
         <p className="text-center font-bold text-xl mb-2">Reviews Done</p>
-        <CardsDoneSVG
-          targetCardsDone={targetReviews}
-          cardsDone={totalReviewsDone}
-          cardsJustDone={reviewsJustDone}
+        <ReviewsDoneSVG
+          targetReviewsDone={targetNumReviews}
+          reviewsDone={totalReviewsDone}
+          reviewsJustDone={reviewsJustDone}
         />
         <p className="text-center">{reviewsDoneText}</p>
       </div>
@@ -153,7 +175,18 @@ export default function FinishedStudying({
       </div>
     );
     return slides;
-  }, [router, courseId, studyAgain, streakWasActive]);
+  }, [
+    router,
+    courseId,
+    studyAgain,
+    streakWasActive,
+    newStreak,
+    oldStreak,
+    reviewsJustDone,
+    targetNumReviews,
+    totalReviewsDone,
+    loading,
+  ]);
 
   return (
     <div>

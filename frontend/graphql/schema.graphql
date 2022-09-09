@@ -80,7 +80,7 @@ type Mutation {
   createFlashcard(courseId: String!, courseSectionSlug: String!, fields: String!, flashcardType: FlashcardType, subSectionSlug: String!, tags: String): Flashcard
 
   """Creates a new NewUserSurveyResponse from a set of responses"""
-  createNewUserSurveyResponse(joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumCards: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse
+  createNewUserSurveyResponse(joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumReviews: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse
 
   """Creates a new sub section"""
   createSubSection(courseSectionId: String!, title: String!): SubSection
@@ -177,7 +177,7 @@ type NewUserSurveyResponse {
   joinReason: JoinReason
   referrer: Referrer
   sendReminders: Boolean
-  targetNumCards: Int
+  targetNumReviews: Int
   timezoneOffset: Int
   user: User
   userId: String
@@ -259,10 +259,11 @@ type User {
 
   """The user's response to the survey launched on sign-up"""
   newUserSurveyResponse: NewUserSurveyResponse
+  numReviewsDoneToday: Int
   role: Role
   sendMarketingResearch: Boolean
   sendReminders: Boolean
-  targetNumCards: Int
+  targetNumReviews: Int
   timezoneOffset: Int
   userType: UserType
   username: String

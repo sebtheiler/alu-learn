@@ -24,6 +24,10 @@ export interface StudyFlashcardsPageProps {
   courseSectionSlug?: string;
   subSectionSlug?: string;
   reviewInstances: ReviewInstance[];
+  /**
+   * Intervals for each review instance.
+   * In the form of a dictionary (reviewInstanceId: interval)
+   */
   intervals: {
     [reviewInstanceId: string]: {
       AGAIN: Interval | null;
@@ -32,18 +36,33 @@ export interface StudyFlashcardsPageProps {
       EASY: Interval | null;
     };
   };
+  /**
+   * Are there no flashcards at all in the section/course?
+   */
+  noFlashcards: boolean;
+  /**
+   * What is the user's streak at the beginning of the study session?
+   */
+  currentStreak: number;
+  /**
+   * Was the user's streak active at the beginning of the study session?
+   */
+  streakActive: boolean;
 }
 
 /**
  * Renders a page where the user can study flashcards (in the form of review instances)
  */
 export default function StudyFlashcardsPage({
-  courseId,
-  courseSectionSlug,
-  subSectionSlug,
   reviewInstances,
+  noFlashcards,
   intervals,
+  currentStreak,
+  streakActive,
 }: StudyFlashcardsPageProps) {
+  const router = useRouter();
+  const { courseId, courseSectionSlug, subSectionSlug } = router.query;
+
   const initialNumReviewInstances = reviewInstances.length;
   const [_reviewInstances, _setReviewInstances] = useState(() =>
     reviewInstances.sort(() => Math.random() - 0.5)
@@ -53,7 +72,9 @@ export default function StudyFlashcardsPage({
   >(() => _reviewInstances[0] as ExtendedReviewInstance);
   const validGrades: Grade[] = GRADES.filter(
     (grade) =>
-      activeReviewInstance && !!intervals[activeReviewInstance.id][grade]
+      activeReviewInstance &&
+      Object.keys(intervals).length > 0 &&
+      !!intervals[activeReviewInstance.id][grade]
   );
 
   const [revealAnswer, setRevealAnswer] = useState(false);
@@ -66,8 +87,6 @@ export default function StudyFlashcardsPage({
     { studyReviewInstance: Mutation["studyReviewInstance"] },
     MutationStudyReviewInstanceArgs
   >(StudyReviewInstance);
-
-  const router = useRouter();
 
   const onStarred = (e: React.MouseEvent<SVGElement>) => {
     // TODO: implement starring
@@ -269,9 +288,38 @@ export default function StudyFlashcardsPage({
           </div>
         )}
         {!activeReviewInstance && initialNumReviewInstances > 0 && (
-          <FinishedStudying courseId={courseId} studyAgain={studyAgain} />
+          <FinishedStudying
+            courseId={courseId as string}
+            studyAgain={studyAgain}
+            oldStreak={currentStreak}
+            reviewsJustDone={Object.keys(intervals).length}
+            streakWasActive={streakActive}
+          />
         )}
         {initialNumReviewInstances === 0 && (
+          <div className="text-center translate-y-24">
+            <p>
+              You&apos;ve studied everything in this section. Come back tomorrow
+              to study more!
+            </p>
+            <ButtonGroup fixedWidth="175px" spaced>
+              <Button
+                onClick={() => console.log("TODO: studying ahead")}
+                className="mt-3"
+                autoFocus
+              >
+                Study Ahead
+              </Button>
+              <Button
+                onClick={() => router.replace(`/course/${courseId}`)}
+                variant="secondary"
+              >
+                Exit
+              </Button>
+            </ButtonGroup>
+          </div>
+        )}
+        {noFlashcards && (
           <div className="text-center translate-y-24">
             <p>This section has no flashcards yet. Why not add some?</p>
             <Button

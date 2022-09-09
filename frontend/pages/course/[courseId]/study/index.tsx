@@ -158,7 +158,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: JSON.parse(
       JSON.stringify({
-        courseId,
         reviewInstances,
         intervals,
       })

@@ -21,7 +21,7 @@ const NewUserSurveyResponse = objectType({
     t.field("userType", { type: UserType });
     t.field("referrer", { type: Referrer });
     t.field("joinReason", { type: JoinReason });
-    t.int("targetNumCards");
+    t.int("targetNumReviews");
     t.boolean("sendReminders");
   },
 });
@@ -40,7 +40,7 @@ export const NewUserSurveyResponseMutation = extendType({
         userType: nonNull(arg({ type: "UserType" })),
         referrer: nonNull(arg({ type: "Referrer" })),
         joinReason: nonNull(arg({ type: "JoinReason" })),
-        targetNumCards: nonNull(intArg()),
+        targetNumReviews: nonNull(intArg()),
         sendReminders: nonNull(booleanArg()),
       },
       async resolve(_root, args, ctx) {
@@ -52,7 +52,7 @@ export const NewUserSurveyResponseMutation = extendType({
           userType: args.userType,
           referrer: args.referrer,
           joinReason: args.joinReason,
-          targetNumCards: args.targetNumCards,
+          targetNumReviews: args.targetNumReviews,
           sendReminders: args.sendReminders,
           userId: user.id,
         };

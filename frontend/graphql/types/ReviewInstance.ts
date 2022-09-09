@@ -39,7 +39,12 @@ export const UsersMutation = extendType({
         grade: nonNull(arg({ type: Grade })),
       },
       async resolve(_parent, args, ctx) {
-        const user = await getUserGQL(ctx);
+        const user = await getUserGQL(ctx, {
+          id: true,
+          doneReviewsToday: true,
+          numReviewsDoneToday: true,
+          currentStreak: true,
+        });
         if (!user) return null;
 
         const reviewInstance = await ctx.prisma.reviewInstance.findUnique({
@@ -53,7 +58,21 @@ export const UsersMutation = extendType({
 
         if (!interval) throw new ApolloError("Error calculating interval");
         const { updatedReviewInstance } = interval;
-        console.log(updatedReviewInstance);
+        console.log(user);
+        console.log("done reviewstoday", user.doneReviewsToday);
+
+        await ctx.prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            numReviewsDoneToday: (user.numReviewsDoneToday as number) + 1,
+            currentStreak: user.doneReviewsToday
+              ? undefined
+              : (user.currentStreak as number) + 1,
+            doneReviewsToday: user.doneReviewsToday ? undefined : true,
+          },
+        });
 
         return ctx.prisma.reviewInstance.update({
           where: {

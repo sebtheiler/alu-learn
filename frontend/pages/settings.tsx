@@ -31,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       timezoneOffset: user?.timezoneOffset,
       userType: user?.userType,
       sendReminders: user?.sendReminders,
-      targetNumCards: user?.targetNumCards,
+      targetNumReviews: user?.targetNumReviews,
       sendMarketingResearch: user?.sendMarketingResearch,
     } as SettingsPageProps,
   };

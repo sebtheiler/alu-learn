@@ -138,7 +138,7 @@ export type MutationCreateNewUserSurveyResponseArgs = {
   joinReason: JoinReason;
   referrer: Referrer;
   sendReminders: Scalars['Boolean'];
-  targetNumCards: Scalars['Int'];
+  targetNumReviews: Scalars['Int'];
   timezoneOffset: Scalars['Int'];
   userType: UserType;
 };
@@ -224,7 +224,7 @@ export type NewUserSurveyResponse = {
   joinReason?: Maybe<JoinReason>;
   referrer?: Maybe<Referrer>;
   sendReminders?: Maybe<Scalars['Boolean']>;
-  targetNumCards?: Maybe<Scalars['Int']>;
+  targetNumReviews?: Maybe<Scalars['Int']>;
   timezoneOffset?: Maybe<Scalars['Int']>;
   user?: Maybe<User>;
   userId?: Maybe<Scalars['String']>;
@@ -313,10 +313,11 @@ export type User = {
   name?: Maybe<Scalars['String']>;
   /** The user's response to the survey launched on sign-up */
   newUserSurveyResponse?: Maybe<NewUserSurveyResponse>;
+  numReviewsDoneToday?: Maybe<Scalars['Int']>;
   role?: Maybe<Role>;
   sendMarketingResearch?: Maybe<Scalars['Boolean']>;
   sendReminders?: Maybe<Scalars['Boolean']>;
-  targetNumCards?: Maybe<Scalars['Int']>;
+  targetNumReviews?: Maybe<Scalars['Int']>;
   timezoneOffset?: Maybe<Scalars['Int']>;
   userType?: Maybe<UserType>;
   username?: Maybe<Scalars['String']>;

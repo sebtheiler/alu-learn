@@ -1,6 +1,6 @@
 import CreateAddCourseModal from "./CreateAddCourseModal";
 import SocialMediaLinks from "./SocialMediaLinks";
-import CardsDoneSVG from "@/components/CardsDoneSVG";
+import ReviewsDoneSVG from "@/components/ReviewsDoneSVG";
 import SEO from "@/helpers/SEO";
 import type { Course } from "@/types";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -15,9 +15,15 @@ export interface HomePageProps {
    * Displays as a list on the homepage
    */
   courses: Course[];
+  reviewsDone: number;
+  targetReviewsDone: number;
 }
 
-export default function HomePage({ courses }: HomePageProps) {
+export default function HomePage({
+  courses,
+  reviewsDone,
+  targetReviewsDone,
+}: HomePageProps) {
   const [addCourseModalOpen, setAddCourseModalOpen] = useState(false);
 
   return (
@@ -83,7 +89,10 @@ export default function HomePage({ courses }: HomePageProps) {
             </div>
           </div>
           <div className="col-span-6 md:col-span-3 mx-4">
-            <CardsDoneSVG cardsDone={30} targetCardsDone={50} />
+            <ReviewsDoneSVG
+              reviewsDone={reviewsDone}
+              targetReviewsDone={targetReviewsDone}
+            />
             <SocialMediaLinks />
           </div>
         </div>

@@ -4,28 +4,28 @@ interface CardsDoneSVGProps {
   /**
    * What is the user's target number of cards to study?
    */
-  targetCardsDone: number;
+  targetReviewsDone: number;
   /**
    * How many cards has the user studied this day?
    */
-  cardsDone: number;
+  reviewsDone: number;
   /**
    * How many cards has the user just studied? (for use after a user finishes studying more cards)
    */
-  cardsJustDone?: number;
+  reviewsJustDone?: number;
 }
 
 /**
  * Displays an SVG with a visual of how many cards the user has studied
  */
-export default function CardsDoneSVG({
-  targetCardsDone,
-  cardsDone,
-  cardsJustDone = 0,
+export default function ReviewsDoneSVG({
+  targetReviewsDone,
+  reviewsDone,
+  reviewsJustDone = 0,
 }: CardsDoneSVGProps) {
-  const LINE_TICK_INTERVAL = cardsDone > 200 ? 20 : 10;
+  const LINE_TICK_INTERVAL = reviewsDone > 200 ? 20 : 10;
   const NUM_EXTRA_BARS = Math.floor(
-    (Math.max(cardsDone, targetCardsDone) - targetCardsDone) /
+    (Math.max(reviewsDone, targetReviewsDone) - targetReviewsDone) /
       LINE_TICK_INTERVAL +
       2
   );
@@ -47,7 +47,7 @@ export default function CardsDoneSVG({
     5;
   const lineTickIntervalRange = Array.from(
     Array(
-      Math.floor(targetCardsDone / LINE_TICK_INTERVAL) + NUM_EXTRA_BARS + 1
+      Math.floor(targetReviewsDone / LINE_TICK_INTERVAL) + NUM_EXTRA_BARS + 1
     ).keys()
   );
   const lineTickYVals = lineTickIntervalRange.map((i) => ({
@@ -77,12 +77,12 @@ export default function CardsDoneSVG({
                 x="10"
                 y={lineTickYVal.y}
                 fill={
-                  lineTickYVal.val === targetCardsDone
+                  lineTickYVal.val === targetReviewsDone
                     ? TARGET_COLOR
                     : LINE_TICK_COLOR
                 }
                 fontWeight={
-                  lineTickYVal.val === targetCardsDone ? "bold" : "normal"
+                  lineTickYVal.val === targetReviewsDone ? "bold" : "normal"
                 }
               >
                 {lineTickYVal.val}
@@ -95,7 +95,7 @@ export default function CardsDoneSVG({
           width={BAR_WIDTH}
           height={SVG_HEIGHT}
           x="50%"
-          y={calcY((cardsDone - cardsJustDone) / LINE_TICK_INTERVAL) + 5}
+          y={calcY((reviewsDone - reviewsJustDone) / LINE_TICK_INTERVAL) + 5}
           transform={`translate(-${BAR_WIDTH / 2})`}
           id="studying-target-bar"
           fill="#6a21bc"
@@ -106,7 +106,7 @@ export default function CardsDoneSVG({
             type="translate"
             by={`0 ${-(
               SVG_HEIGHT -
-              calcY(cardsJustDone / LINE_TICK_INTERVAL) -
+              calcY(reviewsJustDone / LINE_TICK_INTERVAL) -
               5
             )}`}
             dur="1s"
@@ -116,23 +116,23 @@ export default function CardsDoneSVG({
         {/* Target label */}
         <line
           x1={LINE_TICK_OFFSET}
-          y1={calcY(targetCardsDone / LINE_TICK_INTERVAL) - 5}
+          y1={calcY(targetReviewsDone / LINE_TICK_INTERVAL) - 5}
           x2={SVG_WIDTH - LINE_TICK_OFFSET}
-          y2={calcY(targetCardsDone / LINE_TICK_INTERVAL) - 5}
+          y2={calcY(targetReviewsDone / LINE_TICK_INTERVAL) - 5}
           style={{ stroke: TARGET_COLOR, strokeWidth: "3" }}
         />
         <rect
           width="90"
           height="25"
           x="50%"
-          y={calcY(targetCardsDone / LINE_TICK_INTERVAL) - 17.5}
+          y={calcY(targetReviewsDone / LINE_TICK_INTERVAL) - 17.5}
           transform="translate(-45)"
           fill={TARGET_COLOR}
           rx="8"
         />
         <text
           x="50%"
-          y={calcY(targetCardsDone / LINE_TICK_INTERVAL)}
+          y={calcY(targetReviewsDone / LINE_TICK_INTERVAL)}
           textAnchor="middle"
           fill="white"
           fontSize="13"

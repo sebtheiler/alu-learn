@@ -4,7 +4,7 @@ const UpdateUser = gql`
   mutation Mutation(
     $name: String
     $timezoneOffset: Int
-    $targetNumCards: Int
+    $targetNumReviews: Int
     $sendReminders: Boolean
     $userType: UserType
     $sendMarketingResearch: Boolean
@@ -12,7 +12,7 @@ const UpdateUser = gql`
     updateUser(
       name: $name
       timezoneOffset: $timezoneOffset
-      targetNumCards: $targetNumCards
+      targetNumReviews: $targetNumReviews
       sendReminders: $sendReminders
       userType: $userType
       sendMarketingResearch: $sendMarketingResearch

@@ -139,7 +139,7 @@ export default function useSlides(
               { value: 50, display: "50 flashcards" },
               { value: 100, display: "100 flashcards" },
             ]}
-            onClick={handleNext("targetNumCards", numSlides)}
+            onClick={handleNext("targetNumReviews", numSlides)}
             numCols={4}
           />
         </>,
