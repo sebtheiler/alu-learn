@@ -16,10 +16,13 @@ import type {
 } from "@/types";
 import { useMutation } from "@apollo/client";
 import type { Interval } from "helpers/calculateInterval";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export interface StudyFlashcardsPageProps {
   courseId: string;
+  courseSectionSlug?: string;
+  subSectionSlug?: string;
   reviewInstances: ReviewInstance[];
   intervals: {
     [reviewInstanceId: string]: {
@@ -36,6 +39,8 @@ export interface StudyFlashcardsPageProps {
  */
 export default function StudyFlashcardsPage({
   courseId,
+  courseSectionSlug,
+  subSectionSlug,
   reviewInstances,
   intervals,
 }: StudyFlashcardsPageProps) {
@@ -61,6 +66,8 @@ export default function StudyFlashcardsPage({
     { studyReviewInstance: Mutation["studyReviewInstance"] },
     MutationStudyReviewInstanceArgs
   >(StudyReviewInstance);
+
+  const router = useRouter();
 
   const onStarred = (e: React.MouseEvent<SVGElement>) => {
     // TODO: implement starring
@@ -119,6 +126,13 @@ export default function StudyFlashcardsPage({
     });
   };
 
+  const studyAgain = () => {
+    router.replace(router.asPath);
+    _setReviewInstances(reviewInstances);
+    setActiveReviewInstance(reviewInstances[0] as ExtendedReviewInstance);
+    setRevealAnswer(false);
+  };
+
   useEffect(() => {
     const keyUp = (event: KeyboardEvent) => {
       switch (event.key) {
@@ -143,6 +157,12 @@ export default function StudyFlashcardsPage({
     document.addEventListener("keyup", keyUp);
     return () => document.removeEventListener("keyup", keyUp);
   });
+
+  const addFlashcardsRoute = subSectionSlug
+    ? `/course/${courseId}/add-flashcards/${courseSectionSlug}/${subSectionSlug}`
+    : courseSectionSlug
+    ? `/course/${courseId}/add-flashcards/${courseSectionSlug}`
+    : `/course/${courseId}/add-flashcards`;
 
   return (
     <>
@@ -249,7 +269,19 @@ export default function StudyFlashcardsPage({
           </div>
         )}
         {!activeReviewInstance && initialNumReviewInstances > 0 && (
-          <FinishedStudying />
+          <FinishedStudying courseId={courseId} studyAgain={studyAgain} />
+        )}
+        {initialNumReviewInstances === 0 && (
+          <div className="text-center translate-y-24">
+            <p>This section has no flashcards yet. Why not add some?</p>
+            <Button
+              onClick={() => router.replace(addFlashcardsRoute)}
+              className="mt-3"
+              autoFocus
+            >
+              Add Flashcards
+            </Button>
+          </div>
         )}
       </div>
     </>

@@ -46,6 +46,10 @@ export interface ButtonProps {
    */
   style?: React.CSSProperties;
   /**
+   * Autofocus the button
+   */
+  autoFocus?: boolean;
+  /**
    * Spin the icon
    */
   _spin?: boolean;
@@ -143,6 +147,7 @@ export default function Button({
   faIcon,
   type = "button",
   style,
+  autoFocus = false,
   _spin = false,
   _unroundRight = false,
   _unroundLeft = false,
@@ -166,6 +171,7 @@ export default function Button({
       onClick={onClick}
       type={type}
       style={style}
+      autoFocus={autoFocus}
     >
       {ripples && <Ripple color={buttonVariantsLookup[variant].rippleColor} />}
       {faIcon && (

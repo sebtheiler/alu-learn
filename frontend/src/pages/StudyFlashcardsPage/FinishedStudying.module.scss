@@ -1,0 +1,33 @@
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  33% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.streakFadeOutAnimation {
+  animation: 2s ease-out fadeOut;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  33% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.streakFadeInAnimation {
+  animation: 2s ease-out fadeIn;
+  opacity: 1;
+}
