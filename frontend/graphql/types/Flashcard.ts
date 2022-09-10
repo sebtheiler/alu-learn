@@ -106,7 +106,7 @@ export const FlashcardMutation = extendType({
         const user = await getUserGQL(ctx);
         if (!user) return null;
 
-        const subSection = await ctx.prisma.subSection.findFirst({
+        const subSection = await ctx.prisma.subSection.findFirstOrThrow({
           where: {
             slug: args.subSectionSlug,
             courseSection: {

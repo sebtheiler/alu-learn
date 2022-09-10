@@ -147,10 +147,28 @@ export default function StudyFlashcardsPage({
 
   const studyAgain = () => {
     router.replace(router.asPath);
-    _setReviewInstances(reviewInstances);
-    setActiveReviewInstance(reviewInstances[0] as ExtendedReviewInstance);
     setRevealAnswer(false);
   };
+
+  const studyAhead = () => {
+    router.replace({
+      pathname: router.asPath,
+      query: {
+        studyAhead: "true",
+      },
+    });
+    setRevealAnswer(false);
+  };
+
+  // When studying ahead or studying again, automatically update the internal
+  // review instances state and the active review instance when the review
+  // instances prop is changed (due to `router.replace`)
+  useEffect(() => {
+    if (_reviewInstances.length === 0) {
+      _setReviewInstances(reviewInstances);
+    }
+    setActiveReviewInstance(reviewInstances[0] as ExtendedReviewInstance);
+  }, [_reviewInstances, reviewInstances]);
 
   useEffect(() => {
     const keyUp = (event: KeyboardEvent) => {
@@ -299,19 +317,15 @@ export default function StudyFlashcardsPage({
         {initialNumReviewInstances === 0 && (
           <div className="text-center translate-y-24">
             <p>
-              You&apos;ve studied everything in this section. Come back tomorrow
+              You&apos;ve studied everything in this section! Come back tomorrow
               to study more!
             </p>
             <ButtonGroup fixedWidth="175px" spaced>
-              <Button
-                onClick={() => console.log("TODO: studying ahead")}
-                className="mt-3"
-                autoFocus
-              >
+              <Button onClick={studyAhead} className="mt-3" autoFocus>
                 Study Ahead
               </Button>
               <Button
-                onClick={() => router.replace(`/course/${courseId}`)}
+                onClick={() => router.push(`/course/${courseId}`)}
                 variant="secondary"
               >
                 Exit
@@ -323,7 +337,7 @@ export default function StudyFlashcardsPage({
           <div className="text-center translate-y-24">
             <p>This section has no flashcards yet. Why not add some?</p>
             <Button
-              onClick={() => router.replace(addFlashcardsRoute)}
+              onClick={() => router.push(addFlashcardsRoute)}
               className="mt-3"
               autoFocus
             >

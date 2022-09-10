@@ -11,7 +11,6 @@ const getUserGQL = async (
   ctx: Context,
   select: Prisma.UserSelect | undefined | null = { id: true }
 ): Promise<Partial<User> | null> => {
-  console.log({ select });
   if (process.env.NODE_ENV === "development" && !ctx.user) {
     return ctx.prisma.user.findFirst();
   }

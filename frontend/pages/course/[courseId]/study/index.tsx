@@ -68,7 +68,10 @@ const generateReviewInstances = (
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { courseId } = context.query;
+  const { courseId, studyAhead: studyAheadRaw } = context.query;
+  const studyAhead =
+    typeof studyAheadRaw === "string" && studyAheadRaw.toLowerCase() === "true";
+
   const session = await unstable_getServerSession(
     context.req,
     context.res,
@@ -78,26 +81,39 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     signIn();
   }
 
-  const user = await getUserSSR(session, { id: true });
-  const endOfDay = new Date();
-  endOfDay.setUTCHours(23, 59, 59, 999);
+  let dateCutoff: { lte: Date } | undefined = undefined;
+  // TODO: implement better studying ahead https://github.com/roxgib/anki-smarter-study-ahead
+  if (!studyAhead) {
+    // If not studying ahead, only show flashcards from before
+    // the end of the day
+    const endOfDay = new Date();
+    endOfDay.setUTCHours(23, 59, 59, 999);
 
+    dateCutoff = {
+      lte: endOfDay,
+    };
+  }
+
+  const user = await getUserSSR(session, { id: true });
   let reviewInstances = await prisma.reviewInstance.findMany({
     where: {
       userId: user?.id as string,
-      nextReview: {
-        lte: endOfDay,
-      },
+      nextReview: dateCutoff,
       flashcard: {
         courseId: courseId as string,
       },
     },
     select: reviewInstanceSelect,
+    orderBy: {
+      nextReview: "asc",
+    },
+    take: NUM_FLASHCARDS_PER_SESSION,
   });
 
-  if (reviewInstances.length >= NUM_FLASHCARDS_PER_SESSION) {
-    reviewInstances = reviewInstances.slice(0, NUM_FLASHCARDS_PER_SESSION);
-  } else {
+  // If there are less review instances due than the number of
+  // review instances that should be per session, find unseen
+  // flashcards and create review instances from them.
+  if (reviewInstances.length < NUM_FLASHCARDS_PER_SESSION) {
     const numFlashcardsToFetch =
       NUM_FLASHCARDS_PER_SESSION - reviewInstances.length;
     const flashcards = await prisma.flashcard.findMany({

@@ -6,6 +6,7 @@ const StreakInfo = gql`
       targetNumReviews
       currentStreak
       doneReviewsToday
+      numReviewsDoneToday
     }
   }
 `;

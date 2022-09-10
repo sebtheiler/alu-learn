@@ -166,7 +166,7 @@ export default function FinishedStudying({
             Study Again
           </Button>
           <Button
-            onClick={() => router.replace(`/course/${courseId}`)}
+            onClick={() => router.push(`/course/${courseId}`)}
             variant="secondary"
           >
             Exit

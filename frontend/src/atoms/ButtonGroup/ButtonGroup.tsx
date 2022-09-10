@@ -36,16 +36,20 @@ export default function ButtonGroup({
   vertical,
   className,
 }: ButtonGroupProps) {
+  // This is required so that falsey elements don't throw off which
+  // buttons get rounded corners
+  const filteredChildren = children.filter((child) => !!child);
+
   return (
     <div className={classNames(className, vertical && "text-center")}>
-      {children.map((button, i) => {
+      {filteredChildren.map((button, i) => {
         if (!button) return;
         const newProps: ButtonProps = { ...button.props };
         if (vertical) {
           newProps.style = { ...newProps.style, display: "block" };
           if (spaced) newProps.className += " mb-1 mx-auto";
         } else {
-          if (i !== children.length - 1) {
+          if (i !== filteredChildren.length - 1) {
             newProps._unroundRight = true;
             if (spaced) newProps.className += " mr-1";
           }
