@@ -46,25 +46,26 @@ export default function HomePage({
                   <Link href={`/course/${course.id}/`}>
                     <a>
                       <div
-                        className="border-gray-200 border-4 bg-gray-50 rounded-xl h-60 min-h-full
-                                     overflow-hidden hover:shadow-lg hover:scale-105 transition"
+                        className="border-gray-200 border-4 bg-gray-50 rounded-xl h-60 min-h-full relative
+                                     overflow-hidden hover:shadow-lg hover:scale-105 transition flex flex-wrap"
                       >
-                        <div className="w-full h-24 relative">
-                          <Image
-                            src={
-                              course.bannerImage ??
-                              "/assets/default-course-banner.png"
-                            }
-                            alt="Course banner"
-                            layout="fill"
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="w-full text-center p-3">
-                          <h3 className="text-xl font-bold mt-4">
-                            {course.title}
-                          </h3>
-                          {/* <p>{course.teacher?.name}</p> */}
+                        {course.bannerImage && (
+                          <div className="w-full h-24 relative">
+                            <Image
+                              src={course.bannerImage}
+                              alt="Course banner"
+                              layout="fill"
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="absolute w-full text-center p-3 h-full flex flex-wrap items-center justify-center">
+                          <div>
+                            <h3 className="text-xl font-bold mt-4 w-full">
+                              {course.title}
+                            </h3>
+                            <p>Sebastian Theiler</p>
+                          </div>
                         </div>
                       </div>
                     </a>

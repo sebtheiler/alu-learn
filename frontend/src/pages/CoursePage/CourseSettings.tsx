@@ -82,7 +82,7 @@ export default function CourseSettings({
           size="2x"
           tooltip="Course Settings"
           tooltipProps={{ className: "w-32" }}
-          className="text-white"
+          className={course.bannerImage ? "text-white" : "text-black"}
         />
       </div>
       <Modal

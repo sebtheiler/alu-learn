@@ -6,6 +6,7 @@ import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
 import RenderCourseSection from "@/courses/RenderCourseSection";
 import SEO from "@/helpers/SEO";
+import classNames from "@/helpers/classNames";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import type { Course, CourseSection } from "@/types";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -45,14 +46,23 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
       {authorized && (
         <div className="mt-28">
           <div className="mx-auto max-w-5xl">
-            <div className="w-full h-52 relative">
-              <Image
-                src={course.bannerImage ?? "/assets/default-course-banner.png"}
-                alt="Course banner"
-                layout="fill"
-                className="object-cover lg:rounded-xl"
-                style={{ zIndex: "-1" }}
-              />
+            <div
+              className={classNames(
+                "w-full relative",
+                course.bannerImage ? "h-52" : "h-32"
+              )}
+            >
+              {course.bannerImage && (
+                <Image
+                  src={
+                    course.bannerImage ?? "/assets/default-course-banner.png"
+                  }
+                  alt="Course banner"
+                  layout="fill"
+                  className="object-cover lg:rounded-xl"
+                  style={{ zIndex: "-1" }}
+                />
+              )}
               <div className="w-full h-full flex items-center justify-center">
                 <div className="absolute left-3 top-2">
                   <Link href="/home">
@@ -60,12 +70,19 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
                       <FontAwesomeIcon
                         icon={faArrowLeft}
                         size="2x"
-                        className="text-white"
+                        className={
+                          course.bannerImage ? "text-white" : "text-black"
+                        }
                       />
                     </a>
                   </Link>
                 </div>
-                <h1 className="font-bold text-4xl text-center text-white">
+                <h1
+                  className={classNames(
+                    "font-bold text-4xl text-center",
+                    course.bannerImage ? "text-white" : "text-black"
+                  )}
+                >
                   {course.title}
                 </h1>
                 <div className="absolute right-0 top-0">
