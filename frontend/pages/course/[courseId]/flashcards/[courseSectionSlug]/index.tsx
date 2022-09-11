@@ -32,6 +32,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       courseId,
       flashcards,
+      courseSectionSlug,
     } as FlashcardsPageProps,
   };
 };
