@@ -1,10 +1,12 @@
 import CreateAddCourseModal from "./CreateAddCourseModal";
+import Heatmap from "./Heatmap";
 import SocialMediaLinks from "./SocialMediaLinks";
 import ReviewsDoneSVG from "@/components/ReviewsDoneSVG";
 import SEO from "@/helpers/SEO";
 import type { Course } from "@/types";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { HistorySegment } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -15,14 +17,25 @@ export interface HomePageProps {
    * Displays as a list on the homepage
    */
   courses: Course[];
+  /**
+   * How many reviews has the user studied today?
+   */
   reviewsDone: number;
+  /**
+   * How many reviews does the user want to study today?
+   */
   targetReviewsDone: number;
+  /**
+   * User's history of reviews for the past year
+   */
+  history: HistorySegment[];
 }
 
 export default function HomePage({
   courses,
   reviewsDone,
   targetReviewsDone,
+  history,
 }: HomePageProps) {
   const [addCourseModalOpen, setAddCourseModalOpen] = useState(false);
 
@@ -64,7 +77,7 @@ export default function HomePage({
                             <h3 className="text-xl font-bold mt-4 w-full">
                               {course.title}
                             </h3>
-                            <p>Sebastian Theiler</p>
+                            {/* <p>TEACHER</p> */}
                           </div>
                         </div>
                       </div>
@@ -87,6 +100,10 @@ export default function HomePage({
                 open={addCourseModalOpen}
                 close={() => setAddCourseModalOpen(false)}
               />
+            </div>
+            <div className="my-20">
+              <h1 className="font-bold text-center text-xl mb-2">History</h1>
+              <Heatmap history={history} />
             </div>
           </div>
           <div className="col-span-6 md:col-span-3 mx-4">

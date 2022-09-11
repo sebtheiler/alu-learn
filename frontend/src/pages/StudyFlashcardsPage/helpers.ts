@@ -18,7 +18,7 @@ type Grade = "AGAIN" | "HARD" | "GOOD" | "EASY";
  * @returns The formatted date (minutes, days, or months)
  */
 const formatDate = (minutes: number | undefined): string => {
-  if (!minutes) return "";
+  if (typeof minutes !== "number") return "";
   if (minutes >= 1440) {
     if (minutes / 1440 > 30) {
       return `${Math.floor((minutes / 1440 / 30) * 10) / 10}mo`;

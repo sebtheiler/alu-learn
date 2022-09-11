@@ -16,3 +16,49 @@ html * {
 .math-inline * {
   font-family: Courier, monospace;
 }
+
+/* https://github.com/kevinsqi/react-calendar-heatmap/blob/HEAD/src/styles.css */
+.react-calendar-heatmap text {
+  font-size: 10px;
+  fill: #aaa;
+}
+
+.react-calendar-heatmap .react-calendar-heatmap-small-text {
+  font-size: 5px;
+}
+
+.react-calendar-heatmap rect:hover {
+  stroke: #555;
+  stroke-width: 1px;
+}
+
+.heatmapColorScale0 {
+  fill: #f9fafb;
+}
+.heatmapColorScale1 {
+  fill: #e9e2f4;
+}
+.heatmapColorScale2 {
+  fill: #d9caed;
+}
+.heatmapColorScale3 {
+  fill: #c9b2e6;
+}
+.heatmapColorScale4 {
+  fill: #b99adf;
+}
+.heatmapColorScale5 {
+  fill: #aa81d8;
+}
+.heatmapColorScale6 {
+  fill: #9a69d1;
+}
+.heatmapColorScale7 {
+  fill: #8a51ca;
+}
+.heatmapColorScale8 {
+  fill: #7a39c3;
+}
+.heatmapColorScale9 {
+  fill: #6a21bc;
+}

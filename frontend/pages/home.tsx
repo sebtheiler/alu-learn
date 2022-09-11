@@ -23,6 +23,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getUserSSR(session, {
     numReviewsDoneToday: true,
     targetNumReviews: true,
+    id: true,
   });
 
   let courses = await prisma.course.findMany({
@@ -47,11 +48,29 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       : null,
   }));
 
+  const startDate = new Date();
+  startDate.setMonth(startDate.getMonth() - 6);
+
+  const history = await prisma.historySegment.findMany({
+    where: {
+      userId: user?.id,
+      date: {
+        gte: startDate,
+      },
+    },
+    select: {
+      date: true,
+      reviewsStudied: true,
+      timeTaken: true,
+    },
+  });
+
   return {
     props: {
       courses,
       reviewsDone: user?.numReviewsDoneToday,
       targetReviewsDone: user?.targetNumReviews,
+      history: JSON.parse(JSON.stringify(history)),
     } as HomePageProps,
   };
 };

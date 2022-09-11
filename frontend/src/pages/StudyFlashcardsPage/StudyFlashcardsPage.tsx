@@ -179,7 +179,6 @@ export default function StudyFlashcardsPage({
     // Get time spent
     browserInteractionTime.stopTimer();
     const timeTaken = browserInteractionTime.getTimeInMilliseconds();
-    console.log({ timeTaken });
     browserInteractionTime.reset();
     browserInteractionTime.startTimer();
 
