@@ -8,6 +8,7 @@ import ProgressBar from "@/components/ProgressBar";
 import StudyReviewInstance from "@/graphql/StudyReviewInstance";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
+import useWindowDimensions from "@/hooks/useWindowDimensions";
 import type {
   Mutation,
   MutationStudyReviewInstanceArgs,
@@ -53,6 +54,7 @@ export interface StudyFlashcardsPageProps {
   streakActive: boolean;
 }
 
+const BUTTONS_BREAKPOINT = 675;
 /**
  * Renders a page where the user can study flashcards (in the form of review instances)
  */
@@ -108,6 +110,8 @@ export default function StudyFlashcardsPage({
     browserInteractionTimer.startTimer();
     return browserInteractionTimer;
   }, []);
+
+  const { width } = useWindowDimensions();
 
   const onStarred = (e: React.MouseEvent<SVGElement>) => {
     // TODO: implement starring
@@ -261,7 +265,7 @@ export default function StudyFlashcardsPage({
       />
       <div className="mt-28">
         {!finishedStudying && activeReviewInstance && (
-          <div>
+          <div className="px-5">
             <h1 className="font-bold text-4xl text-center">Study Flashcards</h1>
             <ProgressBar
               stepNum={initialNumReviewInstances - _reviewInstances.length}
@@ -275,7 +279,7 @@ export default function StudyFlashcardsPage({
             )}
             <div
               className={classNames(
-                "w-96 h-[28rem] mx-auto mt-8 mb-4 flex flex-col relative hover:cursor-pointer",
+                "w-[20rem] md:w-96 h-[28rem] mx-auto mt-8 mb-4 flex flex-col relative hover:cursor-pointer",
                 (isTransitioningCorrect || isTransitioningIncorrect) &&
                   "transition-all duration-500 scale-75 -translate-y-36 opacity-0",
                 isTransitioningCorrect && "origin-bottom-right rotate-90",
@@ -308,11 +312,17 @@ export default function StudyFlashcardsPage({
             </p>
             <div
               className={classNames(
-                "fixed bottom-0 w-full z-30 h-24 transition-opacity duration-600",
-                revealAnswer ? "opacity-100" : "opacity-0"
+                "w-full z-30 transition-opacity duration-600",
+                revealAnswer ? "opacity-100" : "opacity-0",
+                width > BUTTONS_BREAKPOINT ? "fixed bottom-0 h-24" : "mt-10"
               )}
             >
-              <ButtonGroup className="text-center" fixedWidth="165px" spaced>
+              <ButtonGroup
+                className="text-center"
+                fixedWidth="165px"
+                vertical={width <= BUTTONS_BREAKPOINT}
+                spaced
+              >
                 {validGrades.includes("AGAIN") && (
                   <Button onClick={() => selectGrade("AGAIN")} variant="red">
                     Again (
@@ -350,9 +360,11 @@ export default function StudyFlashcardsPage({
                   </Button>
                 )}
               </ButtonGroup>
-              <p className="text-center mt-2 text-gray-500">
-                Click a response or use keys 1-{validGrades.length}
-              </p>
+              {width > BUTTONS_BREAKPOINT && (
+                <p className="text-center mt-2 text-gray-500">
+                  Click a response or use keys 1-{validGrades.length}
+                </p>
+              )}
             </div>
           </div>
         )}
