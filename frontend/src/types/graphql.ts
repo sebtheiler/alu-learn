@@ -174,7 +174,6 @@ export type MutationStudyReviewInstanceArgs = {
   grade: Grade;
   reviewInstanceId: Scalars['String'];
   timeTaken: Scalars['Int'];
-  timezoneOffset: Scalars['Int'];
 };
 
 

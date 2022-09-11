@@ -30,6 +30,14 @@ interface FinishedStudyingProps {
    */
   reviewsJustDone: number;
   /**
+   * Number of flashcards the user just learned
+   */
+  numReviewsLearned: number;
+  /**
+   * Number of flashcards the user just refreshed themselves on
+   */
+  numReviewsRefreshed: number;
+  /**
    * Was the user's streak "lit" when they started studying?
    */
   streakWasActive: boolean;
@@ -43,6 +51,8 @@ export default function FinishedStudying({
   studyAgain,
   oldStreak,
   reviewsJustDone,
+  numReviewsLearned,
+  numReviewsRefreshed,
   streakWasActive,
 }: FinishedStudyingProps) {
   const [slideIndex, setSlideIndex] = useState(0);
@@ -201,6 +211,20 @@ export default function FinishedStudying({
       <div className="flex container px-12 mx-auto mt-4 h-[36rem]">
         <div className="w-1/2 border-r-[3px] border-r-gray-400 h-full flex items-center justify-center">
           {slides[slideIndex]}
+        </div>
+        <div className="w-1/2 h-full flex items-center justify-center">
+          <div className="text-center">
+            {numReviewsLearned > 0 && (
+              <p className="text-green-600">
+                You learned {numReviewsLearned} new flashcards
+              </p>
+            )}
+            {numReviewsRefreshed > 0 && (
+              <p className="text-blue-600">
+                You refreshed your memory of {numReviewsRefreshed} flashcards
+              </p>
+            )}
+          </div>
         </div>
       </div>
       {slideIndex !== slides.length - 1 && (

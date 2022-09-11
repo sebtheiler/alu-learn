@@ -33,7 +33,6 @@ export const UsersMutation = extendType({
       type: ReviewInstance,
       description: "Change the user's settings",
       args: {
-        timezoneOffset: nonNull(intArg()),
         timeTaken: nonNull(intArg({ description: "In ms" })),
         reviewInstanceId: nonNull(stringArg()),
         grade: nonNull(arg({ type: Grade })),
@@ -58,8 +57,6 @@ export const UsersMutation = extendType({
 
         if (!interval) throw new ApolloError("Error calculating interval");
         const { updatedReviewInstance } = interval;
-        console.log(user);
-        console.log("done reviewstoday", user.doneReviewsToday);
 
         await ctx.prisma.user.update({
           where: {

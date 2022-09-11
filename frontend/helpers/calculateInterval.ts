@@ -1,6 +1,5 @@
 import daysBetween from "@/helpers/daysBetween";
-import type { PartialBy } from "@/types";
-import { ReviewInstance } from "@prisma/client";
+import type { LearningStatus, ReviewInstance } from "@prisma/client";
 
 // const ANKI_SETTINGS = {
 //   // "New Cards" tab
@@ -16,7 +15,6 @@ import { ReviewInstance } from "@prisma/client";
 //   // "Lapses" tab
 //   LAPSES_STEPS: [10], // in minutes
 //   NEW_INTERVAL: 70, // in percent
-//   MINIMUM_INTERVAL: 1, // in days
 
 //   // Other
 //   MIN_EASE_FACTOR: 130,
@@ -39,7 +37,6 @@ const ANKING_SETTINGS = {
   // "Lapses" tab
   LAPSES_STEPS: [30, 1440], // in minutes
   NEW_INTERVAL: 20, // in percent
-  MINIMUM_INTERVAL: 1, // in days
 
   // Other
   MIN_EASE_FACTOR: 130,
@@ -55,14 +52,15 @@ const inDays = (n: number) => {
   return date;
 };
 
-type PartialReviewInstance = PartialBy<
-  ReviewInstance,
-  "flashcardId" | "userId"
->;
+const inMinutes = (n: number) => {
+  const date = new Date();
+  date.setMinutes(date.getMinutes() + n);
+  return date;
+};
 
 export interface Interval {
   minutes: number;
-  updatedReviewInstance: PartialReviewInstance;
+  updatedReviewInstance: Partial<ReviewInstance>;
 }
 
 /**
@@ -73,90 +71,97 @@ export interface Interval {
  * @see https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
  */
 const calculateInterval = (
-  reviewInstance: PartialReviewInstance,
+  reviewInstance: {
+    lastReview: Date | null;
+    learningStatus: LearningStatus;
+    stepsIndex: number;
+    ease: number;
+  },
   grade: "AGAIN" | "HARD" | "GOOD" | "EASY",
   settings = ANKING_SETTINGS
 ): Interval | null => {
-  const updatedReviewInstance = reviewInstance;
-  const daysSinceLastReview = daysBetween(
-    reviewInstance.lastReview as Date,
-    new Date()
-  );
+  const daysSinceLastReview = reviewInstance.lastReview
+    ? daysBetween(reviewInstance.lastReview, new Date())
+    : 0;
 
   switch (reviewInstance.learningStatus) {
     case "UNSEEN":
     case "LEARNING":
-      updatedReviewInstance.learningStatus = "LEARNING";
       switch (grade) {
-        case "AGAIN":
-          updatedReviewInstance.stepsIndex = 0;
+        case "AGAIN": {
+          const minutes = settings.NEW_STEPS[0];
           return {
-            minutes: settings.NEW_STEPS[0],
-            updatedReviewInstance,
+            minutes,
+            updatedReviewInstance: {
+              learningStatus: "LEARNING",
+              stepsIndex: 0,
+              nextReview: inMinutes(minutes),
+            },
           };
+        }
         case "HARD":
           return null;
         case "GOOD":
-          updatedReviewInstance.stepsIndex++;
-          if (
-            updatedReviewInstance.stepsIndex <
-            settings.NEW_STEPS[updatedReviewInstance.stepsIndex]
-          ) {
+          if (reviewInstance.stepsIndex + 1 < settings.NEW_STEPS.length) {
+            const minutes = settings.NEW_STEPS[reviewInstance.stepsIndex + 1];
             return {
-              minutes: settings.NEW_STEPS[updatedReviewInstance.stepsIndex],
-              updatedReviewInstance,
+              minutes,
+              updatedReviewInstance: {
+                learningStatus: "LEARNING",
+                stepsIndex: reviewInstance.stepsIndex + 1,
+                nextReview: inMinutes(minutes),
+              },
             };
           } else {
-            updatedReviewInstance.learningStatus = "LEARNED";
-            updatedReviewInstance.nextReview = inDays(
-              settings.GRADUATING_INTERVAL
-            );
             return {
               minutes: settings.GRADUATING_INTERVAL * daysToMinutes,
-              updatedReviewInstance,
+              updatedReviewInstance: {
+                learningStatus: "LEARNED",
+                nextReview: inDays(settings.GRADUATING_INTERVAL),
+              },
             };
           }
         case "EASY":
-          updatedReviewInstance.learningStatus = "LEARNED";
-          updatedReviewInstance.nextReview = inDays(settings.EASY_INTERVAL);
           return {
             minutes: settings.EASY_INTERVAL * daysToMinutes,
-            updatedReviewInstance,
+            updatedReviewInstance: {
+              learningStatus: "LEARNED",
+              nextReview: inDays(settings.EASY_INTERVAL),
+            },
           };
       }
       break;
     case "LEARNED":
       switch (grade) {
-        case "AGAIN":
-          updatedReviewInstance.learningStatus = "RELEARNING";
-          updatedReviewInstance.stepsIndex = 0;
-          updatedReviewInstance.ease = Math.max(
-            settings.MIN_EASE_FACTOR,
-            reviewInstance.ease - 20
-          );
-          updatedReviewInstance.nextReview = inDays(
-            Math.max(
-              settings.MINIMUM_INTERVAL,
-              (daysSinceLastReview * settings.NEW_INTERVAL) / 100
-            )
-          );
+        case "AGAIN": {
+          const minutes = settings.LAPSES_STEPS[0];
           return {
-            minutes: settings.LAPSES_STEPS[0],
-            updatedReviewInstance,
+            minutes,
+            updatedReviewInstance: {
+              learningStatus: "RELEARNING",
+              stepsIndex: 0,
+              ease: Math.max(
+                settings.MIN_EASE_FACTOR,
+                reviewInstance.ease - 20
+              ),
+              nextReview: inMinutes(minutes),
+            },
           };
+        }
         case "HARD": {
-          updatedReviewInstance.ease = Math.max(
-            settings.MIN_EASE_FACTOR,
-            reviewInstance.ease - 15
-          );
           const interval = Math.min(
             settings.MAXIMUM_INTERVAL,
             (daysSinceLastReview * 1.2 * settings.INTERVAL_MODIFIER) / 100
           );
-          updatedReviewInstance.nextReview = inDays(interval);
           return {
             minutes: interval * daysToMinutes,
-            updatedReviewInstance,
+            updatedReviewInstance: {
+              ease: Math.max(
+                settings.MIN_EASE_FACTOR,
+                reviewInstance.ease - 15
+              ),
+              nextReview: inDays(interval),
+            },
           };
         }
         case "GOOD": {
@@ -166,14 +171,14 @@ const calculateInterval = (
               settings.INTERVAL_MODIFIER) /
               100
           );
-          updatedReviewInstance.nextReview = inDays(interval);
           return {
             minutes: interval * daysToMinutes,
-            updatedReviewInstance,
+            updatedReviewInstance: {
+              nextReview: inDays(interval),
+            },
           };
         }
         case "EASY": {
-          updatedReviewInstance.ease += 15;
           const interval = Math.min(
             settings.MAXIMUM_INTERVAL,
             (((((daysSinceLastReview * reviewInstance.ease) / 100) *
@@ -182,36 +187,48 @@ const calculateInterval = (
               settings.INTERVAL_MODIFIER) /
               100
           );
-          updatedReviewInstance.nextReview = inDays(interval);
           return {
             minutes: interval * daysToMinutes,
-            updatedReviewInstance,
+            updatedReviewInstance: {
+              ease: reviewInstance.ease + 15,
+              nextReview: inDays(interval),
+            },
           };
         }
       }
       break;
     case "RELEARNING":
       switch (grade) {
-        case "AGAIN":
-          updatedReviewInstance.stepsIndex = 0;
+        case "AGAIN": {
+          const minutes = settings.LAPSES_STEPS[0];
           return {
-            minutes: settings.LAPSES_STEPS[0],
-            updatedReviewInstance,
+            minutes,
+            updatedReviewInstance: {
+              stepsIndex: 0,
+              nextReview: inMinutes(minutes),
+            },
           };
+        }
         case "HARD":
           return null;
         case "GOOD":
-          updatedReviewInstance.stepsIndex++;
-          if (updatedReviewInstance.stepsIndex < settings.LAPSES_STEPS.length) {
+          if (reviewInstance.stepsIndex + 1 < settings.LAPSES_STEPS.length) {
+            const minutes =
+              settings.LAPSES_STEPS[reviewInstance.stepsIndex + 1];
             return {
-              minutes: settings.LAPSES_STEPS[updatedReviewInstance.stepsIndex],
-              updatedReviewInstance,
+              minutes,
+              updatedReviewInstance: {
+                stepsIndex: reviewInstance.stepsIndex + 1,
+                nextReview: inMinutes(minutes),
+              },
             };
           } else {
-            updatedReviewInstance.learningStatus = "LEARNED";
             return {
               minutes: daysSinceLastReview * daysToMinutes,
-              updatedReviewInstance,
+              updatedReviewInstance: {
+                learningStatus: "LEARNED",
+                nextReview: inDays(daysSinceLastReview),
+              },
             };
           }
         case "EASY":

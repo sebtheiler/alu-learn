@@ -15,9 +15,11 @@ import type {
   Grade as GQLGrade,
 } from "@/types";
 import { useMutation } from "@apollo/client";
+import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
 import type { Interval } from "helpers/calculateInterval";
+import calculateInterval from "helpers/calculateInterval";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export interface StudyFlashcardsPageProps {
   courseId: string;
@@ -64,18 +66,28 @@ export default function StudyFlashcardsPage({
   const { courseId, courseSectionSlug, subSectionSlug } = router.query;
 
   const initialNumReviewInstances = reviewInstances.length;
+  const initialNumUnseen = reviewInstances.filter(
+    (ri) => ri.learningStatus === "UNSEEN"
+  ).length;
   const [_reviewInstances, _setReviewInstances] = useState(() =>
     reviewInstances.sort(() => Math.random() - 0.5)
   );
   const [activeReviewInstance, setActiveReviewInstance] = useState<
     ExtendedReviewInstance | undefined
   >(() => _reviewInstances[0] as ExtendedReviewInstance);
-  const validGrades: Grade[] = GRADES.filter(
-    (grade) =>
-      activeReviewInstance &&
-      Object.keys(intervals).length > 0 &&
-      !!intervals[activeReviewInstance.id][grade]
+  const validGrades: Grade[] = useMemo(
+    () =>
+      GRADES.filter(
+        (grade) =>
+          activeReviewInstance &&
+          Object.keys(intervals).length > 0 &&
+          !!intervals[activeReviewInstance.id][grade]
+      ),
+    [intervals, activeReviewInstance]
   );
+  const [finishedStudying, setFinishedStudying] = useState(false);
+  const [numReviewsStudiedInSession, setNumReviewsStudiedInSession] =
+    useState(0);
 
   const [revealAnswer, setRevealAnswer] = useState(false);
   const [starred, setStarred] = useState(false);
@@ -105,13 +117,33 @@ export default function StudyFlashcardsPage({
       newReviewInstances = newReviewInstances.filter(
         (ri) => ri.id !== activeReviewInstance.id
       );
-    } else if (newReviewInstances.length > 1) {
+    } else {
+      // Recalculate the intervals
+      const updatedReviewInstance = {
+        ...activeReviewInstance,
+        ...interval.updatedReviewInstance,
+      };
+      for (const grade of GRADES) {
+        intervals[activeReviewInstance.id][grade] = calculateInterval(
+          updatedReviewInstance as PrismaReviewInstance,
+          grade
+        );
+      }
+      newReviewInstances[
+        newReviewInstances.map((ri) => ri.id).indexOf(activeReviewInstance.id)
+      ] = updatedReviewInstance as ReviewInstance;
+
       // Make sure the user is never shown the same card twice (unless it's the only card left)
-      while (newReviewInstances[0].id === activeReviewInstance.id) {
-        newReviewInstances = newReviewInstances.sort(() => Math.random() - 0.5);
+      if (newReviewInstances.length > 1) {
+        while (newReviewInstances[0].id === activeReviewInstance.id) {
+          newReviewInstances = newReviewInstances.sort(
+            () => Math.random() - 0.5
+          );
+        }
       }
     }
     _setReviewInstances(newReviewInstances);
+    setNumReviewsStudiedInSession(numReviewsStudiedInSession + 1);
 
     // Play "throwing away" animation
     setRevealAnswer(false);
@@ -132,12 +164,12 @@ export default function StudyFlashcardsPage({
         setActiveReviewInstance(
           newReviewInstances[0] as ExtendedReviewInstance
         );
+      if (newReviewInstances.length === 0) setFinishedStudying(true);
     }, 400);
 
     // Send API request
     studyReviewInstance({
       variables: {
-        timezoneOffset: 0,
         timeTaken: 0,
         reviewInstanceId: activeReviewInstance.id,
         grade: grade as GQLGrade,
@@ -148,6 +180,8 @@ export default function StudyFlashcardsPage({
   const studyAgain = () => {
     router.replace(router.asPath);
     setRevealAnswer(false);
+    setFinishedStudying(false);
+    setNumReviewsStudiedInSession(0);
   };
 
   const studyAhead = () => {
@@ -158,17 +192,19 @@ export default function StudyFlashcardsPage({
       },
     });
     setRevealAnswer(false);
+    setFinishedStudying(false);
+    setNumReviewsStudiedInSession(0);
   };
 
   // When studying ahead or studying again, automatically update the internal
   // review instances state and the active review instance when the review
   // instances prop is changed (due to `router.replace`)
   useEffect(() => {
-    if (_reviewInstances.length === 0) {
+    if (_reviewInstances.length === 0 && finishedStudying) {
       _setReviewInstances(reviewInstances);
     }
     setActiveReviewInstance(reviewInstances[0] as ExtendedReviewInstance);
-  }, [_reviewInstances, reviewInstances]);
+  }, [_reviewInstances.length, reviewInstances, finishedStudying]);
 
   useEffect(() => {
     const keyUp = (event: KeyboardEvent) => {
@@ -209,7 +245,7 @@ export default function StudyFlashcardsPage({
         description=""
       />
       <div className="mt-28">
-        {initialNumReviewInstances > 0 && activeReviewInstance && (
+        {!finishedStudying && activeReviewInstance && (
           <div>
             <h1 className="font-bold text-4xl text-center">Study Flashcards</h1>
             <ProgressBar
@@ -305,12 +341,16 @@ export default function StudyFlashcardsPage({
             </div>
           </div>
         )}
-        {!activeReviewInstance && initialNumReviewInstances > 0 && (
+        {finishedStudying && (
           <FinishedStudying
             courseId={courseId as string}
             studyAgain={studyAgain}
             oldStreak={currentStreak}
-            reviewsJustDone={Object.keys(intervals).length}
+            reviewsJustDone={numReviewsStudiedInSession}
+            numReviewsLearned={initialNumUnseen}
+            numReviewsRefreshed={
+              Object.keys(intervals).length - initialNumUnseen
+            }
             streakWasActive={streakActive}
           />
         )}
