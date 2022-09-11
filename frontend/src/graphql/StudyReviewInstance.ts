@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 const StudyReviewInstance = gql`
   mutation StudyReviewInstance(
-    $timeTaken: Int!
+    $timeTaken: Float!
     $reviewInstanceId: String!
     $grade: Grade!
   ) {

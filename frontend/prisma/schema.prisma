@@ -73,6 +73,7 @@ model User {
 
   uploadedImages  UploadedImage[]
   reviewInstances ReviewInstance[]
+  history         HistorySegment[]
 
   userType              UserType @default(STUDENT)
   sendReminders         Boolean  @default(false)
@@ -223,4 +224,14 @@ model UploadedImage {
 
   width  Int?
   height Int?
+}
+
+model HistorySegment {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  date           DateTime @db.Date
+  reviewsStudied Int      @default(0)
+  timeTaken      Float    @default(0)
 }

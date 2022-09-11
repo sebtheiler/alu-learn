@@ -121,8 +121,8 @@ export default function {page_name}({{
 
     page_stories_tsx = f"""
 import {{ ComponentStory }} from "@storybook/react";
-import withNavbar from "helpers/withNavbar";
-import withFullContext from "helpers/withFullContext";
+import withNavbar from "@/helpers/withNavbar";
+import withFullContext from "@/helpers/withFullContext";
 
 import {page_name} from ".";
 

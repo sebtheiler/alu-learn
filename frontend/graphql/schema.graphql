@@ -117,7 +117,7 @@ type Mutation {
     reviewInstanceId: String!
 
     """In ms"""
-    timeTaken: Int!
+    timeTaken: Float!
   ): ReviewInstance
 
   """Change a course's settings"""

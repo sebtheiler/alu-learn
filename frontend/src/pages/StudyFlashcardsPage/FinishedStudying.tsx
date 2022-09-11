@@ -216,12 +216,14 @@ export default function FinishedStudying({
           <div className="text-center">
             {numReviewsLearned > 0 && (
               <p className="text-green-600">
-                You learned {numReviewsLearned} new flashcards
+                You learned {numReviewsLearned} new flashcard
+                {numReviewsLearned !== 1 && "s"}
               </p>
             )}
             {numReviewsRefreshed > 0 && (
               <p className="text-blue-600">
-                You refreshed your memory of {numReviewsRefreshed} flashcards
+                You refreshed your memory of {numReviewsRefreshed} flashcard
+                {numReviewsRefreshed !== 1 && "s"}
               </p>
             )}
           </div>

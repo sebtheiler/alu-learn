@@ -2,11 +2,12 @@ import DateScalar from "./scalars/DateScalar";
 import { ApolloError } from "apollo-server-micro";
 import calculateInterval from "helpers/calculateInterval";
 import getUserGQL from "helpers/getUserGQL";
+import updateUserHistory from "helpers/updateUserHistory";
 import {
   arg,
   enumType,
   extendType,
-  intArg,
+  floatArg,
   nonNull,
   objectType,
   stringArg,
@@ -33,7 +34,7 @@ export const UsersMutation = extendType({
       type: ReviewInstance,
       description: "Change the user's settings",
       args: {
-        timeTaken: nonNull(intArg({ description: "In ms" })),
+        timeTaken: nonNull(floatArg({ description: "In ms" })),
         reviewInstanceId: nonNull(stringArg()),
         grade: nonNull(arg({ type: Grade })),
       },
@@ -43,6 +44,7 @@ export const UsersMutation = extendType({
           doneReviewsToday: true,
           numReviewsDoneToday: true,
           currentStreak: true,
+          timezoneOffset: true,
         });
         if (!user) return null;
 
@@ -70,6 +72,8 @@ export const UsersMutation = extendType({
             doneReviewsToday: user.doneReviewsToday ? undefined : true,
           },
         });
+
+        await updateUserHistory(user, args.timeTaken, ctx.prisma);
 
         return ctx.prisma.reviewInstance.update({
           where: {

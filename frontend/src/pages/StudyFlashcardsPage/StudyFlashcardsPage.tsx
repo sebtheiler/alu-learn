@@ -16,6 +16,7 @@ import type {
 } from "@/types";
 import { useMutation } from "@apollo/client";
 import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
+import BrowserInteractionTime from "browser-interaction-time";
 import type { Interval } from "helpers/calculateInterval";
 import calculateInterval from "helpers/calculateInterval";
 import { useRouter } from "next/router";
@@ -100,6 +101,14 @@ export default function StudyFlashcardsPage({
     MutationStudyReviewInstanceArgs
   >(StudyReviewInstance);
 
+  const browserInteractionTime = useMemo(() => {
+    const browserInteractionTimer = new BrowserInteractionTime({
+      idleTimeoutMs: 60_000,
+    });
+    browserInteractionTimer.startTimer();
+    return browserInteractionTimer;
+  }, []);
+
   const onStarred = (e: React.MouseEvent<SVGElement>) => {
     // TODO: implement starring
     setStarred(!starred);
@@ -167,10 +176,17 @@ export default function StudyFlashcardsPage({
       if (newReviewInstances.length === 0) setFinishedStudying(true);
     }, 400);
 
+    // Get time spent
+    browserInteractionTime.stopTimer();
+    const timeTaken = browserInteractionTime.getTimeInMilliseconds();
+    console.log({ timeTaken });
+    browserInteractionTime.reset();
+    browserInteractionTime.startTimer();
+
     // Send API request
     studyReviewInstance({
       variables: {
-        timeTaken: 0,
+        timeTaken,
         reviewInstanceId: activeReviewInstance.id,
         grade: grade as GQLGrade,
       },
