@@ -1,4 +1,3 @@
-import styles from "./MatchingGridGamePage.module.scss";
 import Button from "@/atoms/Button";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
@@ -71,6 +70,10 @@ export default function MatchingGridGamePage({
     if (selectedEl === newEl) {
       setCorrectValues([...correctValues, newEl]);
       setSelected(null);
+
+      // https://freesound.org/people/ertfelda/sounds/243701/
+      const sound = new Audio("/assets/audio/correct.wav");
+      sound.play();
     } else {
       setSelected(null);
       setNumMistakes(numMistakes + 1);
@@ -109,10 +112,7 @@ export default function MatchingGridGamePage({
                       selected?.i === i && selected?.j === j
                         ? "bg-slate-200"
                         : correctValues.includes(values[i * gridSize + j].id)
-                        ? classNames(
-                            "bg-green-300 hover:cursor-not-allowed hover:scale-100",
-                            styles.pop
-                          )
+                        ? "bg-green-300 hover:cursor-not-allowed hover:scale-100 pop"
                         : "bg-slate-50"
                     )}
                     onClick={() => selectGrid({ i, j })}

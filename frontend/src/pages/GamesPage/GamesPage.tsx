@@ -101,6 +101,7 @@ export default function GamesPage() {
             <TextInput
               label="Number of Questions"
               defaultValue={10}
+              min={5}
               type="number"
               name="numQuestions"
             />

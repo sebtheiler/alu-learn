@@ -58,6 +58,14 @@ interface TextInputProps {
    * Autofocus the input?
    */
   autoFocus?: boolean;
+  /**
+   * Minimum value (if number type)
+   */
+  min?: number;
+  /**
+   * Maximum value (if number type)
+   */
+  max?: number;
 }
 
 /**
@@ -79,6 +87,8 @@ export default function TextInput({
   onChange,
   onBlur,
   autoFocus = false,
+  min,
+  max,
 }: TextInputProps) {
   return (
     <div
@@ -106,6 +116,8 @@ export default function TextInput({
         required={required}
         disabled={disabled}
         autoFocus={autoFocus}
+        min={min}
+        max={max}
       />
       {label && (
         <label
