@@ -1,3 +1,5 @@
+import type { Flashcard, ReviewInstance } from "./graphql";
+
 /**
  * Make each key of a type NonNullable
  */
@@ -12,4 +14,8 @@ interface Streak {
   doneReviewsToday: boolean;
 }
 
-export type { NonNullableKeys, Streak, PartialBy };
+type ReviewInstanceWithFlashcard = NonNullableKeys<ReviewInstance> & {
+  flashcard: Flashcard;
+};
+
+export type { NonNullableKeys, Streak, PartialBy, ReviewInstanceWithFlashcard };

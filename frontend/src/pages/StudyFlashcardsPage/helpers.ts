@@ -1,14 +1,8 @@
-import type { Flashcard, NonNullableKeys, ReviewInstance } from "@/types";
-
 const EASE_FOR_HARD_EXERCISE = 180;
 
 const GRADES: Grade[] = ["AGAIN", "HARD", "GOOD", "EASY"];
 
 const TIME_BEFORE_SWAP = 250;
-
-type ExtendedReviewInstance = NonNullableKeys<ReviewInstance> & {
-  flashcard: Flashcard;
-};
 
 type Grade = "AGAIN" | "HARD" | "GOOD" | "EASY";
 
@@ -28,5 +22,5 @@ const formatDate = (minutes: number | undefined): string => {
   return `${minutes}m`;
 };
 
-export type { Grade, ExtendedReviewInstance };
+export type { Grade };
 export { EASE_FOR_HARD_EXERCISE, GRADES, TIME_BEFORE_SWAP, formatDate };

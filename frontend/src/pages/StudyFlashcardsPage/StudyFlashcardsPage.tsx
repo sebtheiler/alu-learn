@@ -1,7 +1,7 @@
 import FinishedStudying from "./FinishedStudying";
 import FlashcardSide from "./FlashcardSide";
 import { EASE_FOR_HARD_EXERCISE, formatDate, GRADES } from "./helpers";
-import type { ExtendedReviewInstance, Grade } from "./helpers";
+import type { Grade } from "./helpers";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import ProgressBar from "@/components/ProgressBar";
@@ -13,6 +13,7 @@ import type {
   Mutation,
   MutationStudyReviewInstanceArgs,
   ReviewInstance,
+  ReviewInstanceWithFlashcard,
   Grade as GQLGrade,
 } from "@/types";
 import { useMutation } from "@apollo/client";
@@ -76,8 +77,8 @@ export default function StudyFlashcardsPage({
     reviewInstances.sort(() => Math.random() - 0.5)
   );
   const [activeReviewInstance, setActiveReviewInstance] = useState<
-    ExtendedReviewInstance | undefined
-  >(() => _reviewInstances[0] as ExtendedReviewInstance);
+    ReviewInstanceWithFlashcard | undefined
+  >(() => _reviewInstances[0] as ReviewInstanceWithFlashcard);
   const validGrades: Grade[] = useMemo(
     () =>
       GRADES.filter(
@@ -175,7 +176,7 @@ export default function StudyFlashcardsPage({
       setIsTransitioningCorrect(false),
         setIsTransitioningIncorrect(false),
         setActiveReviewInstance(
-          newReviewInstances[0] as ExtendedReviewInstance
+          newReviewInstances[0] as ReviewInstanceWithFlashcard
         );
       if (newReviewInstances.length === 0) setFinishedStudying(true);
     }, 400);
@@ -222,7 +223,7 @@ export default function StudyFlashcardsPage({
     if (_reviewInstances.length === 0 && finishedStudying) {
       _setReviewInstances(reviewInstances);
     }
-    setActiveReviewInstance(reviewInstances[0] as ExtendedReviewInstance);
+    setActiveReviewInstance(reviewInstances[0] as ReviewInstanceWithFlashcard);
   }, [_reviewInstances.length, reviewInstances, finishedStudying]);
 
   useEffect(() => {

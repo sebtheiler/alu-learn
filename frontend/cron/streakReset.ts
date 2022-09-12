@@ -29,6 +29,7 @@ const streakReset = async () => {
     },
     data: {
       doneReviewsToday: false,
+      numReviewsDoneToday: 0,
     },
   });
 };

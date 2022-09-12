@@ -37,6 +37,10 @@ interface SelectProps {
    */
   id: string;
   /**
+   * Name of the input element
+   */
+  name?: string;
+  /**
    * Function to call when the value changes
    * @param val Value of the new option
    */
@@ -55,6 +59,7 @@ export default function Select({
   defaultValue,
   label,
   id,
+  name,
   onChange,
   className,
 }: SelectProps) {
@@ -66,6 +71,7 @@ export default function Select({
   return (
     <Listbox
       value={selectedOption.value}
+      name={name}
       onChange={(optionVal) => {
         onChange && onChange(optionVal);
         setSelectedOption(
