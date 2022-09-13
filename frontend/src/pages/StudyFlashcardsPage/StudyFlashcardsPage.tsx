@@ -15,11 +15,11 @@ import type {
   ReviewInstance,
   ReviewInstanceWithFlashcard,
   Grade as GQLGrade,
+  Intervals,
 } from "@/types";
 import { useMutation } from "@apollo/client";
 import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
 import BrowserInteractionTime from "browser-interaction-time";
-import type { Interval } from "helpers/calculateInterval";
 import calculateInterval from "helpers/calculateInterval";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -33,14 +33,7 @@ export interface StudyFlashcardsPageProps {
    * Intervals for each review instance.
    * In the form of a dictionary (reviewInstanceId: interval)
    */
-  intervals: {
-    [reviewInstanceId: string]: {
-      AGAIN: Interval | null;
-      HARD: Interval | null;
-      GOOD: Interval | null;
-      EASY: Interval | null;
-    };
-  };
+  intervals: Intervals;
   /**
    * Are there no flashcards at all in the section/course?
    */

@@ -1,5 +1,6 @@
 import daysBetween from "@/helpers/daysBetween";
-import type { LearningStatus, ReviewInstance } from "@prisma/client";
+import type { Interval } from "@/types";
+import type { LearningStatus } from "@prisma/client";
 
 // const ANKI_SETTINGS = {
 //   // "New Cards" tab
@@ -57,11 +58,6 @@ const inMinutes = (n: number) => {
   date.setMinutes(date.getMinutes() + n);
   return date;
 };
-
-export interface Interval {
-  minutes: number;
-  updatedReviewInstance: Partial<ReviewInstance>;
-}
 
 /**
  * Calculate an interval for a review instance using Anki's algorithm

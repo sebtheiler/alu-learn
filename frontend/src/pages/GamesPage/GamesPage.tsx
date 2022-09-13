@@ -67,7 +67,7 @@ export default function GamesPage() {
             label="Game"
             options={[
               { value: "MATCHING-GRID", label: "Matching Grid" },
-              { value: "ALU-BOT", label: "Alu Bot" },
+              { value: "ALU-BOT", label: "Alu Bot (WIP)" },
               { value: "QUIZ", label: "Quiz" },
             ]}
             onChange={(val) => setGame(val as Game)}

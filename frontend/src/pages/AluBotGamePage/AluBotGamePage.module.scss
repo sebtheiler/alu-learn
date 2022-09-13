@@ -1,0 +1,108 @@
+// Taken from https://codepen.io/swards/pen/gxQmbj
+.aluBotText {
+  &:before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    bottom: 0;
+    left: -7px;
+    height: 20px;
+    width: 20px;
+    background: #e5e7eb;
+    border-bottom-right-radius: 15px;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    left: -10px;
+    width: 10px;
+    height: 20px;
+    background: white;
+    border-bottom-right-radius: 10px;
+  }
+}
+
+.userText {
+  &:before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    bottom: 0;
+    right: -8px;
+    height: 20px;
+    width: 20px;
+    background: #2563eb;
+    background-attachment: fixed;
+    border-bottom-left-radius: 15px;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    right: -10px;
+    width: 10px;
+    height: 20px;
+    background: white;
+    border-bottom-left-radius: 10px;
+  }
+}
+
+// Adapted from https://codepen.io/fusco/pen/XbpaYv
+.typingIndicator {
+  $ti-color-bg: #e5e7eb;
+  background-color: $ti-color-bg;
+  will-change: transform;
+  width: auto;
+  display: table;
+  position: relative;
+  animation: 2s bulge infinite ease-out;
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: -2px;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background-color: $ti-color-bg;
+  }
+  &::after {
+    height: 10px;
+    width: 10px;
+    left: -10px;
+    bottom: -10px;
+  }
+  span {
+    height: 10px;
+    width: 10px;
+    float: left;
+    margin: 0 1px;
+    background-color: #9e9ea1;
+    display: block;
+    border-radius: 50%;
+    opacity: 0.4;
+    @for $i from 1 through 3 {
+      &:nth-of-type(#{$i}) {
+        animation: 1s blink infinite ($i * 0.3333s);
+      }
+    }
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes bulge {
+  50% {
+    transform: scale(1.05);
+  }
+}

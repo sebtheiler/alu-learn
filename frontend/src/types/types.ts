@@ -1,4 +1,5 @@
 import type { Flashcard, ReviewInstance } from "./graphql";
+import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
 
 /**
  * Make each key of a type NonNullable
@@ -18,4 +19,29 @@ type ReviewInstanceWithFlashcard = NonNullableKeys<ReviewInstance> & {
   flashcard: Flashcard;
 };
 
-export type { NonNullableKeys, Streak, PartialBy, ReviewInstanceWithFlashcard };
+interface Interval {
+  minutes: number;
+  updatedReviewInstance: Partial<PrismaReviewInstance>;
+}
+
+/**
+ * Intervals for each review instance.
+ * In the form of a dictionary (reviewInstanceId: interval)
+ */
+interface Intervals {
+  [reviewInstanceId: string]: {
+    AGAIN: Interval | null;
+    HARD: Interval | null;
+    GOOD: Interval | null;
+    EASY: Interval | null;
+  };
+}
+
+export type {
+  NonNullableKeys,
+  Streak,
+  PartialBy,
+  ReviewInstanceWithFlashcard,
+  Interval,
+  Intervals,
+};
