@@ -5,16 +5,27 @@ import ButtonGroup from "@/atoms/ButtonGroup";
 import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
 import RenderCourseSection from "@/courses/RenderCourseSection";
+import MoveCourseSection from "@/graphql/MoveCourseSection";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
-import type { Course, CourseSection } from "@/types";
+import type {
+  Course,
+  CourseSection,
+  Mutation,
+  MutationMoveCourseSectionArgs,
+} from "@/types";
+import { useMutation } from "@apollo/client";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useState } from "react";
+import { ReactSortable } from "react-sortablejs";
+import type { SortableEvent } from "react-sortablejs";
+
+type CourseSectionWithId = CourseSection & { id: string };
 
 export interface CoursePageProps {
   /**
@@ -34,6 +45,25 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
   const router = useRouter();
   const refreshData = () => router.replace(router.asPath);
   const { width } = useWindowDimensions();
+  const [courseSections, setCourseSections] = useState<CourseSectionWithId[]>(
+    course.courseSections as CourseSectionWithId[]
+  );
+  const [moveCourseSection] = useMutation<
+    { moveCourseSection: Mutation["moveCourseSection"] },
+    MutationMoveCourseSectionArgs
+  >(MoveCourseSection);
+
+  const onCourseSectionDragEnd = (evt: SortableEvent) => {
+    if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
+
+    moveCourseSection({
+      variables: {
+        courseId: course.id as string,
+        from: evt.oldIndex,
+        to: evt.newIndex,
+      },
+    });
+  };
 
   return (
     <>
@@ -121,19 +151,25 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
               More
             </DropdownButton>
           </ButtonGroup>
-          <div className="md:container mx-auto px-4 mt-6">
+          <ReactSortable
+            list={courseSections}
+            setList={setCourseSections}
+            handle=".course-section-drag-handle"
+            onEnd={onCourseSectionDragEnd}
+            className="md:container mx-auto px-4 mt-6"
+          >
             <CoursePageContext.Provider value={{ course, refreshData }}>
-              {course?.courseSections?.map((courseSection) => (
+              {courseSections.map((courseSection) => (
                 <RenderCourseSection
                   courseSection={courseSection as CourseSection}
                   key={courseSection?.id as string}
                 />
               ))}
             </CoursePageContext.Provider>
-          </div>
+          </ReactSortable>
           <div className="text-center">
             <p className="text-white">.</p>
-            {course.courseSections?.length === 0 && (
+            {courseSections.length === 0 && (
               <p className="mb-3 mx-auto">
                 This course doesn&apos;t have any sections yet. Add one below to
                 start organizing the course!

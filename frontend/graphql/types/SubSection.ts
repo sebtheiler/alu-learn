@@ -3,8 +3,16 @@ import type { SubSection as PrismaSubSection } from "@prisma/client";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseSectionOwner from "helpers/isCourseSectionOwner";
 import isSubSectionOwner from "helpers/isSubSectionOwner";
+import moveObject from "helpers/moveObject";
 import slugifyText from "helpers/slugifyText";
-import { extendType, list, nonNull, objectType, stringArg } from "nexus";
+import {
+  extendType,
+  intArg,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from "nexus";
 
 const SubSection = objectType({
   name: "SubSection",
@@ -114,6 +122,34 @@ export const SubSectionMutation = extendType({
 
         return ctx.prisma.subSection.delete({
           where: { id: args.subSectionId },
+        });
+      },
+    });
+    t.field("moveSubSection", {
+      type: "SubSection",
+      description: "Moves a sub section from a position to another",
+      args: {
+        courseSectionId: nonNull(stringArg()),
+        from: nonNull(intArg()),
+        to: nonNull(intArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        if (
+          !user ||
+          !isCourseSectionOwner(args.courseSectionId, ctx.user?.email)
+        )
+          return null;
+
+        return moveObject({
+          objType: "SUB_SECTION",
+          from: args.from,
+          to: args.to,
+          parentQuery: { courseSectionId: args.courseSectionId },
+          objQuery: {
+            courseSectionId: args.courseSectionId,
+          },
+          ctx,
         });
       },
     });

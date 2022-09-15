@@ -1,9 +1,9 @@
 import type { Flashcard as PrismaFlashcard, Prisma } from "@prisma/client";
-import { ApolloError } from "apollo-server-micro";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
 import isCourseUser from "helpers/isCourseUser";
 import isSubSectionOwner from "helpers/isSubSectionOwner";
+import moveObject from "helpers/moveObject";
 import {
   arg,
   enumType,
@@ -234,68 +234,18 @@ export const FlashcardMutation = extendType({
         if (!user || !isCourseOwner(args.courseId, ctx.user?.email))
           return null;
 
-        const numFlashcards = await ctx.prisma.flashcard.count({
-          where: { subSectionId },
-        });
-
-        if (
-          args.from > numFlashcards ||
-          args.to > numFlashcards ||
-          args.from < 0 ||
-          args.to < 0
-        ) {
-          throw new ApolloError("Invalid values for `from` or `to`");
-        }
-
-        const { id: fromFlashcardId } =
-          await ctx.prisma.flashcard.findFirstOrThrow({
-            where: {
-              index: args.from,
+        return moveObject({
+          objType: "FLASHCARD",
+          from: args.from,
+          to: args.to,
+          parentQuery: { subSectionId },
+          objQuery: {
+            subSection: {
+              slug: args.subSectionSlug,
             },
-            select: {
-              id: true,
-            },
-          });
-
-        if (args.to > args.from) {
-          await ctx.prisma.flashcard.updateMany({
-            where: {
-              subSectionId,
-              index: {
-                gt: args.from,
-                lte: args.to,
-              },
-            },
-            data: {
-              index: {
-                decrement: 1,
-              },
-            },
-          });
-        } else {
-          await ctx.prisma.flashcard.updateMany({
-            where: {
-              subSectionId,
-              index: {
-                lt: args.from,
-                gte: args.to,
-              },
-            },
-            data: {
-              index: {
-                increment: 1,
-              },
-            },
-          });
-        }
-
-        return await ctx.prisma.flashcard.update({
-          where: {
-            id: fromFlashcardId,
+            courseId: args.courseId,
           },
-          data: {
-            index: args.to,
-          },
+          ctx,
         });
       },
     });

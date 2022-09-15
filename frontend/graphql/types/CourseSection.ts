@@ -2,8 +2,16 @@ import type { CourseSection as PrismaCourseSection } from "@prisma/client";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
 import isCourseSectionOwner from "helpers/isCourseSectionOwner";
+import moveObject from "helpers/moveObject";
 import slugifyText from "helpers/slugifyText";
-import { extendType, list, nonNull, objectType, stringArg } from "nexus";
+import {
+  extendType,
+  intArg,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from "nexus";
 
 const CourseSection = objectType({
   name: "CourseSection",
@@ -123,6 +131,31 @@ export const CourseSectionMutation = extendType({
 
         return ctx.prisma.courseSection.delete({
           where: { id: args.courseSectionId },
+        });
+      },
+    });
+    t.field("moveCourseSection", {
+      type: "CourseSection",
+      description: "Moves a course section from a position to another",
+      args: {
+        courseId: nonNull(stringArg()),
+        from: nonNull(intArg()),
+        to: nonNull(intArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        if (!user || !isCourseOwner(args.courseId, ctx.user?.email))
+          return null;
+
+        return moveObject({
+          objType: "COURSE_SECTION",
+          from: args.from,
+          to: args.to,
+          parentQuery: { courseId: args.courseId },
+          objQuery: {
+            courseId: args.courseId,
+          },
+          ctx,
         });
       },
     });

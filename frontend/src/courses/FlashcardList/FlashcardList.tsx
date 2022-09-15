@@ -24,7 +24,7 @@ export default function FlashcardList({ flashcards }: FlashcardListProps) {
     Array(flashcards.length).fill(false)
   );
   const [moveFlashcard] = useMutation<
-    { updateFlashcard: Mutation["moveFlashcard"] },
+    { moveFlashcard: Mutation["moveFlashcard"] },
     MutationMoveFlashcardArgs
   >(MoveFlashcard);
 

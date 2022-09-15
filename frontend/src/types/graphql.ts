@@ -94,8 +94,12 @@ export type Mutation = {
   deleteFlashcard?: Maybe<Flashcard>;
   /** Deletes a sub section */
   deleteSubSection?: Maybe<SubSection>;
+  /** Moves a course section from a position to another */
+  moveCourseSection?: Maybe<CourseSection>;
   /** Moves a flashcard from a position to another */
   moveFlashcard?: Maybe<Flashcard>;
+  /** Moves a sub section from a position to another */
+  moveSubSection?: Maybe<SubSection>;
   /** Change the user's settings */
   studyReviewInstance?: Maybe<ReviewInstance>;
   /** Change a course's settings */
@@ -174,10 +178,24 @@ export type MutationDeleteSubSectionArgs = {
 };
 
 
+export type MutationMoveCourseSectionArgs = {
+  courseId: Scalars['String'];
+  from: Scalars['Int'];
+  to: Scalars['Int'];
+};
+
+
 export type MutationMoveFlashcardArgs = {
   courseId: Scalars['String'];
   from: Scalars['Int'];
   subSectionSlug: Scalars['String'];
+  to: Scalars['Int'];
+};
+
+
+export type MutationMoveSubSectionArgs = {
+  courseSectionId: Scalars['String'];
+  from: Scalars['Int'];
   to: Scalars['Int'];
 };
 

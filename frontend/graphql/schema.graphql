@@ -111,8 +111,14 @@ type Mutation {
     subSectionId: String!
   ): SubSection
 
+  """Moves a course section from a position to another"""
+  moveCourseSection(courseId: String!, from: Int!, to: Int!): CourseSection
+
   """Moves a flashcard from a position to another"""
   moveFlashcard(courseId: String!, from: Int!, subSectionSlug: String!, to: Int!): Flashcard
+
+  """Moves a sub section from a position to another"""
+  moveSubSection(courseSectionId: String!, from: Int!, to: Int!): SubSection
 
   """Change the user's settings"""
   studyReviewInstance(
