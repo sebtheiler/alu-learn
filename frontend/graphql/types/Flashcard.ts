@@ -1,4 +1,5 @@
 import type { Flashcard as PrismaFlashcard, Prisma } from "@prisma/client";
+import { ApolloError } from "apollo-server-micro";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
 import isCourseUser from "helpers/isCourseUser";
@@ -7,6 +8,7 @@ import {
   arg,
   enumType,
   extendType,
+  intArg,
   list,
   nonNull,
   objectType,
@@ -121,10 +123,17 @@ export const FlashcardMutation = extendType({
         )
           return null;
 
+        const newIndex = await ctx.prisma.flashcard.count({
+          where: {
+            subSectionId: subSection.id,
+          },
+        });
+
         return ctx.prisma.flashcard.create({
           data: {
             fields: args.fields,
             tags: args.tags ?? "",
+            index: newIndex,
             subSection: {
               connect: {
                 id: subSection.id,
@@ -194,6 +203,98 @@ export const FlashcardMutation = extendType({
         return ctx.prisma.flashcard.delete({
           where: {
             id: flashcard.id,
+          },
+        });
+      },
+    });
+    t.field("moveFlashcard", {
+      type: "Flashcard",
+      description: "Moves a flashcard from a position to another",
+      args: {
+        courseId: nonNull(stringArg()),
+        subSectionSlug: nonNull(stringArg()),
+        from: nonNull(intArg()),
+        to: nonNull(intArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        const { id: subSectionId } =
+          await ctx.prisma.subSection.findFirstOrThrow({
+            where: {
+              slug: args.subSectionSlug,
+              courseSection: {
+                courseId: args.courseId,
+              },
+            },
+            select: {
+              id: true,
+            },
+          });
+
+        if (!user || !isCourseOwner(args.courseId, ctx.user?.email))
+          return null;
+
+        const numFlashcards = await ctx.prisma.flashcard.count({
+          where: { subSectionId },
+        });
+
+        if (
+          args.from > numFlashcards ||
+          args.to > numFlashcards ||
+          args.from < 0 ||
+          args.to < 0
+        ) {
+          throw new ApolloError("Invalid values for `from` or `to`");
+        }
+
+        const { id: fromFlashcardId } =
+          await ctx.prisma.flashcard.findFirstOrThrow({
+            where: {
+              index: args.from,
+            },
+            select: {
+              id: true,
+            },
+          });
+
+        if (args.to > args.from) {
+          await ctx.prisma.flashcard.updateMany({
+            where: {
+              subSectionId,
+              index: {
+                gt: args.from,
+                lte: args.to,
+              },
+            },
+            data: {
+              index: {
+                decrement: 1,
+              },
+            },
+          });
+        } else {
+          await ctx.prisma.flashcard.updateMany({
+            where: {
+              subSectionId,
+              index: {
+                lt: args.from,
+                gte: args.to,
+              },
+            },
+            data: {
+              index: {
+                increment: 1,
+              },
+            },
+          });
+        }
+
+        return await ctx.prisma.flashcard.update({
+          where: {
+            id: fromFlashcardId,
+          },
+          data: {
+            index: args.to,
           },
         });
       },

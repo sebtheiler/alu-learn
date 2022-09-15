@@ -111,6 +111,9 @@ type Mutation {
     subSectionId: String!
   ): SubSection
 
+  """Moves a flashcard from a position to another"""
+  moveFlashcard(courseId: String!, from: Int!, subSectionSlug: String!, to: Int!): Flashcard
+
   """Change the user's settings"""
   studyReviewInstance(
     grade: Grade!
@@ -149,6 +152,9 @@ type Mutation {
     subSectionId: String!
     title: String
   ): SubSection
+
+  """Change the user's settings"""
+  updateUser(name: String, sendMarketingResearch: Boolean, sendReminders: Boolean, targetNumReviews: Int, timezoneOffset: Int, userType: UserType): User
 
   """Upload a banner image for a course"""
   uploadCourseBannerImage(

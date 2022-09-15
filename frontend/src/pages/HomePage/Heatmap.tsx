@@ -11,6 +11,7 @@ interface HistoryVal {
 }
 
 const genDataTip = (value: HistoryVal) => {
+  if (!value) return;
   const minutes = Math.round(value.timeTaken / 1000 / 60);
   return `You studied ${value.reviewsStudied} flashcard${
     value.reviewsStudied !== 1 ? "s" : ""
@@ -45,6 +46,8 @@ export default function Heatmap({ history }: { history: HistorySegment[] }) {
   const startDate = new Date();
   startDate.setMonth(startDate.getMonth() - 6);
 
+  const todayDataTip = genDataTip(historyVals[historyVals.length - 1]);
+
   return (
     <div className="max-w-lg mx-auto">
       <div
@@ -72,7 +75,11 @@ export default function Heatmap({ history }: { history: HistorySegment[] }) {
       {showTooltip && <ReactTooltip />}
       <div>
         <p className="text-center mt-2">
-          {genDataTip(historyVals[historyVals.length - 1])} today
+          {todayDataTip ? (
+            <>{todayDataTip} today</>
+          ) : (
+            "You haven't studied any flashcards today"
+          )}
         </p>
       </div>
     </div>

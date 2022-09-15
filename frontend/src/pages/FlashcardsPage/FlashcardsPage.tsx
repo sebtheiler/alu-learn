@@ -2,11 +2,14 @@ import ButtonGroup from "@/atoms/ButtonGroup";
 import LinkButton from "@/atoms/LinkButton";
 import FlashcardList from "@/courses/FlashcardList";
 import SEO from "@/helpers/SEO";
+import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { Flashcard } from "@/types";
+
+type FlashcardWithId = Flashcard & { id: string };
 
 export interface FlashcardsPageProps {
   courseId: string;
-  flashcards: Flashcard[];
+  flashcards: FlashcardWithId[];
   courseSectionSlug?: string;
   subSectionSlug?: string;
 }
@@ -26,6 +29,8 @@ export default function FlashcardsPage({
       : `/${courseSectionSlug}`
     : "";
 
+  const { width } = useWindowDimensions();
+
   return (
     <>
       <SEO
@@ -35,7 +40,12 @@ export default function FlashcardsPage({
       />
       <div className="mt-28">
         <h1 className="text-center font-bold text-4xl mb-2">Flashcards</h1>
-        <ButtonGroup className="text-center" fixedWidth="175px" spaced>
+        <ButtonGroup
+          className="text-center"
+          fixedWidth="175px"
+          vertical={width < 740}
+          spaced
+        >
           <LinkButton href={`/course/${courseId}/study${slug}`}>
             Study
           </LinkButton>
@@ -46,7 +56,7 @@ export default function FlashcardsPage({
             Add Flashcards
           </LinkButton>
         </ButtonGroup>
-        <div className="container mx-auto px-48 mt-4">
+        <div className="container mx-auto px-4 mt-4">
           <FlashcardList flashcards={flashcards} />
         </div>
       </div>

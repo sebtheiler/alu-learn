@@ -27,7 +27,7 @@ const ReviewInstance = objectType({
 
 export default ReviewInstance;
 
-export const UsersMutation = extendType({
+export const ReviewInstancesMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.field("studyReviewInstance", {

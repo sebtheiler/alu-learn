@@ -98,7 +98,7 @@ export default function SettingsPage({
         path="/settings"
         // description=""  TODO: (SEO) set description
       />
-      <div className="mt-28 container mx-auto max-w-xl">
+      <div className="mt-28 container mx-auto max-w-xl px-5">
         <h1 className="text-center text-4xl font-bold">Settings</h1>
         <p className="text-center">
           All of your preferences are saved automatically

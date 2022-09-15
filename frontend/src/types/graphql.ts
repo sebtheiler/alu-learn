@@ -94,6 +94,8 @@ export type Mutation = {
   deleteFlashcard?: Maybe<Flashcard>;
   /** Deletes a sub section */
   deleteSubSection?: Maybe<SubSection>;
+  /** Moves a flashcard from a position to another */
+  moveFlashcard?: Maybe<Flashcard>;
   /** Change the user's settings */
   studyReviewInstance?: Maybe<ReviewInstance>;
   /** Change a course's settings */
@@ -104,6 +106,8 @@ export type Mutation = {
   updateFlashcard?: Maybe<Flashcard>;
   /** Change a sub section's settings */
   updateSubSection?: Maybe<SubSection>;
+  /** Change the user's settings */
+  updateUser?: Maybe<User>;
   /** Upload a banner image for a course */
   uploadCourseBannerImage?: Maybe<Course>;
   /** Upload an image */
@@ -170,10 +174,18 @@ export type MutationDeleteSubSectionArgs = {
 };
 
 
+export type MutationMoveFlashcardArgs = {
+  courseId: Scalars['String'];
+  from: Scalars['Int'];
+  subSectionSlug: Scalars['String'];
+  to: Scalars['Int'];
+};
+
+
 export type MutationStudyReviewInstanceArgs = {
   grade: Grade;
   reviewInstanceId: Scalars['String'];
-  timeTaken: Scalars['Int'];
+  timeTaken: Scalars['Float'];
 };
 
 
@@ -199,6 +211,16 @@ export type MutationUpdateFlashcardArgs = {
 export type MutationUpdateSubSectionArgs = {
   subSectionId: Scalars['String'];
   title?: InputMaybe<Scalars['String']>;
+};
+
+
+export type MutationUpdateUserArgs = {
+  name?: InputMaybe<Scalars['String']>;
+  sendMarketingResearch?: InputMaybe<Scalars['Boolean']>;
+  sendReminders?: InputMaybe<Scalars['Boolean']>;
+  targetNumReviews?: InputMaybe<Scalars['Int']>;
+  timezoneOffset?: InputMaybe<Scalars['Int']>;
+  userType?: InputMaybe<UserType>;
 };
 
 

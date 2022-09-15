@@ -27,6 +27,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       tags: true,
       type: true,
     },
+    orderBy: {
+      index: "asc",
+    },
   });
 
   return {

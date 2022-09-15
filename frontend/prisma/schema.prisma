@@ -151,6 +151,8 @@ model CourseSection {
   courseId String
 
   subSections SubSection[]
+
+  index Int
 }
 
 model SubSection {
@@ -162,6 +164,8 @@ model SubSection {
   courseSectionId String
 
   flashcards Flashcard[]
+
+  index Int
 }
 
 // ## Flashcards
@@ -177,6 +181,8 @@ model Flashcard {
   type FlashcardType @default(NORMAL)
 
   reviewInstances ReviewInstance[]
+
+  index Int
 
   // Although this is redundant, it often saves database operations
   // and is therefore useful

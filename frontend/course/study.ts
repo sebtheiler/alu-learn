@@ -169,6 +169,23 @@ const getStudyReviewInstances = async (
         id: true,
       },
       take: numFlashcardsToFetch,
+      orderBy: [
+        {
+          subSection: {
+            courseSection: {
+              index: "asc",
+            },
+          },
+        },
+        {
+          subSection: {
+            index: "asc",
+          },
+        },
+        {
+          index: "asc",
+        },
+      ],
     });
 
     let reviewInstancesToCreate: PartialReviewInstance[] = [];

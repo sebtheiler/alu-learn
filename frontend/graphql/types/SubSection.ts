@@ -47,10 +47,17 @@ export const SubSectionMutation = extendType({
         )
           return null;
 
+        const newIndex = await ctx.prisma.subSection.count({
+          where: {
+            courseSectionId: args.courseSectionId,
+          },
+        });
+
         return ctx.prisma.subSection.create({
           data: {
             title: args.title,
             slug: slugifyText(args.title),
+            index: newIndex,
             courseSection: {
               connect: {
                 id: args.courseSectionId,

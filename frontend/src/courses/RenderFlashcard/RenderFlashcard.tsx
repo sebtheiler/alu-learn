@@ -13,9 +13,11 @@ import { useMutation } from "@apollo/client";
 import {
   faEye,
   faEyeSlash,
+  faGripVertical,
   faPencil,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useId, useState } from "react";
 
 interface RenderFlashcardProps {
@@ -46,6 +48,10 @@ interface RenderFlashcardProps {
    */
   hidden?: boolean;
   setHidden?: React.Dispatch<boolean>;
+  /**
+   * Display the "gripper" to rearrange a flashcard?
+   */
+  rearrangeable?: boolean;
 }
 
 /**
@@ -57,6 +63,7 @@ export default function RenderFlashcard({
   handlers,
   hidden,
   setHidden,
+  rearrangeable,
 }: RenderFlashcardProps) {
   const [editMode, setEditMode] = useState(false);
   const [fields, setFields] = useState(JSON.parse(flashcard.fields as string));
@@ -101,11 +108,20 @@ export default function RenderFlashcard({
   return (
     <div
       className={classNames(
-        "bg-alu-light-gray border-2 border-alu-mid-gray rounded-xl min-h-[10rem] relative",
+        "bg-alu-light-gray border-2 border-alu-mid-gray rounded-xl min-h-[10rem] max-w-4xl mx-auto relative",
         className
       )}
     >
       <div className="absolute mt-2 w-1/2">
+        {rearrangeable && (
+          <span title="Drag to rearrange">
+            <FontAwesomeIcon
+              icon={faGripVertical}
+              // `.flashcard-drag-handle` is the handle class defined in `FlashcardList.tsx`
+              className="text-gray-400 mx-3 hover:cursor-grab flashcard-drag-handle"
+            />
+          </span>
+        )}
         <IconTooltip
           faIcon={editMode ? faEye : faPencil}
           tooltip={editMode ? "Save and View" : "Edit"}

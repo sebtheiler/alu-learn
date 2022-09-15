@@ -40,11 +40,18 @@ export const CourseSectionMutation = extendType({
         if (!user || !isCourseOwner(args.courseId, ctx.user?.email, ctx.prisma))
           return null;
 
+        const newIndex = await ctx.prisma.courseSection.count({
+          where: {
+            courseId: args.courseId,
+          },
+        });
+
         const courseSection = await ctx.prisma.courseSection.create({
           data: {
             title: args.title,
             courseId: args.courseId,
             slug: slugifyText(args.title),
+            index: newIndex,
           },
         });
 
@@ -54,6 +61,7 @@ export const CourseSectionMutation = extendType({
             title: subSectionTitle,
             courseSectionId: courseSection.id,
             slug: slugifyText(subSectionTitle),
+            index: 0,
           },
         });
 

@@ -132,6 +132,7 @@ export const CoursesMutation = extendType({
             title: defaultSectionTitle,
             courseId: course.id,
             slug: slugifyText(defaultSectionTitle),
+            index: 0,
           },
         });
 
@@ -140,6 +141,7 @@ export const CoursesMutation = extendType({
             title: "Default",
             courseSectionId: courseSection.id,
             slug: slugifyText(defaultSectionTitle),
+            index: 0,
           },
         });
 
