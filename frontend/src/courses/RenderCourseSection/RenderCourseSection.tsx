@@ -112,15 +112,18 @@ export default function RenderCourseSection({
         spaced
         vertical={width < 640}
       >
-        <LinkButton href={`/course/${course?.id}/learn/${courseSection.slug}`}>
+        {/* <LinkButton href={`/course/${course?.id}/learn/${courseSection.slug}`}>
           Learn Content
+        </LinkButton> */}
+        <LinkButton href={`/course/${course?.id}/study/${courseSection.slug}`}>
+          Study
         </LinkButton>
         <LinkButton
           href={`/course/${course?.id}/flashcards/${courseSection.slug}`}
         >
           Flashcards
         </LinkButton>
-        <DropdownButton
+        {/* <DropdownButton
           options={[
             {
               text: "Games",
@@ -133,7 +136,7 @@ export default function RenderCourseSection({
           ]}
         >
           More
-        </DropdownButton>
+        </DropdownButton> */}
       </ButtonGroup>
       <ReactSortable
         list={subSections}

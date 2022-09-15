@@ -2,6 +2,10 @@ import type { Prisma } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
 import type { Context } from "graphql/context";
 
+/**
+ * Updates an object and its siblings to reorder that object.
+ * // TODO: implement a better version https://softwareengineering.stackexchange.com/questions/195308/storing-a-re-orderable-list-in-a-database
+ */
 const moveObject = async ({
   objType,
   from,

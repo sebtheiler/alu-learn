@@ -22,11 +22,18 @@ export default function SubSectionPopover({
         </h4>
         <SubSectionSettings subSection={subSection} />
       </div>
-      <LinkButton
+      {/* <LinkButton
         href={`/course/${course?.id}/learn/${courseSection.slug}/${subSection.slug}`}
         block
       >
         Learn Content
+      </LinkButton> */}
+      <LinkButton
+        href={`/course/${course?.id}/study/${courseSection.slug}/${subSection.slug}`}
+        className="mt-2"
+        block
+      >
+        Study
       </LinkButton>
       <LinkButton
         href={`/course/${course?.id}/flashcards/${courseSection.slug}/${subSection.slug}`}
@@ -35,7 +42,7 @@ export default function SubSectionPopover({
       >
         Flashcards
       </LinkButton>
-      <LinkButton
+      {/* <LinkButton
         href={`/course/${course?.id}/practice/${courseSection.slug}/${subSection.slug}`}
         className="mt-2"
         block
@@ -48,7 +55,7 @@ export default function SubSectionPopover({
         block
       >
         Games
-      </LinkButton>
+      </LinkButton> */}
     </>
   );
 }
