@@ -1,12 +1,18 @@
-Your privacy is critically important to us.  At Alu, we have a few fundamental principles:
+---
+title: "Privacy Policy"
+path: "legal/privacypolicy"
+description: "Alu Learn privacy policy"
+---
 
-* We don't ask you for personal information unless we truly need it.
-* We don't share your personal information with anyone (other than basic information such as your name) except to comply with the law, develop or products, or protect our rights.
-* We aim to make it as simple as possible for you to control what's visible to the public, seen by search engines, kept private and permanently deleted.  If you want us to remove your information, please contact us at our [legal contact page](/legal/contactus/).
+Your privacy is critically important to us. At Alu, we have a few fundamental principles:
+
+- We don't ask you for personal information unless we truly need it.
+- We don't share your personal information with anyone (other than basic information such as your name) except to comply with the law, develop or products, or protect our rights.
+- We aim to make it as simple as possible for you to control what's visible to the public, seen by search engines, kept private and permanently deleted. If you want us to remove your information, please contact us at our [legal contact page](/legal/contactus/).
 
 Below is our privacy policy which incorporates these goals:
 
-**Note:** These terms are adapted from WordPress's Privacy Policy and is therefore available under a [Create Commons Sharealike](https://creativecommons.org/licenses/by-sa/4.0/) license.  You can grab a copy of the original terms and other legal documents on [Github](https://github.com/Automattic/legalmattic).  This means you are free to copy (but adapt) these terms for your uses.  If you do so, please credit Automattic somewhere on your website.  The original terms can be found [here](https://wordpress.org/about/privacy/).
+**Note:** These terms are adapted from WordPress's Privacy Policy and is therefore available under a [Create Commons Sharealike](https://creativecommons.org/licenses/by-sa/4.0/) license. You can grab a copy of the original terms and other legal documents on [Github](https://github.com/Automattic/legalmattic). This means you are free to copy (but adapt) these terms for your uses. If you do so, please credit Automattic somewhere on your website. The original terms can be found [here](https://wordpress.org/about/privacy/).
 
 ## Website Visitors
 
@@ -28,8 +34,8 @@ Alu discloses potentially personally-identifying and personally-identifying info
 
 ## Cookies
 
-A cookie is a string of information that a website stores on a visitor's computer, and that the visitor's browser provides to the website each time the visitor returns. Alu uses cookies to help Alu identify and track visitors, their usage of the Alu website, and their website access preferences.  Alu also allows third parties, including Google, to use cookies to serve targeted ads.  Users can opt out of seeing personalized ads by visiting Google's Ad Settings.  Alu visitors who do not wish to have cookies placed on their computers should set their browsers to refuse cookies before using Alu's websites, with the drawback that certain features of Alu's websites may not function properly without the aid of cookies.  Cookies are, for example, required to keep the current user logged in.
+A cookie is a string of information that a website stores on a visitor's computer, and that the visitor's browser provides to the website each time the visitor returns. Alu uses cookies to help Alu identify and track visitors, their usage of the Alu website, and their website access preferences. Alu also allows third parties, including Google, to use cookies to serve targeted ads. Users can opt out of seeing personalized ads by visiting Google's Ad Settings. Alu visitors who do not wish to have cookies placed on their computers should set their browsers to refuse cookies before using Alu's websites, with the drawback that certain features of Alu's websites may not function properly without the aid of cookies. Cookies are, for example, required to keep the current user logged in.
 
 ## Privacy Policy Changes
 
-Although most changes are likely to be minor, Alu may change its Privacy Policy from time to time, and in Alu's sole discretion. Alu encourages visitors to frequently check this page for any changes to its Privacy Policy. If you have an Alu account, you should also check your blog's dashboard for alerts to these changes. Your continued use of this site after any change in this Privacy Policy will constitute your acceptance of such change. 
+Although most changes are likely to be minor, Alu may change its Privacy Policy from time to time, and in Alu's sole discretion. Alu encourages visitors to frequently check this page for any changes to its Privacy Policy. If you have an Alu account, you should also check your blog's dashboard for alerts to these changes. Your continued use of this site after any change in this Privacy Policy will constitute your acceptance of such change.

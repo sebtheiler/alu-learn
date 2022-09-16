@@ -27,7 +27,11 @@ const profileDropdownOptions = [
     faIcon: faSignOut,
     onClick: () => signOut({ callbackUrl: "/" }),
   },
-  { text: "Contact Us", href: "/contactus", faIcon: faEnvelope },
+  {
+    text: "Contact Us",
+    href: "mailto:support@alulearn.com",
+    faIcon: faEnvelope,
+  },
 ] as MenuOption[];
 
 interface SignedInProps {

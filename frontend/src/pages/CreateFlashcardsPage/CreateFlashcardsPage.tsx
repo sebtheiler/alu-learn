@@ -223,7 +223,8 @@ export default function CreateFlashcardsPage({
                         className={classNames(
                           `bg-alu-light-gray hover:bg-alu-light-gray-darker border-2
                           px-3 py-2 max-w-xs rounded-full ml-5 my-1`,
-                          subSectionSlug === subSection?.slug &&
+                          courseSectionSlug === courseSection?.slug &&
+                            subSectionSlug === subSection?.slug &&
                             "bg-alu-light-gray-darker"
                         )}
                         key={j}

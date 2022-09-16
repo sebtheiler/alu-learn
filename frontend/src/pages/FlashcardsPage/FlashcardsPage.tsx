@@ -49,15 +49,21 @@ export default function FlashcardsPage({
           <LinkButton href={`/course/${courseId}/study${slug}`}>
             Study
           </LinkButton>
-          <LinkButton href={`/course/${courseId}/games${slug}`}>
+          {/* <LinkButton href={`/course/${courseId}/games${slug}`}>
             Games
-          </LinkButton>
+          </LinkButton> */}
           <LinkButton href={`/course/${courseId}/add-flashcards${slug}`}>
             Add Flashcards
           </LinkButton>
         </ButtonGroup>
         <div className="container mx-auto px-4 mt-4">
-          <FlashcardList flashcards={flashcards} />
+          {flashcards.length > 0 ? (
+            <FlashcardList flashcards={flashcards} />
+          ) : (
+            <p className="text-center">
+              This section doesn&apos;t have any flashcards yet
+            </p>
+          )}
         </div>
       </div>
     </>
