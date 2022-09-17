@@ -46,24 +46,27 @@ export default function Navbar({
       >
         <a>
           <div className="flex items-center">
-            <Image
-              src="/assets/logo.svg"
-              alt="Alu Learn Logo"
-              height={40}
-              width={40}
-              className="transition duration-700 hover:scale-x-[-1]"
-            />
+            <span className="transition duration-500 hover:scale-x-[-1] mt-1">
+              <Image
+                src="/assets/logo.svg"
+                alt="Alu Learn Logo"
+                height={40}
+                width={40}
+              />
+            </span>
             <span className="ml-2 text-2xl font-bold text-white no-underline">
               Alu Learn
             </span>
             {isPro && (
-              <Image
-                src="/assets/pro-banner.svg"
-                alt="Pro Banner"
-                className="ml-1 -translate-y-0.5 w-14 transition duration-700 hover:rotate-360"
-                width={60}
-                height={25}
-              />
+              <span className="hover:rotate-360 transition duration-700 h-[25px]">
+                <Image
+                  src="/assets/pro-banner.svg"
+                  alt="Pro Banner"
+                  className="ml-1 -translate-y-0.5 w-14"
+                  width={60}
+                  height={25}
+                />
+              </span>
             )}
           </div>
         </a>

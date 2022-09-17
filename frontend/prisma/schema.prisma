@@ -62,8 +62,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  role  Role    @default(USER)
-  isPro Boolean @default(false)
+  role                  Role            @default(USER)
+  stripeCustomerAccount StripeCustomer?
+  isPro                 Boolean         @default(false)
+  isProFromOrg          Boolean         @default(false)
 
   currentStreak    Int     @default(0)
   doneReviewsToday Boolean @default(false)
@@ -240,4 +242,14 @@ model HistorySegment {
   date           DateTime @db.Date
   reviewsStudied Int      @default(0)
   timeTaken      Float    @default(0)
+}
+
+// # Stripe
+model StripeCustomer {
+  id                   String @id @default(cuid())
+  stripeCustomerId     String @unique
+  stripeSubscriptionId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
 }

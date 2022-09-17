@@ -46,17 +46,15 @@
 }
 .proCardBody {
   @apply rounded-b-xl bg-white px-6 py-4;
+}
 
-  > ul > li {
-    &.check > svg {
-      @apply mr-2 text-green-600;
-    }
-    &.xmark {
-      @apply text-gray-400 line-through;
-      > svg {
-        @apply mr-2;
-      }
-    }
+.check > svg {
+  @apply mr-2 text-green-600;
+}
+.xmark {
+  @apply text-gray-400 line-through;
+  > svg {
+    @apply mr-2;
   }
 }
 

@@ -15,39 +15,39 @@ export default function ProFeaturesCard() {
       </div>
       <div className={styles.proCardBody}>
         <ul>
-          <li className="check">
+          <li className={styles.check}>
             <FontAwesomeIcon icon={faCheck} />
             Personalized spaced repetition flashcards
           </li>
-          <li className="check">
+          <li className={styles.check}>
             <FontAwesomeIcon icon={faCheck} />
             Rich text formatting
           </li>
-          <li className="check">
+          <li className={styles.check}>
             <FontAwesomeIcon icon={faCheck} />
             Upload custom images
           </li>
-          <li className="check">
+          <li className={styles.check}>
             <FontAwesomeIcon icon={faCheck} />
             No ads
           </li>
-          <li className="check">
+          <li className={styles.check}>
             <FontAwesomeIcon icon={faCheck} />
             Study with games
           </li>
-          <li className="check">
+          <li className={styles.check}>
             <FontAwesomeIcon icon={faCheck} />
             Identify difficult flashcards and topics
           </li>
-          <li className="check">
+          <li className={styles.check}>
             <FontAwesomeIcon icon={faCheck} />
             Create links between flashcards
           </li>
-          <li className="check">
+          <li className={styles.check}>
             <FontAwesomeIcon icon={faCheck} />
             Unlimited flashcards
           </li>
-          <li className="check">
+          <li className={styles.check}>
             <FontAwesomeIcon icon={faCheck} />
             Support Alu and free education
           </li>

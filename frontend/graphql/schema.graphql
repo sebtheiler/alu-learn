@@ -82,6 +82,9 @@ type Mutation {
   """Creates a new NewUserSurveyResponse from a set of responses"""
   createNewUserSurveyResponse(joinReason: JoinReason!, referrer: Referrer!, sendReminders: Boolean!, targetNumReviews: Int!, timezoneOffset: Int!, userType: UserType!): NewUserSurveyResponse
 
+  """Creates a Stripe session for purchasing an item"""
+  createStripeSession(item: StripeItem!): String
+
   """Creates a new sub section"""
   createSubSection(courseSectionId: String!, title: String!): SubSection
 
@@ -239,6 +242,12 @@ enum Role {
   ADMIN
   STAFF
   USER
+}
+
+"""A purchasable item to buy with Stripe"""
+enum StripeItem {
+  proMONTHLY
+  proYEARLY
 }
 
 type SubSection {

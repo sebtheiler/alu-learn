@@ -3,10 +3,17 @@ import ProFromOrganization from "./ProFromOrganization";
 import styles from "./ProUpgradePage.module.scss";
 import AsyncButton from "@/atoms/AsyncButton";
 import Button from "@/atoms/Button";
+import CreateStripeSession from "@/graphql/CreateStripeSession";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
 import daysBetween from "@/helpers/daysBetween";
 import useGlobalModalStore from "@/stores/globalModalStore";
+import type {
+  Mutation,
+  MutationCreateStripeSessionArgs,
+  StripeItem,
+} from "@/types";
+import { useMutation } from "@apollo/client";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/router";
@@ -26,27 +33,22 @@ export default function ProUpgradePage({
 }: ProUpgradePageProps) {
   const router = useRouter();
   const { setRegisterModalOpen } = useGlobalModalStore();
-  // const [stripe, setStripe] = useState<Stripe | null>(null);
-  // useAsyncState<{ publishableKey: string }>(
-  //   () => backendFetch('GET', 'accounts/stripe-config/'), [],
-  //   publishableKey => {
-  //     loadStripe(publishableKey.publishableKey).then(
-  //       stripe => setStripe(stripe),
-  //     );
-  //   }
-  // );
+  const [createStripeSession] = useMutation<
+    { createStripeSession: Mutation["createStripeSession"] },
+    MutationCreateStripeSessionArgs
+  >(CreateStripeSession);
 
-  const purchase = (purchaseType: "monthly" | "yearly") => {
-    // if (!stripe) return async () => {};
-    // return async () => {
-    //   await backendFetch<{ sessionId: string }>(
-    //     'POST', 'accounts/stripe-create-checkout-session/', { purchaseType },
-    //   ).then(
-    //     ({ sessionId }) => stripe.redirectToCheckout({ sessionId }),
-    //   );
-    // }
+  const purchase = (purchaseType: "MONTHLY" | "YEARLY") => {
     return async () => {
-      console.log(purchaseType);
+      const { data } = await createStripeSession({
+        variables: {
+          item: `pro${purchaseType}` as StripeItem,
+        },
+      });
+
+      if (data && data.createStripeSession) {
+        window.location.href = data.createStripeSession;
+      }
     };
   };
 
@@ -87,35 +89,35 @@ export default function ProUpgradePage({
             </div>
             <div className={styles.proCardBody}>
               <ul>
-                <li className="check">
+                <li className={styles.check}>
                   <FontAwesomeIcon icon={faCheck} />
                   Personalized spaced repetition flashcards
                 </li>
-                <li className="check">
+                <li className={styles.check}>
                   <FontAwesomeIcon icon={faCheck} />
                   Rich text formatting
                 </li>
-                <li className="check">
+                <li className={styles.check}>
                   <FontAwesomeIcon icon={faCheck} />
                   Upload custom images
                 </li>
-                <li className="xmark">
+                <li className={styles.xmark}>
                   <FontAwesomeIcon icon={faXmark} />
                   No ads
                 </li>
-                <li className="xmark">
+                <li className={styles.xmark}>
                   <FontAwesomeIcon icon={faXmark} />
                   Study with games
                 </li>
-                <li className="xmark">
+                <li className={styles.xmark}>
                   <FontAwesomeIcon icon={faXmark} />
                   Identify difficult flashcards and topics
                 </li>
-                <li className="xmark">
+                <li className={styles.xmark}>
                   <FontAwesomeIcon icon={faXmark} />
                   Create links between flashcards
                 </li>
-                <li className="xmark">
+                <li className={styles.xmark}>
                   <FontAwesomeIcon icon={faXmark} />
                   Unlimited flashcards
                 </li>
@@ -134,11 +136,11 @@ export default function ProUpgradePage({
               </>
             ) : (
               <>
-                <AsyncButton onClick={purchase("monthly")} block>
+                <AsyncButton onClick={purchase("MONTHLY")} block>
                   Upgrade to Pro ($3/mo)
                 </AsyncButton>
                 <AsyncButton
-                  onClick={purchase("yearly")}
+                  onClick={purchase("YEARLY")}
                   block
                   className="mt-2"
                 >

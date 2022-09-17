@@ -3,6 +3,7 @@ export * from "./CourseSection";
 export * from "./Flashcard";
 export * from "./NewUserSurveyResponse";
 export * from "./ReviewInstance";
+export * from "./Stripe";
 export * from "./SubSection";
 export * from "./UploadedImage";
 export * from "./User";

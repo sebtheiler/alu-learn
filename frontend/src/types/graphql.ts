@@ -84,6 +84,8 @@ export type Mutation = {
   createFlashcard?: Maybe<Flashcard>;
   /** Creates a new NewUserSurveyResponse from a set of responses */
   createNewUserSurveyResponse?: Maybe<NewUserSurveyResponse>;
+  /** Creates a Stripe session for purchasing an item */
+  createStripeSession?: Maybe<Scalars['String']>;
   /** Creates a new sub section */
   createSubSection?: Maybe<SubSection>;
   /** Removes the current user from a course if the course has other users.  If the course has no other users, deletes the course. */
@@ -149,6 +151,11 @@ export type MutationCreateNewUserSurveyResponseArgs = {
   targetNumReviews: Scalars['Int'];
   timezoneOffset: Scalars['Int'];
   userType: UserType;
+};
+
+
+export type MutationCreateStripeSessionArgs = {
+  item: StripeItem;
 };
 
 
@@ -322,6 +329,12 @@ export enum Role {
   Admin = 'ADMIN',
   Staff = 'STAFF',
   User = 'USER'
+}
+
+/** A purchasable item to buy with Stripe */
+export enum StripeItem {
+  ProMonthly = 'proMONTHLY',
+  ProYearly = 'proYEARLY'
 }
 
 export type SubSection = {
