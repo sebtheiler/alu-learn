@@ -1,7 +1,43 @@
+import { JSONData } from "./scalars";
 import { ApolloError } from "apollo-server-micro";
 import getUserGQL from "helpers/getUserGQL";
 import stripe from "lib/stripe";
 import { enumType, extendType, nonNull } from "nexus";
+
+export const StripeQuery = extendType({
+  type: "Query",
+  definition(t) {
+    t.field("getStripeSubscription", {
+      type: JSONData,
+      description:
+        "Gets the Stripe subscription and product for the current user",
+      async resolve(_, __, ctx) {
+        const user = await getUserGQL(ctx, { id: true });
+        if (!user) return null;
+
+        const stripeCustomer = await ctx.prisma.stripeCustomer.findUnique({
+          where: {
+            userId: user.id,
+          },
+          select: {
+            stripeSubscriptionId: true,
+          },
+        });
+        if (!stripeCustomer) return null;
+
+        const subscription = await stripe.subscriptions.retrieve(
+          stripeCustomer.stripeSubscriptionId
+        );
+
+        // @ts-ignore
+        const planId = subscription.plan.id;
+        const plan = await stripe.plans.retrieve(planId);
+
+        return { subscription, plan };
+      },
+    });
+  },
+});
 
 export const StripeMutation = extendType({
   type: "Mutation",
@@ -34,6 +70,54 @@ export const StripeMutation = extendType({
         });
 
         return stripeSession.url;
+      },
+    });
+    t.field("cancelStripeSubscription", {
+      type: "Boolean",
+      description: "Cancels the Stripe subscription for the current user",
+      async resolve(_parent, _args, ctx) {
+        const user = await getUserGQL(ctx, { id: true });
+        if (!user) return null;
+
+        const stripeCustomer = await ctx.prisma.stripeCustomer.findUnique({
+          where: {
+            userId: user.id,
+          },
+          select: {
+            stripeSubscriptionId: true,
+          },
+        });
+        if (!stripeCustomer) return null;
+
+        await stripe.subscriptions.update(stripeCustomer.stripeSubscriptionId, {
+          cancel_at_period_end: true,
+        });
+
+        return true;
+      },
+    });
+    t.field("renewStripeSubscription", {
+      type: "Boolean",
+      description: "Renews the Stripe subscription for the current user",
+      async resolve(_parent, _args, ctx) {
+        const user = await getUserGQL(ctx, { id: true });
+        if (!user) return null;
+
+        const stripeCustomer = await ctx.prisma.stripeCustomer.findUnique({
+          where: {
+            userId: user.id,
+          },
+          select: {
+            stripeSubscriptionId: true,
+          },
+        });
+        if (!stripeCustomer) return null;
+
+        await stripe.subscriptions.update(stripeCustomer.stripeSubscriptionId, {
+          cancel_at_period_end: false,
+        });
+
+        return true;
       },
     });
   },

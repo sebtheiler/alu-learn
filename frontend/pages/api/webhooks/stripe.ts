@@ -23,10 +23,20 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).send(`Webhook error: ${(err as any).message}`);
   }
 
-  const session = event.data.object as any; // typing is weird
+  const session = event.data.object as Stripe.Checkout.Session;
 
   switch (event.type) {
     case "checkout.session.completed": {
+      if (
+        !session.client_reference_id ||
+        !session.customer ||
+        !session.subscription
+      ) {
+        return res.status(400).json({
+          msg: "`client_reference_id`, `customer`, and `subscription` must be defined",
+        });
+      }
+
       const user = await prisma.user.findUniqueOrThrow({
         where: {
           id: session.client_reference_id,
@@ -48,8 +58,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       await prisma.stripeCustomer.create({
         data: {
-          stripeCustomerId: session.customer,
-          stripeSubscriptionId: session.subscription,
+          stripeCustomerId: session.customer as string,
+          stripeSubscriptionId: session.subscription as string,
           user: {
             connect: {
               id: user.id,
@@ -65,7 +75,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case "customer.subscription.deleted": {
       const { id, userId } = await prisma.stripeCustomer.findUniqueOrThrow({
         where: {
-          stripeCustomerId: session.customer,
+          stripeCustomerId: session.customer as string,
         },
         select: {
           id: true,
@@ -88,7 +98,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       break;
     }
     default:
-      console.log(`Unhandled event type ${event.type}`);
       break;
   }
 

@@ -1,3 +1,4 @@
+import ProUpgradeSuccessPage from "../ProUpgradeSuccessPage";
 import ProFeaturesCard from "./ProFeaturesCard";
 import ProFromOrganization from "./ProFromOrganization";
 import styles from "./ProUpgradePage.module.scss";
@@ -16,7 +17,6 @@ import type {
 import { useMutation } from "@apollo/client";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useRouter } from "next/router";
 
 export interface ProUpgradePageProps {
   proTrialExpires: string;
@@ -31,7 +31,6 @@ export default function ProUpgradePage({
   isPro,
   isSignedIn,
 }: ProUpgradePageProps) {
-  const router = useRouter();
   const { setRegisterModalOpen } = useGlobalModalStore();
   const [createStripeSession] = useMutation<
     { createStripeSession: Mutation["createStripeSession"] },
@@ -55,9 +54,8 @@ export default function ProUpgradePage({
   const expiresInDays = Math.floor(daysBetween(new Date(), proTrialExpires));
 
   if (isProFromOrg) return <ProFromOrganization />;
-  if (isPro && !proTrialExpires) {
-    router.push("/pro/success");
-    return <p>Redirecting...</p>;
+  if (isPro) {
+    return <ProUpgradeSuccessPage />;
   }
 
   return (

@@ -65,6 +65,9 @@ enum LearningStatus {
 }
 
 type Mutation {
+  """Cancels the Stripe subscription for the current user"""
+  cancelStripeSubscription: Boolean
+
   """Creates a course and populates it with an initial main and sub section"""
   createCourse(
     """Title of the course to create"""
@@ -122,6 +125,9 @@ type Mutation {
 
   """Moves a sub section from a position to another"""
   moveSubSection(courseSectionId: String!, from: Int!, to: Int!): SubSection
+
+  """Renews the Stripe subscription for the current user"""
+  renewStripeSubscription: Boolean
 
   """Change the user's settings"""
   studyReviewInstance(
@@ -204,6 +210,9 @@ type Query {
 
   """Gets a flashcard by its ID"""
   getFlashcard(flashcardId: String!): Flashcard
+
+  """Gets the Stripe subscription and product for the current user"""
+  getStripeSubscription: JSONObject
 
   """Get information on the current user"""
   me: User
