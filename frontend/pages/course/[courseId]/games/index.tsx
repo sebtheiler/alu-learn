@@ -1,7 +1,10 @@
 import GamesPage from "@/pages/GamesPage";
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
+import type { NextPage } from "types";
 
 const Games: NextPage = () => <GamesPage />;
+Games.authRequired = true;
+Games.proRequired = true;
 
 export default Games;
 

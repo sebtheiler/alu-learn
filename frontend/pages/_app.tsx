@@ -12,6 +12,7 @@ type AppProps = {
   // eslint-disable-next-line
   Component: NextComponentType<NextPageContext, any, {}> & {
     authRequired?: boolean;
+    proRequired?: boolean;
   };
 };
 
@@ -21,7 +22,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
       <ApolloProvider client={apolloClient}>
         <Layout session={session}>
           {Component.authRequired ? (
-            <Auth>
+            <Auth proRequired={Component.proRequired}>
               <Component {...pageProps} />
             </Auth>
           ) : (

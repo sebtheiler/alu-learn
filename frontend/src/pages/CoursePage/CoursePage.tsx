@@ -8,6 +8,7 @@ import MoveCourseSection from "@/graphql/MoveCourseSection";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
+import useProStore from "@/stores/proStore";
 import type {
   Course,
   CourseSection,
@@ -51,6 +52,7 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
     { moveCourseSection: Mutation["moveCourseSection"] },
     MutationMoveCourseSectionArgs
   >(MoveCourseSection);
+  const isPro = useProStore((state) => state.isPro);
 
   const onCourseSectionDragEnd = (evt: SortableEvent) => {
     if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
@@ -152,7 +154,13 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
             >
               More
             </DropdownButton> */}
-            <LinkButton href={`/course/${course.id}/games`}>Games</LinkButton>
+            <LinkButton
+              href={`/course/${course.id}/games`}
+              disabled={!isPro}
+              title={!isPro ? "Upgrade to pro to play games" : ""}
+            >
+              Games
+            </LinkButton>
           </ButtonGroup>
           <ReactSortable
             list={courseSections}

@@ -1,10 +1,10 @@
-import type { NextPage } from "../types";
 import { authOptions } from "./api/auth/[...nextauth]";
 import SettingsPage, { SettingsPageProps } from "@/pages/SettingsPage";
 import getUserSSR from "helpers/getUserSSR";
 import type { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
+import type { NextPage } from "types";
 
 const Settings: NextPage = (props: SettingsPageProps) => (
   <SettingsPage {...props} />

@@ -16,7 +16,7 @@ interface LinkButtonProps extends ButtonProps {
  */
 export default function LinkButton(props: LinkButtonProps) {
   return (
-    <Link href={props.href}>
+    <Link href={props.disabled ? "#" : props.href}>
       <a>
         <Button {...props} />
       </a>

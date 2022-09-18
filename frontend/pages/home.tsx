@@ -4,12 +4,13 @@ import HomePage from "@/pages/HomePage";
 import type { HomePageProps } from "@/pages/HomePage";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
 import getUserSSR from "helpers/getUserSSR";
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
+import type { NextPage } from "types";
 
-const Home: NextPage<HomePageProps> & { authRequired: boolean } = (
-  props: HomePageProps
-) => <HomePage {...props} />;
+const Home: NextPage<HomePageProps> = (props: HomePageProps) => (
+  <HomePage {...props} />
+);
 Home.authRequired = true;
 
 export default Home;

@@ -1,11 +1,12 @@
 import StudyFlashcardsPage from "@/pages/StudyFlashcardsPage";
 import type { StudyFlashcardsPageProps } from "@/pages/StudyFlashcardsPage";
 import getStudyReviewInstances from "course/study";
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
+import type { NextPage } from "types";
 
-const StudyFlashcards: NextPage<StudyFlashcardsPageProps> & {
-  authRequired: boolean;
-} = (props: StudyFlashcardsPageProps) => <StudyFlashcardsPage {...props} />;
+const StudyFlashcards: NextPage<StudyFlashcardsPageProps> = (
+  props: StudyFlashcardsPageProps
+) => <StudyFlashcardsPage {...props} />;
 StudyFlashcards.authRequired = true;
 
 export default StudyFlashcards;

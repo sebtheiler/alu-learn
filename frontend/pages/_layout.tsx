@@ -1,10 +1,12 @@
 import Navbar from "@/components/Navbar";
 import MeQuery from "@/graphql/MeQuery";
+import useProStore from "@/stores/proStore";
 import type { Query, Streak } from "@/types";
 import { useQuery } from "@apollo/client";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import NextNProgress from "nextjs-progressbar";
+import { useEffect } from "react";
 
 interface LayoutProps {
   session: Session;
@@ -13,8 +15,21 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const { data: session, status } = useSession();
-  const { data: meData } = useQuery<{ me: Query["me"] }>(MeQuery);
+  const { data: meData, loading: meDataLoading } = useQuery<{
+    me: Query["me"];
+  }>(MeQuery);
   const { isPro, currentStreak, doneReviewsToday } = meData?.me ?? {};
+  const { isPro: globalIsPro, setIsPro } = useProStore();
+
+  useEffect(() => {
+    if (
+      !meDataLoading &&
+      globalIsPro === null &&
+      (isPro === false || isPro === true)
+    ) {
+      setIsPro(isPro);
+    }
+  }, [meDataLoading, globalIsPro, isPro, setIsPro]);
 
   return (
     <>

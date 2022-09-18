@@ -2,15 +2,17 @@ import QuizGamePage from "@/pages/QuizGamePage";
 import type { QuizGamePageProps } from "@/pages/QuizGamePage";
 import getGameReviewInstances from "course/games";
 import getUserSSR from "helpers/getUserSSR";
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import { authOptions } from "pages/api/auth/[...nextauth]";
+import type { NextPage } from "types";
 
-const QuizGame: NextPage<QuizGamePageProps> & { authRequired: boolean } = (
-  props: QuizGamePageProps
-) => <QuizGamePage {...props} />;
+const QuizGame: NextPage<QuizGamePageProps> = (props: QuizGamePageProps) => (
+  <QuizGamePage {...props} />
+);
 QuizGame.authRequired = true;
+QuizGame.proRequired = true;
 
 export default QuizGame;
 

@@ -1,6 +1,6 @@
-import type { NextPage } from "../types";
 import NewUserSurveyPage from "@/pages/NewUserSurveyPage";
 import { GetServerSideProps } from "next";
+import type { NextPage } from "types";
 
 const NewUserSurvey: NextPage = () => <NewUserSurveyPage />;
 NewUserSurvey.authRequired = true;

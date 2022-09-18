@@ -2,15 +2,17 @@ import MatchingGridGamePage from "@/pages/MatchingGridGamePage";
 import type { MatchingGridGamePageProps } from "@/pages/MatchingGridGamePage";
 import getGameReviewInstances from "course/games";
 import getUserSSR from "helpers/getUserSSR";
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import { authOptions } from "pages/api/auth/[...nextauth]";
+import type { NextPage } from "types";
 
-const MatchingGridGame: NextPage<MatchingGridGamePageProps> & {
-  authRequired: boolean;
-} = (props: MatchingGridGamePageProps) => <MatchingGridGamePage {...props} />;
+const MatchingGridGame: NextPage<MatchingGridGamePageProps> = (
+  props: MatchingGridGamePageProps
+) => <MatchingGridGamePage {...props} />;
 MatchingGridGame.authRequired = true;
+MatchingGridGame.proRequired = true;
 
 export default MatchingGridGame;
 

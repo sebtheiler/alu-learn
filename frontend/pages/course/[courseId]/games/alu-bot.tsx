@@ -1,12 +1,14 @@
 import AluBotGamePage from "@/pages/AluBotGamePage";
 import type { AluBotGamePageProps } from "@/pages/AluBotGamePage";
 import getStudyReviewInstances from "course/study";
-import type { GetServerSideProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
+import type { NextPage } from "types";
 
-const AluBotGame: NextPage<AluBotGamePageProps> & { authRequired: boolean } = (
+const AluBotGame: NextPage<AluBotGamePageProps> = (
   props: AluBotGamePageProps
 ) => <AluBotGamePage {...props} />;
 AluBotGame.authRequired = true;
+AluBotGame.proRequired = true;
 
 export default AluBotGame;
 

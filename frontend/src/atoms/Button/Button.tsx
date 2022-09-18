@@ -50,6 +50,14 @@ export interface ButtonProps {
    */
   autoFocus?: boolean;
   /**
+   * Disable the button
+   */
+  disabled?: boolean;
+  /**
+   * Title
+   */
+  title?: string;
+  /**
    * Spin the icon
    */
   _spin?: boolean;
@@ -119,12 +127,14 @@ export const generateButtonClassName = ({
   variant = "primary",
   pill = true,
   block = false,
+  disabled = false,
   _unroundRight = false,
   _unroundLeft = false,
 }: Partial<ButtonProps>) => {
   return classNames(
     className,
     "px-6 py-2.5 hover:shadow-md transition relative overflow-hidden",
+    disabled && "hover:cursor-not-allowed opacity-75",
     buttonVariantsLookup[variant].className,
     pill ? " rounded-full" : " rounded",
     block ? " w-full" : "",
@@ -148,6 +158,8 @@ export default function Button({
   type = "button",
   style,
   autoFocus = false,
+  disabled = false,
+  title,
   _spin = false,
   _unroundRight = false,
   _unroundLeft = false,
@@ -158,22 +170,27 @@ export default function Button({
         variant,
         pill,
         block,
+        disabled,
         _unroundRight,
         _unroundLeft,
         className,
       }),
-    [className, variant, pill, block, _unroundRight, _unroundLeft]
+    [className, variant, pill, block, disabled, _unroundRight, _unroundLeft]
   );
 
   return (
     <button
       className={generatedClassName}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
       type={type}
       style={style}
       autoFocus={autoFocus}
+      disabled={disabled}
+      title={title}
     >
-      {ripples && <Ripple color={buttonVariantsLookup[variant].rippleColor} />}
+      {ripples && !disabled && (
+        <Ripple color={buttonVariantsLookup[variant].rippleColor} />
+      )}
       {faIcon && (
         <FontAwesomeIcon
           icon={faIcon}
