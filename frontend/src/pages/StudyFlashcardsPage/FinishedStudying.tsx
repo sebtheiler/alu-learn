@@ -1,6 +1,7 @@
 import styles from "./FinishedStudying.module.scss";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
+import Ad from "@/components/Ad";
 import ReviewsDoneSVG from "@/components/ReviewsDoneSVG";
 import StreakInfo from "@/graphql/StreakInfo";
 import classNames from "@/helpers/classNames";
@@ -212,7 +213,7 @@ export default function FinishedStudying({
         <div className="w-1/2 border-r-[3px] border-r-gray-400 h-full flex items-center justify-center">
           {slides[slideIndex]}
         </div>
-        <div className="w-1/2 h-full flex items-center justify-center">
+        <div className="w-1/2 h-full text-center mt-12 px-10">
           <div className="text-center">
             {numReviewsLearned > 0 && (
               <p className="text-green-600">
@@ -227,6 +228,8 @@ export default function FinishedStudying({
               </p>
             )}
           </div>
+          <Ad adType="FINISHED_STUDYING_1" />
+          <Ad adType="FINISHED_STUDYING_2" />
         </div>
       </div>
       {slideIndex !== slides.length - 1 && (

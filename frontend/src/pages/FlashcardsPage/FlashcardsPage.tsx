@@ -43,7 +43,7 @@ export default function FlashcardsPage({
         <ButtonGroup
           className="text-center"
           fixedWidth="175px"
-          vertical={width < 740}
+          vertical={width === 0 ? false : width < 740}
           spaced
         >
           <LinkButton href={`/course/${courseId}/study${slug}`}>

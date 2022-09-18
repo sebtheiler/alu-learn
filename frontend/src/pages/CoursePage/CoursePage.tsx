@@ -4,6 +4,7 @@ import CoursePageContext from "./context";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
+import Ad from "@/components/Ad";
 import RenderCourseSection from "@/courses/RenderCourseSection";
 import MoveCourseSection from "@/graphql/MoveCourseSection";
 import SEO from "@/helpers/SEO";
@@ -126,15 +127,13 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
           <ButtonGroup
             className="text-center mt-2"
             fixedWidth="175px"
-            vertical={width < 750}
+            vertical={width === 0 ? false : width < 750}
             spaced
           >
             {/* <LinkButton href={`/course/${course.id}/learn`}>
               Learn Content
             </LinkButton> */}
-            <LinkButton href={`/course/${course.id}/flashcards`}>
-              Study All
-            </LinkButton>
+            <LinkButton href={`/course/${course.id}/study`}>Study</LinkButton>
             <LinkButton href={`/course/${course.id}/flashcards`}>
               View Flashcards
             </LinkButton>
@@ -195,6 +194,9 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
           <p>You are not authorized to view this course</p>
         </div>
       )}
+      <footer className="md:px-10">
+        <Ad adType="COURSE_BOTTOM" />
+      </footer>
     </>
   );
 }

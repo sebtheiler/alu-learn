@@ -109,7 +109,7 @@ export default function RenderCourseSection({
         className="text-center"
         fixedWidth="175px"
         spaced
-        vertical={width < 640}
+        vertical={width === 0 ? false : width < 640}
       >
         {/* <LinkButton href={`/course/${course?.id}/learn/${courseSection.slug}`}>
           Learn Content

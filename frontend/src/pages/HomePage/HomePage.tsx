@@ -1,6 +1,7 @@
 import CreateAddCourseModal from "./CreateAddCourseModal";
 import Heatmap from "./Heatmap";
 import SocialMediaLinks from "./SocialMediaLinks";
+import Ad from "@/components/Ad";
 import ReviewsDoneSVG from "@/components/ReviewsDoneSVG";
 import SEO from "@/helpers/SEO";
 import type { Course } from "@/types";
@@ -112,6 +113,7 @@ export default function HomePage({
               targetReviewsDone={targetReviewsDone}
             />
             <SocialMediaLinks />
+            <Ad adType="META_SIDEBAR" />
           </div>
         </div>
       </div>

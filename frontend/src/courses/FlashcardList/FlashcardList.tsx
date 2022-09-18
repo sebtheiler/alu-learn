@@ -1,9 +1,10 @@
 import RenderFlashcard from "../RenderFlashcard";
+import Ad from "@/components/Ad";
 import MoveFlashcard from "@/graphql/MoveFlashcard";
 import type { Flashcard, Mutation, MutationMoveFlashcardArgs } from "@/types";
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useMemo, useState, Fragment } from "react";
 import { ReactSortable } from "react-sortablejs";
 import type { SortableEvent } from "react-sortablejs";
 
@@ -53,21 +54,23 @@ export default function FlashcardList({ flashcards }: FlashcardListProps) {
     };
 
     return _flashcards.map((flashcard, i) => (
-      <RenderFlashcard
-        flashcard={flashcard}
-        className="mb-3"
-        key={flashcard.id}
-        handlers={{
-          deleteHandler,
-          setHideAllHandler: (val) =>
-            setHidden(Array(_flashcards.length).fill(val)),
-        }}
-        hidden={hidden[i]}
-        setHidden={(val) =>
-          setHidden([...hidden.slice(0, i), val, ...hidden.slice(i + 1)])
-        }
-        rearrangeable={rearrangeable}
-      />
+      <Fragment key={i}>
+        {i > 0 && i % 25 === 0 && <Ad adType="FLASHCARD_LIST_MIDDLE" />}
+        <RenderFlashcard
+          flashcard={flashcard}
+          className="mb-3"
+          handlers={{
+            deleteHandler,
+            setHideAllHandler: (val) =>
+              setHidden(Array(_flashcards.length).fill(val)),
+          }}
+          hidden={hidden[i]}
+          setHidden={(val) =>
+            setHidden([...hidden.slice(0, i), val, ...hidden.slice(i + 1)])
+          }
+          rearrangeable={rearrangeable}
+        />
+      </Fragment>
     ));
   }, [_flashcards, hidden, rearrangeable]);
 
@@ -85,6 +88,9 @@ export default function FlashcardList({ flashcards }: FlashcardListProps) {
       ) : (
         renderedFlashcards
       )}
+      <footer>
+        <Ad adType="FLASHCARD_LIST_BOTTOM" />
+      </footer>
     </div>
   );
 }
