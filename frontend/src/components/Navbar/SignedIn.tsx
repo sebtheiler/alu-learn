@@ -23,7 +23,6 @@ const profileDropdownOptions = [
   { text: "Changelog", href: "/changelog", faIcon: faBook },
   {
     text: "Log-out",
-    href: "/",
     faIcon: faSignOut,
     onClick: () => signOut({ callbackUrl: "/" }),
   },

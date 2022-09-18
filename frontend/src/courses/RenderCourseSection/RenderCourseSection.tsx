@@ -2,7 +2,6 @@ import CourseSectionSettings from "./CourseSectionSettings";
 import AsyncForm from "@/atoms/AsyncForm";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
-import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
 import Modal from "@/atoms/Modal";
 import TextInput from "@/atoms/TextInput";
