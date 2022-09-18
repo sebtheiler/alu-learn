@@ -2,6 +2,7 @@ import CourseSettings from "./CourseSettings";
 import CreateCourseSectionButton from "./CreateCourseSectionButton";
 import CoursePageContext from "./context";
 import ButtonGroup from "@/atoms/ButtonGroup";
+import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
 import RenderCourseSection from "@/courses/RenderCourseSection";
 import MoveCourseSection from "@/graphql/MoveCourseSection";
@@ -140,20 +141,6 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
             {/* <LinkButton href={`/course/${course.id}/study-group`}>
               Study Group
             </LinkButton> */}
-            {/* <DropdownButton
-              options={[
-                {
-                  text: "Games",
-                  href: `/course/${course?.id}/games`,
-                },
-                {
-                  text: "Practice Problems",
-                  href: `/course/${course?.id}/practice`,
-                },
-              ]}
-            >
-              More
-            </DropdownButton> */}
             <LinkButton
               href={`/course/${course.id}/games`}
               disabled={!isPro}
@@ -161,6 +148,16 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
             >
               Games
             </LinkButton>
+            <DropdownButton
+              options={[
+                {
+                  text: "Tools",
+                  href: `/course/${course?.id}/tools`,
+                },
+              ]}
+            >
+              More
+            </DropdownButton>
           </ButtonGroup>
           <ReactSortable
             list={courseSections}

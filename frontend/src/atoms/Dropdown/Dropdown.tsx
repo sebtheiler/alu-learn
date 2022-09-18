@@ -31,6 +31,10 @@ export type MenuOption =
        * Is the option "active"?
        */
       active?: boolean;
+      /**
+       * Is the option disabled?
+       */
+      disabled?: boolean;
     }
   | {
       /**
@@ -107,13 +111,15 @@ export default function Dropdown({
                 <Menu.Item key={i}>
                   {({ active }) =>
                     option.href ? (
-                      <Link href={option.href}>
+                      <Link href={option.disabled ? "#" : option.href}>
                         <a
                           className={classNames(
                             active || option.active
                               ? "bg-gray-100 text-gray-900"
                               : "text-gray-700",
-                            "block px-4 py-2 text-sm hover:bg-gray-200"
+                            "block px-4 py-2 text-sm hover:bg-gray-200",
+                            option.disabled &&
+                              "hover:cursor-not-allowed hover:bg-gray-50"
                           )}
                         >
                           {option.faIcon && (
@@ -131,9 +137,12 @@ export default function Dropdown({
                           active || option.active
                             ? "bg-gray-100 text-gray-900"
                             : "text-gray-700",
-                          "block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left"
+                          "block px-4 py-2 text-sm hover:bg-gray-200 w-full text-left",
+                          option.disabled &&
+                            "hover:cursor-not-allowed hover:bg-gray-50"
                         )}
-                        onClick={option.onClick}
+                        onClick={option.disabled ? undefined : option.onClick}
+                        disabled={option.disabled}
                       >
                         {option.faIcon && (
                           <FontAwesomeIcon

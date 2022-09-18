@@ -76,6 +76,8 @@ export enum LearningStatus {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Cancels the Stripe subscription for the current user */
+  cancelStripeSubscription?: Maybe<Scalars['Boolean']>;
   /** Creates a course and populates it with an initial main and sub section */
   createCourse?: Maybe<Course>;
   /** Creates a new course section and populates it with a default subsection */
@@ -102,6 +104,8 @@ export type Mutation = {
   moveFlashcard?: Maybe<Flashcard>;
   /** Moves a sub section from a position to another */
   moveSubSection?: Maybe<SubSection>;
+  /** Renews the Stripe subscription for the current user */
+  renewStripeSubscription?: Maybe<Scalars['Boolean']>;
   /** Change the user's settings */
   studyReviewInstance?: Maybe<ReviewInstance>;
   /** Change a course's settings */
@@ -281,8 +285,14 @@ export type Query = {
   __typename?: 'Query';
   /** Gets all available courses */
   courses?: Maybe<Array<Maybe<Course>>>;
+  /** Find review instances sorted by difficulty */
+  findHardestReviewInstances?: Maybe<Array<Maybe<ReviewInstance>>>;
+  /** Find subsections sorted by difficulty. Returns subsections with custom `avgEase` and `courseSectionSlug` attributes */
+  findHardestSubSections?: Maybe<Array<Maybe<Scalars['JSONObject']>>>;
   /** Gets a flashcard by its ID */
   getFlashcard?: Maybe<Flashcard>;
+  /** Gets the Stripe subscription and product for the current user */
+  getStripeSubscription?: Maybe<Scalars['JSONObject']>;
   /** Get information on the current user */
   me?: Maybe<User>;
   /** Get the current user's courses */
@@ -291,6 +301,18 @@ export type Query = {
   searchFlashcards?: Maybe<Array<Maybe<Flashcard>>>;
   /** List all users */
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+
+export type QueryFindHardestReviewInstancesArgs = {
+  courseId: Scalars['String'];
+  skip?: InputMaybe<Scalars['Int']>;
+};
+
+
+export type QueryFindHardestSubSectionsArgs = {
+  courseId: Scalars['String'];
+  skip?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -318,6 +340,7 @@ export enum Referrer {
 export type ReviewInstance = {
   __typename?: 'ReviewInstance';
   ease?: Maybe<Scalars['Int']>;
+  flashcard?: Maybe<Flashcard>;
   id?: Maybe<Scalars['String']>;
   lastReview?: Maybe<Scalars['Date']>;
   learningStatus?: Maybe<LearningStatus>;

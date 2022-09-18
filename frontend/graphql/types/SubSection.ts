@@ -1,7 +1,9 @@
 import Flashcard from "./Flashcard";
+import { JSONData } from "./scalars";
 import type { SubSection as PrismaSubSection } from "@prisma/client";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseSectionOwner from "helpers/isCourseSectionOwner";
+import isCourseUser from "helpers/isCourseUser";
 import isSubSectionOwner from "helpers/isSubSectionOwner";
 import moveObject from "helpers/moveObject";
 import slugifyText from "helpers/slugifyText";
@@ -28,6 +30,61 @@ const SubSection = objectType({
             subSectionId: subSection.id as string,
           },
         });
+      },
+    });
+  },
+});
+
+export const SubSectionQuery = extendType({
+  type: "Query",
+  definition(t) {
+    t.field("findHardestSubSections", {
+      type: list(JSONData),
+      description:
+        "Find subsections sorted by difficulty. Returns subsections with custom `avgEase` and `courseSectionSlug` attributes",
+      args: {
+        courseId: nonNull(stringArg()),
+        skip: intArg({ description: "used in pagination" }),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, { id: true });
+        if (
+          !user ||
+          !(await isCourseUser(args.courseId, ctx.user?.email, ctx.prisma))
+        )
+          return null;
+
+        // Maybe this will eventually be possible in Prisma w/o raw SQL
+        // https://github.com/prisma/prisma/issues/10866
+        return await ctx.prisma.$queryRaw`
+          SELECT
+            "SubSection"."id",
+            "SubSection"."title",
+            "SubSection"."slug",
+            "CourseSection"."slug" AS "courseSectionSlug",
+            AVG("ReviewInstance"."ease") AS "avgEase"
+          FROM
+            "SubSection"
+            INNER JOIN "CourseSection" ON (
+              "SubSection"."courseSectionId" = "CourseSection"."id"
+            )
+            LEFT OUTER JOIN "Flashcard" ON (
+              "SubSection"."id" = "Flashcard"."subSectionId"
+            )
+            LEFT OUTER JOIN "ReviewInstance" ON (
+              "Flashcard"."id" = "ReviewInstance"."flashcardId"
+            )
+          WHERE
+            "CourseSection"."courseId" = ${args.courseId}
+            AND "ReviewInstance"."userId" = ${user.id}
+          GROUP BY
+            "SubSection"."id",
+            "CourseSection"."slug" -- not sure why this is required https://stackoverflow.com/questions/19601948/must-appear-in-the-group-by-clause-or-be-used-in-an-aggregate-function
+          HAVING
+            COUNT("ReviewInstance") > 0
+          ORDER BY
+            "avgEase" ASC
+        `;
       },
     });
   },

@@ -28,7 +28,7 @@ interface RenderFlashcardProps {
   /**
    * Additional classes to apply to the flashcard
    */
-  className: string;
+  className?: string;
   /**
    * Functions to be called at various events
    */
@@ -136,22 +136,24 @@ export default function RenderFlashcard({
           onClick={deleteFlashcardHandler}
         />
       </div>
-      <div className="absolute mt-2 w-1/2 translate-x-full text-right">
-        <IconTooltip
-          faIcon={hidden ? faEye : faEyeSlash}
-          tooltipProps={{ className: "w-40" }}
-          tooltip={
-            hidden
-              ? "Show (double click to show all)"
-              : "Hide (double click to hide all)"
-          }
-          className="text-right mr-2"
-          onClick={() => setHidden && setHidden(!hidden)}
-          onDoubleClick={() =>
-            handlers?.setHideAllHandler && handlers.setHideAllHandler(!hidden)
-          }
-        />
-      </div>
+      {setHidden && (
+        <div className="absolute mt-2 w-1/2 translate-x-full text-right">
+          <IconTooltip
+            faIcon={hidden ? faEye : faEyeSlash}
+            tooltipProps={{ className: "w-40" }}
+            tooltip={
+              hidden
+                ? "Show (double click to show all)"
+                : "Hide (double click to hide all)"
+            }
+            className="text-right mr-2"
+            onClick={() => setHidden(!hidden)}
+            onDoubleClick={() =>
+              handlers?.setHideAllHandler && handlers.setHideAllHandler(!hidden)
+            }
+          />
+        </div>
+      )}
       <div className="w-full h-full flex min-h-[10rem]">
         {fields.map((field: any, i: number) => (
           <div

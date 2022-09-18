@@ -2,12 +2,15 @@ import DateScalar from "./scalars/DateScalar";
 import { ApolloError } from "apollo-server-micro";
 import calculateInterval from "helpers/calculateInterval";
 import getUserGQL from "helpers/getUserGQL";
+import isCourseUser from "helpers/isCourseUser";
 import updateUserHistory from "helpers/updateUserHistory";
 import {
   arg,
   enumType,
   extendType,
   floatArg,
+  intArg,
+  list,
   nonNull,
   objectType,
   stringArg,
@@ -22,10 +25,58 @@ const ReviewInstance = objectType({
     t.int("ease");
     t.field("nextReview", { type: DateScalar });
     t.field("lastReview", { type: DateScalar });
+    t.field("flashcard", { type: "Flashcard" });
   },
 });
 
 export default ReviewInstance;
+
+export const ReviewInstanceQuery = extendType({
+  type: "Query",
+  definition(t) {
+    t.field("findHardestReviewInstances", {
+      type: list(ReviewInstance),
+      description: "Find review instances sorted by difficulty",
+      args: {
+        courseId: nonNull(stringArg()),
+        skip: intArg({ description: "used in pagination" }),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, { id: true });
+        if (
+          !user ||
+          !(await isCourseUser(args.courseId, ctx.user?.email, ctx.prisma))
+        )
+          return null;
+
+        return ctx.prisma.reviewInstance.findMany({
+          where: {
+            flashcard: {
+              courseId: args.courseId,
+            },
+            userId: user.id,
+          },
+          orderBy: {
+            ease: "asc",
+          },
+          select: {
+            id: true,
+            ease: true,
+            flashcard: {
+              select: {
+                fields: true,
+                id: true,
+                tags: true,
+              },
+            },
+          },
+          take: 50,
+          skip: args.skip ?? 0,
+        });
+      },
+    });
+  },
+});
 
 export const ReviewInstancesMutation = extendType({
   type: "Mutation",

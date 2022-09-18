@@ -208,6 +208,24 @@ type Query {
   """Gets all available courses"""
   courses: [Course]
 
+  """Find review instances sorted by difficulty"""
+  findHardestReviewInstances(
+    courseId: String!
+
+    """used in pagination"""
+    skip: Int
+  ): [ReviewInstance]
+
+  """
+  Find subsections sorted by difficulty. Returns subsections with custom `avgEase` and `courseSectionSlug` attributes
+  """
+  findHardestSubSections(
+    courseId: String!
+
+    """used in pagination"""
+    skip: Int
+  ): [JSONObject]
+
   """Gets a flashcard by its ID"""
   getFlashcard(flashcardId: String!): Flashcard
 
@@ -240,6 +258,7 @@ enum Referrer {
 
 type ReviewInstance {
   ease: Int
+  flashcard: Flashcard
   id: String
   lastReview: Date
   learningStatus: LearningStatus
