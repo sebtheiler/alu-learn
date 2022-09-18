@@ -6,6 +6,7 @@ import { ApolloProvider } from "@apollo/client";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import type { NextComponentType, NextPageContext } from "next";
 import { SessionProvider } from "next-auth/react";
+import { GoogleAnalytics } from "nextjs-google-analytics";
 
 type AppProps = {
   pageProps: any;
@@ -21,6 +22,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
     <SessionProvider session={session}>
       <ApolloProvider client={apolloClient}>
         <Layout session={session}>
+          <GoogleAnalytics trackPageViews />
           {Component.authRequired ? (
             <Auth proRequired={Component.proRequired}>
               <Component {...pageProps} />
