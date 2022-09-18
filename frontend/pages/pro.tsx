@@ -20,11 +20,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const user = await getUserSSR(session, { isPro: true, isProFromOrg: true });
   const { isPro, isProFromOrg } = user ?? {};
 
-  const proTrialExpires = "2023-01-01";
-
   return {
     props: {
-      proTrialExpires,
       isPro: isPro ?? null,
       isProFromOrg: isProFromOrg ?? null,
       isSignedIn: !!session,

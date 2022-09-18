@@ -12,7 +12,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useState } from "react";
 import type Stripe from "stripe";
 
-export default function ProUpgradeSuccessPage() {
+export default function UpgradeSuccess() {
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const { data: subscriptionData, refetch } = useQuery(GetStripeSubscription);
   const [cancelStripeSubscription] = useMutation(CancelStripeSubscription);
@@ -35,7 +35,7 @@ export default function ProUpgradeSuccessPage() {
 
   return (
     <>
-      <SEO title="Upgrade Success" path="/pro/success" noindex />
+      <SEO title="Upgrade Success" path="/pro" />
       <div className="container mx-auto mt-28 text-center">
         <div className="prose mx-auto max-w-2xl">
           <h1>Thank You for Upgrading to Alu Pro!</h1>
@@ -57,16 +57,35 @@ export default function ProUpgradeSuccessPage() {
         <div className="mx-auto mt-10 max-w-lg text-left">
           <ProFeaturesCard />
         </div>
-        {subscription && subscription.status === "active" && (
+        {subscription && (
           <div className="my-3">
             <h3 className="text-2xl font-bold text-center mt-10">Info</h3>
             <p>{subscription.description}</p>
             <p>
               Price: ${(plan?.amount ?? 0) / 100} per {plan?.interval}
             </p>
-            <p>
-              Billing period ends:{" "}
-              {new Date(subscription.current_period_end * 1000).toDateString()}
+            {subscription.status === "active" && (
+              <p>
+                Billing period ends:{" "}
+                {new Date(
+                  subscription.current_period_end * 1000
+                ).toDateString()}
+              </p>
+            )}
+            {subscription.status === "trialing" && (
+              <p>
+                Free trial ends:{" "}
+                {new Date((subscription.trial_end ?? 0) * 1000).toDateString()}
+              </p>
+            )}
+            <p className="text-center text-blue-500 underline mt-1">
+              <a
+                href={process.env.NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_LINK}
+                target="_blank"
+                rel="noreferrer nofollow"
+              >
+                Manage
+              </a>
             </p>
             {subscription.cancel_at_period_end ? (
               <div className="mt-2">

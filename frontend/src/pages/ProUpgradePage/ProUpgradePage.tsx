@@ -1,13 +1,12 @@
-import ProUpgradeSuccessPage from "../ProUpgradeSuccessPage";
 import ProFeaturesCard from "./ProFeaturesCard";
 import ProFromOrganization from "./ProFromOrganization";
 import styles from "./ProUpgradePage.module.scss";
+import UpgradeSuccess from "./UpgradeSuccess";
 import AsyncButton from "@/atoms/AsyncButton";
 import Button from "@/atoms/Button";
 import CreateStripeSession from "@/graphql/CreateStripeSession";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
-import daysBetween from "@/helpers/daysBetween";
 import useGlobalModalStore from "@/stores/globalModalStore";
 import type {
   Mutation,
@@ -26,7 +25,6 @@ export interface ProUpgradePageProps {
 }
 
 export default function ProUpgradePage({
-  proTrialExpires,
   isProFromOrg,
   isPro,
   isSignedIn,
@@ -51,11 +49,9 @@ export default function ProUpgradePage({
     };
   };
 
-  const expiresInDays = Math.floor(daysBetween(new Date(), proTrialExpires));
-
   if (isProFromOrg) return <ProFromOrganization />;
   if (isPro) {
-    return <ProUpgradeSuccessPage />;
+    return <UpgradeSuccess />;
   }
 
   return (
@@ -71,19 +67,12 @@ export default function ProUpgradePage({
           <p className="mb-1">
             Gain access to Alu&apos;s most powerful features
           </p>
-          {proTrialExpires && (
-            <p className="mt-0">
-              Your free-trial of Alu Pro ends in{" "}
-              <strong>{expiresInDays} days.</strong> Upgrade now to make it
-              permanent.
-            </p>
-          )}
         </div>
         <div className="mt-10 grid grid-cols-12">
           <div className={classNames(styles.proCard, styles.proCardBasic)}>
             <div className={styles.proCardHead}>
               <h3>Basic</h3>
-              <p>Free</p>
+              <h4>Free</h4>
             </div>
             <div className={styles.proCardBody}>
               <ul>
@@ -135,17 +124,18 @@ export default function ProUpgradePage({
             ) : (
               <>
                 <AsyncButton onClick={purchase("MONTHLY")} block>
-                  Upgrade to Pro ($3/mo)
+                  Upgrade to Pro ($4.99/mo)
                 </AsyncButton>
                 <AsyncButton
                   onClick={purchase("YEARLY")}
                   block
                   className="mt-2"
                 >
-                  Upgrade to Pro ($30/yr)
+                  Upgrade to Pro ($3.99/mo, billed yearly)
                 </AsyncButton>
               </>
             )}
+            <p className="font-bold my-3">7-day free trial. Cancel anytime.</p>
           </div>
         </div>
       </div>
