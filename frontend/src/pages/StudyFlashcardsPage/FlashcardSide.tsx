@@ -1,7 +1,8 @@
 import { TIME_BEFORE_SWAP } from "./helpers";
 import classNames from "@/helpers/classNames";
+import flattenLexical from "@/helpers/flattenLexical";
 import LexicalEditor from "@/lexicalEditor/LexicalEditor";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 
@@ -32,6 +33,26 @@ export default function FlashcardSide({
     setTimeout(() => setOnTop(isShown), TIME_BEFORE_SWAP); // magic number to hide swap
   }, [isShown]);
 
+  const [playingTTS, setPlayingTTS] = useState(false);
+
+  const playTTS = async (e: React.MouseEvent<SVGElement>) => {
+    e.stopPropagation();
+    const synthesis = window.speechSynthesis;
+
+    if (playingTTS) {
+      synthesis.cancel();
+    } else {
+      const text = await flattenLexical(field);
+      if (text) {
+        setPlayingTTS(true);
+        const utterance = new SpeechSynthesisUtterance();
+        utterance.text = text;
+        synthesis.speak(utterance);
+        utterance.onend = () => setPlayingTTS(false);
+      }
+    }
+  };
+
   return (
     <div
       className={classNames(
@@ -43,6 +64,16 @@ export default function FlashcardSide({
       <div className="absolute w-full">
         <p className="text-center my-2 text-gray-400 font-bold">
           {side.toUpperCase()}
+          {"speechSynthesis" in window && (
+            <FontAwesomeIcon
+              icon={faVolumeHigh}
+              className="absolute right-10 top-3 z-20"
+              onClick={playTTS}
+              title={playingTTS ? "Click to Cancel" : "Speak Flashcard (en)"}
+              role="button"
+              beat={playingTTS}
+            />
+          )}
           <FontAwesomeIcon
             icon={faStar}
             className={classNames(
@@ -51,6 +82,7 @@ export default function FlashcardSide({
             )}
             title="Star Flashcard"
             onClick={onStarred}
+            role="button"
           />
         </p>
         <hr className="mx-5" />
