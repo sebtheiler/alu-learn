@@ -16,7 +16,7 @@ import { signOut } from "next-auth/react";
 import Image from "next/image";
 
 const profileDropdownOptions = [
-  { text: "My Profile", href: "/profile", faIcon: faUserCircle },
+  { text: "My Profile", href: "/me", faIcon: faUserCircle },
   { text: "Settings", href: "/settings", faIcon: faCogs },
   { text: "Notifications", href: "/notifications", faIcon: faBell },
   { divider: true },

@@ -87,7 +87,7 @@ export default function FlashcardSide({
         </p>
         <hr className="mx-5" />
       </div>
-      <div className="flex flex-1 justify-center items-center w-full h-full relative">
+      <div className="flex flex-1 justify-center items-center w-full h-full relative p-5">
         <LexicalEditor
           namespace={`flashcard-${side}`}
           editorState={field}

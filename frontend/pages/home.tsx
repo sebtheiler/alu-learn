@@ -69,8 +69,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       courses,
-      reviewsDone: user?.numReviewsDoneToday,
-      targetReviewsDone: user?.targetNumReviews,
+      reviewsDone: user?.numReviewsDoneToday ?? null,
+      targetReviewsDone: user?.targetNumReviews ?? null,
       history: JSON.parse(JSON.stringify(history)),
     } as HomePageProps,
   };
