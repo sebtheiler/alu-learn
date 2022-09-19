@@ -6,13 +6,23 @@ import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
 import slugifyText from "helpers/slugifyText";
 import uploadImageToS3 from "helpers/uploadImageToS3";
-import { arg, extendType, list, nonNull, objectType, stringArg } from "nexus";
+import {
+  arg,
+  enumType,
+  extendType,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from "nexus";
 
 const Course = objectType({
   name: "Course",
   definition(t) {
     t.string("id");
     t.string("title");
+    t.field("privacySetting", { type: PrivacySetting });
+    t.field("editingAccess", { type: EditingAccess });
     t.string("bannerImage", {
       resolve(course) {
         // @ts-ignore
@@ -153,6 +163,9 @@ export const CoursesMutation = extendType({
       description: "Change a course's settings",
       args: {
         title: stringArg(),
+        privacySetting: arg({ type: PrivacySetting }),
+        editingAccess: arg({ type: EditingAccess }),
+        coursePassword: stringArg(),
         courseId: nonNull(
           stringArg({ description: "ID of the course to update" })
         ),
@@ -164,10 +177,15 @@ export const CoursesMutation = extendType({
 
         const data: Partial<PrismaCourse> = {};
         if (args.title != null) data.title = args.title;
+        if (args.privacySetting != null)
+          data.privacySetting = args.privacySetting;
+        if (args.editingAccess != null) data.editingAccess = args.editingAccess;
+        if (args.coursePassword != null)
+          data.coursePassword = args.coursePassword;
 
         return ctx.prisma.course.update({
           where: { id: args.courseId },
-          data: data,
+          data,
         });
       },
     });
@@ -281,6 +299,56 @@ export const CoursesMutation = extendType({
         }
       },
     });
+    t.field("addCourseOwner", {
+      type: "User",
+      description: "Adds a user as a course owner",
+      args: {
+        username: nonNull(stringArg()),
+        courseId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!isCourseOwner(args.courseId, ctx.user?.email, ctx.prisma))
+          return null;
+
+        return ctx.prisma.course.update({
+          where: {
+            id: args.courseId,
+          },
+          data: {
+            owners: {
+              connect: {
+                username: args.username,
+              },
+            },
+          },
+        });
+      },
+    });
+    t.field("removeCourseOwner", {
+      type: "User",
+      description: "Removes a user as a course owner",
+      args: {
+        username: nonNull(stringArg()),
+        courseId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!isCourseOwner(args.courseId, ctx.user?.email, ctx.prisma))
+          return null;
+
+        return ctx.prisma.course.update({
+          where: {
+            id: args.courseId,
+          },
+          data: {
+            owners: {
+              disconnect: {
+                username: args.username,
+              },
+            },
+          },
+        });
+      },
+    });
   },
 });
 
@@ -288,3 +356,13 @@ export default Course;
 
 const genCourseBannerFilename = (courseId: string) =>
   `courseBannerImages/course-${courseId}-bannerImage`;
+
+export const PrivacySetting = enumType({
+  name: "PrivacySetting",
+  members: ["ALL", "PASSWORD", "FRIENDS", "INSTITUTION", "PRIVATE"],
+});
+
+export const EditingAccess = enumType({
+  name: "EditingAccess",
+  members: ["OWNERS", "ALL", "FRIENDS", "INSTITUTION"],
+});

@@ -1,8 +1,20 @@
 import { gql } from "@apollo/client";
 
 const UpdateCourse = gql`
-  mutation Mutation($title: String, $courseId: String!) {
-    updateCourse(title: $title, courseId: $courseId) {
+  mutation UpdateCourse(
+    $courseId: String!
+    $privacySetting: PrivacySetting
+    $editingAccess: EditingAccess
+    $title: String
+    $coursePassword: String
+  ) {
+    updateCourse(
+      courseId: $courseId
+      privacySetting: $privacySetting
+      editingAccess: $editingAccess
+      title: $title
+      coursePassword: $coursePassword
+    ) {
       id
     }
   }

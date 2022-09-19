@@ -16,6 +16,10 @@ interface AsyncFormProps {
    * Props to affect the button at the bottom of the form
    */
   buttonProps: ButtonProps;
+  /**
+   * Additional classes for the form
+   */
+  className?: string;
 }
 
 /**
@@ -25,6 +29,7 @@ export default function AsyncForm({
   children,
   onSubmit,
   buttonProps,
+  className,
 }: AsyncFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,7 +50,7 @@ export default function AsyncForm({
   );
 
   return (
-    <form onSubmit={onSubmitWrapper}>
+    <form onSubmit={onSubmitWrapper} className={className}>
       {children}
       <Button
         {...buttonProps}

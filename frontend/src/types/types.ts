@@ -37,6 +37,24 @@ interface Intervals {
   };
 }
 
+/**
+ * Option for use in various `atoms`
+ */
+interface Option {
+  /**
+   * Value of the option
+   */
+  value: string | number;
+  /**
+   * Label to display for the option
+   */
+  label: string;
+  /**
+   * Is the option disabled?
+   */
+  disabled?: boolean;
+}
+
 export type {
   NonNullableKeys,
   Streak,
@@ -44,4 +62,5 @@ export type {
   ReviewInstanceWithFlashcard,
   Interval,
   Intervals,
+  Option,
 };

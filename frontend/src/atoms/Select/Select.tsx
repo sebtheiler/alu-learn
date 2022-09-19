@@ -1,23 +1,9 @@
 import classNames from "@/helpers/classNames";
+import type { Option } from "@/types";
 import { faSort } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Listbox, Transition } from "@headlessui/react";
-import { useState } from "react";
-
-interface Option {
-  /**
-   * Value of the option
-   */
-  value: string | number;
-  /**
-   * Label to display for the option
-   */
-  label: string;
-  /**
-   * Is the option disabled?
-   */
-  disabled?: boolean;
-}
+import { useId, useState } from "react";
 
 interface SelectProps {
   /**
@@ -35,7 +21,7 @@ interface SelectProps {
   /**
    * ID of the button
    */
-  id: string;
+  id?: string;
   /**
    * Name of the input element
    */
@@ -68,6 +54,8 @@ export default function Select({
       options.filter((option) => option.value === defaultValue)[0] ?? options[0]
   );
 
+  const componentId = useId();
+
   return (
     <Listbox
       value={selectedOption.value}
@@ -86,7 +74,7 @@ export default function Select({
           focus:ring-alu-primary-purple focus:border-alu-primary-purple sm:text-sm z-1`,
           className
         )}
-        id={id}
+        id={id ?? componentId}
         style={{ zIndex: "0" }}
       >
         {selectedOption.label}

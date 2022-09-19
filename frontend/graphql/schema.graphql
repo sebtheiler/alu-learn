@@ -5,10 +5,12 @@
 type Course {
   bannerImage: String
   courseSections: [CourseSection]
+  editingAccess: EditingAccess
   id: String
 
   """Users who have full privileges on this course"""
   owners: [User]
+  privacySetting: PrivacySetting
   title: String
 
   """Users who have studying or teaching this course"""
@@ -24,6 +26,13 @@ type CourseSection {
 
 """Date scalar type"""
 scalar Date
+
+enum EditingAccess {
+  ALL
+  FRIENDS
+  INSTITUTION
+  OWNERS
+}
 
 type Flashcard {
   fields: String
@@ -65,6 +74,9 @@ enum LearningStatus {
 }
 
 type Mutation {
+  """Adds a user as a course owner"""
+  addCourseOwner(courseId: String!, username: String!): User
+
   """Cancels the Stripe subscription for the current user"""
   cancelStripeSubscription: Boolean
 
@@ -126,6 +138,9 @@ type Mutation {
   """Moves a sub section from a position to another"""
   moveSubSection(courseSectionId: String!, from: Int!, to: Int!): SubSection
 
+  """Removes a user as a course owner"""
+  removeCourseOwner(courseId: String!, username: String!): User
+
   """Renews the Stripe subscription for the current user"""
   renewStripeSubscription: Boolean
 
@@ -142,6 +157,9 @@ type Mutation {
   updateCourse(
     """ID of the course to update"""
     courseId: String!
+    coursePassword: String
+    editingAccess: EditingAccess
+    privacySetting: PrivacySetting
     title: String
   ): Course
 
@@ -204,6 +222,14 @@ type NewUserSurveyResponse {
   userType: UserType
 }
 
+enum PrivacySetting {
+  ALL
+  FRIENDS
+  INSTITUTION
+  PASSWORD
+  PRIVATE
+}
+
 type Query {
   """Gets all available courses"""
   courses: [Course]
@@ -240,6 +266,9 @@ type Query {
 
   """Finds flashcards based on some criteria"""
   searchFlashcards(courseId: String, text: String): [Flashcard]
+
+  """Search for users"""
+  searchUsers(name: String!): [User]
 
   """List all users"""
   users: [User]

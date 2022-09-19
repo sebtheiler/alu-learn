@@ -23,9 +23,11 @@ export type Course = {
   __typename?: 'Course';
   bannerImage?: Maybe<Scalars['String']>;
   courseSections?: Maybe<Array<Maybe<CourseSection>>>;
+  editingAccess?: Maybe<EditingAccess>;
   id?: Maybe<Scalars['String']>;
   /** Users who have full privileges on this course */
   owners?: Maybe<Array<Maybe<User>>>;
+  privacySetting?: Maybe<PrivacySetting>;
   title?: Maybe<Scalars['String']>;
   /** Users who have studying or teaching this course */
   users?: Maybe<Array<Maybe<User>>>;
@@ -38,6 +40,13 @@ export type CourseSection = {
   subSections?: Maybe<Array<Maybe<SubSection>>>;
   title?: Maybe<Scalars['String']>;
 };
+
+export enum EditingAccess {
+  All = 'ALL',
+  Friends = 'FRIENDS',
+  Institution = 'INSTITUTION',
+  Owners = 'OWNERS'
+}
 
 export type Flashcard = {
   __typename?: 'Flashcard';
@@ -76,6 +85,8 @@ export enum LearningStatus {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Adds a user as a course owner */
+  addCourseOwner?: Maybe<User>;
   /** Cancels the Stripe subscription for the current user */
   cancelStripeSubscription?: Maybe<Scalars['Boolean']>;
   /** Creates a course and populates it with an initial main and sub section */
@@ -104,6 +115,8 @@ export type Mutation = {
   moveFlashcard?: Maybe<Flashcard>;
   /** Moves a sub section from a position to another */
   moveSubSection?: Maybe<SubSection>;
+  /** Removes a user as a course owner */
+  removeCourseOwner?: Maybe<User>;
   /** Renews the Stripe subscription for the current user */
   renewStripeSubscription?: Maybe<Scalars['Boolean']>;
   /** Change the user's settings */
@@ -124,6 +137,12 @@ export type Mutation = {
   uploadImage?: Maybe<UploadedImage>;
   /** Upload an image from a URL */
   uploadImageFromUrl?: Maybe<UploadedImage>;
+};
+
+
+export type MutationAddCourseOwnerArgs = {
+  courseId: Scalars['String'];
+  username: Scalars['String'];
 };
 
 
@@ -211,6 +230,12 @@ export type MutationMoveSubSectionArgs = {
 };
 
 
+export type MutationRemoveCourseOwnerArgs = {
+  courseId: Scalars['String'];
+  username: Scalars['String'];
+};
+
+
 export type MutationStudyReviewInstanceArgs = {
   grade: Grade;
   reviewInstanceId: Scalars['String'];
@@ -220,6 +245,9 @@ export type MutationStudyReviewInstanceArgs = {
 
 export type MutationUpdateCourseArgs = {
   courseId: Scalars['String'];
+  coursePassword?: InputMaybe<Scalars['String']>;
+  editingAccess?: InputMaybe<EditingAccess>;
+  privacySetting?: InputMaybe<PrivacySetting>;
   title?: InputMaybe<Scalars['String']>;
 };
 
@@ -281,6 +309,14 @@ export type NewUserSurveyResponse = {
   userType?: Maybe<UserType>;
 };
 
+export enum PrivacySetting {
+  All = 'ALL',
+  Friends = 'FRIENDS',
+  Institution = 'INSTITUTION',
+  Password = 'PASSWORD',
+  Private = 'PRIVATE'
+}
+
 export type Query = {
   __typename?: 'Query';
   /** Gets all available courses */
@@ -299,6 +335,8 @@ export type Query = {
   myCourses?: Maybe<Array<Maybe<Course>>>;
   /** Finds flashcards based on some criteria */
   searchFlashcards?: Maybe<Array<Maybe<Flashcard>>>;
+  /** Search for users */
+  searchUsers?: Maybe<Array<Maybe<User>>>;
   /** List all users */
   users?: Maybe<Array<Maybe<User>>>;
 };
@@ -324,6 +362,11 @@ export type QueryGetFlashcardArgs = {
 export type QuerySearchFlashcardsArgs = {
   courseId?: InputMaybe<Scalars['String']>;
   text?: InputMaybe<Scalars['String']>;
+};
+
+
+export type QuerySearchUsersArgs = {
+  name: Scalars['String'];
 };
 
 export enum Referrer {

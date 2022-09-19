@@ -14,15 +14,15 @@ interface DisplayUserInlineProps {
  */
 export default function DisplayUserInline({ user }: DisplayUserInlineProps) {
   return (
-    <span className="inline">
+    <span className="inline-block">
       <Image
         src={user.image ?? "/assets/default-profile-picture.jpg"}
         alt={`${user.name}'s profile picture`}
         width={15}
         height={15}
-        className="rounded-full"
+        className="rounded-full align-middle inline-block"
       />
-      <Link href={`/users/${user.id}`}>
+      <Link href={`/user/${user.username}`}>
         <a className="inline text-blue-500 hover:text-blue-600 ml-1">
           {user.name}
         </a>

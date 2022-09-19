@@ -1,4 +1,4 @@
-import type { User as PrismaUser } from "@prisma/client";
+import { User as PrismaUser } from "@prisma/client";
 import getUserGQL from "helpers/getUserGQL";
 import isAdmin from "helpers/isAdmin";
 import {
@@ -9,6 +9,8 @@ import {
   booleanArg,
   arg,
   stringArg,
+  list,
+  nonNull,
 } from "nexus";
 
 const User = objectType({
@@ -67,6 +69,35 @@ export const UsersQuery = extendType({
       description: "Get information on the current user",
       resolve(_parent, _args, ctx) {
         return getUserGQL(ctx, null);
+      },
+    });
+    t.field("searchUsers", {
+      type: list("User"),
+      description: "Search for users",
+      args: {
+        name: nonNull(stringArg()),
+      },
+      resolve(_parent, args, ctx) {
+        if (args.name.length < 3) return null;
+        return ctx.prisma.user.findMany({
+          where: {
+            OR: [
+              {
+                name: {
+                  contains: args.name,
+                  mode: "insensitive",
+                },
+              },
+              {
+                username: {
+                  contains: args.name,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          },
+          take: 25,
+        });
       },
     });
   },
