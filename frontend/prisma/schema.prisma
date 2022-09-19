@@ -231,8 +231,10 @@ model ReviewInstance {
   ease           Int            @default(250)
   nextReview     DateTime
   lastReview     DateTime?
-  // isSuspended Boolean
-  // leechIndex Int
+
+  isStarred Boolean @default(false)
+  // isSuspended Boolean @default(false)
+  // leechIndex Int @default(0)
 }
 
 enum LearningStatus {

@@ -128,6 +128,8 @@ export type Mutation = {
   updateCourseSection?: Maybe<CourseSection>;
   /** Change a flashcard's data */
   updateFlashcard?: Maybe<Flashcard>;
+  /** Update metadata for the review instance (not for studying) */
+  updateReviewInstance?: Maybe<ReviewInstance>;
   /** Change a sub section's settings */
   updateSubSection?: Maybe<SubSection>;
   /** Change the user's settings */
@@ -267,6 +269,12 @@ export type MutationUpdateFlashcardArgs = {
 };
 
 
+export type MutationUpdateReviewInstanceArgs = {
+  isStarred?: InputMaybe<Scalars['Boolean']>;
+  reviewInstanceId: Scalars['String'];
+};
+
+
 export type MutationUpdateSubSectionArgs = {
   subSectionId: Scalars['String'];
   title?: InputMaybe<Scalars['String']>;
@@ -387,6 +395,7 @@ export type ReviewInstance = {
   ease?: Maybe<Scalars['Int']>;
   flashcard?: Maybe<Flashcard>;
   id?: Maybe<Scalars['String']>;
+  isStarred?: Maybe<Scalars['Boolean']>;
   lastReview?: Maybe<Scalars['Date']>;
   learningStatus?: Maybe<LearningStatus>;
   nextReview?: Maybe<Scalars['Date']>;

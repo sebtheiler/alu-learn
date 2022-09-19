@@ -38,6 +38,7 @@ const reviewInstanceSelect = {
   ease: true,
   nextReview: true,
   lastReview: true,
+  isStarred: true,
   flashcard: {
     select: flashcardSelect,
   },
