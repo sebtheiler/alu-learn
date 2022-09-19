@@ -1,4 +1,3 @@
-import ToolsPage, { ToolsPageProps } from "./ToolsPage";
+import ToolsPage from "./ToolsPage";
 
 export default ToolsPage;
-export type { ToolsPageProps };

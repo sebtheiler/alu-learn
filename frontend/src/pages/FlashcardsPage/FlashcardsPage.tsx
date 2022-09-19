@@ -12,6 +12,7 @@ export interface FlashcardsPageProps {
   flashcards: FlashcardWithId[];
   courseSectionSlug?: string;
   subSectionSlug?: string;
+  editAccess: boolean;
 }
 
 /**
@@ -22,6 +23,7 @@ export default function FlashcardsPage({
   flashcards,
   courseSectionSlug,
   subSectionSlug,
+  editAccess,
 }: FlashcardsPageProps) {
   const slug = courseSectionSlug
     ? subSectionSlug
@@ -52,9 +54,11 @@ export default function FlashcardsPage({
           {/* <LinkButton href={`/course/${courseId}/games${slug}`}>
             Games
           </LinkButton> */}
-          <LinkButton href={`/course/${courseId}/add-flashcards${slug}`}>
-            Add Flashcards
-          </LinkButton>
+          {editAccess && (
+            <LinkButton href={`/course/${courseId}/add-flashcards${slug}`}>
+              Add Flashcards
+            </LinkButton>
+          )}
         </ButtonGroup>
         <div className="container mx-auto px-4 mt-4">
           {flashcards.length > 0 ? (

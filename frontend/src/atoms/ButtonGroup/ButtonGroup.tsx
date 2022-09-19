@@ -6,7 +6,7 @@ interface ButtonGroupProps {
   /**
    * Buttons in the group. Must be instances of `atoms/Button`
    */
-  children: Array<React.ReactElement<ButtonProps> | false | null>;
+  children: Array<React.ReactElement<ButtonProps> | false | null | undefined>;
   /**
    * Put spaces between each button?
    */

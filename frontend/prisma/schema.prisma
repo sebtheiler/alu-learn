@@ -136,6 +136,7 @@ model Course {
   id          String  @id @default(cuid())
   title       String
   bannerImage String?
+  description String? // Stringified Lexical state
 
   users  User[] @relation("CourseUsers")
   owners User[] @relation("CourseOwners")

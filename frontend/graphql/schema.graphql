@@ -5,6 +5,7 @@
 type Course {
   bannerImage: String
   courseSections: [CourseSection]
+  description: String
   editingAccess: EditingAccess
   id: String
 
@@ -158,6 +159,7 @@ type Mutation {
     """ID of the course to update"""
     courseId: String!
     coursePassword: String
+    description: String
     editingAccess: EditingAccess
     privacySetting: PrivacySetting
     title: String

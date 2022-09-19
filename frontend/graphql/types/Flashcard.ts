@@ -1,7 +1,7 @@
 import type { Flashcard as PrismaFlashcard, Prisma } from "@prisma/client";
+import canViewCourse from "helpers/canViewCourse";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
-import isCourseUser from "helpers/isCourseUser";
 import isSubSectionOwner from "helpers/isSubSectionOwner";
 import moveObject from "helpers/moveObject";
 import {
@@ -45,7 +45,7 @@ export const FlashcardQuery = extendType({
         });
         if (
           !flashcard ||
-          !isCourseUser(flashcard?.courseId, ctx.user?.email, ctx.prisma)
+          !canViewCourse(flashcard?.courseId, ctx.user?.email, ctx.prisma)
         )
           return null;
 

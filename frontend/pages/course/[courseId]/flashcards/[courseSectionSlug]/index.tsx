@@ -1,7 +1,10 @@
 import FlashcardsPage from "@/pages/FlashcardsPage";
 import type { FlashcardsPageProps } from "@/pages/FlashcardsPage";
+import canEditCourse from "helpers/canEditCourse";
 import prisma from "lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
+import { unstable_getServerSession } from "next-auth";
+import { authOptions } from "pages/api/auth/[...nextauth]";
 
 const Flashcards: NextPage<FlashcardsPageProps> = (
   props: FlashcardsPageProps
@@ -34,11 +37,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     ],
   });
 
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  );
+  const editAccess = await canEditCourse(
+    courseId as string,
+    session?.user?.email
+  );
+
   return {
     props: {
       courseId,
       flashcards,
       courseSectionSlug,
+      editAccess,
     } as FlashcardsPageProps,
   };
 };

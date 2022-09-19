@@ -1,7 +1,8 @@
 import CoursePage from "@/pages/CoursePage";
 import type { CoursePageProps } from "@/pages/CoursePage";
+import canEditCourse from "helpers/canEditCourse";
+import canViewCourse from "helpers/canViewCourse";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
-import isCourseUser from "helpers/isCourseUser";
 import prisma from "lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
@@ -52,10 +53,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  let authorized = true;
-  if (!(await isCourseUser(courseId as string, session?.user?.email))) {
+  const viewAccess = await canViewCourse(
+    courseId as string,
+    session?.user?.email
+  );
+  const editAccess = await canEditCourse(
+    courseId as string,
+    session?.user?.email
+  );
+  if (!viewAccess) {
     course = null;
-    authorized = false;
   } else if (course && course.bannerImage) {
     course.bannerImage = generateSignedS3URL(course.bannerImage);
   }
@@ -63,7 +70,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       course,
-      authorized,
+      viewAccess,
+      editAccess,
     } as CoursePageProps,
   };
 };

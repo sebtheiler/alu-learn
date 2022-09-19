@@ -1,4 +1,4 @@
-import isCourseUser from "helpers/isCourseUser";
+import isCourseOwner from "helpers/isCourseOwner";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
@@ -16,7 +16,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   );
   const { courseId } = context.query;
 
-  if (!isCourseUser(courseId as string, session?.user?.email)) {
+  if (!isCourseOwner(courseId as string, session?.user?.email)) {
     return {
       redirect: {
         permanent: false,

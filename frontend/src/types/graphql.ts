@@ -23,6 +23,7 @@ export type Course = {
   __typename?: 'Course';
   bannerImage?: Maybe<Scalars['String']>;
   courseSections?: Maybe<Array<Maybe<CourseSection>>>;
+  description?: Maybe<Scalars['String']>;
   editingAccess?: Maybe<EditingAccess>;
   id?: Maybe<Scalars['String']>;
   /** Users who have full privileges on this course */
@@ -246,6 +247,7 @@ export type MutationStudyReviewInstanceArgs = {
 export type MutationUpdateCourseArgs = {
   courseId: Scalars['String'];
   coursePassword?: InputMaybe<Scalars['String']>;
+  description?: InputMaybe<Scalars['String']>;
   editingAccess?: InputMaybe<EditingAccess>;
   privacySetting?: InputMaybe<PrivacySetting>;
   title?: InputMaybe<Scalars['String']>;

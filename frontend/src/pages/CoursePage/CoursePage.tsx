@@ -37,13 +37,21 @@ export interface CoursePageProps {
   /**
    * Is the user authorized to view the course? (course is null if true)
    */
-  authorized: boolean;
+  viewAccess: boolean;
+  /**
+   * Is the user authorized to edit the course?
+   */
+  editAccess: boolean;
 }
 
 /**
  * Renders the page for a course, with all of its course sections and sub sections
  */
-export default function CoursePage({ course, authorized }: CoursePageProps) {
+export default function CoursePage({
+  course,
+  viewAccess,
+  editAccess,
+}: CoursePageProps) {
   const router = useRouter();
   const refreshData = () => router.replace(router.asPath);
   const { width } = useWindowDimensions();
@@ -76,7 +84,7 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
         // TODO: Add SEO description (VERY IMPORTANT)
         description=""
       />
-      {authorized && (
+      {viewAccess && (
         <div className="mt-28">
           <div className="mx-auto max-w-5xl">
             <div
@@ -118,9 +126,11 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
                 >
                   {course.title}
                 </h1>
-                <div className="absolute right-0 top-0">
-                  <CourseSettings course={course} refreshData={refreshData} />
-                </div>
+                {editAccess && (
+                  <div className="absolute right-0 top-0">
+                    <CourseSettings course={course} refreshData={refreshData} />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -165,7 +175,9 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
             onEnd={onCourseSectionDragEnd}
             className="md:container mx-auto px-4 mt-6"
           >
-            <CoursePageContext.Provider value={{ course, refreshData }}>
+            <CoursePageContext.Provider
+              value={{ course, refreshData, editAccess }}
+            >
               {courseSections.map((courseSection) => (
                 <RenderCourseSection
                   courseSection={courseSection as CourseSection}
@@ -182,14 +194,16 @@ export default function CoursePage({ course, authorized }: CoursePageProps) {
                 start organizing the course!
               </p>
             )}
-            <CreateCourseSectionButton
-              course={course}
-              refreshData={refreshData}
-            />
+            {editAccess && (
+              <CreateCourseSectionButton
+                course={course}
+                refreshData={refreshData}
+              />
+            )}
           </div>
         </div>
       )}
-      {!authorized && (
+      {!viewAccess && (
         <div className="mt-28 text-center">
           <p>You are not authorized to view this course</p>
         </div>

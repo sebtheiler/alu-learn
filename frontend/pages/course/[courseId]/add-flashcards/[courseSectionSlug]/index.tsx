@@ -1,4 +1,4 @@
-import isCourseUser from "helpers/isCourseUser";
+import isCourseOwner from "helpers/isCourseOwner";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
@@ -25,7 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
   if (
-    !isCourseUser(courseId as string, session?.user?.email) ||
+    !isCourseOwner(courseId as string, session?.user?.email) ||
     !prisma.courseSection.findFirst({
       where: {
         slug: courseSectionSlug as string,

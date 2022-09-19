@@ -7,6 +7,7 @@ const UpdateCourse = gql`
     $editingAccess: EditingAccess
     $title: String
     $coursePassword: String
+    $description: String
   ) {
     updateCourse(
       courseId: $courseId
@@ -14,6 +15,7 @@ const UpdateCourse = gql`
       editingAccess: $editingAccess
       title: $title
       coursePassword: $coursePassword
+      description: $description
     ) {
       id
     }

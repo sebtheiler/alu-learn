@@ -41,7 +41,7 @@ interface RenderCourseSectionProps {
 export default function RenderCourseSection({
   courseSection,
 }: RenderCourseSectionProps) {
-  const { course, refreshData } = useContext(CoursePageContext);
+  const { course, refreshData, editAccess } = useContext(CoursePageContext);
   const [createSubSectionModalOpen, setCreateSubSectionModalOpen] =
     useState(false);
   const [createSubSection] = useMutation(CreateSubSection);
@@ -89,21 +89,23 @@ export default function RenderCourseSection({
   return (
     <div className="border-gray-200 border-4 bg-gray-50 rounded-[1rem] px-4 py-3 max-w-5xl mx-auto mb-8">
       <div className="flex items-center mt-4 mb-3">
-        <div className="absolute -translate-y-6 -translate-x-3">
-          <span title="Drag to rearrange">
-            <FontAwesomeIcon
-              icon={faGripVertical}
-              // `.course-section-drag-handle` is the handle class defined in `CoursePage.tsx`
-              className="text-gray-400 mx-3 hover:cursor-grab course-section-drag-handle"
-            />
-          </span>
-        </div>
+        {editAccess && (
+          <div className="absolute -translate-y-6 -translate-x-3">
+            <span title="Drag to rearrange">
+              <FontAwesomeIcon
+                icon={faGripVertical}
+                // `.course-section-drag-handle` is the handle class defined in `CoursePage.tsx`
+                className="text-gray-400 mx-3 hover:cursor-grab course-section-drag-handle"
+              />
+            </span>
+          </div>
+        )}
         <div className="flex-grow bg bg-gray-300 h-0.5"></div>
         <div className="flex-grow-0 mx-5 text font-bold text-center text-3xl">
           {courseSection?.title?.toUpperCase()}
         </div>
         <div className="flex-grow bg bg-gray-300 h-0.5"></div>
-        <CourseSectionSettings courseSection={courseSection} />
+        {editAccess && <CourseSectionSettings courseSection={courseSection} />}
       </div>
       <ButtonGroup
         className="text-center"
@@ -157,34 +159,36 @@ export default function RenderCourseSection({
           the &quot;+&quot; icon!
         </p>
       )}
-      <div className="float-right -translate-y-12">
-        <Tooltip tooltip="Add Sub-section" className="w-32">
-          <Button
-            faIcon={faPlus}
-            className="px-4"
-            onClick={() => setCreateSubSectionModalOpen(true)}
-          />
-        </Tooltip>
-        <Modal
-          open={createSubSectionModalOpen}
-          close={() => setCreateSubSectionModalOpen(false)}
-        >
-          <h2 className="text-2xl font-bold text-center mb-3">
-            Add Sub-section
-          </h2>
-          <AsyncForm
-            onSubmit={handleCreateSubSection}
-            buttonProps={{ block: true, children: "Add Sub-section" }}
-          >
-            <TextInput
-              label="Sub-section Title"
-              className="mb-3"
-              name="subSectionTitle"
-              required
+      {editAccess && (
+        <div className="float-right -translate-y-12">
+          <Tooltip tooltip="Add Sub-section" className="w-32">
+            <Button
+              faIcon={faPlus}
+              className="px-4"
+              onClick={() => setCreateSubSectionModalOpen(true)}
             />
-          </AsyncForm>
-        </Modal>
-      </div>
+          </Tooltip>
+          <Modal
+            open={createSubSectionModalOpen}
+            close={() => setCreateSubSectionModalOpen(false)}
+          >
+            <h2 className="text-2xl font-bold text-center mb-3">
+              Add Sub-section
+            </h2>
+            <AsyncForm
+              onSubmit={handleCreateSubSection}
+              buttonProps={{ block: true, children: "Add Sub-section" }}
+            >
+              <TextInput
+                label="Sub-section Title"
+                className="mb-3"
+                name="subSectionTitle"
+                required
+              />
+            </AsyncForm>
+          </Modal>
+        </div>
+      )}
     </div>
   );
 }

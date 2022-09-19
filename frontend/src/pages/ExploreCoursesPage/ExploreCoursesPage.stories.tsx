@@ -1,16 +1,16 @@
-import ExploreDecksPage from ".";
+import ExploreCoursesPage from ".";
 import withFullContext from "@/helpers/withFullContext";
 import withNavbar from "@/helpers/withNavbar";
 import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Pages/ExploreDecksPage",
-  component: ExploreDecksPage,
+  component: ExploreCoursesPage,
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof ExploreDecksPage> = () => (
-  <ExploreDecksPage />
+const Template: ComponentStory<typeof ExploreCoursesPage> = () => (
+  <ExploreCoursesPage />
 );
 
 export const ExploreDecksPageExample = Template.bind({});

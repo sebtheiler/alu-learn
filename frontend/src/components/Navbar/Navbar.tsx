@@ -88,7 +88,7 @@ export default function Navbar({
         id="navigation"
       >
         <div className="flex flex-grow flex-col lg:inline-flex lg:flex-row">
-          <NavItem href="/explore/decks" icon={faCompass}>
+          <NavItem href="/explore" icon={faCompass}>
             Explore
           </NavItem>
           <NavItem href="/pro" icon={faStar}>

@@ -68,8 +68,8 @@ export const StripeMutation = extendType({
           subscription_data: {
             trial_period_days: 7,
           },
-          success_url: `${process.env.SERVER_URL}/pro`,
-          cancel_url: `${process.env.SERVER_URL}/pro`,
+          success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/pro`,
+          cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/pro`,
         });
 
         return stripeSession.url;

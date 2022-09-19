@@ -11,6 +11,7 @@ import UpdateCourse from "@/graphql/UpdateCourse";
 import SEO from "@/helpers/SEO";
 import { getElementsVals } from "@/helpers/getElementsVals";
 import { useDebounce } from "@/hooks/useDebounce";
+import LexicalEditor from "@/lexicalEditor/LexicalEditor";
 import {
   Course,
   EditingAccess,
@@ -26,6 +27,7 @@ import {
 } from "@/types";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { faX } from "@fortawesome/free-solid-svg-icons";
+import type { EditorState } from "lexical";
 import { useEffect, useState } from "react";
 
 export interface ShareCoursePageProps {
@@ -52,6 +54,7 @@ export default function ShareCoursePage({
     QuerySearchUsersArgs
   >(SearchUsers, { variables: { name: query } });
   const [owners, setOwners] = useState<User[]>(course?.owners as User[]);
+  const [description, setDescription] = useState<EditorState>();
 
   const [addCourseOwner] = useMutation<
     Mutation["addCourseOwner"],
@@ -89,6 +92,7 @@ export default function ShareCoursePage({
         privacySetting: privacySetting as PrivacySetting,
         editingAccess: editingAccess as EditingAccess,
         coursePassword,
+        description: JSON.stringify(description),
         courseId: course?.id as string,
       },
     });
@@ -225,8 +229,34 @@ export default function ShareCoursePage({
               clearOnChange
             />
           </div>
+          <div className="mt-3 mb-5">
+            <h3 className="font-bold text-lg">Description (optional)</h3>
+            <LexicalEditor
+              namespace="description"
+              onChange={(state) => setDescription(state)}
+              editorState={course?.description ? course?.description : null}
+            />
+          </div>
         </AsyncForm>
-        <p className="text-center mt-3">{shareMsg}</p>
+        <p className="text-center my-3">{shareMsg}</p>
+        <div className="text-center">
+          <p>Use this link to share the course:</p>
+          <input
+            value={`${process.env.NEXT_PUBLIC_SERVER_URL}/course/${course?.id}`}
+            readOnly
+            className="px-2 py-1 border-2 border-gray-100 rounded-xl w-96 focus:outline-none focus:border-gray-200"
+            id="copy-course-id"
+            onClick={() => {
+              const el = document.getElementById(
+                "copy-course-id"
+              ) as HTMLInputElement;
+              if (el) {
+                el.select();
+                navigator.clipboard.writeText(el.value);
+              }
+            }}
+          />
+        </div>
       </div>
     </>
   );
