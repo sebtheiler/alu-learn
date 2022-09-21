@@ -78,13 +78,6 @@ const Course = objectType({
 export const CoursesQuery = extendType({
   type: "Query",
   definition(t) {
-    t.list.field("courses", {
-      type: Course,
-      description: "Gets all available courses",
-      async resolve(_parent, _args, ctx) {
-        return ctx.prisma.course.findMany();
-      },
-    });
     t.list.field("myCourses", {
       type: Course,
       description: "Get the current user's courses",
@@ -97,6 +90,25 @@ export const CoursesQuery = extendType({
               },
             },
           },
+        });
+      },
+    });
+    t.list.field("searchCourses", {
+      type: Course,
+      description: "Search for shared courses based on their title",
+      args: {
+        title: nonNull(stringArg()),
+      },
+      resolve(_parent, args, ctx) {
+        if (args.title.length < 3) return null;
+        return ctx.prisma.course.findMany({
+          where: {
+            title: {
+              contains: args.title,
+              mode: "insensitive",
+            },
+          },
+          take: 25,
         });
       },
     });

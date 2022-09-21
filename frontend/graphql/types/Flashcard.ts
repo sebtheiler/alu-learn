@@ -159,12 +159,11 @@ export const FlashcardMutation = extendType({
         ),
       },
       async resolve(_parent, args, ctx) {
-        const user = await getUserGQL(ctx);
         const flashcard = await ctx.prisma.flashcard.findUnique({
           where: { id: args.flashcardId },
+          select: { courseId: true },
         });
         if (
-          !user ||
           !flashcard ||
           !isCourseOwner(flashcard.courseId, ctx.user?.email, ctx.prisma)
         )

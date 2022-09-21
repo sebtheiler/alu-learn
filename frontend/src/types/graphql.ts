@@ -19,6 +19,13 @@ export type Scalars = {
   Upload: any;
 };
 
+export type Classroom = {
+  __typename?: 'Classroom';
+  id?: Maybe<Scalars['String']>;
+  joinCode?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+};
+
 export type Course = {
   __typename?: 'Course';
   bannerImage?: Maybe<Scalars['String']>;
@@ -92,6 +99,8 @@ export type Mutation = {
   archiveCourse?: Maybe<Course>;
   /** Cancels the Stripe subscription for the current user */
   cancelStripeSubscription?: Maybe<Scalars['Boolean']>;
+  /** Creates a classroom */
+  createClassroom?: Maybe<Classroom>;
   /** Creates a course and populates it with an initial main and sub section */
   createCourse?: Maybe<Course>;
   /** Creates a new course section and populates it with a default subsection */
@@ -130,6 +139,8 @@ export type Mutation = {
   updateCourseSection?: Maybe<CourseSection>;
   /** Change a flashcard's data */
   updateFlashcard?: Maybe<Flashcard>;
+  /** Update metadata for the review instance (not for studying) */
+  updateReviewInstance?: Maybe<ReviewInstance>;
   /** Change a sub section's settings */
   updateSubSection?: Maybe<SubSection>;
   /** Change the user's settings */
@@ -152,6 +163,12 @@ export type MutationAddCourseOwnerArgs = {
 export type MutationArchiveCourseArgs = {
   archive: Scalars['Boolean'];
   courseId: Scalars['String'];
+};
+
+
+export type MutationCreateClassroomArgs = {
+  courseId: Scalars['String'];
+  title: Scalars['String'];
 };
 
 
@@ -275,6 +292,12 @@ export type MutationUpdateFlashcardArgs = {
 };
 
 
+export type MutationUpdateReviewInstanceArgs = {
+  isStarred?: InputMaybe<Scalars['Boolean']>;
+  reviewInstanceId: Scalars['String'];
+};
+
+
 export type MutationUpdateSubSectionArgs = {
   subSectionId: Scalars['String'];
   title?: InputMaybe<Scalars['String']>;
@@ -329,8 +352,6 @@ export enum PrivacySetting {
 
 export type Query = {
   __typename?: 'Query';
-  /** Gets all available courses */
-  courses?: Maybe<Array<Maybe<Course>>>;
   /** Find review instances sorted by difficulty */
   findHardestReviewInstances?: Maybe<Array<Maybe<ReviewInstance>>>;
   /** Find subsections sorted by difficulty. Returns subsections with custom `avgEase` and `courseSectionSlug` attributes */
@@ -343,6 +364,8 @@ export type Query = {
   me?: Maybe<User>;
   /** Get the current user's courses */
   myCourses?: Maybe<Array<Maybe<Course>>>;
+  /** Search for shared courses based on their title */
+  searchCourses?: Maybe<Array<Maybe<Course>>>;
   /** Finds flashcards based on some criteria */
   searchFlashcards?: Maybe<Array<Maybe<Flashcard>>>;
   /** Search for users */
@@ -366,6 +389,11 @@ export type QueryFindHardestSubSectionsArgs = {
 
 export type QueryGetFlashcardArgs = {
   flashcardId: Scalars['String'];
+};
+
+
+export type QuerySearchCoursesArgs = {
+  title: Scalars['String'];
 };
 
 
@@ -395,6 +423,7 @@ export type ReviewInstance = {
   ease?: Maybe<Scalars['Int']>;
   flashcard?: Maybe<Flashcard>;
   id?: Maybe<Scalars['String']>;
+  isStarred?: Maybe<Scalars['Boolean']>;
   lastReview?: Maybe<Scalars['Date']>;
   learningStatus?: Maybe<LearningStatus>;
   nextReview?: Maybe<Scalars['Date']>;

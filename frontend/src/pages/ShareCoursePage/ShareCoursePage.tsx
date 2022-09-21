@@ -37,7 +37,7 @@ export interface ShareCoursePageProps {
 }
 
 /**
- *
+ * Page for updating a course's sharing settings
  */
 export default function ShareCoursePage({
   course,

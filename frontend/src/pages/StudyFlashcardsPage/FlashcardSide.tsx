@@ -80,7 +80,7 @@ export default function FlashcardSide({
               "absolute right-3 top-3 z-20",
               starred && "text-yellow-500"
             )}
-            title="Star Flashcard"
+            title={starred ? "Unstar Flashcard" : "Star Flashcard"}
             onClick={onStarred}
             role="button"
           />

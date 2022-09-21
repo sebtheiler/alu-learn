@@ -1,4 +1,5 @@
 import DateScalar from "./scalars/DateScalar";
+import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
 import calculateInterval from "helpers/calculateInterval";
 import getUserGQL from "helpers/getUserGQL";
@@ -6,6 +7,7 @@ import isCourseUser from "helpers/isCourseUser";
 import updateUserHistory from "helpers/updateUserHistory";
 import {
   arg,
+  booleanArg,
   enumType,
   extendType,
   floatArg,
@@ -26,6 +28,7 @@ const ReviewInstance = objectType({
     t.field("nextReview", { type: DateScalar });
     t.field("lastReview", { type: DateScalar });
     t.field("flashcard", { type: "Flashcard" });
+    t.boolean("isStarred");
   },
 });
 
@@ -131,6 +134,31 @@ export const ReviewInstancesMutation = extendType({
             id: args.reviewInstanceId,
           },
           data: updatedReviewInstance,
+        });
+      },
+    });
+    t.field("updateReviewInstance", {
+      type: ReviewInstance,
+      description: "Update metadata for the review instance (not for studying)",
+      args: {
+        isStarred: booleanArg(),
+        reviewInstanceId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, { id: true });
+        const reviewInstance = await ctx.prisma.reviewInstance.findUnique({
+          where: { id: args.reviewInstanceId },
+          select: { userId: true },
+        });
+        if (!user || !reviewInstance || user.id !== reviewInstance.userId)
+          return null;
+
+        const data: Partial<PrismaReviewInstance> = {};
+        if (args.isStarred !== null) data.isStarred = args.isStarred;
+
+        return ctx.prisma.reviewInstance.update({
+          where: { id: args.reviewInstanceId },
+          data,
         });
       },
     });

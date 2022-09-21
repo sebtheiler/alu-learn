@@ -5,8 +5,14 @@ const UpdateFlashcard = gql`
     $flashcardId: String!
     $tags: String
     $fields: String
+    $starred: Boolean
   ) {
-    updateFlashcard(flashcardId: $flashcardId, tags: $tags, fields: $fields) {
+    updateFlashcard(
+      flashcardId: $flashcardId
+      tags: $tags
+      fields: $fields
+      starred: $starred
+    ) {
       id
     }
   }

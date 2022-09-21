@@ -6,6 +6,7 @@ import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import ProgressBar from "@/components/ProgressBar";
 import StudyReviewInstance from "@/graphql/StudyReviewInstance";
+import UpdateReviewInstance from "@/graphql/UpdateReviewInstance";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
@@ -16,6 +17,7 @@ import type {
   ReviewInstanceWithFlashcard,
   Grade as GQLGrade,
   Intervals,
+  MutationUpdateReviewInstanceArgs,
 } from "@/types";
 import { useMutation } from "@apollo/client";
 import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
@@ -87,7 +89,6 @@ export default function StudyFlashcardsPage({
     useState(0);
 
   const [revealAnswer, setRevealAnswer] = useState(false);
-  const [starred, setStarred] = useState(false);
   const [isTransitioningCorrect, setIsTransitioningCorrect] = useState(false);
   const [isTransitioningIncorrect, setIsTransitioningIncorrect] =
     useState(false);
@@ -96,6 +97,10 @@ export default function StudyFlashcardsPage({
     { studyReviewInstance: Mutation["studyReviewInstance"] },
     MutationStudyReviewInstanceArgs
   >(StudyReviewInstance);
+  const [updateReviewInstance] = useMutation<
+    { updateFlashcard: Mutation["updateFlashcard"] },
+    MutationUpdateReviewInstanceArgs
+  >(UpdateReviewInstance);
 
   const browserInteractionTime = useMemo(() => {
     const browserInteractionTimer = new BrowserInteractionTime({
@@ -107,10 +112,20 @@ export default function StudyFlashcardsPage({
 
   const { width } = useWindowDimensions();
 
-  const onStarred = (e: React.MouseEvent<SVGElement>) => {
-    // TODO: implement starring
-    setStarred(!starred);
+  const onStarred = async (e: React.MouseEvent<SVGElement>) => {
     e.stopPropagation();
+    if (!activeReviewInstance) return;
+
+    await updateReviewInstance({
+      variables: {
+        isStarred: !activeReviewInstance.isStarred,
+        reviewInstanceId: activeReviewInstance.id as string,
+      },
+    });
+    setActiveReviewInstance({
+      ...activeReviewInstance,
+      isStarred: !activeReviewInstance.isStarred,
+    });
   };
 
   const selectGrade = (grade: Grade) => {
@@ -288,7 +303,7 @@ export default function StudyFlashcardsPage({
                   JSON.parse(activeReviewInstance.flashcard.fields as string)[0]
                 )}
                 isShown={!revealAnswer}
-                starred={starred}
+                starred={activeReviewInstance.isStarred}
                 onStarred={onStarred}
               />
               <FlashcardSide
@@ -297,7 +312,7 @@ export default function StudyFlashcardsPage({
                   JSON.parse(activeReviewInstance.flashcard.fields as string)[1]
                 )}
                 isShown={revealAnswer}
-                starred={starred}
+                starred={activeReviewInstance.isStarred}
                 onStarred={onStarred}
               />
             </div>
