@@ -6,6 +6,7 @@ import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
 import Ad from "@/components/Ad";
 import RenderCourseSection from "@/courses/RenderCourseSection";
+import ArchiveCourse from "@/graphql/ArchiveCourse";
 import MoveCourseSection from "@/graphql/MoveCourseSection";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
@@ -15,6 +16,7 @@ import type {
   Course,
   CourseSection,
   Mutation,
+  MutationArchiveCourseArgs,
   MutationMoveCourseSectionArgs,
 } from "@/types";
 import { useMutation } from "@apollo/client";
@@ -62,6 +64,10 @@ export default function CoursePage({
     { moveCourseSection: Mutation["moveCourseSection"] },
     MutationMoveCourseSectionArgs
   >(MoveCourseSection);
+  const [archiveCourse] = useMutation<
+    { archiveCourse: Mutation["archiveCourse"] },
+    MutationArchiveCourseArgs
+  >(ArchiveCourse);
   const isPro = useProStore((state) => state.isPro);
 
   const onCourseSectionDragEnd = (evt: SortableEvent) => {
@@ -74,6 +80,19 @@ export default function CoursePage({
         to: evt.newIndex,
       },
     });
+  };
+
+  const archiveCourseHandler = async (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    await archiveCourse({
+      variables: {
+        courseId: course.id as string,
+        archive: true,
+      },
+    });
+
+    router.push("/archived");
   };
 
   return (
@@ -162,6 +181,10 @@ export default function CoursePage({
                 {
                   text: "Tools",
                   href: `/course/${course?.id}/tools`,
+                },
+                {
+                  text: "Archive",
+                  onClick: archiveCourseHandler,
                 },
               ]}
             >

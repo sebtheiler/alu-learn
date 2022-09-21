@@ -78,6 +78,9 @@ type Mutation {
   """Adds a user as a course owner"""
   addCourseOwner(courseId: String!, username: String!): User
 
+  """Archives a course for the current user. Does not affect ownership"""
+  archiveCourse(archive: Boolean!, courseId: String!): Course
+
   """Cancels the Stripe subscription for the current user"""
   cancelStripeSubscription: Boolean
 

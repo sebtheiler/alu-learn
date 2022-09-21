@@ -4,10 +4,12 @@ import deleteFileFromS3 from "helpers/deleteFileFromS3";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
+import isCourseUser from "helpers/isCourseUser";
 import slugifyText from "helpers/slugifyText";
 import uploadImageToS3 from "helpers/uploadImageToS3";
 import {
   arg,
+  booleanArg,
   enumType,
   extendType,
   list,
@@ -350,6 +352,72 @@ export const CoursesMutation = extendType({
             },
           },
         });
+      },
+    });
+    t.field("archiveCourse", {
+      type: "Course",
+      description:
+        "Archives a course for the current user. Does not affect ownership",
+      args: {
+        courseId: nonNull(stringArg()),
+        archive: nonNull(booleanArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, { id: true });
+        if (!user) return null;
+
+        if (args.archive) {
+          if (!isCourseUser(args.courseId, ctx.user?.email, ctx.prisma))
+            return null;
+          return ctx.prisma.course.update({
+            where: {
+              id: args.courseId,
+            },
+            data: {
+              users: {
+                disconnect: {
+                  id: user.id,
+                },
+              },
+              archivedUsers: {
+                connect: {
+                  id: user.id,
+                },
+              },
+            },
+          });
+        } else {
+          if (
+            (await ctx.prisma.user.count({
+              where: {
+                email: ctx.user?.email ?? null,
+                coursesArchived: {
+                  some: {
+                    id: args.courseId ?? null,
+                  },
+                },
+              },
+            })) === 0
+          )
+            return null;
+          return ctx.prisma.course.update({
+            where: {
+              id: args.courseId,
+            },
+            data: {
+              users: {
+                connect: {
+                  id: user.id,
+                },
+              },
+              archivedUsers: {
+                disconnect: {
+                  id: user.id,
+                },
+              },
+            },
+          });
+        }
       },
     });
   },

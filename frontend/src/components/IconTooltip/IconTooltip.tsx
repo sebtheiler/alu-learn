@@ -10,7 +10,11 @@ interface IconTooltipProps {
   /**
    * Tooltip to display when hovering the icon
    */
-  tooltip: React.ReactNode;
+  tooltip?: React.ReactNode;
+  /**
+   * Title to display when hovering the icon
+   */
+  title?: string;
   /**
    * Called when the icon is clicked
    */
@@ -48,6 +52,7 @@ interface IconTooltipProps {
  */
 export default function IconTooltip({
   tooltip,
+  title,
   onClick,
   onDoubleClick,
   faIcon,
@@ -83,6 +88,7 @@ export default function IconTooltip({
         onClick={handleClick}
         onDoubleClick={handleDoubleClick}
         className={classNames(className, "cursor-pointer text-center")}
+        title={title}
         role="button"
       >
         <FontAwesomeIcon

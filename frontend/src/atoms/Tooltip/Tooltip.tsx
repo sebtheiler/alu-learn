@@ -57,33 +57,35 @@ export default function Tooltip({
       >
         {children}
       </span>
-      <Transition
-        show={isTooltipOpen}
-        enter="ease-out duration-300"
-        enterFrom="opacity-0"
-        enterTo="opacity-100"
-        leave="ease-in duration-200"
-        leaveFrom="opacity-100"
-        leaveTo="opacity-0"
-        className="absolute z-50"
-      >
-        <div
-          ref={setPopEl}
-          role="tooltip"
-          className={classNames(
-            "absolute z-50 select-none rounded-lg bg-gray-900 bg-opacity-90 px-2 py-1 text-center text-sm text-white",
-            className
-          )}
-          // Keep tooltip open when hovered
-          onMouseEnter={() => setIsTooltipOpen(true)}
-          onMouseLeave={() => setIsTooltipOpen(false)}
-          // Popper style and attributes
-          style={styles.popper}
-          {...attributes.popper}
+      {tooltip && (
+        <Transition
+          show={isTooltipOpen}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+          className="absolute z-50"
         >
-          {tooltip}
-        </div>
-      </Transition>
+          <div
+            ref={setPopEl}
+            role="tooltip"
+            className={classNames(
+              "absolute z-50 select-none rounded-lg bg-gray-900 bg-opacity-90 px-2 py-1 text-center text-sm text-white",
+              className
+            )}
+            // Keep tooltip open when hovered
+            onMouseEnter={() => setIsTooltipOpen(true)}
+            onMouseLeave={() => setIsTooltipOpen(false)}
+            // Popper style and attributes
+            style={styles.popper}
+            {...attributes.popper}
+          >
+            {tooltip}
+          </div>
+        </Transition>
+      )}
     </div>
   );
 }
