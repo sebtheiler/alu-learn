@@ -1,5 +1,6 @@
 export * from "./Course";
 export * from "./CourseSection";
+export * from "./Classroom";
 export * from "./Flashcard";
 export * from "./NewUserSurveyResponse";
 export * from "./ReviewInstance";

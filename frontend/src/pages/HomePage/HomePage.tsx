@@ -1,13 +1,14 @@
 import CreateAddCourseModal from "./CreateAddCourseModal";
 import Heatmap from "./Heatmap";
 import SocialMediaLinks from "./SocialMediaLinks";
+import LinkButton from "@/atoms/LinkButton";
 import Ad from "@/components/Ad";
 import ReviewsDoneSVG from "@/components/ReviewsDoneSVG";
 import SEO from "@/helpers/SEO";
 import type { Course } from "@/types";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { HistorySegment } from "@prisma/client";
+import type { HistorySegment, UserType } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -30,6 +31,10 @@ export interface HomePageProps {
    * User's history of reviews for the past year
    */
   history: HistorySegment[];
+  /**
+   * Whether the user is a teacher, student, etc.
+   */
+  userType: UserType;
 }
 
 export default function HomePage({
@@ -37,8 +42,10 @@ export default function HomePage({
   reviewsDone,
   targetReviewsDone,
   history,
+  userType,
 }: HomePageProps) {
   const [addCourseModalOpen, setAddCourseModalOpen] = useState(false);
+  console.log(userType);
 
   return (
     <>
@@ -48,7 +55,12 @@ export default function HomePage({
         // description=""  TODO: (SEO) set description
       />
       <div className="mt-28">
-        <h1 className="text-center text-4xl font-bold mb-3">Welcome!</h1>
+        <h1 className="text-center text-4xl font-bold mb-5">Welcome!</h1>
+        {(userType === "TEACHER" || userType === "MIXED") && (
+          <LinkButton outerClassname="absolute left-10 top-25" href="/classes">
+            Manage Classes
+          </LinkButton>
+        )}
         <div className="grid md:grid-cols-12 sm:grid-cols-6 h-40">
           <div className="md:col-start-4 col-span-6 mx-10 md:mx-5">
             <div className="flex flex-wrap">

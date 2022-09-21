@@ -25,6 +25,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     numReviewsDoneToday: true,
     targetNumReviews: true,
     id: true,
+    userType: true,
   });
 
   let courses = await prisma.course.findMany({
@@ -72,6 +73,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       reviewsDone: user?.numReviewsDoneToday ?? null,
       targetReviewsDone: user?.targetNumReviews ?? null,
       history: JSON.parse(JSON.stringify(history)),
+      userType: user?.userType,
     } as HomePageProps,
   };
 };

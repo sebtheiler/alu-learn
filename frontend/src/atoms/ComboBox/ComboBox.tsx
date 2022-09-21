@@ -29,6 +29,10 @@ interface ComboBoxProps {
    */
   placeholder?: string;
   /**
+   * If true, display "loading" instead of the options. Can be used while loading data
+   */
+  loading?: boolean;
+  /**
    * Apply additional classes
    */
   className?: string;
@@ -44,6 +48,7 @@ export default function ComboBox({
   clearOnChange,
   onQueryChange,
   placeholder,
+  loading,
   className,
 }: ComboBoxProps) {
   const [selected, setSelected] = useState(defaultValue);
@@ -78,7 +83,9 @@ export default function ComboBox({
                    sm:text-sm max-w-sm border-gray-200 border-2"
         style={{ zIndex: "50" }}
       >
-        {options.length > 0 ? (
+        {loading ? (
+          <p className="py-2 px-3">Loading...</p>
+        ) : options.length > 0 ? (
           <HeadlessUICombobox.Options>
             {options.map((option, i) => (
               <HeadlessUICombobox.Option

@@ -2,6 +2,12 @@
 ### Do not make changes to this file directly
 
 
+type Classroom {
+  id: String
+  joinCode: String
+  title: String
+}
+
 type Course {
   bannerImage: String
   courseSections: [CourseSection]
@@ -80,6 +86,9 @@ type Mutation {
 
   """Cancels the Stripe subscription for the current user"""
   cancelStripeSubscription: Boolean
+
+  """Creates a classroom"""
+  createClassroom(courseId: String!, title: String!): Classroom
 
   """Creates a course and populates it with an initial main and sub section"""
   createCourse(
@@ -236,9 +245,6 @@ enum PrivacySetting {
 }
 
 type Query {
-  """Gets all available courses"""
-  courses: [Course]
-
   """Find review instances sorted by difficulty"""
   findHardestReviewInstances(
     courseId: String!
@@ -268,6 +274,9 @@ type Query {
 
   """Get the current user's courses"""
   myCourses: [Course]
+
+  """Search for shared courses based on their title"""
+  searchCourses(title: String!): [Course]
 
   """Finds flashcards based on some criteria"""
   searchFlashcards(courseId: String, text: String): [Flashcard]

@@ -7,6 +7,10 @@ interface LinkButtonProps extends ButtonProps {
    * Href the button will link to
    */
   href: string;
+  /**
+   * Classname to affect the `a`, not the `button`
+   */
+  outerClassname?: string;
 }
 
 /**
@@ -17,7 +21,7 @@ interface LinkButtonProps extends ButtonProps {
 export default function LinkButton(props: LinkButtonProps) {
   return (
     <Link href={props.disabled ? "#" : props.href}>
-      <a>
+      <a className={props.outerClassname}>
         <Button {...props} />
       </a>
     </Link>
