@@ -1,16 +1,15 @@
 import AsyncForm from "@/atoms/AsyncForm";
-import ComboBox from "@/atoms/ComboBox";
 import Select from "@/atoms/Select";
 import TextInput from "@/atoms/TextInput";
+import CopyLink from "@/components/CopyLink";
 import DisplayUserInline from "@/components/DisplayUserInline";
 import IconTooltip from "@/components/IconTooltip";
+import SearchUser from "@/components/SearchUser";
 import AddCourseOwner from "@/graphql/AddCourseOwner";
 import RemoveCourseOwner from "@/graphql/RemoveCourseOwner";
-import SearchUsers from "@/graphql/SearchUsers";
 import UpdateCourse from "@/graphql/UpdateCourse";
 import SEO from "@/helpers/SEO";
 import { getElementsVals } from "@/helpers/getElementsVals";
-import { useDebounce } from "@/hooks/useDebounce";
 import LexicalEditor from "@/lexicalEditor/LexicalEditor";
 import {
   Course,
@@ -19,16 +18,13 @@ import {
   MutationAddCourseOwnerArgs,
   MutationRemoveCourseOwnerArgs,
   MutationUpdateCourseArgs,
-  Option,
   PrivacySetting,
-  Query,
-  QuerySearchUsersArgs,
   User,
 } from "@/types";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import type { EditorState } from "lexical";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export interface ShareCoursePageProps {
   course: Course | null;
@@ -45,14 +41,6 @@ export default function ShareCoursePage({
   currentUserId,
 }: ShareCoursePageProps) {
   const [privacySetting, setPrivacySetting] = useState("ALL");
-  const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce<string>(query, 500);
-  const [, { data: searchedUsers, refetch: searchUsers }] = useLazyQuery<
-    {
-      searchUsers: Query["searchUsers"];
-    },
-    QuerySearchUsersArgs
-  >(SearchUsers, { variables: { name: query } });
   const [owners, setOwners] = useState<User[]>(course?.owners as User[]);
   const [description, setDescription] = useState<EditorState>();
 
@@ -69,11 +57,6 @@ export default function ShareCoursePage({
     MutationUpdateCourseArgs
   >(UpdateCourse);
   const [shareMsg, setShareMsg] = useState("");
-
-  useEffect(() => {
-    if (debouncedQuery.length >= 3 && debouncedQuery === query)
-      searchUsers({ name: query });
-  }, [debouncedQuery, query, searchUsers]);
 
   const shareCourse = async (e: React.FormEvent<HTMLFormElement>) => {
     const { privacySetting, editingAccess } = getElementsVals(
@@ -102,14 +85,17 @@ export default function ShareCoursePage({
     else setShareMsg("Updated course sharing settings");
   };
 
-  const addOwner = async (username: string) => {
-    const newOwner = searchedUsers?.searchUsers?.filter(
-      (u) => u?.username === username
-    )[0];
-    if (newOwner && !owners.map((u) => u.username).includes(username)) {
+  const addOwner = async (newOwner: User) => {
+    if (
+      newOwner &&
+      !owners.map((u) => u.username).includes(newOwner.username)
+    ) {
       setOwners([...owners, newOwner]);
       await addCourseOwner({
-        variables: { username, courseId: course?.id as string },
+        variables: {
+          username: newOwner.username as string,
+          courseId: course?.id as string,
+        },
       });
     }
   };
@@ -215,18 +201,9 @@ export default function ShareCoursePage({
                 </li>
               ))}
             </ul>
-            <ComboBox
-              options={
-                (searchedUsers?.searchUsers?.map((user) => ({
-                  value: user?.username,
-                  label: user?.name,
-                })) ?? []) as Option[]
-              }
-              onQueryChange={(e) => setQuery(e.target.value)}
-              onChange={addOwner}
+            <SearchUser
+              onUserSelect={addOwner}
               placeholder="Add Owner (search by name)"
-              className="mt-2"
-              clearOnChange
             />
           </div>
           <div className="mt-3 mb-5">
@@ -241,21 +218,7 @@ export default function ShareCoursePage({
         <p className="text-center my-3">{shareMsg}</p>
         <div className="text-center">
           <p>Use this link to share the course:</p>
-          <input
-            value={`${process.env.NEXT_PUBLIC_SERVER_URL}/course/${course?.id}`}
-            readOnly
-            className="px-2 py-1 border-2 border-gray-100 rounded-xl w-96 focus:outline-none focus:border-gray-200"
-            id="copy-course-id"
-            onClick={() => {
-              const el = document.getElementById(
-                "copy-course-id"
-              ) as HTMLInputElement;
-              if (el) {
-                el.select();
-                navigator.clipboard.writeText(el.value);
-              }
-            }}
-          />
+          <CopyLink link={`course/${course?.id}`} />
         </div>
       </div>
     </>

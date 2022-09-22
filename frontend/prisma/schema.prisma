@@ -287,7 +287,7 @@ model StripeCustomer {
 model Classroom {
   id       String @id @default(cuid())
   title    String
-  joinCode String @db.VarChar(8)
+  joinCode String @unique @db.VarChar(8)
 
   teachers User[] @relation("ClassroomTeachers")
   students User[] @relation("ClassroomStudents")

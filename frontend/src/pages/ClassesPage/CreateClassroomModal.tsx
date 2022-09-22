@@ -44,7 +44,6 @@ export default function CreateClassroomModal({
   >(SearchCourses);
 
   useEffect(() => {
-    console.log(debouncedQuery, query, debouncedQuery === query);
     if (debouncedQuery.length >= 3 && debouncedQuery === query)
       searchCourses({ title: query });
   }, [debouncedQuery, query, searchCourses]);

@@ -1,5 +1,8 @@
-import type { Flashcard, ReviewInstance } from "./graphql";
-import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
+import type { Flashcard, ReviewInstance, User } from "./graphql";
+import type {
+  HistorySegment,
+  ReviewInstance as PrismaReviewInstance,
+} from "@prisma/client";
 
 /**
  * Make each key of a type NonNullable
@@ -17,6 +20,10 @@ interface Streak {
 
 type ReviewInstanceWithFlashcard = NonNullableKeys<ReviewInstance> & {
   flashcard: Flashcard;
+};
+
+type UserWithHistory = User & {
+  history: Partial<HistorySegment>[];
 };
 
 interface Interval {
@@ -63,4 +70,5 @@ export type {
   Interval,
   Intervals,
   Option,
+  UserWithHistory,
 };
