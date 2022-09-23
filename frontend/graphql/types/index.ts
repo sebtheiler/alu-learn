@@ -1,3 +1,4 @@
+export * from "./Assignment";
 export * from "./Course";
 export * from "./CourseSection";
 export * from "./Classroom";

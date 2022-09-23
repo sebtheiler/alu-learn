@@ -19,6 +19,12 @@ export type Scalars = {
   Upload: any;
 };
 
+export type Assignment = {
+  __typename?: 'Assignment';
+  id?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+};
+
 export type Classroom = {
   __typename?: 'Classroom';
   id?: Maybe<Scalars['String']>;
@@ -99,6 +105,8 @@ export type Mutation = {
   archiveCourse?: Maybe<Course>;
   /** Cancels the Stripe subscription for the current user */
   cancelStripeSubscription?: Maybe<Scalars['Boolean']>;
+  /** Creates an assignment */
+  createAssignment?: Maybe<Assignment>;
   /** Creates a classroom */
   createClassroom?: Maybe<Classroom>;
   /** Creates a course and populates it with an initial main and sub section */
@@ -163,6 +171,13 @@ export type MutationAddCourseOwnerArgs = {
 export type MutationArchiveCourseArgs = {
   archive: Scalars['Boolean'];
   courseId: Scalars['String'];
+};
+
+
+export type MutationCreateAssignmentArgs = {
+  classroomIds: Array<Scalars['String']>;
+  subSectionIds: Array<Scalars['String']>;
+  title: Scalars['String'];
 };
 
 

@@ -47,39 +47,95 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         },
       },
+      select: {
+        id: true,
+        title: true,
+        courseId: true,
+      },
     })) ?? null;
 
-  const students = await prisma.user.findMany({
-    where: {
-      classesEnrolledIn: {
-        some: {
-          id: classroom?.id,
-        },
-      },
-    },
-    select: {
-      id: true,
-      name: true,
-      username: true,
-      image: true,
-      email: true,
-      history: {
+  const students = classroom
+    ? await prisma.user.findMany({
         where: {
-          date: new Date(),
+          classesEnrolledIn: {
+            some: {
+              id: classroom.id,
+            },
+          },
         },
         select: {
-          reviewsStudied: true,
-          timeTaken: true,
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+          email: true,
+          history: {
+            where: {
+              date: new Date(),
+            },
+            select: {
+              reviewsStudied: true,
+              timeTaken: true,
+            },
+          },
         },
-      },
-    },
-  });
+      })
+    : [];
+
+  const assignments = classroom
+    ? await prisma.assignment.findMany({
+        where: {
+          classrooms: {
+            some: {
+              id: classroomId as string,
+            },
+          },
+        },
+        select: {
+          id: true,
+          title: true,
+          assignedSubSections: {
+            select: {
+              id: true,
+              title: true,
+              slug: true,
+            },
+          },
+        },
+      })
+    : [];
+
+  const courseSections = classroom
+    ? await prisma.courseSection.findMany({
+        where: {
+          courseId: classroom.courseId,
+        },
+        select: {
+          id: true,
+          title: true,
+          subSections: {
+            select: {
+              id: true,
+              title: true,
+            },
+            orderBy: {
+              index: "asc",
+            },
+          },
+        },
+        orderBy: {
+          index: "asc",
+        },
+      })
+    : [];
 
   return {
     props: {
       classrooms,
       classroom,
       students,
+      assignments,
+      courseSections,
     } as ClassesPageProps,
   };
 };

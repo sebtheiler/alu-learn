@@ -194,6 +194,8 @@ model SubSection {
 
   flashcards Flashcard[]
 
+  assignments Assignment[]
+
   index Int
 }
 
@@ -291,6 +293,16 @@ model Classroom {
 
   teachers User[] @relation("ClassroomTeachers")
   students User[] @relation("ClassroomStudents")
-  course   Course @relation(fields: [courseId], references: [id])
-  courseId String
+
+  assignments Assignment[]
+  course      Course       @relation(fields: [courseId], references: [id])
+  courseId    String
+}
+
+model Assignment {
+  id    String @id @default(cuid())
+  title String
+
+  assignedSubSections SubSection[]
+  classrooms          Classroom[]
 }

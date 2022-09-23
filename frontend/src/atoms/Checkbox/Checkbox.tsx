@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 interface CheckboxProps {
   /**
    * Label to display next to the checkbox
@@ -28,6 +30,10 @@ interface CheckboxProps {
    */
   defaultChecked?: boolean;
   /**
+   * Value
+   */
+  value?: string;
+  /**
    * Is the checkbox required?
    */
   required?: boolean;
@@ -44,13 +50,17 @@ export default function Checkbox({
   required,
   onChange,
   defaultChecked,
+  value,
   className = "",
 }: CheckboxProps) {
+  const componentId = useId();
+
   return (
     <div className={"flex items-start " + className}>
       <div className="flex h-5 items-center">
         <input
-          id={id}
+          id={id ?? componentId}
+          value={value}
           name={name}
           type="checkbox"
           className="h-4 w-4 rounded-full accent-alu-primary-purple ring-indigo-500 focus:outline-none focus:ring focus:ring-violet-400/20"
@@ -60,7 +70,10 @@ export default function Checkbox({
         />
       </div>
       <div className="ml-3 text-sm">
-        <label htmlFor={id} className="font-medium text-gray-700">
+        <label
+          htmlFor={id ?? componentId}
+          className="font-medium text-gray-700"
+        >
           {label}
         </label>
         {description && <p className="text-gray-500">{description}</p>}

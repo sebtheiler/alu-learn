@@ -1,7 +1,14 @@
 import ClassroomSelect from "../ClassesPage/ClassroomSelect";
+import AssignmentsTab from "./AssignmentsTab";
 import StudentsTab from "./StudentsTab";
 import SEO from "@/helpers/SEO";
-import type { Classroom, UserWithHistory } from "@/types";
+import classNames from "@/helpers/classNames";
+import type {
+  Assignment,
+  Classroom,
+  CourseSection,
+  UserWithHistory,
+} from "@/types";
 import {
   faClipboard,
   faGear,
@@ -23,6 +30,14 @@ export interface ClassesPageProps {
    * The students of the class
    */
   students: UserWithHistory[];
+  /**
+   * The assignments of the class
+   */
+  assignments: Assignment[];
+  /**
+   * The sections of the classroom's course (for assigning the assignment)
+   */
+  courseSections: CourseSection[];
 }
 
 /**
@@ -32,6 +47,8 @@ export default function ClassroomPage({
   classrooms,
   classroom,
   students,
+  assignments,
+  courseSections,
 }: ClassesPageProps) {
   const [tab, setTab] = useState("STUDENTS");
 
@@ -62,7 +79,10 @@ export default function ClassroomPage({
           <div className="col-span-2 mx-5">
             <ul>
               <li
-                className="px-4 py-3 hover:bg-gray-100 my-2 border-2 border-gray-100 rounded-xl hover:border-gray-200 hover:shadow-sm"
+                className={classNames(
+                  "px-4 py-3 hover:bg-gray-100 my-2 border-2 border-gray-100 rounded-xl hover:border-gray-200 hover:shadow-md",
+                  tab === "STUDENTS" && "bg-gray-100 border-gray-200"
+                )}
                 onClick={() => setTab("STUDENTS")}
                 role="button"
               >
@@ -73,7 +93,10 @@ export default function ClassroomPage({
                 Students
               </li>
               <li
-                className="px-4 py-3 hover:bg-gray-100 my-2 border-2 border-gray-100 rounded-xl hover:border-gray-200 hover:shadow-sm"
+                className={classNames(
+                  "px-4 py-3 hover:bg-gray-100 my-2 border-2 border-gray-100 rounded-xl hover:border-gray-200 hover:shadow-md",
+                  tab === "ASSIGNMENTS" && "bg-gray-100 border-gray-200"
+                )}
                 onClick={() => setTab("ASSIGNMENTS")}
                 role="button"
               >
@@ -84,7 +107,10 @@ export default function ClassroomPage({
                 Assignments
               </li>
               <li
-                className="px-4 py-3 hover:bg-gray-100 my-2 border-2 border-gray-100 rounded-xl hover:border-gray-200 hover:shadow-sm"
+                className={classNames(
+                  "px-4 py-3 hover:bg-gray-100 my-2 border-2 border-gray-100 rounded-xl hover:border-gray-200 hover:shadow-md",
+                  tab === "SETTINGS" && "bg-gray-100 border-gray-200"
+                )}
                 onClick={() => setTab("SETTINGS")}
                 role="button"
               >
@@ -97,6 +123,14 @@ export default function ClassroomPage({
             <hr />
             {tab === "STUDENTS" && (
               <StudentsTab students={students} classroom={classroom} />
+            )}
+            {tab === "ASSIGNMENTS" && (
+              <AssignmentsTab
+                assignments={assignments}
+                courseSections={courseSections}
+                classrooms={classrooms}
+                classroomId={classroom.id as string}
+              />
             )}
           </div>
         </div>

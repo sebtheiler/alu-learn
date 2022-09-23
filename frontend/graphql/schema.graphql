@@ -2,6 +2,11 @@
 ### Do not make changes to this file directly
 
 
+type Assignment {
+  id: String
+  title: String
+}
+
 type Classroom {
   id: String
   joinCode: String
@@ -89,6 +94,16 @@ type Mutation {
 
   """Cancels the Stripe subscription for the current user"""
   cancelStripeSubscription: Boolean
+
+  """Creates an assignment"""
+  createAssignment(
+    """IDs of the classrooms to post to"""
+    classroomIds: [String!]!
+
+    """IDs of the subsections to assign"""
+    subSectionIds: [String!]!
+    title: String!
+  ): Assignment
 
   """Creates a classroom"""
   createClassroom(courseId: String!, title: String!): Classroom
