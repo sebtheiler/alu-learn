@@ -27,6 +27,7 @@ export type Assignment = {
 
 export type Classroom = {
   __typename?: 'Classroom';
+  courseId?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['String']>;
   joinCode?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;

@@ -21,12 +21,12 @@ export default function AssignmentsTab({
   assignments,
   courseSections,
   classrooms,
-  classroomId,
+  classroom,
 }: {
   assignments: Assignment[];
   courseSections: CourseSection[];
   classrooms: Classroom[];
-  classroomId: string;
+  classroom: Classroom;
 }) {
   const router = useRouter();
   const [createAssignmentModalOpen, setCreateAssignmentModalOpen] =
@@ -55,6 +55,9 @@ export default function AssignmentsTab({
       .filter((el) => el.checked)
       .map((el) => el.value);
 
+    if (subSectionIds.length === 0 || assignToClassroomIds.length === 0)
+      return null;
+
     // Crete assignment
     await createAssignment({
       variables: {
@@ -75,7 +78,7 @@ export default function AssignmentsTab({
         {assignments.map((assignment) => (
           <div
             key={assignment.id}
-            className="max-w-xs bg-gray-100 border-4 borde-gray-200 rounded-xl p-5 mx-auto"
+            className="max-w-xs bg-gray-100 border-4 borde-gray-200 rounded-xl p-5 mx-auto my-2"
           >
             <h3 className="font-bold text-center">{assignment.title}</h3>
           </div>
@@ -131,15 +134,19 @@ export default function AssignmentsTab({
             </div>
             <div className="mb-5">
               <p className="mb-1">Assign to classrooms</p>
-              {classrooms.map((classroom) => (
-                <Checkbox
-                  key={classroom.id}
-                  label={classroom.title}
-                  value={classroom.id as string}
-                  defaultChecked={classroom.id === classroomId}
-                  name="assignToClassroom"
-                />
-              ))}
+              {classrooms
+                .filter(
+                  (_classroom) => _classroom.courseId === classroom.courseId
+                )
+                .map((_classroom) => (
+                  <Checkbox
+                    key={_classroom.id}
+                    label={_classroom.title}
+                    value={_classroom.id as string}
+                    defaultChecked={_classroom.id === classroom.id}
+                    name="assignToClassroom"
+                  />
+                ))}
             </div>
           </AsyncForm>
         </Modal>

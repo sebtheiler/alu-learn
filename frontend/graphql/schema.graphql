@@ -8,6 +8,7 @@ type Assignment {
 }
 
 type Classroom {
+  courseId: String
   id: String
   joinCode: String
   title: String

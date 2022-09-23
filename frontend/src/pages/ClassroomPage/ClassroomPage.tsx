@@ -129,7 +129,7 @@ export default function ClassroomPage({
                 assignments={assignments}
                 courseSections={courseSections}
                 classrooms={classrooms}
-                classroomId={classroom.id as string}
+                classroom={classroom}
               />
             )}
           </div>

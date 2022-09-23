@@ -7,6 +7,7 @@ const Classroom = objectType({
     t.string("id");
     t.string("title");
     t.string("joinCode");
+    t.string("courseId");
   },
 });
 
