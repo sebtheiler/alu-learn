@@ -52,6 +52,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         id: true,
         title: true,
         courseId: true,
+        course: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
       },
     })) ?? null;
 

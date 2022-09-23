@@ -182,6 +182,14 @@ type Mutation {
     timeTaken: Float!
   ): ReviewInstance
 
+  """Updates a classrooms values"""
+  updateClassroom(
+    """ID of the classroom to update"""
+    classroomId: String!
+    courseId: String
+    title: String
+  ): Classroom
+
   """Change a course's settings"""
   updateCourse(
     """ID of the course to update"""

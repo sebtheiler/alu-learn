@@ -3,7 +3,7 @@ import type { Option } from "@/types";
 import { Combobox as HeadlessUICombobox, Transition } from "@headlessui/react";
 import { useState } from "react";
 
-interface ComboBoxProps {
+export interface ComboBoxProps {
   /**
    * Options to select from
    */

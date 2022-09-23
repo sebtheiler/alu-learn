@@ -1,0 +1,60 @@
+import SelectCourse from "../ClassesPage/SelectCourse";
+import AsyncForm from "@/atoms/AsyncForm";
+import TextInput from "@/atoms/TextInput";
+import UpdateClassroom from "@/graphql/UpdateClassroom";
+import { getElementsVals } from "@/helpers/getElementsVals";
+import type { Classroom, Mutation, MutationUpdateClassroomArgs } from "@/types";
+import { useMutation } from "@apollo/client";
+import { useRouter } from "next/router";
+import { useState } from "react";
+
+export default function SettingsTab({ classroom }: { classroom: Classroom }) {
+  const router = useRouter();
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(
+    classroom.courseId ?? null
+  );
+  const [updateClassroom] = useMutation<
+    { updateClassroom: Mutation["updateClassroom"] },
+    MutationUpdateClassroomArgs
+  >(UpdateClassroom);
+
+  const updateClassroomHandler = async (e: React.FormEvent) => {
+    const { title } = getElementsVals(e.target as HTMLFormElement, ["title"]);
+
+    await updateClassroom({
+      variables: {
+        classroomId: classroom.id as string,
+        courseId: selectedCourseId ?? undefined,
+        title: title === classroom.title ? undefined : title,
+      },
+    });
+    router.push(router.asPath);
+  };
+
+  return (
+    <>
+      <h2 className="mt-3 mb-2 text-center font-bold text-2xl">Settings</h2>
+      <AsyncForm
+        className="text-center max-w-md mx-auto"
+        onSubmit={updateClassroomHandler}
+        buttonProps={{ block: true, children: "Save Changes" }}
+      >
+        <div className="text-left">
+          <TextInput
+            label="Title"
+            name="title"
+            className="mb-3"
+            defaultValue={classroom.title ?? ""}
+            required
+          />
+          <SelectCourse
+            selectedCourseId={selectedCourseId}
+            setSelectedCourseId={setSelectedCourseId}
+            // @ts-ignore
+            defaultSearch={[classroom.course]}
+          />
+        </div>
+      </AsyncForm>
+    </>
+  );
+}

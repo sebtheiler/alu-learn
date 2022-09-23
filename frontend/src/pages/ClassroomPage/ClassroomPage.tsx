@@ -1,5 +1,6 @@
 import ClassroomSelect from "../ClassesPage/ClassroomSelect";
 import AssignmentsTab from "./AssignmentsTab";
+import SettingsTab from "./SettingsTab";
 import StudentsTab from "./StudentsTab";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
@@ -132,6 +133,7 @@ export default function ClassroomPage({
                 classroom={classroom}
               />
             )}
+            {tab === "SETTINGS" && <SettingsTab classroom={classroom} />}
           </div>
         </div>
       </div>

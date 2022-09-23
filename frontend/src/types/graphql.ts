@@ -142,6 +142,8 @@ export type Mutation = {
   renewStripeSubscription?: Maybe<Scalars['Boolean']>;
   /** Change the user's settings */
   studyReviewInstance?: Maybe<ReviewInstance>;
+  /** Updates a classrooms values */
+  updateClassroom?: Maybe<Classroom>;
   /** Change a course's settings */
   updateCourse?: Maybe<Course>;
   /** Change a course section's settings */
@@ -282,6 +284,13 @@ export type MutationStudyReviewInstanceArgs = {
   grade: Grade;
   reviewInstanceId: Scalars['String'];
   timeTaken: Scalars['Float'];
+};
+
+
+export type MutationUpdateClassroomArgs = {
+  classroomId: Scalars['String'];
+  courseId?: InputMaybe<Scalars['String']>;
+  title?: InputMaybe<Scalars['String']>;
 };
 
 
