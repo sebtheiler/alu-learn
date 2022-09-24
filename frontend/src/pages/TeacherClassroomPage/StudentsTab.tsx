@@ -1,10 +1,20 @@
 import Button from "@/atoms/Button";
 import Modal from "@/atoms/Modal";
 import CopyLink from "@/components/CopyLink";
+import IconTooltip from "@/components/IconTooltip";
+import RemoveStudentFromClassroom from "@/graphql/RemoveStudentFromClassroom";
 import formatPlural from "@/helpers/formatPlural";
-import type { Classroom, UserWithHistory } from "@/types";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import type {
+  Classroom,
+  Mutation,
+  MutationRemoveStudentFromClassroomArgs,
+  User,
+  UserWithHistory,
+} from "@/types";
+import { useMutation } from "@apollo/client";
+import { faPlus, faX } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function StudentsTab({
@@ -14,8 +24,34 @@ export default function StudentsTab({
   students: UserWithHistory[];
   classroom: Classroom;
 }) {
+  const router = useRouter();
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   // const [studentsToInvite, setStudentsToInvite] = useState<User[]>([])
+  const [removeStudentFromClassroom] = useMutation<
+    { removeStudentFromClassroom: Mutation["removeStudentFromClassroom"] },
+    MutationRemoveStudentFromClassroomArgs
+  >(RemoveStudentFromClassroom);
+
+  const removeStudentHandler =
+    (student: User) => async (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (
+        !window.confirm(
+          `Are you sure you want to remove ${student.name} from this class?`
+        )
+      )
+        return;
+
+      await removeStudentFromClassroom({
+        variables: {
+          studentId: student.id as string,
+          classroomId: classroom.id as string,
+        },
+      });
+
+      router.push(router.asPath);
+    };
 
   return (
     <>
@@ -30,7 +66,7 @@ export default function StudentsTab({
           {students.map((student) => (
             <li
               key={student.id}
-              className="flex items-center border-b-2 border-gray-200 last:border-b-0 p-3 hover:bg-gray-100"
+              className="flex items-center border-b-2 border-gray-200 last:border-b-0 p-3 hover:bg-gray-100 relative"
             >
               <span className="w-1/3 flex items-center">
                 {student.image && (
@@ -63,6 +99,12 @@ export default function StudentsTab({
                       "minute"
                     )}
               </span>
+              <IconTooltip
+                faIcon={faX}
+                className="absolute right-5 top-4 text-gray-600"
+                title="Remove Student"
+                onClick={removeStudentHandler(student)}
+              />
             </li>
           ))}
         </ul>

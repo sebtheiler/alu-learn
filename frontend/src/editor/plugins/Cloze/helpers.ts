@@ -22,7 +22,7 @@ const unwrapCloze = (editor: ReactEditor) => {
   Transforms.unwrapNodes(editor, { match: (n) => n.type === "cloze" });
 };
 
-const wrapCloze = (editor: ReactEditor, clozeOptions: ClozeOptions) => {
+const wrapCloze = (editor: ReactEditor /**, clozeOptions: ClozeOptions */) => {
   if (isClozeActive(editor)) {
     unwrapCloze(editor);
   }

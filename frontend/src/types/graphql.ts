@@ -130,6 +130,8 @@ export type Mutation = {
   deleteFlashcard?: Maybe<Flashcard>;
   /** Deletes a sub section */
   deleteSubSection?: Maybe<SubSection>;
+  /** Joins the current user as a student to a classroom */
+  joinClassroom?: Maybe<Classroom>;
   /** Moves a course section from a position to another */
   moveCourseSection?: Maybe<CourseSection>;
   /** Moves a flashcard from a position to another */
@@ -138,6 +140,8 @@ export type Mutation = {
   moveSubSection?: Maybe<SubSection>;
   /** Removes a user as a course owner */
   removeCourseOwner?: Maybe<User>;
+  /** Removes a given user as a student to a classroom */
+  removeStudentFromClassroom?: Maybe<Classroom>;
   /** Renews the Stripe subscription for the current user */
   renewStripeSubscription?: Maybe<Scalars['Boolean']>;
   /** Change the user's settings */
@@ -252,6 +256,11 @@ export type MutationDeleteSubSectionArgs = {
 };
 
 
+export type MutationJoinClassroomArgs = {
+  joinCode: Scalars['String'];
+};
+
+
 export type MutationMoveCourseSectionArgs = {
   courseId: Scalars['String'];
   from: Scalars['Int'];
@@ -277,6 +286,12 @@ export type MutationMoveSubSectionArgs = {
 export type MutationRemoveCourseOwnerArgs = {
   courseId: Scalars['String'];
   username: Scalars['String'];
+};
+
+
+export type MutationRemoveStudentFromClassroomArgs = {
+  classroomId: Scalars['String'];
+  studentId: Scalars['String'];
 };
 
 

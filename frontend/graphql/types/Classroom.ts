@@ -80,5 +80,65 @@ export const ClassroomsMutation = extendType({
         });
       },
     });
+    t.field("joinClassroom", {
+      type: Classroom,
+      description: "Joins the current user as a student to a classroom",
+      args: {
+        joinCode: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user || !ctx.user.email) return null;
+
+        return ctx.prisma.classroom.update({
+          where: {
+            joinCode: args.joinCode,
+          },
+          data: {
+            students: {
+              connect: {
+                email: ctx.user.email,
+              },
+            },
+          },
+        });
+      },
+    });
+    t.field("removeStudentFromClassroom", {
+      type: Classroom,
+      description: "Removes a given user as a student to a classroom",
+      args: {
+        studentId: nonNull(stringArg()),
+        classroomId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (!ctx.user || !ctx.user.email) return null;
+
+        // Assert that the user is a teacher of the classroom
+        const classroomExists = await ctx.prisma.classroom.count({
+          where: {
+            id: args.classroomId,
+            teachers: {
+              some: {
+                email: ctx.user.email,
+              },
+            },
+          },
+        });
+        if (classroomExists !== 1) return null;
+
+        return ctx.prisma.classroom.update({
+          where: {
+            id: args.classroomId,
+          },
+          data: {
+            students: {
+              disconnect: {
+                id: args.studentId,
+              },
+            },
+          },
+        });
+      },
+    });
   },
 });

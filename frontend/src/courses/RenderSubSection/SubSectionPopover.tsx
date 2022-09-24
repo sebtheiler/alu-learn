@@ -1,19 +1,24 @@
 import SubSectionSettings from "./SubSectionSettings";
 import LinkButton from "@/atoms/LinkButton";
 import CoursePageContext from "@/pages/CoursePage/context";
-import type { CourseSection, SubSection } from "@/types";
+import ClassroomPageContext from "@/pages/StudentClassroomPage/context";
+import type { Assignment, CourseSection, SubSection } from "@/types";
 import { useContext } from "react";
 
 interface SubSectionPopoverProps {
   subSection: SubSection;
-  courseSection: CourseSection;
+  courseSection?: CourseSection;
+  assignment?: Assignment;
 }
 
 export default function SubSectionPopover({
   subSection,
   courseSection,
+  assignment,
 }: SubSectionPopoverProps) {
-  const { course } = useContext(CoursePageContext);
+  const { course, editAccess } = useContext(CoursePageContext);
+  const { classroom } = useContext(ClassroomPageContext);
+
   return (
     <>
       <div>
@@ -29,19 +34,36 @@ export default function SubSectionPopover({
         Learn Content
       </LinkButton> */}
       <LinkButton
-        href={`/course/${course?.id}/study/${courseSection.slug}/${subSection.slug}`}
+        href={
+          courseSection
+            ? `/course/${course?.id}/study/${courseSection.slug}/${subSection.slug}`
+            : `/classroom/${classroom?.id}/study/${assignment?.id}/${subSection.slug}`
+        }
         className="mt-2"
         block
       >
         Study
       </LinkButton>
       <LinkButton
-        href={`/course/${course?.id}/flashcards/${courseSection.slug}/${subSection.slug}`}
+        href={
+          courseSection
+            ? `/course/${course?.id}/flashcards/${courseSection.slug}/${subSection.slug}`
+            : `/classroom/${classroom?.id}/flashcards/${assignment?.id}/${subSection.slug}`
+        }
         className="mt-2"
         block
       >
         Flashcards
       </LinkButton>
+      {courseSection && editAccess && (
+        <LinkButton
+          href={`/course/${course?.id}/add-flashcards/${courseSection.slug}/${subSection.slug}`}
+          className="mt-2"
+          block
+        >
+          Add Flashcards
+        </LinkButton>
+      )}
       {/* <LinkButton
         href={`/course/${course?.id}/practice/${courseSection.slug}/${subSection.slug}`}
         className="mt-2"

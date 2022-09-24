@@ -48,7 +48,7 @@ export default function FileUpload({
           `block border-2 rounded-full border-gray-200 bg-transparent text-sm
            text-gray-900 outline-2 focus:ring-alu-primary-purple
            focus:border-alu-primary-purple focus:outline-alu-primary-purple
-           text-center w-full hover:cursor-pointer`
+           w-full hover:cursor-pointer`
         )}
         aria-describedby="file_input_help"
         id="file_input"

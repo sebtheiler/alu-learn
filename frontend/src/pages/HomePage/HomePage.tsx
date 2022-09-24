@@ -1,16 +1,24 @@
 import CreateAddCourseModal from "./CreateAddCourseModal";
 import Heatmap from "./Heatmap";
 import SocialMediaLinks from "./SocialMediaLinks";
+import AsyncForm from "@/atoms/AsyncForm";
+import Button from "@/atoms/Button";
 import LinkButton from "@/atoms/LinkButton";
+import Modal from "@/atoms/Modal";
+import TextInput from "@/atoms/TextInput";
 import Ad from "@/components/Ad";
 import ReviewsDoneSVG from "@/components/ReviewsDoneSVG";
+import JoinClassroom from "@/graphql/JoinClassroom";
 import SEO from "@/helpers/SEO";
-import type { Course } from "@/types";
+import { getElementsVals } from "@/helpers/getElementsVals";
+import type { Course, Mutation, MutationJoinClassroomArgs } from "@/types";
+import { useMutation } from "@apollo/client";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { HistorySegment, UserType } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 export interface HomePageProps {
@@ -44,8 +52,28 @@ export default function HomePage({
   history,
   userType,
 }: HomePageProps) {
+  const router = useRouter();
   const [addCourseModalOpen, setAddCourseModalOpen] = useState(false);
-  console.log(userType);
+  const [joinClassModalOpen, setJoinClassModalOpen] = useState(false);
+  const [joinClassroom] = useMutation<
+    { joinClassroom: Mutation["joinClassroom"] },
+    MutationJoinClassroomArgs
+  >(JoinClassroom);
+
+  const joinClassroomHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { joinCode } = getElementsVals(e.target as HTMLFormElement, [
+      "joinCode",
+    ]);
+
+    const { data } = await joinClassroom({
+      variables: {
+        joinCode,
+      },
+    });
+
+    if (data?.joinClassroom) router.push(`/classroom/${data.joinClassroom.id}`);
+  };
 
   return (
     <>
@@ -55,12 +83,40 @@ export default function HomePage({
         // description=""  TODO: (SEO) set description
       />
       <div className="mt-28">
+        <div className="relative">
+          {userType === "TEACHER" || userType === "MIXED" ? (
+            <LinkButton outerClassname="absolute left-5 top-0" href="/classes">
+              Manage Classes
+            </LinkButton>
+          ) : (
+            <div className="absolute left-5 top-0">
+              <Button
+                faIcon={faPlus}
+                onClick={() => setJoinClassModalOpen(true)}
+              >
+                Join Class
+              </Button>
+              <Modal
+                open={joinClassModalOpen}
+                close={() => setJoinClassModalOpen(false)}
+                title="Join Class"
+              >
+                <AsyncForm
+                  onSubmit={joinClassroomHandler}
+                  buttonProps={{ block: true, children: "Join Class" }}
+                >
+                  <TextInput
+                    label="Classroom Code"
+                    name="joinCode"
+                    className="mb-3"
+                    required
+                  />
+                </AsyncForm>
+              </Modal>
+            </div>
+          )}
+        </div>
         <h1 className="text-center text-4xl font-bold mb-5">Welcome!</h1>
-        {(userType === "TEACHER" || userType === "MIXED") && (
-          <LinkButton outerClassname="absolute left-10 top-25" href="/classes">
-            Manage Classes
-          </LinkButton>
-        )}
         <div className="grid md:grid-cols-12 sm:grid-cols-6 h-40">
           <div className="md:col-start-4 col-span-6 mx-10 md:mx-5">
             <div className="flex flex-wrap">

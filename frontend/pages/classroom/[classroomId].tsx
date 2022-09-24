@@ -1,15 +1,30 @@
 import { authOptions } from "../api/auth/[...nextauth]";
-import ClassroomPage from "@/pages/ClassroomPage";
-import type { ClassesPageProps } from "@/pages/ClassroomPage";
+import StudentClassroomPage from "@/pages/StudentClassroomPage";
+import type { StudentClassroomPageProps } from "@/pages/StudentClassroomPage";
+import TeacherClassroomPage from "@/pages/TeacherClassroomPage";
+import type { TeacherClassroomPageProps } from "@/pages/TeacherClassroomPage";
 import getUserSSR from "helpers/getUserSSR";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import type { NextPage } from "types";
 
-const Classes: NextPage<ClassesPageProps> = (props: ClassesPageProps) => (
-  <ClassroomPage {...props} />
-);
+type ClassroomPageProps =
+  | {
+      teacher: true;
+      props: TeacherClassroomPageProps;
+    }
+  | {
+      teacher: false;
+      props: StudentClassroomPageProps;
+    };
+
+const Classes: NextPage<ClassroomPageProps> = (props) =>
+  props.teacher ? (
+    <TeacherClassroomPage {...props.props} />
+  ) : (
+    <StudentClassroomPage {...props.props} />
+  );
 Classes.authRequired = true;
 
 export default Classes;
@@ -20,38 +35,37 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     context.res,
     authOptions
   );
-  const user = await getUserSSR(session, { id: true });
+  const user = await getUserSSR(session, { id: true, userType: true });
   const { classroomId } = context.query;
-
-  const classrooms = await prisma.classroom.findMany({
-    where: {
-      teachers: {
-        some: {
-          id: user?.id as string,
-        },
-      },
-    },
-    select: {
-      id: true,
-      title: true,
-      courseId: true,
-    },
-  });
 
   const classroom =
     (await prisma.classroom.findFirst({
       where: {
         id: classroomId as string,
-        teachers: {
-          some: {
-            id: user?.id as string,
-          },
+        AND: {
+          OR: [
+            {
+              teachers: {
+                some: {
+                  id: user?.id as string,
+                },
+              },
+            },
+            {
+              students: {
+                some: {
+                  id: user?.id as string,
+                },
+              },
+            },
+          ],
         },
       },
       select: {
         id: true,
         title: true,
         courseId: true,
+        joinCode: true,
         course: {
           select: {
             id: true,
@@ -60,34 +74,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       },
     })) ?? null;
-
-  const students = classroom
-    ? await prisma.user.findMany({
-        where: {
-          classesEnrolledIn: {
-            some: {
-              id: classroom.id,
-            },
-          },
-        },
-        select: {
-          id: true,
-          name: true,
-          username: true,
-          image: true,
-          email: true,
-          history: {
-            where: {
-              date: new Date(),
-            },
-            select: {
-              reviewsStudied: true,
-              timeTaken: true,
-            },
-          },
-        },
-      })
-    : [];
 
   const assignments = classroom
     ? await prisma.assignment.findMany({
@@ -112,37 +98,95 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       })
     : [];
 
-  const courseSections = classroom
-    ? await prisma.courseSection.findMany({
-        where: {
-          courseId: classroom.courseId,
-        },
-        select: {
-          id: true,
-          title: true,
-          subSections: {
-            select: {
-              id: true,
-              title: true,
-            },
-            orderBy: {
-              index: "asc",
-            },
+  if (user?.userType === "TEACHER" || user?.userType === "MIXED") {
+    const classrooms = await prisma.classroom.findMany({
+      where: {
+        teachers: {
+          some: {
+            id: user?.id as string,
           },
         },
-        orderBy: {
-          index: "asc",
-        },
-      })
-    : [];
+      },
+      select: {
+        id: true,
+        title: true,
+        courseId: true,
+      },
+    });
 
-  return {
-    props: {
-      classrooms,
-      classroom,
-      students,
-      assignments,
-      courseSections,
-    } as ClassesPageProps,
-  };
+    const students = classroom
+      ? await prisma.user.findMany({
+          where: {
+            classesEnrolledIn: {
+              some: {
+                id: classroom.id,
+              },
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            image: true,
+            email: true,
+            history: {
+              where: {
+                date: new Date(),
+              },
+              select: {
+                reviewsStudied: true,
+                timeTaken: true,
+              },
+            },
+          },
+        })
+      : [];
+
+    const courseSections = classroom
+      ? await prisma.courseSection.findMany({
+          where: {
+            courseId: classroom.courseId,
+          },
+          select: {
+            id: true,
+            title: true,
+            subSections: {
+              select: {
+                id: true,
+                title: true,
+              },
+              orderBy: {
+                index: "asc",
+              },
+            },
+          },
+          orderBy: {
+            index: "asc",
+          },
+        })
+      : [];
+
+    return {
+      props: {
+        teacher: true,
+        props: {
+          classrooms,
+          classroom,
+          students,
+          assignments,
+          courseSections,
+        } as TeacherClassroomPageProps,
+      },
+    };
+  } else {
+    return {
+      props: {
+        teacher: false,
+        props: {
+          classroom,
+          assignments,
+        } as StudentClassroomPageProps,
+      },
+    };
+  }
 };

@@ -18,7 +18,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
-export interface ClassesPageProps {
+export interface TeacherClassroomPageProps {
   /**
    * All the teacher's classrooms
    */
@@ -44,13 +44,13 @@ export interface ClassesPageProps {
 /**
  * Shows a page for a specific classroom
  */
-export default function ClassroomPage({
+export default function TeacherClassroomPage({
   classrooms,
   classroom,
   students,
   assignments,
   courseSections,
-}: ClassesPageProps) {
+}: TeacherClassroomPageProps) {
   const [tab, setTab] = useState("STUDENTS");
 
   if (!classroom) {

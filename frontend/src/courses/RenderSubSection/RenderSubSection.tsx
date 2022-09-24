@@ -1,6 +1,6 @@
 import SubSectionPopover from "./SubSectionPopover";
 import Popover from "@/atoms/Popover";
-import type { CourseSection, SubSection } from "@/types";
+import type { Assignment, CourseSection, SubSection } from "@/types";
 
 const currentlyStudiedColor = "#5ed149";
 const previouslyStudiedColor = "#FDCE29";
@@ -11,9 +11,13 @@ interface RenderSubSectionProps {
    */
   subSection: SubSection;
   /**
-   * The parent course section
+   * The parent course section. If not specified, `assignment` must be specified
    */
-  courseSection: CourseSection;
+  courseSection?: CourseSection;
+  /**
+   * The assignment the sub section is part of. If not specified, `courseSection` must be specified
+   */
+  assignment?: Assignment;
 }
 
 /**
@@ -22,6 +26,7 @@ interface RenderSubSectionProps {
 export default function RenderSubSection({
   subSection,
   courseSection,
+  assignment,
 }: RenderSubSectionProps) {
   return (
     <div className="md:w-1/3 lg:w-1/4 mx-auto my-1">
@@ -31,6 +36,7 @@ export default function RenderSubSection({
             <SubSectionPopover
               subSection={subSection}
               courseSection={courseSection}
+              assignment={assignment}
             />
           }
           trigger="click"

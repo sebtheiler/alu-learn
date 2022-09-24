@@ -1,16 +1,16 @@
 import { authOptions } from "./api/auth/[...nextauth]";
 import ClassesPage from "@/pages/ClassroomPage";
 // TODO: import not working
-import type { ClassesPageProps } from "@/pages/ClassroomPage";
+import type { TeacherClassroomPageProps } from "@/pages/ClassroomPage";
 import getUserSSR from "helpers/getUserSSR";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
 import { unstable_getServerSession } from "next-auth";
 import type { NextPage } from "types";
 
-const Classes: NextPage<ClassesPageProps> = (props: ClassesPageProps) => (
-  <ClassesPage {...props} />
-);
+const Classes: NextPage<TeacherClassroomPageProps> = (
+  props: TeacherClassroomPageProps
+) => <ClassesPage {...props} />;
 Classes.authRequired = true;
 
 export default Classes;
@@ -49,6 +49,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       classrooms,
-    } as ClassesPageProps,
+    } as TeacherClassroomPageProps,
   };
 };

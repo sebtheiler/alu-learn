@@ -1,25 +1,13 @@
 import SelectCourse from "./SelectCourse";
 import AsyncForm from "@/atoms/AsyncForm";
-import ComboBox from "@/atoms/ComboBox";
 import Modal from "@/atoms/Modal";
 import TextInput from "@/atoms/TextInput";
 import CreateClassroom from "@/graphql/CreateClassroom";
-import SearchCourses from "@/graphql/SearchCourses";
 import { getElementsVals } from "@/helpers/getElementsVals";
-import { useDebounce } from "@/hooks/useDebounce";
-import type {
-  Mutation,
-  MutationCreateClassroomArgs,
-  Option,
-  Query,
-  QuerySearchCoursesArgs,
-} from "@/types";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { faX } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Link from "next/link";
+import type { Mutation, MutationCreateClassroomArgs } from "@/types";
+import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function CreateClassroomModal({
   open,
