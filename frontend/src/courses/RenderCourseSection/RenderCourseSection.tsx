@@ -6,12 +6,12 @@ import LinkButton from "@/atoms/LinkButton";
 import Modal from "@/atoms/Modal";
 import TextInput from "@/atoms/TextInput";
 import Tooltip from "@/atoms/Tooltip";
+import CoursePageContext from "@/courses/RenderCourse/context";
 import RenderSubSection from "@/courses/RenderSubSection";
 import CreateSubSection from "@/graphql/CreateSubSection";
 import MoveSubSection from "@/graphql/MoveSubSection";
 import { getElementsVals } from "@/helpers/getElementsVals";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
-import CoursePageContext from "@/pages/CoursePage/context";
 import type {
   CourseSection,
   Mutation,

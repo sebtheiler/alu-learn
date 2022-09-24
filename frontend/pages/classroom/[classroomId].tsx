@@ -179,11 +179,45 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } else {
+    const course = classroom
+      ? await prisma.course.findUnique({
+          where: {
+            id: classroom.courseId,
+          },
+          select: {
+            id: true,
+            title: true,
+            bannerImage: true,
+            courseSections: {
+              select: {
+                id: true,
+                title: true,
+                slug: true,
+                subSections: {
+                  select: {
+                    id: true,
+                    title: true,
+                    slug: true,
+                  },
+                  orderBy: {
+                    index: "asc",
+                  },
+                },
+              },
+              orderBy: {
+                index: "asc",
+              },
+            },
+          },
+        })
+      : null;
+
     return {
       props: {
         teacher: false,
         props: {
           classroom,
+          course,
           assignments,
         } as StudentClassroomPageProps,
       },

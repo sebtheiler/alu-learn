@@ -10,8 +10,15 @@ import Ad from "@/components/Ad";
 import ReviewsDoneSVG from "@/components/ReviewsDoneSVG";
 import JoinClassroom from "@/graphql/JoinClassroom";
 import SEO from "@/helpers/SEO";
+import englishList from "@/helpers/englishList";
 import { getElementsVals } from "@/helpers/getElementsVals";
-import type { Course, Mutation, MutationJoinClassroomArgs } from "@/types";
+import type {
+  Classroom,
+  Course,
+  Mutation,
+  MutationJoinClassroomArgs,
+  User,
+} from "@/types";
 import { useMutation } from "@apollo/client";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,7 +26,23 @@ import type { HistorySegment, UserType } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+
+type ClassroomWithTeachers = Classroom & {
+  teachers: User[];
+};
+
+type CourseAndClass =
+  | {
+      type: "COURSE";
+      course: Course;
+      classroom: undefined;
+    }
+  | {
+      type: "CLASS";
+      classroom: ClassroomWithTeachers;
+      course: undefined;
+    };
 
 export interface HomePageProps {
   /**
@@ -27,6 +50,10 @@ export interface HomePageProps {
    * Displays as a list on the homepage
    */
   courses: Course[];
+  /**
+   * Classes the user is a student in. Displayed alongside courses
+   */
+  classes: ClassroomWithTeachers[];
   /**
    * How many reviews has the user studied today?
    */
@@ -47,6 +74,7 @@ export interface HomePageProps {
 
 export default function HomePage({
   courses,
+  classes,
   reviewsDone,
   targetReviewsDone,
   history,
@@ -59,6 +87,24 @@ export default function HomePage({
     { joinClassroom: Mutation["joinClassroom"] },
     MutationJoinClassroomArgs
   >(JoinClassroom);
+
+  const coursesAndClasses = useMemo(
+    () =>
+      courses
+        .map<CourseAndClass>((course) => ({
+          type: "COURSE",
+          course,
+          classroom: undefined,
+        }))
+        .concat(
+          classes.map<CourseAndClass>((classroom) => ({
+            type: "CLASS",
+            classroom,
+            course: undefined,
+          }))
+        ),
+    [courses, classes]
+  );
 
   const joinClassroomHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,21 +166,27 @@ export default function HomePage({
         <div className="grid md:grid-cols-12 sm:grid-cols-6 h-40">
           <div className="md:col-start-4 col-span-6 mx-10 md:mx-5">
             <div className="flex flex-wrap">
-              {courses.map((course) => (
+              {coursesAndClasses.map((courseOrClass, i) => (
                 <div
                   className="w-full lg:w-1/3 md:w-1/2 px-2 mb-4 mx-auto"
-                  key={course.id}
+                  key={i}
                 >
-                  <Link href={`/course/${course.id}/`}>
+                  <Link
+                    href={
+                      courseOrClass.type === "COURSE"
+                        ? `/course/${courseOrClass.course.id}/`
+                        : `/classroom/${courseOrClass.classroom.id}`
+                    }
+                  >
                     <a>
                       <div
                         className="border-gray-200 border-4 bg-gray-50 rounded-xl h-60 min-h-full relative
                                      overflow-hidden hover:shadow-lg hover:scale-105 transition flex flex-wrap"
                       >
-                        {course.bannerImage && (
+                        {courseOrClass.course?.bannerImage && (
                           <div className="w-full h-24 relative">
                             <Image
-                              src={course.bannerImage}
+                              src={courseOrClass.course.bannerImage}
                               alt="Course banner"
                               layout="fill"
                               className="object-cover"
@@ -144,9 +196,18 @@ export default function HomePage({
                         <div className="absolute w-full text-center p-3 h-full flex flex-wrap items-center justify-center">
                           <div>
                             <h3 className="text-xl font-bold mt-4 w-full">
-                              {course.title}
+                              {courseOrClass.course?.title ||
+                                courseOrClass.classroom?.title}
                             </h3>
-                            {/* <p>TEACHER</p> */}
+                            {courseOrClass.type === "CLASS" && (
+                              <p>
+                                {englishList(
+                                  courseOrClass.classroom.teachers.map(
+                                    (teacher) => teacher.name ?? ""
+                                  )
+                                )}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>

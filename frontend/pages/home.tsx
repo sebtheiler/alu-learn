@@ -32,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     where: {
       users: {
         some: {
-          email: session?.user?.email,
+          email: session?.user?.email ?? null,
         },
       },
     },
@@ -49,6 +49,25 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       ? generateSignedS3URL(course.bannerImage)
       : null,
   }));
+
+  const classes = await prisma.classroom.findMany({
+    where: {
+      students: {
+        some: {
+          email: session?.user?.email ?? null,
+        },
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      teachers: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 
   const startDate = new Date();
   startDate.setMonth(startDate.getMonth() - 6);
@@ -70,6 +89,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       courses,
+      classes,
       reviewsDone: user?.numReviewsDoneToday ?? null,
       targetReviewsDone: user?.targetNumReviews ?? null,
       history: JSON.parse(JSON.stringify(history)),

@@ -1,6 +1,6 @@
 import SubSectionSettings from "./SubSectionSettings";
 import LinkButton from "@/atoms/LinkButton";
-import CoursePageContext from "@/pages/CoursePage/context";
+import CoursePageContext from "@/courses/RenderCourse/context";
 import ClassroomPageContext from "@/pages/StudentClassroomPage/context";
 import type { Assignment, CourseSection, SubSection } from "@/types";
 import { useContext } from "react";
