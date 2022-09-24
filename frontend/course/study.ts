@@ -155,8 +155,9 @@ const getStudyReviewInstances = async (
         courseId: courseId as string,
         ...slugQuery,
         reviewInstances: {
-          // Where there are no review instances
+          // Where there are no review instances that belong to this user
           none: {
+            userId: user?.id,
             ease: {
               gte: 0, // always false
             },
@@ -190,7 +191,9 @@ const getStudyReviewInstances = async (
     });
 
     let reviewInstancesToCreate: PartialReviewInstance[] = [];
+    console.log(flashcards.length);
     for (const flashcard of flashcards) {
+      console.log(flashcard);
       reviewInstancesToCreate = reviewInstancesToCreate.concat(
         generateReviewInstances(flashcard, user?.id as string)
       );
@@ -199,6 +202,8 @@ const getStudyReviewInstances = async (
     await prisma.reviewInstance.createMany({
       data: reviewInstancesToCreate,
     });
+
+    console.log(reviewInstancesToCreate);
 
     const newReviewInstances = await prisma.reviewInstance.findMany({
       where: {

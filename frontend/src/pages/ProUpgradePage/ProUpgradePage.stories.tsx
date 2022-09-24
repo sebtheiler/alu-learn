@@ -9,8 +9,8 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof ProUpgradePage> = () => (
-  <ProUpgradePage />
+const Template: ComponentStory<typeof ProUpgradePage> = (args) => (
+  <ProUpgradePage {...args} />
 );
 
 export const ProUpgradePageExample = Template.bind({});

@@ -21,7 +21,7 @@ const Template: ComponentStory<typeof FullEditable> = (args) => {
       // @ts-ignore
       onChange={(newValue) => setValue(newValue)}
     >
-      <FullEditable editor={editor} {...args} />
+      <FullEditable {...args} editor={editor} />
     </Slate>
   );
 };

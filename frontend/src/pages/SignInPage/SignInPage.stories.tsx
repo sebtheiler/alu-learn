@@ -9,9 +9,7 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof SignInPage> = (args) => (
-  <SignInPage {...args} />
-);
+const Template: ComponentStory<typeof SignInPage> = () => <SignInPage />;
 
 export const SignInPageExample = Template.bind({});
 SignInPageExample.parameters = {

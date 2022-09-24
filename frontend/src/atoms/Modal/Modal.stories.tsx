@@ -13,7 +13,7 @@ const Template: ComponentStory<typeof Modal> = (args) => {
   return (
     <>
       <Button onClick={() => setOpen(true)}>Open Modal</Button>
-      <Modal open={open} close={() => setOpen(false)} {...args} />
+      <Modal {...args} open={open} close={() => setOpen(false)} />
     </>
   );
 };

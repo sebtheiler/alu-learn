@@ -4,7 +4,7 @@ import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
 import { NextPage } from "types";
 
-const CreateFlashcards: NextPage = (props: CreateFlashcardsPageProps) => (
+const CreateFlashcards: NextPage<CreateFlashcardsPageProps> = (props) => (
   <CreateFlashcardsPage {...props} />
 );
 

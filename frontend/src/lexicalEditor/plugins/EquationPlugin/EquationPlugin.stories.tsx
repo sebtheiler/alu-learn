@@ -6,7 +6,7 @@ export default {
   component: EquationPlugin,
 };
 
-const Template: ComponentStory<typeof EquationPlugin> = (args) => (
+const Template: ComponentStory<typeof EquationPlugin> = (args: any) => (
   <EquationPlugin {...args} />
 );
 

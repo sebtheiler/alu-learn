@@ -3,3 +3,5 @@ describe("Landing Page", () => {
     cy.visit("/");
   });
 });
+
+export {};

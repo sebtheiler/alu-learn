@@ -6,7 +6,7 @@ export default {
   component: ImagePlugin,
 };
 
-const Template: ComponentStory<typeof ImagePlugin> = (args) => (
+const Template: ComponentStory<typeof ImagePlugin> = (args: any) => (
   <ImagePlugin {...args} />
 );
 

@@ -9,9 +9,7 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof GamesPage> = (args) => (
-  <GamesPage {...args} />
-);
+const Template: ComponentStory<typeof GamesPage> = () => <GamesPage />;
 
 export const GamesPageExample = Template.bind({});
 GamesPageExample.parameters = {

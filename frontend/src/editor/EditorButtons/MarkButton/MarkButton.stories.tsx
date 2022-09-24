@@ -13,7 +13,7 @@ export default {
 const Template: ComponentStory<typeof MarkButton> = (args) => {
   const editor = useMemo<ReactEditor>(createFullEditor, []);
 
-  return <MarkButton editor={editor} {...args} />;
+  return <MarkButton {...args} editor={editor} />;
 };
 
 export const BoldButton = Template.bind({});

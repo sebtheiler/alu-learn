@@ -14,6 +14,7 @@ export default function StudentClassroomPage({
   classroom,
   assignments,
 }: StudentClassroomPageProps) {
+  // TODO: Load the course for this classroom and display it as a normal course page with some extra stuff
   return (
     <>
       <SEO title={classroom.title as string} path="classes" description="" />

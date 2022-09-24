@@ -9,8 +9,8 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof ExploreCoursesPage> = () => (
-  <ExploreCoursesPage />
+const Template: ComponentStory<typeof ExploreCoursesPage> = (args) => (
+  <ExploreCoursesPage {...args} />
 );
 
 export const ExploreDecksPageExample = Template.bind({});

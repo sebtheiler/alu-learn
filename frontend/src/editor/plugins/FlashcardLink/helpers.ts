@@ -1,4 +1,4 @@
-import flattenNodes from "@/helpers/flattenNodes";
+// import flattenNodes from "@/helpers/flattenNodes";
 import type { Flashcard } from "@/types";
 import { Editor, Transforms, Range, Location } from "slate";
 import { ReactEditor } from "slate-react";
@@ -40,7 +40,9 @@ const wrapFlashcardLink = (editor: ReactEditor, flashcard: Flashcard) => {
     type: "flashcard-link",
     flashcardId: flashcard.id,
     children: isCollapsed
-      ? [{ text: flattenNodes(flashcard.fields.value[0]) }]
+      ? [
+          /*{ text: flattenNodes(flashcard.fields.value[0]) }*/
+        ]
       : [],
   };
 

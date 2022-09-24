@@ -12,6 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo } from "react";
 
 const testimonials = [
@@ -105,18 +106,31 @@ export default function LandingPage() {
                     className="mx-2 inline-block cursor-pointer rounded-full
                          bg-white bg-opacity-20 p-0 text-white
                          text-opacity-60 hover:bg-opacity-30 hover:text-opacity-100"
+                    onClick={exampleDeck.onClick}
                   >
-                    <a
-                      href={exampleDeck.link}
-                      onClick={exampleDeck.onClick}
-                      className="block px-4 py-2"
-                    >
-                      <FontAwesomeIcon
-                        icon={exampleDeck.icon}
-                        className="mr-2"
-                      />
-                      {exampleDeck.title}
-                    </a>
+                    {exampleDeck.link ? (
+                      <Link href={exampleDeck.link}>
+                        <a
+                          href={exampleDeck.link}
+                          onClick={exampleDeck.onClick}
+                          className="block px-4 py-2"
+                        >
+                          <FontAwesomeIcon
+                            icon={exampleDeck.icon}
+                            className="mr-2"
+                          />
+                          {exampleDeck.title}
+                        </a>
+                      </Link>
+                    ) : (
+                      <span className="block px-4 py-2">
+                        <FontAwesomeIcon
+                          icon={exampleDeck.icon}
+                          className="mr-2"
+                        />
+                        {exampleDeck.title}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

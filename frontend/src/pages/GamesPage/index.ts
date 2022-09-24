@@ -1,4 +1,3 @@
-import GamesPage, { GamesPageProps } from "./GamesPage";
+import GamesPage from "./GamesPage";
 
 export default GamesPage;
-export type { GamesPageProps };

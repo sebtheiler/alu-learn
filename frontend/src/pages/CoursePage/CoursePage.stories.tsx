@@ -49,18 +49,28 @@ const Template: ComponentStory<typeof CoursePage> = (args) => (
   <CoursePage {...args} />
 );
 
-export const AuthorizedCoursePage = Template.bind({});
-AuthorizedCoursePage.args = {
-  authorized: true,
+export const ViewEditCourse = Template.bind({});
+ViewEditCourse.args = {
+  viewAccess: true,
+  editAccess: true,
   course: course,
 };
-AuthorizedCoursePage.parameters = {
+ViewEditCourse.parameters = {
   layout: "fullscreen",
 };
 
+export const ViewCourse = Template.bind({});
+ViewCourse.args = {
+  viewAccess: true,
+  editAccess: false,
+  course: course,
+};
+ViewCourse.parameters = { layout: "fullscreen" };
+
 export const UnauthorizedCoursePage = Template.bind({});
 UnauthorizedCoursePage.args = {
-  authorized: false,
+  viewAccess: false,
+  editAccess: false,
 };
 UnauthorizedCoursePage.parameters = {
   layout: "fullscreen",

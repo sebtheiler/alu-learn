@@ -21,6 +21,5 @@ TrashIcon.args = {
     await new Promise((r) => setTimeout(r, 2000));
   },
   faIcon: faTrash,
-  id: "delete-icon",
   className: "color-blue-500",
 };

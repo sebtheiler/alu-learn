@@ -12,7 +12,7 @@ export default {
 const Template: ComponentStory<typeof LinkButton> = (args) => {
   const editor = useMemo<ReactEditor>(createFullEditor, []);
 
-  return <LinkButton editor={editor} {...args} />;
+  return <LinkButton {...args} editor={editor} />;
 };
 
 export const LinkButtonExample = Template.bind({});

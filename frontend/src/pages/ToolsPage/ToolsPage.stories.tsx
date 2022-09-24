@@ -9,9 +9,7 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof ToolsPage> = (args) => (
-  <ToolsPage {...args} />
-);
+const Template: ComponentStory<typeof ToolsPage> = () => <ToolsPage />;
 
 export const ToolsPageExample = Template.bind({});
 ToolsPageExample.parameters = {

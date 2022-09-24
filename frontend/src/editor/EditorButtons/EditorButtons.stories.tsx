@@ -12,7 +12,7 @@ export default {
 const Template: ComponentStory<typeof EditorButtons> = (args) => {
   const editor = useMemo<ReactEditor>(createFullEditor, []);
 
-  return <EditorButtons editor={editor} {...args} />;
+  return <EditorButtons {...args} editor={editor} />;
 };
 
 export const EditorButtonsExample = Template.bind({});

@@ -1,10 +1,11 @@
-import RenderRichText from "../../RenderRichText";
+// import RenderRichText from "../../RenderRichText";
 import Popover from "@/atoms/Popover";
 import type { ExtendedSlateElement } from "@/editor/types";
-import GetFlashcard from "@/graphql/GetFlashcard";
-import type { GetFlashcardType } from "@/graphql/GetFlashcard";
-import { useQuery } from "@apollo/client";
-import { useState, Fragment } from "react";
+
+// import GetFlashcard from "@/graphql/GetFlashcard";
+// import type { GetFlashcardType } from "@/graphql/GetFlashcard";
+// import { useQuery } from "@apollo/client";
+// import { useState, Fragment } from "react";
 
 interface FlashcardLinkComponentProps {
   /**
@@ -30,16 +31,16 @@ interface FlashcardLinkComponentProps {
 export default function FlashcardLinkComponent({
   attributes,
   children,
-  element,
-}: FlashcardLinkComponentProps) {
-  const [hasOpened, setHasOpened] = useState(false);
-  const { data, loading } = useQuery<GetFlashcardType>(GetFlashcard, {
-    variables: {
-      flashcardId: element.flashcardId,
-    },
-    skip: !hasOpened, // only run the query after the user has opened the popup
-  });
-  const { getFlashcard: flashcard } = data ?? {};
+}: // element,
+FlashcardLinkComponentProps) {
+  // const [hasOpened, setHasOpened] = useState(false);
+  // const { data, loading } = useQuery<GetFlashcardType>(GetFlashcard, {
+  //   variables: {
+  //     flashcardId: element.flashcardId,
+  //   },
+  //   skip: !hasOpened, // only run the query after the user has opened the popup
+  // });
+  // const { getFlashcard: flashcard } = data ?? {};
 
   return (
     <Popover
@@ -48,7 +49,7 @@ export default function FlashcardLinkComponent({
           <h3 className="text-md mb-3 text-center font-bold">
             Flashcard Preview
           </h3>
-          {!loading &&
+          {/* {!loading &&
             flashcard &&
             flashcard.fields.value.map((field, i: number) => (
               <Fragment key={i}>
@@ -57,11 +58,11 @@ export default function FlashcardLinkComponent({
                   <RenderRichText text={field} />
                 </div>
               </Fragment>
-            ))}
-          {loading && <p>Loading flashcard...</p>}
+            ))} */}
+          {/* {loading && <p>Loading flashcard...</p>} */}
         </div>
       }
-      onOpenCallback={() => setHasOpened(true)}
+      // onOpenCallback={() => setHasOpened(true)}
       className="w-80"
       arrow
     >

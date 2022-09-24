@@ -13,7 +13,7 @@ export default {
 const Template: ComponentStory<typeof BlockButton> = (args) => {
   const editor = useMemo<ReactEditor>(createFullEditor, []);
 
-  return <BlockButton editor={editor} {...args} />;
+  return <BlockButton {...args} editor={editor} />;
 };
 
 export const MathButton = Template.bind({});

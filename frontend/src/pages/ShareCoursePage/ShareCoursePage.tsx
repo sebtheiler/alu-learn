@@ -216,7 +216,7 @@ export default function ShareCoursePage({
           </div>
         </AsyncForm>
         <p className="text-center my-3">{shareMsg}</p>
-        <div className="text-center">
+        <div className="text-center max-w-lg mx-auto">
           <p>Use this link to share the course:</p>
           <CopyLink link={`course/${course?.id}`} />
         </div>

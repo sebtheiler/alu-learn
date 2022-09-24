@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 export default function withNavbar(Story) {
   return (
     <>
-      <Navbar isSignedIn={false} />
+      <Navbar session={null} status="unauthenticated" isPro={false} />
       <Story />
     </>
   );

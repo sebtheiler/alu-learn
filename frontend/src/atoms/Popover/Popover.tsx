@@ -63,9 +63,9 @@ export default function Popover({
 }: PopoverProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  const [refEl, setRefEl] = useState<HTMLElement>();
-  const [popEl, setPopEl] = useState<HTMLElement>();
-  const [arrowEl, setArrowEl] = useState<HTMLElement>();
+  const [refEl, setRefEl] = useState<HTMLElement | null>();
+  const [popEl, setPopEl] = useState<HTMLElement | null>();
+  const [arrowEl, setArrowEl] = useState<HTMLElement | null>();
   const { styles: popperStyles, attributes } = usePopper(refEl, popEl, {
     placement: placement,
     modifiers: [
@@ -107,7 +107,7 @@ export default function Popover({
     }
   }, [trigger, onOpenCallback, onCloseCallback]);
 
-  useOutsideClick(popEl, () => {
+  useOutsideClick(popEl as HTMLElement, () => {
     if (trigger === "click") {
       setIsPopoverOpen(false);
       onCloseCallback && onCloseCallback();

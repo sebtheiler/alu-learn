@@ -1,13 +1,13 @@
 import { Editor, Range, Transforms } from "slate";
 import { ReactEditor } from "slate-react";
 
-interface ClozeOptions {
-  d;
-}
+// interface ClozeOptions {
+//   d;
+// }
 
-const insertCloze = (editor: ReactEditor, clozeOptions: ClozeOptions) => {
+const insertCloze = (editor: ReactEditor /*, clozeOptions: ClozeOptions*/) => {
   if (editor.selection) {
-    wrapCloze(editor, clozeOptions);
+    wrapCloze(editor /*, clozeOptions*/);
   }
 };
 
@@ -22,7 +22,7 @@ const unwrapCloze = (editor: ReactEditor) => {
   Transforms.unwrapNodes(editor, { match: (n) => n.type === "cloze" });
 };
 
-const wrapCloze = (editor: ReactEditor /**, clozeOptions: ClozeOptions */) => {
+const wrapCloze = (editor: ReactEditor /*, clozeOptions: ClozeOptions */) => {
   if (isClozeActive(editor)) {
     unwrapCloze(editor);
   }

@@ -4,7 +4,7 @@ import TextInput from "@/atoms/TextInput";
 import Tooltip from "@/atoms/Tooltip";
 import SearchFlashcards from "@/graphql/SearchFlashcards";
 import type { SearchFlashcardsType } from "@/graphql/SearchFlashcards";
-import flattenNodes from "@/helpers/flattenNodes";
+// import flattenNodes from "@/helpers/flattenNodes";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useQuery } from "@apollo/client";
 import { faAnchor } from "@fortawesome/free-solid-svg-icons";
@@ -113,7 +113,7 @@ export default function FlashcardLinkButton({
                         }}
                         key={flashcard.id}
                       >
-                        {flattenNodes(flashcard.fields.value[0])}
+                        {/* {flattenNodes(flashcard?.fields?.value[0])} */}
                       </div>
                     )
                 )}
