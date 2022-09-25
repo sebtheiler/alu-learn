@@ -47,7 +47,8 @@ export const AssignmentsMutation = extendType({
           },
         });
 
-        if (!isCourseUser(courseId, ctx.user.email, ctx.prisma)) return null;
+        if (!isCourseUser(courseId as string, ctx.user.email, ctx.prisma))
+          return null;
 
         // Assert that the user is a teacher of all the classrooms
         const classroomsTaught = await ctx.prisma.classroom.count({
@@ -67,7 +68,7 @@ export const AssignmentsMutation = extendType({
         const subSectionsToCourse = await ctx.prisma.subSection.count({
           where: {
             courseSection: {
-              courseId,
+              courseId: courseId as string,
             },
           },
         });

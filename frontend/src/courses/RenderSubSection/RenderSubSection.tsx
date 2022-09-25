@@ -1,6 +1,8 @@
 import SubSectionPopover from "./SubSectionPopover";
 import Popover from "@/atoms/Popover";
-import type { Assignment, CourseSection, SubSection } from "@/types";
+import type { CourseSection, SubSection } from "@/types";
+import { faClipboard } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 
 const currentlyStudiedColor = "#5ed149";
@@ -12,17 +14,17 @@ interface RenderSubSectionProps {
    */
   subSection: SubSection;
   /**
-   * The parent course section. If not specified, `assignment` must be specified
+   * The parent course section
    */
-  courseSection?: CourseSection;
-  /**
-   * The assignment the sub section is part of. If not specified, `courseSection` must be specified
-   */
-  assignment?: Assignment;
+  courseSection: CourseSection;
   /**
    * Additional styling
    */
   style?: React.CSSProperties;
+  /**
+   * Is the sub section assigned to the user?
+   */
+  assigned?: boolean;
 }
 
 /**
@@ -31,13 +33,24 @@ interface RenderSubSectionProps {
 export default function RenderSubSection({
   subSection,
   courseSection,
-  assignment,
   style,
+  assigned,
 }: RenderSubSectionProps) {
   return (
-    <div className="mx-auto my-4 z-10">
+    <div
+      className="mx-auto my-4 z-10"
+      title={
+        assigned ? "Your teacher has assigned this sub section" : undefined
+      }
+    >
       <div style={style}>
         <p className="text-center rounded-lg max-w-xs mx-auto font-bold">
+          {assigned && (
+            <FontAwesomeIcon
+              icon={faClipboard}
+              className="text-yellow-500 mr-1"
+            />
+          )}
           {subSection?.title}
         </p>
         <div className="w-24 h-24 mx-auto sub-section-drag-handle">
@@ -46,7 +59,6 @@ export default function RenderSubSection({
               <SubSectionPopover
                 subSection={subSection}
                 courseSection={courseSection}
-                assignment={assignment}
               />
             }
             trigger="click"
@@ -73,7 +85,7 @@ export default function RenderSubSection({
                 <div className="flex items-center justify-center rounded-full h-full w-full bg-gray-100 border-4 border-gray-200">
                   {/* <FlashcardsSVG width="40px" height="40px" viewBox="0 0 512 512" /> */}
                   <Image
-                    src="/assets/flashcards.png"
+                    src="/assets/flashcards-gray.png"
                     width={40}
                     height={40}
                     alt=""

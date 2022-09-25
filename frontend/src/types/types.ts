@@ -1,4 +1,10 @@
-import type { Flashcard, ReviewInstance, User } from "./graphql";
+import type {
+  Assignment,
+  Flashcard,
+  ReviewInstance,
+  SubSection,
+  User,
+} from "./graphql";
 import type {
   HistorySegment,
   ReviewInstance as PrismaReviewInstance,
@@ -24,6 +30,10 @@ type ReviewInstanceWithFlashcard = NonNullableKeys<ReviewInstance> & {
 
 type UserWithHistory = User & {
   history: Partial<HistorySegment>[];
+};
+
+type AssignmentWithSubSections = Assignment & {
+  assignedSubSections: SubSection[];
 };
 
 interface Interval {
@@ -71,4 +81,5 @@ export type {
   Intervals,
   Option,
   UserWithHistory,
+  AssignmentWithSubSections,
 };

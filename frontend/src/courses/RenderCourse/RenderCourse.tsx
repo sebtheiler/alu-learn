@@ -8,7 +8,6 @@ import RenderCourseSection from "@/courses/RenderCourseSection";
 import ArchiveCourse from "@/graphql/ArchiveCourse";
 import MoveCourseSection from "@/graphql/MoveCourseSection";
 import classNames from "@/helpers/classNames";
-import useWindowDimensions from "@/hooks/useWindowDimensions";
 import useProStore from "@/stores/proStore";
 import type {
   Course,
@@ -16,7 +15,8 @@ import type {
   MutationArchiveCourseArgs,
   MutationMoveCourseSectionArgs,
   CourseSection,
-  Assignment,
+  AssignmentWithSubSections,
+  Classroom,
 } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -33,8 +33,8 @@ type CourseSectionWithId = CourseSection & { id: string };
 interface RenderCourseProps {
   course: Course;
   editAccess: boolean;
-  assignments?: Assignment[];
-  isClassroom?: boolean;
+  assignments?: AssignmentWithSubSections[];
+  classroom?: Classroom;
 }
 
 /**
@@ -44,7 +44,7 @@ export default function RenderCourse({
   course,
   editAccess,
   assignments,
-  isClassroom,
+  classroom,
 }: RenderCourseProps) {
   const router = useRouter();
   const refreshData = () => router.replace(router.asPath);
@@ -55,7 +55,6 @@ export default function RenderCourse({
     setCourseSections(course.courseSections as CourseSectionWithId[]);
   }, [course.courseSections]);
 
-  const { width } = useWindowDimensions();
   const [courseSections, setCourseSections] = useState<CourseSectionWithId[]>(
     course.courseSections as CourseSectionWithId[]
   );
@@ -97,25 +96,30 @@ export default function RenderCourse({
     router.push("/archived");
   };
   return (
-    <div>
-      <div className="mx-auto max-w-5xl">
-        <div
-          className={classNames(
-            "w-full relative",
-            course.bannerImage ? "h-52" : "h-32"
-          )}
-        >
-          {course.bannerImage && (
-            <Image
-              src={course.bannerImage ?? "/assets/default-course-banner.png"}
-              alt="Course banner"
-              layout="fill"
-              className="object-cover lg:rounded-xl"
-              style={{ zIndex: "-1" }}
-            />
-          )}
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="absolute left-3 top-2">
+    <div className="grid grid-cols-12">
+      <div className="col-span-3">
+        <div className="sticky top-24">
+          <div
+            className={classNames(
+              "relative",
+              course.bannerImage && "py-10 mx-2"
+            )}
+          >
+            {course.bannerImage && (
+              <Image
+                src={course.bannerImage}
+                alt="Course banner"
+                layout="fill"
+                className="object-cover rounded-xl"
+                style={{ zIndex: "-1" }}
+              />
+            )}
+            <div
+              className={classNames(
+                "absolute left-3",
+                course.bannerImage ? "top-5" : "top-1"
+              )}
+            >
               <Link href="/home">
                 <a>
                   <FontAwesomeIcon
@@ -126,97 +130,134 @@ export default function RenderCourse({
                 </a>
               </Link>
             </div>
+            {editAccess && (
+              <div
+                className={classNames(
+                  "absolute left-3",
+                  course.bannerImage ? "top-16" : "top-10"
+                )}
+              >
+                <CourseSettings course={course} refreshData={refreshData} />
+              </div>
+            )}
             <h1
               className={classNames(
-                "font-bold text-4xl text-center",
+                "text-4xl font-bold text-center",
                 course.bannerImage ? "text-white" : "text-black"
               )}
             >
               {course.title}
             </h1>
-            {editAccess && (
-              <div className="absolute right-0 top-0">
-                <CourseSettings course={course} refreshData={refreshData} />
-              </div>
-            )}
           </div>
+          <hr className="max-w-xs mx-auto my-5" />
+          <ButtonGroup
+            className="text-center mt-2"
+            fixedWidth="250px"
+            vertical
+            spaced
+          >
+            <LinkButton href={`/course/${course.id}/study`}>
+              Study All
+            </LinkButton>
+            <LinkButton href={`/course/${course.id}/flashcards`}>
+              View Flashcards
+            </LinkButton>
+            {/* <LinkButton href={`/course/${course.id}/study-group`}>
+                  Study Group
+                </LinkButton> */}
+            <LinkButton
+              href={`/course/${course.id}/games`}
+              disabled={!isPro}
+              title={!isPro ? "Upgrade to pro to play games" : ""}
+            >
+              Games
+            </LinkButton>
+            <DropdownButton
+              options={[
+                {
+                  text: "Tools",
+                  href: `/course/${course?.id}/tools`,
+                },
+                ...(classroom
+                  ? []
+                  : [
+                      {
+                        text: "Archive",
+                        onClick: archiveCourseHandler,
+                      },
+                    ]),
+              ]}
+            >
+              More
+            </DropdownButton>
+          </ButtonGroup>
         </div>
       </div>
-      <ButtonGroup
-        className="text-center mt-2"
-        fixedWidth="175px"
-        vertical={width === 0 ? false : width < 750}
-        spaced
-      >
-        {/* <LinkButton href={`/course/${course.id}/learn`}>
-              Learn Content
-            </LinkButton> */}
-        <LinkButton href={`/course/${course.id}/study`}>Study</LinkButton>
-        <LinkButton href={`/course/${course.id}/flashcards`}>
-          View Flashcards
-        </LinkButton>
-        {/* <LinkButton href={`/course/${course.id}/study-group`}>
-              Study Group
-            </LinkButton> */}
-        <LinkButton
-          href={`/course/${course.id}/games`}
-          disabled={!isPro}
-          title={!isPro ? "Upgrade to pro to play games" : ""}
+      <div className="col-span-6">
+        <ReactSortable
+          list={courseSections}
+          setList={setCourseSections}
+          handle=".course-section-drag-handle"
+          onEnd={onCourseSectionDragEnd}
+          onStart={() => setCollapseCourseSections(true)}
         >
-          Games
-        </LinkButton>
-        <DropdownButton
-          options={[
-            {
-              text: "Tools",
-              href: `/course/${course?.id}/tools`,
-            },
-            ...(isClassroom
-              ? []
-              : [
-                  {
-                    text: "Archive",
-                    onClick: archiveCourseHandler,
-                  },
-                ]),
-          ]}
-        >
-          More
-        </DropdownButton>
-      </ButtonGroup>
-      <ReactSortable
-        list={courseSections}
-        setList={setCourseSections}
-        handle=".course-section-drag-handle"
-        onEnd={onCourseSectionDragEnd}
-        onStart={() => setCollapseCourseSections(true)}
-        className="md:container mx-auto px-4 mt-6"
-      >
-        <CoursePageContext.Provider value={{ course, refreshData, editAccess }}>
-          {courseSections.map((courseSection) => (
-            <RenderCourseSection
-              courseSection={courseSection as CourseSection}
-              collapsedSubSections={collapseCourseSections}
-              key={courseSection?.id as string}
-            />
-          ))}
-        </CoursePageContext.Provider>
-      </ReactSortable>
-      <div className="text-center">
-        {courseSections.length === 0 && (
-          <p className="mb-3 mx-auto">
-            This course doesn&apos;t have any sections yet. Add one below to
-            start organizing the course!
-          </p>
-        )}
-        {editAccess && (
-          <div className="flex justify-center w-full">
-            <CreateCourseSectionButton
-              course={course}
-              refreshData={refreshData}
-            />
-          </div>
-        )}
+          <CoursePageContext.Provider
+            value={{ course, refreshData, editAccess }}
+          >
+            {courseSections.map((courseSection) => (
+              <RenderCourseSection
+                courseSection={courseSection as CourseSection}
+                collapsedSubSections={collapseCourseSections}
+                assignedSubSectionIds={assignments?.flatMap((assignment) =>
+                  assignment.assignedSubSections.map((ss) => ss.id as string)
+                )}
+                key={courseSection?.id as string}
+              />
+            ))}
+          </CoursePageContext.Provider>
+        </ReactSortable>
+        <div className="text-center">
+          {courseSections.length === 0 && (
+            <p className="mb-3 mx-auto">
+              This course doesn&apos;t have any sections yet. Add one below to
+              start organizing the course!
+            </p>
+          )}
+          {editAccess && (
+            <div className="flex justify-center w-full">
+              <CreateCourseSectionButton
+                course={course}
+                refreshData={refreshData}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="col-span-3">
+        <div className="sticky top-24 max-w-xs mx-auto">
+          {assignments && (
+            <div>
+              <h2 className="text-center font-bold text-2xl">Assignments</h2>
+              {assignments.map((assignment) => (
+                <Link
+                  href={`/classroom/${classroom?.id}/study/${assignment.id}`}
+                  key={assignment.id}
+                >
+                  <a>
+                    <div className="my-3 px-3 py-2 border-2 rounded-xl hover:scale-105 transition">
+                      <h3 className="font-bold text-lg">{assignment.title}</h3>
+                      <ul className="ml-8">
+                        {assignment.assignedSubSections.map((subSection) => (
+                          <li key={subSection.id}>{subSection.title}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </a>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

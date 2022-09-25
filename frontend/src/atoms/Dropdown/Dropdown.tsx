@@ -85,7 +85,7 @@ export default function Dropdown({
     >
       <Menu.Button
         className="focus:outline-none inline-flex items-center"
-        {...omit(menuButtonProps, ["_unroundLeft", "_unroundRight"])}
+        {...omit(menuButtonProps, ["_unroundLeft", "_unroundRight", "options"])}
       >
         {children}
       </Menu.Button>

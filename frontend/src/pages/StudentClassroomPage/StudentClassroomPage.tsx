@@ -1,11 +1,11 @@
 import RenderCourse from "@/courses/RenderCourse";
 import SEO from "@/helpers/SEO";
-import type { Classroom, Assignment, SubSection, Course } from "@/types";
+import type { Classroom, Course, AssignmentWithSubSections } from "@/types";
 
 export interface StudentClassroomPageProps {
   classroom: Classroom;
   course: Course;
-  assignments: (Assignment & { assignedSubSections: SubSection[] })[];
+  assignments: AssignmentWithSubSections[];
 }
 
 export default function StudentClassroomPage({
@@ -21,7 +21,7 @@ export default function StudentClassroomPage({
           course={course}
           editAccess={false}
           assignments={assignments}
-          isClassroom
+          classroom={classroom}
         />
       </div>
     </>

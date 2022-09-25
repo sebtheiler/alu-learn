@@ -40,6 +40,10 @@ interface RenderCourseSectionProps {
    * Collapse the sub sections of the course section?
    */
   collapsedSubSections?: boolean;
+  /**
+   * IDs of which sub sections are assigned
+   */
+  assignedSubSectionIds?: string[];
 }
 
 /**
@@ -49,6 +53,7 @@ interface RenderCourseSectionProps {
 export default function RenderCourseSection({
   courseSection,
   collapsedSubSections,
+  assignedSubSectionIds,
 }: RenderCourseSectionProps) {
   const { course, editAccess } = useContext(CoursePageContext);
   const [createSubSectionModalOpen, setCreateSubSectionModalOpen] =
@@ -106,6 +111,7 @@ export default function RenderCourseSection({
         <RenderSubSection
           subSection={subSection as SubSection}
           courseSection={courseSection}
+          assigned={assignedSubSectionIds?.includes(subSection.id)}
           key={subSection?.id}
           style={{
             // Can't use translate because that messes up z-index and
@@ -115,7 +121,7 @@ export default function RenderCourseSection({
           }}
         />
       )),
-    [courseSection, subSections]
+    [courseSection, subSections, assignedSubSectionIds]
   );
 
   return (
@@ -138,11 +144,11 @@ export default function RenderCourseSection({
           </div>
         )}
         <div className="w-2/3">
-          <h1 className="text-xl font-bold">{courseSection.title}</h1>
+          <h2 className="text-xl font-bold">{courseSection.title}</h2>
           <p>{courseSection.description}</p>
         </div>
-        <div className="w-1/3">
-          <ButtonGroup spaced vertical>
+        <div className="w-1/3 flex items-center">
+          <ButtonGroup className="w-full" spaced vertical>
             <LinkButton
               href={`/course/${course?.id}/study/${courseSection.slug}`}
               variant="transparent"
@@ -155,7 +161,7 @@ export default function RenderCourseSection({
               variant="transparent"
               block
             >
-              View Flashcards
+              View
             </LinkButton>
           </ButtonGroup>
         </div>

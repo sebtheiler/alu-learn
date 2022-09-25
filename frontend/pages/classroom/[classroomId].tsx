@@ -3,6 +3,7 @@ import StudentClassroomPage from "@/pages/StudentClassroomPage";
 import type { StudentClassroomPageProps } from "@/pages/StudentClassroomPage";
 import TeacherClassroomPage from "@/pages/TeacherClassroomPage";
 import type { TeacherClassroomPageProps } from "@/pages/TeacherClassroomPage";
+import generateSignedS3URL from "helpers/generateSignedS3URL";
 import getUserSSR from "helpers/getUserSSR";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
@@ -215,6 +216,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             },
           })
         : null;
+
+    if (course && course.bannerImage)
+      course.bannerImage = generateSignedS3URL(course.bannerImage);
 
     return {
       props: {
