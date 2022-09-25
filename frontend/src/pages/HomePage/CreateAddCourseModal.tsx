@@ -1,15 +1,40 @@
+import SelectCourse from "../ClassesPage/SelectCourse";
 import AsyncForm from "@/atoms/AsyncForm";
 import Modal from "@/atoms/Modal";
 import TextInput from "@/atoms/TextInput";
 import CreateCourse from "@/graphql/CreateCourse";
+import JoinCourse from "@/graphql/JoinCourse";
 import { getElementsVals } from "@/helpers/getElementsVals";
-import type { Course } from "@/types";
+import type {
+  Mutation,
+  MutationCreateCourseArgs,
+  MutationJoinCourseArgs,
+} from "@/types";
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export default function CreateAddCourseModal({ open, close }) {
-  const [createCourse] = useMutation<{ createCourse: Course }>(CreateCourse);
+  const [createCourse] = useMutation<
+    { createCourse: Mutation["createCourse"] },
+    MutationCreateCourseArgs
+  >(CreateCourse);
+  const [joinCourse] = useMutation<
+    { joinCourse: Mutation["joinCourse"] },
+    MutationJoinCourseArgs
+  >(JoinCourse);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    if (selectedCourseId) {
+      joinCourse({
+        variables: {
+          courseId: selectedCourseId,
+        },
+      }).then(() => router.push(`/course/${selectedCourseId}`));
+    }
+  }, [selectedCourseId, router, joinCourse]);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     const { data } = await createCourse({
@@ -29,7 +54,10 @@ export default function CreateAddCourseModal({ open, close }) {
       <h1 className="text-center text-4xl font-bold">Create or Add Course</h1>
       <hr className="mt-2 mb-5" />
       <h3 className="text-xl font-bold mb-1">Add Existing Course</h3>
-      <TextInput label="Search Course" />
+      <SelectCourse
+        selectedCourseId={selectedCourseId}
+        setSelectedCourseId={setSelectedCourseId}
+      />
 
       <div className="flex items-center mt-4 mb-3">
         <div className="flex-grow bg bg-gray-300 h-0.5"></div>

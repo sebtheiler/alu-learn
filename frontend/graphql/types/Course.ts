@@ -1,5 +1,6 @@
 import type { Course as PrismaCourse } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
+import canViewCourse from "helpers/canViewCourse";
 import deleteFileFromS3 from "helpers/deleteFileFromS3";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
 import getUserGQL from "helpers/getUserGQL";
@@ -430,6 +431,33 @@ export const CoursesMutation = extendType({
             },
           });
         }
+      },
+    });
+    t.field("joinCourse", {
+      type: "Course",
+      description: "Joins the current user to a course",
+      args: {
+        courseId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        if (
+          !ctx.user ||
+          !canViewCourse(args.courseId, ctx.user.email, ctx.prisma)
+        )
+          return null;
+
+        return ctx.prisma.course.update({
+          where: {
+            id: args.courseId,
+          },
+          data: {
+            users: {
+              connect: {
+                email: ctx.user.email as string,
+              },
+            },
+          },
+        });
       },
     });
   },

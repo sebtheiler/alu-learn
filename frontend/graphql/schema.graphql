@@ -163,6 +163,9 @@ type Mutation {
   """Joins the current user as a student to a classroom"""
   joinClassroom(joinCode: String!): Classroom
 
+  """Joins the current user to a course"""
+  joinCourse(courseId: String!): Course
+
   """Moves a course section from a position to another"""
   moveCourseSection(courseId: String!, from: Int!, to: Int!): CourseSection
 

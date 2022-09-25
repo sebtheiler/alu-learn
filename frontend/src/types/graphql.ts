@@ -134,6 +134,8 @@ export type Mutation = {
   deleteSubSection?: Maybe<SubSection>;
   /** Joins the current user as a student to a classroom */
   joinClassroom?: Maybe<Classroom>;
+  /** Joins the current user to a course */
+  joinCourse?: Maybe<Course>;
   /** Moves a course section from a position to another */
   moveCourseSection?: Maybe<CourseSection>;
   /** Moves a flashcard from a position to another */
@@ -260,6 +262,11 @@ export type MutationDeleteSubSectionArgs = {
 
 export type MutationJoinClassroomArgs = {
   joinCode: Scalars['String'];
+};
+
+
+export type MutationJoinCourseArgs = {
+  courseId: Scalars['String'];
 };
 
 
