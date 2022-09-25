@@ -31,6 +31,8 @@ type Course {
 }
 
 type CourseSection {
+  color: String
+  description: String
   id: String
   slug: String
   subSections: [SubSection]
@@ -209,8 +211,11 @@ type Mutation {
 
   """Change a course section's settings"""
   updateCourseSection(
+    color: String
+
     """ID of the course section to update"""
     courseSectionId: String!
+    description: String
     title: String
   ): CourseSection
 

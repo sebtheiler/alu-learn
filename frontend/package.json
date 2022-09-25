@@ -49,6 +49,7 @@
     "immutable": "^4.1.0",
     "katex": "^0.16.2",
     "lexical": "^0.3.11",
+    "lodash": "^4.17.21",
     "markdown-it": "^13.0.1",
     "micro": "^9.4.1",
     "micro-cors": "^0.1.1",

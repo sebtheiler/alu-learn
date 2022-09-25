@@ -1,4 +1,4 @@
-import CourseSectionSettings from "./CourseSectionSettings";
+import CourseSectionSettings, { colorMap } from "./CourseSectionSettings";
 import AsyncForm from "@/atoms/AsyncForm";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
@@ -10,6 +10,7 @@ import CoursePageContext from "@/courses/RenderCourse/context";
 import RenderSubSection from "@/courses/RenderSubSection";
 import CreateSubSection from "@/graphql/CreateSubSection";
 import MoveSubSection from "@/graphql/MoveSubSection";
+import classNames from "@/helpers/classNames";
 import { getElementsVals } from "@/helpers/getElementsVals";
 import type {
   CourseSection,
@@ -35,6 +36,10 @@ interface RenderCourseSectionProps {
    * Course section to render
    */
   courseSection: CourseSection;
+  /**
+   * Collapse the sub sections of the course section?
+   */
+  collapsedSubSections?: boolean;
 }
 
 /**
@@ -43,6 +48,7 @@ interface RenderCourseSectionProps {
  */
 export default function RenderCourseSection({
   courseSection,
+  collapsedSubSections,
 }: RenderCourseSectionProps) {
   const { course, editAccess } = useContext(CoursePageContext);
   const [createSubSectionModalOpen, setCreateSubSectionModalOpen] =
@@ -94,8 +100,6 @@ export default function RenderCourseSection({
     });
   };
 
-  console.log(subSections);
-
   const renderedSubSections = useMemo(
     () =>
       subSections.map((subSection, i) => (
@@ -115,8 +119,13 @@ export default function RenderCourseSection({
   );
 
   return (
-    <section className="max-w-xl mx-auto">
-      <header className="bg-blue-500 flex p-5 rounded-xl text-white">
+    <section className="max-w-xl mx-auto mb-20">
+      <header
+        className={classNames(
+          "flex p-5 rounded-xl text-white",
+          colorMap.get(courseSection.color as string)
+        )}
+      >
         {editAccess && (
           <div className="absolute -translate-y-4 -translate-x-6">
             <span title="Drag to rearrange">
@@ -130,10 +139,7 @@ export default function RenderCourseSection({
         )}
         <div className="w-2/3">
           <h1 className="text-xl font-bold">{courseSection.title}</h1>
-          <p>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolorum
-            nam vero sed quaerat. Nulla esse aut ipsa
-          </p>
+          <p>{courseSection.description}</p>
         </div>
         <div className="w-1/3">
           <ButtonGroup spaced vertical>
@@ -155,54 +161,56 @@ export default function RenderCourseSection({
         </div>
         {editAccess && <CourseSectionSettings courseSection={courseSection} />}
       </header>
-      <div>
-        {editAccess ? (
-          <ReactSortable
-            list={subSections}
-            setList={setSubSections}
-            onEnd={onSubSectionDragEnd}
-            handle=".sub-section-drag-handle"
-          >
-            {renderedSubSections}
-          </ReactSortable>
-        ) : (
-          renderedSubSections
-        )}
-      </div>
-      {subSections.length === 0 && (
-        <p className="text-center mb-4">
-          This section doesn&apos;t have any sub-sections yet. Create one with
-          the &quot;+&quot; icon!
-        </p>
-      )}
-      {editAccess && (
-        <div className="float-right -translate-y-12">
-          <Tooltip tooltip="Add Sub-section" className="w-32">
-            <Button
-              faIcon={faPlus}
-              className="px-4"
-              onClick={() => setCreateSubSectionModalOpen(true)}
-            />
-          </Tooltip>
-          <Modal
-            open={createSubSectionModalOpen}
-            close={() => setCreateSubSectionModalOpen(false)}
-          >
-            <h2 className="text-2xl font-bold text-center mb-3">
-              Add Sub-section
-            </h2>
-            <AsyncForm
-              onSubmit={handleCreateSubSection}
-              buttonProps={{ block: true, children: "Add Sub-section" }}
+      {!collapsedSubSections && (
+        <div>
+          {editAccess ? (
+            <ReactSortable
+              list={subSections}
+              setList={setSubSections}
+              onEnd={onSubSectionDragEnd}
+              handle=".sub-section-drag-handle"
             >
-              <TextInput
-                label="Sub-section Title"
-                className="mb-3"
-                name="subSectionTitle"
-                required
-              />
-            </AsyncForm>
-          </Modal>
+              {renderedSubSections}
+            </ReactSortable>
+          ) : (
+            renderedSubSections
+          )}
+          {subSections.length === 0 && (
+            <p className="text-center mb-4">
+              This section doesn&apos;t have any sub-sections yet. Create one
+              with the &quot;+&quot; icon!
+            </p>
+          )}
+          {editAccess && (
+            <div className="float-right -translate-y-12">
+              <Tooltip tooltip="Add Sub-section" className="w-32">
+                <Button
+                  faIcon={faPlus}
+                  className="px-4"
+                  onClick={() => setCreateSubSectionModalOpen(true)}
+                />
+              </Tooltip>
+              <Modal
+                open={createSubSectionModalOpen}
+                close={() => setCreateSubSectionModalOpen(false)}
+              >
+                <h2 className="text-2xl font-bold text-center mb-3">
+                  Add Sub-section
+                </h2>
+                <AsyncForm
+                  onSubmit={handleCreateSubSection}
+                  buttonProps={{ block: true, children: "Add Sub-section" }}
+                >
+                  <TextInput
+                    label="Sub-section Title"
+                    className="mb-3"
+                    name="subSectionTitle"
+                    required
+                  />
+                </AsyncForm>
+              </Modal>
+            </div>
+          )}
         </div>
       )}
     </section>

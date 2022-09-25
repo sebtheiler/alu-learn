@@ -172,9 +172,11 @@ enum EditingAccess {
 }
 
 model CourseSection {
-  id    String @id @default(cuid())
-  title String
-  slug  String
+  id          String @id @default(cuid())
+  slug        String
+  title       String
+  description String @default("")
+  color       String @default("BLUE")
 
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId String

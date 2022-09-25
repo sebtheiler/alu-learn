@@ -50,6 +50,8 @@ export type Course = {
 
 export type CourseSection = {
   __typename?: 'CourseSection';
+  color?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
   subSections?: Maybe<Array<Maybe<SubSection>>>;
@@ -320,7 +322,9 @@ export type MutationUpdateCourseArgs = {
 
 
 export type MutationUpdateCourseSectionArgs = {
+  color?: InputMaybe<Scalars['String']>;
   courseSectionId: Scalars['String'];
+  description?: InputMaybe<Scalars['String']>;
   title?: InputMaybe<Scalars['String']>;
 };
 

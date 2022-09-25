@@ -142,29 +142,30 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         })
       : [];
 
-    const courseSections = classroom
-      ? await prisma.courseSection.findMany({
-          where: {
-            courseId: classroom.courseId,
-          },
-          select: {
-            id: true,
-            title: true,
-            subSections: {
-              select: {
-                id: true,
-                title: true,
-              },
-              orderBy: {
-                index: "asc",
+    const courseSections =
+      classroom && classroom.courseId
+        ? await prisma.courseSection.findMany({
+            where: {
+              courseId: classroom.courseId,
+            },
+            select: {
+              id: true,
+              title: true,
+              subSections: {
+                select: {
+                  id: true,
+                  title: true,
+                },
+                orderBy: {
+                  index: "asc",
+                },
               },
             },
-          },
-          orderBy: {
-            index: "asc",
-          },
-        })
-      : [];
+            orderBy: {
+              index: "asc",
+            },
+          })
+        : [];
 
     return {
       props: {
@@ -179,38 +180,41 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } else {
-    const course = classroom
-      ? await prisma.course.findUnique({
-          where: {
-            id: classroom.courseId,
-          },
-          select: {
-            id: true,
-            title: true,
-            bannerImage: true,
-            courseSections: {
-              select: {
-                id: true,
-                title: true,
-                slug: true,
-                subSections: {
-                  select: {
-                    id: true,
-                    title: true,
-                    slug: true,
-                  },
-                  orderBy: {
-                    index: "asc",
+    const course =
+      classroom && classroom.courseId
+        ? await prisma.course.findUnique({
+            where: {
+              id: classroom.courseId,
+            },
+            select: {
+              id: true,
+              title: true,
+              bannerImage: true,
+              courseSections: {
+                select: {
+                  id: true,
+                  title: true,
+                  slug: true,
+                  description: true,
+                  color: true,
+                  subSections: {
+                    select: {
+                      id: true,
+                      title: true,
+                      slug: true,
+                    },
+                    orderBy: {
+                      index: "asc",
+                    },
                   },
                 },
-              },
-              orderBy: {
-                index: "asc",
+                orderBy: {
+                  index: "asc",
+                },
               },
             },
-          },
-        })
-      : null;
+          })
+        : null;
 
     return {
       props: {

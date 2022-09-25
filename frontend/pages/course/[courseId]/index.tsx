@@ -35,6 +35,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           id: true,
           title: true,
           slug: true,
+          description: true,
+          color: true,
           subSections: {
             select: {
               id: true,

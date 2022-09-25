@@ -24,7 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import type { SortableEvent } from "react-sortablejs";
 
@@ -47,8 +47,14 @@ export default function RenderCourse({
   isClassroom,
 }: RenderCourseProps) {
   const router = useRouter();
-
   const refreshData = () => router.replace(router.asPath);
+
+  // When `refreshData` reloads the course, we need to manually update
+  // the internal statee
+  useEffect(() => {
+    setCourseSections(course.courseSections as CourseSectionWithId[]);
+  }, [course.courseSections]);
+
   const { width } = useWindowDimensions();
   const [courseSections, setCourseSections] = useState<CourseSectionWithId[]>(
     course.courseSections as CourseSectionWithId[]
@@ -61,6 +67,7 @@ export default function RenderCourse({
     { archiveCourse: Mutation["archiveCourse"] },
     MutationArchiveCourseArgs
   >(ArchiveCourse);
+  const [collapseCourseSections, setCollapseCourseSections] = useState(false);
   const isPro = useProStore((state) => state.isPro);
 
   const onCourseSectionDragEnd = (evt: SortableEvent) => {
@@ -73,6 +80,8 @@ export default function RenderCourse({
         to: evt.newIndex,
       },
     });
+
+    setCollapseCourseSections(false);
   };
 
   const archiveCourseHandler = async (e: React.MouseEvent) => {
@@ -180,12 +189,14 @@ export default function RenderCourse({
         setList={setCourseSections}
         handle=".course-section-drag-handle"
         onEnd={onCourseSectionDragEnd}
+        onStart={() => setCollapseCourseSections(true)}
         className="md:container mx-auto px-4 mt-6"
       >
         <CoursePageContext.Provider value={{ course, refreshData, editAccess }}>
           {courseSections.map((courseSection) => (
             <RenderCourseSection
               courseSection={courseSection as CourseSection}
+              collapsedSubSections={collapseCourseSections}
               key={courseSection?.id as string}
             />
           ))}

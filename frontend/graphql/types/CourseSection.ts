@@ -19,6 +19,8 @@ const CourseSection = objectType({
     t.string("id");
     t.string("title");
     t.string("slug");
+    t.string("description");
+    t.string("color");
     t.field("subSections", {
       type: list("SubSection"),
       resolve(courseSection, _args, ctx) {
@@ -81,6 +83,8 @@ export const CourseSectionMutation = extendType({
       description: "Change a course section's settings",
       args: {
         title: stringArg(),
+        color: stringArg(),
+        description: stringArg(),
         courseSectionId: nonNull(
           stringArg({ description: "ID of the course section to update" })
         ),
@@ -98,10 +102,13 @@ export const CourseSectionMutation = extendType({
           return null;
 
         const data: Partial<PrismaCourseSection> = {};
-        if (args.title != null) {
+        if (args.title) {
           data.title = args.title;
           data.slug = slugifyText(args.title);
         }
+        if (args.color) data.color = args.color;
+        if (typeof args.description === "string")
+          data.description = args.description;
 
         return ctx.prisma.courseSection.update({
           where: { id: args.courseSectionId },

@@ -43,7 +43,7 @@ export default function Ad({ adType, className }: AdProps) {
 
   useEffect(() => {
     setMounted(true);
-    if (pushedAdEl || isPro || !ad) return;
+    if (mounted || pushedAdEl || !ad || isPro !== false) return;
     setPushedAdEl(true);
     try {
       // @ts-ignore
@@ -51,7 +51,7 @@ export default function Ad({ adType, className }: AdProps) {
     } catch (err) {
       console.error(err);
     }
-  }, [pushedAdEl, isPro, ad]);
+  }, [pushedAdEl, mounted, isPro, ad]);
 
   if (ad && isPro === false && mounted) {
     return (
