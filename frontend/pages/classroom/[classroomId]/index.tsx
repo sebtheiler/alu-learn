@@ -1,4 +1,4 @@
-import { authOptions } from "../api/auth/[...nextauth]";
+import { authOptions } from "../../api/auth/[...nextauth]";
 import StudentClassroomPage from "@/pages/StudentClassroomPage";
 import type { StudentClassroomPageProps } from "@/pages/StudentClassroomPage";
 import TeacherClassroomPage from "@/pages/TeacherClassroomPage";

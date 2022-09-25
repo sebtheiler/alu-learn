@@ -85,11 +85,30 @@ const getStudyReviewInstances = async (
     courseId,
     courseSectionSlug,
     subSectionSlug,
+    subSectionIds,
     studyAhead,
   }: {
+    /**
+     * ID of the course to study (has all the flashcards)
+     */
     courseId: string;
+    /**
+     * Slug of the course section to study
+     */
     courseSectionSlug?: string;
+    /**
+     * Slug of the sub section to study
+     */
     subSectionSlug?: string;
+    /**
+     * IDs of the sub sections to get flashcards from.
+     * For use in assignments. Do not use when `subSectionSlug`
+     * is specified.
+     */
+    subSectionIds?: string[];
+    /**
+     * Include reviews not yet due?
+     */
     studyAhead: boolean;
   }
 ) => {
@@ -98,9 +117,7 @@ const getStudyReviewInstances = async (
     context.res,
     authOptions
   );
-  if (!session) {
-    signIn();
-  }
+  if (!session) signIn();
 
   let dateCutoff: { lte: Date } | undefined = undefined;
   // TODO: implement better studying ahead https://github.com/roxgib/anki-smarter-study-ahead
@@ -116,16 +133,25 @@ const getStudyReviewInstances = async (
   }
 
   // Only get flashcards from the specific (sub)section if that (sub)section is specified
-  const slugQuery = courseSectionSlug
-    ? {
-        subSection: {
-          slug: subSectionSlug,
-          courseSection: {
-            slug: courseSectionSlug,
-          },
+  let slugQuery = {};
+  if (courseSectionSlug)
+    slugQuery = {
+      subSection: {
+        slug: subSectionSlug,
+        courseSection: {
+          slug: courseSectionSlug,
         },
-      }
-    : {};
+      },
+    };
+  else if (subSectionIds) {
+    slugQuery = {
+      subSection: {
+        id: {
+          in: subSectionIds,
+        },
+      },
+    };
+  }
 
   const user = await getUserSSR(session, { id: true });
   let reviewInstances = await prisma.reviewInstance.findMany({
@@ -191,9 +217,7 @@ const getStudyReviewInstances = async (
     });
 
     let reviewInstancesToCreate: PartialReviewInstance[] = [];
-    console.log(flashcards.length);
     for (const flashcard of flashcards) {
-      console.log(flashcard);
       reviewInstancesToCreate = reviewInstancesToCreate.concat(
         generateReviewInstances(flashcard, user?.id as string)
       );
@@ -202,8 +226,6 @@ const getStudyReviewInstances = async (
     await prisma.reviewInstance.createMany({
       data: reviewInstancesToCreate,
     });
-
-    console.log(reviewInstancesToCreate);
 
     const newReviewInstances = await prisma.reviewInstance.findMany({
       where: {

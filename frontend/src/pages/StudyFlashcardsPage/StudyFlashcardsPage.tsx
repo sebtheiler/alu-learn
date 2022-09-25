@@ -62,7 +62,8 @@ export default function StudyFlashcardsPage({
   streakActive,
 }: StudyFlashcardsPageProps) {
   const router = useRouter();
-  const { courseId, courseSectionSlug, subSectionSlug } = router.query;
+  const { courseId, classroomId, courseSectionSlug, subSectionSlug } =
+    router.query;
 
   const initialNumReviewInstances = reviewInstances.length;
   const initialNumUnseen = reviewInstances.filter(
@@ -379,7 +380,8 @@ export default function StudyFlashcardsPage({
         )}
         {finishedStudying && (
           <FinishedStudying
-            courseId={courseId as string}
+            courseId={courseId as string | undefined}
+            classroomId={classroomId as string | undefined}
             studyAgain={studyAgain}
             oldStreak={currentStreak}
             reviewsJustDone={numReviewsStudiedInSession}

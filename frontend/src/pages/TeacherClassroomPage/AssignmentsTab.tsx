@@ -108,7 +108,7 @@ export default function AssignmentsTab({
               </label>
               <select
                 name="subSections"
-                className="w-full border-gray-200 focus:border-alu-primary-purple border-2 rounded-xl p-3 mt-1 mb-3 focus:outline-none overflow-hidden"
+                className="w-full border-gray-200 focus:border-alu-primary-purple border-2 rounded-xl p-3 mt-1 mb-3 focus:outline-none"
                 multiple
               >
                 {courseSections.map((courseSection) => (

@@ -15,9 +15,15 @@ import ReactConfetti from "react-confetti";
 
 interface FinishedStudyingProps {
   /**
-   * ID of the course in which the user is studying (used for exiting after studying)
+   * ID of the course in which the user is studying (used for exiting after studying).
+   * Either this or `classroomId` must be specified.
    */
-  courseId: string;
+  courseId?: string;
+  /**
+   * ID of the classroom in which the user is studying (used for exiting after studying).
+   * Either this or `courseId` must be specified.
+   */
+  classroomId?: string;
   /**
    * Function to be called when the user selects to study again
    */
@@ -49,6 +55,7 @@ interface FinishedStudyingProps {
  */
 export default function FinishedStudying({
   courseId,
+  classroomId,
   studyAgain,
   oldStreak,
   reviewsJustDone,
@@ -177,7 +184,11 @@ export default function FinishedStudying({
             Study Again
           </Button>
           <Button
-            onClick={() => router.push(`/course/${courseId}`)}
+            onClick={() =>
+              router.push(
+                courseId ? `/course/${courseId}` : `/classroom/${classroomId}`
+              )
+            }
             variant="secondary"
           >
             Exit
@@ -189,6 +200,7 @@ export default function FinishedStudying({
   }, [
     router,
     courseId,
+    classroomId,
     studyAgain,
     streakWasActive,
     newStreak,
