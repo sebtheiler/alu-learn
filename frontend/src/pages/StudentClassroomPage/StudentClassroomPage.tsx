@@ -17,7 +17,12 @@ export default function StudentClassroomPage({
     <>
       <SEO title={classroom.title as string} path="classes" description="" />
       <div className="mt-28">
-        <RenderCourse course={course} editAccess={false} />
+        <RenderCourse
+          course={course}
+          editAccess={false}
+          assignments={assignments}
+          isClassroom
+        />
       </div>
     </>
   );

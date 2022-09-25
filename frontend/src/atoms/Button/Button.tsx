@@ -116,6 +116,11 @@ export const buttonVariantsLookup = {
                 focus:ring focus:ring-blue-400/50`,
     rippleColor: "white",
   },
+  transparent: {
+    className: `bg-transparent hover:bg-black/10 border-4 border-black/10 text-white focus:outline-none
+                focus:ring focus:ring-black-400/50`,
+    rippleColor: "rgba(255, 255, 255, 0.5)",
+  },
 };
 
 /**

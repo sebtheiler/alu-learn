@@ -11,19 +11,22 @@ import RenderSubSection from "@/courses/RenderSubSection";
 import CreateSubSection from "@/graphql/CreateSubSection";
 import MoveSubSection from "@/graphql/MoveSubSection";
 import { getElementsVals } from "@/helpers/getElementsVals";
-import useWindowDimensions from "@/hooks/useWindowDimensions";
 import type {
   CourseSection,
   Mutation,
+  MutationCreateSubSectionArgs,
   MutationMoveSubSectionArgs,
   SubSection,
 } from "@/types";
 import { useMutation } from "@apollo/client";
-import { faGripVertical, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faGripHorizontal, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import type { SortableEvent } from "react-sortablejs";
+
+const factor = 100;
+const xScale = [0, 1, 0, -1];
 
 type SubSectionWithId = SubSection & { id: string };
 
@@ -41,10 +44,13 @@ interface RenderCourseSectionProps {
 export default function RenderCourseSection({
   courseSection,
 }: RenderCourseSectionProps) {
-  const { course, refreshData, editAccess } = useContext(CoursePageContext);
+  const { course, editAccess } = useContext(CoursePageContext);
   const [createSubSectionModalOpen, setCreateSubSectionModalOpen] =
     useState(false);
-  const [createSubSection] = useMutation(CreateSubSection);
+  const [createSubSection] = useMutation<
+    { createSubSection: Mutation["createSubSection"] },
+    MutationCreateSubSectionArgs
+  >(CreateSubSection);
 
   const [subSections, setSubSections] = useState<SubSectionWithId[]>(
     courseSection.subSections as SubSectionWithId[]
@@ -61,18 +67,20 @@ export default function RenderCourseSection({
       "subSectionTitle",
     ]);
 
-    await createSubSection({
+    const { data } = await createSubSection({
       variables: {
         title: subSectionTitle,
-        courseSectionId: courseSection.id,
+        courseSectionId: courseSection.id as string,
       },
     });
 
-    refreshData && refreshData();
+    if (data?.createSubSection)
+      setSubSections([
+        ...subSections,
+        data?.createSubSection as SubSectionWithId,
+      ]);
     setCreateSubSectionModalOpen(false);
   };
-
-  const { width } = useWindowDimensions();
 
   const onSubSectionDragEnd = (evt: SortableEvent) => {
     if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
@@ -86,73 +94,81 @@ export default function RenderCourseSection({
     });
   };
 
+  console.log(subSections);
+
+  const renderedSubSections = useMemo(
+    () =>
+      subSections.map((subSection, i) => (
+        <RenderSubSection
+          subSection={subSection as SubSection}
+          courseSection={courseSection}
+          key={subSection?.id}
+          style={{
+            // Can't use translate because that messes up z-index and
+            // some stuff with drag-and-drop
+            marginLeft: `${xScale[i % xScale.length] * factor}px`,
+            marginBottom: `-15px`,
+          }}
+        />
+      )),
+    [courseSection, subSections]
+  );
+
   return (
-    <div className="border-gray-200 border-4 bg-gray-50 rounded-[1rem] px-4 py-3 max-w-5xl mx-auto mb-8">
-      <div className="flex items-center mt-4 mb-3">
+    <section className="max-w-xl mx-auto">
+      <header className="bg-blue-500 flex p-5 rounded-xl text-white">
         {editAccess && (
-          <div className="absolute -translate-y-6 -translate-x-3">
+          <div className="absolute -translate-y-4 -translate-x-6">
             <span title="Drag to rearrange">
               <FontAwesomeIcon
-                icon={faGripVertical}
+                icon={faGripHorizontal}
                 // `.course-section-drag-handle` is the handle class defined in `CoursePage.tsx`
-                className="text-gray-400 mx-3 hover:cursor-grab course-section-drag-handle"
+                className="text-white mx-3 hover:cursor-grab course-section-drag-handle"
               />
             </span>
           </div>
         )}
-        <div className="flex-grow bg bg-gray-300 h-0.5"></div>
-        <div className="flex-grow-0 mx-5 text font-bold text-center text-3xl">
-          {courseSection?.title?.toUpperCase()}
+        <div className="w-2/3">
+          <h1 className="text-xl font-bold">{courseSection.title}</h1>
+          <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolorum
+            nam vero sed quaerat. Nulla esse aut ipsa
+          </p>
         </div>
-        <div className="flex-grow bg bg-gray-300 h-0.5"></div>
+        <div className="w-1/3">
+          <ButtonGroup spaced vertical>
+            <LinkButton
+              href={`/course/${course?.id}/study/${courseSection.slug}`}
+              variant="transparent"
+              block
+            >
+              Study
+            </LinkButton>
+            <LinkButton
+              href={`/course/${course?.id}/flashcards/${courseSection.slug}`}
+              variant="transparent"
+              block
+            >
+              View Flashcards
+            </LinkButton>
+          </ButtonGroup>
+        </div>
         {editAccess && <CourseSectionSettings courseSection={courseSection} />}
+      </header>
+      <div>
+        {editAccess ? (
+          <ReactSortable
+            list={subSections}
+            setList={setSubSections}
+            onEnd={onSubSectionDragEnd}
+            handle=".sub-section-drag-handle"
+          >
+            {renderedSubSections}
+          </ReactSortable>
+        ) : (
+          renderedSubSections
+        )}
       </div>
-      <ButtonGroup
-        className="text-center"
-        fixedWidth="175px"
-        spaced
-        vertical={width === 0 ? false : width < 640}
-      >
-        {/* <LinkButton href={`/course/${course?.id}/learn/${courseSection.slug}`}>
-          Learn Content
-        </LinkButton> */}
-        <LinkButton href={`/course/${course?.id}/study/${courseSection.slug}`}>
-          Study
-        </LinkButton>
-        <LinkButton
-          href={`/course/${course?.id}/flashcards/${courseSection.slug}`}
-        >
-          Flashcards
-        </LinkButton>
-        {/* <DropdownButton
-          options={[
-            {
-              text: "Games",
-              href: `/course/${course?.id}/games/${courseSection.slug}`,
-            },
-            {
-              text: "Practice Problems",
-              href: `/course/${course?.id}/practice/${courseSection.slug}`,
-            },
-          ]}
-        >
-          More
-        </DropdownButton> */}
-      </ButtonGroup>
-      <ReactSortable
-        list={subSections}
-        setList={setSubSections}
-        onEnd={onSubSectionDragEnd}
-        className="flex flex-wrap px-10 py-5"
-      >
-        {subSections.map((subSection) => (
-          <RenderSubSection
-            subSection={subSection as SubSection}
-            courseSection={courseSection}
-            key={subSection?.id}
-          />
-        ))}
-      </ReactSortable>
       {subSections.length === 0 && (
         <p className="text-center mb-4">
           This section doesn&apos;t have any sub-sections yet. Create one with
@@ -189,6 +205,6 @@ export default function RenderCourseSection({
           </Modal>
         </div>
       )}
-    </div>
+    </section>
   );
 }

@@ -1,0 +1,17 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+ <!--! Font Awesome Pro 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+
+ <g>
+  <title>Layer 1</title>
+  <g stroke="null" id="svg_10">
+   <g stroke="null" transform="matrix(1.6818 0.612127 -0.612127 1.6818 107.349 -106.703)" id="svg_9">
+    <rect stroke="null" fill="#000000" rx="29" id="svg_6" height="208.72727" width="163.63098" y="56.75413" x="96.80126"/>
+    <path stroke="null" id="svg_7" d="m115.77541,87.22024c0,-5.21986 3.27681,-9.6063 7.17623,-9.6063l111.33022,0c3.89941,0 7.17623,4.38644 7.17623,9.6063l0,149.02962c0,5.21986 -3.27682,9.6063 -7.17623,9.6063l-111.33022,0c-3.89942,0 -7.17623,-4.38644 -7.17623,-9.6063l0,-149.02962z" opacity="undefined" fill="#ffffff"/>
+   </g>
+   <g stroke="null" id="svg_8">
+    <rect stroke="null" fill="#000000" rx="29" id="svg_2" height="373.56731" width="292.85672" y="12.79756" x="1.39581"/>
+    <path stroke="null" id="svg_4" d="m35.35458,67.32393c0,-9.34218 5.86465,-17.19276 12.84358,-17.19276l199.25203,0c6.97893,0 12.84358,7.85057 12.84358,17.19276l0,266.72411c0,9.34218 -5.86465,17.19276 -12.84358,17.19276l-199.25203,0c-6.97893,0 -12.84358,-7.85057 -12.84358,-17.19276l0,-266.72411z" opacity="undefined" fill="#ffffff"/>
+   </g>
+  </g>
+ </g>
+</svg>

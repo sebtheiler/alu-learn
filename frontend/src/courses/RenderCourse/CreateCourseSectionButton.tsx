@@ -47,7 +47,7 @@ export default function CreateCourseSectionButton({
       <Button
         onClick={() => setCreateCourseSectionModalOpen(true)}
         faIcon={faPlus}
-        className="mb-3"
+        className="my-5 mb-3 text-center mx-auto"
       >
         Add Section
       </Button>

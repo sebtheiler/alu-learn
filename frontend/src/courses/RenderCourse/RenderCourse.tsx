@@ -16,6 +16,7 @@ import type {
   MutationArchiveCourseArgs,
   MutationMoveCourseSectionArgs,
   CourseSection,
+  Assignment,
 } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -32,6 +33,8 @@ type CourseSectionWithId = CourseSection & { id: string };
 interface RenderCourseProps {
   course: Course;
   editAccess: boolean;
+  assignments?: Assignment[];
+  isClassroom?: boolean;
 }
 
 /**
@@ -40,6 +43,8 @@ interface RenderCourseProps {
 export default function RenderCourse({
   course,
   editAccess,
+  assignments,
+  isClassroom,
 }: RenderCourseProps) {
   const router = useRouter();
 
@@ -157,10 +162,14 @@ export default function RenderCourse({
               text: "Tools",
               href: `/course/${course?.id}/tools`,
             },
-            {
-              text: "Archive",
-              onClick: archiveCourseHandler,
-            },
+            ...(isClassroom
+              ? []
+              : [
+                  {
+                    text: "Archive",
+                    onClick: archiveCourseHandler,
+                  },
+                ]),
           ]}
         >
           More
@@ -183,7 +192,6 @@ export default function RenderCourse({
         </CoursePageContext.Provider>
       </ReactSortable>
       <div className="text-center">
-        <p className="text-white">.</p>
         {courseSections.length === 0 && (
           <p className="mb-3 mx-auto">
             This course doesn&apos;t have any sections yet. Add one below to
@@ -191,10 +199,12 @@ export default function RenderCourse({
           </p>
         )}
         {editAccess && (
-          <CreateCourseSectionButton
-            course={course}
-            refreshData={refreshData}
-          />
+          <div className="flex justify-center w-full">
+            <CreateCourseSectionButton
+              course={course}
+              refreshData={refreshData}
+            />
+          </div>
         )}
       </div>
     </div>

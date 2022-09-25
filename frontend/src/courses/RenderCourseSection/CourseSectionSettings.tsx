@@ -62,14 +62,14 @@ export default function CourseSectionSettings({
 
   return (
     <div>
-      <div className="absolute -translate-x-3 -translate-y-10">
+      <div className="absolute -translate-x-1 -translate-y-4">
         <IconTooltip
           faIcon={faGear}
           onClick={() => setCourseSectionSettingsModalOpen(true)}
           size="lg"
           tooltip="Section Settings"
           tooltipProps={{ className: "w-32" }}
-          className="text-gray-500"
+          className="text-white"
         />
       </div>
       <Modal

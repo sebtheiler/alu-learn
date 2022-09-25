@@ -295,8 +295,8 @@ model Classroom {
   students User[] @relation("ClassroomStudents")
 
   assignments Assignment[]
-  course      Course       @relation(fields: [courseId], references: [id])
-  courseId    String
+  course      Course?      @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  courseId    String?
 }
 
 model Assignment {
