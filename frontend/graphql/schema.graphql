@@ -286,6 +286,9 @@ enum PrivacySetting {
 }
 
 type Query {
+  """Calculates %-complete data for a list of sub sections"""
+  calculateSubSectionsPercentComplete(subSectionIds: [String!]!): JSONObject
+
   """Find review instances sorted by difficulty"""
   findHardestReviewInstances(
     courseId: String!

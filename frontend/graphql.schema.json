@@ -2419,6 +2419,43 @@
         "description": null,
         "fields": [
           {
+            "name": "calculateSubSectionsPercentComplete",
+            "description": "Calculates %-complete data for a list of sub sections",
+            "args": [
+              {
+                "name": "subSectionIds",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "LIST",
+                    "name": null,
+                    "ofType": {
+                      "kind": "NON_NULL",
+                      "name": null,
+                      "ofType": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                      }
+                    }
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "SCALAR",
+              "name": "JSONObject",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "findHardestReviewInstances",
             "description": "Find review instances sorted by difficulty",
             "args": [

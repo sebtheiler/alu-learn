@@ -403,6 +403,8 @@ export enum PrivacySetting {
 
 export type Query = {
   __typename?: 'Query';
+  /** Calculates %-complete data for a list of sub sections */
+  calculateSubSectionsPercentComplete?: Maybe<Scalars['JSONObject']>;
   /** Find review instances sorted by difficulty */
   findHardestReviewInstances?: Maybe<Array<Maybe<ReviewInstance>>>;
   /** Find subsections sorted by difficulty. Returns subsections with custom `avgEase` and `courseSectionSlug` attributes */
@@ -423,6 +425,11 @@ export type Query = {
   searchUsers?: Maybe<Array<Maybe<User>>>;
   /** List all users */
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+
+export type QueryCalculateSubSectionsPercentCompleteArgs = {
+  subSectionIds: Array<Scalars['String']>;
 };
 
 

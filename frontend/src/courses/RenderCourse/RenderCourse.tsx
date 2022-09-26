@@ -6,6 +6,7 @@ import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
 import RenderCourseSection from "@/courses/RenderCourseSection";
 import ArchiveCourse from "@/graphql/ArchiveCourse";
+import CalculateSubSectionsPercentComplete from "@/graphql/CalculateSubSectionsPercentComplete";
 import MoveCourseSection from "@/graphql/MoveCourseSection";
 import classNames from "@/helpers/classNames";
 import useProStore from "@/stores/proStore";
@@ -17,8 +18,9 @@ import type {
   CourseSection,
   AssignmentWithSubSections,
   Classroom,
+  Query,
 } from "@/types";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
@@ -68,6 +70,16 @@ export default function RenderCourse({
   >(ArchiveCourse);
   const [collapseCourseSections, setCollapseCourseSections] = useState(false);
   const isPro = useProStore((state) => state.isPro);
+
+  const { data: percentComplete } = useQuery<{
+    calculateSubSectionsPercentComplete: Query["calculateSubSectionsPercentComplete"];
+  }>(CalculateSubSectionsPercentComplete, {
+    variables: {
+      subSectionIds: courseSections.flatMap((courseSection) =>
+        courseSection.subSections?.map((subSection) => subSection?.id)
+      ),
+    },
+  });
 
   const onCourseSectionDragEnd = (evt: SortableEvent) => {
     if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
@@ -202,7 +214,7 @@ export default function RenderCourse({
           onStart={() => setCollapseCourseSections(true)}
         >
           <CoursePageContext.Provider
-            value={{ course, refreshData, editAccess }}
+            value={{ course, refreshData, editAccess, percentComplete }}
           >
             {courseSections.map((courseSection) => (
               <RenderCourseSection

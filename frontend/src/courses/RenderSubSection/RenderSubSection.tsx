@@ -1,9 +1,11 @@
+import CoursePageContext from "../RenderCourse/context";
 import SubSectionPopover from "./SubSectionPopover";
 import Popover from "@/atoms/Popover";
 import type { CourseSection, SubSection } from "@/types";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
+import { useContext } from "react";
 
 const currentlyStudiedColor = "#5ed149";
 const previouslyStudiedColor = "#FDCE29";
@@ -36,6 +38,16 @@ export default function RenderSubSection({
   style,
   assigned,
 }: RenderSubSectionProps) {
+  const { percentComplete } = useContext(CoursePageContext);
+  const { currentPercentComplete, totalPercentComplete } = percentComplete
+    ? percentComplete.calculateSubSectionsPercentComplete[
+        subSection.id as string
+      ]
+    : {
+        currentPercentComplete: 0,
+        totalPercentComplete: 0,
+      };
+
   return (
     <div
       className="mx-auto my-4 z-10"
@@ -70,7 +82,7 @@ export default function RenderSubSection({
               role="button"
               style={{
                 background: `conic-gradient(${previouslyStudiedColor} ${
-                  /*subSection?.totalPercentComplete ?? 0*/ 0 * 100
+                  (totalPercentComplete ?? 0) * 100
                 }%, transparent 0%)`,
               }}
             >
@@ -78,12 +90,11 @@ export default function RenderSubSection({
                 className="w-full h-full flex items-center rounded-full p-2"
                 style={{
                   background: `conic-gradient(${currentlyStudiedColor} ${
-                    /*subSection?.percentComplete ?? 0*/ 0 * 100
+                    (currentPercentComplete ?? 0) * 100
                   }%, transparent 0%)`,
                 }}
               >
                 <div className="flex items-center justify-center rounded-full h-full w-full bg-gray-100 border-4 border-gray-200">
-                  {/* <FlashcardsSVG width="40px" height="40px" viewBox="0 0 512 512" /> */}
                   <Image
                     src="/assets/flashcards-gray.png"
                     width={40}

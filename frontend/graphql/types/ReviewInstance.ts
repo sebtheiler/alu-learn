@@ -1,3 +1,4 @@
+import { percentCompleteCacheKey } from "./SubSection";
 import DateScalar from "./scalars/DateScalar";
 import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
@@ -5,6 +6,7 @@ import calculateInterval from "helpers/calculateInterval";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseUser from "helpers/isCourseUser";
 import updateUserHistory from "helpers/updateUserHistory";
+import globalCache from "lib/globalCache";
 import {
   arg,
   booleanArg,
@@ -104,16 +106,32 @@ export const ReviewInstancesMutation = extendType({
 
         const reviewInstance = await ctx.prisma.reviewInstance.findUnique({
           where: { id: args.reviewInstanceId },
+          select: {
+            id: true,
+            userId: true,
+            lastReview: true,
+            nextReview: true,
+            learningStatus: true,
+            stepsIndex: true,
+            ease: true,
+            flashcard: {
+              select: {
+                subSectionId: true,
+              },
+            },
+          },
         });
         if (!reviewInstance || reviewInstance.userId !== user.id)
           throw new ApolloError(
             "Unauthorized to access given reviewInstanceId"
           );
-        const interval = calculateInterval(reviewInstance, args.grade);
 
+        // Calculate interval
+        const interval = calculateInterval(reviewInstance, args.grade);
         if (!interval) throw new ApolloError("Error calculating interval");
         const { updatedReviewInstance } = interval;
 
+        // Update user and history
         await ctx.prisma.user.update({
           where: {
             id: user.id,
@@ -129,6 +147,15 @@ export const ReviewInstancesMutation = extendType({
 
         await updateUserHistory(user, args.timeTaken, ctx.prisma);
 
+        // Clear sub section cache
+        globalCache.del(
+          percentCompleteCacheKey(
+            reviewInstance.flashcard.subSectionId,
+            user.id
+          )
+        );
+
+        // Update review instance
         return ctx.prisma.reviewInstance.update({
           where: {
             id: args.reviewInstanceId,

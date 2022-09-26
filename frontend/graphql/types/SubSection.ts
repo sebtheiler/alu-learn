@@ -7,6 +7,7 @@ import isCourseUser from "helpers/isCourseUser";
 import isSubSectionOwner from "helpers/isSubSectionOwner";
 import moveObject from "helpers/moveObject";
 import slugifyText from "helpers/slugifyText";
+import globalCache from "lib/globalCache";
 import {
   extendType,
   intArg,
@@ -85,6 +86,74 @@ export const SubSectionQuery = extendType({
           ORDER BY
             "avgEase" ASC
         `;
+      },
+    });
+    t.field("calculateSubSectionsPercentComplete", {
+      type: "JSONObject",
+      description: "Calculates %-complete data for a list of sub sections",
+      args: {
+        subSectionIds: nonNull(list(nonNull(stringArg()))),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, { id: true });
+        if (!user) return null;
+
+        const data = {};
+        for (const subSectionId of args.subSectionIds) {
+          const cacheKey = percentCompleteCacheKey(
+            subSectionId,
+            user.id as string
+          );
+          const cached = globalCache.get(cacheKey);
+          if (cached) {
+            data[subSectionId] = cached;
+            continue;
+          }
+
+          const numFlashcards = await ctx.prisma.flashcard.count({
+            where: {
+              subSectionId: subSectionId,
+            },
+          });
+          const numReviewInstancesCurrentlyStudied =
+            await ctx.prisma.reviewInstance.count({
+              where: {
+                user: {
+                  email: ctx.user?.email,
+                },
+                flashcard: {
+                  subSectionId: subSectionId,
+                },
+                nextReview: {
+                  gte: new Date(),
+                },
+              },
+            });
+          const numReviewInstancesEverStudied =
+            await ctx.prisma.reviewInstance.count({
+              where: {
+                user: {
+                  email: ctx.user?.email,
+                },
+                flashcard: {
+                  subSectionId: subSectionId,
+                },
+                learningStatus: {
+                  not: "UNSEEN",
+                },
+              },
+            });
+
+          const percentComplete = {
+            currentPercentComplete:
+              numReviewInstancesCurrentlyStudied / numFlashcards,
+            totalPercentComplete: numReviewInstancesEverStudied / numFlashcards,
+          };
+          globalCache.set(cacheKey, percentComplete, 60 * 60 * 12);
+          data[subSectionId] = percentComplete;
+        }
+
+        return data;
       },
     });
   },
@@ -214,3 +283,12 @@ export const SubSectionMutation = extendType({
 });
 
 export default SubSection;
+
+/**
+ * Generate a cache key for a sub section's percent complete.
+ * Used to enforce consistency in the cache.
+ * @param subSectionId Sub section to generate the cache key for
+ * @returns A cache key
+ */
+export const percentCompleteCacheKey = (subSectionId: string, userId: string) =>
+  `percentComplete_SS${subSectionId}_for_U${userId}`;

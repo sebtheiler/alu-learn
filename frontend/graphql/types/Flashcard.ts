@@ -105,7 +105,7 @@ export const FlashcardMutation = extendType({
         subSectionSlug: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
-        const user = await getUserGQL(ctx);
+        const user = await getUserGQL(ctx, { id: true });
         if (!user) return null;
 
         const subSection = await ctx.prisma.subSection.findFirstOrThrow({
@@ -115,6 +115,9 @@ export const FlashcardMutation = extendType({
               slug: args.courseSectionSlug,
               courseId: args.courseId,
             },
+          },
+          select: {
+            id: true,
           },
         });
         if (
