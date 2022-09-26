@@ -26,6 +26,46 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     userType: true,
   });
 
+  // Log the user visit
+  // (ideally this would be done w/ middleware, but I can't get that working)
+  const morning = new Date();
+  morning.setHours(0, 0, 0, 0);
+  const midnight = new Date();
+  midnight.setHours(23, 59, 59, 999);
+
+  if (
+    (await prisma.userVisit.count({
+      where: {
+        userId: user?.id,
+        timestamp: {
+          gte: morning,
+          lte: midnight,
+        },
+      },
+    })) === 0
+  ) {
+    const forwarded = context.req.headers["x-forwarded-for"] as
+      | string
+      | undefined;
+    const remoteAddr = forwarded
+      ? forwarded.split(/, /)[0]
+      : context.req.socket.remoteAddress;
+    const userAgent = context.req.headers["user-agent"];
+
+    await prisma.userVisit.create({
+      data: {
+        remoteAddr,
+        userAgent,
+        user: {
+          connect: {
+            id: user?.id,
+          },
+        },
+      },
+    });
+  }
+
+  // Fetch the user's courses and classes
   let courses = await prisma.course.findMany({
     where: {
       users: {
@@ -67,6 +107,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  // Fetch the user's history
   const startDate = new Date();
   startDate.setMonth(startDate.getMonth() - 6);
 

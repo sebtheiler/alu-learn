@@ -155,6 +155,24 @@ export const ReviewInstancesMutation = extendType({
           )
         );
 
+        // Log review instance history
+        await ctx.prisma.reviewInstanceHistory.create({
+          data: {
+            gradeResponse: args.grade,
+            timeTaken: args.timeTaken,
+            ease: reviewInstance.ease,
+            learningStatus: reviewInstance.learningStatus,
+            stepsIndex: reviewInstance.stepsIndex,
+            nextReview: reviewInstance.nextReview,
+            lastReview: reviewInstance.lastReview,
+            reviewInstance: {
+              connect: {
+                id: reviewInstance.id,
+              },
+            },
+          },
+        });
+
         // Update review instance
         return ctx.prisma.reviewInstance.update({
           where: {

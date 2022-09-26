@@ -6,7 +6,23 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import apolloClient from "lib/apollo";
 import type { NextComponentType, NextPageContext } from "next";
 import { SessionProvider } from "next-auth/react";
-import { GoogleAnalytics } from "nextjs-google-analytics";
+import type { NextWebVitalsMetric } from "next/app";
+import { GoogleAnalytics } from "nextjs-google-analytics/dist/components/GoogleAnalytics";
+import { event } from "nextjs-google-analytics/dist/interactions/event";
+
+export function reportWebVitals({
+  id,
+  name,
+  label,
+  value,
+}: NextWebVitalsMetric) {
+  event(name, {
+    category: label === "web-vital" ? "Web Vitals" : "Next.js custom metric",
+    value: Math.round(name === "CLS" ? value * 1000 : value), // values must be integers
+    label: id, // id unique to current page load
+    nonInteraction: true, // avoids affecting bounce rate.
+  });
+}
 
 type AppProps = {
   pageProps: any;

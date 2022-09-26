@@ -58,6 +58,7 @@ model User {
   sessions      Session[]
 
   newUserSurveyResponse NewUserSurveyResponse?
+  dailyVisits           UserVisit[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -133,6 +134,17 @@ enum JoinReason {
   CONCEPT
   TEACHER
   STUDENTS
+}
+
+// ## Daily User Visit
+model UserVisit {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  remoteAddr String?
+  userAgent  String?
+  timestamp  DateTime @default(now()) @db.Timestamptz(3)
 }
 
 // # Courses
@@ -246,6 +258,8 @@ model ReviewInstance {
   isStarred Boolean @default(false)
   // isSuspended Boolean @default(false)
   // leechIndex Int @default(0)
+
+  history ReviewInstanceHistory[]
 }
 
 enum LearningStatus {
@@ -253,6 +267,29 @@ enum LearningStatus {
   LEARNING
   LEARNED
   RELEARNING
+}
+
+model ReviewInstanceHistory {
+  id               String          @id @default(cuid())
+  reviewInstance   ReviewInstance? @relation(fields: [reviewInstanceId], references: [id], onDelete: SetNull)
+  reviewInstanceId String?
+
+  gradeResponse  GradeResponse
+  timeTaken      Float
+  ease           Int
+  learningStatus LearningStatus
+  stepsIndex     Int
+  nextReview     DateTime
+  lastReview     DateTime?
+
+  timestamp DateTime @default(now())
+}
+
+enum GradeResponse {
+  AGAIN
+  HARD
+  GOOD
+  EASY
 }
 
 // # Other
