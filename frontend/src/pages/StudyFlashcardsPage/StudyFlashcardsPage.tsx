@@ -182,11 +182,11 @@ export default function StudyFlashcardsPage({
 
     // End "throwing away" animation
     setTimeout(() => {
-      setIsTransitioningCorrect(false),
-        setIsTransitioningIncorrect(false),
-        setActiveReviewInstance(
-          newReviewInstances[0] as ReviewInstanceWithFlashcard
-        );
+      setIsTransitioningCorrect(false);
+      setIsTransitioningIncorrect(false);
+      setActiveReviewInstance(
+        newReviewInstances[0] as ReviewInstanceWithFlashcard
+      );
       if (newReviewInstances.length === 0) setFinishedStudying(true);
     }, 400);
 
@@ -275,7 +275,7 @@ export default function StudyFlashcardsPage({
       />
       <div className="mt-28">
         {!finishedStudying && activeReviewInstance && (
-          <div className="px-5">
+          <div className="px-5 overflow-hidden">
             <h1 className="font-bold text-4xl text-center">Study Flashcards</h1>
             <ProgressBar
               stepNum={initialNumReviewInstances - _reviewInstances.length}

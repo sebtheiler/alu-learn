@@ -1,4 +1,5 @@
 import styles from "./LandingPage.module.scss";
+import StudyingDemo from "./StudyingDemo";
 import Button from "@/atoms/Button";
 import SEO from "@/helpers/SEO";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
@@ -23,7 +24,7 @@ const testimonials = [
 ];
 
 export default function LandingPage() {
-  const { height } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const { setRegisterModalOpen, setSignInModalOpen } = useGlobalModalStore();
 
   const exampleDecks = useMemo(
@@ -91,6 +92,7 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
+            {width > 1024 && <StudyingDemo />}
           </div>
         </div>
         <div

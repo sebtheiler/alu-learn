@@ -7,11 +7,30 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 
 interface FlashcardSideProps {
+  /**
+   * Is this side of the flashcard the front or the back?
+   */
   side: "front" | "back";
+  /**
+   * Flashcard field (Lexical) to display
+   */
   field: string;
+  /**
+   * Is the side shown? The front and back sides should have opposite values
+   */
   isShown: boolean;
+  /**
+   * Is the parent flashcard starred?
+   */
   starred: boolean;
-  onStarred(event: React.MouseEvent<SVGSVGElement, MouseEvent>): void;
+  /**
+   * Called when the user clicks the "star" icon
+   */
+  onStarred?(event: React.MouseEvent<SVGSVGElement, MouseEvent>): void;
+  /**
+   * Manually override the `field` content. Only use if you know what you're doing
+   */
+  overrideContent?: React.ReactElement;
 }
 
 /**
@@ -23,6 +42,7 @@ export default function FlashcardSide({
   field,
   isShown,
   starred,
+  overrideContent,
   onStarred,
 }: FlashcardSideProps) {
   const [onTop, setOnTop] = useState(isShown);
@@ -37,6 +57,7 @@ export default function FlashcardSide({
 
   const playTTS = async (e: React.MouseEvent<SVGElement>) => {
     e.stopPropagation();
+    if (!("speechSynthesis" in window)) return;
     const synthesis = window.speechSynthesis;
 
     if (playingTTS) {
@@ -64,16 +85,14 @@ export default function FlashcardSide({
       <div className="absolute w-full">
         <p className="text-center my-2 text-gray-400 font-bold">
           {side.toUpperCase()}
-          {"speechSynthesis" in window && (
-            <FontAwesomeIcon
-              icon={faVolumeHigh}
-              className="absolute right-10 top-3 z-20"
-              onClick={playTTS}
-              title={playingTTS ? "Click to Cancel" : "Speak Flashcard (en)"}
-              role="button"
-              beat={playingTTS}
-            />
-          )}
+          <FontAwesomeIcon
+            icon={faVolumeHigh}
+            className="absolute right-10 top-3 z-20"
+            onClick={playTTS}
+            title={playingTTS ? "Click to Cancel" : "Speak Flashcard (en)"}
+            role="button"
+            beat={playingTTS}
+          />
           <FontAwesomeIcon
             icon={faStar}
             className={classNames(
@@ -88,11 +107,15 @@ export default function FlashcardSide({
         <hr className="mx-5" />
       </div>
       <div className="flex flex-1 justify-center items-center w-full h-full relative p-5">
-        <LexicalEditor
-          namespace={`flashcard-${side}`}
-          editorState={field}
-          readOnly
-        />
+        {overrideContent ? (
+          overrideContent
+        ) : (
+          <LexicalEditor
+            namespace={`flashcard-${side}`}
+            editorState={field}
+            readOnly
+          />
+        )}
       </div>
     </div>
   );
