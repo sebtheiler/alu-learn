@@ -45,7 +45,7 @@ export default function CreateAddCourseModal({ open, close }) {
     });
 
     if (data) {
-      router.push(`/course/${data.createCourse.id}`);
+      router.push(`/course/${data.createCourse?.id}`);
     }
   };
 

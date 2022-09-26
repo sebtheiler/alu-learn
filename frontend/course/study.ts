@@ -1,7 +1,10 @@
-import type { Flashcard, FlashcardType } from "@prisma/client";
+import type { Intervals } from "@/types";
+import type { Flashcard, FlashcardType, ReviewInstance } from "@prisma/client";
 import cuid from "cuid";
 import calculateInterval from "helpers/calculateInterval";
+import canViewCourse from "helpers/canViewCourse";
 import getUserSSR from "helpers/getUserSSR";
+import isCourseUser from "helpers/isCourseUser";
 import prisma from "lib/prisma";
 import type { GetServerSidePropsContext } from "next";
 import { unstable_getServerSession } from "next-auth";
@@ -111,13 +114,38 @@ const getStudyReviewInstances = async (
      */
     studyAhead: boolean;
   }
-) => {
+): Promise<{
+  reviewInstances: Partial<ReviewInstance>[];
+  intervals: Intervals;
+} | null> => {
   const session = await unstable_getServerSession(
     context.req,
     context.res,
     authOptions
   );
   if (!session) signIn();
+
+  // Check that the user is a user of the course
+  if (!(await isCourseUser(courseId, session?.user?.email))) {
+    // If they have access, add them as a user
+    if (await canViewCourse(courseId, session?.user?.email)) {
+      await prisma.course.update({
+        where: {
+          id: courseId,
+        },
+        data: {
+          users: {
+            connect: {
+              email: session?.user?.email as string,
+            },
+          },
+        },
+      });
+    } else {
+      // Return empty
+      return null;
+    }
+  }
 
   let dateCutoff: { lte: Date } | undefined = undefined;
   // TODO: implement better studying ahead https://github.com/roxgib/anki-smarter-study-ahead

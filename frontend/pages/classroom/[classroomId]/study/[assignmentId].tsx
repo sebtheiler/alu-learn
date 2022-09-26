@@ -76,10 +76,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     (subSection) => subSection.id
   );
 
-  const { reviewInstances, intervals } = await getStudyReviewInstances(
-    context,
-    { courseId: courseId as string, studyAhead, subSectionIds }
-  );
+  const studyData = await getStudyReviewInstances(context, {
+    courseId: courseId as string,
+    studyAhead,
+    subSectionIds,
+  });
+  if (!studyData) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const { reviewInstances, intervals } = studyData;
 
   return {
     props: JSON.parse(

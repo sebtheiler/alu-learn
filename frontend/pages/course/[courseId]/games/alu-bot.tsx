@@ -15,10 +15,16 @@ export default AluBotGame;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { courseId } = context.query;
 
-  const { reviewInstances, intervals } = await getStudyReviewInstances(
-    context,
-    { courseId: courseId as string, studyAhead: false }
-  );
+  const studyData = await getStudyReviewInstances(context, {
+    courseId: courseId as string,
+    studyAhead: false,
+  });
+  if (!studyData) {
+    return {
+      notFound: true,
+    };
+  }
+  const { reviewInstances, intervals } = studyData;
 
   return {
     props: JSON.parse(

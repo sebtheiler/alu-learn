@@ -20,14 +20,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const studyAhead =
     typeof studyAheadRaw === "string" && studyAheadRaw.toLowerCase() === "true";
 
-  const { reviewInstances, intervals } = await getStudyReviewInstances(
-    context,
-    {
-      courseId: courseId as string,
-      courseSectionSlug: courseSectionSlug as string | undefined,
-      studyAhead,
-    }
-  );
+  const studyData = await getStudyReviewInstances(context, {
+    courseId: courseId as string,
+    courseSectionSlug: courseSectionSlug as string | undefined,
+    studyAhead,
+  });
+  if (!studyData) {
+    return {
+      notFound: true,
+    };
+  }
+  const { reviewInstances, intervals } = studyData;
 
   return {
     props: JSON.parse(
