@@ -1,4 +1,5 @@
 import { verifySignature } from "@upstash/qstash/nextjs";
+import reminderEmail from "cron/reminderEmail";
 import streakReset from "cron/streakReset";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -7,6 +8,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
       res.status(200).json({ success: true });
       await streakReset();
+      await reminderEmail();
     } catch (err) {
       res.status(500).json({ statusCode: 500, message: (err as any).message });
     }

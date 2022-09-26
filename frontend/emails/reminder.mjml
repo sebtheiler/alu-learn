@@ -1,0 +1,20 @@
+<mj-text>
+  <p class="text-paragraph">Hi {{name}}!</p>
+</mj-text>
+<mj-text>
+  <p class="text-paragraph">
+    You're on a {{streak}}-day streak. Study with Alu today to make it
+    {{newStreak}} days! You got this!
+  </p>
+</mj-text>
+<mj-button
+  background-color="#6A21BC"
+  align="center"
+  color="#ffffff"
+  font-size="17px"
+  href="https://alulearn.com/l/study"
+  width="300px"
+  border-radius="999px"
+>
+  Study Now
+</mj-button>

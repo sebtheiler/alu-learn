@@ -1,0 +1,136 @@
+<mjml>
+  <mj-head>
+    <mj-title>{{title}}</mj-title>
+    <mj-preview>{{preview}}</mj-preview>
+    <mj-attributes>
+      <mj-all
+        font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+      ></mj-all>
+      <mj-text
+        font-weight="400"
+        font-size="16px"
+        color="#000000"
+        line-height="24px"
+        font-family="Ubuntu, Helvetica, Arial, sans-serif"
+      ></mj-text>
+    </mj-attributes>
+    <mj-style inline="inline">
+      .body-section { -webkit-box-shadow: 1px 4px 11px 0px rgba(0, 0, 0, 0.15);
+      -moz-box-shadow: 1px 4px 11px 0px rgba(0, 0, 0, 0.15); box-shadow: 1px 4px
+      11px 0px rgba(0, 0, 0, 0.15); }
+    </mj-style>
+    <mj-style inline="inline">
+      .text-link { color: #5e6ebf } .text-paragraph { color: #637381; font-size:
+      16px; margin-bottom: 0; }
+    </mj-style>
+    <mj-style inline="inline">
+      .footer-link { color: gray; margin-right: 5px; margin-left: 5px; }
+    </mj-style>
+  </mj-head>
+  <mj-body background-color="#F4F4F4" width="600px">
+    <mj-section
+      full-width="full-width"
+      background-color="#290254"
+      padding-bottom="0"
+    >
+      <mj-column width="100%">
+        <mj-text color="white" font-size="30px" align="center">
+          <p style="margin-bottom: 20px">{{title}}</p>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-wrapper
+      padding-top="0"
+      padding-bottom="0"
+      css-class="body-section"
+      border-radius="0 0 20px 20px"
+    >
+      <mj-section
+        background-color="#ffffff"
+        padding-left="15px"
+        padding-right="15px"
+        border-radius="0 0 20px 20px"
+      >
+        <mj-column width="100%">
+          <!-- This is automatically updated by the code in `emails/createEmailTemplate.ts` -->
+          {{ EMAIL_BODY_CONTENT }}
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+
+    <mj-wrapper full-width="full-width">
+      <mj-section>
+        <mj-column width="100%" padding="0">
+          <mj-text font-size="14px" align="center"
+            >Find us on social media</mj-text
+          >
+          <mj-social
+            font-size="15px"
+            icon-size="30px"
+            mode="horizontal"
+            padding="0"
+            align="center"
+          >
+            <mj-social-element
+              href="https://www.instagram.com/alu_learn"
+              src="http://localhost:3000/assets/logos/instagram.svg"
+            >
+            </mj-social-element>
+            <mj-social-element
+              href="https://www.twitter.com/AluLearn"
+              src="http://localhost:3000/assets/logos/twitter.svg"
+            >
+            </mj-social-element>
+            <mj-social-element
+              href="https://www.tiktok.com/@alulearn"
+              src="http://localhost:3000/assets/logos/tiktok.svg"
+            >
+            </mj-social-element>
+            <mj-social-element
+              href="https://www.reddit.com/r/AluLearn"
+              src="http://localhost:3000/assets/logos/reddit.svg"
+            >
+            </mj-social-element>
+          </mj-social>
+        </mj-column>
+      </mj-section>
+      <mj-section padding-top="0">
+        <mj-group>
+          <mj-column width="100%" padding-right="0">
+            <mj-text
+              color="#445566"
+              font-size="11px"
+              align="center"
+              line-height="16px"
+              font-weight="bold"
+            >
+              <a class="footer-link" href="https://www.alulearn.com/settings"
+                >Unsubscribe</a
+              >
+              <a
+                class="footer-link"
+                href="https://www.alulearn.com/legal/privacy"
+                >Privacy Policy</a
+              >
+              <a class="footer-link" href="https://www.alulearn.com/legal/tos"
+                >Terms of Service</a
+              >
+              <a class="footer-link" href="mailto:alu@alulearn.com"
+                >Contact Us</a
+              >
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-section padding-top="0">
+        <mj-group>
+          <mj-column>
+            <mj-text font-size="13px" color="#445566" align="center"
+              >Sent by Alu Learn | NYC, New York</mj-text
+            >
+          </mj-column>
+        </mj-group>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+</mjml>
