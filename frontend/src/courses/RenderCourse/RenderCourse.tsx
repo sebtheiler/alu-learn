@@ -97,12 +97,12 @@ export default function RenderCourse({
   };
   return (
     <div className="grid grid-cols-12">
-      <div className="col-span-3">
-        <div className="sticky top-24">
+      <div className="col-span-12 xl:col-span-3">
+        <div className="sticky top-24 w-full px-2">
           <div
             className={classNames(
-              "relative",
-              course.bannerImage && "py-10 mx-2"
+              "relative w-full md:max-w-xl mx-auto",
+              course.bannerImage && "py-10"
             )}
           >
             {course.bannerImage && (
@@ -110,7 +110,7 @@ export default function RenderCourse({
                 src={course.bannerImage}
                 alt="Course banner"
                 layout="fill"
-                className="object-cover rounded-xl"
+                className="object-cover md:rounded-xl"
                 style={{ zIndex: "-1" }}
               />
             )}
@@ -193,7 +193,7 @@ export default function RenderCourse({
           </ButtonGroup>
         </div>
       </div>
-      <div className="col-span-6">
+      <div className="col-span-12 mt-5 xl:col-span-6">
         <ReactSortable
           list={courseSections}
           setList={setCourseSections}
@@ -233,10 +233,10 @@ export default function RenderCourse({
           )}
         </div>
       </div>
-      <div className="col-span-3">
+      <div className="col-span-12 xl:col-span-3">
         <div className="sticky top-24 max-w-xs mx-auto">
           {assignments && (
-            <div>
+            <div className="px-2 overflow-hidden">
               <h2 className="text-center font-bold text-2xl">Assignments</h2>
               {assignments.map((assignment) => (
                 <Link

@@ -125,10 +125,10 @@ export default function RenderCourseSection({
   );
 
   return (
-    <section className="max-w-xl mx-auto mb-20">
+    <section className="w-full md:max-w-xl mx-auto mb-20">
       <header
         className={classNames(
-          "flex p-5 rounded-xl text-white",
+          "flex p-5 md:rounded-xl text-white",
           colorMap.get(courseSection.color as string)
         )}
       >
