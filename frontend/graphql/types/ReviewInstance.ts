@@ -133,7 +133,7 @@ export const ReviewInstancesMutation = extendType({
           where: {
             id: args.reviewInstanceId,
           },
-          data: updatedReviewInstance,
+          data: { ...updatedReviewInstance, lastReview: new Date() },
         });
       },
     });

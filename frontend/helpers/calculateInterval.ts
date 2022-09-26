@@ -1,3 +1,4 @@
+import clamp from "@/helpers/clamp";
 import daysBetween from "@/helpers/daysBetween";
 import type { Interval } from "@/types";
 import type { LearningStatus } from "@prisma/client";
@@ -69,6 +70,7 @@ const inMinutes = (n: number) => {
 const calculateInterval = (
   reviewInstance: {
     lastReview: Date | null;
+    nextReview: Date;
     learningStatus: LearningStatus;
     stepsIndex: number;
     ease: number;
@@ -78,6 +80,15 @@ const calculateInterval = (
 ): Interval | null => {
   const daysSinceLastReview = reviewInstance.lastReview
     ? daysBetween(reviewInstance.lastReview, new Date())
+    : 0;
+
+  const MINIMUM_REMEMBERED_INTERVAL = reviewInstance.lastReview
+    ? Math.max(
+        Math.floor(
+          daysBetween(reviewInstance.lastReview, reviewInstance.nextReview)
+        ),
+        0
+      )
     : 0;
 
   switch (reviewInstance.learningStatus) {
@@ -145,9 +156,10 @@ const calculateInterval = (
           };
         }
         case "HARD": {
-          const interval = Math.min(
-            settings.MAXIMUM_INTERVAL,
-            (daysSinceLastReview * 1.2 * settings.INTERVAL_MODIFIER) / 100
+          const interval = clamp(
+            (daysSinceLastReview * 1.2 * settings.INTERVAL_MODIFIER) / 100,
+            MINIMUM_REMEMBERED_INTERVAL,
+            settings.MAXIMUM_INTERVAL
           );
           return {
             minutes: interval * daysToMinutes,
@@ -161,11 +173,12 @@ const calculateInterval = (
           };
         }
         case "GOOD": {
-          const interval = Math.min(
-            settings.MAXIMUM_INTERVAL,
+          const interval = clamp(
             (((daysSinceLastReview * reviewInstance.ease) / 100) *
               settings.INTERVAL_MODIFIER) /
-              100
+              100,
+            MINIMUM_REMEMBERED_INTERVAL,
+            settings.MAXIMUM_INTERVAL
           );
           return {
             minutes: interval * daysToMinutes,
@@ -175,13 +188,14 @@ const calculateInterval = (
           };
         }
         case "EASY": {
-          const interval = Math.min(
-            settings.MAXIMUM_INTERVAL,
+          const interval = clamp(
             (((((daysSinceLastReview * reviewInstance.ease) / 100) *
               settings.EASY_BONUS) /
               100) *
               settings.INTERVAL_MODIFIER) /
-              100
+              100,
+            MINIMUM_REMEMBERED_INTERVAL,
+            settings.MAXIMUM_INTERVAL
           );
           return {
             minutes: interval * daysToMinutes,
