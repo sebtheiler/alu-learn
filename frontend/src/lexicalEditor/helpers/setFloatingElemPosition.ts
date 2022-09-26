@@ -33,13 +33,6 @@ export function setFloatingElemPosition(
   const anchorElementRect = anchorElem.getBoundingClientRect();
   const editorScrollerRect = scrollerElem.getBoundingClientRect();
 
-  console.log({
-    targetRect,
-    floatingElemRect,
-    anchorElementRect,
-    editorScrollerRect,
-  });
-
   let top =
     targetRect.y - floatingElemRect.height - verticalGap + verticalOffset;
   let left = targetRect.left - horizontalOffset;
@@ -54,7 +47,6 @@ export function setFloatingElemPosition(
 
   top -= anchorElementRect.y;
   left -= anchorElementRect.left;
-  console.log({ top, left });
 
   floatingElem.style.opacity = "1";
   floatingElem.style.top = `${top}px`;

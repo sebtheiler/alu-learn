@@ -28,6 +28,10 @@ const textPairs = [
     "Does Alu have pre-made flashcards?",
     "Yes! Alu has existing flashcards for 5+ AP Exams",
   ],
+  [
+    "How does Alu organize its flashcards?",
+    "Alu uses a skill tree which organizes flashcards into sections and sub sections. This allows you to easily study any unit for a course",
+  ],
 ];
 
 const exampleReviewInstances = textPairs.map(([front, back], i) => ({
@@ -56,7 +60,6 @@ export default function StudyingDemo() {
 
   const updateCard = (correct: boolean) => {
     return (e: React.MouseEvent) => {
-      console.log(correct);
       e.preventDefault();
 
       setRevealAnswer(false);
@@ -89,7 +92,9 @@ export default function StudyingDemo() {
       {!hasClicked && (
         <div className="w-[20rem] mx-auto">
           <div className="absolute -translate-y-6 -translate-x-20 w-20 h-20 bg-red-500 rounded-full flex items-center justify-center">
-            <p className="text-white italic">Click me!</p>
+            <p className="text-white italic font-bold -rotate-[20deg]">
+              Click me!
+            </p>
           </div>
         </div>
       )}

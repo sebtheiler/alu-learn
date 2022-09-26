@@ -1,18 +1,16 @@
-import { authOptions } from "./api/auth/[...nextauth]";
+import getAuthServerSession from "helpers/getAuthServerSession";
 import getUserSSR from "helpers/getUserSSR";
 import type { GetServerSideProps, NextPage } from "next";
-import { unstable_getServerSession } from "next-auth";
 
 const Index: NextPage = () => <div />;
 
 export default Index;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const data = await getAuthServerSession(context);
+  if (data.props) return data;
+  const { session } = data;
+
   const { username } = (await getUserSSR(session, { username: true })) ?? {};
 
   if (username) {

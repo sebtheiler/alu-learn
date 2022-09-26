@@ -249,7 +249,6 @@ export default function AluBotGamePage({
       setOptions(["Yes", "No"]);
     })();
   }, [sendText, sentInitialTexts]);
-  console.log(texts);
 
   return (
     <>

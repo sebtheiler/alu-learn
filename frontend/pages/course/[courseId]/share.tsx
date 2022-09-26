@@ -1,11 +1,10 @@
 import ShareCoursePage from "@/pages/ShareCoursePage";
 import type { ShareCoursePageProps } from "@/pages/ShareCoursePage";
+import getAuthServerSession from "helpers/getAuthServerSession";
 import getUserSSR from "helpers/getUserSSR";
 import isCourseOwner from "helpers/isCourseOwner";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 import type { NextPage } from "types";
 
 const ShareCourse: NextPage<ShareCoursePageProps> = (
@@ -17,11 +16,10 @@ export default ShareCourse;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { courseId } = context.query;
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const data = await getAuthServerSession(context);
+  if (data.props) return data;
+  const { session } = data;
+
   const user = await getUserSSR(session, { email: true, id: true });
 
   const course = await prisma.course.findUnique({

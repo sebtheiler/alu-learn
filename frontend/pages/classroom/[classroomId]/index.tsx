@@ -1,13 +1,12 @@
-import { authOptions } from "../../api/auth/[...nextauth]";
 import StudentClassroomPage from "@/pages/StudentClassroomPage";
 import type { StudentClassroomPageProps } from "@/pages/StudentClassroomPage";
 import TeacherClassroomPage from "@/pages/TeacherClassroomPage";
 import type { TeacherClassroomPageProps } from "@/pages/TeacherClassroomPage";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
+import getAuthServerSession from "helpers/getAuthServerSession";
 import getUserSSR from "helpers/getUserSSR";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
 import type { NextPage } from "types";
 
 type ClassroomPageProps =
@@ -31,11 +30,9 @@ Classes.authRequired = true;
 export default Classes;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const data = await getAuthServerSession(context);
+  if (data.props) return data;
+  const { session } = data;
   const user = await getUserSSR(session, { id: true, userType: true });
   const { classroomId } = context.query;
 

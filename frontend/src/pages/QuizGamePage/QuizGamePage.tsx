@@ -108,8 +108,6 @@ export default function QuizGamePage({ reviewInstances }: QuizGamePageProps) {
     router.replace(router.asPath);
   };
 
-  console.log(questions);
-
   return (
     <>
       <SEO

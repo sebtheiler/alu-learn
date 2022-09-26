@@ -1,11 +1,10 @@
 import prisma from "../lib/prisma";
-import { authOptions } from "./api/auth/[...nextauth]";
 import HomePage from "@/pages/HomePage";
 import type { HomePageProps } from "@/pages/HomePage";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
+import getAuthServerSession from "helpers/getAuthServerSession";
 import getUserSSR from "helpers/getUserSSR";
 import type { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
 import type { NextPage } from "types";
 
 const Home: NextPage<HomePageProps> = (props: HomePageProps) => (
@@ -16,11 +15,10 @@ Home.authRequired = true;
 export default Home;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const data = await getAuthServerSession(context);
+  if (data.props) return data;
+  const { session } = data;
+
   const user = await getUserSSR(session, {
     numReviewsDoneToday: true,
     targetNumReviews: true,

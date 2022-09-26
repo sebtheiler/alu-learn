@@ -1,10 +1,9 @@
-import { authOptions } from "./api/auth/[...nextauth]";
 import ArchivedPage from "@/pages/ArchivedPage";
 import type { ArchivedPageProps } from "@/pages/ArchivedPage";
+import getAuthServerSession from "helpers/getAuthServerSession";
 import getUserSSR from "helpers/getUserSSR";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
 import type { NextPage } from "types";
 
 const Archived: NextPage<ArchivedPageProps> = (props: ArchivedPageProps) => (
@@ -15,11 +14,10 @@ Archived.authRequired = true;
 export default Archived;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const data = await getAuthServerSession(context);
+  if (data.props) return data;
+  const { session } = data;
+
   const user = await getUserSSR(session, { id: true });
 
   const archivedCourses = user

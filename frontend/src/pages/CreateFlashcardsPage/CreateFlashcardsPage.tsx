@@ -236,7 +236,7 @@ export default function CreateFlashcardsPage({
                 ))}
               </div>
             ))}
-            {history.length > 0 && (
+            {/* {history.length > 0 && (
               <div>
                 <hr className="my-5 max-w-xs" />
                 <Select
@@ -254,7 +254,7 @@ export default function CreateFlashcardsPage({
                   id="history"
                 />
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>

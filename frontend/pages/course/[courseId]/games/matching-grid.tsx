@@ -1,11 +1,10 @@
 import MatchingGridGamePage from "@/pages/MatchingGridGamePage";
 import type { MatchingGridGamePageProps } from "@/pages/MatchingGridGamePage";
 import getGameReviewInstances from "course/games";
+import getAuthServerSession from "helpers/getAuthServerSession";
 import getUserSSR from "helpers/getUserSSR";
 import type { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 import type { NextPage } from "types";
 
 const MatchingGridGame: NextPage<MatchingGridGamePageProps> = (
@@ -18,11 +17,9 @@ export default MatchingGridGame;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { courseId, gridSize, flashcardsType } = context.query;
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const data = await getAuthServerSession(context);
+  if (data.props) return data;
+  const { session } = data;
   const user = await getUserSSR(session, { id: true });
   if (!session || !user) signIn();
   if (typeof gridSize !== "string") throw new Error("Invalid grid size");

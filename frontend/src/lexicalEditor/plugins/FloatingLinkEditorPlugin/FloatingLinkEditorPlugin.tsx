@@ -87,7 +87,6 @@ function FloatingLinkEditor({
         rect = domRange.getBoundingClientRect();
       }
 
-      console.log(anchorElem);
       setFloatingElemPosition(rect, editorElem, anchorElem, { verticalOffset });
       setLastSelection(selection);
     } else if (!activeElement || activeElement.className !== styles.linkInput) {

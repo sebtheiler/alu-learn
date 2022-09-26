@@ -1,8 +1,7 @@
-import { authOptions } from "./api/auth/[...nextauth]";
 import SettingsPage, { SettingsPageProps } from "@/pages/SettingsPage";
+import getAuthServerSession from "helpers/getAuthServerSession";
 import getUserSSR from "helpers/getUserSSR";
 import type { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
 import { signIn } from "next-auth/react";
 import type { NextPage } from "types";
 
@@ -14,11 +13,10 @@ Settings.authRequired = true;
 export default Settings;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const data = await getAuthServerSession(context);
+  if (data.props) return data;
+  const { session } = data;
+
   if (!session) {
     signIn();
   }

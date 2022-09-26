@@ -1,10 +1,9 @@
 import StudyFlashcardsPage from "@/pages/StudyFlashcardsPage";
 import type { StudyFlashcardsPageProps } from "@/pages/StudyFlashcardsPage";
 import getStudyReviewInstances from "course/study";
+import getAuthServerSession from "helpers/getAuthServerSession";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 import type { NextPage } from "types";
 
 const StudyFlashcards: NextPage<StudyFlashcardsPageProps> = (
@@ -16,13 +15,12 @@ export default StudyFlashcards;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { assignmentId, studyAhead: studyAheadRaw } = context.query;
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
   const studyAhead =
     typeof studyAheadRaw === "string" && studyAheadRaw.toLowerCase() === "true";
+
+  const data = await getAuthServerSession(context);
+  if (data.props) return data;
+  const { session } = data;
 
   const assignment = await prisma.assignment.findFirst({
     where: {
@@ -33,14 +31,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             {
               students: {
                 some: {
-                  email: session?.user?.email,
+                  email: session.user?.email,
                 },
               },
             },
             {
               teachers: {
                 some: {
-                  email: session?.user?.email,
+                  email: session.user?.email,
                 },
               },
             },
@@ -77,6 +75,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   );
 
   const studyData = await getStudyReviewInstances(context, {
+    session,
     courseId: courseId as string,
     studyAhead,
     subSectionIds,

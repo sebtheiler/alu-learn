@@ -7,9 +7,7 @@ import getUserSSR from "helpers/getUserSSR";
 import isCourseUser from "helpers/isCourseUser";
 import prisma from "lib/prisma";
 import type { GetServerSidePropsContext } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { signIn } from "next-auth/react";
-import { authOptions } from "pages/api/auth/[...nextauth]";
+import type { Session } from "next-auth";
 
 interface PartialReviewInstance {
   flashcardId: string;
@@ -85,12 +83,17 @@ const generateReviewInstances = (
 const getStudyReviewInstances = async (
   context: GetServerSidePropsContext,
   {
+    session,
     courseId,
     courseSectionSlug,
     subSectionSlug,
     subSectionIds,
     studyAhead,
   }: {
+    /**
+     * Session
+     */
+    session: Session;
     /**
      * ID of the course to study (has all the flashcards)
      */
@@ -118,13 +121,6 @@ const getStudyReviewInstances = async (
   reviewInstances: Partial<ReviewInstance>[];
   intervals: Intervals;
 } | null> => {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
-  if (!session) signIn();
-
   // Check that the user is a user of the course
   if (!(await isCourseUser(courseId, session?.user?.email))) {
     // If they have access, add them as a user
