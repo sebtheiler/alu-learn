@@ -24,12 +24,11 @@ export default function SelectCourse({
       searchCourses: Query["searchCourses"];
     },
     QuerySearchCoursesArgs
-  >(SearchCourses);
+  >(SearchCourses, { variables: { title: debouncedQuery } });
 
   useEffect(() => {
-    if (debouncedQuery.length >= 3 && debouncedQuery === query)
-      searchCourses({ title: query });
-  }, [debouncedQuery, query, searchCourses]);
+    if (debouncedQuery.length >= 3 && debouncedQuery === query) searchCourses();
+  }, [debouncedQuery, query, searchedCourses, searchCourses]);
 
   if (selectedCourseId) {
     return (
