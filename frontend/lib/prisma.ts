@@ -25,9 +25,19 @@ async function main() {
       if (params.action === "create") {
         // Generate a username for the user if one is not specified
         if (!params.args.data.username) {
-          const newUsernameBase = params.args.data.name
-            .toLowerCase()
-            .replaceAll(" ", "");
+          let newUsernameBase = "user";
+          try {
+            if (params.args.data.name) {
+              newUsernameBase = params.args.data.name
+                .toLowerCase()
+                .replaceAll(" ", "");
+            } else if (params.args.data.email) {
+              newUsernameBase = params.args.email.split("@")[0].toLowerCase();
+            }
+          } catch {
+            newUsernameBase = "user";
+          }
+
           let newUsername = newUsernameBase;
           while (
             (await prisma.user.count({ where: { username: newUsername } })) > 0
@@ -36,6 +46,17 @@ async function main() {
               newUsernameBase + Math.floor(Math.random() * 1000).toString();
           }
           params.args.data.username = newUsername;
+        }
+
+        // If no name is specified, default to using their email as a name
+        if (!params.args.data.name) {
+          if (params.args.email) {
+            params.args.data.name = params.args.email
+              .split("@")[0]
+              .toLowerCase();
+          } else {
+            params.args.data.name = "User";
+          }
         }
 
         // If the user is from a partnered organization, give them pro mode

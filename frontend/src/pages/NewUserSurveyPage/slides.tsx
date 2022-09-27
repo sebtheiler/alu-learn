@@ -1,5 +1,9 @@
 import type { Question } from "./types";
+import Button from "@/atoms/Button";
+import TextInput from "@/atoms/TextInput";
 import ChoiceSelect from "@/components/ChoiceSelect";
+import { getElementsVals } from "@/helpers/getElementsVals";
+import type { User } from "@/types";
 import {
   faGraduationCap,
   faNewspaper,
@@ -18,7 +22,8 @@ export default function useSlides(
     question: Question | null,
     numSlides: number
   ) => (response: string | number | boolean) => Promise<void>,
-  userType: "STUDENT" | "TEACHER" | undefined
+  userType: "STUDENT" | "TEACHER" | undefined,
+  user: User
 ) {
   // The value of slides depends on the answers to questions in the slides
   const slides = useMemo(() => {
@@ -26,9 +31,41 @@ export default function useSlides(
      * Total, predetermined number of slides
      * Must be predetermined to avoid circular depndency
      */
-    const numSlides = 2 + (userType === "STUDENT" ? 3 : 1) + 1;
+    const numSlides =
+      (user.name ? 0 : 1) + 2 + (userType === "STUDENT" ? 3 : 1) + 1;
 
-    let slides = [
+    let slides: React.ReactElement[] = [];
+
+    if (!user.name)
+      slides.push(
+        <>
+          <h4 className="text-center">What&apos;s your name?</h4>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleNext(
+                "name",
+                numSlides
+              )(getElementsVals(e.target as HTMLFormElement, ["name"]).name);
+            }}
+            className="max-w-sm mt-3 mx-auto"
+          >
+            <TextInput
+              label="Your Name"
+              autoComplete="name"
+              className="mb-3"
+              name="name"
+              autoFocus
+              required
+            />
+            <Button type="submit" block>
+              Confirm
+            </Button>
+          </form>
+        </>
+      );
+
+    slides = slides.concat([
       <>
         <h4 className="text-center">Are you a student or a teacher?</h4>
         <ChoiceSelect
@@ -103,7 +140,7 @@ export default function useSlides(
           includeOther
         />
       </>,
-    ];
+    ]);
 
     if (userType === "STUDENT") {
       // Questions only shown if the user is a student
@@ -198,7 +235,7 @@ export default function useSlides(
     ]);
 
     return slides;
-  }, [handleNext, userType]);
+  }, [handleNext, userType, user.name]);
 
   return slides;
 }

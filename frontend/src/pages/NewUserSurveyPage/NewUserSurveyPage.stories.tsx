@@ -9,8 +9,8 @@ export default {
   decorators: [withNavbar, withFullContext],
 };
 
-const Template: ComponentStory<typeof NewUserSurveyPage> = () => (
-  <NewUserSurveyPage />
+const Template: ComponentStory<typeof NewUserSurveyPage> = (props) => (
+  <NewUserSurveyPage {...props} />
 );
 
 export const NewUserSurveyPageExample = Template.bind({});

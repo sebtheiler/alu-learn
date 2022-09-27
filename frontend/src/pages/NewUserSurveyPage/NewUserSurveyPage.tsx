@@ -4,12 +4,16 @@ import ProgressBar from "@/components/ProgressBar";
 import CreateNewUserSurveyResponse from "@/graphql/CreateNewUserSurveyResponse";
 import UpdateUser from "@/graphql/UpdateUser";
 import SEO from "@/helpers/SEO";
-import { NewUserSurveyResponse } from "@/types";
+import type { NewUserSurveyResponse, User } from "@/types";
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useCallback, useState } from "react";
 
-export default function NewUserSurveyPage() {
+export interface NewUserSurveyPageProps {
+  user: User;
+}
+
+export default function NewUserSurveyPage({ user }: NewUserSurveyPageProps) {
   const [slideNum, setSlideNum] = useState(0);
   const [answers, setAnswers] = useState<NewUserSurveyResponse>({
     timezoneOffset: new Date().getTimezoneOffset(),
@@ -51,7 +55,8 @@ export default function NewUserSurveyPage() {
 
   const slides = useSlides(
     handleNext,
-    answers.userType as "STUDENT" | "TEACHER"
+    answers.userType as "STUDENT" | "TEACHER",
+    user
   );
 
   return (

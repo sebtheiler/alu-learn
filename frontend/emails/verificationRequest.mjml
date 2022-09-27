@@ -1,0 +1,30 @@
+<mj-text font-size="20px" align="center" font-weight="bold">
+  <p>Sign in to Alu Learn</p>
+</mj-text>
+<mj-group width="100%">
+  <mj-column>
+    <mj-button
+      background-color="#6A21BC"
+      align="center"
+      color="#ffffff"
+      font-size="17px"
+      href="{{url}}"
+      width="300px"
+      border-radius="999px"
+    >
+      Sign in
+    </mj-button>
+  </mj-column>
+</mj-group>
+<mj-text align="center">
+  <p class="text-paragraph">
+    If you did not request this email, you can safely ignore it.
+  </p>
+</mj-text>
+<mj-text>
+  <p class="text-paragraph">
+    <em>What about a password‽</em> Alu doesn't use passwords. Instead, it uses
+    "magic links" that are emailed to you whenever you log in. This is both more
+    secure and easier to remember.
+  </p>
+</mj-text>

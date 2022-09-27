@@ -11,16 +11,9 @@ import { useState } from "react";
 
 const onRegister = async (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
-  console.log(
-    getElementsVals(e.target as HTMLFormElement, [
-      "age",
-      "firstName",
-      "lastName",
-      "username",
-      "email",
-      "password",
-    ])
-  );
+  const { email } = getElementsVals(e.target as HTMLFormElement, ["email"]);
+
+  await signIn("email", { email });
 };
 
 /**
@@ -28,9 +21,7 @@ const onRegister = async (e: React.FormEvent<HTMLFormElement>) => {
  */
 export default function RegisterModal() {
   const { registerModalOpen, setRegisterModalOpen } = useGlobalModalStore();
-
   const [continueWithEmail, setContinueWithEmail] = useState(false);
-  const [age, setAge] = useState<number>(111);
 
   return (
     <Modal
@@ -70,55 +61,10 @@ export default function RegisterModal() {
         >
           <hr className="my-3" />
           <TextInput
-            label="Age"
-            name="age"
-            type="number"
-            className="mb-2"
-            required
-            onBlur={(e) =>
-              setAge(e.target.value.length > 0 ? parseInt(e.target.value) : 111)
-            }
-          />
-          {age >= 13 && (
-            <div className="mb-2 grid grid-cols-2 gap-3">
-              <TextInput
-                label="First Name"
-                name="firstName"
-                autoComplete="given-name"
-                className=""
-                required
-              />
-              <TextInput
-                label="Last Name"
-                name="lastName"
-                autoComplete="family-name"
-                className=""
-                required
-              />
-            </div>
-          )}
-          <TextInput
-            label={
-              age >= 13 ? "Username" : "Username (don't use your real name!)"
-            }
-            name="username"
-            autoComplete="username"
-            className="mb-2"
-            required
-          />
-          <TextInput
-            label={age >= 13 ? "Email" : "Parent's Email"}
+            label="Email"
             name="email"
             autoComplete="email"
             type="email"
-            className="mb-2"
-            required
-          />
-          <TextInput
-            label="Password"
-            name="password"
-            autoComplete="new-password"
-            type="password"
             className="mb-2"
             required
           />

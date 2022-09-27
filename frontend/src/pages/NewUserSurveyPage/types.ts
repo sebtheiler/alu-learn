@@ -1,3 +1,3 @@
 import type { NewUserSurveyResponse } from "@/types";
 
-export type Question = keyof NewUserSurveyResponse;
+export type Question = keyof NewUserSurveyResponse | "name";

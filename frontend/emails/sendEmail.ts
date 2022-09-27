@@ -5,7 +5,7 @@ const EMAIL_FROM = process.env.EMAIL_FROM;
 if (!EMAIL_FROM) throw new Error("`.env` must specify `EMAIL_FROM`");
 
 const transporter = createTransport({
-  host: "smtp.gmail.com",
+  host: process.env.EMAIL_SERVER,
   port: 465,
   secure: true,
   auth: {
@@ -35,18 +35,14 @@ const sendEmail = async ({
   /** The HTML message */
   html: string;
 }) => {
-  try {
-    await transporter.verify();
-    await transporter.sendMail({
-      from: EMAIL_FROM,
-      to,
-      subject,
-      text: "Please use an HTML-enabled client to view this email",
-      html,
-    });
-  } catch (e) {
-    console.error(e);
-  }
+  await transporter.verify();
+  return await transporter.sendMail({
+    from: EMAIL_FROM,
+    to,
+    subject,
+    text: "Please use an HTML-enabled client to view this email",
+    html,
+  });
 };
 
 export default sendEmail;

@@ -7,14 +7,18 @@
     {{newStreak}} days! You got this!
   </p>
 </mj-text>
-<mj-button
-  background-color="#6A21BC"
-  align="center"
-  color="#ffffff"
-  font-size="17px"
-  href="https://alulearn.com/l/study"
-  width="300px"
-  border-radius="999px"
->
-  Study Now
-</mj-button>
+<mj-group width="100%">
+  <mj-column>
+    <mj-button
+      background-color="#6A21BC"
+      align="center"
+      color="#ffffff"
+      font-size="17px"
+      href="https://alulearn.com/l/study"
+      width="300px"
+      border-radius="999px"
+    >
+      Study Now
+    </mj-button>
+  </mj-column>
+</mj-group>
