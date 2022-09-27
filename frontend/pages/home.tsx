@@ -3,6 +3,7 @@ import HomePage from "@/pages/HomePage";
 import type { HomePageProps } from "@/pages/HomePage";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
 import getAuthServerSession from "helpers/getAuthServerSession";
+import getRequestMetadata from "helpers/getRequestMetadata";
 import getUserSSR from "helpers/getUserSSR";
 import type { GetServerSideProps } from "next";
 import type { NextPage } from "types";
@@ -44,13 +45,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     })) === 0
   ) {
-    const forwarded = context.req.headers["x-forwarded-for"] as
-      | string
-      | undefined;
-    const remoteAddr = forwarded
-      ? forwarded.split(/, /)[0]
-      : context.req.socket.remoteAddress;
-    const userAgent = context.req.headers["user-agent"];
+    const { remoteAddr, userAgent } = getRequestMetadata(context.req);
 
     await prisma.userVisit.create({
       data: {

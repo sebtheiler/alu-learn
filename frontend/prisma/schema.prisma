@@ -59,6 +59,7 @@ model User {
 
   newUserSurveyResponse NewUserSurveyResponse?
   dailyVisits           UserVisit[]
+  urlHits               UrlHit[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -145,6 +146,28 @@ model UserVisit {
   remoteAddr String?
   userAgent  String?
   timestamp  DateTime @default(now()) @db.Timestamptz(3)
+}
+
+// ## URL Shortener
+model ShortUrl {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  destination String
+  hits        UrlHit[]
+}
+
+model UrlHit {
+  id String @id @default(cuid())
+
+  shortUrl   ShortUrl @relation(fields: [shortUrlId], references: [id], onDelete: Cascade)
+  shortUrlId String
+  user       User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String?
+
+  timestamp  DateTime @default(now())
+  userAgent  String?
+  remoteAddr String?
+  referer    String?
 }
 
 // # Courses
