@@ -6,17 +6,39 @@ import type { LexicalCommand, CommandPayloadType } from "lexical";
 import { useMemo } from "react";
 
 interface EditorButtonProps {
+  /**
+   * Command to dispatch when the button is clicked
+   */
   command: LexicalCommand<any>;
+  /**
+   * Payload of the dispatched command
+   */
   payload?: CommandPayloadType<any>;
+  /**
+   * Title to display on hover
+   */
   title: string;
+  /**
+   * Keyboard shortcut. Only displays the shortcut; logic must be written elsewhere
+   */
   shortcut?: string;
+  /**
+   * Font Awesome icon to display
+   */
   faIcon: IconProp;
+  /**
+  /**
+   * Is the button active?
+   */
   isActive?: boolean;
+  /**
+   * Is the button disabled?
+   */
   disabled?: boolean;
 }
 
 /**
- *
+ * Displays a button that dispatches an editor command. Used in the editor toolbar
  */
 export default function EditorButton({
   command,

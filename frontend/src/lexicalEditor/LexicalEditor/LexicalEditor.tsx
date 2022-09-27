@@ -1,5 +1,7 @@
 import AutoLinkPlugin from "../plugins/AutoLinkPlugin";
 import ClearEditorPlugin from "../plugins/ClearEditorPlugin";
+import ClozeDeletionPlugin from "../plugins/ClozeDeletionPlugin/ClozeDeletionPlugin";
+import { ClozeDeletionNode } from "../plugins/ClozeDeletionPlugin/nodes";
 import EquationPlugin from "../plugins/EquationPlugin";
 import { EquationNode } from "../plugins/EquationPlugin/nodes";
 import FlashcardLinkPlugin from "../plugins/FlashcardLinkPlugin/FlashcardLinkPlugin";
@@ -94,6 +96,7 @@ const theme = {
   quote: styles.quote,
   link: styles.link,
   flashcardLink: styles.flashcardLink,
+  clozeDeletion: styles.clozeDeletion,
 };
 
 const nodes = [
@@ -107,6 +110,7 @@ const nodes = [
   EquationNode,
   ImageNode,
   FlashcardLinkNode,
+  ClozeDeletionNode,
 ];
 
 interface LexicalEditorProps {
@@ -236,6 +240,7 @@ export default function LexicalEditor({
           ""
         )}
         <FlashcardLinkPlugin />
+        <ClozeDeletionPlugin />
         <EquationPlugin />
         <ImagePlugin />
 

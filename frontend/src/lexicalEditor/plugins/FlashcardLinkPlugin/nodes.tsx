@@ -1,4 +1,4 @@
-// export type SerializedFlashcardLinkNode = Spread<
+import $getAncestor from "@/lexicalEditor/helpers/getAncestor";
 import { addClassNamesToElement } from "@lexical/utils";
 import {
   $getSelection,
@@ -11,9 +11,8 @@ import {
   NodeKey,
   NodeSelection,
   RangeSelection,
-  SerializedElementNode,
-  Spread,
 } from "lexical";
+import type { SerializedElementNode, Spread } from "lexical";
 
 export type SerializedFlashcardLinkNode = Spread<
   {
@@ -241,17 +240,4 @@ export function toggleFlashcardLink(flashcardId: string): void {
 
 function $getFlashcardLinkAncestor(node: LexicalNode): null | LexicalNode {
   return $getAncestor(node, (ancestor) => $isFlashcardLinkNode(ancestor));
-}
-
-function $getAncestor(
-  node: LexicalNode,
-  predicate: (ancestor: LexicalNode) => boolean
-): null | LexicalNode {
-  let parent: null | LexicalNode = node;
-  while (
-    parent !== null &&
-    (parent = parent.getParent()) !== null &&
-    !predicate(parent)
-  );
-  return parent;
 }

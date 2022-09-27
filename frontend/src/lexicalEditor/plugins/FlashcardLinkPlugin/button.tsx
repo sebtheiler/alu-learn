@@ -110,12 +110,10 @@ export default function FlashcardLinkButton({
       <button
         className={classNames(
           "w-6 h-6 mx-1 rounded-md hover:bg-gray-200",
-          isActive && "bg-blue-100 hover:bg-blue-100",
-          !isPro && "hover:cursor-not-allowed text-gray-400"
+          isActive && "bg-blue-100 hover:bg-blue-100"
         )}
         title="Flashcard Link"
         aria-label="Flashcard Link"
-        disabled={!isPro}
         tabIndex={-1}
       >
         <FontAwesomeIcon icon={faAnchor} />

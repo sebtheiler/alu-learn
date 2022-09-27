@@ -1,3 +1,5 @@
+import { TOGGLE_CLOZE_DELETION_COMMAND } from "../ClozeDeletionPlugin/ClozeDeletionPlugin";
+import { $isClozeDeletionNode } from "../ClozeDeletionPlugin/nodes";
 import InsertEquationModal from "../EquationPlugin/modal";
 import FlashcardLinkButton from "../FlashcardLinkPlugin/button";
 import { $isFlashcardLinkNode } from "../FlashcardLinkPlugin/nodes";
@@ -9,6 +11,7 @@ import EditorButton from "@/lexicalEditor/EditorButton";
 import { getSelectedNode } from "@/lexicalEditor/helpers/getSelectedNode";
 import {
   faAngleDown,
+  faAsterisk,
   faBold,
   faCode,
   faHeading,
@@ -99,6 +102,7 @@ export default function ToolbarPlugin({ clearEditorRef }) {
   const [isCode, setIsCode] = useState(false);
   const [isLink, setIsLink] = useState(false);
   const [isFlashcardLink, setIsFlashcardLink] = useState(false);
+  const [isClozeDeletion, setIsClozeDeletion] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
@@ -138,6 +142,13 @@ export default function ToolbarPlugin({ clearEditorRef }) {
         setIsFlashcardLink(true);
       } else {
         setIsFlashcardLink(false);
+      }
+
+      // ...and cloze
+      if ($isClozeDeletionNode(parent) || $isClozeDeletionNode(node)) {
+        setIsClozeDeletion(true);
+      } else {
+        setIsClozeDeletion(false);
       }
 
       // Update block format
@@ -257,6 +268,13 @@ export default function ToolbarPlugin({ clearEditorRef }) {
       />
       <VL />
       <FlashcardLinkButton isActive={isFlashcardLink} />
+      <EditorButton
+        command={TOGGLE_CLOZE_DELETION_COMMAND}
+        payload={isClozeDeletion ? null : { color: "YELLOW", hint: "" }}
+        faIcon={faAsterisk}
+        title="Cloze"
+        isActive={isClozeDeletion}
+      />
       <VL />
       <InsertDropdown editor={editor} />
       <VL />
