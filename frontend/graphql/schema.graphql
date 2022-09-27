@@ -323,7 +323,7 @@ type Query {
   searchCourses(title: String!): [Course]
 
   """Finds flashcards based on some criteria"""
-  searchFlashcards(courseId: String, text: String): [Flashcard]
+  searchFlashcards(courseId: String!, text: String!): [Flashcard]
 
   """Search for users"""
   searchUsers(name: String!): [User]

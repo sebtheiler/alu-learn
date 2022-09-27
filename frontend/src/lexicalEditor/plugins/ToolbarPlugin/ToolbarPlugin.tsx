@@ -1,4 +1,6 @@
 import InsertEquationModal from "../EquationPlugin/modal";
+import FlashcardLinkButton from "../FlashcardLinkPlugin/button";
+import { $isFlashcardLinkNode } from "../FlashcardLinkPlugin/nodes";
 import InsertImageModal from "../ImagePlugin/modal";
 import Dropdown from "@/atoms/Dropdown";
 import classNames from "@/helpers/classNames";
@@ -96,6 +98,7 @@ export default function ToolbarPlugin({ clearEditorRef }) {
   const [isUnderline, setIsUnderline] = useState(false);
   const [isCode, setIsCode] = useState(false);
   const [isLink, setIsLink] = useState(false);
+  const [isFlashcardLink, setIsFlashcardLink] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
@@ -128,6 +131,13 @@ export default function ToolbarPlugin({ clearEditorRef }) {
         setIsLink(true);
       } else {
         setIsLink(false);
+      }
+
+      // ...and flashcard links
+      if ($isFlashcardLinkNode(parent) || $isFlashcardLinkNode(node)) {
+        setIsFlashcardLink(true);
+      } else {
+        setIsFlashcardLink(false);
       }
 
       // Update block format
@@ -245,6 +255,8 @@ export default function ToolbarPlugin({ clearEditorRef }) {
         title="Link"
         isActive={isLink}
       />
+      <VL />
+      <FlashcardLinkButton isActive={isFlashcardLink} />
       <VL />
       <InsertDropdown editor={editor} />
       <VL />

@@ -2,6 +2,7 @@ import type { Flashcard as PrismaFlashcard, Prisma } from "@prisma/client";
 import canViewCourse from "helpers/canViewCourse";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
+import isCourseUser from "helpers/isCourseUser";
 import isSubSectionOwner from "helpers/isSubSectionOwner";
 import moveObject from "helpers/moveObject";
 import {
@@ -56,34 +57,25 @@ export const FlashcardQuery = extendType({
       type: list(Flashcard),
       description: "Finds flashcards based on some criteria",
       args: {
-        text: stringArg(),
-        courseId: stringArg(),
+        text: nonNull(stringArg()),
+        courseId: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
-        const user = await getUserGQL(ctx);
-        if (!user) return null;
+        const user = await getUserGQL(ctx, { email: true });
+        if (!user || !isCourseUser(args.courseId, user.email, ctx.prisma))
+          return null;
 
-        // Only return flashcards from courses the user is a user of
         const where: Prisma.FlashcardWhereInput = {
-          course: {
-            users: {
-              some: {
-                id: user.id,
-              },
-            },
-          },
-        };
-
-        if (args.text) {
-          where.fields = {
+          fields: {
             contains: args.text,
-          };
-        }
-
-        if (args.courseId) where.courseId = args.courseId;
+            mode: "insensitive",
+          },
+          courseId: args.courseId,
+        };
 
         return ctx.prisma.flashcard.findMany({
           where,
+          take: 50,
         });
       },
     });

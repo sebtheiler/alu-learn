@@ -2,6 +2,8 @@ import AutoLinkPlugin from "../plugins/AutoLinkPlugin";
 import ClearEditorPlugin from "../plugins/ClearEditorPlugin";
 import EquationPlugin from "../plugins/EquationPlugin";
 import { EquationNode } from "../plugins/EquationPlugin/nodes";
+import FlashcardLinkPlugin from "../plugins/FlashcardLinkPlugin/FlashcardLinkPlugin";
+import { FlashcardLinkNode } from "../plugins/FlashcardLinkPlugin/nodes";
 import FloatingLinkEditorPlugin from "../plugins/FloatingLinkEditorPlugin";
 import ImagePlugin from "../plugins/ImagePlugin";
 import { ImageNode } from "../plugins/ImagePlugin/node";
@@ -90,6 +92,7 @@ const theme = {
   code: styles.code,
   quote: styles.quote,
   link: styles.link,
+  flashcardLink: styles.flashcardLink,
 };
 
 const nodes = [
@@ -102,6 +105,7 @@ const nodes = [
   AutoLinkNode,
   EquationNode,
   ImageNode,
+  FlashcardLinkNode,
 ];
 
 interface LexicalEditorProps {
@@ -178,6 +182,7 @@ export default function LexicalEditor({
         ) : (
           ""
         )}
+        <FlashcardLinkPlugin />
         <EquationPlugin />
         <ImagePlugin />
 

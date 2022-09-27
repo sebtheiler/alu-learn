@@ -456,8 +456,8 @@ export type QuerySearchCoursesArgs = {
 
 
 export type QuerySearchFlashcardsArgs = {
-  courseId?: InputMaybe<Scalars['String']>;
-  text?: InputMaybe<Scalars['String']>;
+  courseId: Scalars['String'];
+  text: Scalars['String'];
 };
 
 
