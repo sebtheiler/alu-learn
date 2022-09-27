@@ -86,8 +86,8 @@ export default function Popover({
 
   const triggerAttrs = useMemo(() => {
     switch (trigger) {
-      case "hover":
-        return {
+      case "hover": {
+        const attrs = {
           onMouseEnter: () => {
             setIsPopoverOpen(true);
             onOpenCallback && onOpenCallback();
@@ -97,12 +97,17 @@ export default function Popover({
             onCloseCallback && onCloseCallback();
           },
         };
+        return { button: attrs, popover: attrs };
+      }
       case "click":
         return {
-          onClick: () => {
-            setIsPopoverOpen(true);
-            onOpenCallback && onOpenCallback();
+          button: {
+            onClick: () => {
+              setIsPopoverOpen(true);
+              onOpenCallback && onOpenCallback();
+            },
           },
+          popover: undefined,
         };
     }
   }, [trigger, onOpenCallback, onCloseCallback]);
@@ -116,7 +121,7 @@ export default function Popover({
 
   return (
     <div className="inline">
-      <span ref={setRefEl} {...triggerAttrs}>
+      <span ref={setRefEl} {...triggerAttrs.button}>
         {children}
       </span>
       <Transition
@@ -138,7 +143,7 @@ export default function Popover({
           )}
           // Popper style, attributes, and trigger attributes
           style={popperStyles.popper}
-          {...triggerAttrs}
+          {...triggerAttrs.popover}
           {...attributes.popper}
         >
           {popover}

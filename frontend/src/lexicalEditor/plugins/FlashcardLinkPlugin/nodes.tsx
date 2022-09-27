@@ -43,6 +43,7 @@ export class FlashcardLinkNode extends ElementNode {
 
   createDOM(config: EditorConfig): HTMLSpanElement {
     const element = document.createElement("span");
+    element.dataset.isFlashcardLink = "true";
     element.dataset.flashcardId = this.__flashcardId;
     addClassNamesToElement(element, config.theme.flashcardLink);
     return element;

@@ -4,6 +4,7 @@ import EquationPlugin from "../plugins/EquationPlugin";
 import { EquationNode } from "../plugins/EquationPlugin/nodes";
 import FlashcardLinkPlugin from "../plugins/FlashcardLinkPlugin/FlashcardLinkPlugin";
 import { FlashcardLinkNode } from "../plugins/FlashcardLinkPlugin/nodes";
+import FlashcardLinkPopoverPlugin from "../plugins/FlashcardLinkPlugin/popover";
 import FloatingLinkEditorPlugin from "../plugins/FloatingLinkEditorPlugin";
 import ImagePlugin from "../plugins/ImagePlugin";
 import { ImageNode } from "../plugins/ImagePlugin/node";
@@ -109,18 +110,66 @@ const nodes = [
 ];
 
 interface LexicalEditorProps {
+  /**
+   * Namespace for the editor
+   */
   namespace: string;
+  /**
+   * Is the editor read only? Set to `true` when rendering text
+   */
   readOnly?: boolean;
+  /**
+   * Classname for the wrapping div
+   */
   className?: string;
+  /**
+   * Style for the wrapping div
+   */
   style?: React.CSSProperties;
+  /**
+   * Autofocus the editor?
+   */
   autoFocus?: boolean;
+  /**
+   * Maximum times a list (numbered or bulleted) can be indented
+   */
   maxIndentLevel?: number | undefined;
+  /**
+   * Maximum number of characters allowed in the editor
+   */
   maxLength?: number | undefined;
+  /**
+   * Vertical offset for the floating link editor plugin
+   */
   verticalOffset?: number;
+  /**
+   * Supplies a button that can be clicked to clear the editor.
+   * @example
+   * ```js
+   * const ref = useRef<HTMLButtonElement | null>(null);
+   * <LexicalEditor clearEditorRef={ref} ... />
+   * ref.click(); // clears the editor
+   * ```
+   */
   clearEditorRef?: React.MutableRefObject<HTMLButtonElement | null>;
+  /**
+   * Called whenever the state of the editor changes
+   * @param editorState New state of the editor
+   * @param editor The editor
+   */
   onChange?(editorState: EditorState, editor: Editor): void;
+  /**
+   * If true, tab goes to the next element rather than creating an indent
+   */
   overrideTab?: boolean;
+  /**
+   * Initial state for the editor
+   */
   editorState?: string | null;
+  /**
+   * Disable popovers (e.g., the floating link editor and the flashcard link popover)
+   */
+  disablePopovers?: boolean;
 }
 
 /**
@@ -137,6 +186,7 @@ export default function LexicalEditor({
   verticalOffset = 0,
   clearEditorRef,
   onChange,
+  disablePopovers,
   overrideTab = false,
   editorState = null,
 }: LexicalEditorProps) {
@@ -174,11 +224,14 @@ export default function LexicalEditor({
         />
         <ListPlugin />
         <LinkPlugin />
-        {typeof window !== "undefined" ? (
-          <FloatingLinkEditorPlugin
-            anchorElem={document.body}
-            verticalOffset={verticalOffset}
-          />
+        {typeof window !== "undefined" && !disablePopovers ? (
+          <>
+            <FloatingLinkEditorPlugin
+              anchorElem={document.body}
+              verticalOffset={verticalOffset}
+            />
+            <FlashcardLinkPopoverPlugin anchorElem={document.body} />
+          </>
         ) : (
           ""
         )}
