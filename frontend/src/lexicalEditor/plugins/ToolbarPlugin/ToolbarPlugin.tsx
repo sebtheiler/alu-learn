@@ -11,10 +11,10 @@ import EditorButton from "@/lexicalEditor/EditorButton";
 import { getSelectedNode } from "@/lexicalEditor/helpers/getSelectedNode";
 import {
   faAngleDown,
-  faAsterisk,
   faBold,
   faCode,
   faHeading,
+  faHighlighter,
   faImage,
   faItalic,
   faLink,
@@ -271,7 +271,7 @@ export default function ToolbarPlugin({ clearEditorRef }) {
       <EditorButton
         command={TOGGLE_CLOZE_DELETION_COMMAND}
         payload={isClozeDeletion ? null : { color: "YELLOW", hint: "" }}
-        faIcon={faAsterisk}
+        faIcon={faHighlighter}
         title="Cloze"
         isActive={isClozeDeletion}
       />

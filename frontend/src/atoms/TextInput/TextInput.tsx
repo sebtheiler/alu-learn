@@ -27,6 +27,10 @@ interface TextInputProps {
    */
   name?: string;
   /**
+   * Ref for the input element
+   */
+  ref?: React.LegacyRef<HTMLInputElement>;
+  /**
    * Autocomplete property for the input element
    */
   autoComplete?: string;
@@ -50,6 +54,10 @@ interface TextInputProps {
    * Function to call when the input changes
    */
   onChange?(event: ChangeEvent<HTMLInputElement>): void;
+  /**
+   *
+   */
+  onKeyDown?(event: React.KeyboardEvent<HTMLInputElement>): void;
   /**
    * Function to call when the input is blurred
    */
@@ -85,7 +93,9 @@ export default function TextInput({
   value,
   defaultValue,
   onChange,
+  onKeyDown,
   onBlur,
+  ref,
   autoFocus = false,
   min,
   max,
@@ -102,8 +112,9 @@ export default function TextInput({
         type={type}
         id={id}
         name={name}
+        ref={ref}
         className={classNames(
-          `border-1 peer block w-full appearance-none rounded-full border-gray-300 bg-transparent p-3 text-sm text-gray-900
+          `border-1 peer block w-full appearance-none rounded-full border-gray-300 bg-white p-3 text-sm text-gray-900
           outline-2 focus:ring-alu-primary-purple focus:border-alu-primary-purple focus:outline-alu-primary-purple`,
           disabled && "cursor-not-allowed bg-slate-100"
         )}
@@ -116,6 +127,7 @@ export default function TextInput({
         required={required}
         disabled={disabled}
         autoFocus={autoFocus}
+        onKeyDown={onKeyDown}
         min={min}
         max={max}
       />

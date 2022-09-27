@@ -1,19 +1,9 @@
+import { ClozeColor } from "./colors";
 import { ClozeDeletionNode, toggleClozeDeletion } from "./nodes";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { COMMAND_PRIORITY_EDITOR, createCommand } from "lexical";
 import type { LexicalCommand } from "lexical";
 import { useEffect } from "react";
-
-type ClozeColor =
-  | "BLUE"
-  | "GREEN"
-  | "LIME"
-  | "ORANGE"
-  | "PINK"
-  | "PURPLE"
-  | "RED"
-  | "SKY"
-  | "YELLOW";
 
 type ClozeDeletionPluginPayload = {
   color: ClozeColor;

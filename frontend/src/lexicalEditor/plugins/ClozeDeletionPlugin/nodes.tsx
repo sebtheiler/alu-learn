@@ -1,5 +1,9 @@
+import { colorMap } from "./colors";
 import $getAncestor from "@/lexicalEditor/helpers/getAncestor";
-import { addClassNamesToElement } from "@lexical/utils";
+import {
+  addClassNamesToElement,
+  removeClassNamesFromElement,
+} from "@lexical/utils";
 import {
   $getSelection,
   $isElementNode,
@@ -14,18 +18,6 @@ import {
   Spread,
 } from "lexical";
 import { ElementNode } from "lexical";
-
-const colorMap = new Map([
-  ["BLUE", "bg-blue-500"],
-  ["GREEN", "bg-green-500"],
-  ["LIME", "bg-lime-500"],
-  ["ORANGE", "bg-orange-500"],
-  ["PINK", "bg-pink-500"],
-  ["PURPLE", "bg-purple-500"],
-  ["RED", "bg-red-500"],
-  ["SKY", "bg-sky-500"],
-  ["YELLOW", "bg-yellow-500"],
-]);
 
 export type SerializedClozeDeletionNode = Spread<
   {
@@ -74,6 +66,7 @@ export class ClozeDeletionNode extends ElementNode {
     const color = this.__color;
     if (color !== prevNode.__color) {
       span.dataset.color = color;
+      removeClassNamesFromElement(span, colorMap.get(prevNode.__color));
       addClassNamesToElement(span, colorMap.get(color));
     }
 

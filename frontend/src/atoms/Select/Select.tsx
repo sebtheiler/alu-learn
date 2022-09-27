@@ -3,13 +3,17 @@ import type { Option } from "@/types";
 import { faSort } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Listbox, Transition } from "@headlessui/react";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 interface SelectProps {
   /**
    * List of options to display
    */
   options: Option[];
+  /**
+   * Override the value
+   */
+  value?: string | number;
   /**
    * Value of the default option
    */
@@ -42,6 +46,7 @@ interface SelectProps {
  */
 export default function Select({
   options,
+  value,
   defaultValue,
   label,
   id,
@@ -51,10 +56,19 @@ export default function Select({
 }: SelectProps) {
   const [selectedOption, setSelectedOption] = useState(
     () =>
-      options.filter((option) => option.value === defaultValue)[0] ?? options[0]
+      options.filter((option) => option.value === (defaultValue ?? value))[0] ??
+      options[0]
   );
 
   const componentId = useId();
+
+  // Used when passing in `value`
+  useEffect(() => {
+    if (value)
+      setSelectedOption(
+        options.find((o) => o.value === value) ?? selectedOption
+      );
+  }, [value, selectedOption, options]);
 
   return (
     <Listbox

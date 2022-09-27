@@ -1,6 +1,7 @@
 import AutoLinkPlugin from "../plugins/AutoLinkPlugin";
 import ClearEditorPlugin from "../plugins/ClearEditorPlugin";
 import ClozeDeletionPlugin from "../plugins/ClozeDeletionPlugin/ClozeDeletionPlugin";
+import FloatingClozeDeletionEditorPlugin from "../plugins/ClozeDeletionPlugin/floatingEditor";
 import { ClozeDeletionNode } from "../plugins/ClozeDeletionPlugin/nodes";
 import EquationPlugin from "../plugins/EquationPlugin";
 import { EquationNode } from "../plugins/EquationPlugin/nodes";
@@ -235,6 +236,10 @@ export default function LexicalEditor({
               verticalOffset={verticalOffset}
             />
             <FlashcardLinkPopoverPlugin anchorElem={document.body} />
+            <FloatingClozeDeletionEditorPlugin
+              anchorElem={document.body}
+              verticalOffset={verticalOffset}
+            />
           </>
         ) : (
           ""

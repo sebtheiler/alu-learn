@@ -1,17 +1,11 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-import styles from "./FloatingLinkEditorPlugin.module.scss";
-import { sanitizeUrl } from "@/helpers/sanitizeUrl";
+import { TOGGLE_CLOZE_DELETION_COMMAND } from "./ClozeDeletionPlugin";
+import { ClozeColor, colorOptions } from "./colors";
+import { $isClozeDeletionNode } from "./nodes";
+import Button from "@/atoms/Button";
+import Select from "@/atoms/Select";
+import TextInput from "@/atoms/TextInput";
 import { getSelectedNode } from "@/lexicalEditor/helpers/getSelectedNode";
 import { setFloatingElemPosition } from "@/lexicalEditor/helpers/setFloatingElemPosition";
-import { faPencil } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import {
@@ -25,10 +19,10 @@ import {
   RangeSelection,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
-function FloatingLinkEditor({
+function FloatingClozeDeletionEditor({
   editor,
   anchorElem,
   verticalOffset = 0,
@@ -38,24 +32,28 @@ function FloatingLinkEditor({
   verticalOffset?: number;
 }): JSX.Element {
   const editorRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [linkUrl, setLinkUrl] = useState("");
-  const [isEditMode, setEditMode] = useState(false);
+  const [color, setColor] = useState("");
+  const [hint, setHint] = useState("");
   const [lastSelection, setLastSelection] = useState<
     RangeSelection | GridSelection | NodeSelection | null
   >(null);
 
-  const updateLinkEditor = useCallback(() => {
+  console.log({ color, hint });
+
+  const updateClozeDeletionEditor = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
       const node = getSelectedNode(selection);
       const parent = node.getParent();
-      if ($isLinkNode(parent)) {
-        setLinkUrl(parent.getURL());
-      } else if ($isLinkNode(node)) {
-        setLinkUrl(node.getURL());
+      if ($isClozeDeletionNode(parent)) {
+        setColor(parent.getColor());
+        setHint(parent.getHint());
+      } else if ($isClozeDeletionNode(node)) {
+        setColor(node.getColor());
+        setHint(node.getHint());
       } else {
-        setLinkUrl("");
+        setColor("");
+        setHint("");
       }
     }
     const editorElem = editorRef.current;
@@ -88,15 +86,15 @@ function FloatingLinkEditor({
 
       setFloatingElemPosition(rect, editorElem, anchorElem, { verticalOffset });
       setLastSelection(selection);
-    } else if (!activeElement || activeElement.className !== styles.linkInput) {
+    } else if (!activeElement) {
       if (rootElement !== null) {
         setFloatingElemPosition(null, editorElem, anchorElem, {
           verticalOffset,
         });
       }
       setLastSelection(null);
-      setEditMode(false);
-      setLinkUrl("");
+      setColor("");
+      setHint("");
     }
 
     return true;
@@ -107,7 +105,7 @@ function FloatingLinkEditor({
 
     const update = () => {
       editor.getEditorState().read(() => {
-        updateLinkEditor();
+        updateClozeDeletionEditor();
       });
     };
 
@@ -124,110 +122,93 @@ function FloatingLinkEditor({
         scrollerElem.removeEventListener("scroll", update);
       }
     };
-  }, [anchorElem.parentElement, editor, updateLinkEditor]);
+  }, [anchorElem.parentElement, editor, updateClozeDeletionEditor]);
 
   useEffect(() => {
     return mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {
         editorState.read(() => {
-          updateLinkEditor();
+          updateClozeDeletionEditor();
         });
       }),
-
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
         () => {
-          updateLinkEditor();
+          updateClozeDeletionEditor();
           return true;
         },
         COMMAND_PRIORITY_LOW
       )
     );
-  }, [editor, updateLinkEditor]);
+  });
 
   useEffect(() => {
     editor.getEditorState().read(() => {
-      updateLinkEditor();
+      updateClozeDeletionEditor();
     });
-  }, [editor, updateLinkEditor]);
+  }, [editor, updateClozeDeletionEditor]);
 
-  useEffect(() => {
-    if (isEditMode && inputRef.current) {
-      inputRef.current.focus();
+  const updateClozeDeletion = useCallback(() => {
+    if (lastSelection !== null) {
+      if (color !== "") {
+        editor.dispatchCommand(TOGGLE_CLOZE_DELETION_COMMAND, {
+          color: color as ClozeColor,
+          hint,
+        });
+      }
     }
-  }, [isEditMode]);
+  }, [editor, lastSelection, color, hint]);
 
   return (
-    <div ref={editorRef} className={styles.linkEditor}>
-      {isEditMode ? (
-        <input
-          ref={inputRef}
-          className={styles.linkInput}
-          value={linkUrl}
-          onChange={(event) => {
-            setLinkUrl(event.target.value);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              if (lastSelection !== null) {
-                if (linkUrl !== "") {
-                  editor.dispatchCommand(
-                    TOGGLE_LINK_COMMAND,
-                    sanitizeUrl(linkUrl)
-                  );
-                }
-                setEditMode(false);
-              }
-            } else if (event.key === "Escape") {
-              event.preventDefault();
-              setEditMode(false);
-            }
-          }}
-        />
-      ) : (
-        <>
-          <div className={styles.linkInput}>
-            <a
-              href={linkUrl}
-              target="_blank"
-              rel="noopener noreferrer nofollow"
-            >
-              {linkUrl}
-            </a>
-            <div
-              className="absolute right-3 top-2 bottom-0"
-              role="button"
-              tabIndex={0}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => setEditMode(true)}
-            >
-              <FontAwesomeIcon icon={faPencil} />
-            </div>
-          </div>
-        </>
-      )}
+    <div
+      ref={editorRef}
+      className="absolute z-10 max-w-sm w-full opacity-0 -top-16 -left-16 bg-alu-light-gray border-4 rounded-xl shadow-md transition-opacity duration-500 px-4 py-3"
+    >
+      <h3 className="text-center font-bold text-lg mb-2">Edit Cloze</h3>
+      <Select
+        label="Color"
+        name="color"
+        value={color}
+        onChange={(v) => setColor(v as string)}
+        className="mb-3"
+        options={colorOptions}
+      />
+      <TextInput
+        label="Hint (optional)"
+        value={hint}
+        onChange={(e) => setHint(e.target.value)}
+        className="mb-3"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            updateClozeDeletion();
+          }
+        }}
+      />
+      <Button onClick={updateClozeDeletion} block>
+        Save
+      </Button>
     </div>
   );
 }
 
-function useFloatingLinkEditorToolbar(
+function useClozeDeletionEditorToolbar(
   editor: LexicalEditor,
   anchorElem: HTMLElement,
   verticalOffset = 0
 ): JSX.Element | null {
   const [activeEditor, setActiveEditor] = useState(editor);
-  const [isLink, setIsLink] = useState(false);
+  const [isClozeDeletion, setIsClozeDeletion] = useState(false);
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
       const node = getSelectedNode(selection);
       const parent = node.getParent();
-      if ($isLinkNode(parent) || $isLinkNode(node)) {
-        setIsLink(true);
+      if ($isClozeDeletionNode(parent) || $isClozeDeletionNode(node)) {
+        setIsClozeDeletion(true);
       } else {
-        setIsLink(false);
+        setIsClozeDeletion(false);
       }
     }
   }, []);
@@ -244,9 +225,9 @@ function useFloatingLinkEditorToolbar(
     );
   }, [editor, updateToolbar]);
 
-  return isLink
+  return isClozeDeletion
     ? createPortal(
-        <FloatingLinkEditor
+        <FloatingClozeDeletionEditor
           editor={activeEditor}
           anchorElem={anchorElem}
           verticalOffset={verticalOffset}
@@ -256,7 +237,7 @@ function useFloatingLinkEditorToolbar(
     : null;
 }
 
-export default function FloatingLinkEditorPlugin({
+export default function FloatingClozeDeletionEditorPlugin({
   anchorElem,
   verticalOffset = 0,
 }: {
@@ -264,5 +245,5 @@ export default function FloatingLinkEditorPlugin({
   verticalOffset?: number;
 }): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
-  return useFloatingLinkEditorToolbar(editor, anchorElem, verticalOffset);
+  return useClozeDeletionEditorToolbar(editor, anchorElem, verticalOffset);
 }
