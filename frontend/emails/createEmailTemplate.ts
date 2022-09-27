@@ -15,6 +15,7 @@ import mjml2html from "mjml";
  * ```
  */
 const createEmailTemplate = (fileName: string) => {
+  if (!fileName.startsWith("emails/")) fileName = `emails/${fileName}`;
   if (!fileName.endsWith(".mjml")) fileName += ".mjml";
 
   // Embed the file within `_template.mjml`

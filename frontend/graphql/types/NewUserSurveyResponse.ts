@@ -1,5 +1,8 @@
 import { UserType } from ".";
+import createEmailTemplate from "emails/createEmailTemplate";
+import sendEmail from "emails/sendEmail";
 import getUserGQL from "helpers/getUserGQL";
+import sendSlackMessage from "helpers/sendSlackMessage";
 import {
   objectType,
   extendType,
@@ -44,7 +47,11 @@ export const NewUserSurveyResponseMutation = extendType({
         sendReminders: nonNull(booleanArg()),
       },
       async resolve(_root, args, ctx) {
-        const user = await getUserGQL(ctx);
+        const user = await getUserGQL(ctx, {
+          id: true,
+          name: true,
+          email: true,
+        });
         if (!user) return null;
 
         const newUserSurveyResponse = {
@@ -56,6 +63,22 @@ export const NewUserSurveyResponseMutation = extendType({
           sendReminders: args.sendReminders,
           userId: user.id,
         };
+
+        // Send email to user
+        const name = user.name as string;
+        const template = createEmailTemplate("welcome");
+        const html = template({
+          title: "Welcome to Alu!",
+          name: name.split(" ")[0],
+        });
+        sendEmail({
+          to: user.email as string,
+          subject: "Welcome to Alu!",
+          html,
+        });
+
+        // Create Slack notification
+        sendSlackMessage(`*New User:* ${name} (${user.email})`);
 
         return ctx.prisma.newUserSurveyResponse.create({
           data: newUserSurveyResponse,

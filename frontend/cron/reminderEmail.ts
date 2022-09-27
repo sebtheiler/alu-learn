@@ -9,7 +9,7 @@ const reminderEmail = async () => {
   const utcHour = new Date().getUTCHours() + 6; // Send at 18:00 (6:00 PM)
   const timezoneOffset = utcHour < 12 ? utcHour * 60 : (utcHour - 24) * 60;
 
-  const template = createEmailTemplate("emails/reminder");
+  const template = createEmailTemplate("reminder");
   const users = await prisma.user.findMany({
     where: {
       sendReminders: true,

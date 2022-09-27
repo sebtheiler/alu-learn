@@ -6,6 +6,7 @@ import generateSignedS3URL from "helpers/generateSignedS3URL";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
 import isCourseUser from "helpers/isCourseUser";
+import sendSlackMessage from "helpers/sendSlackMessage";
 import slugifyText from "helpers/slugifyText";
 import uploadImageToS3 from "helpers/uploadImageToS3";
 import {
@@ -194,8 +195,12 @@ export const CoursesMutation = extendType({
 
         const data: Partial<PrismaCourse> = {};
         if (args.title != null) data.title = args.title;
-        if (args.privacySetting != null)
+        if (args.privacySetting != null) {
           data.privacySetting = args.privacySetting;
+          sendSlackMessage(
+            `Privacy setting updated to ${args.privacySetting} for course ${args.courseId}`
+          );
+        }
         if (args.editingAccess != null) data.editingAccess = args.editingAccess;
         if (args.coursePassword != null)
           data.coursePassword = args.coursePassword;

@@ -1,0 +1,29 @@
+<mj-text>
+  <p class="text-paragraph">Welcome to Alu, {{name}}!</p>
+</mj-text>
+<mj-text>
+  <p class="text-paragraph">
+    We're so happy you signed up! Alu helps you study more efficiently by
+    showing you flashcards right before you forget them.
+  </p>
+  <p class="text-paragraph">
+    Looking for some courses to get started? Try these:
+  </p>
+  <ul>
+    <li style="padding-bottom: 10px" class="text-link">
+      <a href="https://www.alulearn.com/l/world">AP World History: Modern</a>
+    </li>
+    <li style="padding-bottom: 10px" class="text-link">
+      <a href="https://www.alulearn.com/l/psych">AP Psychology</a>
+    </li>
+    <li class="text-link">
+      <a href="https://www.alulearn.com/l/usgov"
+        >AP U.S. Government and Politics</a
+      >
+    </li>
+  </ul>
+  <p class="text-paragraph">
+    Need help? Reply to this email or contact us at
+    <a href="mailto:support@alulearn.com">support@alulearn.com</a>
+  </p>
+</mj-text>
