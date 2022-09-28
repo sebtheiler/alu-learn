@@ -138,6 +138,7 @@
     "eslint-config-next": "12.2.5",
     "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-storybook": "^0.6.4",
+    "globby": "^13.1.2",
     "husky": "^8.0.1",
     "install-peers": "^1.0.4",
     "jose": "^4.9.1",

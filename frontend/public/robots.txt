@@ -1,7 +1,4 @@
 User-agent: *
+Sitemap: https://alulearn.com/sitemap.xml
 Disallow: /admin/
 Disallow: /api/
-Disallow: /public-api/
-Disallow: /private-api/
-Disallow: /logging/
-Disallow: /cache/
