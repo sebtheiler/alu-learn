@@ -4,11 +4,15 @@ import FlashcardList from "@/courses/FlashcardList";
 import SEO from "@/helpers/SEO";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { Flashcard } from "@/types";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Link from "next/link";
 
 type FlashcardWithId = Flashcard & { id: string };
 
 export interface FlashcardsPageProps {
   courseId: string;
+  title: string;
   flashcards: FlashcardWithId[];
   courseSectionSlug?: string;
   subSectionSlug?: string;
@@ -20,6 +24,7 @@ export interface FlashcardsPageProps {
  */
 export default function FlashcardsPage({
   courseId,
+  title,
   flashcards,
   courseSectionSlug,
   subSectionSlug,
@@ -36,12 +41,31 @@ export default function FlashcardsPage({
   return (
     <>
       <SEO
-        title="Flashcards"
+        title={`${title} Flashcards`}
         path={`course/${courseId}/flashcards`}
         description=""
       />
       <div className="mt-28">
         <h1 className="text-center font-bold text-4xl mb-2">Flashcards</h1>
+        <div className="absolute left-6 top-28">
+          <Link
+            href={
+              subSectionSlug
+                ? `/course/${courseId}/flashcards/${courseSectionSlug}`
+                : courseSectionSlug
+                ? `/course/${courseId}/flashcards`
+                : `/course/${courseId}`
+            }
+          >
+            <a>
+              <FontAwesomeIcon
+                icon={faArrowLeft}
+                size="2x"
+                className="text-gray-600"
+              />
+            </a>
+          </Link>
+        </div>
         <ButtonGroup
           className="text-center"
           fixedWidth="175px"

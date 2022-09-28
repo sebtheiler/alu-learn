@@ -92,7 +92,7 @@ const VL = ({ className }: { className?: string }) => (
 /**
  *
  */
-export default function ToolbarPlugin({ clearEditorRef }) {
+export default function ToolbarPlugin({ clearEditorRef, includeCloze }) {
   const [editor] = useLexicalComposerContext();
 
   // Text formatting
@@ -268,13 +268,15 @@ export default function ToolbarPlugin({ clearEditorRef }) {
       />
       <VL />
       <FlashcardLinkButton isActive={isFlashcardLink} />
-      <EditorButton
-        command={TOGGLE_CLOZE_DELETION_COMMAND}
-        payload={isClozeDeletion ? null : { color: "YELLOW", hint: "" }}
-        faIcon={faHighlighter}
-        title="Cloze"
-        isActive={isClozeDeletion}
-      />
+      {includeCloze && (
+        <EditorButton
+          command={TOGGLE_CLOZE_DELETION_COMMAND}
+          payload={isClozeDeletion ? null : { color: "YELLOW", hint: "" }}
+          faIcon={faHighlighter}
+          title="Cloze"
+          isActive={isClozeDeletion}
+        />
+      )}
       <VL />
       <InsertDropdown editor={editor} />
       <VL />

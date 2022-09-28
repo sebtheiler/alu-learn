@@ -1,4 +1,4 @@
-import { colorMap } from "./colors";
+import { ClozeColor, colorMap } from "./colors";
 import $getAncestor from "@/lexicalEditor/helpers/getAncestor";
 import {
   addClassNamesToElement,
@@ -22,7 +22,7 @@ import { ElementNode } from "lexical";
 export type SerializedClozeDeletionNode = Spread<
   {
     type: "clozedeletion";
-    color: string;
+    color: ClozeColor;
     hint: string;
     version: 1;
   },
@@ -31,7 +31,7 @@ export type SerializedClozeDeletionNode = Spread<
 
 export class ClozeDeletionNode extends ElementNode {
   /** @internal */
-  __color: string;
+  __color: ClozeColor;
   /** @internal */
   __hint: string;
 
@@ -43,7 +43,7 @@ export class ClozeDeletionNode extends ElementNode {
     return new ClozeDeletionNode(node.__color, node.__hint, node.__key);
   }
 
-  constructor(color: string, hint: string, key?: NodeKey) {
+  constructor(color: ClozeColor, hint: string, key?: NodeKey) {
     super(key);
     this.__color = color;
     this.__hint = hint;
@@ -101,11 +101,11 @@ export class ClozeDeletionNode extends ElementNode {
     };
   }
 
-  getColor(): string {
+  getColor(): ClozeColor {
     return this.getLatest().__color;
   }
 
-  setColor(color: string): void {
+  setColor(color: ClozeColor): void {
     const writable = this.getWritable();
     writable.__color = color;
   }
@@ -168,7 +168,7 @@ export class ClozeDeletionNode extends ElementNode {
 }
 
 export function $createClozeDeletionNode(
-  color: string,
+  color: ClozeColor,
   hint: string
 ): ClozeDeletionNode {
   return new ClozeDeletionNode(color, hint);
@@ -181,7 +181,7 @@ export function $isClozeDeletionNode(
 }
 
 export function toggleClozeDeletion(
-  payload: { color: string; hint: string } | null
+  payload: { color: ClozeColor; hint: string } | null
 ): void {
   const selection = $getSelection();
 

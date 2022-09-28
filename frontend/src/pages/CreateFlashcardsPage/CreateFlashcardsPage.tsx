@@ -2,10 +2,11 @@ import styles from "./CreateFlashcardsPage.module.scss";
 import AsyncButton from "@/atoms/AsyncButton";
 import Select from "@/atoms/Select";
 import TextInput from "@/atoms/TextInput";
+import { TWO_SIDED_FLASHCARDS } from "@/globals";
 import CreateFlashcard from "@/graphql/CreateFlashcard";
 import SEO from "@/helpers/SEO";
-import blankLexicalElement from "@/helpers/blankLexicalElement";
 import classNames from "@/helpers/classNames";
+import flattenLexical from "@/helpers/flattenLexical";
 import LexicalEditor from "@/lexicalEditor/LexicalEditor";
 import type {
   Course,
@@ -60,19 +61,25 @@ export default function CreateFlashcardsPage({
 
   const createFlashcardHandler = async () => {
     if (
-      flashcardType !== "CLOZE" &&
-      (JSON.stringify(frontEditorState) ===
-        JSON.stringify(blankLexicalElement) ||
-        JSON.stringify(backEditorState) === JSON.stringify(blankLexicalElement))
+      (await flattenLexical(JSON.stringify(frontEditorState)))?.length === 0 ||
+      (TWO_SIDED_FLASHCARDS.includes(flashcardType) &&
+        (await flattenLexical(JSON.stringify(backEditorState)))?.length === 0)
     ) {
       setError("BLANK_SIDE");
       return;
     }
     setError("");
 
+    let fields: string;
+    if (TWO_SIDED_FLASHCARDS.includes(flashcardType)) {
+      fields = JSON.stringify([frontEditorState, backEditorState]);
+    } else {
+      fields = JSON.stringify([frontEditorState]);
+    }
+
     const { data } = await createFlashcard({
       variables: {
-        fields: JSON.stringify([frontEditorState, backEditorState]),
+        fields,
         tags,
         flashcardType,
         courseId: course.id as string,
@@ -158,24 +165,24 @@ export default function CreateFlashcardsPage({
                 verticalOffset={112} // mt-28
                 clearEditorRef={clearFrontEditorRef}
                 onChange={(state) => setFrontEditorState(state)}
+                includeCloze={flashcardType === "CLOZE"}
                 overrideTab
                 autoFocus
               />
             </div>
-            <div className="mt-5">
-              <h3 className="font-bold text-xl">
-                {flashcardType === "NORMAL" && "Back"}
-                {flashcardType === "CLOZE" && "Extra Information (optional)"}
-              </h3>
-              <LexicalEditor
-                namespace="backEditor"
-                className={styles.editorMinHeight}
-                verticalOffset={112}
-                clearEditorRef={clearBackEditorRef}
-                onChange={(state) => setBackEditorState(state)}
-                overrideTab
-              />
-            </div>
+            {TWO_SIDED_FLASHCARDS.includes(flashcardType) && (
+              <div className="mt-5">
+                <h3 className="font-bold text-xl">Back</h3>
+                <LexicalEditor
+                  namespace="backEditor"
+                  className={styles.editorMinHeight}
+                  verticalOffset={112}
+                  clearEditorRef={clearBackEditorRef}
+                  onChange={(state) => setBackEditorState(state)}
+                  overrideTab
+                />
+              </div>
+            )}
             <div className="mt-3">
               {error === "BLANK_SIDE" && (
                 <p className="text-red-700 text-center mb-3">

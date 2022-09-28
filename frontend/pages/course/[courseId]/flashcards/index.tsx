@@ -14,6 +14,31 @@ export default Flashcards;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { courseId } = context.query;
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  );
+
+  const course = await prisma.course.findFirst({
+    where: {
+      id: courseId as string,
+      users: {
+        some: {
+          email: session?.user?.email,
+        },
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+    },
+  });
+  if (!course)
+    return {
+      notFound: true,
+    };
+
   const flashcards = await prisma.flashcard.findMany({
     where: {
       courseId: courseId as string,
@@ -43,11 +68,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     ],
   });
 
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
   const editAccess = await canEditCourse(
     courseId as string,
     session?.user?.email
@@ -56,6 +76,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       courseId,
+      title: course.title,
       flashcards,
       editAccess,
     } as FlashcardsPageProps,

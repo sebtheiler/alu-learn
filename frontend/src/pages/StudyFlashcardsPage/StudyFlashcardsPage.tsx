@@ -2,6 +2,7 @@ import FinishedStudying from "./FinishedStudying";
 import FlashcardSide from "./FlashcardSide";
 import { EASE_FOR_HARD_EXERCISE, formatDate, GRADES } from "./helpers";
 import type { Grade } from "./helpers";
+import usePrepareFields from "./usePrepareFields";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import ProgressBar from "@/components/ProgressBar";
@@ -18,11 +19,15 @@ import type {
   Grade as GQLGrade,
   Intervals,
   MutationUpdateReviewInstanceArgs,
+  Flashcard,
 } from "@/types";
 import { useMutation } from "@apollo/client";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
 import BrowserInteractionTime from "browser-interaction-time";
 import calculateInterval from "helpers/calculateInterval";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 
@@ -266,6 +271,10 @@ export default function StudyFlashcardsPage({
     ? `/course/${courseId}/add-flashcards/${courseSectionSlug}`
     : `/course/${courseId}/add-flashcards`;
 
+  const { frontField, backField } = usePrepareFields(
+    activeReviewInstance?.flashcard as Flashcard | undefined
+  );
+
   return (
     <>
       <SEO
@@ -274,6 +283,17 @@ export default function StudyFlashcardsPage({
         description=""
       />
       <div className="mt-28">
+        <div className="absolute left-6 top-28">
+          <Link href={`/course/${courseId}`}>
+            <a>
+              <FontAwesomeIcon
+                icon={faArrowLeft}
+                size="2x"
+                className="text-gray-600"
+              />
+            </a>
+          </Link>
+        </div>
         {!finishedStudying && activeReviewInstance && (
           <div className="px-5 overflow-hidden">
             <h1 className="font-bold text-4xl text-center">Study Flashcards</h1>
@@ -298,24 +318,24 @@ export default function StudyFlashcardsPage({
               role="button"
               onClick={() => setRevealAnswer(!revealAnswer)}
             >
-              <FlashcardSide
-                side="front"
-                field={JSON.stringify(
-                  JSON.parse(activeReviewInstance.flashcard.fields as string)[0]
-                )}
-                isShown={!revealAnswer}
-                starred={activeReviewInstance.isStarred}
-                onStarred={onStarred}
-              />
-              <FlashcardSide
-                side="back"
-                field={JSON.stringify(
-                  JSON.parse(activeReviewInstance.flashcard.fields as string)[1]
-                )}
-                isShown={revealAnswer}
-                starred={activeReviewInstance.isStarred}
-                onStarred={onStarred}
-              />
+              {frontField && backField && (
+                <>
+                  <FlashcardSide
+                    side="front"
+                    field={frontField}
+                    isShown={!revealAnswer}
+                    starred={activeReviewInstance.isStarred}
+                    onStarred={onStarred}
+                  />
+                  <FlashcardSide
+                    side="back"
+                    field={backField}
+                    isShown={revealAnswer}
+                    starred={activeReviewInstance.isStarred}
+                    onStarred={onStarred}
+                  />
+                </>
+              )}
             </div>
             <p className="text-center text-gray-500">
               Press &quot;space&quot; to flip the flashcard

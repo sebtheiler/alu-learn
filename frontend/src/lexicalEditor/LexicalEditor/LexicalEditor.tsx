@@ -100,7 +100,7 @@ const theme = {
   clozeDeletion: styles.clozeDeletion,
 };
 
-const nodes = [
+export const nodes = [
   HeadingNode,
   ListNode,
   ListItemNode,
@@ -175,6 +175,10 @@ interface LexicalEditorProps {
    * Disable popovers (e.g., the floating link editor and the flashcard link popover)
    */
   disablePopovers?: boolean;
+  /**
+   * Include the `cloze` option in the editor
+   */
+  includeCloze?: boolean;
 }
 
 /**
@@ -194,6 +198,7 @@ export default function LexicalEditor({
   disablePopovers,
   overrideTab = false,
   editorState = null,
+  includeCloze = false,
 }: LexicalEditorProps) {
   const initialConfig = {
     namespace,
@@ -215,7 +220,14 @@ export default function LexicalEditor({
       id={namespace}
     >
       <LexicalComposer initialConfig={initialConfig}>
-        {!readOnly ? <ToolbarPlugin clearEditorRef={clearEditorRef} /> : ""}
+        {!readOnly ? (
+          <ToolbarPlugin
+            clearEditorRef={clearEditorRef}
+            includeCloze={includeCloze}
+          />
+        ) : (
+          ""
+        )}
         <RichTextPlugin
           contentEditable={<ContentEditable />}
           placeholder={<></>}

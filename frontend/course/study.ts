@@ -1,3 +1,5 @@
+import processCloze from "./processCloze";
+import { ClozeColor } from "@/lexicalEditor/plugins/ClozeDeletionPlugin/colors";
 import type { Intervals } from "@/types";
 import type { Flashcard, FlashcardType, ReviewInstance } from "@prisma/client";
 import cuid from "cuid";
@@ -27,6 +29,7 @@ const NUM_FLASHCARDS_PER_SESSION = 20;
 const flashcardSelect = {
   fields: true,
   tags: true,
+  type: true,
 };
 
 /**
@@ -51,10 +54,10 @@ const reviewInstanceSelect = {
  * @param userId User who will own the review instances
  * @returns A list of review instances to be created
  */
-const generateReviewInstances = (
+const generateReviewInstances = async (
   flashcard: Partial<Flashcard> & { type: FlashcardType; id: string },
   userId: string
-): PartialReviewInstance[] => {
+): Promise<PartialReviewInstance[]> => {
   const thisMorning = new Date();
   thisMorning.setUTCHours(0, 0, 0, 0);
 
@@ -68,9 +71,19 @@ const generateReviewInstances = (
           id: cuid(),
         },
       ];
-    case "CLOZE":
-      // TODO
-      return [];
+    case "CLOZE": {
+      const field = JSON.stringify(JSON.parse(flashcard.fields as string)[0]);
+      const clozeColors = new Set<ClozeColor>();
+      await processCloze(field, (child) => clozeColors.add(child.getColor()));
+
+      return Array.from(clozeColors).map((color) => ({
+        flashcardId: flashcard.id,
+        userId,
+        nextReview: thisMorning,
+        id: cuid(),
+        name: `cloze-${color.toLowerCase()}`,
+      }));
+    }
     default:
       throw new Error(`Unrecognized flashcard type: ${flashcard.type}`);
   }
@@ -242,8 +255,12 @@ const getStudyReviewInstances = async (
 
     let reviewInstancesToCreate: PartialReviewInstance[] = [];
     for (const flashcard of flashcards) {
+      const generatedReviewInstances = await generateReviewInstances(
+        flashcard,
+        user?.id as string
+      );
       reviewInstancesToCreate = reviewInstancesToCreate.concat(
-        generateReviewInstances(flashcard, user?.id as string)
+        generatedReviewInstances
       );
     }
 
