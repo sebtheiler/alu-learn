@@ -1,3 +1,4 @@
+import { nodes } from "@/lexicalEditor/LexicalEditor/LexicalEditor";
 import { createEditor } from "lexical";
 
 /**
@@ -6,7 +7,7 @@ import { createEditor } from "lexical";
  * @returns Raw string of the editor state
  */
 const flattenLexical = (editorState: string) => {
-  const editor = createEditor();
+  const editor = createEditor({ nodes });
   const parsedEditorState = editor.parseEditorState(editorState);
 
   return new Promise<string | undefined>((resolve) => {

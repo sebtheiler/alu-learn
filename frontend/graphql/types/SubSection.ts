@@ -110,11 +110,6 @@ export const SubSectionQuery = extendType({
             continue;
           }
 
-          const numFlashcards = await ctx.prisma.flashcard.count({
-            where: {
-              subSectionId: subSectionId,
-            },
-          });
           const numReviewInstancesCurrentlyStudied =
             await ctx.prisma.reviewInstance.count({
               where: {
@@ -143,6 +138,15 @@ export const SubSectionQuery = extendType({
                 },
               },
             });
+
+          const numFlashcards = Math.max(
+            await ctx.prisma.flashcard.count({
+              where: {
+                subSectionId: subSectionId,
+              },
+            }),
+            numReviewInstancesEverStudied
+          );
 
           const percentComplete = {
             currentPercentComplete:
@@ -245,6 +249,31 @@ export const SubSectionMutation = extendType({
           !isSubSectionOwner(args.subSectionId, ctx.user?.email, ctx.prisma)
         )
           return null;
+
+        const subSection = await ctx.prisma.subSection.findUniqueOrThrow({
+          where: {
+            id: args.subSectionId,
+          },
+          select: {
+            index: true,
+            courseSectionId: true,
+          },
+        });
+
+        // Decrease index of all course sections after
+        await ctx.prisma.subSection.updateMany({
+          where: {
+            courseSectionId: subSection.courseSectionId,
+            index: {
+              gt: subSection.index,
+            },
+          },
+          data: {
+            index: {
+              decrement: 1,
+            },
+          },
+        });
 
         return ctx.prisma.subSection.delete({
           where: { id: args.subSectionId },

@@ -79,7 +79,7 @@ export default function RenderFlashcard({
     MutationUpdateFlashcardArgs
   >(UpdateFlashcard);
   const [deleteFlashcard] = useMutation<
-    { deleteFlashcarc: Mutation["deleteFlashcard"] },
+    { deleteFlashcard: Mutation["deleteFlashcard"] },
     MutationDeleteFlashcardArgs
   >(DeleteFlashcard);
 
@@ -155,24 +155,26 @@ export default function RenderFlashcard({
         </div>
       )}
       <div className="w-full h-full flex min-h-[10rem]">
-        {fields.map((field: any, i: number) => (
-          <div
-            key={i}
-            className="flex w-1/2 justify-center items-center border-r-4
+        {fields
+          .filter((field) => !!field)
+          .map((field: any, i: number) => (
+            <div
+              key={i}
+              className="flex w-full justify-center items-center border-r-4
                      border-r-alu-mid-gray last:border-none py-4 px-5"
-          >
-            {hidden && i > 0 ? (
-              <span className="font-bold text-4xl">?</span>
-            ) : (
-              <LexicalEditor
-                namespace={`${componentId}-field-${i}`}
-                editorState={JSON.stringify(field)}
-                onChange={(state) => setStates[i](state)}
-                readOnly={!editMode}
-              />
-            )}
-          </div>
-        ))}
+            >
+              {hidden && i > 0 ? (
+                <span className="font-bold text-4xl">?</span>
+              ) : (
+                <LexicalEditor
+                  namespace={`${componentId}-field-${i}`}
+                  editorState={JSON.stringify(field)}
+                  onChange={(state) => setStates[i](state)}
+                  readOnly={!editMode}
+                />
+              )}
+            </div>
+          ))}
       </div>
     </div>
   );

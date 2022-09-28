@@ -9,7 +9,7 @@ export default function VerifyRequestPage() {
     <>
       <SEO title="Verify Request" path="verify-request" description="" />
       <div className="mt-48 text-center">
-        <h1 className="text-4xl font-bold">Check your email</h1>
+        <h1 className="text-4xl font-bold mb-2">Check your email</h1>
         <p>A sign in link has been sent to your email address</p>
       </div>
     </>

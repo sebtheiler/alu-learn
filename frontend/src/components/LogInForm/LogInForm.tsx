@@ -1,10 +1,8 @@
 import AsyncForm from "@/atoms/AsyncForm";
 import Button from "@/atoms/Button";
 import Checkbox from "@/atoms/Checkbox";
-import Modal from "@/atoms/Modal";
 import TextInput from "@/atoms/TextInput";
 import { getElementsVals } from "@/helpers/getElementsVals";
-import useGlobalModalStore from "@/stores/globalModalStore";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
@@ -17,18 +15,12 @@ const onRegister = async (e: React.FormEvent<HTMLFormElement>) => {
 };
 
 /**
- * Renders the global sign-up modal. Only instantiate in `Navbar`!
+ * A form for the user to register or sign in
  */
-export default function RegisterModal() {
-  const { registerModalOpen, setRegisterModalOpen } = useGlobalModalStore();
+export default function LogInForm({ type }: { type: "REGISTER" | "SIGNIN" }) {
   const [continueWithEmail, setContinueWithEmail] = useState(false);
-
   return (
-    <Modal
-      open={registerModalOpen}
-      close={() => setRegisterModalOpen(false)}
-      title="Register"
-    >
+    <>
       <Button
         variant="white"
         className="flex items-center justify-center"
@@ -41,7 +33,7 @@ export default function RegisterModal() {
           width={25}
           height={25}
         />
-        Continue with Google
+        {type === "REGISTER" ? "Continue with Google" : "Sign-in with Google"}
       </Button>
       <Button
         onClick={() => setContinueWithEmail(!continueWithEmail)}
@@ -49,13 +41,13 @@ export default function RegisterModal() {
         className="mt-1"
         block
       >
-        Continue with Email
+        {type === "REGISTER" ? "Continue with Email" : "Sign-in with Email"}
       </Button>
       {continueWithEmail && (
         <AsyncForm
           onSubmit={onRegister}
           buttonProps={{
-            children: "Create Account",
+            children: type === "REGISTER" ? "Create Account" : "Sign-in",
             block: true,
           }}
         >
@@ -68,29 +60,35 @@ export default function RegisterModal() {
             className="mb-2"
             required
           />
-          <Checkbox
-            label={
-              <>
-                I accept the{" "}
-                <a href="/legal/tos" target="_blank" className="text-blue-500">
-                  terms of service
-                </a>{" "}
-                and{" "}
-                <a
-                  href="/legal/privacypolicy"
-                  target="_blank"
-                  className="text-blue-500"
-                >
-                  privacy policy
-                </a>
-              </>
-            }
-            id="terms-and-conditions"
-            className="mb-4 ml-2"
-            required
-          />
+          {type === "REGISTER" && (
+            <Checkbox
+              label={
+                <>
+                  I accept the{" "}
+                  <a
+                    href="/legal/tos"
+                    target="_blank"
+                    className="text-blue-500"
+                  >
+                    terms of service
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="/legal/privacypolicy"
+                    target="_blank"
+                    className="text-blue-500"
+                  >
+                    privacy policy
+                  </a>
+                </>
+              }
+              id="terms-and-conditions"
+              className="mb-4 ml-2"
+              required
+            />
+          )}
         </AsyncForm>
       )}
-    </Modal>
+    </>
   );
 }

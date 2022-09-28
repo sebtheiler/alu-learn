@@ -136,6 +136,31 @@ export const CourseSectionMutation = extendType({
         )
           return null;
 
+        const courseSection = await ctx.prisma.courseSection.findUniqueOrThrow({
+          where: {
+            id: args.courseSectionId,
+          },
+          select: {
+            index: true,
+            courseId: true,
+          },
+        });
+
+        // Decrease index of all course sections after
+        await ctx.prisma.courseSection.updateMany({
+          where: {
+            courseId: courseSection.courseId,
+            index: {
+              gt: courseSection.index,
+            },
+          },
+          data: {
+            index: {
+              decrement: 1,
+            },
+          },
+        });
+
         return ctx.prisma.courseSection.delete({
           where: { id: args.courseSectionId },
         });

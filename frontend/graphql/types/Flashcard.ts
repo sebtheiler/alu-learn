@@ -1,4 +1,8 @@
-import type { Flashcard as PrismaFlashcard, Prisma } from "@prisma/client";
+import type {
+  Flashcard as PrismaFlashcard,
+  FlashcardType as PrismaFlashcardType,
+  Prisma,
+} from "@prisma/client";
 import canViewCourse from "helpers/canViewCourse";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
@@ -129,6 +133,7 @@ export const FlashcardMutation = extendType({
             fields: args.fields,
             tags: args.tags ?? "",
             index: newIndex,
+            type: args.flashcardType as PrismaFlashcardType,
             subSection: {
               connect: {
                 id: subSection.id,
@@ -186,6 +191,12 @@ export const FlashcardMutation = extendType({
         const user = await getUserGQL(ctx);
         const flashcard = await ctx.prisma.flashcard.findUnique({
           where: { id: args.flashcardId },
+          select: {
+            id: true,
+            index: true,
+            courseId: true,
+            subSectionId: true,
+          },
         });
         if (
           !user ||
@@ -193,6 +204,21 @@ export const FlashcardMutation = extendType({
           !isCourseOwner(flashcard.courseId, ctx.user?.email, ctx.prisma)
         )
           return null;
+
+        // Decrease index of all flashcards after
+        await ctx.prisma.flashcard.updateMany({
+          where: {
+            subSectionId: flashcard.subSectionId,
+            index: {
+              gt: flashcard.index,
+            },
+          },
+          data: {
+            index: {
+              decrement: 1,
+            },
+          },
+        });
 
         return ctx.prisma.flashcard.delete({
           where: {

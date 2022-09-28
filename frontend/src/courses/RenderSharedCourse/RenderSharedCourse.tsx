@@ -36,9 +36,9 @@ export default function RenderSharedCourse({
           {course._count.users} {/* @ts-ignore */}
           {course._count.users === 1 ? "student" : "students"}
         </p>
-        <h1 className="my-2 text-4xl font-bold text-blue-500 hover:text-blue-600 hover:underline">
+        <h2 className="my-2 text-4xl font-bold text-blue-500 hover:text-blue-600 hover:underline">
           <Link href={`/course/${course.id}`}>{course.title}</Link>
-        </h1>
+        </h2>
         <hr className="my-3" />
       </div>
       <LexicalEditor

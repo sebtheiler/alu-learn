@@ -54,7 +54,7 @@ export default function FlashcardList({ flashcards }: FlashcardListProps) {
     };
 
     return _flashcards.map((flashcard, i) => (
-      <Fragment key={i}>
+      <Fragment key={flashcard.id}>
         {i > 0 && i % 25 === 0 && <Ad adType="FLASHCARD_LIST_MIDDLE" />}
         <RenderFlashcard
           flashcard={flashcard}

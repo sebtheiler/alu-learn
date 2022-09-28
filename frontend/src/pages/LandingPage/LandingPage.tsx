@@ -141,9 +141,9 @@ export default function LandingPage() {
         </div>
         <div className="container mx-auto mt-10 px-2">
           <div className="mb-5 text-center">
-            <h1 className="mb-5 text-2xl font-semibold">
+            <h2 className="mb-5 text-2xl font-semibold">
               What People Are Saying
-            </h1>
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
               {testimonials.map((testimonial, i) => (
                 <div
@@ -157,9 +157,9 @@ export default function LandingPage() {
           </div>
           <hr />
           <div className="mt-5">
-            <h1 className="text-center text-2xl font-bold">
+            <h2 className="text-center text-2xl font-bold">
               How Alu Can Help You
-            </h1>
+            </h2>
             <div className={styles.helpSection}>
               <div className={styles.helpSection__Text}>
                 <div>

@@ -3,7 +3,7 @@ import create from "zustand";
 interface GlobalModalState {
   registerModalOpen: boolean;
   setRegisterModalOpen(open: boolean): void;
-  logInModalOpen: boolean;
+  signInModalOpen: boolean;
   setSignInModalOpen(open: boolean): void;
 }
 
@@ -11,9 +11,9 @@ const useGlobalModalStore = create<GlobalModalState>((set) => ({
   registerModalOpen: false,
   setRegisterModalOpen: (open) =>
     set((state) => ({ ...state, registerModalOpen: open })),
-  logInModalOpen: false,
+  signInModalOpen: false,
   setSignInModalOpen: (open) =>
-    set((state) => ({ ...state, logInModalOpen: open })),
+    set((state) => ({ ...state, signInModalOpen: open })),
 }));
 
 export default useGlobalModalStore;

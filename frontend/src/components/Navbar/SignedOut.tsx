@@ -1,7 +1,6 @@
+import LogInModal from "./LogInModal";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
-import RegisterModal from "@/components/Navbar/RegisterModal";
-import SignInModal from "@/components/Navbar/SignInModal";
 import useGlobalModalStore from "@/stores/globalModalStore";
 
 export default function SignedOut() {
@@ -15,8 +14,8 @@ export default function SignedOut() {
         </Button>
         <Button onClick={() => setRegisterModalOpen(true)}>Register</Button>
       </ButtonGroup>
-      <RegisterModal />
-      <SignInModal />
+      <LogInModal type="REGISTER" />
+      <LogInModal type="SIGNIN" />
     </div>
   );
 }
