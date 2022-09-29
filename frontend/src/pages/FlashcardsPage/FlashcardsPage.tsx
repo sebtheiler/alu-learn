@@ -2,28 +2,18 @@ import ButtonGroup from "@/atoms/ButtonGroup";
 import LinkButton from "@/atoms/LinkButton";
 import FlashcardList from "@/courses/FlashcardList";
 import SEO from "@/helpers/SEO";
-import flattenLexical from "@/helpers/flattenLexical";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { Flashcard } from "@/types";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 
-async function allSynchronously<T>(
-  resolvables: (() => Promise<T>)[]
-): Promise<T[]> {
-  const results: T[] = [];
-  for (const resolvable of resolvables) {
-    results.push(await resolvable());
-  }
-  return results;
-}
-
 type FlashcardWithId = Flashcard & { id: string };
 
 export interface FlashcardsPageProps {
   courseId: string;
   title: string;
+  flashcardsHasPart: any;
   flashcards: FlashcardWithId[];
   courseSectionSlug?: string;
   subSectionSlug?: string;
@@ -36,6 +26,7 @@ export interface FlashcardsPageProps {
 export default function FlashcardsPage({
   courseId,
   title,
+  flashcardsHasPart,
   flashcards,
   courseSectionSlug,
   subSectionSlug,
@@ -49,40 +40,6 @@ export default function FlashcardsPage({
 
   const { width } = useWindowDimensions();
 
-  const fronts = allSynchronously<string | undefined>(
-    flashcards.map(
-      (flashcard) => () =>
-        flattenLexical(
-          JSON.stringify(JSON.parse(flashcard.fields as string)[0])
-        )
-    )
-  );
-  const backs = allSynchronously<string | undefined>(
-    flashcards.map(
-      (flashcard) => () =>
-        flattenLexical(
-          JSON.stringify(JSON.parse(flashcard.fields as string)[1])
-        )
-    )
-  );
-  const flashcardsSEO = flashcards
-    .map(
-      (flashcard) => () =>
-        flattenLexical(
-          JSON.stringify(JSON.parse(flashcard.fields as string)[0])
-        )
-    )
-    .map((flashcard, i) => ({
-      "@context": "https://schema.org/",
-      "@type": "Question",
-      eduQuestionType: "Flashcard",
-      text: fronts[i],
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: backs[i],
-      },
-    }));
-
   return (
     <>
       <SEO
@@ -94,16 +51,16 @@ export default function FlashcardsPage({
           "@type": "Quiz",
           about: {
             "@type": "Thing",
-            name: "Cell Transport",
+            name: title,
           },
           educationalAlignment: [
             {
               "@type": "AlignmentObject",
               alignmentType: "educationalSubject",
-              targetName: "Biology",
+              targetName: title, // TODO: improve this?
             },
           ],
-          hasPart: flashcardsSEO,
+          hasPart: flashcardsHasPart,
         }}
       />
       <script type="application/ld+json"></script>

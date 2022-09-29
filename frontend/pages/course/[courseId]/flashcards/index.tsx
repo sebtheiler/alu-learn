@@ -1,5 +1,7 @@
 import FlashcardsPage from "@/pages/FlashcardsPage";
 import type { FlashcardsPageProps } from "@/pages/FlashcardsPage";
+import type { Flashcard } from "@/types";
+import flashcardsSEO from "course/flashcardsSEO";
 import canEditCourse from "helpers/canEditCourse";
 import canViewCourse from "helpers/canViewCourse";
 import prisma from "lib/prisma";
@@ -69,10 +71,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     session?.user?.email
   );
 
+  const flashcardsHasPart = await flashcardsSEO(flashcards as Flashcard[]);
+
   return {
     props: {
       courseId,
       title: course.title,
+      flashcardsHasPart,
       flashcards,
       editAccess,
     } as FlashcardsPageProps,

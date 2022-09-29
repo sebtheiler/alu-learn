@@ -28,11 +28,93 @@ const SEO: React.FC<SEOProps> = ({
   // Absolute og image url
   const ogImageUrl = APP_ROOT_URL + ogImagePath;
 
+  // const stringified = JSON.stringify(seoJson)
+  // console.log(stringified)
+  // console.log(typeof stringified)
+  const _seoJson = {
+    "@context": "https://schema.org/",
+    "@type": "Quiz",
+    about: {
+      "@type": "Thing",
+      name: "Cell Transport",
+    },
+    educationalAlignment: [
+      {
+        "@type": "AlignmentObject",
+        alignmentType: "educationalSubject",
+        targetName: "Biology",
+      },
+    ],
+    hasPart: [
+      {
+        "@context": "https://schema.org/",
+        "@type": "Question",
+        eduQuestionType: "Flashcard",
+        text: "This is some fact about receptor molecules.",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "receptor molecules",
+        },
+      },
+      {
+        "@context": "https://schema.org/",
+        "@type": "Question",
+        eduQuestionType: "Flashcard",
+        text: "This is some fact about the cell membrane.",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "cell membrane",
+        },
+      },
+    ],
+  };
+
   return (
     <>
       {seoJson && (
         <Head>
-          <script type="application/ld+json">{seoJson}</script>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(seoJson) }}
+          />
+          {/* <script type="application/ld+json">{`{"@context":"https://schema.org/","@type":"Quiz","about":{"@type":"Thing","name":"test"},"educationalAlignment":[{"@type":"AlignmentObject","alignmentType":"educationalSubject","targetName":"test"}],"hasPart":[{"@context":"https://schema.org/","@type":"Question","eduQuestionType":"Flashcard","text":"#1 (#2)","acceptedAnswer":{"@type":"Answer","text":"#1"}},{"@context":"https://schema.org/","@type":"Question","eduQuestionType":"Flashcard","text":"#2","acceptedAnswer":{"@type":"Answer","text":"#2"}},{"@context":"https://schema.org/","@type":"Question","eduQuestionType":"Flashcard","text":"#3","acceptedAnswer":{"@type":"Answer","text":"#3"}},{"@context":"https://schema.org/","@type":"Question","eduQuestionType":"Flashcard","text":"#4","acceptedAnswer":{"@type":"Answer","text":"#4"}},{"@context":"https://schema.org/","@type":"Question","eduQuestionType":"Flashcard","text":"#5","acceptedAnswer":{"@type":"Answer","text":"#5"}},{"@context":"https://schema.org/","@type":"Question","eduQuestionType":"Flashcard","text":"#6","acceptedAnswer":{"@type":"Answer","text":"#6"}},{"@context":"https://schema.org/","@type":"Question","eduQuestionType":"Flashcard","text":"alt #1","acceptedAnswer":{"@type":"Answer","text":"alt #1"}},{"@context":"https://schema.org/","@type":"Question","eduQuestionType":"Flashcard","text":"alt #2","acceptedAnswer":{"@type":"Answer","text":"alt #2"}}]}`}</script> */}
+          {/* <script type="application/ld+json">{JSON.stringify(JSON.parse(`{
+      "@context": "https://schema.org/",
+      "@type": "Quiz",
+      "about": {
+        "@type": "Thing",
+        "name": "Cell Transport"
+      },
+      "educationalAlignment": [
+        {
+          "@type": "AlignmentObject",
+          "alignmentType": "educationalSubject",
+          "targetName": "Biology"
+        }
+      ],
+      "hasPart": [
+        {
+          "@context": "https://schema.org/",
+          "@type": "Question",
+          "eduQuestionType": "Flashcard",
+          "text": "This is some fact about receptor molecules.",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "receptor molecules"
+          }
+        },
+        {
+          "@context": "https://schema.org/",
+          "@type": "Question",
+          "eduQuestionType": "Flashcard",
+          "text": "This is some fact about the cell membrane.",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "cell membrane"
+          }
+        }
+      ]
+    }`))}</script> */}
         </Head>
       )}
       <NextSeo
