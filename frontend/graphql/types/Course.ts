@@ -28,6 +28,8 @@ const Course = objectType({
     t.field("privacySetting", { type: PrivacySetting });
     t.field("editingAccess", { type: EditingAccess });
     t.string("description");
+    t.string("seoDescription");
+    t.string("seoSubject");
     t.string("bannerImage", {
       resolve(course) {
         // @ts-ignore
@@ -183,6 +185,8 @@ export const CoursesMutation = extendType({
         privacySetting: arg({ type: PrivacySetting }),
         editingAccess: arg({ type: EditingAccess }),
         coursePassword: stringArg(),
+        seoSubject: stringArg(),
+        seoDescription: stringArg(),
         description: stringArg(),
         courseId: nonNull(
           stringArg({ description: "ID of the course to update" })
@@ -205,6 +209,9 @@ export const CoursesMutation = extendType({
         if (args.coursePassword != null)
           data.coursePassword = args.coursePassword;
         if (args.description != null) data.description = args.description;
+        if (args.seoDescription != null)
+          data.seoDescription = args.seoDescription;
+        if (args.seoSubject != null) data.seoSubject = args.seoSubject;
 
         return ctx.prisma.course.update({
           where: { id: args.courseId },

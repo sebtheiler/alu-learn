@@ -39,6 +39,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           course: {
             select: {
               title: true,
+              seoDescription: true,
+              seoSubject: true,
+              id: true,
             },
           },
         },
@@ -81,7 +84,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      courseId,
+      course: subSection.courseSection.course,
       title: `${subSection.title}, ${subSection.courseSection.course.title}`,
       flashcardsHasPart,
       flashcards,

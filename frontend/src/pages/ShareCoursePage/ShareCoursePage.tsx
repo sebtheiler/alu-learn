@@ -59,10 +59,13 @@ export default function ShareCoursePage({
   const [shareMsg, setShareMsg] = useState("");
 
   const shareCourse = async (e: React.FormEvent<HTMLFormElement>) => {
-    const { privacySetting, editingAccess } = getElementsVals(
-      e.target as HTMLFormElement,
-      ["privacySetting", "editingAccess"]
-    );
+    const { privacySetting, editingAccess, seoDescription, seoSubject } =
+      getElementsVals(e.target as HTMLFormElement, [
+        "privacySetting",
+        "editingAccess",
+        "seoDescription",
+        "seoSubject",
+      ]);
     let coursePassword: string | null = null;
     if (privacySetting === "PASSWORD") {
       coursePassword = getElementsVals(e.target as HTMLFormElement, [
@@ -74,6 +77,8 @@ export default function ShareCoursePage({
       variables: {
         privacySetting: privacySetting as PrivacySetting,
         editingAccess: editingAccess as EditingAccess,
+        seoDescription,
+        seoSubject,
         coursePassword,
         description: JSON.stringify(description),
         courseId: course?.id as string,
@@ -206,12 +211,28 @@ export default function ShareCoursePage({
               placeholder="Add Owner (search by name)"
             />
           </div>
-          <div className="mt-3 mb-5">
+          <div className="mt-3">
             <h3 className="font-bold text-lg">Description (optional)</h3>
             <LexicalEditor
               namespace="description"
               onChange={(state) => setDescription(state)}
               editorState={course?.description ? course?.description : null}
+            />
+          </div>
+          <div className="mt-3 mb-5">
+            <h3 className="font-bold text-lg">SEO</h3>
+            <TextInput
+              label="SEO Description (optional)"
+              name="seoDescription"
+              maxLength={160}
+              defaultValue={course?.seoDescription ?? ""}
+            />
+            <TextInput
+              className="mt-3"
+              label="SEO Subject (optional)"
+              name="seoSubject"
+              maxLength={40}
+              defaultValue={course?.seoSubject ?? ""}
             />
           </div>
         </AsyncForm>

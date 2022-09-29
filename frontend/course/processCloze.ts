@@ -5,7 +5,7 @@ import {
 } from "@/lexicalEditor/plugins/ClozeDeletionPlugin/nodes";
 import { createEditor, EditorState } from "lexical";
 // import { createHeadlessEditor } from "lexical-headless"
-import type { ElementNode, LexicalNode, RootNode, TextNode } from "lexical";
+import { ElementNode, LexicalNode, RootNode, TextNode } from "lexical";
 import { createEmptyEditorState } from "lexical/LexicalEditorState";
 
 /**
@@ -44,7 +44,7 @@ const processCloze = (
   // console.log(editor.getEditorState())
   // console.log(editor.isReadOnly())
   const editorState = editor.parseEditorState(field);
-  console.log(editorState._nodeMap);
+  console.log(editorState);
   editor.setEditorState(editorState);
   console.log(editor.getEditorState()._nodeMap);
   // const foo = new EditorState(editorState._nodeMap);

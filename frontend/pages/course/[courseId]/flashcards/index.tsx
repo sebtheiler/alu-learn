@@ -28,8 +28,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       id: courseId as string,
     },
     select: {
-      id: true,
       title: true,
+      seoDescription: true,
+      seoSubject: true,
+      id: true,
     },
   });
   if (!course || !canViewCourse(courseId as string, session?.user?.email))
@@ -75,7 +77,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      courseId,
+      course,
       title: course.title,
       flashcardsHasPart,
       flashcards,

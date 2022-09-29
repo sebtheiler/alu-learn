@@ -8,6 +8,8 @@ const UpdateCourse = gql`
     $title: String
     $coursePassword: String
     $description: String
+    $seoDescription: String
+    $seoSubject: String
   ) {
     updateCourse(
       courseId: $courseId
@@ -16,6 +18,8 @@ const UpdateCourse = gql`
       title: $title
       coursePassword: $coursePassword
       description: $description
+      seoDescription: $seoDescription
+      seoSubject: $seoSubject
     ) {
       id
     }

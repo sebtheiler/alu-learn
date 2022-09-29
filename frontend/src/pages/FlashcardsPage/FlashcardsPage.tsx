@@ -3,7 +3,7 @@ import LinkButton from "@/atoms/LinkButton";
 import FlashcardList from "@/courses/FlashcardList";
 import SEO from "@/helpers/SEO";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
-import { Flashcard } from "@/types";
+import type { Course, Flashcard } from "@/types";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import Link from "next/link";
 type FlashcardWithId = Flashcard & { id: string };
 
 export interface FlashcardsPageProps {
-  courseId: string;
+  course: Course;
   title: string;
   flashcardsHasPart: any;
   flashcards: FlashcardWithId[];
@@ -24,7 +24,7 @@ export interface FlashcardsPageProps {
  * Renders a page with a list of all flashcards in a specific course, course section, or sub section
  */
 export default function FlashcardsPage({
-  courseId,
+  course,
   title,
   flashcardsHasPart,
   flashcards,
@@ -44,8 +44,11 @@ export default function FlashcardsPage({
     <>
       <SEO
         title={`${title} Flashcards`}
-        path={`course/${courseId}/flashcards`}
-        description="" // TODO: SUPER IMPORTANT
+        path={`course/${course.id}/flashcards${slug}`}
+        description={
+          course.seoDescription ??
+          `${title} study guide flashcards. Learn ${course.title} for free with spaced repetition flashcards and games`
+        } // TODO: SUPER IMPORTANT
         seoJson={{
           "@context": "https://schema.org/",
           "@type": "Quiz",
@@ -57,7 +60,7 @@ export default function FlashcardsPage({
             {
               "@type": "AlignmentObject",
               alignmentType: "educationalSubject",
-              targetName: title, // TODO: improve this?
+              targetName: course.seoSubject ?? title,
             },
           ],
           hasPart: flashcardsHasPart,
@@ -70,10 +73,10 @@ export default function FlashcardsPage({
           <Link
             href={
               subSectionSlug
-                ? `/course/${courseId}/flashcards/${courseSectionSlug}`
+                ? `/course/${course.id}/flashcards/${courseSectionSlug}`
                 : courseSectionSlug
-                ? `/course/${courseId}/flashcards`
-                : `/course/${courseId}`
+                ? `/course/${course.id}/flashcards`
+                : `/course/${course.id}`
             }
           >
             <a>
@@ -91,14 +94,14 @@ export default function FlashcardsPage({
           vertical={width === 0 ? false : width < 740}
           spaced
         >
-          <LinkButton href={`/course/${courseId}/study${slug}`}>
+          <LinkButton href={`/course/${course.id}/study${slug}`}>
             Study
           </LinkButton>
-          {/* <LinkButton href={`/course/${courseId}/games${slug}`}>
+          {/* <LinkButton href={`/course/${course.id}/games${slug}`}>
             Games
           </LinkButton> */}
           {editAccess && (
-            <LinkButton href={`/course/${courseId}/add-flashcards${slug}`}>
+            <LinkButton href={`/course/${course.id}/add-flashcards${slug}`}>
               Add Flashcards
             </LinkButton>
           )}

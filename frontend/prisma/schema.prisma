@@ -172,10 +172,12 @@ model UrlHit {
 
 // # Courses
 model Course {
-  id          String  @id @default(cuid())
-  title       String
-  bannerImage String?
-  description String? // Stringified Lexical state
+  id             String  @id @default(cuid())
+  title          String
+  bannerImage    String?
+  description    String? // Stringified Lexical state
+  seoDescription String?
+  seoSubject     String?
 
   users         User[] @relation("CourseUsers")
   archivedUsers User[] @relation("CourseArchivedUsers")

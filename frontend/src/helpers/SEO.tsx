@@ -28,47 +28,6 @@ const SEO: React.FC<SEOProps> = ({
   // Absolute og image url
   const ogImageUrl = APP_ROOT_URL + ogImagePath;
 
-  // const stringified = JSON.stringify(seoJson)
-  // console.log(stringified)
-  // console.log(typeof stringified)
-  const _seoJson = {
-    "@context": "https://schema.org/",
-    "@type": "Quiz",
-    about: {
-      "@type": "Thing",
-      name: "Cell Transport",
-    },
-    educationalAlignment: [
-      {
-        "@type": "AlignmentObject",
-        alignmentType: "educationalSubject",
-        targetName: "Biology",
-      },
-    ],
-    hasPart: [
-      {
-        "@context": "https://schema.org/",
-        "@type": "Question",
-        eduQuestionType: "Flashcard",
-        text: "This is some fact about receptor molecules.",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "receptor molecules",
-        },
-      },
-      {
-        "@context": "https://schema.org/",
-        "@type": "Question",
-        eduQuestionType: "Flashcard",
-        text: "This is some fact about the cell membrane.",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "cell membrane",
-        },
-      },
-    ],
-  };
-
   return (
     <>
       {seoJson && (

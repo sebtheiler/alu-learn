@@ -32,10 +32,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       privacySetting: true,
       editingAccess: true,
       description: true,
+      seoDescription: true,
+      seoSubject: true,
       owners: {
         select: {
           id: true,
           username: true,
+          email: true,
           image: true,
           name: true,
         },

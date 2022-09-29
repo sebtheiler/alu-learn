@@ -74,6 +74,10 @@ interface TextInputProps {
    * Maximum value (if number type)
    */
   max?: number;
+  /**
+   * Maximum length
+   */
+  maxLength?: number;
 }
 
 /**
@@ -99,6 +103,7 @@ export default function TextInput({
   autoFocus = false,
   min,
   max,
+  maxLength,
 }: TextInputProps) {
   return (
     <div
@@ -128,6 +133,7 @@ export default function TextInput({
         disabled={disabled}
         autoFocus={autoFocus}
         onKeyDown={onKeyDown}
+        maxLength={maxLength}
         min={min}
         max={max}
       />

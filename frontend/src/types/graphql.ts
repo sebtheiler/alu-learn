@@ -43,6 +43,8 @@ export type Course = {
   /** Users who have full privileges on this course */
   owners?: Maybe<Array<Maybe<User>>>;
   privacySetting?: Maybe<PrivacySetting>;
+  seoDescription?: Maybe<Scalars['String']>;
+  seoSubject?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   /** Users who have studying or teaching this course */
   users?: Maybe<Array<Maybe<User>>>;
@@ -324,6 +326,8 @@ export type MutationUpdateCourseArgs = {
   description?: InputMaybe<Scalars['String']>;
   editingAccess?: InputMaybe<EditingAccess>;
   privacySetting?: InputMaybe<PrivacySetting>;
+  seoDescription?: InputMaybe<Scalars['String']>;
+  seoSubject?: InputMaybe<Scalars['String']>;
   title?: InputMaybe<Scalars['String']>;
 };
 

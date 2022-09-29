@@ -24,6 +24,8 @@ type Course {
   """Users who have full privileges on this course"""
   owners: [User]
   privacySetting: PrivacySetting
+  seoDescription: String
+  seoSubject: String
   title: String
 
   """Users who have studying or teaching this course"""
@@ -209,6 +211,8 @@ type Mutation {
     description: String
     editingAccess: EditingAccess
     privacySetting: PrivacySetting
+    seoDescription: String
+    seoSubject: String
     title: String
   ): Course
 

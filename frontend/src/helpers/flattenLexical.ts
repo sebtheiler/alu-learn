@@ -8,7 +8,6 @@ import { createEditor } from "lexical";
  */
 const flattenLexical = (editorState: string) => {
   const editor = createEditor({ nodes });
-  console.log(editor, editorState);
   const parsedEditorState = editor.parseEditorState(editorState);
 
   return new Promise<string | undefined>((resolve) => {
