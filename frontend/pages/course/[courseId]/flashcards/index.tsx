@@ -1,6 +1,7 @@
 import FlashcardsPage from "@/pages/FlashcardsPage";
 import type { FlashcardsPageProps } from "@/pages/FlashcardsPage";
 import canEditCourse from "helpers/canEditCourse";
+import canViewCourse from "helpers/canViewCourse";
 import prisma from "lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
 import { unstable_getServerSession } from "next-auth";
@@ -23,18 +24,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const course = await prisma.course.findFirst({
     where: {
       id: courseId as string,
-      users: {
-        some: {
-          email: session?.user?.email,
-        },
-      },
     },
     select: {
       id: true,
       title: true,
     },
   });
-  if (!course)
+  if (!course || !canViewCourse(courseId as string, session?.user?.email))
     return {
       notFound: true,
     };

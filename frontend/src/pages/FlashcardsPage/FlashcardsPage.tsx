@@ -2,11 +2,22 @@ import ButtonGroup from "@/atoms/ButtonGroup";
 import LinkButton from "@/atoms/LinkButton";
 import FlashcardList from "@/courses/FlashcardList";
 import SEO from "@/helpers/SEO";
+import flattenLexical from "@/helpers/flattenLexical";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import { Flashcard } from "@/types";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
+
+async function allSynchronously<T>(
+  resolvables: (() => Promise<T>)[]
+): Promise<T[]> {
+  const results: T[] = [];
+  for (const resolvable of resolvables) {
+    results.push(await resolvable());
+  }
+  return results;
+}
 
 type FlashcardWithId = Flashcard & { id: string };
 
@@ -38,13 +49,64 @@ export default function FlashcardsPage({
 
   const { width } = useWindowDimensions();
 
+  const fronts = allSynchronously<string | undefined>(
+    flashcards.map(
+      (flashcard) => () =>
+        flattenLexical(
+          JSON.stringify(JSON.parse(flashcard.fields as string)[0])
+        )
+    )
+  );
+  const backs = allSynchronously<string | undefined>(
+    flashcards.map(
+      (flashcard) => () =>
+        flattenLexical(
+          JSON.stringify(JSON.parse(flashcard.fields as string)[1])
+        )
+    )
+  );
+  const flashcardsSEO = flashcards
+    .map(
+      (flashcard) => () =>
+        flattenLexical(
+          JSON.stringify(JSON.parse(flashcard.fields as string)[0])
+        )
+    )
+    .map((flashcard, i) => ({
+      "@context": "https://schema.org/",
+      "@type": "Question",
+      eduQuestionType: "Flashcard",
+      text: fronts[i],
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: backs[i],
+      },
+    }));
+
   return (
     <>
       <SEO
         title={`${title} Flashcards`}
         path={`course/${courseId}/flashcards`}
-        description=""
+        description="" // TODO: SUPER IMPORTANT
+        seoJson={{
+          "@context": "https://schema.org/",
+          "@type": "Quiz",
+          about: {
+            "@type": "Thing",
+            name: "Cell Transport",
+          },
+          educationalAlignment: [
+            {
+              "@type": "AlignmentObject",
+              alignmentType: "educationalSubject",
+              targetName: "Biology",
+            },
+          ],
+          hasPart: flashcardsSEO,
+        }}
       />
+      <script type="application/ld+json"></script>
       <div className="mt-28">
         <h1 className="text-center font-bold text-4xl mb-2">Flashcards</h1>
         <div className="absolute left-6 top-28">
