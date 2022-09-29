@@ -7,7 +7,11 @@ import SEO from "@/helpers/SEO";
 export default function VerifyRequestPage() {
   return (
     <>
-      <SEO title="Verify Request" path="verify-request" description="" />
+      <SEO
+        title="Verify Request"
+        path="verify-request"
+        description="Verify your email at Alu Learn"
+      />
       <div className="mt-48 text-center">
         <h1 className="text-4xl font-bold mb-2">Check your email</h1>
         <p>A sign in link has been sent to your email address</p>

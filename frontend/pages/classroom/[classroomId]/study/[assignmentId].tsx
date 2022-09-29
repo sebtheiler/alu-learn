@@ -88,10 +88,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const { reviewInstances, intervals } = studyData;
 
+  const course = await prisma.course.findUnique({
+    where: { id: courseId as string },
+    select: { title: true },
+  });
+
   return {
     props: JSON.parse(
       JSON.stringify({
         reviewInstances,
+        title: course?.title,
         intervals,
       })
     ) as StudyFlashcardsPageProps,

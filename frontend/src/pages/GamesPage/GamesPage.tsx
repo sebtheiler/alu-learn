@@ -59,7 +59,11 @@ export default function GamesPage() {
 
   return (
     <>
-      <SEO title="Games" path={`course/${courseId}/games`} description="" />
+      <SEO
+        title="Games"
+        path={`course/${courseId}/games`}
+        description="Play fun games with flashcards at Alu Learn. Matching games, chatbot games, quiz games, and more are available"
+      />
       <div className="mt-28 max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold text-center mb-2">Games</h1>
         <form onSubmit={play}>

@@ -30,6 +30,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       id: true,
       title: true,
       bannerImage: true,
+      seoDescription: true,
       courseSections: {
         select: {
           id: true,

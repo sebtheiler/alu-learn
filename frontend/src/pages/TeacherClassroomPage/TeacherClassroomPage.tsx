@@ -59,7 +59,7 @@ export default function TeacherClassroomPage({
         <SEO
           title="Class not found"
           path="/classrooms/undefined"
-          description=""
+          description="The classroom you are looking for does not exist"
         />
         <div className="mt-28">
           <h1 className="text-center font-bold text-4xl">
@@ -72,7 +72,11 @@ export default function TeacherClassroomPage({
 
   return (
     <>
-      <SEO title={classroom.title as string} path="classes" description="" />
+      <SEO
+        title={classroom.title as string}
+        path="classes"
+        description={`Manage ${classroom.title} with free flashcards at Alu Learn`}
+      />
       <div className="mt-28">
         <h1 className="text-center font-bold text-4xl">{classroom.title}</h1>
         <ClassroomSelect classrooms={classrooms} />

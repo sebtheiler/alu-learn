@@ -15,7 +15,11 @@ export default function StudentClassroomPage({
 }: StudentClassroomPageProps) {
   return (
     <>
-      <SEO title={classroom.title as string} path="classes" description="" />
+      <SEO
+        title={classroom.title as string}
+        path="classes"
+        description={`Study for ${classroom.title} with free online spaced repetition flashcards and games`}
+      />
       <div className="mt-28">
         <RenderCourse
           course={course}

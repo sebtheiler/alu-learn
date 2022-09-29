@@ -12,7 +12,7 @@ export default function AboutPage() {
       <SEO
         title="About"
         path="/about"
-        // description=""  TODO: (SEO) set description
+        description="Alu is the world's best flashcard maker and studying app for AP Exams. Study AP World, AP Psych, AP Gov, and more with Alu's free online flashcards"
       />
       <article className="container prose mx-auto mt-28 max-w-4xl prose-a:text-blue-500 prose-a:no-underline">
         <h1 className="mx-auto mb-2 text-center text-4xl font-bold">

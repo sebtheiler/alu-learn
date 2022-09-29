@@ -114,12 +114,19 @@ export default function ShareCoursePage({
 
   if (!authorized) {
     return (
-      <div className="mt-28 text-center">
-        <h1 className="font-bold text-4xl mb-3">Not Authorized</h1>
-        <p>
-          You are not authorized to edit the sharing settings of this course
-        </p>
-      </div>
+      <>
+        <SEO
+          title="Not Authorized"
+          path={`course/${course?.id}/share`}
+          description="You are not authorized to modify the sharing settings of this course"
+        />
+        <div className="mt-28 text-center">
+          <h1 className="font-bold text-4xl mb-3">Not Authorized</h1>
+          <p>
+            You are not authorized to edit the sharing settings of this course
+          </p>
+        </div>
+      </>
     );
   }
 
@@ -128,7 +135,7 @@ export default function ShareCoursePage({
       <SEO
         title="Share Course"
         path={`course/${course?.id}/share`}
-        description=""
+        description={`Update the sharing settings of ${course?.title} to share your flashcards with others`}
       />
       <div className="mt-28">
         <h1 className="text-center font-bold text-4xl mb-3">Share Course</h1>

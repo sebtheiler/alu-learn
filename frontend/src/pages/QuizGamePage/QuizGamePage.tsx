@@ -113,7 +113,7 @@ export default function QuizGamePage({ reviewInstances }: QuizGamePageProps) {
       <SEO
         title="Quiz Game"
         path={`course/${courseId}/games/quiz`}
-        description=""
+        description="Study the fun way with a quiz game to test your knowledge of your flashcards"
       />
       <div className="mt-28 max-w-xl mx-auto relative">
         <h1 className="text-center font-bold text-2xl">Quiz Game</h1>

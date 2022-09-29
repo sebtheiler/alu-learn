@@ -96,7 +96,7 @@ export default function SettingsPage({
       <SEO
         title="Settings"
         path="/settings"
-        // description=""  TODO: (SEO) set description
+        description="Update your user preferences and settings for Alu Learn"
       />
       <div className="mt-28 container mx-auto max-w-xl px-5">
         <h1 className="text-center text-4xl font-bold">Settings</h1>

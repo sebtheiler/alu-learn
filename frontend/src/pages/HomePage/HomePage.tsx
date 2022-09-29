@@ -126,7 +126,7 @@ export default function HomePage({
       <SEO
         title="Home"
         path="/home"
-        // description=""  TODO: (SEO) set description
+        description="Alu is the world's best flashcard maker and studying app for AP Exams. Study AP World, AP Psych, AP Gov, and more with Alu's free online flashcards"
       />
       <div className="mt-28">
         <div className="relative">

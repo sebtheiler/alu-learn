@@ -2,6 +2,7 @@ import ButtonGroup from "@/atoms/ButtonGroup";
 import LinkButton from "@/atoms/LinkButton";
 import RenderSharedCourse from "@/courses/RenderSharedCourse";
 import SEO from "@/helpers/SEO";
+import englishList from "@/helpers/englishList";
 import type { Course, User } from "@/types";
 
 export interface ProfilePageProps {
@@ -21,7 +22,11 @@ export default function ProfilePage({
   if (!user)
     return (
       <>
-        <SEO title="Profile not found" path="profile" description="" />
+        <SEO
+          title="Profile not found"
+          path="profile"
+          description="The profile you are looking for does not exist"
+        />
         <div className="mt-28 mx-auto text-center">
           <h1 className="text-4xl font-bold">Profile not Found</h1>
           <p className="my-6">
@@ -34,7 +39,15 @@ export default function ProfilePage({
 
   return (
     <>
-      <SEO title={`${user.name}'s Profile`} path="profile" description="" />
+      <SEO
+        title={`${user.name}'s Profile`}
+        path="profile"
+        description={`View ${
+          user.name
+        }'s free study guide flashcards for ${englishList(
+          courses.map((course) => course.title as string)
+        )}`}
+      />
       <div className="mt-28 px-10 md:container md:px-48 mx-auto">
         <h1 className="text-4xl font-bold">{user.name}</h1>
         <hr className="my-3" />

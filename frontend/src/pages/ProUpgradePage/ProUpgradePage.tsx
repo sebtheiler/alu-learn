@@ -59,7 +59,7 @@ export default function ProUpgradePage({
       <SEO
         title="Pro"
         path="/pro"
-        // description=""  TODO: (SEO) set description
+        description="Upgrade to Alu Pro to gain access to Alu's next-level flashcard and studying features, including games, special tools, and more"
       />
       <div className="container mx-auto mt-28 max-w-6xl px-20">
         <div className="prose mx-auto text-center">

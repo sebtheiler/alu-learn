@@ -34,7 +34,11 @@ export default function ArchivedPage({ archivedCourses }: ArchivedPageProps) {
 
   return (
     <>
-      <SEO title="Archived" path="archived" description="" />
+      <SEO
+        title="Archived"
+        path="archived"
+        description="View your archived courses and classes in Alu Learn"
+      />
       <div className="mt-28">
         <h1 className="text-4xl font-bold text-center">Archived</h1>
         <h3 className="text-2xl font-bold text-center mt-5 mb-3">Courses</h3>

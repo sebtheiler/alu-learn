@@ -29,7 +29,11 @@ export default function ToolsPage() {
 
   return (
     <>
-      <SEO title="Tools" path={`course/${courseId}/tools`} description="" />
+      <SEO
+        title="Tools"
+        path={`course/${courseId}/tools`}
+        description="Find the personalized hardest flashcards and topics for you with Alu's course tools"
+      />
       <div className="mt-28 max-w-3xl mx-auto px-10">
         <h1 className="text-4xl font-bold text-center">Tools</h1>
         {!isPro && (

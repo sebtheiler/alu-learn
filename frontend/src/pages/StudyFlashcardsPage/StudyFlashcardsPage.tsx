@@ -35,6 +35,10 @@ export interface StudyFlashcardsPageProps {
   courseId: string;
   courseSectionSlug?: string;
   subSectionSlug?: string;
+  /**
+   * Used in the SEO/meta title
+   */
+  title?: string;
   reviewInstances: ReviewInstance[];
   /**
    * Intervals for each review instance.
@@ -62,6 +66,7 @@ const BUTTONS_BREAKPOINT = 675;
 export default function StudyFlashcardsPage({
   reviewInstances,
   noFlashcards,
+  title,
   intervals,
   currentStreak,
   streakActive,
@@ -275,12 +280,18 @@ export default function StudyFlashcardsPage({
     activeReviewInstance?.flashcard as Flashcard | undefined
   );
 
+  const slug = subSectionSlug
+    ? `/${courseSectionSlug}/${subSectionSlug}`
+    : courseSectionSlug
+    ? `/${courseSectionSlug}`
+    : "";
+
   return (
     <>
       <SEO
-        title="Study Flashcards"
-        path={`course/${courseId}/study`}
-        description=""
+        title={title ? `Study ${title} Flashcards` : "Study Flashcards"}
+        path={`course/${courseId}/study${slug}`}
+        description={`Study ${title} flashcards for free. Improve your memory and grades with Alu's spaced repetition flashcards and games`}
       />
       <div className="mt-28">
         <div className="absolute left-6 top-28">

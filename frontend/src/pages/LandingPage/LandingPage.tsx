@@ -47,7 +47,7 @@ export default function LandingPage() {
       <SEO
         title="Alu Learn"
         path="/"
-        // description=""  TODO: (SEO) set description
+        description="Alu is the world's best flashcard maker and studying app for AP Exams. Study AP World, AP Psych, AP Gov, and more with Alu's free online flashcards"
         noTitleTemplate
       />
       <div>

@@ -14,7 +14,7 @@ export default function ExploreCoursesPage({
       <SEO
         title="Explore Decks"
         path="/explore"
-        // description=""  TODO: (SEO) set description
+        description="Find free online flashcards for AP World, AP Psych, AP Gov, and more. Study today with Alu's science-backed spaced repetition studying system"
       />
       <div className="container mx-auto mt-28 px-48">
         <div>

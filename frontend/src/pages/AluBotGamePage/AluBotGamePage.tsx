@@ -255,7 +255,7 @@ export default function AluBotGamePage({
       <SEO
         title="Alu Bot Game"
         path={`course/${courseId}/games/alu-bot`}
-        description=""
+        description="Study flashcards the fun way with a chatbot game!"
       />
       <div className="mt-28">
         <h1 className="text-center font-bold text-2xl">Study with Alu Bot</h1>

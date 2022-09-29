@@ -7,7 +7,7 @@ export default function NotFoundPage() {
       <SEO
         title="Page Not Found"
         path=""
-        // description=""  TODO: (SEO) set description
+        description="We couldn't find the page you are looking for"
         noindex
       />
       <div className="prose mx-auto mt-28 text-center">

@@ -31,8 +31,10 @@ export default function CoursePage({
       <SEO
         title={course?.title ?? "Course"}
         path={`course/${course?.id}`}
-        // TODO: Add SEO description (VERY IMPORTANT)
-        description=""
+        description={
+          course.seoDescription ??
+          `${course.title} study guide flashcards. Learn ${course.title} for free with spaced repetition flashcards and games`
+        }
       />
       {viewAccess && (
         <div className="mt-28">

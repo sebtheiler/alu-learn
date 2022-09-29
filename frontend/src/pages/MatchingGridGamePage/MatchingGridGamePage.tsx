@@ -94,7 +94,7 @@ export default function MatchingGridGamePage({
       <SEO
         title="Matching Grid Game"
         path={`course/${courseId}/games/matching-grid`}
-        description=""
+        description="Study the fun way with a matching game to test your knowledge of your flashcards"
       />
       <div className="mt-28">
         <h1 className="font-bold text-2xl text-center">

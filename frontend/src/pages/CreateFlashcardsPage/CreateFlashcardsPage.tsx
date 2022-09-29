@@ -116,7 +116,7 @@ export default function CreateFlashcardsPage({
       <SEO
         title="Create Flashcards"
         path={`course/${course?.id}/add-flashcards/${courseSectionSlug}/${subSectionSlug}`}
-        description=""
+        description={`Create free spaced repetition flashcards for ${course.title} at Alu Learn`}
       />
       <div className="mt-28">
         <h1 className="text-center font-bold text-4xl">Add Flashcards</h1>

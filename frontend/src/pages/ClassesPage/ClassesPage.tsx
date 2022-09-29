@@ -13,7 +13,11 @@ export interface ClassesPageProps {
 export default function ClassesPage({ classrooms }: ClassesPageProps) {
   return (
     <>
-      <SEO title="Classes" path="classes" description="" />
+      <SEO
+        title="Classes"
+        path="classes"
+        description="Create a new classroom at Alu Learn"
+      />
       <div className="mt-28">
         <h1 className="text-center font-bold text-4xl">Classes</h1>
         <ClassroomSelect classrooms={classrooms} />
