@@ -14,6 +14,7 @@ import {
 } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -76,12 +77,16 @@ export default function AssignmentsTab({
       <h2 className="mt-3 mb-2 text-center font-bold text-2xl">Assignments</h2>
       <div className="my-3">
         {assignments.map((assignment) => (
-          <div
+          <Link
+            href={`/classroom/${classroom.id}/assignments/${assignment.id}`}
             key={assignment.id}
-            className="max-w-xs bg-gray-100 border-4 borde-gray-200 rounded-xl p-5 mx-auto my-2"
           >
-            <h3 className="font-bold text-center">{assignment.title}</h3>
-          </div>
+            <a>
+              <div className="max-w-xs bg-gray-100 border-4 border-gray-200 rounded-xl p-5 mx-auto my-2 hover:scale-105 transition duration-150">
+                <h3 className="font-bold text-center">{assignment.title}</h3>
+              </div>
+            </a>
+          </Link>
         ))}
       </div>
       <div className="text-center">

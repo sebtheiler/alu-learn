@@ -4,6 +4,7 @@ import CopyLink from "@/components/CopyLink";
 import IconTooltip from "@/components/IconTooltip";
 import RemoveStudentFromClassroom from "@/graphql/RemoveStudentFromClassroom";
 import formatPlural from "@/helpers/formatPlural";
+import formatTimeTaken from "@/helpers/formatTimeTaken";
 import type {
   Classroom,
   Mutation,
@@ -87,17 +88,7 @@ export default function StudentsTab({
                 )}
               </span>
               <span className="w-1/3">
-                {(student.history[0]?.timeTaken ?? 0) / 1000 < 60
-                  ? formatPlural(
-                      Math.floor((student.history[0]?.timeTaken ?? 0) / 1000),
-                      "second"
-                    )
-                  : formatPlural(
-                      Math.floor(
-                        (student.history[0]?.timeTaken ?? 0) / 1000 / 60
-                      ),
-                      "minute"
-                    )}
+                {formatTimeTaken(student.history[0]?.timeTaken ?? 0)}
               </span>
               <IconTooltip
                 faIcon={faX}
