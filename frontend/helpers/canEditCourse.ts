@@ -1,4 +1,5 @@
 import isCourseUser from "./isCourseUser";
+import isFriendOfCourseOwner from "./isFriendOfCourseOwner";
 import prisma from "lib/prisma";
 
 /**
@@ -23,8 +24,7 @@ const canEditCourse = async (
     case "ALL":
       return true;
     case "FRIENDS":
-      // TODO
-      return null;
+      return isFriendOfCourseOwner(email, courseId);
     case "INSTITUTION":
       return;
     case "OWNERS":

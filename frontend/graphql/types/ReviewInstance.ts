@@ -100,6 +100,7 @@ export const ReviewInstancesMutation = extendType({
           doneReviewsToday: true,
           numReviewsDoneToday: true,
           currentStreak: true,
+          longestStreak: true,
           timezoneOffset: true,
         });
         if (!user) return null;
@@ -131,6 +132,9 @@ export const ReviewInstancesMutation = extendType({
         if (!interval) throw new ApolloError("Error calculating interval");
         const { updatedReviewInstance } = interval;
 
+        const newStreak = user.doneReviewsToday
+          ? undefined
+          : (user.currentStreak as number) + 1;
         // Update user and history
         await ctx.prisma.user.update({
           where: {
@@ -138,9 +142,11 @@ export const ReviewInstancesMutation = extendType({
           },
           data: {
             numReviewsDoneToday: (user.numReviewsDoneToday as number) + 1,
-            currentStreak: user.doneReviewsToday
-              ? undefined
-              : (user.currentStreak as number) + 1,
+            currentStreak: newStreak,
+            longestStreak:
+              newStreak && newStreak > (user.longestStreak ?? 0)
+                ? newStreak
+                : undefined,
             doneReviewsToday: user.doneReviewsToday ? undefined : true,
           },
         });

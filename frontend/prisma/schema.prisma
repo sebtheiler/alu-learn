@@ -64,12 +64,20 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  role                  Role            @default(USER)
+  friends     User[] @relation("Friends")
+  friendUsers User[] @relation("Friends")
+
   stripeCustomerAccount StripeCustomer?
   isPro                 Boolean         @default(false)
   isProFromOrg          Boolean         @default(false)
 
+  role        Role    @default(USER)
+  isSuperuser Boolean @default(false)
+  isStaff     Boolean @default(false)
+  isActive    Boolean @default(true)
+
   currentStreak    Int     @default(0)
+  longestStreak    Int     @default(0)
   doneReviewsToday Boolean @default(false)
 
   courses         Course[] @relation("CourseUsers")
