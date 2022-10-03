@@ -146,8 +146,8 @@ export default function StudyingDemo() {
         className={classNames(
           "transition-opacity duration-600",
           revealAnswer && activeReviewInstance.id !== areYouReady.id
-            ? "opacity-100"
-            : "opacity-0"
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         )}
       >
         <ButtonGroup className="text-center" fixedWidth="165px" spaced>

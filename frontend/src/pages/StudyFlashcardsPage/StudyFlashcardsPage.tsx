@@ -351,7 +351,9 @@ export default function StudyFlashcardsPage({
             <div
               className={classNames(
                 "w-full z-30 transition-opacity duration-600",
-                revealAnswer ? "opacity-100" : "opacity-0",
+                revealAnswer
+                  ? "opacity-100 pointer-events-auto"
+                  : "opacity-0 pointer-events-none",
                 width > BUTTONS_BREAKPOINT ? "fixed bottom-0 h-24" : "mt-10"
               )}
             >

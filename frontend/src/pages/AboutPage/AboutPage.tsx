@@ -4,6 +4,8 @@ import Image from "next/image";
 
 const sebProfile = {
   name: "Sebastian Theiler",
+  image:
+    "https://lh3.googleusercontent.com/ogw/AOh-ky2MDMLVHGZYlQ6W3PnsS5EtaogYdjgeDxQtVJK77g=s32-c-mo",
 };
 
 export default function AboutPage() {
@@ -165,7 +167,7 @@ export default function AboutPage() {
               Hi! I&apos;m
               <span className="ml-1" />
               <DisplayUserInline user={sebProfile} />, a New York high school
-              junior, and I created Alu. I&apos;ve been a life-long learner and,
+              senior, and I created Alu. I&apos;ve been a life-long learner and,
               in the summer of 2020, I sought out to create a tool to help me
               learn more effectively. Inspired by{" "}
               <a

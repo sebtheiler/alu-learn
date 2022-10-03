@@ -16,7 +16,7 @@ export default function RenderSharedCourse({
 }: RenderSharedCourseProps) {
   return (
     <div
-      className="rounded-xl border-4 border-alu-mid-gray bg-alu-light-gray px-6 py-4"
+      className="rounded-xl border-4 border-alu-mid-gray bg-alu-light-gray px-6 py-4 my-3"
       key={course.id}
     >
       <div>
@@ -36,8 +36,12 @@ export default function RenderSharedCourse({
           {course._count.users} {/* @ts-ignore */}
           {course._count.users === 1 ? "student" : "students"}
         </p>
-        <h2 className="my-2 text-4xl font-bold text-blue-500 hover:text-blue-600 hover:underline">
-          <Link href={`/course/${course.id}`}>{course.title}</Link>
+        <h2>
+          <Link href={`/course/${course.id}`}>
+            <a className="my-2 text-4xl font-bold text-blue-500 hover:text-blue-600 hover:underline">
+              {course.title}
+            </a>
+          </Link>
         </h2>
         <hr className="my-3" />
       </div>

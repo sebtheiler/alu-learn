@@ -154,7 +154,7 @@ export default function RenderCourse({
             )}
             <h1
               className={classNames(
-                "text-4xl font-bold text-center",
+                "text-4xl font-bold text-center px-12",
                 course.bannerImage ? "text-white" : "text-black"
               )}
             >

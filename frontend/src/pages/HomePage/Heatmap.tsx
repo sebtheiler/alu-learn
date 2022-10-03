@@ -60,9 +60,9 @@ export default function Heatmap({ history }: { history: HistorySegment[] }) {
           values={historyVals}
           classForValue={(value: HistoryVal) => {
             if (!value) return "heatmapColorScale0";
-            return `heatmapColorScale${Math.floor(
-              (value.count / maxValue) * 9
-            )}`;
+            const colorNum = Math.ceil((value.count / maxValue) * 9);
+            console.log(value.count, colorNum);
+            return `heatmapColorScale${colorNum}`;
           }}
           tooltipDataAttrs={(value: HistoryVal) => {
             if (!value.date) return;

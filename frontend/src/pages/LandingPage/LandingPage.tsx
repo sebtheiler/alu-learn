@@ -52,7 +52,7 @@ export default function LandingPage() {
       />
       <div>
         <div
-          style={{ height: `${height - 100}px` }}
+          style={{ height: `${(height ?? 1080) - 100}px` }}
           className="w-100 bg-alu-dark-purple"
         >
           <div className="grid h-full items-center text-center md:grid-cols-1 lg:grid-cols-2 lg:text-left">

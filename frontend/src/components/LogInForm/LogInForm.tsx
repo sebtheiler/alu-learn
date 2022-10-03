@@ -60,35 +60,33 @@ export default function LogInForm({ type }: { type: "REGISTER" | "SIGNIN" }) {
             className="mb-2"
             required
           />
-          {type === "REGISTER" && (
-            <Checkbox
-              label={
-                <>
-                  I accept the{" "}
-                  <a
-                    href="/legal/tos"
-                    target="_blank"
-                    className="text-blue-500"
-                  >
-                    terms of service
-                  </a>{" "}
-                  and{" "}
-                  <a
-                    href="/legal/privacypolicy"
-                    target="_blank"
-                    className="text-blue-500"
-                  >
-                    privacy policy
-                  </a>
-                </>
-              }
-              id="terms-and-conditions"
-              className="mb-4 ml-2"
-              required
-            />
-          )}
+          <Checkbox
+            label={
+              <>
+                I accept the{" "}
+                <a href="/legal/tos" target="_blank" className="text-blue-500">
+                  terms of service
+                </a>{" "}
+                and{" "}
+                <a
+                  href="/legal/privacypolicy"
+                  target="_blank"
+                  className="text-blue-500"
+                >
+                  privacy policy
+                </a>
+              </>
+            }
+            id="terms-and-conditions"
+            className="mb-4 ml-2"
+            required
+          />
         </AsyncForm>
       )}
+      <p className="text-center text-orange-600 mt-3">
+        Note: If you created your Alu account prior to October 3, you{" "}
+        <span className="font-bold italic">must</span> sign-in with your email
+      </p>
     </>
   );
 }
