@@ -176,6 +176,7 @@ export const ReviewInstancesMutation = extendType({
                 id: reviewInstance.id,
               },
             },
+            backupReviewInstanceId: reviewInstance.id,
           },
         });
 

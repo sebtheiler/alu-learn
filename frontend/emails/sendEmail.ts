@@ -35,14 +35,26 @@ const sendEmail = async ({
   /** The HTML message */
   html: string;
 }) => {
-  await transporter.verify();
-  return await transporter.sendMail({
-    from: EMAIL_FROM,
-    to,
-    subject,
-    text: "Please use an HTML-enabled client to view this email",
-    html,
-  });
+  if (process.env.NODE_ENV === "production") {
+    await transporter.verify();
+    return await transporter.sendMail({
+      from: EMAIL_FROM,
+      to,
+      subject,
+      text: "Please use an HTML-enabled client to view this email",
+      html,
+    });
+  } else {
+    console.log(
+      `
+=== Begin Email ===
+TO: ${to}
+Subject: ${subject}
+Message: ${html}
+=== End Email ===
+`.trim()
+    );
+  }
 };
 
 export default sendEmail;

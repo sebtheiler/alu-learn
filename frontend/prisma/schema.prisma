@@ -72,7 +72,7 @@ model User {
   isProFromOrg          Boolean         @default(false)
 
   role        Role    @default(USER)
-  isSuperuser Boolean @default(false)
+  isSuperUser Boolean @default(false)
   isStaff     Boolean @default(false)
   isActive    Boolean @default(true)
 
@@ -304,9 +304,10 @@ enum LearningStatus {
 }
 
 model ReviewInstanceHistory {
-  id               String          @id @default(cuid())
-  reviewInstance   ReviewInstance? @relation(fields: [reviewInstanceId], references: [id], onDelete: SetNull)
-  reviewInstanceId String?
+  id                     String          @id @default(cuid())
+  reviewInstance         ReviewInstance? @relation(fields: [reviewInstanceId], references: [id], onDelete: SetNull)
+  reviewInstanceId       String?
+  backupReviewInstanceId String?
 
   gradeResponse  GradeResponse
   timeTaken      Float

@@ -3,7 +3,6 @@ import Popover from "@/atoms/Popover";
 import TextInput from "@/atoms/TextInput";
 import Tooltip from "@/atoms/Tooltip";
 import SearchFlashcards from "@/graphql/SearchFlashcards";
-import type { SearchFlashcardsType } from "@/graphql/SearchFlashcards";
 // import flattenNodes from "@/helpers/flattenNodes";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useQuery } from "@apollo/client";
@@ -40,10 +39,12 @@ export default function FlashcardLinkButton({
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const debouncedSearchTerm = useDebounce<string>(searchTerm, 750);
-  const { data: searchData, refetch: searchFlashcards } =
-    useQuery<SearchFlashcardsType>(SearchFlashcards, {
+  const { data: searchData, refetch: searchFlashcards } = useQuery(
+    SearchFlashcards,
+    {
       skip: debouncedSearchTerm === "",
-    });
+    }
+  );
   const { searchFlashcards: searchedFlashcards } = searchData ?? {};
 
   // We need to override the popup's `open` state so that we can
