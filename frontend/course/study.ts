@@ -1,4 +1,5 @@
 import processCloze from "./processCloze";
+import { clozeRegex } from "@/globals";
 import { ClozeColor } from "@/lexicalEditor/plugins/ClozeDeletionPlugin/colors";
 import type { Intervals } from "@/types";
 import type { Flashcard, FlashcardType, ReviewInstance } from "@prisma/client";
@@ -74,10 +75,23 @@ const generateReviewInstances = async (
       ];
     case "CLOZE": {
       const field = JSON.stringify(JSON.parse(flashcard.fields as string)[0]);
-      const clozeColors = new Set<ClozeColor>();
-      await processCloze(field, (child) => clozeColors.add(child.getColor()));
 
-      return Array.from(clozeColors).map((color) => ({
+      // Process modern cloze colors
+      const clozeColors = new Set<ClozeColor>();
+      processCloze(field, (child) => clozeColors.add(child.getColor()));
+
+      // Process legacy cloze numbers
+      const clozeNumbers = new Set<string>(); // string representation of ints
+      const clozeNumberMatches = field.matchAll(clozeRegex);
+      for (const clozeNumberMatch of clozeNumberMatches) {
+        const clozeData = clozeNumberMatch[0]; // e.g., {{c1::hello world}}
+        const clozeNumberData = clozeData.split("::")[0]; // e.g., {{c1
+        const clozeNumber = clozeNumberData.replace(/^\D+/g, ""); // e.g., 1
+        clozeNumbers.add(clozeNumber);
+      }
+
+      const clozeElements = new Set([...clozeColors, ...clozeNumbers]);
+      return Array.from(clozeElements).map((color) => ({
         flashcardId: flashcard.id,
         userId,
         nextReview: thisMorning,

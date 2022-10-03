@@ -8,10 +8,10 @@ import { ElementNode, LexicalNode, RootNode, TextNode } from "lexical";
 import type { LexicalEditor } from "lexical";
 
 /**
- * Recursively finds all ClozeDeletionNode from a stringified field
+ * Recursively finds all ClozeDeletionNode from a stringified field and runs a `callback` for each cloze node found
  * @param field Stringified field to search for ClozeDeletionNodes in
  * @param callback Function to be called when a ClozeDeletionNode is found
- * @returns A promise to await as the function finds all the ClozeDeletionNodes
+ * @returns An editor with any changes made
  * @example
  * ```ts
  * const field = JSON.stringify(JSON.parse(flashcard.fields as string)[0]);
