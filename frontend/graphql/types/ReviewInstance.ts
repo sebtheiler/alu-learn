@@ -31,6 +31,7 @@ const ReviewInstance = objectType({
     t.field("lastReview", { type: DateScalar });
     t.field("flashcard", { type: "Flashcard" });
     t.boolean("isStarred");
+    t.string("name");
   },
 });
 

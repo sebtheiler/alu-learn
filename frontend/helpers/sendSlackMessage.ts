@@ -5,6 +5,7 @@ const sendSlackMessage = (
   channel = process.env.SLACK_NOTIFICATION_CHANNEL as string
 ) => {
   if (process.env.NODE_ENV !== "production") return null;
+  if (!slackApp) throw new Error("`slackApp` not set");
   return slackApp.client.chat.postMessage({
     channel,
     text,

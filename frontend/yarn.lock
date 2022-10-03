@@ -3470,6 +3470,11 @@
   dependencies:
     "@lexical/utils" "0.3.11"
 
+"@lexical/headless@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@lexical/headless/-/headless-0.5.0.tgz#a857e50eac242d0aabdc524ac9b6a1c52af81777"
+  integrity sha512-diIfSdbAZ/yDH6wUPod4m4vc0O7bTnpei53b+mlU7Q+g9ZROoS5q2XQWXDsMSpyag5EOuYhgTM75BT2DvtJbCA==
+
 "@lexical/history@0.3.11":
   version "0.3.11"
   resolved "https://registry.yarnpkg.com/@lexical/history/-/history-0.3.11.tgz#4c80c5e9612299d5cba8b3788a2e8ebb34008d9c"

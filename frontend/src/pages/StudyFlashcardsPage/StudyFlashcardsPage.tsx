@@ -19,7 +19,6 @@ import type {
   Grade as GQLGrade,
   Intervals,
   MutationUpdateReviewInstanceArgs,
-  Flashcard,
 } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
@@ -276,9 +275,7 @@ export default function StudyFlashcardsPage({
     ? `/course/${courseId}/add-flashcards/${courseSectionSlug}`
     : `/course/${courseId}/add-flashcards`;
 
-  const { frontField, backField } = usePrepareFields(
-    activeReviewInstance?.flashcard as Flashcard | undefined
-  );
+  const { frontField, backField } = usePrepareFields(activeReviewInstance);
 
   const slug = subSectionSlug
     ? `/${courseSectionSlug}/${subSectionSlug}`

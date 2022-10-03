@@ -488,6 +488,7 @@ export type ReviewInstance = {
   isStarred?: Maybe<Scalars['Boolean']>;
   lastReview?: Maybe<Scalars['Date']>;
   learningStatus?: Maybe<LearningStatus>;
+  name?: Maybe<Scalars['String']>;
   nextReview?: Maybe<Scalars['Date']>;
   stepsIndex?: Maybe<Scalars['Int']>;
 };
