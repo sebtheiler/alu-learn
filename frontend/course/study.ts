@@ -37,6 +37,7 @@ const flashcardSelect = {
  */
 const reviewInstanceSelect = {
   id: true,
+  name: true,
   learningStatus: true,
   stepsIndex: true,
   ease: true,

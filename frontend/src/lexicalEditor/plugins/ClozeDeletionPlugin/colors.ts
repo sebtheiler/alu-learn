@@ -1,4 +1,5 @@
 export const colorMap = new Map([
+  ["BLANK", "bg-transparent"],
   ["BLUE", "bg-blue-400"],
   ["CYAN", "bg-cyan-400"],
   ["FUCHSIA", "bg-fuchsia-400"],
@@ -27,6 +28,7 @@ export const colorOptions = [
 ];
 
 export type ClozeColor =
+  | "BLANK"
   | "BLUE"
   | "CYAN"
   | "FUCHSIA"

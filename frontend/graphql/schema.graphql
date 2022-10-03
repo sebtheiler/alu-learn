@@ -354,6 +354,7 @@ type ReviewInstance {
   isStarred: Boolean
   lastReview: Date
   learningStatus: LearningStatus
+  name: String
   nextReview: Date
   stepsIndex: Int
 }
