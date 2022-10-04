@@ -1,12 +1,16 @@
+import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import LinkButton from "@/atoms/LinkButton";
+import Ad from "@/components/Ad";
 import FlashcardList from "@/courses/FlashcardList";
 import SEO from "@/helpers/SEO";
+import updateURLParameter from "@/helpers/updateURLParameter";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import type { Course, Flashcard } from "@/types";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 type FlashcardWithId = Flashcard & { id: string };
 
@@ -39,6 +43,9 @@ export default function FlashcardsPage({
     : "";
 
   const { width } = useWindowDimensions();
+  const router = useRouter();
+  const { page: rawPage } = router.query;
+  const page = parseInt((rawPage as string | undefined) ?? "0");
 
   return (
     <>
@@ -66,7 +73,6 @@ export default function FlashcardsPage({
           hasPart: flashcardsHasPart,
         }}
       />
-      <script type="application/ld+json"></script>
       <div className="mt-28">
         <h1 className="text-center font-bold text-4xl mb-2">Flashcards</h1>
         <div className="absolute left-6 top-28">
@@ -114,6 +120,41 @@ export default function FlashcardsPage({
               This section doesn&apos;t have any flashcards yet
             </p>
           )}
+          <ButtonGroup className="my-3 text-center" fixedWidth="200px" spaced>
+            {page > 0 && (
+              <Button
+                onClick={() =>
+                  router.push(
+                    updateURLParameter(
+                      router.asPath,
+                      "page",
+                      (page - 1).toString()
+                    )
+                  )
+                }
+              >
+                Previous Page
+              </Button>
+            )}
+            {flashcards.length === 200 && (
+              <Button
+                onClick={() =>
+                  router.push(
+                    updateURLParameter(
+                      router.asPath,
+                      "page",
+                      (page + 1).toString()
+                    )
+                  )
+                }
+              >
+                Next Page
+              </Button>
+            )}
+          </ButtonGroup>
+          <footer>
+            <Ad adType="FLASHCARD_LIST_BOTTOM" />
+          </footer>
         </div>
       </div>
     </>

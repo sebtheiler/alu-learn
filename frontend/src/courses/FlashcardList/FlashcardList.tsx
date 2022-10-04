@@ -4,7 +4,7 @@ import MoveFlashcard from "@/graphql/MoveFlashcard";
 import type { Flashcard, Mutation, MutationMoveFlashcardArgs } from "@/types";
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
-import { useMemo, useState, Fragment } from "react";
+import { useMemo, useState, Fragment, useEffect } from "react";
 import { ReactSortable } from "react-sortablejs";
 import type { SortableEvent } from "react-sortablejs";
 
@@ -48,6 +48,11 @@ export default function FlashcardList({ flashcards }: FlashcardListProps) {
     });
   };
 
+  // When the flashcards prop changes, update the internal `_flashcards` state
+  useEffect(() => {
+    if (flashcards !== _flashcards && flashcards) _setFlashcards(flashcards);
+  }, [flashcards, _flashcards]);
+
   const renderedFlashcards = useMemo(() => {
     const deleteHandler = (flashcard: FlashcardWithId) => {
       _setFlashcards(_flashcards.filter((f) => f.id !== flashcard.id));
@@ -88,9 +93,6 @@ export default function FlashcardList({ flashcards }: FlashcardListProps) {
       ) : (
         renderedFlashcards
       )}
-      <footer>
-        <Ad adType="FLASHCARD_LIST_BOTTOM" />
-      </footer>
     </div>
   );
 }

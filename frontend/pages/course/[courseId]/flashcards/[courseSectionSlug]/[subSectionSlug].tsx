@@ -2,6 +2,7 @@ import FlashcardsPage from "@/pages/FlashcardsPage";
 import type { FlashcardsPageProps } from "@/pages/FlashcardsPage";
 import type { Flashcard } from "@/types";
 import flashcardsSEO from "course/flashcardsSEO";
+import getFlashcards from "course/getFlashcards";
 import canEditCourse from "helpers/canEditCourse";
 import canViewCourse from "helpers/canViewCourse";
 import prisma from "lib/prisma";
@@ -16,7 +17,7 @@ const Flashcards: NextPage<FlashcardsPageProps> = (
 export default Flashcards;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { courseId, courseSectionSlug, subSectionSlug } = context.query;
+  const { courseId, courseSectionSlug, subSectionSlug, page } = context.query;
   const session = await unstable_getServerSession(
     context.req,
     context.res,
@@ -54,25 +55,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       notFound: true,
     };
 
-  const flashcards = await prisma.flashcard.findMany({
-    where: {
-      subSection: {
-        slug: subSectionSlug as string,
-        courseSection: {
-          courseId: courseId as string,
-          slug: courseSectionSlug as string,
-        },
-      },
-    },
-    select: {
-      id: true,
-      fields: true,
-      tags: true,
-      type: true,
-    },
-    orderBy: {
-      index: "asc",
-    },
+  const flashcards = await getFlashcards({
+    courseId: courseId as string,
+    courseSectionSlug: courseSectionSlug as string,
+    subSectionSlug: subSectionSlug as string,
+    pageNum: parseInt((page as string | undefined) ?? "0"),
   });
 
   const editAccess = await canEditCourse(
