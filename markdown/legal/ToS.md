@@ -1,7 +1,7 @@
 ---
 title: "Terms of Service"
 path: "legal/tos"
-description: "Alu Learn terms of service"
+description: "Alu Learn's Terms of Service (ToS)"
 ---
 
 ## Gist

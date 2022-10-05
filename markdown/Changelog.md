@@ -1,16 +1,38 @@
 ---
 title: "Changelog"
 path: "changelog"
-description: ""
+description: "Alu Learn changelog"
 ---
 
+# Alu 2.0 - Oct 04
+The biggest update in Alu's history has arrived!
+
+Alu's codebase has been entirely rewritten from Django to Next.js, improving performance, SEO, ease of updates and reducing common bugs.  This update features a complete UI overhaul, including newly designed buttons, modals, and more. Flashcard studying has also been improved, with better animations and a satisfying noise for each flashcard you get correct.
+
+Decks are now referred to as courses and will soon have the ability to contain more than just flashcards...
+
+Here's a (mostly) full list of changes:
+
+- **Skill Tree Redesign:** Alu's skill tree has been redesigned to feel more fun and modern. All flashcard progress is transferred to the new skill tree
+- **Course Page Redesign:** The course page has been redesigned to have a more modern feel
 - **Changed Paragraph Breaks:** Paragraph no longer have a bottom margin. This makes the editor more consistent with other editors, such as Google Docs.
-
-# Better Sign-up - Jun ?? - 1.1.0
-
-Improved the sign-up experience.
-
-- **Sign-in with Google:** You may now sign-in to your existing account (or create a new account) with Google authentication. One less password to remember!
+- **Custom Styled Components:** Alu now has more beautiful, custom UI components
+- **Alu Bot Game:** Study the fun way by "texting" Alu Bot with your flashcards
+- **Switched to Next.js:** Alu's code base is now completely written in Next.js + React. This was a monumental undertaking, but should pave the way for a better Alu
+- **Switched to Lexical:** Alu's rich text editor is now built using Lexical, rather than Slate. This should greatly reduce the number of errors that occur when creating flashcards.
+  - **Improved Images:** You can now attach multiple images to each flashcard. Old images that were previously broken have now been fixed
+  - **Share with Institution:** You can now share courses
+  - **Improved Equations:** Alu now has a built-in equation preview feature, making it much easier to write LaTeX equations
+  - **Improved Cloze:** Cloze flashcards now have a modern, colorful editor that makes it easier for beginners and advanced users alike to use cloze. Numerical cloze (e.g., {{c1::example}}) is still supported, but not recommended
+- **Automatic TTS:** You can click the audio button when studying flashcards to hear a TTS narration of that flashcardA
+- **Creation Sidebar:** There is now a sidebar that allows you to easily switch between sub sections when creating flashcards.
+- **Simplified Sharing System:** The old sharing system was ridiculously complicated, leading to a constant source of bugs. The new sharing system has been designed to be as easy as possible for everyone to use. Some of the old sharing system's capabilities are no longer available (e.g., remixing decks), but will be re-added shortly
+  - You no longer need to fully copy a deck to study it; rather, multiple review instances from different users can be attached to a single flashcard
+- **Improved Mobile Responsiveness:** Improved Alu's responsiveness to mobile devices, improving the mobile experience
+- **New Landing Page:** Alu has a new landing page, complete with an interactive demo and testimonials from real Alu users
+- **Improved Teacher's Interface:** Teachers now have more information about how their students are using Alu; the classrooms UI has been redesigned to simplify the process of setting up a classroom
+  - **Join Classroom Link:** Teachers can post a join classroom link that allows students to join their classroom without manually entering the join code
+- **No More Passwords:** Alu no longer stores passwords in its database.  This is more secure and eliminates the chance of you forgetting your password. You can now sign-in with Google authentication or with "magic" email links. One less password to remember!
 - **Improved Welcome Info:** Improved the welcome info collection upon sign-up.
   - Added multiple options to type of social media (Instagram, Reddit, TikTok)
   - Changed interface to display large buttons with icons rather than a list
@@ -18,9 +40,6 @@ Improved the sign-up experience.
   - Added choice between creating your own deck or copying an existing one
 - **Fixed Logo:** Fixed the Instagram logo under the "Follow Alu" section
 - **Fixed Partnered Organizations Pro-mode:** Fixed a bug that caused users from partnered organizations not to receive pro-mode when signing up
-- **Removed Free Trial on Sign-up:** Removed the free trial on sign-up. A free trial will soon be available again when the user first purchases pro-mode.
-- **Added Delete Assigment Button:** Added a button that allows teachers to delete assignments
-- **Improved Email Confirmation:** Users who sign-up with an email may now confirm their email with the click of a button, rather than by entering a code
 
 # Marketing Research - May 18 - 1.0.5
 
