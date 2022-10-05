@@ -70,7 +70,7 @@ function ImageComponent({
   nodeKey,
   width,
   height,
-  maxWidth,
+  // maxWidth,
   resizable,
   caption,
   sourceUrl,
@@ -84,6 +84,7 @@ function ImageComponent({
   src: string;
   width: number;
 }): JSX.Element {
+  const maxWidth = 375;
   const imageRef = useRef<HTMLImageElement | null>(null);
   const imageParentRef = useRef<HTMLDivElement | null>(null);
   const [isSelected, setSelected, clearSelection] =

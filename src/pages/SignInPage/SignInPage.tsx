@@ -1,7 +1,13 @@
 import LogInForm from "@/components/LogInForm";
 import SEO from "@/helpers/SEO";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 export default function SignInPage() {
+  const session = useSession();
+  const router = useRouter();
+  if (session && typeof window !== 'undefined') router.push('/home')
+
   return (
     <>
       <SEO

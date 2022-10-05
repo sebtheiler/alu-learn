@@ -56,6 +56,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         },
       },
     },
+    orderBy: {
+      users: {
+        _count: "desc",
+      },
+    },
   });
 
   return {

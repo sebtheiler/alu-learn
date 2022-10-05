@@ -73,22 +73,22 @@
           >
             <mj-social-element
               href="https://www.instagram.com/alu_learn"
-              src="http://www.alulearn.com/assets/logos/instagram.svg"
+              src="https://www.alulearn.com/assets/logos/instagram.svg"
             >
             </mj-social-element>
             <mj-social-element
               href="https://www.twitter.com/AluLearn"
-              src="http://www.alulearn.com/assets/logos/twitter.svg"
+              src="https://www.alulearn.com/assets/logos/twitter.svg"
             >
             </mj-social-element>
             <mj-social-element
               href="https://www.tiktok.com/@alulearn"
-              src="http://www.alulearn.com/assets/logos/tiktok.svg"
+              src="https://www.alulearn.com/assets/logos/tiktok.svg"
             >
             </mj-social-element>
             <mj-social-element
               href="https://www.reddit.com/r/AluLearn"
-              src="http://www.alulearn.com/assets/logos/reddit.svg"
+              src="https://www.alulearn.com/assets/logos/reddit.svg"
             >
             </mj-social-element>
           </mj-social>

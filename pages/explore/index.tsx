@@ -17,7 +17,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     },
     orderBy: {
       users: {
-        _count: "asc",
+        _count: "desc",
       },
     },
     take: 50,

@@ -37,9 +37,17 @@ export const authOptions = {
           title: "Sign In",
           url,
         });
+        const dateInfo = new Date().toLocaleDateString("en-us", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour12: true,
+          hour: "numeric",
+          minute: "numeric",
+        });
         const result = await sendEmail({
           to: identifier,
-          subject: "Sign in to Alu Learn",
+          subject: `Sign in to Alu Learn (${dateInfo})`,
           html,
         });
         if (!result) return;

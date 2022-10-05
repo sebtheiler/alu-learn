@@ -4,6 +4,19 @@ path: "changelog"
 description: "Alu Learn changelog"
 ---
 
+# Minor Sign-in Fixes - Oct 05 - 2.0.1
+
+A couple of quick fixes for Alu 2.0, with a focus on signing in/up.
+
+- Fixed social media images in emails
+- Fixed back button on course pages when the user is signed out
+- Fixed name entry when a user signs up with their email
+- Fixed redirecting on sign-up
+- Fixed explore page and user page course ordering
+- Fixed most instances of image width overflow
+- Automatically redirected logged-in users on the sign-in page to the home page
+- Improved sign-in email sending to have date in subject line
+
 # Alu 2.0 - Oct 04
 
 The biggest update in Alu's history has arrived!
