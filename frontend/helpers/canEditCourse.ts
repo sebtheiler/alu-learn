@@ -1,4 +1,4 @@
-import isCourseUser from "./isCourseUser";
+import isCourseOwner from "./isCourseOwner";
 import isFriendOfCourseOwner from "./isFriendOfCourseOwner";
 import prisma from "lib/prisma";
 
@@ -28,7 +28,7 @@ const canEditCourse = async (
     case "INSTITUTION":
       return;
     case "OWNERS":
-      return isCourseUser(courseId, email, prismaInstance);
+      return isCourseOwner(courseId, email, prismaInstance);
     default:
       return false;
   }

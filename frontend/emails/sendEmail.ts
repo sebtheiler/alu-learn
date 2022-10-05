@@ -1,4 +1,5 @@
 import key from "creds/gsuite.json";
+import fs from "fs";
 import { createTransport } from "nodemailer";
 
 const EMAIL_FROM = process.env.EMAIL_FROM;
@@ -45,7 +46,9 @@ const sendEmail = async ({
       html,
     });
   } else {
-    console.log(
+    const tmpFile = `/tmp/email-${new Date().getTime()}`;
+    fs.writeFileSync(
+      tmpFile,
       `
 === Begin Email ===
 TO: ${to}
@@ -54,6 +57,7 @@ Message: ${html}
 === End Email ===
 `.trim()
     );
+    console.log(`Wrote email to file ${tmpFile}`);
   }
 };
 

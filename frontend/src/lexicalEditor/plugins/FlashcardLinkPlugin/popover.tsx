@@ -84,7 +84,7 @@ function FlashcardLinkPopover({
       if (!popupEl || !activeFlashcardId) return;
 
       popupEl.style.opacity = "1";
-      popupEl.style.top = `${e.clientY + OFFSET}px`;
+      popupEl.style.top = `${e.clientY + window.scrollY + OFFSET}px`;
       popupEl.style.left = `${e.clientX}px`;
     };
 

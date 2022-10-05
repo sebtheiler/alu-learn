@@ -215,7 +215,13 @@ function ImageComponent({
                   "relative",
                   isFocused && "outline outline-2 outline-blue-400"
                 )}
-                style={{ width, height }}
+                style={{
+                  width,
+                  height,
+                  maxWidth,
+                  maxHeight:
+                    width > maxWidth ? (maxWidth / width) * height : undefined,
+                }}
                 ref={imageParentRef}
               >
                 <Image
@@ -230,7 +236,6 @@ function ImageComponent({
                   }
                   src={src}
                   alt={caption}
-                  style={{ maxWidth }}
                   layout="fill"
                   draggable="false"
                 />

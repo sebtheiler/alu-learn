@@ -16,7 +16,10 @@ const canViewCourse = async (
 ) => {
   const course = await prismaInstance.course.findUnique({
     where: { id: courseId },
-    select: { privacySetting: true },
+    select: {
+      privacySetting: true,
+      owners: { select: { email: true }, take: 1 },
+    },
   });
   if (!course) return null;
 
@@ -27,7 +30,7 @@ const canViewCourse = async (
     case "FRIENDS":
       return isFriendOfCourseOwner(email, courseId);
     case "INSTITUTION":
-      return;
+      return course.owners[0].email?.split("@")[1] === email?.split("@")[1];
     case "PASSWORD":
       return;
     case "PRIVATE":
