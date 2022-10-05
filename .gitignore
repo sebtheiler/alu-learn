@@ -11,6 +11,7 @@ storybook-static/
 /node_modules
 /.pnp
 .pnp.js
+dependencygraph.svg
 
 # testing
 /coverage

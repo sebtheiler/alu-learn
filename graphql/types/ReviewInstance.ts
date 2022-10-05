@@ -158,7 +158,7 @@ export const ReviewInstancesMutation = extendType({
         globalCache.del(
           percentCompleteCacheKey(
             reviewInstance.flashcard.subSectionId,
-            user.id
+            user.id as string
           )
         );
 
