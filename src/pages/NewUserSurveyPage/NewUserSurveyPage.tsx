@@ -43,7 +43,16 @@ export default function NewUserSurveyPage({ user }: NewUserSurveyPageProps) {
         if (slideNum === numSlides - 2) {
           createNewUserSurveyResponse({ variables: answers });
           updateUser({ variables: answers });
-          const callbackUrl = router.query.callbackUrl as string | undefined;
+
+          let callbackUrl = router.query.callbackUrl as string | undefined;
+          if (callbackUrl?.includes("auth/sign-in")) {
+            // If the callback url directs to e.g., http://localhost:3000/auth/sign-in?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2Fjoin-classroom%2F84FVXH99
+            // Instead, redirect to http://localhost:3000/join-classroom/84FVXH99
+            callbackUrl = decodeURIComponent(
+              callbackUrl.split("sign-in?")[1]
+            ).replace("callbackUrl=", "");
+          }
+
           router.push(callbackUrl ?? "/home");
         }
 

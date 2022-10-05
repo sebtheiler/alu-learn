@@ -23,6 +23,7 @@ import type {
 import { useMutation, useQuery } from "@apollo/client";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -50,6 +51,7 @@ export default function RenderCourse({
 }: RenderCourseProps) {
   const router = useRouter();
   const refreshData = () => router.replace(router.asPath);
+  const session = useSession();
 
   // When `refreshData` reloads the course, we need to manually update
   // the internal statee
@@ -132,7 +134,11 @@ export default function RenderCourse({
                 course.bannerImage ? "top-5" : "top-1"
               )}
             >
-              <Link href="/home">
+              <Link
+                href={
+                  session.status === "unauthenticated" ? "/explore" : "/home"
+                }
+              >
                 <a>
                   <FontAwesomeIcon
                     icon={faArrowLeft}

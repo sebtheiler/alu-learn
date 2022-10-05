@@ -27,16 +27,21 @@ export default function useSlides(
 ) {
   // The value of slides depends on the answers to questions in the slides
   const slides = useMemo(() => {
+    const nameNotSet =
+      !user.name ||
+      user.name === "User" ||
+      user.name === user?.email?.split("@")[0].toLowerCase();
+
     /**
      * Total, predetermined number of slides
      * Must be predetermined to avoid circular depndency
      */
     const numSlides =
-      (user.name ? 0 : 1) + 2 + (userType === "STUDENT" ? 3 : 1) + 1;
+      (nameNotSet ? 1 : 0) + 2 + (userType === "STUDENT" ? 3 : 1) + 1;
 
     let slides: React.ReactElement[] = [];
 
-    if (!user.name)
+    if (nameNotSet)
       slides.push(
         <>
           <h4 className="text-center">What&apos;s your name?</h4>
@@ -235,7 +240,7 @@ export default function useSlides(
     ]);
 
     return slides;
-  }, [handleNext, userType, user.name]);
+  }, [handleNext, userType, user.name, user.email]);
 
   return slides;
 }
