@@ -7,7 +7,7 @@ import CreateFlashcard from "@/graphql/CreateFlashcard";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
 import flattenLexical from "@/helpers/flattenLexical";
-import LexicalEditor from "@/lexicalEditor/LexicalEditor";
+import LexicalEditor from "@/editor/LexicalEditor";
 import type {
   Course,
   FlashcardType,

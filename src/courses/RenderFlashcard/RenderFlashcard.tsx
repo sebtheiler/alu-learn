@@ -2,7 +2,7 @@ import IconTooltip from "@/components/IconTooltip";
 import DeleteFlashcard from "@/graphql/DeleteFlashcard";
 import UpdateFlashcard from "@/graphql/UpdateFlashcard";
 import classNames from "@/helpers/classNames";
-import LexicalEditor from "@/lexicalEditor/LexicalEditor";
+import LexicalEditor from "@/editor/LexicalEditor";
 import type {
   Flashcard,
   Mutation,

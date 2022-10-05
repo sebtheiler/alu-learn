@@ -2,7 +2,7 @@ import Button from "@/atoms/Button";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
 import stringifyReviewInstanceField from "@/helpers/stringifyReviewInstanceField";
-import LexicalEditor from "@/lexicalEditor/LexicalEditor";
+import LexicalEditor from "@/editor/LexicalEditor";
 import { ReviewInstanceWithFlashcard } from "@/types";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";

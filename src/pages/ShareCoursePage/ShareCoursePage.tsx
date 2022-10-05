@@ -10,7 +10,7 @@ import RemoveCourseOwner from "@/graphql/RemoveCourseOwner";
 import UpdateCourse from "@/graphql/UpdateCourse";
 import SEO from "@/helpers/SEO";
 import { getElementsVals } from "@/helpers/getElementsVals";
-import LexicalEditor from "@/lexicalEditor/LexicalEditor";
+import LexicalEditor from "@/editor/LexicalEditor";
 import {
   Course,
   EditingAccess,

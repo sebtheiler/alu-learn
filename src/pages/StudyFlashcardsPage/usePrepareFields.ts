@@ -1,5 +1,5 @@
 import { clozeRegex } from "@/globals";
-import { nodes } from "@/lexicalEditor/LexicalEditor/LexicalEditor";
+import { nodes } from "@/editor/LexicalEditor/LexicalEditor";
 import type { ReviewInstance } from "@/types";
 import processCloze from "course/processCloze";
 import { createEditor, TextNode } from "lexical";
