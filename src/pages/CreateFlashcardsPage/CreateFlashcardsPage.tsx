@@ -2,12 +2,12 @@ import styles from "./CreateFlashcardsPage.module.scss";
 import AsyncButton from "@/atoms/AsyncButton";
 import Select from "@/atoms/Select";
 import TextInput from "@/atoms/TextInput";
+import LexicalEditor from "@/editor/LexicalEditor";
 import { TWO_SIDED_FLASHCARDS } from "@/globals";
 import CreateFlashcard from "@/graphql/CreateFlashcard";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
 import flattenLexical from "@/helpers/flattenLexical";
-import LexicalEditor from "@/editor/LexicalEditor";
 import type {
   Course,
   FlashcardType,

@@ -6,8 +6,8 @@
  *
  */
 import TextInput from "@/atoms/TextInput";
-import classNames from "@/helpers/classNames";
 import ImageResizer from "@/editor/ImageResizer";
+import classNames from "@/helpers/classNames";
 import {
   faArrowUpRightFromSquare,
   faEye,

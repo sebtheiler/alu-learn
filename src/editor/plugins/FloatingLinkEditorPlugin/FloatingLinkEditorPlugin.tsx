@@ -6,9 +6,9 @@
  *
  */
 import styles from "./FloatingLinkEditorPlugin.module.scss";
-import { sanitizeUrl } from "@/helpers/sanitizeUrl";
 import { getSelectedNode } from "@/editor/helpers/getSelectedNode";
 import { setFloatingElemPosition } from "@/editor/helpers/setFloatingElemPosition";
+import { sanitizeUrl } from "@/helpers/sanitizeUrl";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";

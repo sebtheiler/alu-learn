@@ -5,10 +5,10 @@ import FlashcardLinkButton from "../FlashcardLinkPlugin/button";
 import { $isFlashcardLinkNode } from "../FlashcardLinkPlugin/nodes";
 import InsertImageModal from "../ImagePlugin/modal";
 import Dropdown from "@/atoms/Dropdown";
-import classNames from "@/helpers/classNames";
-import { sanitizeUrl } from "@/helpers/sanitizeUrl";
 import EditorButton from "@/editor/EditorButton";
 import { getSelectedNode } from "@/editor/helpers/getSelectedNode";
+import classNames from "@/helpers/classNames";
+import { sanitizeUrl } from "@/helpers/sanitizeUrl";
 import {
   faAngleDown,
   faBold,

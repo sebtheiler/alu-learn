@@ -5,9 +5,10 @@ description: "Alu Learn changelog"
 ---
 
 # Alu 2.0 - Oct 04
+
 The biggest update in Alu's history has arrived!
 
-Alu's codebase has been entirely rewritten from Django to Next.js, improving performance, SEO, ease of updates and reducing common bugs.  This update features a complete UI overhaul, including newly designed buttons, modals, and more. Flashcard studying has also been improved, with better animations and a satisfying noise for each flashcard you get correct.
+Alu's codebase has been entirely rewritten from Django to Next.js, improving performance, SEO, ease of updates and reducing common bugs. This update features a complete UI overhaul, including newly designed buttons, modals, and more. Flashcard studying has also been improved, with better animations and a satisfying noise for each flashcard you get correct.
 
 Decks are now referred to as courses and will soon have the ability to contain more than just flashcards...
 
@@ -32,7 +33,7 @@ Here's a (mostly) full list of changes:
 - **New Landing Page:** Alu has a new landing page, complete with an interactive demo and testimonials from real Alu users
 - **Improved Teacher's Interface:** Teachers now have more information about how their students are using Alu; the classrooms UI has been redesigned to simplify the process of setting up a classroom
   - **Join Classroom Link:** Teachers can post a join classroom link that allows students to join their classroom without manually entering the join code
-- **No More Passwords:** Alu no longer stores passwords in its database.  This is more secure and eliminates the chance of you forgetting your password. You can now sign-in with Google authentication or with "magic" email links. One less password to remember!
+- **No More Passwords:** Alu no longer stores passwords in its database. This is more secure and eliminates the chance of you forgetting your password. You can now sign-in with Google authentication or with "magic" email links. One less password to remember!
 - **Improved Welcome Info:** Improved the welcome info collection upon sign-up.
   - Added multiple options to type of social media (Instagram, Reddit, TikTok)
   - Changed interface to display large buttons with icons rather than a list

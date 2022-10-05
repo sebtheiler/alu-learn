@@ -1,6 +1,6 @@
 import processCloze from "./processCloze";
-import { clozeRegex } from "@/globals";
 import { ClozeColor } from "@/editor/plugins/ClozeDeletionPlugin/colors";
+import { clozeRegex } from "@/globals";
 import type { Intervals } from "@/types";
 import type { Flashcard, FlashcardType, ReviewInstance } from "@prisma/client";
 import cuid from "cuid";

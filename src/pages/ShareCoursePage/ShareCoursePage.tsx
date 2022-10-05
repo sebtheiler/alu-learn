@@ -5,12 +5,12 @@ import CopyLink from "@/components/CopyLink";
 import DisplayUserInline from "@/components/DisplayUserInline";
 import IconTooltip from "@/components/IconTooltip";
 import SearchUser from "@/components/SearchUser";
+import LexicalEditor from "@/editor/LexicalEditor";
 import AddCourseOwner from "@/graphql/AddCourseOwner";
 import RemoveCourseOwner from "@/graphql/RemoveCourseOwner";
 import UpdateCourse from "@/graphql/UpdateCourse";
 import SEO from "@/helpers/SEO";
 import { getElementsVals } from "@/helpers/getElementsVals";
-import LexicalEditor from "@/editor/LexicalEditor";
 import {
   Course,
   EditingAccess,

@@ -1,12 +1,12 @@
 {
-    "python.linting.enabled": true,
-    "python.pythonPath": "aluenv/bin/python",
-    "python.linting.pycodestyleEnabled": false,
-    "python.linting.flake8Enabled": true,
-    "python.linting.pylintEnabled": false,
-    "files.watcherExclude": {
-        "**/.git/objects/**": true,
-        "**/.git/subtree-cache/**": true,
-        "**/node_modules/**": true
-    }
+  "python.linting.enabled": true,
+  "python.pythonPath": "aluenv/bin/python",
+  "python.linting.pycodestyleEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.pylintEnabled": false,
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true
+  }
 }

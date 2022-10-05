@@ -48,7 +48,7 @@ model VerificationToken {
 
 // # User
 model User {
-  OLD_ID Int? @unique
+  OLD_ID         Int? @unique
   OLD_PROFILE_ID Int? @unique
 
   id            String    @id @default(cuid())
@@ -253,7 +253,7 @@ model SubSection {
 
 // ## Flashcards
 model Flashcard {
-  OLD_ID String? @unique
+  OLD_ID           String? @unique
   OLD_UNIVERSAL_ID String?
 
   id String @id @default(cuid())

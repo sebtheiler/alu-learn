@@ -1,7 +1,7 @@
 import { TIME_BEFORE_SWAP } from "./helpers";
+import LexicalEditor from "@/editor/LexicalEditor";
 import classNames from "@/helpers/classNames";
 import flattenLexical from "@/helpers/flattenLexical";
-import LexicalEditor from "@/editor/LexicalEditor";
 import { faStar, faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";

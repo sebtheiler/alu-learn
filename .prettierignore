@@ -5,6 +5,7 @@ coverage
 node_modules
 storybook-static
 dist
+aluenv
 
 # Ignore generated GraphQL
 schema.graphql

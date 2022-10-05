@@ -1,10 +1,10 @@
 import { GRADES } from "../StudyFlashcardsPage/helpers";
 import styles from "./AluBotGamePage.module.scss";
+import LexicalEditor from "@/editor/LexicalEditor";
 import StudyReviewInstance from "@/graphql/StudyReviewInstance";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
 import stringifyReviewInstanceField from "@/helpers/stringifyReviewInstanceField";
-import LexicalEditor from "@/editor/LexicalEditor";
 import type {
   Intervals,
   Mutation,

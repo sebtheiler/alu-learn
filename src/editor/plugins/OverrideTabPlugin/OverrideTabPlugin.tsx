@@ -1,5 +1,5 @@
-import focusNextElement from "@/helpers/focusNextElement";
 import { getSelectedNode } from "@/editor/helpers/getSelectedNode";
+import focusNextElement from "@/helpers/focusNextElement";
 import { $isListNode, $isListItemNode } from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {

@@ -1,5 +1,5 @@
-import GetFlashcard from "@/graphql/GetFlashcard";
 import LexicalEditor from "@/editor/LexicalEditor";
+import GetFlashcard from "@/graphql/GetFlashcard";
 import type { Query, QueryGetFlashcardArgs } from "@/types";
 import { useQuery } from "@apollo/client";
 import { useEffect, useRef, useState } from "react";
@@ -107,25 +107,29 @@ function FlashcardLinkPopover({
       ) : (
         <div>
           <div className="flex items-center justify-center">
-            {data?.getFlashcard?.fields && <LexicalEditor
-              namespace={`flashcard-link-popover-front-${activeFlashcardId}`}
-              editorState={JSON.stringify(
-                JSON.parse(data?.getFlashcard?.fields)[0]
-              )}
-              disablePopovers
-              readOnly
-            />}
+            {data?.getFlashcard?.fields && (
+              <LexicalEditor
+                namespace={`flashcard-link-popover-front-${activeFlashcardId}`}
+                editorState={JSON.stringify(
+                  JSON.parse(data?.getFlashcard?.fields)[0]
+                )}
+                disablePopovers
+                readOnly
+              />
+            )}
           </div>
           <hr className="my-3" />
           <div className="flex items-center justify-center">
-            {data?.getFlashcard?.fields && <LexicalEditor
-              namespace={`flashcard-link-popover-back-${activeFlashcardId}`}
-              editorState={JSON.stringify(
-                JSON.parse(data?.getFlashcard?.fields)[1]
-              )}
-              disablePopovers
-              readOnly
-            />}
+            {data?.getFlashcard?.fields && (
+              <LexicalEditor
+                namespace={`flashcard-link-popover-back-${activeFlashcardId}`}
+                editorState={JSON.stringify(
+                  JSON.parse(data?.getFlashcard?.fields)[1]
+                )}
+                disablePopovers
+                readOnly
+              />
+            )}
           </div>
         </div>
       )}
