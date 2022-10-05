@@ -39,7 +39,7 @@ export default function RenderSubSection({
   assigned,
 }: RenderSubSectionProps) {
   const { percentComplete } = useContext(CoursePageContext);
-  const { currentPercentComplete, totalPercentComplete } = percentComplete
+  const { currentPercentComplete, totalPercentComplete } = (percentComplete && percentComplete.calculateSubSectionsPercentComplete)
     ? percentComplete.calculateSubSectionsPercentComplete[
         subSection.id as string
       ]

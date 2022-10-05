@@ -40,9 +40,6 @@ export const FlashcardQuery = extendType({
         flashcardId: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
-        const user = await getUserGQL(ctx);
-        if (!user) return null;
-
         const flashcard = await ctx.prisma.flashcard.findUnique({
           where: {
             id: args.flashcardId,

@@ -1,6 +1,7 @@
 import key from "creds/gsuite.json";
 import fs from "fs";
 import { createTransport } from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
 const EMAIL_FROM = process.env.EMAIL_FROM;
 if (!EMAIL_FROM) throw new Error("`.env` must specify `EMAIL_FROM`");
@@ -35,7 +36,7 @@ const sendEmail = async ({
   subject: string;
   /** The HTML message */
   html: string;
-}) => {
+}): Promise<SMTPTransport.SentMessageInfo | null> => {
   if (process.env.NODE_ENV === "production") {
     await transporter.verify();
     return await transporter.sendMail({
@@ -58,6 +59,7 @@ Message: ${html}
 `.trim()
     );
     console.log(`Wrote email to file ${tmpFile}`);
+    return null;
   }
 };
 

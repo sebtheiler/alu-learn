@@ -42,6 +42,7 @@ export const authOptions = {
           subject: "Sign in to Alu Learn",
           html,
         });
+        if (!result) return;
 
         const failed = result
           ? result.rejected.concat(result.pending).filter(Boolean)

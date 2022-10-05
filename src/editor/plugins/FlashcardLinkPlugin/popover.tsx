@@ -107,25 +107,25 @@ function FlashcardLinkPopover({
       ) : (
         <div>
           <div className="flex items-center justify-center">
-            <LexicalEditor
+            {data?.getFlashcard?.fields && <LexicalEditor
               namespace={`flashcard-link-popover-front-${activeFlashcardId}`}
               editorState={JSON.stringify(
-                JSON.parse(data?.getFlashcard?.fields as string)[0]
+                JSON.parse(data?.getFlashcard?.fields)[0]
               )}
               disablePopovers
               readOnly
-            />
+            />}
           </div>
           <hr className="my-3" />
           <div className="flex items-center justify-center">
-            <LexicalEditor
+            {data?.getFlashcard?.fields && <LexicalEditor
               namespace={`flashcard-link-popover-back-${activeFlashcardId}`}
               editorState={JSON.stringify(
-                JSON.parse(data?.getFlashcard?.fields as string)[1]
+                JSON.parse(data?.getFlashcard?.fields)[1]
               )}
               disablePopovers
               readOnly
-            />
+            />}
           </div>
         </div>
       )}
