@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 export default function SignInPage() {
   const session = useSession();
   const router = useRouter();
-  if (session && typeof window !== 'undefined') router.push('/home')
+  if (session.status === 'authenticated' && typeof window !== 'undefined') router.push('/home')
 
   return (
     <>

@@ -46,7 +46,7 @@ export default function Heatmap({ history }: { history: HistorySegment[] }) {
   const startDate = new Date();
   startDate.setMonth(startDate.getMonth() - 6);
 
-  const todayDataTip = genDataTip(historyVals[historyVals.length - 1]);
+  const todayDataTip = historyVals[historyVals.length - 1].date === new Date().toISOString().slice(0, 10) && genDataTip(historyVals[historyVals.length - 1]);
 
   return (
     <div className="max-w-lg mx-auto">
@@ -61,7 +61,6 @@ export default function Heatmap({ history }: { history: HistorySegment[] }) {
           classForValue={(value: HistoryVal) => {
             if (!value) return "heatmapColorScale0";
             const colorNum = Math.ceil((value.count / maxValue) * 9);
-            console.log(value.count, colorNum);
             return `heatmapColorScale${colorNum}`;
           }}
           tooltipDataAttrs={(value: HistoryVal) => {

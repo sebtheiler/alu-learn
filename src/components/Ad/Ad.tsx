@@ -1,5 +1,6 @@
 import classNames from "@/helpers/classNames";
 import useProStore from "@/stores/proStore";
+import { useSession } from "next-auth/react";
 import { useState, useEffect, useMemo } from "react";
 
 interface AdProps {
@@ -36,6 +37,7 @@ const adSlots = new Map<
  */
 export default function Ad({ adType, className }: AdProps) {
   const isPro = useProStore((state) => state.isPro);
+  const session = useSession();
 
   const ad = useMemo(() => adSlots.get(adType), [adType]);
   const [pushedAdEl, setPushedAdEl] = useState(false);
@@ -43,7 +45,14 @@ export default function Ad({ adType, className }: AdProps) {
 
   useEffect(() => {
     setMounted(true);
-    if (mounted || pushedAdEl || !ad || isPro !== false) return;
+    if (
+      mounted ||
+      pushedAdEl ||
+      !ad ||
+      session.status === "loading" ||
+      (session.status === "authenticated" && isPro !== false)
+    )
+      return;
     setPushedAdEl(true);
     try {
       // @ts-ignore
@@ -51,9 +60,15 @@ export default function Ad({ adType, className }: AdProps) {
     } catch (err) {
       console.error(err);
     }
-  }, [pushedAdEl, mounted, isPro, ad]);
+  }, [pushedAdEl, mounted, isPro, ad, session]);
 
-  if (ad && isPro === false && mounted) {
+  if (
+    ad &&
+    ((session.status === "authenticated" && isPro === false) ||
+      (session.status === "unauthenticated" && isPro === null)) &&
+    mounted
+  ) {
+    console.log('ad')
     return (
       <div
         className={classNames(

@@ -9,7 +9,8 @@ interface RenderSharedCourseProps {
 }
 
 /**
- *
+ * Render a shared course.
+ * E.g., on the explore page and a user's homepage
  */
 export default function RenderSharedCourse({
   course,

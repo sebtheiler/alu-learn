@@ -55,7 +55,7 @@ export default function FlashcardsPage({
         description={
           course.seoDescription ??
           `${title} study guide flashcards. Learn ${course.title} for free with spaced repetition flashcards and games`
-        } // TODO: SUPER IMPORTANT
+        }
         seoJson={{
           "@context": "https://schema.org/",
           "@type": "Quiz",
@@ -103,9 +103,6 @@ export default function FlashcardsPage({
           <LinkButton href={`/course/${course.id}/study${slug}`}>
             Study
           </LinkButton>
-          {/* <LinkButton href={`/course/${course.id}/games${slug}`}>
-            Games
-          </LinkButton> */}
           {editAccess && (
             <LinkButton href={`/course/${course.id}/add-flashcards${slug}`}>
               Add Flashcards
@@ -114,7 +111,7 @@ export default function FlashcardsPage({
         </ButtonGroup>
         <div className="container mx-auto px-4 mt-4">
           {flashcards.length > 0 ? (
-            <FlashcardList flashcards={flashcards} />
+            <FlashcardList flashcards={flashcards} canEdit={editAccess} />
           ) : (
             <p className="text-center">
               This section doesn&apos;t have any flashcards yet

@@ -52,6 +52,10 @@ interface RenderFlashcardProps {
    * Display the "gripper" to rearrange a flashcard?
    */
   rearrangeable?: boolean;
+  /**
+   * Can the current user edit the flashcard?
+   */
+  canEdit?: boolean;
 }
 
 /**
@@ -64,6 +68,7 @@ export default function RenderFlashcard({
   hidden,
   setHidden,
   rearrangeable,
+  canEdit,
 }: RenderFlashcardProps) {
   const [editMode, setEditMode] = useState(false);
   const [fields, setFields] = useState(JSON.parse(flashcard.fields as string));
@@ -112,30 +117,32 @@ export default function RenderFlashcard({
         className
       )}
     >
-      <div className="absolute mt-2 w-1/2">
-        {rearrangeable && (
-          <span title="Drag to rearrange">
-            <FontAwesomeIcon
-              icon={faGripVertical}
-              // `.flashcard-drag-handle` is the handle class defined in `FlashcardList.tsx`
-              className="text-gray-400 mx-3 hover:cursor-grab flashcard-drag-handle"
-            />
-          </span>
-        )}
-        <IconTooltip
-          faIcon={editMode ? faEye : faPencil}
-          tooltip={editMode ? "Save and View" : "Edit"}
-          className="ml-2"
-          tooltipProps={{ className: classNames(editMode && "w-28") }}
-          onClick={editModeHandler}
-        />
-        <IconTooltip
-          faIcon={faTrash}
-          tooltip="Delete"
-          className="ml-5"
-          onClick={deleteFlashcardHandler}
-        />
-      </div>
+      {canEdit && (
+        <div className="absolute mt-2 w-1/2">
+          {rearrangeable && (
+            <span title="Drag to rearrange">
+              <FontAwesomeIcon
+                icon={faGripVertical}
+                // `.flashcard-drag-handle` is the handle class defined in `FlashcardList.tsx`
+                className="text-gray-400 mx-3 hover:cursor-grab flashcard-drag-handle"
+              />
+            </span>
+          )}
+          <IconTooltip
+            faIcon={editMode ? faEye : faPencil}
+            tooltip={editMode ? "Save and View" : "Edit"}
+            className="ml-2"
+            tooltipProps={{ className: classNames(editMode && "w-28") }}
+            onClick={editModeHandler}
+          />
+          <IconTooltip
+            faIcon={faTrash}
+            tooltip="Delete"
+            className="ml-5"
+            onClick={deleteFlashcardHandler}
+          />
+        </div>
+      )}
       {setHidden && (
         <div className="absolute mt-2 w-1/2 translate-x-full text-right">
           <IconTooltip

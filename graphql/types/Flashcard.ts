@@ -6,7 +6,6 @@ import type {
 import canViewCourse from "helpers/canViewCourse";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
-import isCourseUser from "helpers/isCourseUser";
 import isSubSectionOwner from "helpers/isSubSectionOwner";
 import moveObject from "helpers/moveObject";
 import {
@@ -62,8 +61,7 @@ export const FlashcardQuery = extendType({
         courseId: nonNull(stringArg()),
       },
       async resolve(_parent, args, ctx) {
-        const user = await getUserGQL(ctx, { email: true });
-        if (!user || !isCourseUser(args.courseId, user.email, ctx.prisma))
+        if (!canViewCourse(args.courseId, ctx.user?.email, ctx.prisma))
           return null;
 
         const where: Prisma.FlashcardWhereInput = {

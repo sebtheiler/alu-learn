@@ -196,6 +196,10 @@ export default function RenderCourse({
                   text: "Tools",
                   href: `/course/${course?.id}/tools`,
                 },
+                {
+                  text: "Search Flashcards",
+                  href: `/course/${course?.id}/search`,
+                },
                 ...(classroom
                   ? []
                   : [

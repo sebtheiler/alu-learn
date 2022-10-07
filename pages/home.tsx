@@ -74,6 +74,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       title: true,
       bannerImage: true,
     },
+    orderBy: {
+      title: "asc",
+    },
   });
 
   courses = courses.map((course) => ({

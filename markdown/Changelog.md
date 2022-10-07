@@ -4,7 +4,21 @@ path: "changelog"
 description: "Alu Learn changelog"
 ---
 
-# Minor Sign-in Fixes - Oct 05 - 2.0.1
+## Search for Flashcards - Oct 06 - 2.0.2
+
+Added a search flashcards page where you can search for flashcards in a course.  You access the search page by clicking "More > Search Flashcards" for a course.
+
+- Added search flashcards page
+- Fixed ordering of courses on home pages
+- Fixed bug in creating sub sections. There is still a bug in deleting/editing sub sections, which I'm working on resolving soon.
+- Fixed flashcard link insertion dropdown to show previews of flashcard fronts, not backs
+- Fixed explore page on mobile
+- Fixed sign in infinite redirect bug
+- Fixed review heatmap message for when you haven't studied any flashcards
+- Fixed flashcard edit options erroneously appearing when you could not edit a flashcard
+- Re-added bottom margin to paragraphs in the rich text editor
+
+## Minor Sign-in Fixes - Oct 05 - 2.0.1
 
 A couple of quick fixes for Alu 2.0, with a focus on signing in/up.
 

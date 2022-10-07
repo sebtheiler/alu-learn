@@ -79,7 +79,7 @@ export default function ToolsPage() {
                 <div key={i} className="my-2">
                   Ease: {ri?.ease}
                   {ri?.flashcard && (
-                    <RenderFlashcard flashcard={ri.flashcard} />
+                    <RenderFlashcard flashcard={ri.flashcard} canEdit />
                   )}
                 </div>
               )

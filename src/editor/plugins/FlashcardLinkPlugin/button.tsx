@@ -136,7 +136,7 @@ function SearchedFlashcard({
       if (flashcard)
         setText(
           await flattenLexical(
-            JSON.stringify(JSON.parse(flashcard.fields as string)[1])
+            JSON.stringify(JSON.parse(flashcard.fields as string)[0])
           )
         );
     };

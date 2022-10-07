@@ -11,14 +11,24 @@ import type { SortableEvent } from "react-sortablejs";
 type FlashcardWithId = Flashcard & { id: string };
 
 interface FlashcardListProps {
+  /**
+   * Flashcards to render as a lsit
+   */
   flashcards: FlashcardWithId[];
+  /**
+   * Can the current user edit the flashcards in the list?
+   */
+  canEdit?: boolean;
 }
 
 /**
  * Displays a list of flashcards
  * @note Changing the `flashcards` prop will not update the list
  */
-export default function FlashcardList({ flashcards }: FlashcardListProps) {
+export default function FlashcardList({
+  flashcards,
+  canEdit,
+}: FlashcardListProps) {
   // We can't directly modify the props, so we duplicate them in a state
   const [_flashcards, _setFlashcards] = useState(flashcards);
   const [hidden, setHidden] = useState<boolean[]>(() =>
@@ -74,10 +84,11 @@ export default function FlashcardList({ flashcards }: FlashcardListProps) {
             setHidden([...hidden.slice(0, i), val, ...hidden.slice(i + 1)])
           }
           rearrangeable={rearrangeable}
+          canEdit={canEdit}
         />
       </Fragment>
     ));
-  }, [_flashcards, hidden, rearrangeable]);
+  }, [_flashcards, hidden, rearrangeable, canEdit]);
 
   return (
     <div>

@@ -16,7 +16,7 @@ export default function ExploreCoursesPage({
         path="/explore"
         description="Find free online flashcards for AP World, AP Psych, AP Gov, and more. Study today with Alu's science-backed spaced repetition studying system"
       />
-      <div className="container mx-auto mt-28 px-48">
+      <div className="container mx-auto mt-28 max-w-5xl px-10">
         <div>
           <h1 className="mb-3 text-4xl font-bold">Explore</h1>
           <p className="text-lg">

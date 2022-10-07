@@ -8,10 +8,7 @@ def create_component():
     comp_name = input('Component name: ')
     comp_base_dir = input('Component dir: ')
     cwd = os.getcwd()
-    if not cwd.endswith('frontend'):
-        comp_dir = os.path.join(cwd, 'frontend', 'src', comp_base_dir, comp_name)
-    else:
-        comp_dir = os.path.join(cwd, 'src', comp_base_dir, comp_name)
+    comp_dir = os.path.join(cwd, 'src', comp_base_dir, comp_name)
 
     os.mkdir(comp_dir)
 
@@ -73,12 +70,8 @@ def create_page():
     page_raw_name = page_name.replace('Page', '')
 
     cwd = os.getcwd()
-    if not cwd.endswith('frontend'):
-        page_dir = os.path.join(cwd, 'frontend', 'src', 'pages', page_name)
-        page_url_dir = os.path.join(cwd, 'frontend', 'pages', base_page_url_dir)
-    else:
-        page_dir = os.path.join(cwd, 'src', 'pages', page_name)
-        page_url_dir = os.path.join(cwd, 'pages', base_page_url_dir)
+    page_dir = os.path.join(cwd, 'src', 'pages', page_name)
+    page_url_dir = os.path.join(cwd, 'pages', base_page_url_dir)
 
     os.mkdir(page_dir)
     if not os.path.isdir(page_url_dir):
@@ -111,7 +104,7 @@ export default function {page_name}({{
       path="{page_url}"
       description=""
     />
-    <div>
+    <div className="mt-28">
     </div>
   </>);
 }}
