@@ -46,7 +46,11 @@ export default function Heatmap({ history }: { history: HistorySegment[] }) {
   const startDate = new Date();
   startDate.setMonth(startDate.getMonth() - 6);
 
-  const todayDataTip = historyVals[historyVals.length - 1].date === new Date().toISOString().slice(0, 10) && genDataTip(historyVals[historyVals.length - 1]);
+    const todayDataTip =
+    historyVals.length > 0 &&
+    historyVals[historyVals.length - 1].date ===
+      new Date().toISOString().slice(0, 10) &&
+    genDataTip(historyVals[historyVals.length - 1]);
 
   return (
     <div className="max-w-lg mx-auto">

@@ -68,7 +68,6 @@ export default function Ad({ adType, className }: AdProps) {
       (session.status === "unauthenticated" && isPro === null)) &&
     mounted
   ) {
-    console.log('ad')
     return (
       <div
         className={classNames(
