@@ -9,7 +9,6 @@ import ArchiveCourse from "@/graphql/ArchiveCourse";
 import CalculateSubSectionsPercentComplete from "@/graphql/CalculateSubSectionsPercentComplete";
 import MoveCourseSection from "@/graphql/MoveCourseSection";
 import classNames from "@/helpers/classNames";
-import useProStore from "@/stores/proStore";
 import type {
   Course,
   Mutation,
@@ -30,6 +29,7 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import type { SortableEvent } from "react-sortablejs";
+import Ad from "@/components/Ad";
 
 type CourseSectionWithId = CourseSection & { id: string };
 
@@ -71,7 +71,6 @@ export default function RenderCourse({
     MutationArchiveCourseArgs
   >(ArchiveCourse);
   const [collapseCourseSections, setCollapseCourseSections] = useState(false);
-  const isPro = useProStore((state) => state.isPro);
 
   const { data: percentComplete } = useQuery<{
     calculateSubSectionsPercentComplete: Query["calculateSubSectionsPercentComplete"];
@@ -185,8 +184,6 @@ export default function RenderCourse({
                 </LinkButton> */}
             <LinkButton
               href={`/course/${course.id}/games`}
-              disabled={!isPro}
-              title={!isPro ? "Upgrade to pro to play games" : ""}
             >
               Games
             </LinkButton>
@@ -277,8 +274,10 @@ export default function RenderCourse({
                   </a>
                 </Link>
               ))}
+              {assignments.length === 0 && <p className="text-center mt-2">You have no assignments. Hurrah!</p>}
             </div>
           )}
+          <Ad adType="COURSE_SIDEBAR" />
         </div>
       </div>
     </div>

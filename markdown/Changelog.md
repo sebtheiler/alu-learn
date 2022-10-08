@@ -4,9 +4,14 @@ path: "changelog"
 description: "Alu Learn changelog"
 ---
 
+## Tiny Fixes - Oct 08 - 2.0.3
+
+- Added an error message for users who try to join a classroom with an invalid code
+- Improved landing page display on mobile
+
 ## Search for Flashcards - Oct 06 - 2.0.2
 
-Added a search flashcards page where you can search for flashcards in a course.  You access the search page by clicking "More > Search Flashcards" for a course.
+Added a search flashcards page where you can search for flashcards in a course. You access the search page by clicking "More > Search Flashcards" for a course.
 
 - Added search flashcards page
 - Fixed ordering of courses on home pages

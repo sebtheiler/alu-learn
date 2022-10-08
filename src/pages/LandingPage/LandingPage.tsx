@@ -2,6 +2,7 @@ import styles from "./LandingPage.module.scss";
 import StudyingDemo from "./StudyingDemo";
 import Button from "@/atoms/Button";
 import SEO from "@/helpers/SEO";
+import classNames from "@/helpers/classNames";
 import useWindowDimensions from "@/hooks/useWindowDimensions";
 import useGlobalModalStore from "@/stores/globalModalStore";
 import {
@@ -56,7 +57,12 @@ export default function LandingPage() {
           className="w-100 bg-alu-dark-purple"
         >
           <div className="grid h-full items-center text-center md:grid-cols-1 lg:grid-cols-2 lg:text-left">
-            <div className="mx-6 rounded-2xl bg-white py-10 text-alu-dark-purple shadow-lg shadow-violet-400/40 md:mx-16">
+            <div
+              className={classNames(
+                "mx-6 rounded-2xl bg-white py-10 text-alu-dark-purple shadow-lg shadow-violet-400/40 md:mx-16",
+                height < 750 && "translate-y-16"
+              )}
+            >
               <div className="sm:px-5 md:px-6 xl:px-9">
                 <h1 className="mb-3 text-2xl font-bold md:mb-8 md:text-4xl xl:text-5xl">
                   Learn Anything.

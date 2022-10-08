@@ -12,6 +12,7 @@ interface AdProps {
     | "FINISHED_STUDYING_1"
     | "FINISHED_STUDYING_2"
     | "COURSE_BOTTOM"
+    | "COURSE_SIDEBAR"
     | "FLASHCARD_LIST_MIDDLE"
     | "FLASHCARD_LIST_BOTTOM";
   /**
@@ -28,6 +29,7 @@ const adSlots = new Map<
   ["FINISHED_STUDYING_1", { format: "display", slot: "5954520366" }],
   ["FINISHED_STUDYING_2", { format: "display", slot: "1728930040" }],
   ["COURSE_BOTTOM", { format: "display", slot: "2309769570" }],
+  ["COURSE_SIDEBAR", { format: "display", slot: "2104655363" }],
   ["FLASHCARD_LIST_MIDDLE", { format: "feed", slot: "5305250964" }],
   ["FLASHCARD_LIST_BOTTOM", { format: "display", slot: "2850440020" }],
 ]);
@@ -38,36 +40,48 @@ const adSlots = new Map<
 export default function Ad({ adType, className }: AdProps) {
   const isPro = useProStore((state) => state.isPro);
   const session = useSession();
+  const [pushedAd, setPushedAd] = useState(false);
 
   const ad = useMemo(() => adSlots.get(adType), [adType]);
-  const [pushedAdEl, setPushedAdEl] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const showAd = useMemo(
+    () =>
+      process.env.NODE_ENV === "production" &&
+      ad &&
+      ((session.status === "authenticated" && isPro === false) ||
+        (session.status === "unauthenticated" && isPro === null)),
+    [ad, isPro, session.status]
+  );
 
+  // Taken from https://stackoverflow.com/a/69374914/10226703
   useEffect(() => {
-    setMounted(true);
-    if (
-      mounted ||
-      pushedAdEl ||
-      !ad ||
-      session.status === "loading" ||
-      (session.status === "authenticated" && isPro !== false)
-    )
-      return;
-    setPushedAdEl(true);
-    try {
-      // @ts-ignore
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (err) {
-      console.error(err);
-    }
-  }, [pushedAdEl, mounted, isPro, ad, session]);
+    if (!showAd || pushedAd) return;
+    const pushAd = () => {
+      try {
+        // @ts-ignore
+        const adsbygoogle = window.adsbygoogle;
+        adsbygoogle.push({});
+        setPushedAd(true);
+      } catch (e) {
+        console.error(e);
+      }
+    };
 
-  if (
-    ad &&
-    ((session.status === "authenticated" && isPro === false) ||
-      (session.status === "unauthenticated" && isPro === null)) &&
-    mounted
-  ) {
+    const interval = setInterval(() => {
+      // Check if Adsense script is loaded every 300ms
+      // @ts-ignore
+      if (window.adsbygoogle) {
+        pushAd();
+        // clear the interval once the ad is pushed so that function isn't called indefinitely
+        clearInterval(interval);
+      }
+    }, 300);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [showAd, pushedAd]);
+
+  if (ad && showAd) {
     return (
       <div
         className={classNames(

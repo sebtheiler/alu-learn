@@ -112,13 +112,22 @@ export default function HomePage({
       "joinCode",
     ]);
 
-    const { data } = await joinClassroom({
+    const result = await joinClassroom({
       variables: {
         joinCode,
       },
+    }).catch((e) => {
+      if (e.message === "Classroom not found") {
+        const classroomJoinErrorEl =
+          document.getElementById("classroomJoinError");
+        if (classroomJoinErrorEl)
+          classroomJoinErrorEl.innerHTML =
+            "Classroom not found. Please check the code you entered.";
+      }
     });
 
-    if (data?.joinClassroom) router.push(`/classroom/${data.joinClassroom.id}`);
+    if (result?.data?.joinClassroom)
+      router.push(`/classroom/${result.data.joinClassroom.id}`);
   };
 
   return (
@@ -158,6 +167,10 @@ export default function HomePage({
                     required
                   />
                 </AsyncForm>
+                <p
+                  className="text-red-600 text-center mt-2"
+                  id="classroomJoinError"
+                />
               </Modal>
             </div>
           )}

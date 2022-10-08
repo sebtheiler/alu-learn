@@ -1,4 +1,5 @@
 import type { Classroom as PrismaClassroom } from "@prisma/client";
+import { ApolloError } from "apollo-server-micro";
 import getRandomString from "helpers/getRandomString";
 import { extendType, nonNull, objectType, stringArg } from "nexus";
 
@@ -88,6 +89,14 @@ export const ClassroomsMutation = extendType({
       },
       async resolve(_parent, args, ctx) {
         if (!ctx.user || !ctx.user.email) return null;
+
+        if (
+          (await ctx.prisma.classroom.count({
+            where: { joinCode: args.joinCode },
+          })) === 0
+        ) {
+          throw new ApolloError("Classroom not found");
+        }
 
         return ctx.prisma.classroom.update({
           where: {

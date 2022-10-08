@@ -26,9 +26,11 @@ export default function Heatmap({ history }: { history: HistorySegment[] }) {
   const historyVals = useMemo<HistoryVal[]>(
     () =>
       history
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .sort(
+          (a, b) => new Date(a?.date).getTime() - new Date(b?.date).getTime()
+        )
         .map((historySegment) => ({
-          date: (historySegment.date as unknown as string).slice(0, 10),
+          date: (historySegment?.date as unknown as string).slice(0, 10),
           count: historySegment.reviewsStudied,
           reviewsStudied: historySegment.reviewsStudied,
           timeTaken: historySegment.timeTaken,
@@ -46,9 +48,9 @@ export default function Heatmap({ history }: { history: HistorySegment[] }) {
   const startDate = new Date();
   startDate.setMonth(startDate.getMonth() - 6);
 
-    const todayDataTip =
+  const todayDataTip =
     historyVals.length > 0 &&
-    historyVals[historyVals.length - 1].date ===
+    historyVals[historyVals.length - 1]?.date ===
       new Date().toISOString().slice(0, 10) &&
     genDataTip(historyVals[historyVals.length - 1]);
 
@@ -68,7 +70,7 @@ export default function Heatmap({ history }: { history: HistorySegment[] }) {
             return `heatmapColorScale${colorNum}`;
           }}
           tooltipDataAttrs={(value: HistoryVal) => {
-            if (!value.date) return;
+            if (!value?.date) return;
             return {
               "data-tip": genDataTip(value),
             };
