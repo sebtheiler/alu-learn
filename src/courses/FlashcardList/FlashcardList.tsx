@@ -1,14 +1,12 @@
 import RenderFlashcard from "../RenderFlashcard";
 import Ad from "@/components/Ad";
 import MoveFlashcard from "@/graphql/MoveFlashcard";
-import type { Flashcard, Mutation, MutationMoveFlashcardArgs } from "@/types";
+import type { FlashcardWithId, Mutation, MutationMoveFlashcardArgs } from "@/types";
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useMemo, useState, Fragment, useEffect } from "react";
 import { ReactSortable } from "react-sortablejs";
 import type { SortableEvent } from "react-sortablejs";
-
-type FlashcardWithId = Flashcard & { id: string };
 
 interface FlashcardListProps {
   /**
@@ -70,7 +68,7 @@ export default function FlashcardList({
 
     return _flashcards.map((flashcard, i) => (
       <Fragment key={flashcard.id}>
-        {i > 0 && i % 25 === 0 && <Ad adType="FLASHCARD_LIST_MIDDLE" />}
+        {i > 0 && i % 25 === 0 && <Ad adType="FLASHCARD_LIST_MIDDLE" className="mx-auto max-w-4xl" />}
         <RenderFlashcard
           flashcard={flashcard}
           className="mb-3"

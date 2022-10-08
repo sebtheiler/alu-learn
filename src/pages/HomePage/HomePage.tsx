@@ -255,7 +255,7 @@ export default function HomePage({
               targetReviewsDone={targetReviewsDone}
             />
             <SocialMediaLinks />
-            <Ad adType="META_SIDEBAR" />
+            <Ad adType="META_SIDEBAR" className="max-w-xs mx-auto" />
           </div>
         </div>
       </div>

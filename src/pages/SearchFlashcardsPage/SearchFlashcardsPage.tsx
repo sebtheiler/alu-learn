@@ -1,11 +1,11 @@
 import TextInput from "@/atoms/TextInput";
-import RenderFlashcard from "@/courses/RenderFlashcard";
+import FlashcardList from "@/courses/FlashcardList";
 import SearchFlashcards from "@/graphql/SearchFlashcards";
 import SEO from "@/helpers/SEO";
 import { useDebounce } from "@/hooks/useDebounce";
 import type {
   Course,
-  Flashcard,
+  FlashcardWithId,
   Query,
   QuerySearchFlashcardsArgs,
 } from "@/types";
@@ -56,7 +56,7 @@ export default function SearchFlashcardsPage({
         <h1 className="text-4xl font-bold text-center">
           Search Flashcards in {course.title}
         </h1>
-        <div className="mt-5">
+        <div className="mt-5 mb-3">
           <TextInput
             label="Search Flashcards"
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -70,14 +70,10 @@ export default function SearchFlashcardsPage({
         ) : (
           <div>
             {searchedFlashcards && searchedFlashcards.length > 0 ? (
-              searchedFlashcards?.map((flashcard) => (
-                <RenderFlashcard
-                  key={flashcard?.id}
-                  flashcard={flashcard as Flashcard}
-                  className="my-3"
-                  canEdit={canEditCourse}
-                />
-              ))
+              <FlashcardList
+                flashcards={searchedFlashcards as FlashcardWithId[]}
+                canEdit={canEditCourse}
+              />
             ) : (
               <p className="text-center mt-3">No flashcards found</p>
             )}

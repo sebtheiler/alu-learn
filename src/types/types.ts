@@ -28,6 +28,8 @@ type ReviewInstanceWithFlashcard = NonNullableKeys<ReviewInstance> & {
   flashcard: Flashcard;
 };
 
+type FlashcardWithId = Flashcard & { id: string };
+
 type UserWithHistory = User & {
   history: Partial<HistorySegment>[];
 };
@@ -82,4 +84,5 @@ export type {
   Option,
   UserWithHistory,
   AssignmentWithSubSections,
+  FlashcardWithId,
 };
