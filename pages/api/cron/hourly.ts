@@ -1,24 +1,26 @@
-import { verifySignature } from "@upstash/qstash/nextjs";
 import reminderEmail from "cron/reminderEmail";
 import streakReset from "cron/streakReset";
 import { NextApiRequest, NextApiResponse } from "next";
 
+const CRON_SECRET_SIGNING_KEY = process.env.CRON_SECRET_SIGNING_KEY;
+if (!CRON_SECRET_SIGNING_KEY)
+  throw new Error("`CRON_SECRET_SIGNING_KEY` must be set in .env");
+
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === "POST") {
+  if (req.headers["signing-key"] === CRON_SECRET_SIGNING_KEY) {
     try {
-      res.status(200).json({ success: true });
       await streakReset();
       await reminderEmail();
+      res.status(200).json({ success: true });
     } catch (err) {
-      res.status(500).json({ statusCode: 500, message: (err as any).message });
+      res.status(500).json({ success: false, message: (err as any).message });
     }
   } else {
-    res.setHeader("Allow", "POST");
-    res.status(405).end("Method Not Allowed");
+    res.status(403).json({ success: false, message: "Invalid signing key" });
   }
 }
 
-export default verifySignature(handler);
+export default handler;
 
 export const config = {
   api: {

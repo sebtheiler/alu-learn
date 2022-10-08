@@ -1,7 +1,5 @@
 <mj-text>
   <p class="text-paragraph">Hi {{name}}!</p>
-</mj-text>
-<mj-text>
   <p class="text-paragraph">
     You're on a {{streak}}-day streak. Study with Alu today to make it
     {{newStreak}} days! You got this!

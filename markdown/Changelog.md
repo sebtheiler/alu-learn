@@ -8,6 +8,7 @@ description: "Alu Learn changelog"
 
 - Added an error message for users who try to join a classroom with an invalid code
 - Improved landing page display on mobile
+- Fixed scheduled based tasks (e.g., resetting streak, sending reminder emails)
 
 ## Search for Flashcards - Oct 06 - 2.0.2
 

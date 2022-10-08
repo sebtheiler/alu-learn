@@ -192,14 +192,14 @@ export default function AboutPage() {
               were able to achieve high scores.
             </p>
             <p>
-              In 2022, I hope to work with others to expand Alu to other schools
-              and enable more students to take advantage of its spaced
-              repetition and free flashcards to do well on their exams and to
-              memorize more of what they learn. To help Alu live up to its
-              vision of an open-source education, I will also build an even
-              simpler and more powerful sharing system that makes collaborating
-              on decks and sharing knowledge easier, and allows for creating
-              lessons alongside flashcards.
+              I hope to work with others to expand Alu to other schools and
+              enable more students to take advantage of its spaced repetition
+              and free flashcards to do well on their exams and to memorize more
+              of what they learn. To help Alu live up to its vision of an
+              open-source education, I will also build an even simpler and more
+              powerful sharing system that makes collaborating on decks and
+              sharing knowledge easier, and allows for creating lessons
+              alongside flashcards.
             </p>
           </div>
           <div className="md:col-span-2">
