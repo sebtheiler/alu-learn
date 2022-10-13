@@ -4,6 +4,11 @@ path: "changelog"
 description: "Alu Learn changelog"
 ---
 
+## Essential-only Assignments
+- Teachers can now create assignments for flashcards only tagged as "essential"
+- Fixed a bug where pressing "again" when studying would not move a flashcard to the end of the current rotation
+- Fixed a bug with flashcard content overflowing the flashcard
+
 ## Tiny Fixes - Oct 08 - 2.0.3
 
 - Added an error message for users who try to join a classroom with an invalid code

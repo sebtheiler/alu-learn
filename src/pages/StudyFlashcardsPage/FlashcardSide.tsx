@@ -46,7 +46,6 @@ export default function FlashcardSide({
   onStarred,
 }: FlashcardSideProps) {
   const [onTop, setOnTop] = useState(isShown);
-  console.log(side, field)
 
   // Delay changing the z-index of the side so that the transition does
   // not abruptly change the text
@@ -83,7 +82,7 @@ export default function FlashcardSide({
       )}
       style={{ transform: isShown ? "" : "rotateY(180deg)" }}
     >
-      <div className="absolute w-full">
+      <div className="absolute w-full bg-inherit rounded-t-xl z-10">
         <p className="text-center my-2 text-gray-400 font-bold">
           {side.toUpperCase()}
           <FontAwesomeIcon
@@ -107,13 +106,14 @@ export default function FlashcardSide({
         </p>
         <hr className="mx-5" />
       </div>
-      <div className="flex flex-1 justify-center items-center w-full h-full relative p-5">
+      <div className="overflow-auto flex flex-1 justify-center item-center w-full h-full relative p-5 pt-12">
         {overrideContent ? (
           overrideContent
         ) : (
           <LexicalEditor
             namespace={`flashcard-${side}`}
             editorState={field}
+            className="my-auto"
             readOnly
           />
         )}

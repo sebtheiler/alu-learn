@@ -84,7 +84,6 @@ function ImageComponent({
   src: string;
   width: number;
 }): JSX.Element {
-  const maxWidth = 375;
   const imageRef = useRef<HTMLImageElement | null>(null);
   const imageParentRef = useRef<HTMLDivElement | null>(null);
   const [isSelected, setSelected, clearSelection] =
@@ -205,105 +204,120 @@ function ImageComponent({
     }
   };
 
+  const [parentWidth, setParentWidth] = useState<number | null>(null);
+  const getDivParent = useCallback((node) => {
+    if (node !== null) {
+      setParentWidth(node.getBoundingClientRect().width);
+      console.log(node);
+    }
+  }, []);
+  const maxWidth = /*parentWidth ?? */200;
+  console.log(parentWidth, maxWidth);
+
   return (
     <Suspense fallback={null}>
-      <>
-        <div className="inline-block relative select-none">
-          <div className="inline-block relative select-none">
-            <div draggable={draggable}>
-              <div
+      <div
+        className="inline-block relative select-none w-full"
+        ref={getDivParent}
+      >
+        <div className="relative select-none w-full">
+          <div
+            draggable={draggable}
+            className="w-full flex items-center justify-center"
+          >
+            <div
+              className={classNames(
+                "relative",
+                isFocused && "outline outline-2 outline-blue-400"
+              )}
+              style={{
+                width,
+                height,
+                maxWidth,
+                maxHeight:
+                  width > maxWidth ? (maxWidth / width) * height : undefined,
+              }}
+              ref={imageParentRef}
+            >
+              <Image
                 className={classNames(
-                  "relative",
-                  isFocused && "outline outline-2 outline-blue-400"
+                  isFocused &&
+                    "outline outline-2 outline-blue-400 text-center mx-auto",
+                  isFocused &&
+                    $isNodeSelection(selection) &&
+                    "cursor-grab active:cursor-grabbing"
                 )}
-                style={{
-                  width,
-                  height,
-                  maxWidth,
-                  maxHeight:
-                    width > maxWidth ? (maxWidth / width) * height : undefined,
-                }}
-                ref={imageParentRef}
-              >
-                <Image
-                  className={classNames(
-                    isFocused && "outline outline-2 outline-blue-400",
-                    isFocused &&
-                      $isNodeSelection(selection) &&
-                      "cursor-grab active:cursor-grabbing"
-                  )}
-                  onLoad={(e) =>
-                    (imageRef.current = e.target as HTMLImageElement)
-                  }
-                  src={src}
-                  alt={caption}
-                  layout="fill"
-                  draggable="false"
-                />
-              </div>
+                onLoad={(e) =>
+                  (imageRef.current = e.target as HTMLImageElement)
+                }
+                src={src}
+                alt={caption}
+                layout="fill"
+                draggable="false"
+              />
             </div>
-            {resizable && $isNodeSelection(selection) && isFocused && (
-              <ImageResizer
-                editor={editor}
-                imageRef={imageRef}
-                imageParentRef={imageParentRef}
-                maxWidth={maxWidth}
-                onResizeStart={onResizeStart}
-                onResizeEnd={onResizeEnd}
+          </div>
+          {resizable && $isNodeSelection(selection) && isFocused && (
+            <ImageResizer
+              editor={editor}
+              imageRef={imageRef}
+              imageParentRef={imageParentRef}
+              maxWidth={maxWidth}
+              onResizeStart={onResizeStart}
+              onResizeEnd={onResizeEnd}
+            />
+          )}
+        </div>
+        <div className="text-center w-full">
+          <div>
+            {!editingCaption &&
+              (sourceUrlValue.length > 0 ? (
+                <a
+                  href={sourceUrlValue}
+                  target="_blank"
+                  rel="nofollow noreferrer ugc"
+                  className="text-blue-500"
+                >
+                  {captionValue}{" "}
+                  <FontAwesomeIcon
+                    icon={faArrowUpRightFromSquare}
+                    title="View Source URL"
+                    size="sm"
+                  />
+                </a>
+              ) : (
+                captionValue
+              ))}
+          </div>
+          <div>
+            {editingCaption && (
+              <>
+                <TextInput
+                  label="Caption"
+                  className="w-full mb-2"
+                  value={captionValue}
+                  onChange={(e) => setCaptionValue(e.target.value)}
+                  autoFocus
+                />
+                <TextInput
+                  label="Source URL (optional)"
+                  className="w-full"
+                  value={sourceUrlValue}
+                  onChange={(e) => setSourceUrlValue(e.target.value)}
+                />
+              </>
+            )}
+            {(isSelected || editingCaption) && (
+              <FontAwesomeIcon
+                icon={editingCaption ? faEye : faPencil}
+                title={editingCaption ? "Save and View" : "Edit Caption"}
+                className="absolute right-0 -top-1 hover:cursor-pointer bg-gray-50 p-2 rounded-full"
+                onClick={toggleEditingCaption}
               />
             )}
           </div>
-          <div className="block text-center -translate-y-2 w-full">
-            <div>
-              {!editingCaption &&
-                (sourceUrlValue.length > 0 ? (
-                  <a
-                    href={sourceUrlValue}
-                    target="_blank"
-                    rel="nofollow noreferrer ugc"
-                    className="text-blue-500"
-                  >
-                    {captionValue}{" "}
-                    <FontAwesomeIcon
-                      icon={faArrowUpRightFromSquare}
-                      title="View Source URL"
-                      size="sm"
-                    />
-                  </a>
-                ) : (
-                  captionValue
-                ))}
-            </div>
-            <div>
-              {editingCaption && (
-                <>
-                  <TextInput
-                    label="Caption"
-                    className="w-full mb-2"
-                    value={captionValue}
-                    onChange={(e) => setCaptionValue(e.target.value)}
-                    autoFocus
-                  />
-                  <TextInput
-                    label="Source URL (optional)"
-                    className="w-full"
-                    value={sourceUrlValue}
-                    onChange={(e) => setSourceUrlValue(e.target.value)}
-                  />
-                </>
-              )}
-              {(isSelected || editingCaption) && (
-                <FontAwesomeIcon
-                  icon={editingCaption ? faEye : faPencil}
-                  title={editingCaption ? "Save and View" : "Edit Caption"}
-                  className="absolute right-0 -top-1 hover:cursor-pointer bg-gray-50 p-2 rounded-full"
-                  onClick={toggleEditingCaption}
-                />
-              )}
-            </div>
-          </div>
         </div>
-      </>
+      </div>
     </Suspense>
   );
 }
