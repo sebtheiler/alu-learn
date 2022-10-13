@@ -1,12 +1,21 @@
+import { Assignment as PrismaAssignment } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
 import isCourseUser from "helpers/isCourseUser";
-import { extendType, list, nonNull, objectType, stringArg } from "nexus";
+import {
+  booleanArg,
+  extendType,
+  list,
+  nonNull,
+  objectType,
+  stringArg,
+} from "nexus";
 
 const Assignment = objectType({
   name: "Assignment",
   definition(t) {
     t.string("id");
     t.string("title");
+    t.boolean("essentialOnly");
   },
 });
 
@@ -20,6 +29,7 @@ export const AssignmentsMutation = extendType({
       description: "Creates an assignment",
       args: {
         title: nonNull(stringArg()),
+        essentialOnly: nonNull(booleanArg()),
         subSectionIds: nonNull(
           list(
             nonNull(
@@ -70,6 +80,9 @@ export const AssignmentsMutation = extendType({
             courseSection: {
               courseId: courseId as string,
             },
+            id: {
+              in: args.subSectionIds,
+            },
           },
         });
         if (subSectionsToCourse !== args.subSectionIds.length)
@@ -81,6 +94,7 @@ export const AssignmentsMutation = extendType({
         return ctx.prisma.assignment.create({
           data: {
             title: args.title,
+            essentialOnly: args.essentialOnly,
             classrooms: {
               connect: args.classroomIds.map((id) => ({ id })),
             },
@@ -88,6 +102,37 @@ export const AssignmentsMutation = extendType({
               connect: args.subSectionIds.map((id) => ({ id })),
             },
           },
+        });
+      },
+    });
+    t.field("updateAssignment", {
+      type: Assignment,
+      description: "Updates an assignment",
+      args: {
+        assignmentId: nonNull(stringArg()),
+        title: stringArg(),
+        essentialOnly: booleanArg(),
+      },
+      async resolve(_parent, args, ctx) {
+        const assignmentExists =
+          (await ctx.prisma.assignment.count({
+            where: {
+              id: args.assignmentId,
+              classrooms: {
+                some: { teachers: { some: { email: ctx.user?.email } } },
+              },
+            },
+          })) > 0;
+        if (!ctx.user || !assignmentExists) return null;
+
+        const data: Partial<PrismaAssignment> = {};
+        if (args.title) data.title = args.title;
+        if (args.essentialOnly !== null)
+          data.essentialOnly = args.essentialOnly;
+
+        return ctx.prisma.assignment.update({
+          where: { id: args.assignmentId },
+          data,
         });
       },
     });

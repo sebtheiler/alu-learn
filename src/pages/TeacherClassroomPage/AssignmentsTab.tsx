@@ -3,6 +3,7 @@ import Button from "@/atoms/Button";
 import Checkbox from "@/atoms/Checkbox";
 import Modal from "@/atoms/Modal";
 import TextInput from "@/atoms/TextInput";
+import InfoBubble from "@/components/InfoBubble";
 import CreateAssignment from "@/graphql/CreateAssignment";
 import { getElementsVals } from "@/helpers/getElementsVals";
 import {
@@ -36,6 +37,7 @@ export default function AssignmentsTab({
     { createAssignment: Mutation["createAssignment"] },
     MutationCreateAssignmentArgs
   >(CreateAssignment);
+  const [essentialOnly, setEssentialOnly] = useState(false);
 
   const createAssignmentHandler = async (e: React.FormEvent) => {
     const { title } = getElementsVals(e.target as HTMLFormElement, ["title"]);
@@ -48,7 +50,7 @@ export default function AssignmentsTab({
       .filter((option) => option.selected)
       .map((option) => option.value);
 
-    // Get classroosm to create assignment in
+    // Get classrooms to create assignment in
     const assignToClassroomEls = document.getElementsByName(
       "assignToClassroom"
     ) as NodeListOf<HTMLInputElement>;
@@ -63,6 +65,7 @@ export default function AssignmentsTab({
     await createAssignment({
       variables: {
         title,
+        essentialOnly,
         subSectionIds,
         classroomIds: assignToClassroomIds,
       },
@@ -137,7 +140,7 @@ export default function AssignmentsTab({
                 ))}
               </select>
             </div>
-            <div className="mb-5">
+            <div>
               <p className="mb-1">Assign to classrooms</p>
               {classrooms
                 .filter(
@@ -153,6 +156,21 @@ export default function AssignmentsTab({
                   />
                 ))}
             </div>
+            <hr className="my-2" />
+            <Checkbox
+              label={
+                <p>
+                  Essential only?{" "}
+                  <InfoBubble
+                    className="w-48"
+                    text="Only shows flashcards with the 'essential' tag to students. Use this if students are facing too much work."
+                    variant="question"
+                  />
+                </p>
+              }
+              onChange={e => setEssentialOnly(e.target.checked)}
+              className="mb-5"
+            />
           </AsyncForm>
         </Modal>
       </div>

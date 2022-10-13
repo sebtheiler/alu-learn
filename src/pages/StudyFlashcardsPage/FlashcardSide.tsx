@@ -46,6 +46,7 @@ export default function FlashcardSide({
   onStarred,
 }: FlashcardSideProps) {
   const [onTop, setOnTop] = useState(isShown);
+  console.log(side, field)
 
   // Delay changing the z-index of the side so that the transition does
   // not abruptly change the text

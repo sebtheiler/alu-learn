@@ -78,7 +78,9 @@ export const NewUserSurveyResponseMutation = extendType({
         });
 
         // Create Slack notification
-        sendSlackMessage(`*New User:* ${name} (${user.email})`);
+        sendSlackMessage(
+          `*New User:* ${name} (${user.email}). Referrer: ${newUserSurveyResponse.referrer}, reason: ${newUserSurveyResponse.joinReason}`
+        );
 
         return ctx.prisma.newUserSurveyResponse.create({
           data: newUserSurveyResponse,

@@ -3,6 +3,7 @@
 
 
 type Assignment {
+  essentialOnly: Boolean
   id: String
   title: String
 }
@@ -104,6 +105,7 @@ type Mutation {
   createAssignment(
     """IDs of the classrooms to post to"""
     classroomIds: [String!]!
+    essentialOnly: Boolean!
 
     """IDs of the subsections to assign"""
     subSectionIds: [String!]!
@@ -194,6 +196,9 @@ type Mutation {
     """In ms"""
     timeTaken: Float!
   ): ReviewInstance
+
+  """Updates an assignment"""
+  updateAssignment(assignmentId: String!, essentialOnly: Boolean, title: String): Assignment
 
   """Updates a classrooms values"""
   updateClassroom(

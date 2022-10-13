@@ -5,6 +5,7 @@ import processCloze from "course/processCloze";
 import { createEditor, TextNode } from "lexical";
 import { useEffect, useMemo } from "react";
 
+// TODO: Make this not a hook
 const usePrepareFields = (reviewInstance?: ReviewInstance) => {
   const flashcard = reviewInstance?.flashcard;
   const frontEditor = useMemo(() => createEditor({ nodes }), []);

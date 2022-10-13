@@ -41,6 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     select: {
       id: true,
       title: true,
+      essentialOnly: true,
       classrooms: {
         select: {
           id: true,
@@ -116,6 +117,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                   in: assignedSubSectionIds,
                 },
               },
+              userId: student.id,
             },
           },
           select: {

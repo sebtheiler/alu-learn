@@ -28,6 +28,7 @@ export type Scalars = {
 
 export type Assignment = {
   __typename?: "Assignment";
+  essentialOnly?: Maybe<Scalars["Boolean"]>;
   id?: Maybe<Scalars["String"]>;
   title?: Maybe<Scalars["String"]>;
 };
@@ -159,6 +160,8 @@ export type Mutation = {
   renewStripeSubscription?: Maybe<Scalars["Boolean"]>;
   /** Change the user's settings */
   studyReviewInstance?: Maybe<ReviewInstance>;
+  /** Updates an assignment */
+  updateAssignment?: Maybe<Assignment>;
   /** Updates a classrooms values */
   updateClassroom?: Maybe<Classroom>;
   /** Change a course's settings */
@@ -193,6 +196,7 @@ export type MutationArchiveCourseArgs = {
 
 export type MutationCreateAssignmentArgs = {
   classroomIds: Array<Scalars["String"]>;
+  essentialOnly: Scalars["Boolean"];
   subSectionIds: Array<Scalars["String"]>;
   title: Scalars["String"];
 };
@@ -295,6 +299,12 @@ export type MutationStudyReviewInstanceArgs = {
   grade: Grade;
   reviewInstanceId: Scalars["String"];
   timeTaken: Scalars["Float"];
+};
+
+export type MutationUpdateAssignmentArgs = {
+  assignmentId: Scalars["String"];
+  essentialOnly?: InputMaybe<Scalars["Boolean"]>;
+  title?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationUpdateClassroomArgs = {

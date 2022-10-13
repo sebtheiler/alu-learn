@@ -161,18 +161,12 @@ export default function StudyFlashcardsPage({
           grade
         );
       }
-      newReviewInstances[
-        newReviewInstances.map((ri) => ri.id).indexOf(activeReviewInstance.id)
-      ] = updatedReviewInstance as ReviewInstance;
 
-      // Make sure the user is never shown the same card twice (unless it's the only card left)
-      if (newReviewInstances.length > 1) {
-        while (newReviewInstances[0].id === activeReviewInstance.id) {
-          newReviewInstances = newReviewInstances.sort(
-            () => Math.random() - 0.5
-          );
-        }
-      }
+      // Put the review instance the user just studied at the end of the current rotation
+      newReviewInstances = newReviewInstances.filter(
+        (ri) => ri.id !== activeReviewInstance.id
+      );
+      newReviewInstances.push(updateReviewInstance as ReviewInstance)
     }
     _setReviewInstances(newReviewInstances);
     setNumReviewsStudiedInSession(numReviewsStudiedInSession + 1);

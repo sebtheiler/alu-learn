@@ -153,18 +153,29 @@ const getStudyReviewInstances = async (
   if (!(await isCourseUser(courseId, session?.user?.email))) {
     // If they have access, add them as a user
     if (await canViewCourse(courseId, session?.user?.email)) {
-      await prisma.course.update({
-        where: {
-          id: courseId,
-        },
-        data: {
-          users: {
-            connect: {
-              email: session?.user?.email as string,
+      // (but they are not a student of a classroom for that course)
+      if (
+        !(
+          (await prisma.classroom.count({
+            where: {
+              students: { some: { email: session.user?.email } },
+              courseId,
+            },
+          })) > 0
+        )
+      )
+        await prisma.course.update({
+          where: {
+            id: courseId,
+          },
+          data: {
+            users: {
+              connect: {
+                email: session?.user?.email as string,
+              },
             },
           },
-        },
-      });
+        });
     } else {
       // Return empty
       return null;

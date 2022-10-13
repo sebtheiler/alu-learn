@@ -1,6 +1,17 @@
+import Checkbox from "@/atoms/Checkbox";
+import UpdateAssignment from "@/graphql/UpdateAssignment";
 import SEO from "@/helpers/SEO";
+import englishList from "@/helpers/englishList";
 import formatTimeTaken from "@/helpers/formatTimeTaken";
-import type { Assignment, Classroom, SubSection, User } from "@/types";
+import type {
+  Assignment,
+  Classroom,
+  Mutation,
+  MutationUpdateAssignmentArgs,
+  SubSection,
+  User,
+} from "@/types";
+import { useMutation } from "@apollo/client";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -29,6 +40,11 @@ export default function AssignmentPage({
   classroomId,
   studentProgress,
 }: AssignmentPageProps) {
+  const [updateAssignment] = useMutation<
+    { createSubSection: Mutation["updateAssignment"] },
+    MutationUpdateAssignmentArgs
+  >(UpdateAssignment);
+
   return (
     <>
       <SEO
@@ -37,23 +53,38 @@ export default function AssignmentPage({
         description="Manage your assignments in Alu Learn"
       />
       <div className="mt-28">
-        <h1 className="text-center text-4xl font-bold">{assignment.title}</h1>
-        <p className="text-center my-1">
-          Assigned to:
-          {assignment.classrooms.map((classroom) => (
-            <Link href={`/classroom/${classroom.id}`} key={classroom.id}>
-              <a className="text-blue-500 px-2 py-1 rounded-full bg-gray-200 mx-2">
-                {classroom.title}
-              </a>
-            </Link>
-          ))}
-        </p>
-        <p className="text-center my-1">
-          Includes Subsections:{" "}
-          {assignment.assignedSubSections.map((subSection) => (
-            <span key={subSection.id}>{subSection.title}</span>
-          ))}
-        </p>
+        <div className="max-w-md mx-auto">
+          <h1 className="text-center text-4xl font-bold">{assignment.title}</h1>
+          <p className="my-1">
+            Assigned to:
+            {assignment.classrooms.map((classroom) => (
+              <Link href={`/classroom/${classroom.id}`} key={classroom.id}>
+                <a className="text-blue-500 px-2 py-1 rounded-full bg-gray-200 mx-2">
+                  {classroom.title}
+                </a>
+              </Link>
+            ))}
+          </p>
+          <p className="my-1">
+            Includes Subsections:{" "}
+            {englishList(
+              assignment.assignedSubSections.map((ss) => ss.title as string)
+            )}
+          </p>
+          <Checkbox
+            label={<p className="text-black font-large">Essential only?</p>}
+            defaultChecked={assignment.essentialOnly ?? false}
+            onChange={(e) =>
+              updateAssignment({
+                variables: {
+                  assignmentId: assignment.id as string,
+                  essentialOnly: e.target.checked,
+                },
+              })
+            }
+          />
+          <hr className="mt-8 mb-3" />
+        </div>
         <div className="mt-5 max-w-4xl mx-auto">
           <h2 className="text-center text-2xl font-bold">Student Progress</h2>
           <ul className="border-2 border-gray-200 rounded-xl overflow-hidden mt-3">

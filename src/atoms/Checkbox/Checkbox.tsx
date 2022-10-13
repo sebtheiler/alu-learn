@@ -70,12 +70,7 @@ export default function Checkbox({
         />
       </div>
       <div className="ml-3 text-sm">
-        <label
-          htmlFor={id ?? componentId}
-          className="font-medium text-gray-700"
-        >
-          {label}
-        </label>
+        <label htmlFor={id ?? componentId}>{label}</label>
         {description && <p className="text-gray-500">{description}</p>}
       </div>
     </div>
