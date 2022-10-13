@@ -6,12 +6,16 @@ export interface StudentClassroomPageProps {
   classroom: Classroom;
   course: Course;
   assignments: AssignmentWithSubSections[];
+  assignmentsPercentComplete: {
+    [assignmentId: string]: number;
+  };
 }
 
 export default function StudentClassroomPage({
   classroom,
   assignments,
   course,
+  assignmentsPercentComplete,
 }: StudentClassroomPageProps) {
   return (
     <>
@@ -25,6 +29,7 @@ export default function StudentClassroomPage({
           course={course}
           editAccess={false}
           assignments={assignments}
+          assignmentsPercentComplete={assignmentsPercentComplete}
           classroom={classroom}
         />
       </div>

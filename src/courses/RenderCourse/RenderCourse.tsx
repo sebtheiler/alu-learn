@@ -4,6 +4,7 @@ import CoursePageContext from "./context";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
+import Ad from "@/components/Ad";
 import RenderCourseSection from "@/courses/RenderCourseSection";
 import ArchiveCourse from "@/graphql/ArchiveCourse";
 import CalculateSubSectionsPercentComplete from "@/graphql/CalculateSubSectionsPercentComplete";
@@ -29,7 +30,6 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import type { SortableEvent } from "react-sortablejs";
-import Ad from "@/components/Ad";
 
 type CourseSectionWithId = CourseSection & { id: string };
 
@@ -37,6 +37,9 @@ interface RenderCourseProps {
   course: Course;
   editAccess: boolean;
   assignments?: AssignmentWithSubSections[];
+  assignmentsPercentComplete?: {
+    [assignmentId: string]: number;
+  };
   classroom?: Classroom;
 }
 
@@ -47,6 +50,7 @@ export default function RenderCourse({
   course,
   editAccess,
   assignments,
+  assignmentsPercentComplete,
   classroom,
 }: RenderCourseProps) {
   const router = useRouter();
@@ -182,11 +186,7 @@ export default function RenderCourse({
             {/* <LinkButton href={`/course/${course.id}/study-group`}>
                   Study Group
                 </LinkButton> */}
-            <LinkButton
-              href={`/course/${course.id}/games`}
-            >
-              Games
-            </LinkButton>
+            <LinkButton href={`/course/${course.id}/games`}>Games</LinkButton>
             <DropdownButton
               options={[
                 {
@@ -265,7 +265,19 @@ export default function RenderCourse({
                   <a>
                     <div className="my-3 px-3 py-2 border-2 rounded-xl hover:scale-105 transition">
                       <h3 className="font-bold text-lg">{assignment.title}</h3>
-                      <ul className="ml-8">
+                      {assignmentsPercentComplete && (<>
+                        <p>
+                          Percent Complete:{" "}
+                          {Math.round(
+                            (assignmentsPercentComplete[
+                              assignment.id as string
+                            ] ?? 0) * 100
+                          )}
+                          %
+                        </p>
+                        <hr className="my-2" />
+                      </>)}
+                      <ul className="ml-8 list-disc">
                         {assignment.assignedSubSections.map((subSection) => (
                           <li key={subSection.id}>{subSection.title}</li>
                         ))}
@@ -274,7 +286,11 @@ export default function RenderCourse({
                   </a>
                 </Link>
               ))}
-              {assignments.length === 0 && <p className="text-center mt-2">You have no assignments. Hurrah!</p>}
+              {assignments.length === 0 && (
+                <p className="text-center mt-2">
+                  You have no assignments. Hurrah!
+                </p>
+              )}
             </div>
           )}
           <Ad adType="COURSE_SIDEBAR" />

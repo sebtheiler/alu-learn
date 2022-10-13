@@ -85,6 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         select: {
           id: true,
           title: true,
+          essentialOnly: true,
           assignedSubSections: {
             select: {
               id: true,
@@ -217,6 +218,36 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (course && course.bannerImage)
       course.bannerImage = generateSignedS3URL(course.bannerImage);
 
+    const assignmentsPercentComplete = {};
+    for (const assignment of assignments) {
+      const flashcardWhere = {
+        subSectionId: {
+          in: assignment.assignedSubSections.map((ss) => ss.id),
+        },
+        tags: assignment.essentialOnly
+          ? {
+              contains: "essential",
+            }
+          : undefined,
+      };
+
+      const numFlashcards = await prisma.flashcard.count({
+        where: flashcardWhere,
+      });
+      const numReviewInstancesStudied = await prisma.reviewInstance.count({
+        where: {
+          userId: user?.id,
+          learningStatus: {
+            not: "UNSEEN",
+          },
+          flashcard: flashcardWhere,
+        },
+      });
+
+      assignmentsPercentComplete[assignment.id] =
+        numReviewInstancesStudied / numFlashcards;
+    }
+
     return {
       props: {
         teacher: false,
@@ -224,6 +255,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           classroom,
           course,
           assignments,
+          assignmentsPercentComplete,
         } as StudentClassroomPageProps,
       },
     };

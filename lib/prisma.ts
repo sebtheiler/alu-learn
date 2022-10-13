@@ -63,7 +63,7 @@ async function main() {
         const email = params.args.data.email;
         if (email) {
           const emailDomain = email.split("@").pop();
-          if (partneredDomains.includes(emailDomain)) {
+          if (partneredDomains.includes(emailDomain.toLowerCase())) {
             params.args.data.isPro = true;
             params.args.data.isProFromOrg = true;
           }

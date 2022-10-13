@@ -87,6 +87,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       subSectionId: {
         in: assignedSubSectionIds,
       },
+      tags: assignment.essentialOnly
+        ? {
+            contains: "essential",
+          }
+        : undefined,
     },
   });
 

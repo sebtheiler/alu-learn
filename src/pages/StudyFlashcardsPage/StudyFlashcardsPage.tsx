@@ -285,7 +285,7 @@ export default function StudyFlashcardsPage({
         description={`Study ${title} flashcards for free. Improve your memory and grades with Alu's spaced repetition flashcards and games`}
       />
       <div className="mt-28">
-        <div className="absolute left-6 top-28">
+        {courseId && <div className="absolute left-6 top-28">
           <Link href={`/course/${courseId}`}>
             <a>
               <FontAwesomeIcon
@@ -295,7 +295,7 @@ export default function StudyFlashcardsPage({
               />
             </a>
           </Link>
-        </div>
+        </div>}
         {!finishedStudying && activeReviewInstance && (
           <div className="px-5 overflow-hidden">
             <h1 className="font-bold text-4xl text-center">Study Flashcards</h1>

@@ -117,6 +117,7 @@ const getStudyReviewInstances = async (
     subSectionSlug,
     subSectionIds,
     studyAhead,
+    essentialOnly,
   }: {
     /**
      * Session
@@ -144,6 +145,10 @@ const getStudyReviewInstances = async (
      * Include reviews not yet due?
      */
     studyAhead: boolean;
+    /**
+     * Only include flashcards with the "essential" tag?
+     */
+    essentialOnly?: boolean;
   }
 ): Promise<{
   reviewInstances: Partial<ReviewInstance>[];
@@ -223,6 +228,11 @@ const getStudyReviewInstances = async (
       nextReview: dateCutoff,
       flashcard: {
         courseId: courseId as string,
+        tags: essentialOnly
+          ? {
+              contains: "essential",
+            }
+          : undefined,
         ...slugQuery,
       },
     },
@@ -252,6 +262,11 @@ const getStudyReviewInstances = async (
             },
           },
         },
+        tags: essentialOnly
+          ? {
+              contains: "essential",
+            }
+          : undefined,
       },
       select: {
         fields: true,
