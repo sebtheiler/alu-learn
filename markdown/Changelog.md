@@ -4,7 +4,17 @@ path: "changelog"
 description: "Alu Learn changelog"
 ---
 
-## Essential-only Assignments
+## Minor Fixes - Oct 18 - 2.0.5
+
+- Fixed text slugs in sections
+- Fixed SVGs in flashcards
+- Added error message when there's a failure to upload an image
+- Fixed the link in the reminder email
+- Fixed a bug that caused some flashcards to crash when viewing them in a list
+- Fixed a bug that caused some courses to not load properly
+
+## Essential-only Assignments - Oct 14 - 2.0.4
+
 - Teachers can now create assignments for flashcards only tagged as "essential"
 - Fixed a bug where pressing "again" when studying would not move a flashcard to the end of the current rotation
 - Fixed a bug with flashcard content overflowing the flashcard

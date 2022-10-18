@@ -42,7 +42,7 @@ import {
   KEY_DELETE_COMMAND,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
-import Image from "next/image";
+import Image from "next/future/image";
 import * as React from "react";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 
@@ -211,7 +211,7 @@ function ImageComponent({
       console.log(node);
     }
   }, []);
-  const maxWidth = /*parentWidth ?? */200;
+  const maxWidth = /*parentWidth ?? */ 200;
   console.log(parentWidth, maxWidth);
 
   return (
@@ -252,7 +252,8 @@ function ImageComponent({
                 }
                 src={src}
                 alt={caption}
-                layout="fill"
+                sizes="100vw"
+                fill
                 draggable="false"
               />
             </div>

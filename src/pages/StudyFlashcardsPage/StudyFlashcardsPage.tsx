@@ -2,7 +2,7 @@ import FinishedStudying from "./FinishedStudying";
 import FlashcardSide from "./FlashcardSide";
 import { EASE_FOR_HARD_EXERCISE, formatDate, GRADES } from "./helpers";
 import type { Grade } from "./helpers";
-import usePrepareFields from "./usePrepareFields";
+import prepareFields from "./prepareFields";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import ProgressBar from "@/components/ProgressBar";
@@ -270,7 +270,10 @@ export default function StudyFlashcardsPage({
     ? `/course/${courseId}/add-flashcards/${courseSectionSlug}`
     : `/course/${courseId}/add-flashcards`;
 
-  const { frontField, backField } = usePrepareFields(activeReviewInstance);
+  const { frontField, backField } = useMemo(
+    () => prepareFields(activeReviewInstance),
+    [activeReviewInstance]
+  );
 
   const slug = subSectionSlug
     ? `/${courseSectionSlug}/${subSectionSlug}`

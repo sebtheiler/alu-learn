@@ -32,7 +32,7 @@ export default function CoursePage({
         title={course?.title ?? "Course"}
         path={`course/${course?.id}`}
         description={
-          course.seoDescription ??
+          course?.seoDescription ??
           `${course.title} study guide flashcards. Learn ${course.title} for free with spaced repetition flashcards and games`
         }
       />

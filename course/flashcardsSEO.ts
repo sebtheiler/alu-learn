@@ -11,14 +11,19 @@ const flashcardsSEO = async (flashcards: Flashcard[]) => {
   const fronts: string[] = [];
   const backs: string[] = [];
   for (const flashcard of flashcards) {
-    const front = JSON.stringify(JSON.parse(flashcard.fields as string)[0]);
-    const back = JSON.stringify(JSON.parse(flashcard.fields as string)[1]);
-    const flattenedFront = front && (await flattenLexical(front));
-    const flattenedBack = back && (await flattenLexical(back));
+    try {
+      const front = JSON.stringify(JSON.parse(flashcard.fields as string)[0]);
+      const back = JSON.stringify(JSON.parse(flashcard.fields as string)[1]);
+      const flattenedFront = front && (await flattenLexical(front));
+      const flattenedBack = back && (await flattenLexical(back));
 
-    if (flattenedFront && flattenedBack) {
-      fronts.push(flattenedFront);
-      backs.push(flattenedBack);
+      if (flattenedFront && flattenedBack) {
+        fronts.push(flattenedFront);
+        backs.push(flattenedBack);
+      }
+    } catch (e) {
+      console.error(e);
+      continue;
     }
   }
 

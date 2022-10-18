@@ -45,6 +45,7 @@ export default function InsertImageModal({
   const [caption, setCaption] = useState("");
   const [widthVal, setWidthVal] = useState<number>();
   const [heightVal, setHeightVal] = useState<number>();
+  const [displayError, setDisplayError] = useState(false);
 
   const insertImage = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -54,20 +55,32 @@ export default function InsertImageModal({
 
       // Upload the image
       if (mode === "URL") {
-        const { data } = await uploadImageFromUrl({
+        await uploadImageFromUrl({
           variables: {
             url: urlVal,
           },
-        });
-        uploadedImage = data?.uploadImageFromUrl;
+        })
+          .then(({ data }) => {
+            uploadedImage = data?.uploadImageFromUrl;
+          })
+          .catch(() => {
+            setDisplayError(true);
+          });
       } else if (mode === "FILE") {
-        const { data } = await uploadImage({
+        await uploadImage({
           variables: {
             image: file,
           },
-        });
-        uploadedImage = data?.uploadImage;
-      } else {
+        })
+          .then(({ data }) => {
+            uploadedImage = data?.uploadImage;
+          })
+          .catch(() => {
+            setDisplayError(true);
+          });
+      }
+
+      if (!uploadedImage) {
         return;
       }
 
@@ -98,6 +111,7 @@ export default function InsertImageModal({
       setCaption("");
       setUrlVal("");
       setSourceUrl("");
+      setDisplayError(false);
     },
     [
       editor,
@@ -200,6 +214,9 @@ export default function InsertImageModal({
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
         />
+        {displayError && (
+          <p className="text-red-600 text-center mb-3">Error uploading image</p>
+        )}
       </AsyncForm>
       <p className="mt-2 text-gray-500 text-sm text-center">
         Only upload images that you have confirmed that you have the license to

@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
+    dangerouslyAllowSVG: true,
     domains: [
       "lh3.googleusercontent.com",
       "alu-user-uploads.nyc3.digitaloceanspaces.com",
