@@ -1,3 +1,4 @@
+import classNames from "@/helpers/classNames";
 import { useId } from "react";
 
 interface CheckboxProps {
@@ -34,6 +35,10 @@ interface CheckboxProps {
    */
   value?: string;
   /**
+   * Disable the checkbox
+   */
+  disabled?: boolean;
+  /**
    * Is the checkbox required?
    */
   required?: boolean;
@@ -51,6 +56,7 @@ export default function Checkbox({
   onChange,
   defaultChecked,
   value,
+  disabled,
   className = "",
 }: CheckboxProps) {
   const componentId = useId();
@@ -63,10 +69,14 @@ export default function Checkbox({
           value={value}
           name={name}
           type="checkbox"
-          className="h-4 w-4 rounded-full accent-alu-primary-purple ring-indigo-500 focus:outline-none focus:ring focus:ring-violet-400/20"
+          className={classNames(
+            "h-4 w-4 rounded-full accent-alu-primary-purple ring-indigo-500 focus:outline-none focus:ring focus:ring-violet-400/20",
+            disabled && "hover:cursor-not-allowed"
+          )}
           onChange={onChange}
           required={required}
           defaultChecked={defaultChecked}
+          disabled={disabled}
         />
       </div>
       <div className="ml-3 text-sm">

@@ -111,6 +111,7 @@ export const CoursesQuery = extendType({
               contains: args.title,
               mode: "insensitive",
             },
+            privacySetting: "ALL",
           },
           take: 25,
         });

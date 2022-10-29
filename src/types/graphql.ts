@@ -349,8 +349,10 @@ export type MutationUpdateSubSectionArgs = {
 
 export type MutationUpdateUserArgs = {
   name?: InputMaybe<Scalars["String"]>;
+  sendGeneral?: InputMaybe<Scalars["Boolean"]>;
   sendMarketingResearch?: InputMaybe<Scalars["Boolean"]>;
   sendReminders?: InputMaybe<Scalars["Boolean"]>;
+  sendWeeklyReports?: InputMaybe<Scalars["Boolean"]>;
   targetNumReviews?: InputMaybe<Scalars["Int"]>;
   timezoneOffset?: InputMaybe<Scalars["Int"]>;
   userType?: InputMaybe<UserType>;

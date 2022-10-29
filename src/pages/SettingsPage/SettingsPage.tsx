@@ -6,6 +6,7 @@ import SEO from "@/helpers/SEO";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useMutation } from "@apollo/client";
 import type { UserType } from "@prisma/client";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useState } from "react";
 
@@ -56,20 +57,27 @@ export interface SettingsPageProps {
   name?: string;
   timezoneOffset?: number;
   userType?: UserType;
-  sendReminders?: boolean;
   targetNumReviews?: number;
+  sendReminders?: boolean;
   sendMarketingResearch?: boolean;
+  sendWeeklyReports?: boolean;
+  sendGeneral?: boolean;
+  unsubscribeAll?: boolean;
 }
 
 export default function SettingsPage({
   name,
   timezoneOffset,
   userType,
-  sendReminders,
   targetNumReviews,
+  sendReminders,
   sendMarketingResearch,
+  sendWeeklyReports,
+  sendGeneral,
+  unsubscribeAll,
 }: SettingsPageProps) {
   const [updateUser] = useMutation(UpdateUser);
+  const router = useRouter();
 
   const [nameState, setNameState] = useState(name);
   const debouncedName = useDebounce(nameState, 500);
@@ -151,7 +159,34 @@ export default function SettingsPage({
               updateUser({ variables: { sendReminders: e.target.checked } })
             }
             defaultChecked={sendReminders}
+            disabled={unsubscribeAll}
             id="sendReminders"
+          />
+          <br />
+          <Checkbox
+            label="Send weekly progress report emails"
+            description="Alu will send you a report of your progress once a week"
+            onChange={(e) =>
+              updateUser({
+                variables: { sendWeeklyReports: e.target.checked },
+              })
+            }
+            defaultChecked={sendWeeklyReports}
+            disabled={unsubscribeAll}
+            id="sendWeeklyReports"
+          />
+          <br />
+          <Checkbox
+            label="Send general emails"
+            description="Alu will occasionally send you emails about new features and ways to use Alu. We will never spam you."
+            onChange={(e) =>
+              updateUser({
+                variables: { sendGeneral: e.target.checked },
+              })
+            }
+            defaultChecked={sendGeneral}
+            disabled={unsubscribeAll}
+            id="sendGeneral"
           />
           <br />
           <Checkbox
@@ -163,7 +198,21 @@ export default function SettingsPage({
               })
             }
             defaultChecked={sendMarketingResearch}
+            disabled={unsubscribeAll}
             id="sendMarketingResearch"
+          />
+          <br />
+          <Checkbox
+            label="Unsubscribe all"
+            description="Unsubscribe from all emails.  You will still receive absolutely necessary emails about your account."
+            onChange={(e) => {
+              updateUser({
+                variables: { unsubscribeAll: e.target.checked },
+              });
+              router.push(router.asPath);
+            }}
+            defaultChecked={unsubscribeAll}
+            id="unsubscribeAll"
           />
         </div>
       </div>

@@ -251,7 +251,7 @@ type Mutation {
   ): SubSection
 
   """Change the user's settings"""
-  updateUser(name: String, sendMarketingResearch: Boolean, sendReminders: Boolean, targetNumReviews: Int, timezoneOffset: Int, userType: UserType): User
+  updateUser(name: String, sendGeneral: Boolean, sendMarketingResearch: Boolean, sendReminders: Boolean, sendWeeklyReports: Boolean, targetNumReviews: Int, timezoneOffset: Int, unsubscribeAll: Boolean, userType: UserType): User
 
   """Upload a banner image for a course"""
   uploadCourseBannerImage(

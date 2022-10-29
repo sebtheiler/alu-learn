@@ -28,9 +28,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       name: user?.name,
       timezoneOffset: user?.timezoneOffset,
       userType: user?.userType,
-      sendReminders: user?.sendReminders,
       targetNumReviews: user?.targetNumReviews,
+      sendReminders: user?.sendReminders,
       sendMarketingResearch: user?.sendMarketingResearch,
+      sendWeeklyReports: user?.sendWeeklyReports,
+      sendGeneral: user?.sendGeneral,
+      unsubscribeAll: user?.unsubscribeAll,
     } as SettingsPageProps,
   };
 };

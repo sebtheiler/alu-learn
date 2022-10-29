@@ -1,0 +1,42 @@
+<mj-text>
+  <p class="text-header">Tip #1: Study a Little Each Day</p>
+  <p class="text-paragraph">
+    Alu works best when you complete all the reviews it assigns you every day.
+    This is because Alu shows you flashcards right before you forget them and
+    not reviewing the flashcards at this time leads to suboptimal (but still
+    greatly improved) memory retention.
+  </p>
+</mj-text>
+<mj-text>
+  <p class="text-header">Tip #2: Star Flashcards You Need Help With</p>
+  <p class="text-paragraph">
+    If you're studying and find a flashcard that you really want to make sure
+    you remember, click the "star" icon in the upper-right corner of the
+    flashcard. This will save it to a special list that you can study more
+    later.
+  </p>
+</mj-text>
+<mj-text>
+  <p class="text-header">Tip #3: Search For Flashcards</p>
+  <p class="text-paragraph">
+    When viewing a course page, you can click "More > Search Flashcards" to
+    search the entire course for a flashcard.
+  </p>
+</mj-text>
+<mj-text>
+  <p class="text-header">Bonus Tip: Find the Most Difficult Flashcards</p>
+  <p class="text-paragraph">
+    Curious in finding out which flashcards and sections are most difficult for
+    you? Click "More > Tools" to access a page where you can find which
+    flashcards and topics are most difficult for you. This will only be accurate
+    after you've been studying for a while.
+  </p>
+</mj-text>
+<mj-text>
+  <hr />
+  <p class="text-paragraph">
+    We hope you were able to find these tips useful! Want to share your own tip?
+    Reply to this email or contact us at
+    <a href="mailto:support@alulearn.com">support@alulearn.com</a>
+  </p>
+</mj-text>

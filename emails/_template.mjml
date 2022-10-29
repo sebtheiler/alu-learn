@@ -1,6 +1,6 @@
 <mjml>
   <mj-head>
-    <mj-title>{{title}}</mj-title>
+    <mj-title><span style="line-height:32px">{{title}}</span></mj-title>
     <mj-preview>{{preview}}</mj-preview>
     <mj-attributes>
       <mj-all
@@ -21,10 +21,15 @@
     </mj-style>
     <mj-style inline="inline">
       .text-link { color: #5e6ebf } .text-paragraph { color: #637381; font-size:
-      16px; margin-bottom: 0; }
+      16px; margin-bottom: 0; } .text-header { color: black; font-size: 24px }
     </mj-style>
     <mj-style inline="inline">
       .footer-link { color: gray; margin-right: 5px; margin-left: 5px; }
+    </mj-style>
+    <mj-style inline="inline">
+      blockquote { background: #f9f9f9; border-left: 10px solid #ccc; margin:
+      1.5em 10px; padding: 0.5em 10px; quotes: "\201C""\201D""\2018""\2019";
+      color: #637381; }
     </mj-style>
   </mj-head>
   <mj-body background-color="#F4F4F4" width="600px">

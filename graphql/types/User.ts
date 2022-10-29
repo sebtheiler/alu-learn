@@ -112,10 +112,13 @@ export const UsersMutation = extendType({
       args: {
         name: stringArg(),
         timezoneOffset: intArg(),
-        sendMarketingResearch: booleanArg(),
         targetNumReviews: intArg(),
-        sendReminders: booleanArg(),
         userType: arg({ type: "UserType" }),
+        sendReminders: booleanArg(),
+        sendGeneral: booleanArg(),
+        sendWeeklyReports: booleanArg(),
+        sendMarketingResearch: booleanArg(),
+        unsubscribeAll: booleanArg(),
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
@@ -125,12 +128,17 @@ export const UsersMutation = extendType({
         if (args.name != null) data.name = args.name;
         if (args.timezoneOffset != null)
           data.timezoneOffset = args.timezoneOffset;
-        if (args.sendMarketingResearch != null)
-          data.sendMarketingResearch = args.sendMarketingResearch;
         if (args.targetNumReviews != null)
           data.targetNumReviews = args.targetNumReviews;
-        if (args.sendReminders != null) data.sendReminders = args.sendReminders;
         if (args.userType != null) data.userType = args.userType;
+        if (args.sendReminders != null) data.sendReminders = args.sendReminders;
+        if (args.sendGeneral != null) data.sendGeneral = args.sendGeneral;
+        if (args.sendWeeklyReports != null)
+          data.sendWeeklyReports = args.sendWeeklyReports;
+        if (args.sendMarketingResearch != null)
+          data.sendMarketingResearch = args.sendMarketingResearch;
+        if (args.unsubscribeAll != null)
+          data.unsubscribeAll = args.unsubscribeAll;
 
         return ctx.prisma.user.update({
           where: { id: user.id },

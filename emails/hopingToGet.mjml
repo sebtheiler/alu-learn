@@ -1,0 +1,26 @@
+<mj-text>
+  <p class="text-paragraph">Hi {{name}},</p>
+</mj-text>
+<mj-text>
+  <p class="text-paragraph">Thank you again for joining Alu!</p>
+  <p class="text-paragraph">
+    Alu is specifically designed to help you score highly on AP Exams with its
+    thousands of free flashcards and powerful spaced repetition. But before you
+    jump in, I have a favor to ask:
+  </p>
+  <p class="text-paragraph">
+    <span style="background-color: #dfbbfb; font-weight: bold; color: black"
+      >Could you tell me what you're hoping to get out of Alu by replying to
+      this email?</span
+    >
+  </p>
+  <p class="text-paragraph">
+    Even though this email is automated, I personally take the time to read all
+    responses. Even just a couple of words would be amazing.
+  </p>
+  <p class="text-paragraph">
+    Thanks!
+    <br />
+    Sebastian, Founder of Alu Learn
+  </p>
+</mj-text>

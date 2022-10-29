@@ -13,6 +13,7 @@ const reminderEmail = async () => {
   const users = await prisma.user.findMany({
     where: {
       sendReminders: true,
+      unsubscribeAll: false,
       doneReviewsToday: false,
       timezoneOffset,
       currentStreak: {

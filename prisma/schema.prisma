@@ -91,12 +91,16 @@ model User {
   reviewInstances ReviewInstance[]
   history         HistorySegment[]
 
-  userType              UserType @default(STUDENT)
-  sendReminders         Boolean  @default(false)
-  targetNumReviews      Int      @default(20)
-  numReviewsDoneToday   Int      @default(0)
-  sendMarketingResearch Boolean  @default(true)
-  timezoneOffset        Int      @default(300) // GMT-5 = 300
+  userType            UserType @default(STUDENT)
+  targetNumReviews    Int      @default(20)
+  numReviewsDoneToday Int      @default(0)
+  timezoneOffset      Int      @default(300) // GMT-5 = 300
+
+  sendReminders         Boolean @default(false)
+  sendMarketingResearch Boolean @default(true)
+  sendWeeklyReports     Boolean @default(true)
+  sendGeneral           Boolean @default(true)
+  unsubscribeAll        Boolean @default(false)
 }
 
 enum Role {

@@ -1,0 +1,47 @@
+<mj-text>
+  <p class="text-header">#1 - Improves Your Memory Retention</p>
+  <p class="text-paragraph">
+    Spaced repetition is the science-backed most effective way to memorize
+    information. Alu utilizes active recall to its full extent by spacing out
+    your reviews, ensuring that you remember everything. Spaced repetition also
+    saves massive amounts of time by showing you the flashcards that are most
+    difficult for you most often and not wasting your time on flashcards that
+    are too easy.
+  </p>
+</mj-text>
+
+<mj-text>
+  <p class="text-header">#2 - Helps You Stay Consistent</p>
+  <p class="text-paragraph">
+    Staying consistent with your studies is hard, especially when exams are
+    months away. Alu makes it easier. Study a little bit each day, and keep
+    working towards your self-set goals. For more help, enable
+    <a href="https://alulearn.com/settings" target="_blank">reminder emails</a>
+    to remind you if you forget to study when you have an active streak.
+  </p>
+</mj-text>
+
+<mj-text>
+  <p class="text-header">#3 - Makes Learning Fun</p>
+  <p class="text-paragraph">
+    With Alu, learning can be as fun as playing a game. Focus on improving your
+    course knowledge one flashcard at a time and have fun doing it. You can even
+    play games with your flashcards!
+  </p>
+</mj-text>
+
+<mj-group width="100%">
+  <mj-column>
+    <mj-button
+      background-color="#6A21BC"
+      align="center"
+      color="#ffffff"
+      font-size="17px"
+      href="https://alulearn.com"
+      width="300px"
+      border-radius="999px"
+    >
+      Study Now
+    </mj-button>
+  </mj-column>
+</mj-group>

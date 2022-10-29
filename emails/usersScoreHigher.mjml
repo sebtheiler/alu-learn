@@ -1,0 +1,48 @@
+<mj-text>
+  <p class="text-paragraph">
+    It's true, almost 96%<sup>*</sup> of Alu users report that Alu benefits them
+    in preparing for exams.
+  </p>
+</mj-text>
+
+<mj-text>
+  <p class="text-header">Why is that?</p>
+  <p class="text-paragraph">
+    Alu uses spaced repetition, the science-backed most effective way to
+    memorize information. Spaced repetition spaces out your study intervals,
+    which is far more effective than cramming. In addition, you don't have to
+    spend hours creating your own flashcards!
+  </p>
+</mj-text>
+
+<mj-text>
+  <p class="text-header">Can Alu benefit me too?</p>
+  <p class="text-paragraph">
+    Of course! All it takes is a couple of minutes of studying every day to see
+    improvements in your test score. The sooner you start, the better, so why
+    not start now?
+  </p>
+</mj-text>
+
+<mj-group width="100%">
+  <mj-column>
+    <mj-button
+      background-color="#6A21BC"
+      align="center"
+      color="#ffffff"
+      font-size="17px"
+      href="https://alulearn.com"
+      width="300px"
+      border-radius="999px"
+    >
+      Study Now
+    </mj-button>
+  </mj-column>
+</mj-group>
+
+<mj-text>
+  <p>
+    <sup>*</sup>Calculated based on a survey conducted in June 2022. The percent
+    of users who reported three or higher (on a scale of five) was counted.
+  </p>
+</mj-text>
