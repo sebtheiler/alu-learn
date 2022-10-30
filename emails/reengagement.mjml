@@ -1,0 +1,50 @@
+<mj-text>
+  <p class="text-header">Alu is most effective when you use it consistently</p>
+  <p class="text-paragraph">
+    It's hard to stay motivated when tests are far away, but all it takes is
+    <strong>10-15 minutes per day</strong>
+    to see a huge improvement down the line.
+  </p>
+  <p class="text-paragraph">
+    Start preparing today and you'll thank yourself later.
+  </p>
+</mj-text>
+
+<mj-group width="100%">
+  <mj-column>
+    <mj-button
+      background-color="#6A21BC"
+      align="center"
+      color="#ffffff"
+      font-size="17px"
+      href="https://alulearn.com"
+      width="300px"
+      border-radius="999px"
+    >
+      Study Now
+    </mj-button>
+  </mj-column>
+</mj-group>
+
+<mj-text>
+  <p class="text-paragraph">
+    Looking for some courses to get started? Try these:
+  </p>
+  <ul>
+    <li style="padding-bottom: 10px" class="text-link">
+      <a href="https://www.alulearn.com/l/world">AP World History: Modern</a>
+    </li>
+    <li style="padding-bottom: 10px" class="text-link">
+      <a href="https://www.alulearn.com/l/psych">AP Psychology</a>
+    </li>
+    <li class="text-link">
+      <a href="https://www.alulearn.com/l/usgov"
+        >AP U.S. Government and Politics</a
+      >
+    </li>
+  </ul>
+  <p class="text-paragraph">
+    Need help? Reply to this email or contact us at
+    <a href="mailto:support@alulearn.com">support@alulearn.com</a>
+  </p>
+</mj-text>

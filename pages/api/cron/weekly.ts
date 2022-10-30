@@ -1,3 +1,4 @@
+import sendReengagement from "cron/reengagement";
 import sendWeeklyProgressReport from "cron/weeklyProgressReport";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -9,6 +10,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.headers["signing-key"] === CRON_SECRET_SIGNING_KEY) {
     try {
       await sendWeeklyProgressReport();
+      await sendReengagement();
       res.status(200).json({ success: true });
     } catch (err) {
       res.status(500).json({ success: false, message: (err as any).message });

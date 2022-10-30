@@ -96,11 +96,12 @@ model User {
   numReviewsDoneToday Int      @default(0)
   timezoneOffset      Int      @default(300) // GMT-5 = 300
 
-  sendReminders         Boolean @default(false)
-  sendMarketingResearch Boolean @default(true)
-  sendWeeklyReports     Boolean @default(true)
-  sendGeneral           Boolean @default(true)
-  unsubscribeAll        Boolean @default(false)
+  sendReminders         Boolean   @default(false)
+  sendMarketingResearch Boolean   @default(true)
+  sendWeeklyReports     Boolean   @default(true)
+  sendGeneral           Boolean   @default(true)
+  unsubscribeAll        Boolean   @default(false)
+  sentReengagement      DateTime?
 }
 
 enum Role {

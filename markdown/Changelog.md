@@ -8,6 +8,7 @@ description: "Alu Learn changelog"
 
 - Each week you will now receive a progress report of how much you used Alu that week
 - Alu now sends a series of emails to new sign-ups to showcase the full extent of its power
+- Alu will also send you a _long-term_ reminder if you haven't used it in two weeks.  This will only be sent a maximum of once per six months, as not to spam you.
 
 
 ## Minor Fixes - Oct 18 - 2.0.5

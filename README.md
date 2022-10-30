@@ -20,3 +20,22 @@ exit
 yarn
 yarn prisma db push
 ```
+
+## Reset Database
+```
+sudo su - postgres
+psql
+
+REVOKE CONNECT ON DATABASE alu FROM public;
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = 'alu';
+DROP DATABASE alu;
+CREATE DATABASE alu;
+GRANT ALL PRIVILEGES ON DATABASE alu TO aluadmin;
+
+\q
+exit
+
+yarn prisma db push
+```
