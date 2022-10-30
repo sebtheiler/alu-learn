@@ -4,6 +4,12 @@ path: "changelog"
 description: "Alu Learn changelog"
 ---
 
+## Emails - Oct 29 - 2.0.5
+
+- Each week you will now receive a progress report of how much you used Alu that week
+- Alu now sends a series of emails to new sign-ups to showcase the full extent of its power
+
+
 ## Minor Fixes - Oct 18 - 2.0.5
 
 - Fixed text slugs in sections

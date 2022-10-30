@@ -8,10 +8,10 @@ import prisma from "lib/prisma";
  * 2: HOPING_TO_GET -> Hoping to get email is sent two days after the user signs up
  */
 const EMAIL_ORDER = {
-  2: "HOPING_TO_GET",
-  4: "GET_THE_MOST",
-  7: "USERS_SCORE_HIGHER",
-  11: "HOW_ALU_HELPS",
+  1: "HOPING_TO_GET",
+  3: "GET_THE_MOST",
+  6: "USERS_SCORE_HIGHER",
+  10: "HOW_ALU_HELPS",
 };
 
 const EMAIL_INFO = {
@@ -38,7 +38,7 @@ const EMAIL_INFO = {
 };
 
 /**
- *
+ * Sends a series of emails after users sign up
  */
 const sendScheduledEmails = async () => {
   const users = await prisma.user.findMany({

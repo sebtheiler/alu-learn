@@ -1,0 +1,40 @@
+<mj-text>
+  <div style="text-align: center">
+    <p class="text-paragraph">This week you studied a total of</p>
+    <h2>{{thisWeekFlashcards}} flashcards</h2>
+    <p class="text-paragraph">In a cummulative</p>
+    <h2>{{thisWeekTime}}</h2>
+  </div>
+</mj-text>
+
+<mj-text>
+  <div style="text-align: center">
+    {% if lastWeekFlashcards > 0 %}
+    <p class="text-paragraph">
+      {% if thisWeekFlashcards > lastWeekFlashcards %} That's a
+      {{percentImprovement}}% improvement over last week! {% else %} That's not
+      quite as much as last week, when you studied {{lastWeekFlashcards}}
+      flashcards in {{lastWeekTime}}. {% endif %}
+    </p>
+    {% endif %}
+    <p class="text-paragraph">
+      Keep studying to see more improvement next week!
+    </p>
+  </div>
+</mj-text>
+
+<mj-group width="100%">
+  <mj-column>
+    <mj-button
+      background-color="#6A21BC"
+      align="center"
+      color="#ffffff"
+      font-size="17px"
+      href="https://alulearn.com"
+      width="300px"
+      border-radius="999px"
+    >
+      Study More
+    </mj-button>
+  </mj-column>
+</mj-group>

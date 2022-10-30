@@ -16,9 +16,10 @@ if (!NEXT_PUBLIC_SERVER_URL) throw new Error("`NEXT_PUBLIC_SERVER_URL` must be s
 
 const hourlyUrl = `${NEXT_PUBLIC_SERVER_URL}/api/cron/hourly`;
 const dailyUrl = `${NEXT_PUBLIC_SERVER_URL}/api/cron/daily`;
+const weeklyUrl = `${NEXT_PUBLIC_SERVER_URL}/api/cron/weekly`;
 
 cron.schedule("0 * * * *", () => {
-  console.log("Running hourly cron")
+  console.log("Running hourly cron");
   axios
     .post(
       hourlyUrl,
@@ -37,11 +38,30 @@ cron.schedule("0 * * * *", () => {
 })
 
 cron.schedule("0 0 * * *", () => {
-  console.log("Running daily cron")
+  console.log("Running daily cron");
   // TODO: Run PG database backup
   axios
     .post(
       dailyUrl,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "signing-key": CRON_SECRET_SIGNING_KEY,
+        },
+      }
+    )
+    .then(({ data }) => {
+      console.log(data);
+    }).catch(e => console.error(e));
+})
+
+cron.schedule("0 0 * * 1", () => {
+  console.log("Running weekly cron");
+  axios
+    .post(
+      weeklyUrl,
       {},
       {
         headers: {

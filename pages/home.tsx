@@ -1,7 +1,6 @@
 import prisma from "../lib/prisma";
 import HomePage from "@/pages/HomePage";
 import type { HomePageProps } from "@/pages/HomePage";
-import sendScheduledEmails from "cron/scheduledEmails";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
 import getAuthServerSession from "helpers/getAuthServerSession";
 import getRequestMetadata from "helpers/getRequestMetadata";
@@ -20,8 +19,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const data = await getAuthServerSession(context);
   if (data.props) return data;
   const { session } = data;
-
-  await sendScheduledEmails();
 
   const user = await getUserSSR(session, {
     numReviewsDoneToday: true,
