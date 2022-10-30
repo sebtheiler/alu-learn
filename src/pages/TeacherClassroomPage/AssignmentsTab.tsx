@@ -168,7 +168,7 @@ export default function AssignmentsTab({
                   />
                 </p>
               }
-              onChange={e => setEssentialOnly(e.target.checked)}
+              onChange={(e) => setEssentialOnly(e.target.checked)}
               className="mb-5"
             />
           </AsyncForm>

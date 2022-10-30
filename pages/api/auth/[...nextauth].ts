@@ -39,7 +39,9 @@ export const authOptions = {
         });
         const result = await sendEmail({
           to: identifier,
-          subject: `Sign in to Alu Learn (${new Date().toISOString().slice(0,16)})`,
+          subject: `Sign in to Alu Learn (${new Date()
+            .toISOString()
+            .slice(0, 16)})`,
           html,
         });
         if (!result) return;

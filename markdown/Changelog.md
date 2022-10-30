@@ -9,12 +9,11 @@ description: "Alu Learn changelog"
 - **More Emails:** Alu now sends more emails in an attempt to increase user retention
   - Each week you will now receive a progress report of how much you used Alu that week
   - Alu now sends a series of emails to new sign-ups to showcase the full extent of its power
-  - Alu will also send you a _long-term_ reminder if you haven't used it in two weeks.  This will only be sent a maximum of once per six months, as not to spam you.
+  - Alu will also send you a _long-term_ reminder if you haven't used it in two weeks. This will only be sent a maximum of once per six months, as not to spam you.
 - **Cloze Hints:** You can now add "hints" to clozes that appear when studying
 - **Fixed Cloze Deletion Bold:** Fixed a bug that caused inactive cloze deletions to still appear as bold
 - **Fixed Numbered List Display**
 - **Moved Sharing Button**
-
 
 ## Minor Fixes - Oct 18 - 2.0.5
 

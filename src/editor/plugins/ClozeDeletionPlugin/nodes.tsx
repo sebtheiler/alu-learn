@@ -56,7 +56,9 @@ export class ClozeDeletionNode extends ElementNode {
     element.dataset.hint = this.__hint;
     addClassNamesToElement(
       element,
-      this.__color !== 'BLANK' ? config.theme.clozeDeletion : config.theme.clozeDeletionBlank,
+      this.__color !== "BLANK"
+        ? config.theme.clozeDeletion
+        : config.theme.clozeDeletionBlank,
       colorMap.get(this.__color)
     );
     return element;

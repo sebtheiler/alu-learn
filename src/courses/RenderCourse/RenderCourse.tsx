@@ -187,11 +187,9 @@ export default function RenderCourse({
                   Study Group
                 </LinkButton> */}
             <LinkButton href={`/course/${course.id}/games`}>Games</LinkButton>
-            {editAccess && <LinkButton
-              href={`/course/${course.id}/share`}
-            >
-              Share
-            </LinkButton>}
+            {editAccess && (
+              <LinkButton href={`/course/${course.id}/share`}>Share</LinkButton>
+            )}
             <DropdownButton
               options={[
                 {
@@ -270,18 +268,20 @@ export default function RenderCourse({
                   <a>
                     <div className="my-3 px-3 py-2 border-2 rounded-xl hover:scale-105 transition">
                       <h3 className="font-bold text-lg">{assignment.title}</h3>
-                      {assignmentsPercentComplete && (<>
-                        <p>
-                          Percent Complete:{" "}
-                          {Math.round(
-                            (assignmentsPercentComplete[
-                              assignment.id as string
-                            ] ?? 0) * 100
-                          )}
-                          %
-                        </p>
-                        <hr className="my-2" />
-                      </>)}
+                      {assignmentsPercentComplete && (
+                        <>
+                          <p>
+                            Percent Complete:{" "}
+                            {Math.round(
+                              (assignmentsPercentComplete[
+                                assignment.id as string
+                              ] ?? 0) * 100
+                            )}
+                            %
+                          </p>
+                          <hr className="my-2" />
+                        </>
+                      )}
                       <ul className="ml-8 list-disc">
                         {assignment.assignedSubSections.map((subSection) => (
                           <li key={subSection.id}>{subSection.title}</li>

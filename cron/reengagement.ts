@@ -109,7 +109,7 @@ const sendReengagement = async () => {
           title: "Still Interested in Alu?",
         }),
       });
-      sentToUsers.push(user.id)
+      sentToUsers.push(user.id);
     }
   }
 
@@ -119,12 +119,12 @@ const sendReengagement = async () => {
     where: {
       id: {
         in: sentToUsers,
-      }
+      },
     },
-    data :{
+    data: {
       sentReengagement: new Date(),
-    }
-  })
+    },
+  });
 };
 
 export default sendReengagement;

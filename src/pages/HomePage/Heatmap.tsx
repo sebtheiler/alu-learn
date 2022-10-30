@@ -72,7 +72,9 @@ export default function Heatmap({ history }: { history: HistorySegment[] }) {
           tooltipDataAttrs={(value: HistoryVal) => {
             if (!value?.date) return;
             return {
-              "data-tip": `${genDataTip(value)} on ${new Date(value.date).toDateString().slice(0, 10)}`,
+              "data-tip": `${genDataTip(value)} on ${new Date(value.date)
+                .toDateString()
+                .slice(0, 10)}`,
             };
           }}
         />

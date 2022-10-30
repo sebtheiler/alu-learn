@@ -5,14 +5,16 @@
  */
 import axios from "axios";
 import * as dotenv from "dotenv";
-import cron from "node-cron"
+import cron from "node-cron";
 
-dotenv.config()
+dotenv.config();
 
 const CRON_SECRET_SIGNING_KEY = process.env.CRON_SECRET_SIGNING_KEY;
 const NEXT_PUBLIC_SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL;
-if (!CRON_SECRET_SIGNING_KEY) throw new Error("`CRON_SECRET_SIGNING_KEY` must be set in .env")
-if (!NEXT_PUBLIC_SERVER_URL) throw new Error("`NEXT_PUBLIC_SERVER_URL` must be set in .env")
+if (!CRON_SECRET_SIGNING_KEY)
+  throw new Error("`CRON_SECRET_SIGNING_KEY` must be set in .env");
+if (!NEXT_PUBLIC_SERVER_URL)
+  throw new Error("`NEXT_PUBLIC_SERVER_URL` must be set in .env");
 
 const hourlyUrl = `${NEXT_PUBLIC_SERVER_URL}/api/cron/hourly`;
 const dailyUrl = `${NEXT_PUBLIC_SERVER_URL}/api/cron/daily`;
@@ -34,8 +36,9 @@ cron.schedule("0 * * * *", () => {
     )
     .then(({ data }) => {
       console.log(data);
-    }).catch(e => console.error(e));
-})
+    })
+    .catch((e) => console.error(e));
+});
 
 cron.schedule("0 0 * * *", () => {
   console.log("Running daily cron");
@@ -54,8 +57,9 @@ cron.schedule("0 0 * * *", () => {
     )
     .then(({ data }) => {
       console.log(data);
-    }).catch(e => console.error(e));
-})
+    })
+    .catch((e) => console.error(e));
+});
 
 cron.schedule("0 0 * * 1", () => {
   console.log("Running weekly cron");
@@ -73,5 +77,6 @@ cron.schedule("0 0 * * 1", () => {
     )
     .then(({ data }) => {
       console.log(data);
-    }).catch(e => console.error(e));
-})
+    })
+    .catch((e) => console.error(e));
+});

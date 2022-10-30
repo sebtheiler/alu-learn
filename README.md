@@ -22,6 +22,7 @@ yarn prisma db push
 ```
 
 ## Reset Database
+
 ```
 sudo su - postgres
 psql

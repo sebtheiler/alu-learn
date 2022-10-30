@@ -1,6 +1,6 @@
 <mjml>
   <mj-head>
-    <mj-title><span style="line-height:32px">{{title}}</span></mj-title>
+    <mj-title><span style="line-height: 32px">{{title}}</span></mj-title>
     <mj-preview>{{preview}}</mj-preview>
     <mj-attributes>
       <mj-all
@@ -109,12 +109,12 @@
               line-height="16px"
               font-weight="bold"
             >
-              <a class="footer-link" href="https://alulearn.com/settings?utm_source=email&utm_medium=email&utm_campaign=unsubscribe"
-                >Unsubscribe</a
-              >
               <a
                 class="footer-link"
-                href="https://alulearn.com/legal/privacy"
+                href="https://alulearn.com/settings?utm_source=email&utm_medium=email&utm_campaign=unsubscribe"
+                >Unsubscribe</a
+              >
+              <a class="footer-link" href="https://alulearn.com/legal/privacy"
                 >Privacy Policy</a
               >
               <a class="footer-link" href="https://alulearn.com/legal/tos"
