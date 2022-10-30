@@ -77,23 +77,23 @@
             align="center"
           >
             <mj-social-element
-              href="https://www.instagram.com/alu_learn"
-              src="https://www.alulearn.com/assets/logos/instagram.svg"
+              href="https://instagram.com/alu_learn"
+              src="https://alulearn.com/assets/logos/instagram.svg"
             >
             </mj-social-element>
             <mj-social-element
-              href="https://www.twitter.com/AluLearn"
-              src="https://www.alulearn.com/assets/logos/twitter.svg"
+              href="https://twitter.com/AluLearn"
+              src="https://alulearn.com/assets/logos/twitter.svg"
             >
             </mj-social-element>
             <mj-social-element
-              href="https://www.tiktok.com/@alulearn"
-              src="https://www.alulearn.com/assets/logos/tiktok.svg"
+              href="https://tiktok.com/@alulearn"
+              src="https://alulearn.com/assets/logos/tiktok.svg"
             >
             </mj-social-element>
             <mj-social-element
-              href="https://www.reddit.com/r/AluLearn"
-              src="https://www.alulearn.com/assets/logos/reddit.svg"
+              href="https://reddit.com/r/AluLearn"
+              src="https://alulearn.com/assets/logos/reddit.svg"
             >
             </mj-social-element>
           </mj-social>
@@ -109,15 +109,15 @@
               line-height="16px"
               font-weight="bold"
             >
-              <a class="footer-link" href="https://www.alulearn.com/settings"
+              <a class="footer-link" href="https://alulearn.com/settings?utm_source=email&utm_medium=email&utm_campaign=unsubscribe"
                 >Unsubscribe</a
               >
               <a
                 class="footer-link"
-                href="https://www.alulearn.com/legal/privacy"
+                href="https://alulearn.com/legal/privacy"
                 >Privacy Policy</a
               >
-              <a class="footer-link" href="https://www.alulearn.com/legal/tos"
+              <a class="footer-link" href="https://alulearn.com/legal/tos"
                 >Terms of Service</a
               >
               <a class="footer-link" href="mailto:support@alulearn.com"
