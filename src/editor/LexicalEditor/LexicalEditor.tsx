@@ -98,6 +98,7 @@ const theme = {
   link: styles.link,
   flashcardLink: styles.flashcardLink,
   clozeDeletion: styles.clozeDeletion,
+  clozeDeletionBlank: styles.clozeDeletionBlank,
 };
 
 export const nodes = [

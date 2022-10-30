@@ -64,12 +64,15 @@ const prepareFields = (reviewInstance?: ReviewInstance) => {
         foundFrontCloze = true;
         if (child.getColor() === activeColorOrNumber) {
           // Make the active cloze yellow, no matter its original color
-          const subChildren = child.getChildren();
           child.setColor("YELLOW");
 
           // Obscure the content of the active cloze
+          const subChildren = child.getChildren();
           for (const subChild of subChildren) subChild.remove(true);
-          const textNode = new TextNode("[...]");
+
+          // Add the hint or default cloze text
+          const hint = child.getHint();
+          const textNode = new TextNode(hint ? `[ ${hint} ]` : "[...]");
           child.append(textNode);
         } else {
           // Make all other clozes not appear
