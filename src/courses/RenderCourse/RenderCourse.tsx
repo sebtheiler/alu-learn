@@ -187,6 +187,11 @@ export default function RenderCourse({
                   Study Group
                 </LinkButton> */}
             <LinkButton href={`/course/${course.id}/games`}>Games</LinkButton>
+            {editAccess && <LinkButton
+              href={`/course/${course.id}/share`}
+            >
+              Share
+            </LinkButton>}
             <DropdownButton
               options={[
                 {

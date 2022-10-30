@@ -108,13 +108,6 @@ export default function CourseSettings({
             name="bannerImage"
             onChange={onChange}
           />
-          <LinkButton
-            href={`/course/${course.id}/share`}
-            className="mt-3"
-            block
-          >
-            Share Course
-          </LinkButton>
           <hr className="my-3" />
           <ButtonGroup className="inline" spaced>
             <AsyncButton
