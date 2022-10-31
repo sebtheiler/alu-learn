@@ -160,6 +160,29 @@ export const SubSectionQuery = extendType({
         return data;
       },
     });
+    t.field("getCourseSubSections", {
+      type: list(SubSection),
+      description: "Get all the sub sections in a course",
+      args: {
+        courseId: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, { id: true });
+        if (
+          !user ||
+          !(await isCourseUser(args.courseId, ctx.user?.email, ctx.prisma))
+        )
+          return null;
+
+        return ctx.prisma.subSection.findMany({
+          where: {
+            courseSection: {
+              courseId: args.courseId,
+            },
+          },
+        });
+      },
+    });
   },
 });
 

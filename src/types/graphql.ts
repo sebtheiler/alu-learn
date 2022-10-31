@@ -77,6 +77,7 @@ export enum EditingAccess {
 
 export type Flashcard = {
   __typename?: "Flashcard";
+  courseId?: Maybe<Scalars["String"]>;
   fields?: Maybe<Scalars["String"]>;
   id?: Maybe<Scalars["String"]>;
   tags?: Maybe<Scalars["String"]>;
@@ -417,6 +418,8 @@ export type Query = {
   findHardestReviewInstances?: Maybe<Array<Maybe<ReviewInstance>>>;
   /** Find subsections sorted by difficulty. Returns subsections with custom `avgEase` and `courseSectionSlug` attributes */
   findHardestSubSections?: Maybe<Array<Maybe<Scalars["JSONObject"]>>>;
+  /** Get all the sub sections in a course */
+  getCourseSubSections?: Maybe<Array<Maybe<SubSection>>>;
   /** Gets a flashcard by its ID */
   getFlashcard?: Maybe<Flashcard>;
   /** Gets the Stripe subscription and product for the current user */
@@ -447,6 +450,10 @@ export type QueryFindHardestReviewInstancesArgs = {
 export type QueryFindHardestSubSectionsArgs = {
   courseId: Scalars["String"];
   skip?: InputMaybe<Scalars["Int"]>;
+};
+
+export type QueryGetCourseSubSectionsArgs = {
+  courseId: Scalars["String"];
 };
 
 export type QueryGetFlashcardArgs = {

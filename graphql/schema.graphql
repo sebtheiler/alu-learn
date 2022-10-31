@@ -53,6 +53,7 @@ enum EditingAccess {
 }
 
 type Flashcard {
+  courseId: String
   fields: String
   id: String
   tags: String
@@ -326,6 +327,9 @@ type Query {
     """used in pagination"""
     skip: Int
   ): [JSONObject]
+
+  """Get all the sub sections in a course"""
+  getCourseSubSections(courseId: String!): [SubSection]
 
   """Gets a flashcard by its ID"""
   getFlashcard(flashcardId: String!): Flashcard
