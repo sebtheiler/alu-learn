@@ -11,6 +11,7 @@ description: "Alu Learn changelog"
   - Alu now sends a series of emails to new sign-ups to showcase the full extent of its power
   - Alu will also send you a _long-term_ reminder if you haven't used it in two weeks. This will only be sent a maximum of once per six months, as not to spam you.
 - **Cloze Hints:** You can now add "hints" to clozes that appear when studying
+- **Added Flashcard Reporting:** If you find an error in a flashcard in a shared course, you can now click the report button in the bottom left to report it
 - **Fixed Cloze Deletion Bold:** Fixed a bug that caused inactive cloze deletions to still appear as bold
 - **Fixed Numbered List Display**
 - **Moved Sharing Button**

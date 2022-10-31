@@ -60,6 +60,7 @@ model User {
   newUserSurveyResponse NewUserSurveyResponse?
   dailyVisits           UserVisit[]
   urlHits               UrlHit[]
+  flashcardReports      FlashcardReport[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -183,6 +184,19 @@ model UrlHit {
   referer    String?
 }
 
+// ## Reports
+model FlashcardReport {
+  id String @id @default(cuid())
+
+  flashcard   Flashcard? @relation(fields: [flashcardId], references: [id], onDelete: SetNull)
+  flashcardId String?
+  user        User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId      String?
+
+  reasons   String
+  timestamp DateTime @default(now())
+}
+
 // # Courses
 model Course {
   OLD_ID Int? @unique
@@ -271,6 +285,8 @@ model Flashcard {
   reviewInstances ReviewInstance[]
 
   index Int
+
+  reports FlashcardReport[]
 
   // Although this is redundant, it often saves database operations
   // and is therefore useful

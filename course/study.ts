@@ -31,6 +31,7 @@ const flashcardSelect = {
   fields: true,
   tags: true,
   type: true,
+  id: true,
 };
 
 /**

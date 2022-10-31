@@ -36,7 +36,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const course = await prisma.course.findUnique({
     where: { id: courseId as string },
-    select: { title: true },
+    select: { title: true, privacySetting: true },
   });
 
   return {
@@ -45,6 +45,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         reviewInstances,
         title: course?.title,
         intervals,
+        isSharedCourse: course?.privacySetting !== "PRIVATE",
       })
     ) as StudyFlashcardsPageProps,
   };

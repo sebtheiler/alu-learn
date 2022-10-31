@@ -1,5 +1,6 @@
 import FinishedStudying from "./FinishedStudying";
 import FlashcardSide from "./FlashcardSide";
+import Report from "./Report";
 import { EASE_FOR_HARD_EXERCISE, formatDate, GRADES } from "./helpers";
 import type { Grade } from "./helpers";
 import prepareFields from "./prepareFields";
@@ -56,6 +57,11 @@ export interface StudyFlashcardsPageProps {
    * Was the user's streak active at the beginning of the study session?
    */
   streakActive: boolean;
+  /**
+   * Is the course shared?
+   * If true, displays a "report" for flashcards
+   */
+  isSharedCourse: boolean;
 }
 
 const BUTTONS_BREAKPOINT = 675;
@@ -69,6 +75,7 @@ export default function StudyFlashcardsPage({
   intervals,
   currentStreak,
   streakActive,
+  isSharedCourse,
 }: StudyFlashcardsPageProps) {
   const router = useRouter();
   const { courseId, classroomId, courseSectionSlug, subSectionSlug } =
@@ -303,7 +310,7 @@ export default function StudyFlashcardsPage({
           </div>
         )}
         {!finishedStudying && activeReviewInstance && (
-          <div className="px-5 overflow-hidden">
+          <div className="px-5 overflow-x-hidden h-[85vh] relative">
             <h1 className="font-bold text-4xl text-center">Study Flashcards</h1>
             <ProgressBar
               stepNum={initialNumReviewInstances - _reviewInstances.length}
@@ -406,6 +413,9 @@ export default function StudyFlashcardsPage({
                 </p>
               )}
             </div>
+            {isSharedCourse && (
+              <Report flashcardId={activeReviewInstance.flashcard.id} />
+            )}
           </div>
         )}
         {finishedStudying && (

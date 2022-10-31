@@ -83,6 +83,15 @@ export type Flashcard = {
   type?: Maybe<FlashcardType>;
 };
 
+export type FlashcardReport = {
+  __typename?: "FlashcardReport";
+  flashcardId?: Maybe<Scalars["String"]>;
+  id?: Maybe<Scalars["String"]>;
+  reasons?: Maybe<Scalars["String"]>;
+  timestamp?: Maybe<Scalars["String"]>;
+  userId?: Maybe<Scalars["String"]>;
+};
+
 export enum FlashcardType {
   Cloze = "CLOZE",
   Normal = "NORMAL",
@@ -128,6 +137,8 @@ export type Mutation = {
   createCourseSection?: Maybe<CourseSection>;
   /** Creates a new flashcard */
   createFlashcard?: Maybe<Flashcard>;
+  /** Creates a new flashcard report */
+  createFlashcardReport?: Maybe<FlashcardReport>;
   /** Creates a new NewUserSurveyResponse from a set of responses */
   createNewUserSurveyResponse?: Maybe<NewUserSurveyResponse>;
   /** Creates a Stripe session for purchasing an item */
@@ -222,6 +233,11 @@ export type MutationCreateFlashcardArgs = {
   flashcardType?: InputMaybe<FlashcardType>;
   subSectionSlug: Scalars["String"];
   tags?: InputMaybe<Scalars["String"]>;
+};
+
+export type MutationCreateFlashcardReportArgs = {
+  flashcardId: Scalars["String"];
+  reasons: Scalars["String"];
 };
 
 export type MutationCreateNewUserSurveyResponseArgs = {
@@ -355,6 +371,7 @@ export type MutationUpdateUserArgs = {
   sendWeeklyReports?: InputMaybe<Scalars["Boolean"]>;
   targetNumReviews?: InputMaybe<Scalars["Int"]>;
   timezoneOffset?: InputMaybe<Scalars["Int"]>;
+  unsubscribeAll?: InputMaybe<Scalars["Boolean"]>;
   userType?: InputMaybe<UserType>;
 };
 

@@ -27,15 +27,18 @@ const sendEmail = async ({
   to,
   subject,
   html,
+  text,
 }: {
   /**
    * Comma separated list or an array of recipients' e-mail addresses that will appear on the To: field
    */
-  to: string;
+  to: string | string[];
   /** The subject of the e-mail */
   subject: string;
   /** The HTML message */
-  html: string;
+  html?: string;
+  /** The raw text message (optional) */
+  text?: string;
 }): Promise<SMTPTransport.SentMessageInfo | null> => {
   if (process.env.NODE_ENV === "production") {
     await transporter.verify();
@@ -43,7 +46,7 @@ const sendEmail = async ({
       from: EMAIL_FROM,
       to,
       subject,
-      text: "Please use an HTML-enabled client to view this email",
+      text: text ?? "Please use an HTML-enabled client to view this email",
       html,
     });
   } else {
@@ -54,7 +57,7 @@ const sendEmail = async ({
 === Begin Email ===
 TO: ${to}
 Subject: ${subject}
-Message: ${html}
+Message: ${text ?? html}
 === End Email ===
 `.trim()
     );

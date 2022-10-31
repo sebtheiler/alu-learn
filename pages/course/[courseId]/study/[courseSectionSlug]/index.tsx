@@ -49,6 +49,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       course: {
         select: {
           title: true,
+          privacySetting: true,
         },
       },
     },
@@ -62,6 +63,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           ? `${courseSection.title}, ${courseSection.course.title}`
           : undefined,
         intervals,
+        isSharedCourse: courseSection?.course?.privacySetting !== "PRIVATE",
       })
     ) as StudyFlashcardsPageProps,
   };
