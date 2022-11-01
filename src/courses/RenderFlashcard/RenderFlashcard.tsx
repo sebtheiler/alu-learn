@@ -1,3 +1,4 @@
+import MoveSubSectionModal from "./MoveSubSectionModal";
 import IconTooltip from "@/components/IconTooltip";
 import LexicalEditor from "@/editor/LexicalEditor";
 import DeleteFlashcard from "@/graphql/DeleteFlashcard";
@@ -11,6 +12,7 @@ import type {
 } from "@/types";
 import { useMutation } from "@apollo/client";
 import {
+  faCog,
   faEye,
   faEyeSlash,
   faGripVertical,
@@ -72,6 +74,7 @@ export default function RenderFlashcard({
 }: RenderFlashcardProps) {
   const [editMode, setEditMode] = useState(false);
   const [fields, setFields] = useState(JSON.parse(flashcard.fields as string));
+  const [moveSubSectionModalOpen, setMoveSubSectionModalOpen] = useState(false);
 
   const [frontState, setFrontState] = useState(fields[0]);
   const [backState, setBackState] = useState(fields[1]);
@@ -145,6 +148,19 @@ export default function RenderFlashcard({
       )}
       {setHidden && (
         <div className="absolute mt-2 w-1/2 translate-x-full text-right">
+          <IconTooltip
+            faIcon={faCog}
+            tooltip="Move Sub-section"
+            tooltipProps={{ className: "w-36" }}
+            className="mr-2"
+            onClick={() => setMoveSubSectionModalOpen(true)}
+          />
+          <MoveSubSectionModal
+            open={moveSubSectionModalOpen}
+            close={() => setMoveSubSectionModalOpen(false)}
+            courseId={flashcard.courseId as string}
+            flashcardId={flashcard.id as string}
+          />
           <IconTooltip
             faIcon={hidden ? faEye : faEyeSlash}
             tooltipProps={{ className: "w-40" }}

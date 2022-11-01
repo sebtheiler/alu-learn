@@ -3,6 +3,7 @@ import type {
   FlashcardType as PrismaFlashcardType,
   Prisma,
 } from "@prisma/client";
+import canEditCourse from "helpers/canEditCourse";
 import canViewCourse from "helpers/canViewCourse";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseOwner from "helpers/isCourseOwner";
@@ -24,6 +25,7 @@ const Flashcard = objectType({
   definition(t) {
     t.string("id");
     t.string("fields");
+    t.string("courseId");
     t.string("tags");
     t.field("type", { type: FlashcardType });
   },
@@ -262,6 +264,86 @@ export const FlashcardMutation = extendType({
           },
           ctx,
         });
+      },
+    });
+    t.field("moveFlashcardToSubSection", {
+      type: "String",
+      description: "Move a flashcard from one sub section to another",
+      args: {
+        flashcardId: nonNull(
+          stringArg({ description: "ID of the flashcard to move" })
+        ),
+        subSectionId: nonNull(
+          stringArg({
+            description: "ID of the sub section to move the flashcard to",
+          })
+        ),
+      },
+      async resolve(_parent, args, ctx) {
+        const flashcard = await ctx.prisma.flashcard.findUnique({
+          where: { id: args.flashcardId },
+          select: { courseId: true, subSectionId: true, index: true },
+        });
+        if (
+          !flashcard ||
+          !(await canEditCourse(
+            flashcard.courseId,
+            ctx.user?.email,
+            ctx.prisma
+          ))
+        )
+          return null;
+
+        // Shift all flashcards after the flashcard that was moved down in the
+        // original sub section
+        await ctx.prisma.flashcard.updateMany({
+          where: {
+            subSectionId: flashcard.subSectionId,
+            index: {
+              gt: flashcard.index,
+            },
+          },
+          data: {
+            index: {
+              decrement: 1,
+            },
+          },
+        });
+
+        // Get the new index
+        const newSubSection = await ctx.prisma.subSection.findUniqueOrThrow({
+          where: {
+            id: args.subSectionId,
+          },
+          select: {
+            _count: {
+              select: {
+                flashcards: true,
+              },
+            },
+            courseSection: {
+              select: {
+                slug: true,
+              },
+            },
+            slug: true,
+          },
+        });
+        const newIndex = newSubSection._count.flashcards;
+
+        // Move the flashcard
+        await ctx.prisma.flashcard.update({
+          where: {
+            id: args.flashcardId,
+          },
+          data: {
+            index: newIndex,
+            subSectionId: args.subSectionId,
+          },
+        });
+
+        // Return the URL
+        return `/course/${flashcard.courseId}/flashcards/${newSubSection.courseSection.slug}/${newSubSection.slug}`;
       },
     });
   },

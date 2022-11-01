@@ -60,6 +60,7 @@ const getFlashcards = async ({
       fields: true,
       tags: true,
       type: true,
+      courseId: true,
     },
     orderBy: (subSectionSlug
       ? subSectionOrder

@@ -53,6 +53,7 @@ enum EditingAccess {
 }
 
 type Flashcard {
+  courseId: String
   fields: String
   id: String
   tags: String
@@ -186,6 +187,15 @@ type Mutation {
 
   """Moves a flashcard from a position to another"""
   moveFlashcard(courseId: String!, from: Int!, subSectionSlug: String!, to: Int!): Flashcard
+
+  """Move a flashcard from one sub section to another"""
+  moveFlashcardToSubSection(
+    """ID of the flashcard to move"""
+    flashcardId: String!
+
+    """ID of the sub section to move the flashcard to"""
+    subSectionId: String!
+  ): String
 
   """Moves a sub section from a position to another"""
   moveSubSection(courseSectionId: String!, from: Int!, to: Int!): SubSection
@@ -326,6 +336,9 @@ type Query {
     """used in pagination"""
     skip: Int
   ): [JSONObject]
+
+  """Get all the sub sections in a course"""
+  getCourseSubSections(courseId: String!): [SubSection]
 
   """Gets a flashcard by its ID"""
   getFlashcard(flashcardId: String!): Flashcard

@@ -15,6 +15,7 @@ description: "Alu Learn changelog"
 - **Fixed Cloze Deletion Bold:** Fixed a bug that caused inactive cloze deletions to still appear as bold
 - **Fixed Numbered List Display**
 - **Moved Sharing Button**
+- **Added Ability to Move Flashcards Between Subsections**
 
 ## Minor Fixes - Oct 18 - 2.0.5
 
