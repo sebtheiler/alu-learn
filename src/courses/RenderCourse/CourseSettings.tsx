@@ -3,7 +3,6 @@ import AsyncForm from "@/atoms/AsyncForm";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import FileUpload from "@/atoms/FileUpload";
-import LinkButton from "@/atoms/LinkButton";
 import Modal from "@/atoms/Modal";
 import TextInput from "@/atoms/TextInput";
 import IconTooltip from "@/components/IconTooltip";

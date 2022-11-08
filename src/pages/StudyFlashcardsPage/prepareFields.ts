@@ -21,9 +21,9 @@ const prepareFields = (reviewInstance?: ReviewInstance) => {
   const basicBackField = JSON.stringify(
     JSON.parse(flashcard.fields as string)[1]
   );
-  if (basicFrontField)
+  if (basicFrontField && basicFrontField !== "null")
     frontEditor.setEditorState(frontEditor.parseEditorState(basicFrontField));
-  if (basicBackField)
+  if (basicBackField && basicBackField !== "null")
     backEditor.setEditorState(backEditor.parseEditorState(basicBackField));
 
   switch (flashcard.type) {

@@ -12,6 +12,7 @@ import type {
 } from "@/types";
 import { useMutation } from "@apollo/client";
 import {
+  faCheck,
   faCog,
   faEye,
   faEyeSlash,
@@ -132,7 +133,7 @@ export default function RenderFlashcard({
             </span>
           )}
           <IconTooltip
-            faIcon={editMode ? faEye : faPencil}
+            faIcon={editMode ? faCheck : faPencil}
             tooltip={editMode ? "Save and View" : "Edit"}
             className="ml-2"
             tooltipProps={{ className: classNames(editMode && "w-28") }}

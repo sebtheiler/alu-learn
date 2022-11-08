@@ -123,6 +123,7 @@ model NewUserSurveyResponse {
   id     String  @id @default(cuid())
   user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String? @unique
+  timestamp DateTime? @default(now())
 
   timezoneOffset   Int
   userType         UserType

@@ -230,7 +230,7 @@ export default function LexicalEditor({
           ""
         )}
         <RichTextPlugin
-          contentEditable={<ContentEditable />}
+          contentEditable={<ContentEditable spellCheck />}
           placeholder={<></>}
         />
         {onChange ? <OnChangePlugin onChange={onChange} /> : ""}
