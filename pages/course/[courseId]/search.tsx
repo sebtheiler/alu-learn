@@ -4,9 +4,8 @@ import canEditCourse from "helpers/canEditCourse";
 import canViewCourse from "helpers/canViewCourse";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 import type { NextPage } from "types";
+import getServerSession from "helpers/getServerSession";
 
 const SearchFlashcards: NextPage<SearchFlashcardsPageProps> = (
   props: SearchFlashcardsPageProps
@@ -23,10 +22,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       title: true,
     },
   });
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
+  const session = await getServerSession(
+    context
   );
 
   if (!course || !canViewCourse(courseId as string, session?.user?.email)) {

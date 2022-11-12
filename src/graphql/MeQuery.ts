@@ -7,6 +7,7 @@ const MeQuery = gql`
       currentStreak
       doneReviewsToday
       isPro
+      username
     }
   }
 `;

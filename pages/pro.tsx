@@ -1,9 +1,8 @@
 import ProUpgradePage from "@/pages/ProUpgradePage";
 import type { ProUpgradePageProps } from "@/pages/ProUpgradePage";
+import getServerSession from "helpers/getServerSession";
 import getUserSSR from "helpers/getUserSSR";
 import type { GetServerSideProps, NextPage } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 
 const ProUpgrade: NextPage<ProUpgradePageProps> = (
   props: ProUpgradePageProps
@@ -12,18 +11,19 @@ const ProUpgrade: NextPage<ProUpgradePageProps> = (
 export default ProUpgrade;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
-  const user = await getUserSSR(session, { isPro: true, isProFromOrg: true });
-  const { isPro, isProFromOrg } = user ?? {};
+  const session = await getServerSession(context);
+  const user = await getUserSSR(session, {
+    isPro: true,
+    isProFromOrg: true,
+    proTrialExpires: true,
+  });
+  const { isPro, isProFromOrg, proTrialExpires } = user ?? {};
 
   return {
     props: {
       isPro: isPro ?? null,
       isProFromOrg: isProFromOrg ?? null,
+      proTrialExpires: proTrialExpires?.toString(),
       isSignedIn: !!session,
     } as ProUpgradePageProps,
   };

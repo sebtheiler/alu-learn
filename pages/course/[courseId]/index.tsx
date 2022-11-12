@@ -3,10 +3,9 @@ import type { CoursePageProps } from "@/pages/CoursePage";
 import canEditCourse from "helpers/canEditCourse";
 import canViewCourse from "helpers/canViewCourse";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
+import getServerSession from "helpers/getServerSession";
 import prisma from "lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 
 const Course: NextPage<CoursePageProps> = (props: CoursePageProps) => (
   <CoursePage {...props} />
@@ -15,11 +14,7 @@ const Course: NextPage<CoursePageProps> = (props: CoursePageProps) => (
 export default Course;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const session = await getServerSession(context);
   const { courseId } = context.query;
 
   let course = await prisma.course.findUnique({

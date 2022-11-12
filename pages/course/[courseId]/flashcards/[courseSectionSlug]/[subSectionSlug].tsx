@@ -5,10 +5,9 @@ import flashcardsSEO from "course/flashcardsSEO";
 import getFlashcards from "course/getFlashcards";
 import canEditCourse from "helpers/canEditCourse";
 import canViewCourse from "helpers/canViewCourse";
+import getServerSession from "helpers/getServerSession";
 import prisma from "lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 
 const Flashcards: NextPage<FlashcardsPageProps> = (
   props: FlashcardsPageProps
@@ -18,11 +17,7 @@ export default Flashcards;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { courseId, courseSectionSlug, subSectionSlug, page } = context.query;
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const session = await getServerSession(context);
 
   const subSection = await prisma.subSection.findFirst({
     where: {

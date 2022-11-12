@@ -1,8 +1,7 @@
 import prisma from "../lib/prisma";
-import { authOptions } from "../pages/api/auth/[...nextauth]";
 import { PrismaClient } from "@prisma/client";
+import getServerSession from "helpers/getServerSession";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { unstable_getServerSession } from "next-auth";
 
 export type Context = {
   user?: {
@@ -21,7 +20,7 @@ export default async function createContext({
   req: NextApiRequest;
   res: NextApiResponse;
 }): Promise<Context> {
-  const session = await unstable_getServerSession(req, res, authOptions);
+  const session = await getServerSession({ req, res });
   if (!session) return { prisma };
 
   const { user } = session;

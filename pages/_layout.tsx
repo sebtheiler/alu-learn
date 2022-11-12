@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import MeQuery from "@/graphql/MeQuery";
+import useMeStore from "@/stores/meStore";
 import useProStore from "@/stores/proStore";
 import type { Query, Streak } from "@/types";
 import { useQuery } from "@apollo/client";
@@ -20,6 +21,7 @@ export default function Layout({ children }: LayoutProps) {
   }>(MeQuery);
   const { isPro, currentStreak, doneReviewsToday } = meData?.me ?? {};
   const { isPro: globalIsPro, setIsPro } = useProStore();
+  const { setMe } = useMeStore();
 
   useEffect(() => {
     if (
@@ -28,8 +30,9 @@ export default function Layout({ children }: LayoutProps) {
       (isPro === false || isPro === true)
     ) {
       setIsPro(isPro);
+      setMe(meData?.me);
     }
-  }, [meDataLoading, globalIsPro, isPro, setIsPro]);
+  }, [meDataLoading, globalIsPro, isPro, setIsPro, setMe, meData?.me]);
 
   return (
     <>

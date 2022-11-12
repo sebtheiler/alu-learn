@@ -70,9 +70,14 @@ model User {
   friendsRequested User[] @relation("FriendsRequested") // users that the given user wants to be friends with
   requestedFriends User[] @relation("FriendsRequested") // users that want to be friends with the given user
 
+  usersReferred User[]  @relation("UserReferrals")
+  referredBy    User?   @relation("UserReferrals", fields: [referredById], references: [id], onDelete: Cascade)
+  referredById  String? @unique
+
   stripeCustomerAccount StripeCustomer?
   isPro                 Boolean         @default(false)
   isProFromOrg          Boolean         @default(false)
+  proTrialExpires       DateTime?
 
   role        Role    @default(USER)
   isSuperUser Boolean @default(false)

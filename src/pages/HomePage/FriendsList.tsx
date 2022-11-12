@@ -2,12 +2,15 @@ import AsyncButton from "@/atoms/AsyncButton";
 import Button from "@/atoms/Button";
 import ComboBox from "@/atoms/ComboBox";
 import Modal from "@/atoms/Modal";
+import CopyLink from "@/components/CopyLink";
 import DisplayUserInline from "@/components/DisplayUserInline";
 import AddFriend from "@/graphql/AddFriend";
 import MyFriends from "@/graphql/MyFriends";
 import SearchUsers from "@/graphql/SearchUsers";
 import formatPlural from "@/helpers/formatPlural";
+import generateReferralLink from "@/helpers/generateReferralLink";
 import { useDebounce } from "@/hooks/useDebounce";
+import useMeStore from "@/stores/meStore";
 import type {
   Mutation,
   MutationAddFriendArgs,
@@ -24,6 +27,8 @@ export default function FriendsList() {
   const { data: friendsData } = useQuery<{
     myFriends: Query["myFriends"];
   }>(MyFriends);
+
+  const username = useMeStore((state) => state.me?.username);
 
   const [friendModalOpen, setFriendModalOpen] = useState(false);
   const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
@@ -68,32 +73,40 @@ export default function FriendsList() {
         Friends
       </header>
       <hr />
-      {!friendsData ? <p className="text-center py-2">Loading...</p> : <section className="bg-gray-50 px-3 py-2 text-center">
-        <div className="text-left px-3">
-          {friendsData.myFriends?.length === 0 && (
-            <p>You haven&apos;t added any friends yet</p>
+      {!friendsData ? (
+        <p className="text-center py-2">Loading...</p>
+      ) : (
+        <section className="bg-gray-50 px-3 py-2 text-center">
+          <div className="text-left px-3">
+            {friendsData.myFriends?.length === 0 && (
+              <p>You haven&apos;t added any friends yet</p>
+            )}
+            {friendsData.myFriends?.map((friend) => (
+              <div
+                className="py-2 border-b-2 border-gray-200 last:border-b-0"
+                key={friend.id}
+              >
+                <DisplayUserInline user={friend} />
+                <span className="float-right">
+                  {formatPlural(friend.reviewsStudied, "flashcard")}
+                </span>
+              </div>
+            ))}
+          </div>
+          {(friendsData.myFriends?.length ?? 0) > 0 && (
+            <p className="my-1">Flashcards done in the past week</p>
           )}
-          {friendsData.myFriends?.map((friend) => (
-            <div
-              className="py-2 border-b-2 border-gray-200 last:border-b-0"
-              key={friend.id}
-            >
-              <DisplayUserInline user={friend} />
-              <span className="float-right">{formatPlural(friend.reviewsStudied, "flashcard")}</span>
-            </div>
-          ))}
-        </div>
-        {(friendsData.myFriends?.length ?? 0) > 0 && <p className="my-1">Flashcards done in the past week</p>}
-        <Button
-          className="mt-2"
-          variant="primary-outline"
-          onClick={() => setFriendModalOpen(true)}
-          faIcon={faPlus}
-          block
-        >
-          Add Friends
-        </Button>
-      </section>}
+          <Button
+            className="mt-2"
+            variant="primary-outline"
+            onClick={() => setFriendModalOpen(true)}
+            faIcon={faPlus}
+            block
+          >
+            Add Friends
+          </Button>
+        </section>
+      )}
       <Modal
         title="Add Friends"
         open={friendModalOpen}
@@ -154,12 +167,16 @@ export default function FriendsList() {
                 .<sup>*</sup>
               </strong>
             </p>
-            <p>TODO</p>
+            <CopyLink
+              link={generateReferralLink(username as string)}
+              className="my-2"
+            />
             <p>
               <small>
                 <sup>*</sup>You will earn one free week of Alu Pro for each new
                 user that signs up using your referral link. You may earn a
-                maximum of four weeks per month. Subject to Alu&apos;s{" "}
+                maximum of four weeks per month. Only applies if you do not have
+                an existing pro-mode subscription. Subject to Alu&apos;s{" "}
                 <Link href="/legal/tos">
                   <a className="text-blue-500">terms of service</a>
                 </Link>

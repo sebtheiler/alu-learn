@@ -1,9 +1,8 @@
 import getRequestMetadata from "helpers/getRequestMetadata";
+import getServerSession from "helpers/getServerSession";
 import getUserSSR from "helpers/getUserSSR";
 import prisma from "lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 
 const Index: NextPage = () => <div />;
 
@@ -31,11 +30,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       notFound: true,
     };
   } else {
-    const session = await unstable_getServerSession(
-      context.req,
-      context.res,
-      authOptions
-    );
+    const session = await getServerSession(context);
     const user = session ? await getUserSSR(session, { id: true }) : undefined;
 
     const { remoteAddr, userAgent, referer } = getRequestMetadata(context.req);

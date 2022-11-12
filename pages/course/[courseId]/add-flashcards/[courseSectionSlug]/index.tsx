@@ -1,8 +1,7 @@
+import getServerSession from "helpers/getServerSession";
 import isCourseOwner from "helpers/isCourseOwner";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 import type { NextPage } from "types";
 
 const Blank: NextPage = () => <></>;
@@ -10,11 +9,7 @@ export default Blank;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const { courseId, courseSectionSlug } = context.query;
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const session = await getServerSession(context);
 
   // Redirect the user if they are not a user of the course or the
   // course section does not exist in the given course

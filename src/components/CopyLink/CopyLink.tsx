@@ -1,15 +1,17 @@
+import classNames from "@/helpers/classNames";
 import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useId, useState } from "react";
 
 interface CopyLinkProps {
   link: string;
+  className?: string;
 }
 
 /**
  * Comopnent that displays a link that the user can easily copy
  */
-export default function CopyLink({ link }: CopyLinkProps) {
+export default function CopyLink({ link, className }: CopyLinkProps) {
   const id = useId();
   const [copied, setCopied] = useState(false);
 
@@ -23,7 +25,7 @@ export default function CopyLink({ link }: CopyLinkProps) {
   };
 
   return (
-    <div className="relative w-full">
+    <div className={classNames("relative w-full", className)}>
       <input
         value={`${process.env.NEXT_PUBLIC_SERVER_URL}/${link}`}
         readOnly

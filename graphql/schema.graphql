@@ -359,7 +359,7 @@ type Query {
   myCourses: [Course]
 
   """
-  Get a list of the user's friends and the number of flashcards they've studied this week
+  Get a list of the user's friends and the number of flashcards they've studied this week. Also includes the current user
   """
   myFriends: [JSONObject]
 

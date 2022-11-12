@@ -1,19 +1,14 @@
+import getServerSession from "helpers/getServerSession";
 import isCourseOwner from "helpers/isCourseOwner";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 import type { NextPage } from "types";
 
 const Blank: NextPage = () => <></>;
 export default Blank;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const session = await getServerSession(context);
   const { courseId } = context.query;
 
   if (!isCourseOwner(courseId as string, session?.user?.email)) {

@@ -4,10 +4,13 @@ import styles from "./ProUpgradePage.module.scss";
 import UpgradeSuccess from "./UpgradeSuccess";
 import AsyncButton from "@/atoms/AsyncButton";
 import Button from "@/atoms/Button";
+import CopyLink from "@/components/CopyLink";
 import CreateStripeSession from "@/graphql/CreateStripeSession";
 import SEO from "@/helpers/SEO";
 import classNames from "@/helpers/classNames";
+import generateReferralLink from "@/helpers/generateReferralLink";
 import useGlobalModalStore from "@/stores/globalModalStore";
+import useMeStore from "@/stores/meStore";
 import type {
   Mutation,
   MutationCreateStripeSessionArgs,
@@ -27,6 +30,7 @@ export interface ProUpgradePageProps {
 export default function ProUpgradePage({
   isProFromOrg,
   isPro,
+  proTrialExpires,
   isSignedIn,
 }: ProUpgradePageProps) {
   const { setRegisterModalOpen } = useGlobalModalStore();
@@ -34,6 +38,8 @@ export default function ProUpgradePage({
     { createStripeSession: Mutation["createStripeSession"] },
     MutationCreateStripeSessionArgs
   >(CreateStripeSession);
+
+  const username = useMeStore((state) => state.me?.username);
 
   const purchase = (purchaseType: "MONTHLY" | "YEARLY") => {
     return async () => {
@@ -50,9 +56,7 @@ export default function ProUpgradePage({
   };
 
   if (isProFromOrg) return <ProFromOrganization />;
-  if (isPro) {
-    return <UpgradeSuccess />;
-  }
+  if (isPro && !proTrialExpires) return <UpgradeSuccess />;
 
   return (
     <>
@@ -136,6 +140,25 @@ export default function ProUpgradePage({
               </>
             )}
             <p className="font-bold my-3">7-day free trial. Cancel anytime.</p>
+            <hr className="my-3" />
+            <p className="mb-1">
+              {proTrialExpires ? (
+                <>
+                  Your pro trial expires on{" "}
+                  {new Date(proTrialExpires).toDateString()}. Extend it by
+                  inviting more users.
+                </>
+              ) : (
+                <>
+                  Want <strong>free</strong> weeks of pro mode? Invite new users
+                  with the link below.
+                </>
+              )}
+              <CopyLink
+                link={generateReferralLink(username as string)}
+                className="my-2 max-w-lg mx-auto"
+              />
+            </p>
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+import expireProModeTrials from "cron/expireProModeTrials";
 import sendScheduledEmails from "cron/scheduledEmails";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -9,6 +10,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.headers["signing-key"] === CRON_SECRET_SIGNING_KEY) {
     try {
       await sendScheduledEmails();
+      await expireProModeTrials();
       res.status(200).json({ success: true });
     } catch (err) {
       res.status(500).json({ success: false, message: (err as any).message });

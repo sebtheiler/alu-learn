@@ -1,10 +1,9 @@
 import ProfilePage from "@/pages/ProfilePage";
 import type { ProfilePageProps } from "@/pages/ProfilePage";
+import getServerSession from "helpers/getServerSession";
 import getUserSSR from "helpers/getUserSSR";
 import prisma from "lib/prisma";
 import type { GetServerSideProps, NextPage } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "pages/api/auth/[...nextauth]";
 
 const Profile: NextPage<ProfilePageProps> = (props: ProfilePageProps) => (
   <ProfilePage {...props} />
@@ -22,11 +21,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       username: true,
     },
   });
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+  const session = await getServerSession(context);
   const currentUser = await getUserSSR(session, { id: true });
 
   const courses = await prisma.course.findMany({
