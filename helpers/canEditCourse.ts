@@ -15,7 +15,10 @@ const canEditCourse = async (
 ) => {
   const course = await prismaInstance.course.findUnique({
     where: { id: courseId },
-    select: { editingAccess: true },
+    select: {
+      editingAccess: true,
+      owners: { select: { email: true }, take: 1 },
+    },
   });
   if (!course) return null;
 
@@ -24,9 +27,15 @@ const canEditCourse = async (
     case "ALL":
       return true;
     case "FRIENDS":
-      return isFriendOfCourseOwner(email, courseId);
+      return (
+        (await isFriendOfCourseOwner(email, courseId)) ||
+        (await isCourseOwner(courseId, email, prismaInstance))
+      );
     case "INSTITUTION":
-      return;
+      return (
+        course.owners[0].email?.split("@")[1] === email?.split("@")[1] ||
+        (await isCourseOwner(courseId, email, prismaInstance))
+      );
     case "OWNERS":
       return isCourseOwner(courseId, email, prismaInstance);
     default:

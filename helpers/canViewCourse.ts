@@ -28,9 +28,15 @@ const canViewCourse = async (
     case "ALL":
       return true;
     case "FRIENDS":
-      return isFriendOfCourseOwner(email, courseId);
+      return (
+        (await isFriendOfCourseOwner(email, courseId)) ||
+        (await isCourseUser(courseId, email, prismaInstance))
+      );
     case "INSTITUTION":
-      return course.owners[0].email?.split("@")[1] === email?.split("@")[1];
+      return (
+        course.owners[0].email?.split("@")[1] === email?.split("@")[1] ||
+        (await isCourseUser(courseId, email, prismaInstance))
+      );
     case "PASSWORD":
       return;
     case "PRIVATE":
