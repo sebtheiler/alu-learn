@@ -104,6 +104,12 @@ type Mutation {
   """Adds a user as a course owner"""
   addCourseOwner(courseId: String!, username: String!): User
 
+  """Sends a friend request or accepts an existing friend request"""
+  addFriend(
+    """User to request/add as a friend"""
+    userId: String!
+  ): Boolean
+
   """Archives a course for the current user. Does not affect ownership"""
   archiveCourse(archive: Boolean!, courseId: String!): Course
 

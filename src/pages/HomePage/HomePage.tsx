@@ -1,4 +1,5 @@
 import CreateAddCourseModal from "./CreateAddCourseModal";
+import FriendsList from "./FriendsList";
 import Heatmap from "./Heatmap";
 import SocialMediaLinks from "./SocialMediaLinks";
 import AsyncForm from "@/atoms/AsyncForm";
@@ -70,6 +71,10 @@ export interface HomePageProps {
    * Whether the user is a teacher, student, etc.
    */
   userType: UserType;
+  /**
+   * A list of the user's friends
+   */
+  friends: User[];
 }
 
 export default function HomePage({
@@ -79,6 +84,7 @@ export default function HomePage({
   targetReviewsDone,
   history,
   userType,
+  friends,
 }: HomePageProps) {
   const router = useRouter();
   const [addCourseModalOpen, setAddCourseModalOpen] = useState(false);
@@ -249,14 +255,15 @@ export default function HomePage({
               <Heatmap history={history} />
             </div>
           </div>
-          <div className="col-span-6 md:col-span-3 mx-4">
+          <aside className="col-span-6 md:col-span-3 mx-4">
             <ReviewsDoneSVG
               reviewsDone={reviewsDone}
               targetReviewsDone={targetReviewsDone}
             />
             <SocialMediaLinks />
             <Ad adType="META_SIDEBAR" className="max-w-xs mx-auto" />
-          </div>
+            <FriendsList friends={friends} />
+          </aside>
         </div>
       </div>
     </>

@@ -65,8 +65,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  friends     User[] @relation("Friends")
-  friendUsers User[] @relation("Friends")
+  friends          User[] @relation("Friends")
+  friendUsers      User[] @relation("Friends")
+  friendsRequested User[] @relation("FriendsRequested") // users that the given user wants to be friends with
+  requestedFriends User[] @relation("FriendsRequested") // users that want to be friends with the given user
 
   stripeCustomerAccount StripeCustomer?
   isPro                 Boolean         @default(false)
@@ -120,9 +122,9 @@ enum UserType {
 // # Analytics
 // ## New user Survey
 model NewUserSurveyResponse {
-  id     String  @id @default(cuid())
-  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String? @unique
+  id        String    @id @default(cuid())
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?   @unique
   timestamp DateTime? @default(now())
 
   timezoneOffset   Int

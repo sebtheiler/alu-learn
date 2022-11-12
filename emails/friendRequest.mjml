@@ -1,0 +1,24 @@
+<mj-text>
+  <p class="text-paragraph">Hi {{name}}!</p>
+  <p class="text-paragraph">
+    {{requesterName}} (<a
+      href="https://alulearn.com/user/{{requesterUsername}}?utm_source=email&utm_medium=email&utm_campaign=friend_request"
+      >{{requesterUsername}}</a
+    >) would like to be your friend on Alu. Do you want to add them?
+  </p>
+</mj-text>
+<mj-group width="100%">
+  <mj-column>
+    <mj-button
+      background-color="#6A21BC"
+      align="center"
+      color="#ffffff"
+      font-size="17px"
+      href="https://alulearn.com/accept-friend-request/{{requesterUsername}}"
+      width="300px"
+      border-radius="999px"
+    >
+      Add {{requesterName}} as a Friend
+    </mj-button>
+  </mj-column>
+</mj-group>

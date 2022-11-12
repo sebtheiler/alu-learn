@@ -131,7 +131,7 @@ export default function ProUpgradePage({
                   block
                   className="mt-2"
                 >
-                  Upgrade to Pro ($3.99/mo, billed yearly)
+                  Upgrade to Pro ($3.99/mo, billed yearly as $47.88)
                 </AsyncButton>
               </>
             )}

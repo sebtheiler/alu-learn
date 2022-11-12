@@ -1,4 +1,8 @@
 import { User as PrismaUser } from "@prisma/client";
+import { ApolloError } from "apollo-server-micro";
+import createEmailTemplate from "emails/createEmailTemplate";
+import sendEmail from "emails/sendEmail";
+import friendUsers from "helpers/friendUsers";
 import getUserGQL from "helpers/getUserGQL";
 import isAdmin from "helpers/isAdmin";
 import {
@@ -94,6 +98,12 @@ export const UsersQuery = extendType({
                   mode: "insensitive",
                 },
               },
+              {
+                email: {
+                  contains: args.name,
+                  mode: "insensitive",
+                },
+              },
             ],
           },
           take: 25,
@@ -144,6 +154,104 @@ export const UsersMutation = extendType({
           where: { id: user.id },
           data: data,
         });
+      },
+    });
+    t.field("addFriend", {
+      type: "Boolean",
+      description:
+        "Sends a friend request or accepts an existing friend request",
+      args: {
+        userId: nonNull(
+          stringArg({ description: "User to request/add as a friend" })
+        ),
+      },
+      async resolve(_parent, args, ctx) {
+        const me = await getUserGQL(ctx, {
+          id: true,
+          name: true,
+          username: true,
+        }); // the current user
+        if (!me) return null;
+        const other = await ctx.prisma.user.findUnique({
+          where: { id: args.userId },
+          select: { username: true, id: true, email: true },
+        }); // the user that me wants to be friends with
+        if (!other) throw new ApolloError("User to request not found");
+
+        // If me has already requested other, or the two are already friends, do nothing
+        const meRequestedOtherOrAlreadyFriends =
+          (await ctx.prisma.user.count({
+            where: {
+              id: me.id,
+              OR: [
+                {
+                  // Me requested other
+                  friendsRequested: {
+                    some: {
+                      id: other.id,
+                    },
+                  },
+                },
+                {
+                  // Already friends
+                  friends: {
+                    some: {
+                      id: other.id,
+                    },
+                  },
+                },
+              ],
+            },
+          })) > 0;
+
+        if (meRequestedOtherOrAlreadyFriends) return null;
+
+        const otherRequestedMe =
+          (await ctx.prisma.user.count({
+            where: {
+              id: me.id,
+              requestedFriends: {
+                some: {
+                  id: other.id,
+                },
+              },
+            },
+          })) > 0;
+
+        if (otherRequestedMe) {
+          // If other has requested to be friends with me, add immediately
+          friendUsers(me.id as string, other.id, ctx.prisma);
+
+          return true;
+        } else {
+          // Otherwise, me requests to be friends with other
+          await ctx.prisma.user.update({
+            where: {
+              id: me.id,
+            },
+            data: {
+              friendsRequested: {
+                connect: {
+                  id: other.id,
+                },
+              },
+            },
+          });
+
+          // Send email to other to notify them of the friend request
+          const template = createEmailTemplate("friendRequest");
+          await sendEmail({
+            to: other.email as string,
+            subject: `Friend Request from ${me.name}`,
+            html: template({
+              title: `Friend Request from ${me.name}`,
+              requesterName: me.name,
+              requesterUsername: me.username,
+            }),
+          });
+
+          return false;
+        }
       },
     });
   },

@@ -1,4 +1,4 @@
-import { Prisma, User } from "@prisma/client";
+import type { Prisma, User } from "@prisma/client";
 import type { Context } from "graphql/context";
 
 /**

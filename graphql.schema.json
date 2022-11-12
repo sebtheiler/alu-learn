@@ -768,6 +768,35 @@
             "deprecationReason": null
           },
           {
+            "name": "addFriend",
+            "description": "Sends a friend request or accepts an existing friend request",
+            "args": [
+              {
+                "name": "userId",
+                "description": "User to request/add as a friend",
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "archiveCourse",
             "description": "Archives a course for the current user. Does not affect ownership",
             "args": [

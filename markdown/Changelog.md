@@ -4,14 +4,15 @@ path: "changelog"
 description: "Alu Learn changelog"
 ---
 
-## Studying Hotfix - Nov 8 - 2.0.7
+## Studying Hotfix - Nov 8 - 2.1.1
+
 Fixed a bug that caused client-side crashes when studying some flashcards
 
 - Fixed bug in studying
 - Changed the save icon when editing flashcards from an eye to a check
 - Fixed an unintentionally disabled spell check when creating flashcards
 
-## Emails - Oct 31 - 2.0.6
+## Emails - Oct 31 - 2.1.0
 
 - **More Emails:** Alu now sends more emails in an attempt to increase user retention
   - Each week you will now receive a progress report of how much you used Alu that week

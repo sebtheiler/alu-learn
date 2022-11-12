@@ -124,6 +124,8 @@ export type Mutation = {
   __typename?: "Mutation";
   /** Adds a user as a course owner */
   addCourseOwner?: Maybe<User>;
+  /** Sends a friend request or accepts an existing friend request */
+  addFriend?: Maybe<Scalars["Boolean"]>;
   /** Archives a course for the current user. Does not affect ownership */
   archiveCourse?: Maybe<Course>;
   /** Cancels the Stripe subscription for the current user */
@@ -201,6 +203,10 @@ export type Mutation = {
 export type MutationAddCourseOwnerArgs = {
   courseId: Scalars["String"];
   username: Scalars["String"];
+};
+
+export type MutationAddFriendArgs = {
+  userId: Scalars["String"];
 };
 
 export type MutationArchiveCourseArgs = {

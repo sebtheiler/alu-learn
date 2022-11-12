@@ -11,8 +11,7 @@ export default function ProFeaturesCard() {
     <div className={classNames(styles.proCard, styles.proCardPro)}>
       <div className={styles.proCardHead}>
         <h3>Pro</h3>
-        <h4>$3.99/mo</h4>
-        <p className="text-sm mt-1 italic">Billed as $47.88/yr</p>
+        <h4>$4.99/mo</h4>
       </div>
       <div className={styles.proCardBody}>
         <ul>
