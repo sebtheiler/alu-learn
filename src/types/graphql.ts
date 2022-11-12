@@ -441,6 +441,8 @@ export type Query = {
   me?: Maybe<User>;
   /** Get the current user's courses */
   myCourses?: Maybe<Array<Maybe<Course>>>;
+  /** Get a list of the user's friends and the number of flashcards they've studied this week */
+  myFriends?: Maybe<Array<Maybe<Scalars["JSONObject"]>>>;
   /** Search for shared courses based on their title */
   searchCourses?: Maybe<Array<Maybe<Course>>>;
   /** Finds flashcards based on some criteria */

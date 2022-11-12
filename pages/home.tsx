@@ -25,13 +25,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     targetNumReviews: true,
     id: true,
     userType: true,
-    friends: {
-      select: {
-        name: true,
-        username: true,
-        id: true,
-      },
-    },
   });
 
   // Log the user visit
@@ -138,8 +131,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       targetReviewsDone: user?.targetNumReviews ?? null,
       history: JSON.parse(JSON.stringify(history)),
       userType: user?.userType,
-      // @ts-ignore
-      friends: user.friends,
     } as HomePageProps,
   };
 };

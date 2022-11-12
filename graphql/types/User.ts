@@ -110,6 +110,74 @@ export const UsersQuery = extendType({
         });
       },
     });
+    t.list.field("myFriends", {
+      type: "JSONObject",
+      description:
+        "Get a list of the user's friends and the number of flashcards they've studied this week. Also includes the current user",
+      async resolve(_parent, _args, ctx) {
+        const me = await getUserGQL(ctx, {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+          friends: { select: { name: true, username: true, id: true, image: true } },
+        });
+        if (!me) return null;
+
+        const friends: (PrismaUser & { reviewsStudied: number })[] = [];
+
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+
+        // @ts-ignore
+        for (const friend of me.friends as PrismaUser[]) {
+          const {
+            _sum: { reviewsStudied },
+          } = await ctx.prisma.historySegment.aggregate({
+            where: {
+              userId: friend.id,
+              date: {
+                gte: weekAgo,
+              },
+            },
+            _sum: {
+              reviewsStudied: true,
+            },
+          });
+
+          friends.push({
+            ...friend,
+            reviewsStudied: reviewsStudied ?? 0,
+          });
+        }
+
+
+        if (friends.length > 0) {
+          const {
+            _sum: { reviewsStudied },
+          } = await ctx.prisma.historySegment.aggregate({
+            where: {
+              userId: me.id,
+              date: {
+                gte: weekAgo,
+              },
+            },
+            _sum: {
+              reviewsStudied: true,
+            },
+          });
+          console.log({reviewsStudied})
+
+          friends.push({
+            ...me as PrismaUser,
+            name: "You",
+            reviewsStudied: reviewsStudied ?? 0,
+          })
+        }
+
+        return friends.sort((a, b) => b.reviewsStudied - a.reviewsStudied);
+      },
+    });
   },
 });
 

@@ -4,7 +4,9 @@ import ComboBox from "@/atoms/ComboBox";
 import Modal from "@/atoms/Modal";
 import DisplayUserInline from "@/components/DisplayUserInline";
 import AddFriend from "@/graphql/AddFriend";
+import MyFriends from "@/graphql/MyFriends";
 import SearchUsers from "@/graphql/SearchUsers";
+import formatPlural from "@/helpers/formatPlural";
 import { useDebounce } from "@/hooks/useDebounce";
 import type {
   Mutation,
@@ -12,14 +14,17 @@ import type {
   Option,
   Query,
   QuerySearchUsersArgs,
-  User,
 } from "@/types";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-export default function FriendsList({ friends }: { friends: User[] }) {
+export default function FriendsList() {
+  const { data: friendsData } = useQuery<{
+    myFriends: Query["myFriends"];
+  }>(MyFriends);
+
   const [friendModalOpen, setFriendModalOpen] = useState(false);
   const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
   const [requestSent, setRequestSent] = useState(false);
@@ -63,20 +68,22 @@ export default function FriendsList({ friends }: { friends: User[] }) {
         Friends
       </header>
       <hr />
-      <section className="bg-gray-50 px-3 py-2 text-center">
+      {!friendsData ? <p className="text-center py-2">Loading...</p> : <section className="bg-gray-50 px-3 py-2 text-center">
         <div className="text-left px-3">
-          {friends.length === 0 && (
+          {friendsData.myFriends?.length === 0 && (
             <p>You haven&apos;t added any friends yet</p>
           )}
-          {friends.map((friend) => (
+          {friendsData.myFriends?.map((friend) => (
             <div
               className="py-2 border-b-2 border-gray-200 last:border-b-0"
               key={friend.id}
             >
               <DisplayUserInline user={friend} />
+              <span className="float-right">{formatPlural(friend.reviewsStudied, "flashcard")}</span>
             </div>
           ))}
         </div>
+        {(friendsData.myFriends?.length ?? 0) > 0 && <p className="my-1">Flashcards done in the past week</p>}
         <Button
           className="mt-2"
           variant="primary-outline"
@@ -86,7 +93,7 @@ export default function FriendsList({ friends }: { friends: User[] }) {
         >
           Add Friends
         </Button>
-      </section>
+      </section>}
       <Modal
         title="Add Friends"
         open={friendModalOpen}

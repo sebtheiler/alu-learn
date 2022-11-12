@@ -3015,6 +3015,22 @@
             "deprecationReason": null
           },
           {
+            "name": "myFriends",
+            "description": "Get a list of the user's friends and the number of flashcards they've studied this week",
+            "args": [],
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "JSONObject",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "searchCourses",
             "description": "Search for shared courses based on their title",
             "args": [

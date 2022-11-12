@@ -358,6 +358,11 @@ type Query {
   """Get the current user's courses"""
   myCourses: [Course]
 
+  """
+  Get a list of the user's friends and the number of flashcards they've studied this week
+  """
+  myFriends: [JSONObject]
+
   """Search for shared courses based on their title"""
   searchCourses(title: String!): [Course]
 

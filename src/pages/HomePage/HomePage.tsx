@@ -84,7 +84,6 @@ export default function HomePage({
   targetReviewsDone,
   history,
   userType,
-  friends,
 }: HomePageProps) {
   const router = useRouter();
   const [addCourseModalOpen, setAddCourseModalOpen] = useState(false);
@@ -262,7 +261,7 @@ export default function HomePage({
             />
             <SocialMediaLinks />
             <Ad adType="META_SIDEBAR" className="max-w-xs mx-auto" />
-            <FriendsList friends={friends} />
+            <FriendsList />
           </aside>
         </div>
       </div>
