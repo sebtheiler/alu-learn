@@ -21,6 +21,7 @@ type Course {
   description: String
   editingAccess: EditingAccess
   id: String
+  isPublic: Boolean
 
   """Users who have full privileges on this course"""
   owners: [User]
@@ -239,9 +240,9 @@ type Mutation {
   updateCourse(
     """ID of the course to update"""
     courseId: String!
-    coursePassword: String
     description: String
     editingAccess: EditingAccess
+    isPublic: Boolean
     privacySetting: PrivacySetting
     seoDescription: String
     seoSubject: String
@@ -317,7 +318,6 @@ enum PrivacySetting {
   ALL
   FRIENDS
   INSTITUTION
-  PASSWORD
   PRIVATE
 }
 

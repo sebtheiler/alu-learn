@@ -223,16 +223,15 @@ model Course {
   courseSections CourseSection[]
   flashcards     Flashcard[]
 
-  privacySetting PrivacySetting @default(PRIVATE)
+  privacySetting PrivacySetting @default(ALL)
   editingAccess  EditingAccess  @default(OWNERS)
-  coursePassword String         @default("") // not intended to be super secure
+  isPublic       Boolean        @default(false)
 
   classrooms Classroom[]
 }
 
 enum PrivacySetting {
   ALL
-  PASSWORD
   FRIENDS
   INSTITUTION
   PRIVATE

@@ -12,7 +12,6 @@ const getServerSession = (
   context:
     | GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
     | { req: NextApiRequest; res: NextApiResponse<any> }
-) =>
-  unstable_getServerSession(context.req, context.res, authOptions(context.req as NextApiRequest));
+) => unstable_getServerSession(context.req, context.res, authOptions);
 
 export default getServerSession;

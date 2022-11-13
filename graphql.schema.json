@@ -194,6 +194,18 @@
             "deprecationReason": null
           },
           {
+            "name": "isPublic",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "owners",
             "description": "Users who have full privileges on this course",
             "args": [],
@@ -2102,18 +2114,6 @@
                 "deprecationReason": null
               },
               {
-                "name": "coursePassword",
-                "description": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "String",
-                  "ofType": null
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              },
-              {
                 "name": "description",
                 "description": null,
                 "type": {
@@ -2131,6 +2131,18 @@
                 "type": {
                   "kind": "ENUM",
                   "name": "EditingAccess",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "isPublic",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
                   "ofType": null
                 },
                 "defaultValue": null,
@@ -2766,12 +2778,6 @@
             "deprecationReason": null
           },
           {
-            "name": "PASSWORD",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "PRIVATE",
             "description": null,
             "isDeprecated": false,
@@ -3016,7 +3022,7 @@
           },
           {
             "name": "myFriends",
-            "description": "Get a list of the user's friends and the number of flashcards they've studied this week",
+            "description": "Get a list of the user's friends and the number of flashcards they've studied this week. Also includes the current user",
             "args": [],
             "type": {
               "kind": "LIST",

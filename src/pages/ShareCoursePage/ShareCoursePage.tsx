@@ -40,7 +40,6 @@ export default function ShareCoursePage({
   authorized,
   currentUserId,
 }: ShareCoursePageProps) {
-  const [privacySetting, setPrivacySetting] = useState("ALL");
   const [owners, setOwners] = useState<User[]>(course?.owners as User[]);
   const [description, setDescription] = useState<EditorState>();
 
@@ -66,12 +65,6 @@ export default function ShareCoursePage({
         "seoDescription",
         "seoSubject",
       ]);
-    let coursePassword: string | null = null;
-    if (privacySetting === "PASSWORD") {
-      coursePassword = getElementsVals(e.target as HTMLFormElement, [
-        "coursePassword",
-      ]).coursePassword;
-    }
 
     await updateCourse({
       variables: {
@@ -79,7 +72,6 @@ export default function ShareCoursePage({
         editingAccess: editingAccess as EditingAccess,
         seoDescription,
         seoSubject,
-        coursePassword,
         description: JSON.stringify(description),
         courseId: course?.id as string,
       },
@@ -152,7 +144,6 @@ export default function ShareCoursePage({
             label="Privacy Setting"
             options={[
               { value: "ALL", label: "All can view" },
-              { value: "PASSWORD", label: "Requires a password to view" },
               { value: "FRIENDS", label: "Friends can view" },
               {
                 value: "INSTITUTION",
@@ -165,19 +156,9 @@ export default function ShareCoursePage({
                 ? "ALL"
                 : course?.privacySetting ?? "ALL"
             }
-            onChange={(val) => setPrivacySetting(val as string)}
             className="mb-3"
             name="privacySetting"
           />
-          {privacySetting === "PASSWORD" && (
-            <TextInput
-              label="Password"
-              type="password"
-              className="mb-3"
-              name="coursePassword"
-              required
-            />
-          )}
           <Select
             label="Editing Access"
             options={[

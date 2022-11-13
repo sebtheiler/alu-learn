@@ -6,8 +6,8 @@ const UpdateCourse = gql`
     $privacySetting: PrivacySetting
     $editingAccess: EditingAccess
     $title: String
-    $coursePassword: String
     $description: String
+    $isPublic: Boolean
     $seoDescription: String
     $seoSubject: String
   ) {
@@ -16,8 +16,8 @@ const UpdateCourse = gql`
       privacySetting: $privacySetting
       editingAccess: $editingAccess
       title: $title
-      coursePassword: $coursePassword
       description: $description
+      isPublic: $isPublic
       seoDescription: $seoDescription
       seoSubject: $seoSubject
     ) {

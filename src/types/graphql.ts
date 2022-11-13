@@ -48,6 +48,7 @@ export type Course = {
   description?: Maybe<Scalars["String"]>;
   editingAccess?: Maybe<EditingAccess>;
   id?: Maybe<Scalars["String"]>;
+  isPublic?: Maybe<Scalars["Boolean"]>;
   /** Users who have full privileges on this course */
   owners?: Maybe<Array<Maybe<User>>>;
   privacySetting?: Maybe<PrivacySetting>;
@@ -345,9 +346,9 @@ export type MutationUpdateClassroomArgs = {
 
 export type MutationUpdateCourseArgs = {
   courseId: Scalars["String"];
-  coursePassword?: InputMaybe<Scalars["String"]>;
   description?: InputMaybe<Scalars["String"]>;
   editingAccess?: InputMaybe<EditingAccess>;
+  isPublic?: InputMaybe<Scalars["Boolean"]>;
   privacySetting?: InputMaybe<PrivacySetting>;
   seoDescription?: InputMaybe<Scalars["String"]>;
   seoSubject?: InputMaybe<Scalars["String"]>;
@@ -419,7 +420,6 @@ export enum PrivacySetting {
   All = "ALL",
   Friends = "FRIENDS",
   Institution = "INSTITUTION",
-  Password = "PASSWORD",
   Private = "PRIVATE",
 }
 
@@ -441,7 +441,7 @@ export type Query = {
   me?: Maybe<User>;
   /** Get the current user's courses */
   myCourses?: Maybe<Array<Maybe<Course>>>;
-  /** Get a list of the user's friends and the number of flashcards they've studied this week */
+  /** Get a list of the user's friends and the number of flashcards they've studied this week. Also includes the current user */
   myFriends?: Maybe<Array<Maybe<Scalars["JSONObject"]>>>;
   /** Search for shared courses based on their title */
   searchCourses?: Maybe<Array<Maybe<Course>>>;

@@ -120,7 +120,9 @@ export const UsersQuery = extendType({
           name: true,
           username: true,
           image: true,
-          friends: { select: { name: true, username: true, id: true, image: true } },
+          friends: {
+            select: { name: true, username: true, id: true, image: true },
+          },
         });
         if (!me) return null;
 
@@ -151,7 +153,6 @@ export const UsersQuery = extendType({
           });
         }
 
-
         if (friends.length > 0) {
           const {
             _sum: { reviewsStudied },
@@ -166,13 +167,12 @@ export const UsersQuery = extendType({
               reviewsStudied: true,
             },
           });
-          console.log({reviewsStudied})
 
           friends.push({
-            ...me as PrismaUser,
+            ...(me as PrismaUser),
             name: "You",
             reviewsStudied: reviewsStudied ?? 0,
-          })
+          });
         }
 
         return friends.sort((a, b) => b.reviewsStudied - a.reviewsStudied);

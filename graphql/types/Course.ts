@@ -28,6 +28,7 @@ const Course = objectType({
     t.field("privacySetting", { type: PrivacySetting });
     t.field("editingAccess", { type: EditingAccess });
     t.string("description");
+    t.boolean("isPublic");
     t.string("seoDescription");
     t.string("seoSubject");
     t.string("bannerImage", {
@@ -112,6 +113,7 @@ export const CoursesQuery = extendType({
               mode: "insensitive",
             },
             privacySetting: "ALL",
+            isPublic: true,
           },
           take: 25,
         });
@@ -185,10 +187,10 @@ export const CoursesMutation = extendType({
         title: stringArg(),
         privacySetting: arg({ type: PrivacySetting }),
         editingAccess: arg({ type: EditingAccess }),
-        coursePassword: stringArg(),
         seoSubject: stringArg(),
         seoDescription: stringArg(),
         description: stringArg(),
+        isPublic: booleanArg(),
         courseId: nonNull(
           stringArg({ description: "ID of the course to update" })
         ),
@@ -207,9 +209,8 @@ export const CoursesMutation = extendType({
           );
         }
         if (args.editingAccess != null) data.editingAccess = args.editingAccess;
-        if (args.coursePassword != null)
-          data.coursePassword = args.coursePassword;
         if (args.description != null) data.description = args.description;
+        if (args.isPublic != null) data.isPublic = args.isPublic;
         if (args.seoDescription != null)
           data.seoDescription = args.seoDescription;
         if (args.seoSubject != null) data.seoSubject = args.seoSubject;
@@ -483,7 +484,7 @@ const genCourseBannerFilename = (courseId: string) =>
 
 export const PrivacySetting = enumType({
   name: "PrivacySetting",
-  members: ["ALL", "PASSWORD", "FRIENDS", "INSTITUTION", "PRIVATE"],
+  members: ["ALL", "FRIENDS", "INSTITUTION", "PRIVATE"],
 });
 
 export const EditingAccess = enumType({

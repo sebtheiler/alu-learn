@@ -1,4 +1,4 @@
-import isCourseUser from "./isCourseUser";
+import isCourseOwner from "./isCourseOwner";
 import isFriendOfCourseOwner from "./isFriendOfCourseOwner";
 import type { PrivacySetting } from "@prisma/client";
 import prisma from "lib/prisma";
@@ -30,17 +30,15 @@ const canViewCourse = async (
     case "FRIENDS":
       return (
         (await isFriendOfCourseOwner(email, courseId)) ||
-        (await isCourseUser(courseId, email, prismaInstance))
+        (await isCourseOwner(courseId, email, prismaInstance))
       );
     case "INSTITUTION":
       return (
         course.owners[0].email?.split("@")[1] === email?.split("@")[1] ||
-        (await isCourseUser(courseId, email, prismaInstance))
+        (await isCourseOwner(courseId, email, prismaInstance))
       );
-    case "PASSWORD":
-      return;
     case "PRIVATE":
-      return isCourseUser(courseId, email, prismaInstance);
+      return isCourseOwner(courseId, email, prismaInstance);
     default:
       return false;
   }

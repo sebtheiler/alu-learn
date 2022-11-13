@@ -14,6 +14,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const courses = await prisma.course.findMany({
     where: {
       privacySetting: "ALL",
+      isPublic: true,
     },
     orderBy: {
       users: {

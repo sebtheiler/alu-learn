@@ -4,6 +4,14 @@ path: "changelog"
 description: "Alu Learn changelog"
 ---
 
+# Better Sharing, Friends, & Referrals - Nov 13 - 2.2.0
+
+Alu's more social now! It's easier to share courses, keep track of your friends, and invite new users.
+
+- **Improved Sharing System:** Reworked the sharing system to be much simpler and allow for easier collaboration when working on courses. Click the "Share" icon on the left of a course that you own to start sharing it.
+- **Friends:** You may now add friends on Alu and compete against them in a weekly leaderboard. If you choose, you can also share your courses with only your friends.
+- **Referrals:** Want pro mode but don't want to pay? Invite new users using your referral link and earn a free week of pro mode for each user who signs up.
+
 ## Studying Hotfix - Nov 8 - 2.1.1
 
 Fixed a bug that caused client-side crashes when studying some flashcards

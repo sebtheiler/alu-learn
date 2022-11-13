@@ -204,21 +204,21 @@ function ImageComponent({
     }
   };
 
-  const [parentWidth, setParentWidth] = useState<number | null>(null);
-  const getDivParent = useCallback((node) => {
-    if (node !== null) {
-      setParentWidth(node.getBoundingClientRect().width);
-      console.log(node);
-    }
-  }, []);
+  // const [parentWidth, setParentWidth] = useState<number | null>(null);
+  // const getDivParent = useCallback((node) => {
+  //   if (node !== null) {
+  //     setParentWidth(node.getBoundingClientRect().width);
+  //     // console.log(node);
+  //   }
+  // }, []);
   const maxWidth = /*parentWidth ?? */ 200;
-  console.log(parentWidth, maxWidth);
+  // console.log(parentWidth, maxWidth);
 
   return (
     <Suspense fallback={null}>
       <div
         className="inline-block relative select-none w-full"
-        ref={getDivParent}
+        // ref={getDivParent}
       >
         <div className="relative select-none w-full">
           <div

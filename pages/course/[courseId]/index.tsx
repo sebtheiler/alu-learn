@@ -17,6 +17,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context);
   const { courseId } = context.query;
 
+  const viewAccess = await canViewCourse(
+    courseId as string,
+    session?.user?.email
+  );
+  const editAccess = await canEditCourse(
+    courseId as string,
+    session?.user?.email
+  );
+
   let course = await prisma.course.findUnique({
     where: {
       id: courseId as string,
@@ -48,17 +57,22 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           index: "asc",
         },
       },
+      owners: editAccess
+        ? {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              image: true,
+              name: true,
+            },
+          }
+        : false,
+      privacySetting: !!editAccess,
+      isPublic: !!editAccess,
     },
   });
 
-  const viewAccess = await canViewCourse(
-    courseId as string,
-    session?.user?.email
-  );
-  const editAccess = await canEditCourse(
-    courseId as string,
-    session?.user?.email
-  );
   if (!viewAccess) {
     course = null;
   } else if (course && course.bannerImage) {

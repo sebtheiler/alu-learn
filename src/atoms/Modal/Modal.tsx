@@ -72,9 +72,9 @@ export default function Modal({
               leaveTo="opacity-0 translate-y-4"
             >
               <Dialog.Panel
-                className={`relative my-8 w-full max-w-xl transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all`}
+                className={`relative my-8 w-full max-w-xl transform rounded-lg bg-white text-left shadow-xl transition-all`}
               >
-                <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="mt-3 sm:mt-0 sm:ml-4 sm:text-left">
                     {title && (
                       <Dialog.Title

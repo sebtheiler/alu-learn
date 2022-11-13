@@ -38,8 +38,6 @@ function FloatingClozeDeletionEditor({
     RangeSelection | GridSelection | NodeSelection | null
   >(null);
 
-  console.log({ color, hint });
-
   const updateClozeDeletionEditor = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {

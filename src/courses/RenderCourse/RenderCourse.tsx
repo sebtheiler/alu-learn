@@ -1,6 +1,8 @@
 import CourseSettings from "./CourseSettings";
 import CreateCourseSectionButton from "./CreateCourseSectionButton";
+import ShareCourseModal from "./ShareCourseModal";
 import CoursePageContext from "./context";
+import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
@@ -85,6 +87,8 @@ export default function RenderCourse({
       ),
     },
   });
+
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const onCourseSectionDragEnd = (evt: SortableEvent) => {
     if (evt.oldIndex === undefined || evt.newIndex === undefined) return;
@@ -188,7 +192,15 @@ export default function RenderCourse({
                 </LinkButton> */}
             <LinkButton href={`/course/${course.id}/games`}>Games</LinkButton>
             {editAccess && (
-              <LinkButton href={`/course/${course.id}/share`}>Share</LinkButton>
+              <Button onClick={() => setShareModalOpen(true)}>Share</Button>
+            )}
+            {editAccess && (
+              // Needs to be separate because of how `ButtonGroup` works
+              <ShareCourseModal
+                open={shareModalOpen}
+                close={() => setShareModalOpen(false)}
+                course={course}
+              />
             )}
             <DropdownButton
               options={[

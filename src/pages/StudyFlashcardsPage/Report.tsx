@@ -10,7 +10,6 @@ import { faFlag } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
 export default function Report({ flashcardId }: { flashcardId: string }) {
-  console.log(flashcardId);
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [finished, setFinished] = useState(false);
   const [createFlashcardReport] = useMutation<
