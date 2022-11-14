@@ -1,14 +1,11 @@
 import CreateAddCourseModal from "./CreateAddCourseModal";
-import FriendsList from "./FriendsList";
 import Heatmap from "./Heatmap";
-import SocialMediaLinks from "./SocialMediaLinks";
 import AsyncForm from "@/atoms/AsyncForm";
 import Button from "@/atoms/Button";
 import LinkButton from "@/atoms/LinkButton";
 import Modal from "@/atoms/Modal";
 import TextInput from "@/atoms/TextInput";
-import Ad from "@/components/Ad";
-import ReviewsDoneSVG from "@/components/ReviewsDoneSVG";
+import SidebarComponents from "@/components/SidebarComponents";
 import JoinClassroom from "@/graphql/JoinClassroom";
 import SEO from "@/helpers/SEO";
 import englishList from "@/helpers/englishList";
@@ -56,14 +53,6 @@ export interface HomePageProps {
    */
   classes: ClassroomWithTeachers[];
   /**
-   * How many reviews has the user studied today?
-   */
-  reviewsDone: number;
-  /**
-   * How many reviews does the user want to study today?
-   */
-  targetReviewsDone: number;
-  /**
    * User's history of reviews for the past year
    */
   history: HistorySegment[];
@@ -80,8 +69,6 @@ export interface HomePageProps {
 export default function HomePage({
   courses,
   classes,
-  reviewsDone,
-  targetReviewsDone,
   history,
   userType,
 }: HomePageProps) {
@@ -255,13 +242,7 @@ export default function HomePage({
             </div>
           </div>
           <aside className="col-span-6 md:col-span-3 mx-4">
-            <ReviewsDoneSVG
-              reviewsDone={reviewsDone}
-              targetReviewsDone={targetReviewsDone}
-            />
-            <SocialMediaLinks />
-            <Ad adType="META_SIDEBAR" className="max-w-xs mx-auto" />
-            <FriendsList />
+            <SidebarComponents />
           </aside>
         </div>
       </div>

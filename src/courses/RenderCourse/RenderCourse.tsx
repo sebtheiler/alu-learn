@@ -7,6 +7,7 @@ import ButtonGroup from "@/atoms/ButtonGroup";
 import DropdownButton from "@/atoms/DropdownButton";
 import LinkButton from "@/atoms/LinkButton";
 import Ad from "@/components/Ad";
+import SidebarComponents from "@/components/SidebarComponents";
 import RenderCourseSection from "@/courses/RenderCourseSection";
 import ArchiveCourse from "@/graphql/ArchiveCourse";
 import CalculateSubSectionsPercentComplete from "@/graphql/CalculateSubSectionsPercentComplete";
@@ -268,7 +269,7 @@ export default function RenderCourse({
         </div>
       </div>
       <div className="col-span-12 xl:col-span-3">
-        <div className="sticky top-24 max-w-xs mx-auto">
+        <div className="max-w-xs mx-auto">
           {assignments && (
             <div className="px-2 overflow-hidden">
               <h2 className="text-center font-bold text-2xl">Assignments</h2>
@@ -308,8 +309,10 @@ export default function RenderCourse({
                   You have no assignments. Hurrah!
                 </p>
               )}
+              <hr className="my-3" />
             </div>
           )}
+          {session.status === "authenticated" && <SidebarComponents />}
           <Ad adType="COURSE_SIDEBAR" />
         </div>
       </div>

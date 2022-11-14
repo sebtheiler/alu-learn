@@ -127,8 +127,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       courses,
       classes,
-      reviewsDone: user?.numReviewsDoneToday ?? null,
-      targetReviewsDone: user?.targetNumReviews ?? null,
       history: JSON.parse(JSON.stringify(history)),
       userType: user?.userType,
     } as HomePageProps,

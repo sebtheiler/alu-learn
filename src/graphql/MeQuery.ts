@@ -6,6 +6,8 @@ const MeQuery = gql`
     me {
       currentStreak
       doneReviewsToday
+      numReviewsDoneToday
+      targetNumReviews
       isPro
       username
     }
