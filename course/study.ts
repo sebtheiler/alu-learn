@@ -119,6 +119,7 @@ const getStudyReviewInstances = async (
     subSectionIds,
     studyAhead,
     essentialOnly,
+    starredOnly,
   }: {
     /**
      * Session
@@ -150,6 +151,10 @@ const getStudyReviewInstances = async (
      * Only include flashcards with the "essential" tag?
      */
     essentialOnly?: boolean;
+    /**
+     * Only includes starred flashcards
+     */
+    starredOnly?: boolean;
   }
 ): Promise<{
   reviewInstances: Partial<ReviewInstance>[];
@@ -236,6 +241,7 @@ const getStudyReviewInstances = async (
           : undefined,
         ...slugQuery,
       },
+      isStarred: starredOnly ? true : undefined,
     },
     select: reviewInstanceSelect,
     orderBy: {

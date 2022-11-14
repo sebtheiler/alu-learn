@@ -32,12 +32,17 @@ const getFlashcards = async ({
   courseId,
   courseSectionSlug,
   subSectionSlug,
+  otherCriteria,
   pageNum,
   pageSize = 200,
 }: {
   courseId: string;
   courseSectionSlug?: string;
   subSectionSlug?: string;
+  /**
+   * Appended to the `findMany` query
+   */
+  otherCriteria?: any;
   pageNum: number;
   pageSize?: number;
 }) => {
@@ -54,6 +59,7 @@ const getFlashcards = async ({
               },
             }
           : undefined,
+        ...otherCriteria,
     },
     select: {
       id: true,

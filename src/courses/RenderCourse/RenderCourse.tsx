@@ -213,6 +213,10 @@ export default function RenderCourse({
                   text: "Search Flashcards",
                   href: `/course/${course?.id}/search`,
                 },
+                {
+                  text: "Starred Flashcards",
+                  href: `/course/${course?.id}/starred`,
+                },
                 ...(classroom
                   ? []
                   : [
