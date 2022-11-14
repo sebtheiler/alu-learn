@@ -24,7 +24,10 @@ async function main() {
     if (params.model === "User") {
       if (params.action === "create") {
         // Generate a username for the user if one is not specified
-        if (!params.args.data.username || params.args.data.username.startsWith('user')) {
+        if (
+          !params.args.data.username ||
+          params.args.data.username.startsWith("user")
+        ) {
           let newUsernameBase = "user";
           try {
             if (params.args.data.name && params.args.data.name !== "User") {
@@ -32,10 +35,12 @@ async function main() {
                 .toLowerCase()
                 .replaceAll(" ", "");
             } else if (params.args.data.email) {
-              newUsernameBase = params.args.data.email.split("@")[0].toLowerCase();
+              newUsernameBase = params.args.data.email
+                .split("@")[0]
+                .toLowerCase();
             }
           } catch (e) {
-            console.error(e)
+            console.error(e);
             newUsernameBase = "user";
           }
 
@@ -50,7 +55,7 @@ async function main() {
         }
 
         // If no name is specified, default to using their email as a name
-        if (!params.args.data.name || params.args.data.name === 'User') {
+        if (!params.args.data.name || params.args.data.name === "User") {
           if (params.args.email) {
             params.args.data.name = params.args.email
               .split("@")[0]

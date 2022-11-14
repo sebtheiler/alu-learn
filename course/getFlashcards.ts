@@ -59,7 +59,7 @@ const getFlashcards = async ({
               },
             }
           : undefined,
-        ...otherCriteria,
+      ...otherCriteria,
     },
     select: {
       id: true,

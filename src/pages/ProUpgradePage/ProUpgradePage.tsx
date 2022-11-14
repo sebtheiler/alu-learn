@@ -154,11 +154,11 @@ export default function ProUpgradePage({
                   with the link below.
                 </>
               )}
-              <CopyLink
-                link={generateReferralLink(username as string)}
-                className="my-2 max-w-lg mx-auto"
-              />
             </p>
+            <CopyLink
+              link={generateReferralLink(username as string)}
+              className="my-2 max-w-lg mx-auto"
+            />
           </div>
         </div>
       </div>

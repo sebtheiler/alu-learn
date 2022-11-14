@@ -34,7 +34,7 @@ export interface FlashcardsPageProps {
 export default function FlashcardsPage({
   course,
   title,
-  isStarred=false,
+  isStarred = false,
   flashcardsHasPart,
   flashcards,
   courseSectionSlug,
@@ -79,7 +79,9 @@ export default function FlashcardsPage({
         }}
       />
       <div className="mt-28">
-        <h1 className="text-center font-bold text-4xl mb-2">{title} Flashcards</h1>
+        <h1 className="text-center font-bold text-4xl mb-2">
+          {title} Flashcards
+        </h1>
         <div className="absolute left-6 top-28">
           <Link
             href={
@@ -99,14 +101,25 @@ export default function FlashcardsPage({
             </a>
           </Link>
         </div>
-        {isStarred && <p className="text-center mb-3">Add flashcards to this list by pressing the &quot;star&quot; button when studying</p>}
+        {isStarred && (
+          <p className="text-center mb-3">
+            Add flashcards to this list by pressing the &quot;star&quot; button
+            when studying
+          </p>
+        )}
         <ButtonGroup
           className="text-center"
           fixedWidth="175px"
           vertical={width === 0 ? false : width < 740}
           spaced
         >
-          <LinkButton href={isStarred ? `/course/${course.id}/starred/study` : `/course/${course.id}/study${slug}`}>
+          <LinkButton
+            href={
+              isStarred
+                ? `/course/${course.id}/starred/study`
+                : `/course/${course.id}/study${slug}`
+            }
+          >
             Study
           </LinkButton>
           {editAccess && !isStarred && (

@@ -2,10 +2,10 @@ import SearchFlashcardsPage from "@/pages/SearchFlashcardsPage";
 import type { SearchFlashcardsPageProps } from "@/pages/SearchFlashcardsPage";
 import canEditCourse from "helpers/canEditCourse";
 import canViewCourse from "helpers/canViewCourse";
+import getServerSession from "helpers/getServerSession";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
 import type { NextPage } from "types";
-import getServerSession from "helpers/getServerSession";
 
 const SearchFlashcards: NextPage<SearchFlashcardsPageProps> = (
   props: SearchFlashcardsPageProps
@@ -22,9 +22,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       title: true,
     },
   });
-  const session = await getServerSession(
-    context
-  );
+  const session = await getServerSession(context);
 
   if (!course || !canViewCourse(courseId as string, session?.user?.email)) {
     return {

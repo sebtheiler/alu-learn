@@ -40,9 +40,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       reviewInstances: {
         some: {
           isStarred: true,
-        }
-      }
-    }
+        },
+      },
+    },
   });
 
   const editAccess = await canEditCourse(
@@ -53,11 +53,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       course,
-      title: 'Starred',
+      title: "Starred",
       flashcards,
       editAccess,
       isStarred: true,
     } as FlashcardsPageProps,
   };
 };
-

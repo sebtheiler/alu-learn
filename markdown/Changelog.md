@@ -12,7 +12,7 @@ Alu's more social now! It's easier to share courses, keep track of your friends,
 - **Friends:** You may now add friends on Alu and compete against them in a weekly leaderboard. If you choose, you can also share your courses with only your friends.
 - **Referrals:** Want pro mode but don't want to pay? Invite new users using your referral link and earn a free week of pro mode for each user who signs up.
 - **Autosave When Editing Flashcards:** Changes made to flashcards when editing are now saved automatically. You may still press the check to save manually, but this is no longer required.
-- **View & Study Starred Flashcards:** You can now view and study starred flashcards.  Click "Tools > Starred Flashcards" from a course page.  As before, star a flashcard by pressing the star button when studying.
+- **View & Study Starred Flashcards:** You can now view and study starred flashcards. Click "Tools > Starred Flashcards" from a course page. As before, star a flashcard by pressing the star button when studying.
 - **Fixed "Study Again":** Fixed a bug that caused responding to flashcards to break after you press "study again"
 - **Fixed Username Bug on Sign-up:** Fixed a bug that caused Alu to not properly infer a username from one's email on sign-up
 - **Added Reviews Done Display to Course Sidebar:** The "reviews done" display and other elements of the home sidebar now appear on course pages
