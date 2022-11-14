@@ -12,6 +12,7 @@ Alu's more social now! It's easier to share courses, keep track of your friends,
 - **Friends:** You may now add friends on Alu and compete against them in a weekly leaderboard. If you choose, you can also share your courses with only your friends.
 - **Referrals:** Want pro mode but don't want to pay? Invite new users using your referral link and earn a free week of pro mode for each user who signs up.
 - **Fixed "Study Again":** Fixed a bug that caused responding to flashcards to break after you press "study again"
+- **Fixed Username Bug on Sign-up:** Fixed a bug that caused Alu to not properly infer a username from one's email on sign-up
 
 ## Studying Hotfix - Nov 8 - 2.1.1
 

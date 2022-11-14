@@ -68,7 +68,7 @@ export default function FriendsList() {
   };
 
   return (
-    <div className="bg-gray-100 rounded-xl mt-4 max-w-xs mx-auto border-2 border-gray-200 overflow-hidden">
+    <div className="bg-gray-100 rounded-xl mt-4 max-w-xs mx-auto border-4 border-gray-200 overflow-hidden">
       <header className="w-full font-bold text-center px-3 py-2">
         Friends
       </header>

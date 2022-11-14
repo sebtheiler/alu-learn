@@ -24,17 +24,18 @@ async function main() {
     if (params.model === "User") {
       if (params.action === "create") {
         // Generate a username for the user if one is not specified
-        if (!params.args.data.username) {
+        if (!params.args.data.username || params.args.data.username.startsWith('user')) {
           let newUsernameBase = "user";
           try {
-            if (params.args.data.name) {
+            if (params.args.data.name && params.args.data.name !== "User") {
               newUsernameBase = params.args.data.name
                 .toLowerCase()
                 .replaceAll(" ", "");
             } else if (params.args.data.email) {
-              newUsernameBase = params.args.email.split("@")[0].toLowerCase();
+              newUsernameBase = params.args.data.email.split("@")[0].toLowerCase();
             }
-          } catch {
+          } catch (e) {
+            console.error(e)
             newUsernameBase = "user";
           }
 
@@ -43,13 +44,13 @@ async function main() {
             (await prisma.user.count({ where: { username: newUsername } })) > 0
           ) {
             newUsername =
-              newUsernameBase + Math.floor(Math.random() * 1000).toString();
+              newUsernameBase + Math.floor(Math.random() * 10000).toString();
           }
           params.args.data.username = newUsername;
         }
 
         // If no name is specified, default to using their email as a name
-        if (!params.args.data.name) {
+        if (!params.args.data.name || params.args.data.name === 'User') {
           if (params.args.email) {
             params.args.data.name = params.args.email
               .split("@")[0]
