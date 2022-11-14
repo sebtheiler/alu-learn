@@ -4,6 +4,7 @@ import LexicalEditor from "@/editor/LexicalEditor";
 import DeleteFlashcard from "@/graphql/DeleteFlashcard";
 import UpdateFlashcard from "@/graphql/UpdateFlashcard";
 import classNames from "@/helpers/classNames";
+import { useDebounce } from "@/hooks/useDebounce";
 import type {
   Flashcard,
   Mutation,
@@ -21,7 +22,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 
 interface RenderFlashcardProps {
   /**
@@ -79,7 +80,10 @@ export default function RenderFlashcard({
 
   const [frontState, setFrontState] = useState(fields[0]);
   const [backState, setBackState] = useState(fields[1]);
-  const states = [frontState, backState];
+  const states = useMemo(
+    () => [frontState, backState],
+    [frontState, backState]
+  );
   const setStates = [setFrontState, setBackState];
 
   const componentId = useId();
@@ -91,6 +95,31 @@ export default function RenderFlashcard({
     { deleteFlashcard: Mutation["deleteFlashcard"] },
     MutationDeleteFlashcardArgs
   >(DeleteFlashcard);
+
+  // Autosave the flashcard when editing
+  const debouncedStates = useDebounce(states, 500);
+  useEffect(() => {
+    if (
+      editMode &&
+      JSON.stringify(fields) !== JSON.stringify(states) &&
+      JSON.stringify(debouncedStates) === JSON.stringify(states)
+    ) {
+      setFields(states);
+      updateFlashcard({
+        variables: {
+          flashcardId: flashcard.id as string,
+          fields: JSON.stringify(states),
+        },
+      });
+    }
+  }, [
+    fields,
+    debouncedStates,
+    states,
+    editMode,
+    updateFlashcard,
+    flashcard.id,
+  ]);
 
   const editModeHandler = async () => {
     // If there has been some change, save it in the DB
