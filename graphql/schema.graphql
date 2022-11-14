@@ -210,6 +210,12 @@ type Mutation {
   """Removes a user as a course owner"""
   removeCourseOwner(courseId: String!, username: String!): User
 
+  """Removes a friend"""
+  removeFriend(
+    """User to remove as a friend"""
+    userId: String!
+  ): Boolean
+
   """Removes a given user as a student to a classroom"""
   removeStudentFromClassroom(classroomId: String!, studentId: String!): Classroom
 

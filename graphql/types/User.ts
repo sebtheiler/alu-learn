@@ -322,6 +322,56 @@ export const UsersMutation = extendType({
         }
       },
     });
+    t.field("removeFriend", {
+      type: "Boolean",
+      description: "Removes a friend",
+      args: {
+        userId: nonNull(
+          stringArg({ description: "User to remove as a friend" })
+        ),
+      },
+      async resolve(_parent, args, ctx) {
+        const me = await getUserGQL(ctx, {
+          id: true,
+          name: true,
+          username: true,
+        }); // the current user
+        if (!me) return null;
+        const other = await ctx.prisma.user.findUnique({
+          where: { id: args.userId },
+          select: { username: true, id: true, email: true },
+        }); // the user that me wants to be friends with
+        if (!other) throw new ApolloError("User to request not found");
+
+        await ctx.prisma.user.update({
+          where: {
+            id: me.id,
+          },
+          data: {
+            friends: {
+              disconnect: {
+                id: other.id,
+              },
+            },
+          },
+        });
+
+        await ctx.prisma.user.update({
+          where: {
+            id: other.id,
+          },
+          data: {
+            friends: {
+              disconnect: {
+                id: me.id,
+              },
+            },
+          },
+        });
+
+        return true;
+      },
+    });
   },
 });
 

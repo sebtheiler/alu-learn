@@ -23,7 +23,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       isPro: isPro ?? null,
       isProFromOrg: isProFromOrg ?? null,
-      proTrialExpires: proTrialExpires?.toString(),
+      proTrialExpires: proTrialExpires?.toString() ?? null,
       isSignedIn: !!session,
     } as ProUpgradePageProps,
   };

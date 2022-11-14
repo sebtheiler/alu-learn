@@ -218,10 +218,12 @@ export default function StudyFlashcardsPage({
   };
 
   const studyAgain = () => {
-    router.replace(router.asPath);
-    setRevealAnswer(false);
-    setFinishedStudying(false);
-    setNumReviewsStudiedInSession(0);
+    window.location.reload();
+    // TODO: fix this. There is a bug where the intervals are not properly being recalculated
+    // router.replace(router.asPath);
+    // setRevealAnswer(false);
+    // setFinishedStudying(false);
+    // setNumReviewsStudiedInSession(0);
   };
 
   const studyAhead = () => {
@@ -297,7 +299,7 @@ export default function StudyFlashcardsPage({
       />
       <div className="mt-28">
         {courseId && (
-          <div className="absolute left-6 top-28">
+          <div className="absolute left-6 top-28 z-10">
             <Link href={`/course/${courseId}`}>
               <a>
                 <FontAwesomeIcon

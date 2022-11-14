@@ -81,7 +81,7 @@ export const buttonVariantsLookup = {
     rippleColor: "white",
   },
   "primary-outline": {
-    className: `bg-white hover:bg-alu-primary-purple text-alu-primary-purple
+    className: `bg-inherit hover:bg-alu-primary-purple text-alu-primary-purple
                 hover:text-white border-2 border-alu-primary-purple
                 focus:outline-none focus:ring focus:ring-violet-400`,
     rippleColor: "lightgray",

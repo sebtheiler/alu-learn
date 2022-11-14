@@ -171,6 +171,8 @@ export type Mutation = {
   moveSubSection?: Maybe<SubSection>;
   /** Removes a user as a course owner */
   removeCourseOwner?: Maybe<User>;
+  /** Removes a friend */
+  removeFriend?: Maybe<Scalars["Boolean"]>;
   /** Removes a given user as a student to a classroom */
   removeStudentFromClassroom?: Maybe<Classroom>;
   /** Renews the Stripe subscription for the current user */
@@ -319,6 +321,10 @@ export type MutationMoveSubSectionArgs = {
 export type MutationRemoveCourseOwnerArgs = {
   courseId: Scalars["String"];
   username: Scalars["String"];
+};
+
+export type MutationRemoveFriendArgs = {
+  userId: Scalars["String"];
 };
 
 export type MutationRemoveStudentFromClassroomArgs = {

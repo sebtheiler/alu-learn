@@ -1,14 +1,28 @@
+import AsyncButton from "@/atoms/AsyncButton";
+import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import LinkButton from "@/atoms/LinkButton";
 import RenderSharedCourse from "@/courses/RenderSharedCourse";
+import AddFriend from "@/graphql/AddFriend";
+import RemoveFriend from "@/graphql/RemoveFriend";
 import SEO from "@/helpers/SEO";
 import englishList from "@/helpers/englishList";
-import type { Course, User } from "@/types";
+import type {
+  Course,
+  Mutation,
+  MutationAddFriendArgs,
+  MutationRemoveFriendArgs,
+  User,
+} from "@/types";
+import { useMutation } from "@apollo/client";
+import { useRouter } from "next/router";
 
 export interface ProfilePageProps {
   user: User;
   isSelf: boolean;
   courses: Course[];
+  areFriends: boolean;
+  friendPending: boolean;
 }
 
 /**
@@ -18,7 +32,19 @@ export default function ProfilePage({
   user,
   isSelf,
   courses,
+  areFriends,
+  friendPending,
 }: ProfilePageProps) {
+  const [addFriend] = useMutation<
+    { addFriend: Mutation["addFriend"] },
+    MutationAddFriendArgs
+  >(AddFriend);
+  const [removeFriend] = useMutation<
+    { removeFriend: Mutation["removeFriend"] },
+    MutationRemoveFriendArgs
+  >(RemoveFriend);
+  const router = useRouter();
+
   if (!user)
     return (
       <>
@@ -51,11 +77,32 @@ export default function ProfilePage({
       <div className="mt-28 px-10 md:container md:px-48 mx-auto">
         <h1 className="text-4xl font-bold">{user.name}</h1>
         <hr className="my-3" />
-        {isSelf && (
+        {isSelf ? (
           <ButtonGroup className="mb-3" fixedWidth="200px" spaced>
             <LinkButton href="/settings">Settings</LinkButton>
             <LinkButton href="/archived">Archived Courses</LinkButton>
           </ButtonGroup>
+        ) : areFriends ? (
+          <AsyncButton
+            onClick={async () => {
+              await removeFriend({ variables: { userId: user.id as string } });
+              router.push(router.asPath);
+            }}
+            variant="red"
+          >
+            Remove Friend
+          </AsyncButton>
+        ) : friendPending ? (
+          <Button>Friend Requested</Button>
+        ) : (
+          <AsyncButton
+            onClick={async () => {
+              await addFriend({ variables: { userId: user.id as string } });
+              router.push(router.asPath);
+            }}
+          >
+            Add Friend
+          </AsyncButton>
         )}
         <div>
           {courses.map((course) => (

@@ -59,12 +59,41 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
+  const isSelf = user?.id === currentUser?.id;
+
+  const areFriends = isSelf
+    ? false
+    : (await prisma.user.count({
+        where: {
+          id: currentUser?.id,
+          friends: {
+            some: {
+              username: username as string,
+            },
+          },
+        },
+      })) > 0;
+  const friendPending = areFriends
+    ? false
+    : (await prisma.user.count({
+        where: {
+          id: currentUser?.id,
+          friendsRequested: {
+            some: {
+              username: username as string,
+            },
+          },
+        },
+      })) > 0;
+
   return {
     props: JSON.parse(
       JSON.stringify({
         user,
-        isSelf: user?.id === currentUser?.id,
+        isSelf,
         courses,
+        areFriends,
+        friendPending,
       })
     ) as ProfilePageProps,
   };
