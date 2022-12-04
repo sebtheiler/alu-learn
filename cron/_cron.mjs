@@ -1,7 +1,7 @@
 /**
  * Runs the API requests to the cron endpoints.
  * Managed separately from the rest of Alu with a separate pm2 process
- * pm2 start --name=alu_cron "node /home/aluadmin/aludir2/cron/_cron.mjs"
+ * `pm2 start --name=alu_cron "node /home/aluadmin/aludir2/cron/_cron.mjs"`
  */
 import axios from "axios";
 import * as dotenv from "dotenv";

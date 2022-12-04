@@ -40,7 +40,7 @@ const sendWeeklyProgressReport = async () => {
     });
     const thisWeekFlashcards = thisWeekData.reviewsStudied ?? 0;
     const thisWeekTime = thisWeekData.timeTaken ?? 0;
-    if (thisWeekFlashcards === 0) continue;
+    if (thisWeekFlashcards < 25) continue; // only show to users who studied 25+ flashcards this week
 
     const { _sum: lastWeekData } = await prisma.historySegment.aggregate({
       _sum: {
