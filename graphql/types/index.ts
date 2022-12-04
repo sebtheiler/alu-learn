@@ -1,4 +1,5 @@
 export * from "./Assignment";
+export * from "./AutoFlashcards";
 export * from "./Classroom";
 export * from "./Course";
 export * from "./CourseSection";

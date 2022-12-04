@@ -157,6 +157,8 @@ export type Mutation = {
   deleteFlashcard?: Maybe<Flashcard>;
   /** Deletes a sub section */
   deleteSubSection?: Maybe<SubSection>;
+  /** Generates a flashcard automatically from some source text. Returns ["front", "back"] */
+  generateAutoFlashcard?: Maybe<Array<Maybe<Scalars["String"]>>>;
   /** Joins the current user as a student to a classroom */
   joinClassroom?: Maybe<Classroom>;
   /** Joins the current user to a course */
@@ -284,6 +286,10 @@ export type MutationDeleteFlashcardArgs = {
 
 export type MutationDeleteSubSectionArgs = {
   subSectionId: Scalars["String"];
+};
+
+export type MutationGenerateAutoFlashcardArgs = {
+  sourceText: Scalars["String"];
 };
 
 export type MutationJoinClassroomArgs = {

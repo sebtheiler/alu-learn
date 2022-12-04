@@ -183,6 +183,11 @@ type Mutation {
     subSectionId: String!
   ): SubSection
 
+  """
+  Generates a flashcard automatically from some source text. Returns ["front", "back"]
+  """
+  generateAutoFlashcard(sourceText: String!): [String]
+
   """Joins the current user as a student to a classroom"""
   joinClassroom(joinCode: String!): Classroom
 

@@ -7,6 +7,7 @@ import {
   faCompass,
   faStar,
   faInfoCircle,
+  faRobot,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Session } from "next-auth";
@@ -96,6 +97,9 @@ export default function Navbar({
           </NavItem>
           <NavItem href="/about" icon={faInfoCircle}>
             About
+          </NavItem>
+          <NavItem href="/auto-flashcards" icon={faRobot}>
+            Auto Flashcards
           </NavItem>
 
           {status === "authenticated" && session !== null && (
