@@ -6,6 +6,7 @@ import type {
   User,
 } from "./graphql";
 import type {
+  FlashcardType,
   HistorySegment,
   ReviewInstance as PrismaReviewInstance,
 } from "@prisma/client";
@@ -74,6 +75,12 @@ interface Option {
   disabled?: boolean;
 }
 
+type GeneratedFlashcard = {
+  front: string;
+  back: string;
+  flashcardType: FlashcardType;
+};
+
 export type {
   NonNullableKeys,
   Streak,
@@ -85,4 +92,5 @@ export type {
   UserWithHistory,
   AssignmentWithSubSections,
   FlashcardWithId,
+  GeneratedFlashcard,
 };

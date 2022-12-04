@@ -33,6 +33,13 @@ export type Assignment = {
   title?: Maybe<Scalars["String"]>;
 };
 
+export enum AutoFlashcardsMode {
+  Cloze = "CLOZE",
+  Multi = "MULTI",
+  Notes = "NOTES",
+  Single = "SINGLE",
+}
+
 export type Classroom = {
   __typename?: "Classroom";
   courseId?: Maybe<Scalars["String"]>;
@@ -158,7 +165,7 @@ export type Mutation = {
   /** Deletes a sub section */
   deleteSubSection?: Maybe<SubSection>;
   /** Generates a flashcard automatically from some source text. Returns ["front", "back"] */
-  generateAutoFlashcard?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  generateAutoFlashcard?: Maybe<Array<Maybe<Scalars["JSONObject"]>>>;
   /** Joins the current user as a student to a classroom */
   joinClassroom?: Maybe<Classroom>;
   /** Joins the current user to a course */
@@ -289,6 +296,8 @@ export type MutationDeleteSubSectionArgs = {
 };
 
 export type MutationGenerateAutoFlashcardArgs = {
+  mode: AutoFlashcardsMode;
+  numFlashcards?: InputMaybe<Scalars["Int"]>;
   sourceText: Scalars["String"];
 };
 
