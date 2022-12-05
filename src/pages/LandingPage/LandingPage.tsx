@@ -201,7 +201,10 @@ export default function LandingPage() {
               <div className={styles.helpSection__Text}>
                 <div>
                   <h2>Automatic Flashcards</h2>
-                  <p>Copy and paste your notes to generate automatic flashcards in seconds</p>
+                  <p>
+                    Copy and paste your notes to generate automatic flashcards
+                    in seconds
+                  </p>
                 </div>
               </div>
             </div>

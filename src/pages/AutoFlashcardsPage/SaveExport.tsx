@@ -117,6 +117,7 @@ export default function SaveExportAutoFlashcards({
               label="Course Title"
               name="courseTitle"
               className="my-3"
+              autoFocus
               required
             />
           </AsyncForm>
@@ -135,15 +136,19 @@ export default function SaveExportAutoFlashcards({
             )}
             {(coursesLoading || subSectionsLoading) && <p>Loading...</p>}
             {!selectedCourse &&
-              coursesData?.myCourses?.map((course: Course | null) => (
-                <div
-                  key={course?.id}
-                  className="bg-gray-100 border-2 border-gray-200 rounded-lg my-2 px-3 py-2 text-center hover:scale-105 hover:cursor-pointer transition"
-                  role="button"
-                  onClick={() => setSelectedCourse(course as Course)}
-                >
-                  {course?.title}
-                </div>
+              ((coursesData?.myCourses?.length ?? 0) > 0 ? (
+                coursesData?.myCourses?.map((course: Course | null) => (
+                  <div
+                    key={course?.id}
+                    className="bg-gray-100 border-2 border-gray-200 rounded-lg my-2 px-3 py-2 text-center hover:scale-105 hover:cursor-pointer transition"
+                    role="button"
+                    onClick={() => setSelectedCourse(course as Course)}
+                  >
+                    {course?.title}
+                  </div>
+                ))
+              ) : (
+                <p className="text-center mt-2">You have no existing courses</p>
               ))}
             {subSectionsData?.getCourseSubSections?.map(
               (subSection: SubSection | null) => (

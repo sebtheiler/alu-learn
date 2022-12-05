@@ -76,10 +76,10 @@ export default function AutoFlashcardsPage({
       />
       <div className="mt-28">
         <h1 className="text-center text-4xl font-bold">
-          Generate Automatic Flashcards
+          Create Automatic Flashcards
         </h1>
         <p className="text-center">
-          Enter your notes, and Alu will automatically make flashcards
+          Enter your notes, and Alu will automatically create flashcards
         </p>
         {typeof numAutoFlashcardsGenerated === "number" && (
           <p className="text-center text-gray-500 mt-1">
@@ -106,29 +106,29 @@ export default function AutoFlashcardsPage({
               {
                 label: "Notes",
                 value: "NOTES",
-                description: "Generate flashcards from long notes",
+                description: "Create flashcards from long notes",
               },
               {
                 label: "Single",
                 value: "SINGLE",
-                description: "Generate a single flashcard from text",
+                description: "Create a single flashcard from text",
               },
               {
                 label: "Multi",
                 value: "MULTI",
-                description: "Generate multiple flashcards from text",
+                description: "Create multiple flashcards from text",
               },
               // {
               //   label: "Cloze",
               //   value: "CLOZE",
-              //   description: "Generate a cloze flashcard from text",
+              //   description: "Create a cloze flashcard from text",
               // },
             ]}
             callback={(selectedTab) => setMode(selectedTab.toUpperCase())}
           />
           {mode === "MULTI" && (
             <TextInput
-              label="Flashcards to Generate"
+              label="Flashcards to Create"
               type="number"
               min={1}
               max={5}
@@ -163,7 +163,7 @@ export default function AutoFlashcardsPage({
             disabled={disabled}
             block
           >
-            Generate Flashcards
+            Create Flashcards
           </AsyncButton>
           {mode === "NOTES" && loading && (
             <p className="text-red-600 my-2 text-center">
@@ -201,7 +201,7 @@ export default function AutoFlashcardsPage({
         {generatedFlashcards.length > 0 && (
           <div className="mt-5 mb-20 mx-auto max-w-xl">
             <h2 className="text-center text-2xl font-bold">
-              Generated Flashcards
+              Created {generatedFlashcards.length} Flashcards
             </h2>
             <SaveExportAutoFlashcards
               generatedFlashcards={generatedFlashcards}
