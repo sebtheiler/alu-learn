@@ -104,7 +104,8 @@ model User {
   numReviewsDoneToday Int      @default(0)
   timezoneOffset      Int      @default(300) // GMT-5 = 300
 
-  numAutoFlashcardsGenerated Int @default(0)
+  numAutoFlashcardsGenerated Int                        @default(0)
+  generatedFlashcards        AutoFlashcardsGeneration[]
 
   sendReminders         Boolean   @default(false)
   sendMarketingResearch Boolean   @default(true)
@@ -205,6 +206,17 @@ model FlashcardReport {
 
   reasons   String
   timestamp DateTime @default(now())
+}
+
+// ## Auto Flashcards Usage
+model AutoFlashcardsGeneration {
+  id String @id @default(cuid())
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId String?
+
+  inputText       String
+  generatedOutput String
 }
 
 // # Courses

@@ -14,11 +14,11 @@ import type {
   GeneratedFlashcard,
   SubSection,
 } from "@/types";
-import { Flashcard as PrismaFlashcard, PrismaClient } from "@prisma/client";
+import type { Flashcard as PrismaFlashcard } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
+import createCompletion from "helpers/createCompletion";
 import getUserGQL from "helpers/getUserGQL";
 import { enumType, extendType, intArg, list, nonNull, stringArg } from "nexus";
-import createCompletion from "helpers/createCompletion";
 
 export const AutoFlashcardsMutation = extendType({
   type: "Mutation",
@@ -46,6 +46,8 @@ export const AutoFlashcardsMutation = extendType({
         if ((user.numAutoFlashcardsGenerated ?? 0) >= MAX_NUM_FLASHCARDS)
           throw new Error("Above flashcard generation quota");
 
+        let flashcards: GeneratedFlashcard[] = [];
+
         switch (args.mode) {
           case "SINGLE": {
             if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["SINGLE"])
@@ -64,13 +66,8 @@ export const AutoFlashcardsMutation = extendType({
             const front = split[0].trim();
             const back = split[1].replace("Back: ", "");
 
-            await incrementNumAutoFlashcardsGenerated(
-              user.id as string,
-              1,
-              ctx.prisma
-            );
-
-            return [{ front, back, flashcardType: "NORMAL" }];
+            flashcards = [{ front, back, flashcardType: "NORMAL" }];
+            break;
           }
           case "MULTI": {
             if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["MULTI"])
@@ -82,18 +79,12 @@ export const AutoFlashcardsMutation = extendType({
               .replaceAll("\n", " ")
               .replaceAll(DOUBLE_RETURN, "\n");
 
-            const flashcards = await generateFlashcards(
+            flashcards = await generateFlashcards(
               processedSource,
               args.numFlashcards ?? 3
             );
 
-            await incrementNumAutoFlashcardsGenerated(
-              user.id as string,
-              flashcards.length,
-              ctx.prisma
-            );
-
-            return flashcards;
+            break;
           }
           case "CLOZE": {
             if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["CLOZE"])
@@ -111,20 +102,14 @@ export const AutoFlashcardsMutation = extendType({
               throw new ApolloError("Failed to generate");
             const output = split[0].trim();
 
-            await incrementNumAutoFlashcardsGenerated(
-              user.id as string,
-              1,
-              ctx.prisma
-            );
-
-            return [{ front: output, back: "", flashcardType: "CLOZE" }];
+            flashcards = [{ front: output, back: "", flashcardType: "CLOZE" }];
+            break;
           }
           case "NOTES": {
             if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["NOTES"])
               throw new ApolloError("Source text too long");
 
             const processedSource = args.sourceText.split("\n\n");
-            let flashcards: GeneratedFlashcard[] = [];
 
             const MAX_LEN_BUFFER = 1000;
             const TARGET_LEN = 800;
@@ -162,17 +147,34 @@ export const AutoFlashcardsMutation = extendType({
               }
             }
 
-            await incrementNumAutoFlashcardsGenerated(
-              user.id as string,
-              flashcards.length,
-              ctx.prisma
-            );
-
-            return flashcards;
+            break;
           }
           default:
             throw new ApolloError("Invalid `mode`");
         }
+
+        // Increment the number of automatic flashcards the user has generated this month
+        await ctx.prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            numAutoFlashcardsGenerated: {
+              increment: Math.max(flashcards.length, 1),
+            },
+          },
+        });
+
+        // Save the generation in the database
+        await ctx.prisma.autoFlashcardsGeneration.create({
+          data: {
+            userId: user.id,
+            inputText: args.sourceText,
+            generatedOutput: JSON.stringify(flashcards),
+          },
+        });
+
+        return flashcards;
       },
     });
     t.field("saveGeneratedFlashcards", {
@@ -314,19 +316,3 @@ const generateFlashcards = async (
 
   return flashcards;
 };
-
-const incrementNumAutoFlashcardsGenerated = (
-  userId: string,
-  num: number,
-  prisma: PrismaClient
-) =>
-  prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
-      numAutoFlashcardsGenerated: {
-        increment: Math.max(num, 1),
-      },
-    },
-  });
