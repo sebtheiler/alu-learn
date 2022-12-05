@@ -14,6 +14,8 @@ import type {
   MutationGenerateAutoFlashcardArgs,
 } from "@/types";
 import { useMutation } from "@apollo/client";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -193,7 +195,7 @@ export default function AutoFlashcardsPage({
           </div>
         )}
         {generatedFlashcards.length > 0 && (
-          <div className="mt-5 mx-auto max-w-xl">
+          <div className="mt-5 mb-20 mx-auto max-w-xl">
             <h2 className="text-center text-2xl font-bold">
               Generated Flashcards
             </h2>
@@ -201,7 +203,7 @@ export default function AutoFlashcardsPage({
               generatedFlashcards={generatedFlashcards}
             />
             {generatedFlashcards.map((generatedFlashcard, i) => (
-              <div key={i}>
+              <div key={i} className="relative">
                 <hr className="my-3" />
                 <p className="font-bold">Front</p>
                 <p>{generatedFlashcard.front}</p>
@@ -212,6 +214,18 @@ export default function AutoFlashcardsPage({
                     <p>{generatedFlashcard.back}</p>
                   </>
                 )}
+                <FontAwesomeIcon
+                  icon={faTrash}
+                  title="Remove flashcard"
+                  onClick={() =>
+                    setGeneratedFlashcards(
+                      generatedFlashcards.filter(
+                        (f) => f !== generatedFlashcard
+                      )
+                    )
+                  }
+                  className="absolute right-3 top-5 hover:cursor-pointer"
+                />
               </div>
             ))}
           </div>

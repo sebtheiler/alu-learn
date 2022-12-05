@@ -2,6 +2,8 @@ import { createCourse } from "./Course";
 import { JSONData } from "./scalars";
 import {
   AUTO_FLASHCARD_LIMITS,
+  DOUBLE_RETURN,
+  NUMBER_TO_WORD,
   SOURCE_TEXT_MAX_LENS,
   TWO_SIDED_FLASHCARDS,
 } from "@/globals";
@@ -15,8 +17,8 @@ import type {
 import { Flashcard as PrismaFlashcard, PrismaClient } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
 import getUserGQL from "helpers/getUserGQL";
-import openai from "lib/openai";
 import { enumType, extendType, intArg, list, nonNull, stringArg } from "nexus";
+import createCompletion from "helpers/createCompletion";
 
 export const AutoFlashcardsMutation = extendType({
   type: "Mutation",
@@ -41,7 +43,7 @@ export const AutoFlashcardsMutation = extendType({
         const MAX_NUM_FLASHCARDS = user.isPro
           ? AUTO_FLASHCARD_LIMITS.pro
           : AUTO_FLASHCARD_LIMITS.regular;
-        if (user.numAutoFlashcardsGenerated ?? 0 >= MAX_NUM_FLASHCARDS)
+        if ((user.numAutoFlashcardsGenerated ?? 0) >= MAX_NUM_FLASHCARDS)
           throw new Error("Above flashcard generation quota");
 
         switch (args.mode) {
@@ -118,11 +120,14 @@ export const AutoFlashcardsMutation = extendType({
             return [{ front: output, back: "", flashcardType: "CLOZE" }];
           }
           case "NOTES": {
+            if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["NOTES"])
+              throw new ApolloError("Source text too long");
+
             const processedSource = args.sourceText.split("\n\n");
             let flashcards: GeneratedFlashcard[] = [];
 
-            const MAX_LEN_BUFFER = SOURCE_TEXT_MAX_LENS["NOTES"];
-            const TARGET_LEN = MAX_LEN_BUFFER - 200;
+            const MAX_LEN_BUFFER = 1000;
+            const TARGET_LEN = 800;
 
             const process = async (text: string) => {
               const numFlashcards = Math.ceil(text.length / 100); // heuristic (233 characters -> 3 flashcards)
@@ -135,7 +140,7 @@ export const AutoFlashcardsMutation = extendType({
 
             for (const segment of processedSource) {
               if (flashcards.length > MAX_NUM_FLASHCARDS) break;
-              if (segment.length < TARGET_LEN) {
+              if (segment.length < MAX_LEN_BUFFER) {
                 await process(segment);
                 continue;
               }
@@ -145,9 +150,9 @@ export const AutoFlashcardsMutation = extendType({
               for (let i = 0; i < split.length; i++) {
                 if (flashcards.length > MAX_NUM_FLASHCARDS) break;
                 if (
-                  aggregatedText.length > TARGET_LEN ||
-                  aggregatedText.length + split[i].length > MAX_LEN_BUFFER ||
-                  i === split.length - 1
+                  aggregatedText.length > TARGET_LEN || // if we're above the target length
+                  aggregatedText.length + split[i].length > MAX_LEN_BUFFER || // if the next line would put us above the max length
+                  i === split.length - 1 // if we're at the final line
                 ) {
                   await process(aggregatedText);
                   aggregatedText = "";
@@ -266,37 +271,6 @@ export const AutoFlashcardsMode = enumType({
   members: ["SINGLE", "MULTI", "CLOZE", "NOTES"],
 });
 
-const createCompletion = async (prompt: string, maxTokens = 64) => {
-  const response = await openai.createCompletion({
-    model: "text-davinci-003",
-    prompt,
-    temperature: 0.5,
-    max_tokens: maxTokens,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0,
-  });
-
-  const rawText = response.data.choices[0].text;
-  if (!rawText) throw new ApolloError("Failed to generate");
-
-  return { rawText };
-};
-
-const NUMBER_TO_WORD = {
-  1: "one",
-  2: "two",
-  3: "three",
-  4: "four",
-  5: "five",
-  6: "six",
-  7: "seven",
-  8: "eight",
-  9: "nine",
-  10: "ten",
-};
-const DOUBLE_RETURN = "<DOUBLE RETURN>";
-
 const generateFlashcards = async (
   sourceText: string,
   numFlashcards: number
@@ -352,7 +326,7 @@ const incrementNumAutoFlashcardsGenerated = (
     },
     data: {
       numAutoFlashcardsGenerated: {
-        increment: num,
+        increment: Math.max(num, 1),
       },
     },
   });
