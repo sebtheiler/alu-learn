@@ -1,10 +1,12 @@
 import SaveExportAutoFlashcards from "./SaveExport";
-import AsyncForm from "@/atoms/AsyncForm";
+import AsyncButton from "@/atoms/AsyncButton";
+import LinkButton from "@/atoms/LinkButton";
 import TextInput from "@/atoms/TextInput";
 import Tabs from "@/components/Tabs";
+import { AUTO_FLASHCARD_LIMITS, SOURCE_TEXT_MAX_LENS } from "@/globals";
 import GenerateAutoFlashcard from "@/graphql/GenerateAutoFlashcard";
 import SEO from "@/helpers/SEO";
-import { getElementsVals } from "@/helpers/getElementsVals";
+import useGlobalModalStore from "@/stores/globalModalStore";
 import type {
   AutoFlashcardsMode,
   GeneratedFlashcard,
@@ -12,21 +14,29 @@ import type {
   MutationGenerateAutoFlashcardArgs,
 } from "@/types";
 import { useMutation } from "@apollo/client";
+import Link from "next/link";
 import { useState } from "react";
 
-const SOURCE_TEXT_MAX_LENS = {
-  SINGLE: 250,
-  MULTI: 1000,
-  CLOZE: 200,
-  NOTES: 10000,
-};
+interface AutoFlashcardsPageProps {
+  signedIn: boolean;
+  numAutoFlashcardsGenerated: number | null;
+  isPro: boolean | null;
+}
 
 /**
  * Page for automatically generating flashcards from notes
  */
-export default function AutoFlashcardsPage() {
+export default function AutoFlashcardsPage({
+  numAutoFlashcardsGenerated,
+  isPro,
+  signedIn,
+}: AutoFlashcardsPageProps) {
+  const setRegisterModalOpen = useGlobalModalStore(
+    (state) => state.setRegisterModalOpen
+  );
   const [sourceText, setSourceText] = useState("");
   const [mode, setMode] = useState("NOTES");
+  const [numFlashcards, setNumFlashcards] = useState(3);
   const [generatedFlashcards, setGeneratedFlashcards] = useState<
     GeneratedFlashcard[]
   >([]);
@@ -36,16 +46,12 @@ export default function AutoFlashcardsPage() {
     MutationGenerateAutoFlashcardArgs
   >(GenerateAutoFlashcard);
 
-  const generateFlashcard = async (e: React.FormEvent) => {
-    const { numFlashcards } =
-      mode === "MULTI"
-        ? getElementsVals(e.target as HTMLFormElement, ["numFlashcards"])
-        : { numFlashcards: undefined };
+  const generateFlashcards = async () => {
     const { data } = await generateAutoFlashcard({
       variables: {
         sourceText,
         mode: mode as AutoFlashcardsMode,
-        numFlashcards: numFlashcards ? parseInt(numFlashcards) : undefined,
+        numFlashcards,
       },
     });
     if (!data) return;
@@ -53,6 +59,11 @@ export default function AutoFlashcardsPage() {
     const { generateAutoFlashcard: newGeneratedFlashcards } = data;
     setGeneratedFlashcards(newGeneratedFlashcards as GeneratedFlashcard[]);
   };
+
+  const MAX_NUM_FLASHCARDS = isPro
+    ? AUTO_FLASHCARD_LIMITS.pro
+    : AUTO_FLASHCARD_LIMITS.regular;
+  const disabled = (numAutoFlashcardsGenerated ?? 0) >= MAX_NUM_FLASHCARDS;
 
   return (
     <>
@@ -64,11 +75,26 @@ export default function AutoFlashcardsPage() {
         <p className="text-center">
           Enter some text, and Alu will automatically create a flashcard from it
         </p>
-        <AsyncForm
-          onSubmit={generateFlashcard}
-          className="mt-5 max-w-sm mx-auto"
-          buttonProps={{ children: "Generate Flashcards", block: true }}
-        >
+        {typeof numAutoFlashcardsGenerated === "number" && (
+          <p className="text-center text-gray-500 mt-1">
+            You have generated{" "}
+            <strong>
+              {numAutoFlashcardsGenerated}/{MAX_NUM_FLASHCARDS}
+            </strong>{" "}
+            of your monthly flashcards
+            {isPro === false && (
+              <>
+                <br />
+                Upgrade to{" "}
+                <Link href="/pro">
+                  <a className="text-blue-600">pro</a>
+                </Link>{" "}
+                to increase your limit
+              </>
+            )}
+          </p>
+        )}
+        <div className="mt-5 max-w-sm mx-auto">
           <Tabs
             tabs={[
               {
@@ -100,7 +126,8 @@ export default function AutoFlashcardsPage() {
               type="number"
               min={1}
               max={5}
-              defaultValue={3}
+              value={numFlashcards}
+              onChange={(e) => setNumFlashcards(parseInt(e.target.value))}
               name="numFlashcards"
               className="mt-3"
             />
@@ -115,19 +142,56 @@ export default function AutoFlashcardsPage() {
               maxLength={SOURCE_TEXT_MAX_LENS[mode]}
               onChange={(e) => setSourceText(e.target.value)}
               className="border-2 border-alu-primary-purple/20 focus:border-alu-primary-purple rounded-xl p-3 outline-none w-full resize-none transition-all"
+              disabled={disabled}
             />
             <span className="absolute text-gray-500 bottom-3 right-3 pointer-events-none">
               {sourceText.length}/{SOURCE_TEXT_MAX_LENS[mode]}
             </span>
           </div>
-          {loading && (
+          <AsyncButton
+            onClick={
+              signedIn
+                ? generateFlashcards
+                : async () => setRegisterModalOpen(true)
+            }
+            disabled={disabled}
+            block
+          >
+            Generate Flashcards
+          </AsyncButton>
+          {mode === "NOTES" && loading && (
             <p className="text-red-600 my-2 text-center">
               Warning: This may take up to several minutes depending on the
               length of your notes. Do <strong>not</strong> refresh the page
               while you wait.
             </p>
           )}
-        </AsyncForm>
+        </div>
+        {disabled && (
+          <div className="max-w-lg mx-auto mt-5">
+            <p className="text-red-600 my-2 text-center font-bold">
+              You have exceeded your monthly quota of automatic flashcard
+              generations.{" "}
+              {isPro ? (
+                <>
+                  Contact{" "}
+                  <a href="mailto:support@alulearn.com">support@alulearn</a> if
+                  you would like to request a personal increase.
+                </>
+              ) : (
+                <>
+                  Upgrade to pro to generate up to {AUTO_FLASHCARD_LIMITS.pro}{" "}
+                  flashcards per month
+                </>
+              )}
+            </p>
+            {!isPro && (
+              <LinkButton href="/pro" block>
+                Upgrade to Pro
+              </LinkButton>
+            )}
+          </div>
+        )}
         {generatedFlashcards.length > 0 && (
           <div className="mt-5 mx-auto max-w-xl">
             <h2 className="text-center text-2xl font-bold">
@@ -148,23 +212,6 @@ export default function AutoFlashcardsPage() {
                     <p>{generatedFlashcard.back}</p>
                   </>
                 )}
-                {/* <div className="mt-5">
-                  <AsyncButton
-                    variant="blue"
-                    onClick={async () => console.log("saved")}
-                    className="mb-1"
-                    block
-                  >
-                    Save
-                  </AsyncButton>
-                  <AsyncButton
-                    variant="green"
-                    onClick={generateFlashcard}
-                    block
-                  >
-                    Regenerate
-                  </AsyncButton>
-                </div> */}
               </div>
             ))}
           </div>

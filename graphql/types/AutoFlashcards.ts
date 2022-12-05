@@ -1,6 +1,10 @@
 import { createCourse } from "./Course";
 import { JSONData } from "./scalars";
-import { TWO_SIDED_FLASHCARDS } from "@/globals";
+import {
+  AUTO_FLASHCARD_LIMITS,
+  SOURCE_TEXT_MAX_LENS,
+  TWO_SIDED_FLASHCARDS,
+} from "@/globals";
 import { generateLexicalElement } from "@/helpers/blankLexicalElement";
 import type {
   Course,
@@ -8,12 +12,9 @@ import type {
   GeneratedFlashcard,
   SubSection,
 } from "@/types";
-import {
-  Flashcard as PrismaFlashcard,
-} from "@prisma/client";
+import { Flashcard as PrismaFlashcard, PrismaClient } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
 import getUserGQL from "helpers/getUserGQL";
-// import getUserGQL from "helpers/getUserGQL";
 import openai from "lib/openai";
 import { enumType, extendType, intArg, list, nonNull, stringArg } from "nexus";
 
@@ -29,12 +30,23 @@ export const AutoFlashcardsMutation = extendType({
         mode: nonNull(AutoFlashcardsMode),
         numFlashcards: intArg({ description: "Number of flashcards" }),
       },
-      async resolve(_parent, args) {
-        // TODO: throttle users by usage with a cap of 250/mo
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, {
+          id: true,
+          isPro: true,
+          numAutoFlashcardsGenerated: true,
+        });
+        if (!user) return null;
+
+        const MAX_NUM_FLASHCARDS = user.isPro
+          ? AUTO_FLASHCARD_LIMITS.pro
+          : AUTO_FLASHCARD_LIMITS.regular;
+        if (user.numAutoFlashcardsGenerated ?? 0 >= MAX_NUM_FLASHCARDS)
+          throw new Error("Above flashcard generation quota");
 
         switch (args.mode) {
           case "SINGLE": {
-            if (args.sourceText.length > 250)
+            if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["SINGLE"])
               throw new ApolloError("Source text too long");
 
             const { rawText } = await createCompletion(
@@ -50,10 +62,16 @@ export const AutoFlashcardsMutation = extendType({
             const front = split[0].trim();
             const back = split[1].replace("Back: ", "");
 
+            await incrementNumAutoFlashcardsGenerated(
+              user.id as string,
+              1,
+              ctx.prisma
+            );
+
             return [{ front, back, flashcardType: "NORMAL" }];
           }
           case "MULTI": {
-            if (args.sourceText.length > 1000)
+            if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["MULTI"])
               throw new ApolloError("Source text too long");
 
             // Remove single enter lines, but keep doubles
@@ -67,10 +85,16 @@ export const AutoFlashcardsMutation = extendType({
               args.numFlashcards ?? 3
             );
 
+            await incrementNumAutoFlashcardsGenerated(
+              user.id as string,
+              flashcards.length,
+              ctx.prisma
+            );
+
             return flashcards;
           }
           case "CLOZE": {
-            if (args.sourceText.length > 200)
+            if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["CLOZE"])
               throw new ApolloError("Source text too long");
 
             const { rawText } = await createCompletion(
@@ -85,25 +109,29 @@ export const AutoFlashcardsMutation = extendType({
               throw new ApolloError("Failed to generate");
             const output = split[0].trim();
 
+            await incrementNumAutoFlashcardsGenerated(
+              user.id as string,
+              1,
+              ctx.prisma
+            );
+
             return [{ front: output, back: "", flashcardType: "CLOZE" }];
           }
           case "NOTES": {
             const processedSource = args.sourceText.split("\n\n");
             let flashcards: GeneratedFlashcard[] = [];
 
+            const MAX_LEN_BUFFER = SOURCE_TEXT_MAX_LENS["NOTES"];
+            const TARGET_LEN = MAX_LEN_BUFFER - 200;
+
             const process = async (text: string) => {
               const numFlashcards = Math.ceil(text.length / 100); // heuristic (233 characters -> 3 flashcards)
               const generatedFlashcards = await generateFlashcards(
-                text,
+                text.slice(0, MAX_LEN_BUFFER),
                 numFlashcards
               );
-              console.log(generatedFlashcards);
               flashcards = flashcards.concat(generatedFlashcards);
             };
-
-            const TARGET_LEN = 800;
-            const MAX_LEN_BUFFER = 1000;
-            const MAX_NUM_FLASHCARDS = 15;
 
             for (const segment of processedSource) {
               if (flashcards.length > MAX_NUM_FLASHCARDS) break;
@@ -129,6 +157,12 @@ export const AutoFlashcardsMutation = extendType({
               }
             }
 
+            await incrementNumAutoFlashcardsGenerated(
+              user.id as string,
+              flashcards.length,
+              ctx.prisma
+            );
+
             return flashcards;
           }
           default:
@@ -146,7 +180,7 @@ export const AutoFlashcardsMutation = extendType({
         subSectionId: stringArg(),
       },
       async resolve(_parent, args, ctx) {
-        const user = await getUserGQL(ctx);
+        const user = await getUserGQL(ctx, { id: true });
         if (!user) return null;
 
         let subSection: SubSection | undefined;
@@ -306,3 +340,19 @@ const generateFlashcards = async (
 
   return flashcards;
 };
+
+const incrementNumAutoFlashcardsGenerated = (
+  userId: string,
+  num: number,
+  prisma: PrismaClient
+) =>
+  prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      numAutoFlashcardsGenerated: {
+        increment: num,
+      },
+    },
+  });

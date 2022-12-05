@@ -13,7 +13,8 @@ type Grade = "AGAIN" | "HARD" | "GOOD" | "EASY";
  */
 const formatDate = (minutes: number | undefined): string => {
   if (typeof minutes !== "number") return "";
-  if (minutes >= 1000) { // slightly less than 1440 (1 day) for weird edge cases when pressing "again"
+  if (minutes >= 1000) {
+    // slightly less than 1440 (1 day) for weird edge cases when pressing "again"
     if (minutes / 1440 > 30) {
       return `${Math.round((minutes / 1440 / 30) * 10) / 10}mo`;
     }

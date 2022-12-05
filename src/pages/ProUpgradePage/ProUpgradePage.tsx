@@ -92,6 +92,10 @@ export default function ProUpgradePage({
                   <FontAwesomeIcon icon={faCheck} />
                   Upload custom images
                 </li>
+                <li className={styles.check}>
+                  <FontAwesomeIcon icon={faCheck} />
+                  50 automatically generated flashcards per month
+                </li>
                 <li className={styles.xmark}>
                   <FontAwesomeIcon icon={faXmark} />
                   No ads

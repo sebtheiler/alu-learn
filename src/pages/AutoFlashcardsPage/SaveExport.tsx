@@ -28,7 +28,7 @@ export default function SaveExportAutoFlashcards({
 }: {
   generatedFlashcards: GeneratedFlashcard[];
 }) {
-  const router=  useRouter();
+  const router = useRouter();
 
   const [saveAllModalOpen, setSaveAllModalOpen] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
@@ -68,10 +68,11 @@ export default function SaveExportAutoFlashcards({
         generatedFlashcards,
         courseTitle,
         subSectionId,
-      }
-    })
-    
-    if (data?.saveGeneratedFlashcards) router.push(data.saveGeneratedFlashcards);
+      },
+    });
+
+    if (data?.saveGeneratedFlashcards)
+      router.push(data.saveGeneratedFlashcards);
   };
 
   return (

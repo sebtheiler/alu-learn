@@ -29,6 +29,10 @@ export default function ProFeaturesCard() {
           </li>
           <li className={styles.check}>
             <FontAwesomeIcon icon={faCheck} />
+            500 automatically generated flashcards per month
+          </li>
+          <li className={styles.check}>
+            <FontAwesomeIcon icon={faCheck} />
             No ads
           </li>
           <li className={styles.check}>
