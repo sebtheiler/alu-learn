@@ -69,13 +69,17 @@ export default function AutoFlashcardsPage({
 
   return (
     <>
-      <SEO title="Auto Flashcards" path="auto-flashcards" description="" />
+      <SEO
+        title="Automatic Flashcard Creator from Your Notes"
+        path="auto-flashcards"
+        description="Best automatic flashcard generator. Simply copy and paste your notes, and our AI will automatically create flashcards. Export to Anki, Quizlet, and more."
+      />
       <div className="mt-28">
         <h1 className="text-center text-4xl font-bold">
           Generate Automatic Flashcards
         </h1>
         <p className="text-center">
-          Enter some text, and Alu will automatically create a flashcard from it
+          Enter your notes, and Alu will automatically make flashcards
         </p>
         {typeof numAutoFlashcardsGenerated === "number" && (
           <p className="text-center text-gray-500 mt-1">
@@ -228,6 +232,15 @@ export default function AutoFlashcardsPage({
                 />
               </div>
             ))}
+            <hr className="my-3" />
+            <p className="text-center text-sm text-gray-600 mt-3">
+              Alu does not guarantee that generated flashcards are accurate.
+              Please verify them yourself, and see our{" "}
+              <Link href="/legal/tos">
+                <a className="text-blue-600">terms of service</a>
+              </Link>{" "}
+              for more information.
+            </p>
           </div>
         )}
       </div>

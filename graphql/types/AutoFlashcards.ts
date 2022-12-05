@@ -43,7 +43,8 @@ export const AutoFlashcardsMutation = extendType({
         const MAX_NUM_FLASHCARDS = user.isPro
           ? AUTO_FLASHCARD_LIMITS.pro
           : AUTO_FLASHCARD_LIMITS.regular;
-        if ((user.numAutoFlashcardsGenerated ?? 0) >= MAX_NUM_FLASHCARDS)
+        const numAutoFlashcardsGenerated = user.numAutoFlashcardsGenerated ?? 0;
+        if (numAutoFlashcardsGenerated >= MAX_NUM_FLASHCARDS)
           throw new Error("Above flashcard generation quota");
 
         let flashcards: GeneratedFlashcard[] = [];
@@ -111,6 +112,7 @@ export const AutoFlashcardsMutation = extendType({
 
             const processedSource = args.sourceText.split("\n\n");
 
+            const MAX_NUM_FLASHCARDS_PER_NOTES = 100;
             const MAX_LEN_BUFFER = 1000;
             const TARGET_LEN = 800;
 
@@ -123,8 +125,14 @@ export const AutoFlashcardsMutation = extendType({
               flashcards = flashcards.concat(generatedFlashcards);
             };
 
+            // Stop generating flashcards after the max has been exceeded
+            const shouldBreak = () =>
+              flashcards.length + numAutoFlashcardsGenerated >=
+                MAX_NUM_FLASHCARDS ||
+              flashcards.length >= MAX_NUM_FLASHCARDS_PER_NOTES;
+
             for (const segment of processedSource) {
-              if (flashcards.length > MAX_NUM_FLASHCARDS) break;
+              if (shouldBreak()) break;
               if (segment.length < MAX_LEN_BUFFER) {
                 await process(segment);
                 continue;
@@ -133,7 +141,7 @@ export const AutoFlashcardsMutation = extendType({
               const split = segment.split("\n");
               let aggregatedText = "";
               for (let i = 0; i < split.length; i++) {
-                if (flashcards.length > MAX_NUM_FLASHCARDS) break;
+                if (shouldBreak()) break;
                 if (
                   aggregatedText.length > TARGET_LEN || // if we're above the target length
                   aggregatedText.length + split[i].length > MAX_LEN_BUFFER || // if the next line would put us above the max length

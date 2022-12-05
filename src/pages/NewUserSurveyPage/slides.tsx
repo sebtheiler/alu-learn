@@ -163,6 +163,10 @@ export default function useSlides(
                 value: "CONCEPT",
                 display: "I think it's an interesting concept",
               },
+              {
+                value: "AUTOFLASHCARDS",
+                display: "For its automatic flashcards",
+              },
               { value: "TEACHER", display: "My teacher told me to" },
             ]}
             onClick={handleNext("joinReason", numSlides)}

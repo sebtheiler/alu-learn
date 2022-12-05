@@ -106,5 +106,12 @@ export const Referrer = enumType({
 
 export const JoinReason = enumType({
   name: "JoinReason",
-  members: ["MEMORY", "GRADES", "CONCEPT", "TEACHER", "STUDENTS"],
+  members: [
+    "MEMORY",
+    "GRADES",
+    "CONCEPT",
+    "AUTOFLASHCARDS",
+    "TEACHER",
+    "STUDENTS",
+  ],
 });
