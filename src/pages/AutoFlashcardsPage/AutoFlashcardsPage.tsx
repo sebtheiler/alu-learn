@@ -118,11 +118,11 @@ export default function AutoFlashcardsPage({
                 value: "MULTI",
                 description: "Generate multiple flashcards from text",
               },
-              {
-                label: "Cloze",
-                value: "CLOZE",
-                description: "Generate a cloze flashcard from text",
-              },
+              // {
+              //   label: "Cloze",
+              //   value: "CLOZE",
+              //   description: "Generate a cloze flashcard from text",
+              // },
             ]}
             callback={(selectedTab) => setMode(selectedTab.toUpperCase())}
           />

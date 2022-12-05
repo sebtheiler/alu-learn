@@ -190,8 +190,8 @@ export default function LandingPage() {
             <div className={styles.helpSection}>
               <div className={styles.helpSection__Image}>
                 <Image
-                  src="/assets/global-sharing-system.png"
-                  alt="Illustration of Alu's sharing system, and how people from around the world can contribute to a deck"
+                  src="/assets/auto-flashcards.png"
+                  alt="Screenshot of Alu's automatic flashcard generator"
                   className="ml-auto"
                   loading="lazy"
                   width={960}
@@ -200,8 +200,8 @@ export default function LandingPage() {
               </div>
               <div className={styles.helpSection__Text}>
                 <div>
-                  <h2>Global Sharing System</h2>
-                  <p>Easily share and collaborate on flashcard decks</p>
+                  <h2>Automatic Flashcards</h2>
+                  <p>Copy and paste your notes to generate automatic flashcards in seconds</p>
                 </div>
               </div>
             </div>
@@ -218,10 +218,10 @@ export default function LandingPage() {
               <div className={styles.helpSection__Image}>
                 <Image
                   src="/assets/skill-tree.png"
-                  alt="Illustration of an example skill tree"
+                  alt="Screenshot of an example skill tree"
                   loading="lazy"
-                  width={960}
-                  height={720}
+                  width={1382}
+                  height={1391}
                 />
               </div>
             </div>
