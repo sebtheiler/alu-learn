@@ -1,11 +1,18 @@
+import Tooltip from "@/atoms/Tooltip";
 import classNames from "@/helpers/classNames";
-import { Tab } from "@headlessui/react";
+import { Tab as HeadlessTab } from "@headlessui/react";
+
+interface Tab {
+  label: string;
+  value: string;
+  description?: string;
+}
 
 interface TabsProps {
   /**
    * List of tabs to display
    */
-  tabs: string[];
+  tabs: Tab[];
   /**
    * Called when a tab is selected
    */
@@ -19,11 +26,11 @@ interface TabsProps {
 export default function Tabs({ tabs, callback, className }: TabsProps) {
   return (
     <div className={classNames("w-full max-w-md px-2 sm:px-0", className)}>
-      <Tab.Group>
-        <Tab.List className="flex space-x-2 rounded-full border-alu-light-gray-darker border-2 bg-alu-light-gray p-1">
+      <HeadlessTab.Group>
+        <HeadlessTab.List className="flex space-x-2 rounded-full border-alu-light-gray-darker border-2 bg-alu-light-gray p-1">
           {tabs.map((tab) => (
-            <Tab
-              key={tab}
+            <HeadlessTab
+              key={tab.value}
               className={({ selected }) =>
                 classNames(
                   "w-full rounded-full py-2.5 text-sm font-medium leading-5 text-white focus:outline-none transition-all duration-300",
@@ -32,13 +39,19 @@ export default function Tabs({ tabs, callback, className }: TabsProps) {
                     : "text-alu-primary-purple hover:bg-white/[0.12]"
                 )
               }
-              onClick={() => callback(tab)}
+              onClick={() => callback(tab.value)}
             >
-              {tab}
-            </Tab>
+              {tab.description ? (
+                <Tooltip tooltip={tab.description} className="w-40">
+                  {tab.label}
+                </Tooltip>
+              ) : (
+                tab.label
+              )}
+            </HeadlessTab>
           ))}
-        </Tab.List>
-      </Tab.Group>
+        </HeadlessTab.List>
+      </HeadlessTab.Group>
     </div>
   );
 }

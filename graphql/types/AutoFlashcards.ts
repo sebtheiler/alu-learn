@@ -1,9 +1,21 @@
+import { createCourse } from "./Course";
 import { JSONData } from "./scalars";
-import type { GeneratedFlashcard } from "@/types";
+import { TWO_SIDED_FLASHCARDS } from "@/globals";
+import { generateLexicalElement } from "@/helpers/blankLexicalElement";
+import type {
+  Course,
+  CourseSection,
+  GeneratedFlashcard,
+  SubSection,
+} from "@/types";
+import {
+  Flashcard as PrismaFlashcard,
+} from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
+import getUserGQL from "helpers/getUserGQL";
 // import getUserGQL from "helpers/getUserGQL";
 import openai from "lib/openai";
-import { enumType, extendType, intArg, nonNull, stringArg } from "nexus";
+import { enumType, extendType, intArg, list, nonNull, stringArg } from "nexus";
 
 export const AutoFlashcardsMutation = extendType({
   type: "Mutation",
@@ -45,52 +57,15 @@ export const AutoFlashcardsMutation = extendType({
               throw new ApolloError("Source text too long");
 
             // Remove single enter lines, but keep doubles
-            const DOUBLE_RETURN = "<DOUBLE RETURN>";
             const processedSource = args.sourceText
               .replaceAll("\n\n", DOUBLE_RETURN)
               .replaceAll("\n", " ")
               .replaceAll(DOUBLE_RETURN, "\n");
-            
 
-            const { rawText } = await createCompletion(
-              // `Make flashcards from my notes:\n\n${processedSource}\n\nFront:`,
-              // `Make front and back flashcards from my notes:\n\n${processedSource}\n\nFront:`,
-              `Make ${
-                NUMBER_TO_WORD[(args.numFlashcards ?? 3) + 1] // not sure why this needs to be incremented by one
-              } flashcards from my notes:\n\n${processedSource}\n\nFront: Wh`,
-              // `Front: What is the demographic transition?\nBack: The demographic transition refers to the transition from high to lower birth and death rates in a country or region as development occurs and that country moves from a preindustrial to an industrialized economic system. This transition is typically demonstrated through a four-stage demographic transition model (DTM).\n\nMake flashcards from my notes:\n\n${processedSource}\n\nFront:`,
-              256
+            const flashcards = await generateFlashcards(
+              processedSource,
+              args.numFlashcards ?? 3
             );
-            const split = `Front Wh:${rawText}`.split("\n");
-
-            const flashcards: GeneratedFlashcard[] = [];
-            for (let i = 0; i < split.length - 1; i++) {
-              const line = split[i];
-              const nextLine = split[i + 1];
-              if (line.startsWith("Front:")) {
-                if (nextLine.startsWith("Back:")) {
-                  // Works with this format:
-                  // 0: Front: abc
-                  // 1: Back: xyz
-                  flashcards.push({
-                    front: line.replace("Front: ", "").trim(),
-                    back: nextLine.replace("Back: ", "").trim(),
-                    flashcardType: "NORMAL",
-                  });
-                } else if (line === "Front:") {
-                  // Works with this format:
-                  // 0: Front:
-                  // 1: abc
-                  // 2: Back:
-                  // 3: xyz
-                  flashcards.push({
-                    front: nextLine.trim(),
-                    back: split[i + 3].trim(),
-                    flashcardType: "NORMAL",
-                  });
-                }
-              }
-            }
 
             return flashcards;
           }
@@ -112,11 +87,141 @@ export const AutoFlashcardsMutation = extendType({
 
             return [{ front: output, back: "", flashcardType: "CLOZE" }];
           }
-          case "NOTES":
-            return [];
+          case "NOTES": {
+            const processedSource = args.sourceText.split("\n\n");
+            let flashcards: GeneratedFlashcard[] = [];
+
+            const process = async (text: string) => {
+              const numFlashcards = Math.ceil(text.length / 100); // heuristic (233 characters -> 3 flashcards)
+              const generatedFlashcards = await generateFlashcards(
+                text,
+                numFlashcards
+              );
+              console.log(generatedFlashcards);
+              flashcards = flashcards.concat(generatedFlashcards);
+            };
+
+            const TARGET_LEN = 800;
+            const MAX_LEN_BUFFER = 1000;
+            const MAX_NUM_FLASHCARDS = 15;
+
+            for (const segment of processedSource) {
+              if (flashcards.length > MAX_NUM_FLASHCARDS) break;
+              if (segment.length < TARGET_LEN) {
+                await process(segment);
+                continue;
+              }
+
+              const split = segment.split("\n");
+              let aggregatedText = "";
+              for (let i = 0; i < split.length; i++) {
+                if (flashcards.length > MAX_NUM_FLASHCARDS) break;
+                if (
+                  aggregatedText.length > TARGET_LEN ||
+                  aggregatedText.length + split[i].length > MAX_LEN_BUFFER ||
+                  i === split.length - 1
+                ) {
+                  await process(aggregatedText);
+                  aggregatedText = "";
+                }
+
+                aggregatedText += " " + split[i];
+              }
+            }
+
+            return flashcards;
+          }
           default:
             throw new ApolloError("Invalid `mode`");
         }
+      },
+    });
+    t.field("saveGeneratedFlashcards", {
+      type: "String",
+      description:
+        "Saves generated flashcards. Must specify course title or sub section id, but not both",
+      args: {
+        generatedFlashcards: nonNull(list(JSONData)),
+        courseTitle: stringArg(),
+        subSectionId: stringArg(),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        if (!user) return null;
+
+        let subSection: SubSection | undefined;
+        let courseSection: CourseSection | undefined;
+        let course: Course | undefined;
+
+        if (args.courseTitle) {
+          const {
+            course: newCourse,
+            courseSection: newCourseSection,
+            subSection: newSubSection,
+          } = await createCourse(
+            args.courseTitle,
+            user.id as string,
+            ctx.prisma
+          );
+          subSection = newSubSection;
+          courseSection = newCourseSection;
+          course = newCourse as Course;
+        } else if (args.subSectionId) {
+          subSection = await ctx.prisma.subSection.findUniqueOrThrow({
+            where: { id: args.subSectionId },
+            select: {
+              slug: true,
+              id: true,
+              courseSection: {
+                select: { slug: true, course: { select: { id: true } } },
+              },
+            },
+          });
+          // @ts-ignore
+          courseSection = subSection.courseSection;
+          // @ts-ignore
+          course = courseSection.course;
+        }
+        if (!(subSection && courseSection && course))
+          throw new ApolloError(
+            "Couldn't find sub section, course section, and course"
+          );
+
+        const startingIndex = await ctx.prisma.flashcard.count({
+          where: { subSectionId: subSection.id as string },
+        });
+        const flashcards: Partial<PrismaFlashcard>[] = [];
+
+        for (const [i, generatedFlashcard] of (
+          args.generatedFlashcards as GeneratedFlashcard[]
+        ).entries()) {
+          let fields: string;
+          if (TWO_SIDED_FLASHCARDS.includes(generatedFlashcard.flashcardType)) {
+            fields = JSON.stringify([
+              generateLexicalElement(generatedFlashcard.front),
+              generateLexicalElement(generatedFlashcard.back),
+            ]);
+          } else {
+            fields = JSON.stringify([
+              generateLexicalElement(generatedFlashcard.front),
+            ]);
+          }
+
+          flashcards.push({
+            fields,
+            tags: "",
+            index: startingIndex + i,
+            type: generatedFlashcard.flashcardType,
+            subSectionId: subSection.id as string,
+            courseId: course.id as string,
+          });
+        }
+
+        await ctx.prisma.flashcard.createMany({
+          data: flashcards as PrismaFlashcard[],
+        });
+
+        return `/course/${course.id}/flashcards/${courseSection.slug}/${subSection.slug}`;
       },
     });
   },
@@ -155,4 +260,49 @@ const NUMBER_TO_WORD = {
   8: "eight",
   9: "nine",
   10: "ten",
+};
+const DOUBLE_RETURN = "<DOUBLE RETURN>";
+
+const generateFlashcards = async (
+  sourceText: string,
+  numFlashcards: number
+): Promise<GeneratedFlashcard[]> => {
+  const { rawText } = await createCompletion(
+    `Make ${
+      NUMBER_TO_WORD[(numFlashcards ?? 3) + 1] // not sure why this needs to be incremented by one
+    } flashcards from my notes:\n\n${sourceText}\n\nFront: Wh`,
+    256
+  );
+  const split = `Front Wh:${rawText}`.split("\n");
+
+  const flashcards: GeneratedFlashcard[] = [];
+  for (let i = 0; i < split.length - 1; i++) {
+    const line = split[i];
+    const nextLine = split[i + 1];
+    if (line.startsWith("Front:")) {
+      if (nextLine.startsWith("Back:")) {
+        // Works with this format:
+        // 0: Front: abc
+        // 1: Back: xyz
+        flashcards.push({
+          front: line.replace("Front: ", "").trim(),
+          back: nextLine.replace("Back: ", "").trim(),
+          flashcardType: "NORMAL",
+        });
+      } else if (line === "Front:") {
+        // Works with this format:
+        // 0: Front:
+        // 1: abc
+        // 2: Back:
+        // 3: xyz
+        flashcards.push({
+          front: nextLine.trim(),
+          back: split[i + 3].trim(),
+          flashcardType: "NORMAL",
+        });
+      }
+    }
+  }
+
+  return flashcards;
 };

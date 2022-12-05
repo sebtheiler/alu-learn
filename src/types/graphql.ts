@@ -186,6 +186,8 @@ export type Mutation = {
   removeStudentFromClassroom?: Maybe<Classroom>;
   /** Renews the Stripe subscription for the current user */
   renewStripeSubscription?: Maybe<Scalars["Boolean"]>;
+  /** Saves generated flashcards. Must specify course title or sub section id, but not both */
+  saveGeneratedFlashcards?: Maybe<Scalars["String"]>;
   /** Change the user's settings */
   studyReviewInstance?: Maybe<ReviewInstance>;
   /** Updates an assignment */
@@ -345,6 +347,12 @@ export type MutationRemoveFriendArgs = {
 export type MutationRemoveStudentFromClassroomArgs = {
   classroomId: Scalars["String"];
   studentId: Scalars["String"];
+};
+
+export type MutationSaveGeneratedFlashcardsArgs = {
+  courseTitle?: InputMaybe<Scalars["String"]>;
+  generatedFlashcards: Array<InputMaybe<Scalars["JSONObject"]>>;
+  subSectionId?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationStudyReviewInstanceArgs = {

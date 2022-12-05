@@ -240,6 +240,11 @@ type Mutation {
   """Renews the Stripe subscription for the current user"""
   renewStripeSubscription: Boolean
 
+  """
+  Saves generated flashcards. Must specify course title or sub section id, but not both
+  """
+  saveGeneratedFlashcards(courseTitle: String, generatedFlashcards: [JSONObject]!, subSectionId: String): String
+
   """Change the user's settings"""
   studyReviewInstance(
     grade: Grade!

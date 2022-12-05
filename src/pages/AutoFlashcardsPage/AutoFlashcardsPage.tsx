@@ -1,4 +1,4 @@
-// import AsyncButton from "@/atoms/AsyncButton";
+import SaveExportAutoFlashcards from "./SaveExport";
 import AsyncForm from "@/atoms/AsyncForm";
 import TextInput from "@/atoms/TextInput";
 import Tabs from "@/components/Tabs";
@@ -26,20 +26,21 @@ const SOURCE_TEXT_MAX_LENS = {
  */
 export default function AutoFlashcardsPage() {
   const [sourceText, setSourceText] = useState("");
-  const [mode, setMode] = useState("SINGLE");
+  const [mode, setMode] = useState("NOTES");
   const [generatedFlashcards, setGeneratedFlashcards] = useState<
     GeneratedFlashcard[]
   >([]);
 
-  const [generateAutoFlashcard] = useMutation<
+  const [generateAutoFlashcard, { loading }] = useMutation<
     { generateAutoFlashcard: Mutation["generateAutoFlashcard"] },
     MutationGenerateAutoFlashcardArgs
   >(GenerateAutoFlashcard);
 
   const generateFlashcard = async (e: React.FormEvent) => {
-    const { numFlashcards } = mode === 'MULTI' ? getElementsVals(e.target as HTMLFormElement, [
-      "numFlashcards",
-    ]) : { numFlashcards: undefined };
+    const { numFlashcards } =
+      mode === "MULTI"
+        ? getElementsVals(e.target as HTMLFormElement, ["numFlashcards"])
+        : { numFlashcards: undefined };
     const { data } = await generateAutoFlashcard({
       variables: {
         sourceText,
@@ -63,43 +64,78 @@ export default function AutoFlashcardsPage() {
         <p className="text-center">
           Enter some text, and Alu will automatically create a flashcard from it
         </p>
-        <div className="max-w-sm mx-auto">
-          <AsyncForm
-            onSubmit={generateFlashcard}
-            className="mt-5"
-            buttonProps={{ children: "Generate Flashcard", block: true }}
-          >
-            <Tabs
-              tabs={["Single", "Multi", "Cloze", "Notes"]}
-              callback={(selectedTab) => setMode(selectedTab.toUpperCase())}
+        <AsyncForm
+          onSubmit={generateFlashcard}
+          className="mt-5 max-w-sm mx-auto"
+          buttonProps={{ children: "Generate Flashcards", block: true }}
+        >
+          <Tabs
+            tabs={[
+              {
+                label: "Notes",
+                value: "NOTES",
+                description: "Generate flashcards from long notes",
+              },
+              {
+                label: "Single",
+                value: "SINGLE",
+                description: "Generate a single flashcard from text",
+              },
+              {
+                label: "Multi",
+                value: "MULTI",
+                description: "Generate multiple flashcards from text",
+              },
+              {
+                label: "Cloze",
+                value: "CLOZE",
+                description: "Generate a cloze flashcard from text",
+              },
+            ]}
+            callback={(selectedTab) => setMode(selectedTab.toUpperCase())}
+          />
+          {mode === "MULTI" && (
+            <TextInput
+              label="Flashcards to Generate"
+              type="number"
+              min={1}
+              max={5}
+              defaultValue={3}
+              name="numFlashcards"
+              className="mt-3"
             />
-            {mode === "MULTI" && (
-              <TextInput
-                label="Flashcards to Generate"
-                type="number"
-                min={1}
-                max={5}
-                defaultValue={3}
-                name="numFlashcards"
-                className="mt-3"
-              />
-            )}
-            <p className="font-bold mt-2">Text</p>
-            <div className="w-full relative">
-              <textarea
-                name="sourceText"
-                rows={8}
-                minLength={15}
-                maxLength={SOURCE_TEXT_MAX_LENS[mode]}
-                onChange={(e) => setSourceText(e.target.value)}
-                className="border-2 border-alu-primary-purple/20 focus:border-alu-primary-purple rounded-xl p-3 outline-none w-full resize-none transition-all"
-              />
-              <span className="absolute text-gray-500 bottom-3 right-3 pointer-events-none">
-                {sourceText.length}/{SOURCE_TEXT_MAX_LENS[mode]}
-              </span>
-            </div>
-          </AsyncForm>
-          <div className="mt-5">
+          )}
+          <p className="font-bold mt-2">Text</p>
+          <div className="w-full relative">
+            <textarea
+              name="sourceText"
+              placeholder="Copy and paste your notes here"
+              rows={8}
+              minLength={15}
+              maxLength={SOURCE_TEXT_MAX_LENS[mode]}
+              onChange={(e) => setSourceText(e.target.value)}
+              className="border-2 border-alu-primary-purple/20 focus:border-alu-primary-purple rounded-xl p-3 outline-none w-full resize-none transition-all"
+            />
+            <span className="absolute text-gray-500 bottom-3 right-3 pointer-events-none">
+              {sourceText.length}/{SOURCE_TEXT_MAX_LENS[mode]}
+            </span>
+          </div>
+          {loading && (
+            <p className="text-red-600 my-2 text-center">
+              Warning: This may take up to several minutes depending on the
+              length of your notes. Do <strong>not</strong> refresh the page
+              while you wait.
+            </p>
+          )}
+        </AsyncForm>
+        {generatedFlashcards.length > 0 && (
+          <div className="mt-5 mx-auto max-w-xl">
+            <h2 className="text-center text-2xl font-bold">
+              Generated Flashcards
+            </h2>
+            <SaveExportAutoFlashcards
+              generatedFlashcards={generatedFlashcards}
+            />
             {generatedFlashcards.map((generatedFlashcard, i) => (
               <div key={i}>
                 <hr className="my-3" />
@@ -132,7 +168,7 @@ export default function AutoFlashcardsPage() {
               </div>
             ))}
           </div>
-        </div>
+        )}
       </div>
     </>
   );

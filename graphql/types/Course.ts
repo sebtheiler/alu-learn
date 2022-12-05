@@ -1,4 +1,4 @@
-import type { Course as PrismaCourse } from "@prisma/client";
+import type { Course as PrismaCourse, PrismaClient } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
 import canViewCourse from "helpers/canViewCourse";
 import deleteFileFromS3 from "helpers/deleteFileFromS3";
@@ -138,44 +138,11 @@ export const CoursesMutation = extendType({
         const user = await getUserGQL(ctx);
         if (!user) return null;
 
-        const course = await ctx.prisma.course.create({
-          data: {
-            title: args.title ?? "",
-
-            // The current user is a user and an owner of the new course
-            users: {
-              connect: {
-                id: user.id,
-              },
-            },
-            owners: {
-              connect: {
-                id: user.id,
-              },
-            },
-          },
-        });
-
-        // Populate the course with a default main and subsection
-        const defaultSectionTitle = "Default";
-
-        const courseSection = await ctx.prisma.courseSection.create({
-          data: {
-            title: defaultSectionTitle,
-            courseId: course.id,
-            slug: slugifyText(defaultSectionTitle),
-            index: 0,
-          },
-        });
-
-        await ctx.prisma.subSection.create({
-          data: {
-            title: "Default",
-            courseSectionId: courseSection.id,
-            slug: slugifyText(defaultSectionTitle),
-            index: 0,
-          },
-        });
+        const { course } = await createCourse(
+          args.title,
+          user.id as string,
+          ctx.prisma
+        );
 
         return course;
       },
@@ -491,3 +458,50 @@ export const EditingAccess = enumType({
   name: "EditingAccess",
   members: ["OWNERS", "ALL", "FRIENDS", "INSTITUTION"],
 });
+
+export const createCourse = async (
+  title: string,
+  userId: string,
+  prisma: PrismaClient
+) => {
+  const course = await prisma.course.create({
+    data: {
+      title: title ?? "",
+
+      // The current user is a user and an owner of the new course
+      users: {
+        connect: {
+          id: userId,
+        },
+      },
+      owners: {
+        connect: {
+          id: userId,
+        },
+      },
+    },
+  });
+
+  // Populate the course with a default main and subsection
+  const defaultSectionTitle = "Default";
+
+  const courseSection = await prisma.courseSection.create({
+    data: {
+      title: defaultSectionTitle,
+      courseId: course.id,
+      slug: slugifyText(defaultSectionTitle),
+      index: 0,
+    },
+  });
+
+  const subSection = await prisma.subSection.create({
+    data: {
+      title: "Default",
+      courseSectionId: courseSection.id,
+      slug: slugifyText(defaultSectionTitle),
+      index: 0,
+    },
+  });
+
+  return { course, courseSection, subSection };
+};
