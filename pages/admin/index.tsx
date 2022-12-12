@@ -14,6 +14,12 @@ const Admin: NextPage<AdminPageProps> = (props: AdminPageProps) => (
 
 export default Admin;
 
+/**
+ * Generate a list of `DateData` objects that start at some date and continue until present
+ * The `DateData` objects' `num` attribute is initialized to 0
+ * @param startDate Date to start data from
+ * @returns
+ */
 const generateDateData = (startDate: Date) => {
   const dateData: DateData[] = [];
   for (let i = Math.abs(daysBetween(startDate, new Date())); i >= -1; i--) {
@@ -28,6 +34,32 @@ const generateDateData = (startDate: Date) => {
   return dateData;
 };
 
+// Helpers to make sorting by non-WESS users easier
+type QueryMode = "insensitive";
+
+export const notWESS = {
+  NOT: [
+    {
+      email: {
+        contains: "westendsecondary",
+        mode: "insensitive" as QueryMode,
+      },
+    },
+  ],
+};
+export const notWESSUser = {
+  NOT: [
+    {
+      user: {
+        email: {
+          contains: "westendsecondary",
+          mode: "insensitive" as QueryMode,
+        },
+      },
+    },
+  ],
+};
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getServerSession(context);
   const user = await getUserSSR(session, { id: true, isStaff: true });
@@ -39,6 +71,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         permanent: false,
       },
     };
+
+  const nonWESSOnly = context.query.nonWESSOnly === "true";
 
   const thisMorning = new Date();
   thisMorning.setUTCHours(0, 0, 0, 0);
@@ -52,22 +86,27 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const monthAgo = new Date();
   monthAgo.setMonth(monthAgo.getMonth() - 1);
 
-  // Sign-ups
-  const totalNumberOfUsers = await prisma.user.count();
+  // # Sign-ups
+  const totalNumberOfUsers = await prisma.user.count({
+    where: nonWESSOnly ? notWESS : undefined,
+  });
   const numSignUpsInPastWeek = await prisma.user.count({
     where: {
       createdAt: {
         gte: weekAgo,
       },
+      ...(nonWESSOnly ? notWESS : {}),
     },
   });
 
+  // ## Timeline of sign ups
   const createdAtData = (
     await prisma.user.findMany({
       where: {
         createdAt: {
           gte: monthAgo,
         },
+        ...(nonWESSOnly ? notWESS : {}),
       },
       select: {
         createdAt: true,
@@ -81,12 +120,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     signUpData[index].num++;
   }
 
-  // User Activity
+  // # User Activity
   const numVisitsToday = await prisma.userVisit.count({
     where: {
       timestamp: {
         gte: thisMorning,
       },
+      ...(nonWESSOnly ? notWESSUser : {}),
     },
   });
   const numVisitsInTheWeek = await prisma.userVisit.count({
@@ -94,6 +134,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       timestamp: {
         gte: weekAgo,
       },
+      ...(nonWESSOnly ? notWESSUser : {}),
     },
   });
   const weeklyActiveUserData = await prisma.userVisit.findMany({
@@ -101,6 +142,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       timestamp: {
         gte: weekAgo,
       },
+      ...(nonWESSOnly ? notWESSUser : {}),
     },
     select: {
       userId: true,
@@ -114,12 +156,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const numWeeklyActiveUsers = weeklyActiveUsers.length;
   const avgDailyActiveUsers = numWeeklyActiveUsers / 7;
 
+  // ## Timeline of visits
   const visitsTimestampData = (
     await prisma.userVisit.findMany({
       where: {
         timestamp: {
           gte: monthAgo,
         },
+        ...(nonWESSOnly ? notWESSUser : {}),
       },
       select: {
         timestamp: true,
@@ -133,12 +177,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     visitsData[index].num++;
   }
 
-  // Flashcard Activity
+  // # Flashcard Activity
   const numUsersStudiedFlashcardsToday = await prisma.historySegment.count({
     where: {
       date: {
         gte: thisMorning,
       },
+      ...(nonWESSOnly ? notWESSUser : {}),
     },
   });
   const numUsersStudiedFlashcardsThisWeek = await prisma.historySegment.count({
@@ -146,6 +191,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       date: {
         gte: weekAgo,
       },
+      ...(nonWESSOnly ? notWESSUser : {}),
     },
   });
   const amountStudiedToday = await prisma.historySegment.aggregate({
@@ -153,6 +199,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       date: {
         gte: thisMorning,
       },
+      ...(nonWESSOnly ? notWESSUser : {}),
     },
     _sum: {
       reviewsStudied: true,
@@ -167,6 +214,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       date: {
         gte: thisMorning,
       },
+      ...(nonWESSOnly ? notWESSUser : {}),
     },
     _sum: {
       reviewsStudied: true,
@@ -177,11 +225,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     amountStudiedThisWeek._sum.reviewsStudied;
   const timeStudiedThisWeek = amountStudiedThisWeek._sum.timeTaken;
 
+  // ## Timeline of studying
   const historySegmentsData = await prisma.historySegment.findMany({
     where: {
       date: {
         gte: monthAgo,
       },
+      ...(nonWESSOnly ? notWESSUser : {}),
     },
     select: {
       reviewsStudied: true,
@@ -197,6 +247,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     flashcardsStudiedData[index].num += historySegment.reviewsStudied;
   }
 
+  // ## History segments from today
   const historySegmentsToday = JSON.parse(
     JSON.stringify(
       await prisma.historySegment.findMany({
@@ -204,6 +255,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           date: {
             gte: dayAgo,
           },
+          ...(nonWESSOnly ? notWESSUser : {}),
         },
         select: {
           reviewsStudied: true,
@@ -225,10 +277,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     )
   );
 
-  // Auto Flashcards
+  // # Auto Flashcards
   const autoFlashcardsGenerated = JSON.parse(
     JSON.stringify(
       await prisma.autoFlashcardsGeneration.findMany({
+        where: nonWESSOnly ? notWESSUser : undefined,
         select: {
           id: true,
           timestamp: true,

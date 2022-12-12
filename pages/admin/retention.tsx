@@ -1,3 +1,4 @@
+import { notWESSUser } from ".";
 import AdminRetentionPage, {
   AdminRetentionPageProps,
   RetentionData,
@@ -26,10 +27,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
 
+  const nonWESSOnly = context.query.nonWESSOnly === "true";
+
   const sixMonthsAgo = new Date();
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-  // Retention
+  // # Retention
   const usersInLastSixMonths = await prisma.user.findMany({
     where: {
       createdAt: {
@@ -51,6 +54,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       const end = new Date(user.createdAt.toISOString());
       end.setDate(end.getDate() + 1 + i);
 
+      // Did the user use Alu `i` days after signing up?
       const usedAlu =
         (await prisma.userVisit.count({
           where: {
@@ -58,7 +62,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             AND: [
               {
                 timestamp: {
-                  gte: start,
+                  gt: start,
                 },
               },
               {
@@ -67,6 +71,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 },
               },
             ],
+            ...(nonWESSOnly ? notWESSUser : {}),
           },
         })) > 0 ||
         (await prisma.historySegment.count({
@@ -75,7 +80,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             AND: [
               {
                 date: {
-                  gte: start,
+                  gt: start,
                 },
               },
               {
@@ -84,6 +89,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
                 },
               },
             ],
+            ...(nonWESSOnly ? notWESSUser : {}),
           },
         })) > 0;
 
@@ -91,7 +97,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
   for (let i = 0; i < retentionData.length; i++) {
-    retentionData[i].num /= usersInLastSixMonths.length;
+    retentionData[i].num =
+      (retentionData[i].num / usersInLastSixMonths.length) * 100;
   }
 
   return {

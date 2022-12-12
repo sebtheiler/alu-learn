@@ -1,10 +1,12 @@
 import Button from "@/atoms/Button";
+import Checkbox from "@/atoms/Checkbox";
 import DisplayUserInline from "@/components/DisplayUserInline";
 import SEO from "@/helpers/SEO";
 import formatTimeTaken from "@/helpers/formatTimeTaken";
 import { GeneratedFlashcard } from "@/types";
 import type { AutoFlashcardsGeneration, HistorySegment } from "@prisma/client";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
@@ -57,12 +59,30 @@ export default function AdminPage({
 }: AdminPageProps) {
   const isServerSide = typeof window === "undefined";
 
+  const router = useRouter();
+  const nonWESSOnly = router.query.nonWESSOnly === "true";
+
   return (
     <>
       <SEO title="Admin" path="/admin" noindex />
       <div className="mt-28">
         <h1 className="text-center text-4xl font-bold">Admin Page</h1>
         <div className="mx-auto max-w-4xl px-5">
+          <Checkbox
+            label="Non-WESS users only?"
+            defaultChecked={nonWESSOnly}
+            onChange={() =>
+              nonWESSOnly
+                ? router.back()
+                : router.push({
+                    pathname: router.asPath,
+                    query: {
+                      nonWESSOnly: "true",
+                    },
+                  })
+            }
+            className="mb-10"
+          />
           <div>
             <h2 className="font-bold text-2xl">Sign-ups</h2>
             <p>Total number of users: {totalNumberOfUsers}</p>
