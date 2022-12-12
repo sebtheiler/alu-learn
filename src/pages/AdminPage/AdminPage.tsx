@@ -157,9 +157,9 @@ export default function AdminPage({
               Number of flashcards studied this week:{" "}
               {numFlashcardsStudiedThisWeek}
             </p>
-            <p>Amount of time spent today: {timeStudiedToday}</p>
-            <p>Amount of time spent in the past week: {timeStudiedThisWeek}</p>
-            <p>Number of flashcards created in the past week: TODO</p>
+            <p>Amount of time spent today: {formatTimeTaken(timeStudiedToday)}</p>
+            <p>Amount of time spent in the past week: {formatTimeTaken(timeStudiedThisWeek)}</p>
+            {/* TODO: <p>Number of flashcards created in the past week: TODO</p> */}
             <p className="font-bold mt-2">Flashcards Studied</p>
             {!isServerSide && (
               <LineChart

@@ -212,7 +212,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const amountStudiedThisWeek = await prisma.historySegment.aggregate({
     where: {
       date: {
-        gte: thisMorning,
+        gte: weekAgo,
       },
       ...(nonWESSOnly ? notWESSUser : {}),
     },
