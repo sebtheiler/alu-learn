@@ -35,7 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!user?.isStaff)
     return {
       redirect: {
-        destination: "/home",
+        destination: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         permanent: false,
       },
     };

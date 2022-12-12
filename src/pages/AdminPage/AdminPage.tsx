@@ -4,6 +4,7 @@ import SEO from "@/helpers/SEO";
 import formatTimeTaken from "@/helpers/formatTimeTaken";
 import { GeneratedFlashcard } from "@/types";
 import type { AutoFlashcardsGeneration, HistorySegment } from "@prisma/client";
+import Link from "next/link";
 import { useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
@@ -93,7 +94,11 @@ export default function AdminPage({
             <p>Average DAUs in the past week: {avgDailyActiveUsers}</p>
             <p>Number of visits today: {numVisitsToday}</p>
             <p>Number of visits in the past week: {numVisitsInTheWeek}</p>
-            <p>Weekly user retention rate: TODO</p>
+            <p>
+              <Link href="/admin/retention" target="_blank">
+                <a className="text-blue-500">Weekly user retention rate</a>
+              </Link>
+            </p>
             <p className="font-bold mt-2">DAUs</p>
             {!isServerSide && (
               <LineChart
