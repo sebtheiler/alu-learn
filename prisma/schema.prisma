@@ -211,7 +211,7 @@ model FlashcardReport {
 
 // ## Auto Flashcards Usage
 model AutoFlashcardsGeneration {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   timestamp DateTime @default(now())
 
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -315,6 +315,8 @@ model Flashcard {
   // and is therefore useful
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId String
+
+  createdAt DateTime @default(now())
 }
 
 enum FlashcardType {
