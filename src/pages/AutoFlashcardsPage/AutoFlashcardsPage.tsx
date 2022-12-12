@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useState } from "react";
 
-interface AutoFlashcardsPageProps {
+export interface AutoFlashcardsPageProps {
   signedIn: boolean;
   numAutoFlashcardsGenerated: number | null;
   isPro: boolean | null;

@@ -211,7 +211,8 @@ model FlashcardReport {
 
 // ## Auto Flashcards Usage
 model AutoFlashcardsGeneration {
-  id String @id @default(cuid())
+  id        String @id @default(cuid())
+  timestamp DateTime @default(now())
 
   user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId String?
