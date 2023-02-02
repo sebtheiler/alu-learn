@@ -233,6 +233,49 @@ export default function RenderCourse({
         </div>
       </div>
       <div className="col-span-12 mt-5 xl:col-span-6">
+        {assignments && (
+          <div className="md:max-w-xl mx-auto">
+            <h2 className="text-center font-bold text-2xl">Assignments</h2>
+            {assignments.map((assignment) => (
+              <Link
+                href={`/classroom/${classroom?.id}/study/${assignment.id}`}
+                key={assignment.id}
+              >
+                <a>
+                  <div className="my-3 px-3 py-2 border-y-2 md:border-2 md:rounded-xl hover:scale-105 transition">
+                    <h3 className="font-bold text-lg">{assignment.title}</h3>
+                    {assignmentsPercentComplete && (
+                      <>
+                        <p>
+                          Percent Complete:{" "}
+                          {Math.round(
+                            (assignmentsPercentComplete[
+                              assignment.id as string
+                            ] ?? 0) * 100
+                          )}
+                          %
+                        </p>
+                        <hr className="my-2" />
+                      </>
+                    )}
+                    <ul className="ml-8 list-disc">
+                      {assignment.assignedSubSections.map((subSection) => (
+                        <li key={subSection.id}>{subSection.title}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </a>
+              </Link>
+            ))}
+            {assignments.length === 0 && (
+              <p className="text-center mt-2">
+                You have no assignments. Hurrah!
+              </p>
+            )}
+            <hr className="my-3" />
+            <h2 className="text-center font-bold text-2xl mb-2">Course</h2>
+          </div>
+        )}
         <ReactSortable
           list={courseSections}
           setList={setCourseSections}
@@ -274,48 +317,6 @@ export default function RenderCourse({
       </div>
       <div className="col-span-12 xl:col-span-3">
         <div className="max-w-xs mx-auto">
-          {assignments && (
-            <div className="px-2 overflow-hidden">
-              <h2 className="text-center font-bold text-2xl">Assignments</h2>
-              {assignments.map((assignment) => (
-                <Link
-                  href={`/classroom/${classroom?.id}/study/${assignment.id}`}
-                  key={assignment.id}
-                >
-                  <a>
-                    <div className="my-3 px-3 py-2 border-2 rounded-xl hover:scale-105 transition">
-                      <h3 className="font-bold text-lg">{assignment.title}</h3>
-                      {assignmentsPercentComplete && (
-                        <>
-                          <p>
-                            Percent Complete:{" "}
-                            {Math.round(
-                              (assignmentsPercentComplete[
-                                assignment.id as string
-                              ] ?? 0) * 100
-                            )}
-                            %
-                          </p>
-                          <hr className="my-2" />
-                        </>
-                      )}
-                      <ul className="ml-8 list-disc">
-                        {assignment.assignedSubSections.map((subSection) => (
-                          <li key={subSection.id}>{subSection.title}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </a>
-                </Link>
-              ))}
-              {assignments.length === 0 && (
-                <p className="text-center mt-2">
-                  You have no assignments. Hurrah!
-                </p>
-              )}
-              <hr className="my-3" />
-            </div>
-          )}
           {session.status === "authenticated" && <SidebarComponents />}
           <Ad adType="COURSE_SIDEBAR" />
         </div>

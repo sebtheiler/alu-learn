@@ -112,8 +112,19 @@ export const CoursesQuery = extendType({
               contains: args.title,
               mode: "insensitive",
             },
-            privacySetting: "ALL",
-            isPublic: true,
+            OR: [
+              {
+                privacySetting: "ALL",
+                isPublic: true,
+              },
+              {
+                owners: {
+                  some: {
+                    email: ctx.user?.email,
+                  },
+                },
+              },
+            ],
           },
           take: 25,
         });
