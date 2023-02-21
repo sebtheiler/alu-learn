@@ -1,6 +1,7 @@
 import type {
   Assignment,
   Flashcard,
+  LearningStatus,
   ReviewInstance,
   SubSection,
   User,
@@ -41,7 +42,7 @@ type AssignmentWithSubSections = Assignment & {
 
 interface Interval {
   minutes: number;
-  updatedReviewInstance: Partial<PrismaReviewInstance>;
+  updatedReviewInstance: Partial<PrismaReviewInstance> & { customData?: any };
 }
 
 /**
@@ -81,6 +82,18 @@ type GeneratedFlashcard = {
   flashcardType: FlashcardType;
 };
 
+type GradeRating = "AGAIN" | "HARD" | "GOOD" | "EASY";
+
+// A subset of `ReviewInstance` for use in scheduling algorithms
+type SchedulerReviewInstance = {
+  lastReview: Date | null;
+  nextReview: Date;
+  learningStatus: LearningStatus;
+  stepsIndex: number;
+  ease: number;
+  customData: any | null;
+};
+
 export type {
   NonNullableKeys,
   Streak,
@@ -93,4 +106,6 @@ export type {
   AssignmentWithSubSections,
   FlashcardWithId,
   GeneratedFlashcard,
+  GradeRating,
+  SchedulerReviewInstance,
 };

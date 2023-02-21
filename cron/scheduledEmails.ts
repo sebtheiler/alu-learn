@@ -1,5 +1,6 @@
 import daysBetween from "@/helpers/daysBetween";
 import createEmailTemplate from "emails/createEmailTemplate";
+import formatName from "emails/formatName";
 import sendEmail from "emails/sendEmail";
 import prisma from "lib/prisma";
 
@@ -60,7 +61,6 @@ const sendScheduledEmails = async () => {
 
     const emailIdToSend = EMAIL_ORDER[daysSinceSignup];
     if (emailIdToSend) {
-      const name = user.name?.split(" ")[0];
       const { template, title, subject } = EMAIL_INFO[emailIdToSend];
 
       sendEmail({
@@ -68,7 +68,7 @@ const sendScheduledEmails = async () => {
         subject,
         html: template({
           title,
-          name,
+          name: formatName(user.name),
         }),
       });
     }

@@ -1,10 +1,10 @@
+import type { GradeRating } from "@/types";
+
 const EASE_FOR_HARD_EXERCISE = 180;
 
-const GRADES: Grade[] = ["AGAIN", "HARD", "GOOD", "EASY"];
+const GRADES: GradeRating[] = ["AGAIN", "HARD", "GOOD", "EASY"];
 
 const TIME_BEFORE_SWAP = 250;
-
-type Grade = "AGAIN" | "HARD" | "GOOD" | "EASY";
 
 /**
  * Formats an interval's minutes into a readable format (25 => 25m; 2880 => 2d)
@@ -23,5 +23,4 @@ const formatDate = (minutes: number | undefined): string => {
   return `${Math.round(minutes)}m`;
 };
 
-export type { Grade };
 export { EASE_FOR_HARD_EXERCISE, GRADES, TIME_BEFORE_SWAP, formatDate };

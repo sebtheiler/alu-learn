@@ -1,7 +1,7 @@
+import { daysToMinutes, inDays, inMinutes } from "./helpers";
 import clamp from "@/helpers/clamp";
 import daysBetween from "@/helpers/daysBetween";
-import type { Interval } from "@/types";
-import type { LearningStatus } from "@prisma/client";
+import type { GradeRating, Interval, SchedulerReviewInstance } from "@/types";
 
 // const ANKI_SETTINGS = {
 //   // "New Cards" tab
@@ -43,39 +43,12 @@ const ANKING_SETTINGS = {
   // Other
   MIN_EASE_FACTOR: 130,
   MAX_EASE_FACTOR: 350,
-  FUZZ: 10, // in percent
+  FUZZ: 0, // in percent
 };
 
-const daysToMinutes = 24 * 60;
-
-const inDays = (n: number) => {
-  const date = new Date();
-  date.setDate(date.getDate() + n);
-  return date;
-};
-
-const inMinutes = (n: number) => {
-  const date = new Date();
-  date.setMinutes(date.getMinutes() + n);
-  return date;
-};
-
-/**
- * Calculate an interval for a review instance using Anki's algorithm
- * @param reviewInstance Review instance to calculate the interval for
- * @param grade How well the user rated their response
- * @returns The updated review instance and the number of minutes for the interval
- * @see https://gist.github.com/riceissa/1ead1b9881ffbb48793565ce69d7dbdd
- */
-const calculateInterval = (
-  reviewInstance: {
-    lastReview: Date | null;
-    nextReview: Date;
-    learningStatus: LearningStatus;
-    stepsIndex: number;
-    ease: number;
-  },
-  grade: "AGAIN" | "HARD" | "GOOD" | "EASY",
+const calculateSM2Interval = (
+  reviewInstance: SchedulerReviewInstance,
+  grade: GradeRating,
   settings = ANKING_SETTINGS
 ): Interval | null => {
   const daysSinceLastReview = reviewInstance.lastReview
@@ -245,6 +218,8 @@ const calculateInterval = (
           return null;
       }
   }
+
+  return null;
 };
 
-export default calculateInterval;
+export default calculateSM2Interval;

@@ -2,11 +2,11 @@ import FinishedStudying from "./FinishedStudying";
 import FlashcardSide from "./FlashcardSide";
 import Report from "./Report";
 import { EASE_FOR_HARD_EXERCISE, formatDate, GRADES } from "./helpers";
-import type { Grade } from "./helpers";
 import prepareFields from "./prepareFields";
 import Button from "@/atoms/Button";
 import ButtonGroup from "@/atoms/ButtonGroup";
 import ProgressBar from "@/components/ProgressBar";
+import CalculateReviewInstanceIntervalQuery from "@/graphql/CalculateReviewInstanceIntervalQuery";
 import StudyReviewInstance from "@/graphql/StudyReviewInstance";
 import UpdateReviewInstance from "@/graphql/UpdateReviewInstance";
 import SEO from "@/helpers/SEO";
@@ -17,16 +17,17 @@ import type {
   MutationStudyReviewInstanceArgs,
   ReviewInstance,
   ReviewInstanceWithFlashcard,
-  Grade as GQLGrade,
   Intervals,
   MutationUpdateReviewInstanceArgs,
+  Interval,
+  Query,
+  Grade as GQLGrade,
+  GradeRating,
 } from "@/types";
-import { useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
 import BrowserInteractionTime from "browser-interaction-time";
-import calculateInterval from "helpers/calculateInterval";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -91,7 +92,7 @@ export default function StudyFlashcardsPage({
   const [activeReviewInstance, setActiveReviewInstance] = useState<
     ReviewInstanceWithFlashcard | undefined
   >(() => _reviewInstances[0] as ReviewInstanceWithFlashcard);
-  const validGrades: Grade[] = useMemo(
+  const validGrades: GradeRating[] = useMemo(
     () =>
       GRADES.filter(
         (grade) =>
@@ -119,6 +120,9 @@ export default function StudyFlashcardsPage({
     { updateFlashcard: Mutation["updateFlashcard"] },
     MutationUpdateReviewInstanceArgs
   >(UpdateReviewInstance);
+  const [calculateReviewInstanceInterval] = useLazyQuery<{
+    calculateReviewInstanceInterval: Query["calculateReviewInstanceInterval"];
+  }>(CalculateReviewInstanceIntervalQuery);
 
   const browserInteractionTime = useMemo(() => {
     const browserInteractionTimer = new BrowserInteractionTime({
@@ -146,7 +150,7 @@ export default function StudyFlashcardsPage({
     });
   };
 
-  const selectGrade = (grade: Grade) => {
+  const selectGrade = async (grade: GradeRating) => {
     if (!activeReviewInstance) return;
     const interval = intervals[activeReviewInstance.id][grade];
     if (!interval || !revealAnswer) return;
@@ -164,10 +168,16 @@ export default function StudyFlashcardsPage({
         ...interval.updatedReviewInstance,
       };
       for (const grade of GRADES) {
-        intervals[activeReviewInstance.id][grade] = calculateInterval(
-          updatedReviewInstance as PrismaReviewInstance,
-          grade
-        );
+        const calculated = await calculateReviewInstanceInterval({
+          variables: {
+            reviewInstance: updatedReviewInstance,
+            grade,
+            algorithm: "SM2",
+          },
+        });
+
+        intervals[activeReviewInstance.id][grade] = calculated.data
+          ?.calculateReviewInstanceInterval as Interval;
       }
 
       // Put the review instance the user just studied at the end of the current rotation

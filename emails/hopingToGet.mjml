@@ -1,5 +1,5 @@
 <mj-text>
-  <p class="text-paragraph">Hi {{name}},</p>
+  <p class="text-paragraph">Hi{{name}},</p>
 </mj-text>
 <mj-text>
   <p class="text-paragraph">Thank you again for joining Alu!</p>

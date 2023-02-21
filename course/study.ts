@@ -1,21 +1,27 @@
 import processCloze from "./processCloze";
 import { ClozeColor } from "@/editor/plugins/ClozeDeletionPlugin/colors";
 import { clozeRegex } from "@/globals";
-import type { Intervals } from "@/types";
-import type { Flashcard, FlashcardType, ReviewInstance } from "@prisma/client";
+import type { Intervals, SchedulerReviewInstance } from "@/types";
+import type {
+  AlgorithmResearchGroup,
+  Flashcard,
+  FlashcardType,
+  ReviewInstance,
+} from "@prisma/client";
 import cuid from "cuid";
-import calculateInterval from "helpers/calculateInterval";
 import canViewCourse from "helpers/canViewCourse";
 import getUserSSR from "helpers/getUserSSR";
 import isCourseUser from "helpers/isCourseUser";
 import prisma from "lib/prisma";
 import type { GetServerSidePropsContext } from "next";
 import type { Session } from "next-auth";
+import calculateInterval from "schedulers/calculateInterval";
 
 interface PartialReviewInstance {
   flashcardId: string;
   userId: string;
   nextReview: Date;
+  algorithmResearchGroup?: AlgorithmResearchGroup;
   id: string;
 }
 
@@ -23,6 +29,14 @@ interface PartialReviewInstance {
  * The number of unique reviews that the user sees in a given study session
  */
 const NUM_FLASHCARDS_PER_SESSION = 20;
+
+/**
+ * Number of review instances for the algorithm research study
+ */
+const NUM_ALGORITHM_STUDY_REVIEW_INSTANCES = {
+  "ap-spanish": 32,
+  "spanish-iii": 24,
+};
 
 /**
  * Fields to select when fetching flashcards
@@ -46,6 +60,8 @@ const reviewInstanceSelect = {
   nextReview: true,
   lastReview: true,
   isStarred: true,
+  algorithmResearchGroup: true,
+  customData: true,
   flashcard: {
     select: flashcardSelect,
   },
@@ -120,6 +136,7 @@ const getStudyReviewInstances = async (
     studyAhead,
     essentialOnly,
     starredOnly,
+    algorithmResearchGroup,
   }: {
     /**
      * Session
@@ -155,6 +172,10 @@ const getStudyReviewInstances = async (
      * Only includes starred flashcards
      */
     starredOnly?: boolean;
+    /**
+     * Is part of the algorithm research study?
+     */
+    algorithmResearchGroup?: "ap-spanish" | "spanish-iii";
   }
 ): Promise<{
   reviewInstances: Partial<ReviewInstance>[];
@@ -227,6 +248,10 @@ const getStudyReviewInstances = async (
     };
   }
 
+  const numFlashcardsPerSession = algorithmResearchGroup
+    ? NUM_ALGORITHM_STUDY_REVIEW_INSTANCES[algorithmResearchGroup]
+    : NUM_FLASHCARDS_PER_SESSION;
+
   const user = await getUserSSR(session, { id: true });
   let reviewInstances = await prisma.reviewInstance.findMany({
     where: {
@@ -242,20 +267,31 @@ const getStudyReviewInstances = async (
         ...slugQuery,
       },
       isStarred: starredOnly ? true : undefined,
+      // Algorithm Research Study
+      OR: [
+        {
+          algorithmResearchGroup: null,
+        },
+        {
+          algorithmResearchGroup: {
+            not: "NOT_SHOWN_CONTROL",
+          },
+        },
+      ],
     },
     select: reviewInstanceSelect,
     orderBy: {
       nextReview: "asc",
     },
-    take: NUM_FLASHCARDS_PER_SESSION,
+    take: numFlashcardsPerSession,
   });
 
   // If there are less review instances due than the number of
   // review instances that should be per session, find unseen
   // flashcards and create review instances from them.
-  if (reviewInstances.length < NUM_FLASHCARDS_PER_SESSION) {
+  if (reviewInstances.length < numFlashcardsPerSession) {
     const numFlashcardsToFetch =
-      NUM_FLASHCARDS_PER_SESSION - reviewInstances.length;
+      numFlashcardsPerSession - reviewInstances.length;
     const flashcards = await prisma.flashcard.findMany({
       where: {
         courseId: courseId as string,
@@ -312,6 +348,32 @@ const getStudyReviewInstances = async (
       );
     }
 
+    if (algorithmResearchGroup && reviewInstancesToCreate.length > 0) {
+      if (
+        reviewInstancesToCreate.length !==
+        NUM_ALGORITHM_STUDY_REVIEW_INSTANCES[algorithmResearchGroup]
+      )
+        throw new Error(
+          `Should be ${NUM_ALGORITHM_STUDY_REVIEW_INSTANCES[algorithmResearchGroup]} review instances for algorithm research study. Found ${reviewInstancesToCreate.length}`
+        );
+      reviewInstancesToCreate = reviewInstancesToCreate.sort(
+        () => Math.random() - 0.5
+      );
+      const groupSize = Math.floor(
+        NUM_ALGORITHM_STUDY_REVIEW_INSTANCES[algorithmResearchGroup] / 4
+      );
+      for (let i = 0; i < reviewInstancesToCreate.length; i++) {
+        if (i < groupSize)
+          reviewInstancesToCreate[i].algorithmResearchGroup =
+            "NOT_SHOWN_CONTROL";
+        else if (i < groupSize * 2)
+          reviewInstancesToCreate[i].algorithmResearchGroup = "SM2";
+        else if (i < groupSize * 3)
+          reviewInstancesToCreate[i].algorithmResearchGroup = "EBISU";
+        else reviewInstancesToCreate[i].algorithmResearchGroup = "SSP_MMC";
+      }
+    }
+
     await prisma.reviewInstance.createMany({
       data: reviewInstancesToCreate,
     });
@@ -321,6 +383,17 @@ const getStudyReviewInstances = async (
         id: {
           in: reviewInstancesToCreate.map((ri) => ri.id),
         },
+        // Algorithm Research Study
+        OR: [
+          {
+            algorithmResearchGroup: null,
+          },
+          {
+            algorithmResearchGroup: {
+              not: "NOT_SHOWN_CONTROL",
+            },
+          },
+        ],
       },
       select: reviewInstanceSelect,
       take: numFlashcardsToFetch,
@@ -332,10 +405,26 @@ const getStudyReviewInstances = async (
   const intervals = {};
   for (const reviewInstance of reviewInstances) {
     intervals[reviewInstance.id] = {
-      AGAIN: calculateInterval(reviewInstance, "AGAIN"),
-      HARD: calculateInterval(reviewInstance, "HARD"),
-      GOOD: calculateInterval(reviewInstance, "GOOD"),
-      EASY: calculateInterval(reviewInstance, "EASY"),
+      AGAIN: calculateInterval(
+        reviewInstance as SchedulerReviewInstance,
+        "AGAIN",
+        reviewInstance.algorithmResearchGroup ?? "SM2"
+      ),
+      HARD: calculateInterval(
+        reviewInstance as SchedulerReviewInstance,
+        "HARD",
+        reviewInstance.algorithmResearchGroup ?? "SM2"
+      ),
+      GOOD: calculateInterval(
+        reviewInstance as SchedulerReviewInstance,
+        "GOOD",
+        reviewInstance.algorithmResearchGroup ?? "SM2"
+      ),
+      EASY: calculateInterval(
+        reviewInstance as SchedulerReviewInstance,
+        "EASY",
+        reviewInstance.algorithmResearchGroup ?? "SM2"
+      ),
     };
   }
 

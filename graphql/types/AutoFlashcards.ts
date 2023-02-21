@@ -3,7 +3,7 @@ import { JSONData } from "./scalars";
 import {
   AUTO_FLASHCARD_LIMITS,
   DOUBLE_RETURN,
-  NUMBER_TO_WORD,
+  languageToPrompt,
   SOURCE_TEXT_MAX_LENS,
   TWO_SIDED_FLASHCARDS,
 } from "@/globals";
@@ -18,7 +18,15 @@ import type { Flashcard as PrismaFlashcard } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
 import createCompletion from "helpers/createCompletion";
 import getUserGQL from "helpers/getUserGQL";
-import { enumType, extendType, intArg, list, nonNull, stringArg } from "nexus";
+import {
+  arg,
+  enumType,
+  extendType,
+  intArg,
+  list,
+  nonNull,
+  stringArg,
+} from "nexus";
 
 export const AutoFlashcardsMutation = extendType({
   type: "Mutation",
@@ -31,6 +39,7 @@ export const AutoFlashcardsMutation = extendType({
         sourceText: nonNull(stringArg()),
         mode: nonNull(AutoFlashcardsMode),
         numFlashcards: intArg({ description: "Number of flashcards" }),
+        language: nonNull(arg({ type: LanguageSelectionType })),
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx, {
@@ -82,7 +91,8 @@ export const AutoFlashcardsMutation = extendType({
 
             flashcards = await generateFlashcards(
               processedSource,
-              args.numFlashcards ?? 3
+              args.numFlashcards ?? 3,
+              args.language
             );
 
             break;
@@ -120,7 +130,8 @@ export const AutoFlashcardsMutation = extendType({
               const numFlashcards = Math.ceil(text.length / 100); // heuristic (233 characters -> 3 flashcards)
               const generatedFlashcards = await generateFlashcards(
                 text.slice(0, MAX_LEN_BUFFER),
-                numFlashcards
+                numFlashcards,
+                args.language
               );
               flashcards = flashcards.concat(generatedFlashcards);
             };
@@ -276,38 +287,40 @@ export const AutoFlashcardsMutation = extendType({
   },
 });
 
-export const AutoFlashcardsMode = enumType({
-  name: "AutoFlashcardsMode",
-  members: ["SINGLE", "MULTI", "CLOZE", "NOTES"],
-});
-
 const generateFlashcards = async (
   sourceText: string,
-  numFlashcards: number
+  numFlashcards: number,
+  language: keyof typeof languageToPrompt = "ENGLISH"
 ): Promise<GeneratedFlashcard[]> => {
-  const { rawText } = await createCompletion(
-    `Make ${
-      NUMBER_TO_WORD[(numFlashcards ?? 3) + 1] // not sure why this needs to be incremented by one
-    } flashcards from my notes:\n\n${sourceText}\n\nFront: Wh`,
-    256
-  );
-  const split = `Front Wh:${rawText}`.split("\n");
+  // Put together the prompt using the "fragments" for the given language
+  const { mainPrompt, front, whatWord } = languageToPrompt[language];
+  const prompt =
+    `${mainPrompt}\n\n${sourceText}\n\n${front}${whatWord}`.replace(
+      "<NUM>",
+      ((numFlashcards ?? 3) + 1).toString()
+    );
+  console.log({prompt})
+  const { rawText } = await createCompletion(prompt, 256);
+  console.log(rawText)
+  const split = `${front}${whatWord}${rawText}`.split("\n");
 
   const flashcards: GeneratedFlashcard[] = [];
   for (let i = 0; i < split.length - 1; i++) {
     const line = split[i];
     const nextLine = split[i + 1];
-    if (line.startsWith("Front:")) {
-      if (nextLine.startsWith("Back:")) {
+    const FRONT = languageToPrompt[language].front;
+    const BACK = languageToPrompt[language].back;
+    if (line.startsWith(FRONT)) {
+      if (nextLine.startsWith(BACK)) {
         // Works with this format:
         // 0: Front: abc
         // 1: Back: xyz
         flashcards.push({
-          front: line.replace("Front: ", "").trim(),
-          back: nextLine.replace("Back: ", "").trim(),
+          front: line.replace(FRONT, "").trim(),
+          back: nextLine.replace(BACK, "").trim(),
           flashcardType: "NORMAL",
         });
-      } else if (line === "Front:") {
+      } else if (line === FRONT) {
         // Works with this format:
         // 0: Front:
         // 1: abc
@@ -324,3 +337,13 @@ const generateFlashcards = async (
 
   return flashcards;
 };
+
+export const LanguageSelectionType = enumType({
+  name: "LanguageSelectionType",
+  members: Object.keys(languageToPrompt),
+});
+
+export const AutoFlashcardsMode = enumType({
+  name: "AutoFlashcardsMode",
+  members: ["SINGLE", "MULTI", "CLOZE", "NOTES"],
+});

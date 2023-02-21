@@ -1,5 +1,5 @@
 <mj-text>
-  <p class="text-paragraph">Hi {{name}}!</p>
+  <p class="text-paragraph">Hi{{requestedName}}!</p>
   <p class="text-paragraph">
     {{requesterName}} (<a
       href="https://alulearn.com/user/{{requesterUsername}}?utm_source=email&utm_medium=email&utm_campaign=friend_request"
@@ -18,7 +18,7 @@
       width="300px"
       border-radius="999px"
     >
-      Add {{requesterName}} as a Friend
+      Add{{requesterName}} as a Friend
     </mj-button>
   </mj-column>
 </mj-group>

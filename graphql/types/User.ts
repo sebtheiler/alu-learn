@@ -1,6 +1,7 @@
 import { User as PrismaUser } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
 import createEmailTemplate from "emails/createEmailTemplate";
+import formatName from "emails/formatName";
 import sendEmail from "emails/sendEmail";
 import friendUsers from "helpers/friendUsers";
 import getUserGQL from "helpers/getUserGQL";
@@ -123,13 +124,19 @@ export const UsersQuery = extendType({
           friends: {
             select: { name: true, username: true, id: true, image: true },
           },
+          timezoneOffset: true,
         });
         if (!me) return null;
 
         const friends: (PrismaUser & { reviewsStudied: number })[] = [];
 
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
+        const lastMonday = new Date();
+        lastMonday.setMinutes(
+          lastMonday.getMinutes() - (me.timezoneOffset ?? 0)
+        );
+        lastMonday.setDate(
+          lastMonday.getDate() - ((lastMonday.getDay() + 6) % 7)
+        );
 
         // @ts-ignore
         for (const friend of me.friends as PrismaUser[]) {
@@ -139,7 +146,7 @@ export const UsersQuery = extendType({
             where: {
               userId: friend.id,
               date: {
-                gte: weekAgo,
+                gte: lastMonday,
               },
             },
             _sum: {
@@ -160,7 +167,7 @@ export const UsersQuery = extendType({
             where: {
               userId: me.id,
               date: {
-                gte: weekAgo,
+                gte: lastMonday,
               },
             },
             _sum: {
@@ -242,7 +249,7 @@ export const UsersMutation = extendType({
         if (!me) return null;
         const other = await ctx.prisma.user.findUnique({
           where: { id: args.userId },
-          select: { username: true, id: true, email: true },
+          select: { username: true, name: true, id: true, email: true },
         }); // the user that me wants to be friends with
         if (!other) throw new ApolloError("User to request not found");
 
@@ -313,7 +320,8 @@ export const UsersMutation = extendType({
             subject: `Friend Request from ${me.name}`,
             html: template({
               title: `Friend Request from ${me.name}`,
-              requesterName: me.name,
+              requestedName: formatName(other.name),
+              requesterName: ` ${me.name}`,
               requesterUsername: me.username,
             }),
           });

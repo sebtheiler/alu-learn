@@ -1,8 +1,9 @@
 import { percentCompleteCacheKey } from "./SubSection";
+import { JSONData } from "./scalars";
 import DateScalar from "./scalars/DateScalar";
+import type { SchedulerReviewInstance } from "@/types";
 import type { ReviewInstance as PrismaReviewInstance } from "@prisma/client";
 import { ApolloError } from "apollo-server-micro";
-import calculateInterval from "helpers/calculateInterval";
 import getUserGQL from "helpers/getUserGQL";
 import isCourseUser from "helpers/isCourseUser";
 import updateUserHistory from "helpers/updateUserHistory";
@@ -19,6 +20,7 @@ import {
   objectType,
   stringArg,
 } from "nexus";
+import calculateInterval from "schedulers/calculateInterval";
 
 const ReviewInstance = objectType({
   name: "ReviewInstance",
@@ -30,6 +32,8 @@ const ReviewInstance = objectType({
     t.field("nextReview", { type: DateScalar });
     t.field("lastReview", { type: DateScalar });
     t.field("flashcard", { type: "Flashcard" });
+    t.field("algorithmResearchGroup", { type: Algorithm });
+    t.field("customData", { type: JSONData });
     t.boolean("isStarred");
     t.string("name");
   },
@@ -81,6 +85,22 @@ export const ReviewInstanceQuery = extendType({
         });
       },
     });
+    t.field("calculateReviewInstanceInterval", {
+      type: JSONData,
+      description: "Calculate a review instance's interval",
+      args: {
+        reviewInstance: nonNull(JSONData),
+        grade: nonNull(Grade),
+        algorithm: nonNull(Algorithm),
+      },
+      async resolve(_parent, args) {
+        return calculateInterval(
+          args.reviewInstance,
+          args.grade,
+          args.algorithm
+        );
+      },
+    });
   },
 });
 
@@ -116,6 +136,8 @@ export const ReviewInstancesMutation = extendType({
             learningStatus: true,
             stepsIndex: true,
             ease: true,
+            algorithmResearchGroup: true,
+            customData: true,
             flashcard: {
               select: {
                 subSectionId: true,
@@ -129,7 +151,11 @@ export const ReviewInstancesMutation = extendType({
           );
 
         // Calculate interval
-        const interval = calculateInterval(reviewInstance, args.grade);
+        const interval = calculateInterval(
+          reviewInstance as SchedulerReviewInstance,
+          args.grade,
+          reviewInstance.algorithmResearchGroup ?? "SM2"
+        );
         if (!interval) throw new ApolloError("Error calculating interval");
         const { updatedReviewInstance } = interval;
 
@@ -206,7 +232,7 @@ export const ReviewInstancesMutation = extendType({
         if (!user || !reviewInstance || user.id !== reviewInstance.userId)
           return null;
 
-        const data: Partial<PrismaReviewInstance> = {};
+        const data: Partial<Omit<PrismaReviewInstance, "customData">> = {};
         if (args.isStarred !== null) data.isStarred = args.isStarred;
 
         return ctx.prisma.reviewInstance.update({
@@ -226,4 +252,9 @@ export const LearningStatus = enumType({
 export const Grade = enumType({
   name: "Grade",
   members: ["AGAIN", "HARD", "GOOD", "EASY"],
+});
+
+export const Algorithm = enumType({
+  name: "Algorithm",
+  members: ["SM2", "EBISU", "SSP_MMC", "NOT_SHOWN_CONTROL"],
 });

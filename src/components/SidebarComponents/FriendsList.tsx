@@ -83,18 +83,18 @@ export default function FriendsList() {
             )}
             {friendsData.myFriends?.map((friend) => (
               <div
-                className="py-2 border-b-2 border-gray-200 last:border-b-0"
+                className="py-2 border-b-2 border-gray-200 last:border-b-0 flex"
                 key={friend.id}
               >
                 <DisplayUserInline user={friend} />
-                <span className="float-right">
+                <span className="ml-auto">
                   {formatPlural(friend.reviewsStudied, "flashcard")}
                 </span>
               </div>
             ))}
           </div>
           {(friendsData.myFriends?.length ?? 0) > 0 && (
-            <p className="my-1">Flashcards done in the past week</p>
+            <p className="my-1">Flashcards studied this week</p>
           )}
           <Button
             className="mt-2"

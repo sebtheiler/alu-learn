@@ -171,55 +171,66 @@ export default function HomePage({
         <div className="grid md:grid-cols-12 sm:grid-cols-6 h-40">
           <div className="md:col-start-4 col-span-6 mx-10 md:mx-5">
             <div className="flex flex-wrap">
-              {coursesAndClasses.map((courseOrClass, i) => (
-                <div
-                  className="w-full lg:w-1/3 md:w-1/2 px-2 mb-4 mx-auto"
-                  key={i}
-                >
-                  <Link
-                    href={
-                      courseOrClass.type === "COURSE"
-                        ? `/course/${courseOrClass.course.id}/`
-                        : `/classroom/${courseOrClass.classroom.id}`
-                    }
-                  >
-                    <a>
-                      <div
-                        className="border-gray-200 border-4 bg-gray-50 rounded-xl h-60 min-h-full relative
-                                     overflow-hidden hover:shadow-lg hover:scale-105 transition flex flex-wrap"
+              {coursesAndClasses.map(
+                (courseOrClass, i) =>
+                  // Only show the course if there is no classroom with that course
+                  ((courseOrClass.type === "COURSE" &&
+                    coursesAndClasses.findIndex(
+                      (subCourseOrClass) =>
+                        subCourseOrClass.type === "CLASS" &&
+                        subCourseOrClass.classroom.courseId ===
+                          courseOrClass.course.id
+                    ) === -1) ||
+                    courseOrClass.type === "CLASS") && (
+                    <div
+                      className="w-full lg:w-1/3 md:w-1/2 px-2 mb-4 mx-auto"
+                      key={i}
+                    >
+                      <Link
+                        href={
+                          courseOrClass.type === "COURSE"
+                            ? `/course/${courseOrClass.course.id}/`
+                            : `/classroom/${courseOrClass.classroom.id}`
+                        }
                       >
-                        {courseOrClass.course?.bannerImage && (
-                          <div className="w-full h-24 relative">
-                            <Image
-                              src={courseOrClass.course.bannerImage}
-                              alt="Course banner"
-                              layout="fill"
-                              className="object-cover"
-                            />
-                          </div>
-                        )}
-                        <div className="absolute w-full text-center p-3 h-full flex flex-wrap items-center justify-center">
-                          <div>
-                            <h3 className="text-xl font-bold mt-4 w-full">
-                              {courseOrClass.course?.title ||
-                                courseOrClass.classroom?.title}
-                            </h3>
-                            {courseOrClass.type === "CLASS" && (
-                              <p>
-                                {englishList(
-                                  courseOrClass.classroom.teachers.map(
-                                    (teacher) => teacher.name ?? ""
-                                  )
-                                )}
-                              </p>
+                        <a>
+                          <div
+                            className="border-gray-200 border-4 bg-gray-50 rounded-xl h-60 min-h-full relative
+                                     overflow-hidden hover:shadow-lg hover:scale-105 transition flex flex-wrap"
+                          >
+                            {courseOrClass.course?.bannerImage && (
+                              <div className="w-full h-24 relative">
+                                <Image
+                                  src={courseOrClass.course.bannerImage}
+                                  alt="Course banner"
+                                  layout="fill"
+                                  className="object-cover"
+                                />
+                              </div>
                             )}
+                            <div className="absolute w-full text-center p-3 h-full flex flex-wrap items-center justify-center">
+                              <div>
+                                <h3 className="text-xl font-bold mt-4 w-full">
+                                  {courseOrClass.course?.title ||
+                                    courseOrClass.classroom?.title}
+                                </h3>
+                                {courseOrClass.type === "CLASS" && (
+                                  <p>
+                                    {englishList(
+                                      courseOrClass.classroom.teachers.map(
+                                        (teacher) => teacher.name ?? ""
+                                      )
+                                    )}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </a>
-                  </Link>
-                </div>
-              ))}
+                        </a>
+                      </Link>
+                    </div>
+                  )
+              )}
               <div className="w-full lg:w-1/3 md:w-1/2 px-2 mb-4 mx-auto">
                 <div
                   className="border-gray-200 border-4 bg-gray-50 rounded-xl h-60 min-h-full

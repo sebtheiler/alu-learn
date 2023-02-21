@@ -19,9 +19,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     courseSectionSlug,
     subSectionSlug,
     studyAhead: studyAheadRaw,
+    essentialOnly: essentialOnlyRaw,
   } = context.query;
   const studyAhead =
     typeof studyAheadRaw === "string" && studyAheadRaw.toLowerCase() === "true";
+  const essentialOnly =
+    typeof essentialOnlyRaw === "string" &&
+    essentialOnlyRaw.toLowerCase() === "true";
 
   const data = await getAuthServerSession(context);
   if (data.props) return data;
@@ -33,6 +37,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     courseSectionSlug: courseSectionSlug as string | undefined,
     subSectionSlug: subSectionSlug as string | undefined,
     studyAhead,
+    essentialOnly,
   });
   if (!studyData) {
     return {

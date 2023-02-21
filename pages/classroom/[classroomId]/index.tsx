@@ -4,6 +4,7 @@ import TeacherClassroomPage from "@/pages/TeacherClassroomPage";
 import type { TeacherClassroomPageProps } from "@/pages/TeacherClassroomPage";
 import generateSignedS3URL from "helpers/generateSignedS3URL";
 import getAuthServerSession from "helpers/getAuthServerSession";
+import getLastName from "helpers/getLastName";
 import getUserSSR from "helpers/getUserSSR";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
@@ -113,7 +114,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     });
 
-    const students = classroom
+    const studentsUnsorted = classroom
       ? await prisma.user.findMany({
           where: {
             classesEnrolledIn: {
@@ -140,6 +141,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
           },
         })
       : [];
+
+    const students = studentsUnsorted.sort(
+      (a, b) =>
+        getLastName(a.name ?? "z")?.localeCompare(getLastName(b.name ?? "z")) ??
+        0
+    );
 
     const courseSections =
       classroom && classroom.courseId

@@ -113,6 +113,9 @@ model User {
   sendGeneral           Boolean   @default(true)
   unsubscribeAll        Boolean   @default(false)
   sentReengagement      DateTime?
+
+  // For Algorithm Research
+  dayChosenForAlgorithmResearch DateTime?
 }
 
 enum Role {
@@ -244,6 +247,9 @@ model Course {
   isPublic       Boolean        @default(false)
 
   classrooms Classroom[]
+
+  // For Algorithm Research
+  algorithmResearchSpanishLevel String?
 }
 
 enum PrivacySetting {
@@ -295,7 +301,8 @@ model Flashcard {
   OLD_ID           String? @unique
   OLD_UNIVERSAL_ID String?
 
-  id String @id @default(cuid())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
 
   fields String // Stored as string over Json for simplicity in searching the value
   tags   String @default("")
@@ -315,8 +322,6 @@ model Flashcard {
   // and is therefore useful
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId String
-
-  createdAt DateTime @default(now())
 }
 
 enum FlashcardType {
@@ -347,6 +352,10 @@ model ReviewInstance {
   // leechIndex Int @default(0)
 
   history ReviewInstanceHistory[]
+
+  // For Algorithm Research
+  algorithmResearchGroup AlgorithmResearchGroup?
+  customData             Json? // Additional information for the spaced repetition algorithm
 }
 
 enum LearningStatus {
@@ -354,6 +363,13 @@ enum LearningStatus {
   LEARNING
   LEARNED
   RELEARNING
+}
+
+enum AlgorithmResearchGroup {
+  NOT_SHOWN_CONTROL
+  SM2
+  EBISU
+  SSP_MMC
 }
 
 model ReviewInstanceHistory {

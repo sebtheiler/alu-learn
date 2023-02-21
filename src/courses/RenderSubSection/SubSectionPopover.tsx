@@ -7,11 +7,16 @@ import { useContext } from "react";
 interface SubSectionPopoverProps {
   subSection: SubSection;
   courseSection: CourseSection;
+  /**
+   * Was the parent sub section assigned to study?
+   */
+  assigned?: boolean;
 }
 
 export default function SubSectionPopover({
   subSection,
   courseSection,
+  assigned,
 }: SubSectionPopoverProps) {
   const { course, editAccess } = useContext(CoursePageContext);
 
@@ -30,7 +35,11 @@ export default function SubSectionPopover({
         Learn Content
       </LinkButton> */}
       <LinkButton
-        href={`/course/${course?.id}/study/${courseSection.slug}/${subSection.slug}`}
+        // TODO: this will erroneously only show essential flashcards even if the assignment is essential only
+        href={
+          `/course/${course?.id}/study/${courseSection.slug}/${subSection.slug}` +
+          (assigned ? "?essentialOnly=true" : "")
+        }
         className="mt-2"
         block
       >

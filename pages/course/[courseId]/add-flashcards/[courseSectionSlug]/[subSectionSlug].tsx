@@ -31,7 +31,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
               title: true,
               slug: true,
             },
+            orderBy: {
+              index: "asc",
+            },
           },
+        },
+        orderBy: {
+          index: "asc",
         },
       },
     },

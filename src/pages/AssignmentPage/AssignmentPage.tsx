@@ -53,18 +53,19 @@ export default function AssignmentPage({
         description="Manage your assignments in Alu Learn"
       />
       <div className="mt-28">
-        <div className="max-w-md mx-auto">
-          <h1 className="text-center text-4xl font-bold">{assignment.title}</h1>
-          <p className="my-1">
-            Assigned to:
-            {assignment.classrooms.map((classroom) => (
-              <Link href={`/classroom/${classroom.id}`} key={classroom.id}>
-                <a className="text-blue-500 px-2 py-1 rounded-full bg-gray-200 mx-2">
-                  {classroom.title}
-                </a>
-              </Link>
-            ))}
-          </p>
+        <h1 className="text-center text-4xl font-bold">{assignment.title}</h1>
+        <p className="my-1 text-center">
+          Assigned to:
+          {assignment.classrooms.map((classroom) => (
+            <Link href={`/classroom/${classroom.id}`} key={classroom.id}>
+              <a className="text-blue-500 px-2 py-1 rounded-full bg-gray-200 mx-2">
+                {classroom.title}
+              </a>
+            </Link>
+          ))}
+        </p>
+        <div className="max-w-2xl mx-auto">
+          <hr className="my-2" />
           <p className="my-1">
             Includes Subsections:{" "}
             {englishList(
@@ -74,6 +75,7 @@ export default function AssignmentPage({
           <Checkbox
             label={<p className="text-black font-large">Essential only?</p>}
             defaultChecked={assignment.essentialOnly ?? false}
+            className="mt-3"
             onChange={(e) =>
               updateAssignment({
                 variables: {

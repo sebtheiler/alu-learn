@@ -2,6 +2,13 @@
 ### Do not make changes to this file directly
 
 
+enum Algorithm {
+  EBISU
+  NOT_SHOWN_CONTROL
+  SM2
+  SSP_MMC
+}
+
 type Assignment {
   essentialOnly: Boolean
   id: String
@@ -102,6 +109,20 @@ enum JoinReason {
   TEACHER
 }
 
+enum LanguageSelectionType {
+  DUTCH
+  ENGLISH
+  ESPERANTO
+  FRENCH
+  GERMAN
+  INDONESIAN
+  JAPANESE
+  MANDARIN
+  PORTUGUESE
+  RUSSIAN
+  SPANISH
+}
+
 enum LearningStatus {
   LEARNED
   LEARNING
@@ -195,6 +216,7 @@ type Mutation {
   Generates a flashcard automatically from some source text. Returns ["front", "back"]
   """
   generateAutoFlashcard(
+    language: LanguageSelectionType!
     mode: AutoFlashcardsMode!
 
     """Number of flashcards"""
@@ -352,6 +374,9 @@ enum PrivacySetting {
 }
 
 type Query {
+  """Calculate a review instance's interval"""
+  calculateReviewInstanceInterval(algorithm: Algorithm!, grade: Grade!, reviewInstance: JSONObject!): JSONObject
+
   """Calculates %-complete data for a list of sub sections"""
   calculateSubSectionsPercentComplete(subSectionIds: [String!]!): JSONObject
 
@@ -418,6 +443,8 @@ enum Referrer {
 }
 
 type ReviewInstance {
+  algorithmResearchGroup: Algorithm
+  customData: JSONObject
   ease: Int
   flashcard: Flashcard
   id: String

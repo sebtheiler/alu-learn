@@ -68,6 +68,7 @@ export default function RenderSubSection({
               <SubSectionPopover
                 subSection={subSection}
                 courseSection={courseSection}
+                assigned={assigned}
               />
             }
             trigger="click"

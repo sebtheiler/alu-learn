@@ -1,15 +1,20 @@
 import SaveExportAutoFlashcards from "./SaveExport";
 import AsyncButton from "@/atoms/AsyncButton";
 import LinkButton from "@/atoms/LinkButton";
-import TextInput from "@/atoms/TextInput";
-import Tabs from "@/components/Tabs";
-import { AUTO_FLASHCARD_LIMITS, SOURCE_TEXT_MAX_LENS } from "@/globals";
+import Select from "@/atoms/Select";
+import {
+  AUTO_FLASHCARD_LIMITS,
+  languageToPrompt,
+  SOURCE_TEXT_MAX_LENS,
+} from "@/globals";
 import GenerateAutoFlashcard from "@/graphql/GenerateAutoFlashcard";
 import SEO from "@/helpers/SEO";
+import capitalize from "@/helpers/capitalize";
 import useGlobalModalStore from "@/stores/globalModalStore";
 import type {
   AutoFlashcardsMode,
   GeneratedFlashcard,
+  LanguageSelectionType,
   Mutation,
   MutationGenerateAutoFlashcardArgs,
 } from "@/types";
@@ -25,6 +30,11 @@ export interface AutoFlashcardsPageProps {
   isPro: boolean | null;
 }
 
+// Used to be changeable by the user to be `NOTES`, `MULTI`, or `SINGLE`.
+// Now always `NOTES` to be simpler for the user, since the other options
+// were pretty much never used.
+const mode = "NOTES";
+
 /**
  * Page for automatically generating flashcards from notes
  */
@@ -37,11 +47,11 @@ export default function AutoFlashcardsPage({
     (state) => state.setRegisterModalOpen
   );
   const [sourceText, setSourceText] = useState("");
-  const [mode, setMode] = useState("NOTES");
-  const [numFlashcards, setNumFlashcards] = useState(3);
   const [generatedFlashcards, setGeneratedFlashcards] = useState<
     GeneratedFlashcard[]
   >([]);
+  const [selectedLanguage, setSelectedLanguage] =
+    useState<keyof typeof languageToPrompt>("ENGLISH");
 
   const [generateAutoFlashcard, { loading }] = useMutation<
     { generateAutoFlashcard: Mutation["generateAutoFlashcard"] },
@@ -53,7 +63,7 @@ export default function AutoFlashcardsPage({
       variables: {
         sourceText,
         mode: mode as AutoFlashcardsMode,
-        numFlashcards,
+        language: selectedLanguage as LanguageSelectionType,
       },
     });
     if (!data) return;
@@ -101,45 +111,24 @@ export default function AutoFlashcardsPage({
           </p>
         )}
         <div className="mt-5 max-w-sm mx-auto">
-          <Tabs
-            tabs={[
-              {
-                label: "Notes",
-                value: "NOTES",
-                description: "Create flashcards from long notes",
-              },
-              {
-                label: "Single",
-                value: "SINGLE",
-                description: "Create a single flashcard from text",
-              },
-              {
-                label: "Multi",
-                value: "MULTI",
-                description: "Create multiple flashcards from text",
-              },
-              // {
-              //   label: "Cloze",
-              //   value: "CLOZE",
-              //   description: "Create a cloze flashcard from text",
-              // },
-            ]}
-            callback={(selectedTab) => setMode(selectedTab.toUpperCase())}
-          />
-          {mode === "MULTI" && (
-            <TextInput
-              label="Flashcards to Create"
-              type="number"
-              min={1}
-              max={5}
-              value={numFlashcards}
-              onChange={(e) => setNumFlashcards(parseInt(e.target.value))}
-              name="numFlashcards"
-              className="mt-3"
-            />
-          )}
-          <p className="font-bold mt-2">Text</p>
           <div className="w-full relative">
+            <Select
+              label="Source Text Language"
+              options={Object.keys(languageToPrompt).map((lang) => ({
+                value: lang,
+                label: capitalize(lang.toLowerCase()),
+              }))}
+              onChange={(val) =>
+                setSelectedLanguage(val as keyof typeof languageToPrompt)
+              }
+              name="privacySetting"
+            />
+            {selectedLanguage !== "ENGLISH" && (
+              <p className="text-center text-sm text-gray-500 mt-2">
+                Note: Auto-flashcards has not been extensively tested languages
+                other than English
+              </p>
+            )}
             <textarea
               name="sourceText"
               placeholder="Copy and paste your notes here"
@@ -147,7 +136,7 @@ export default function AutoFlashcardsPage({
               minLength={15}
               maxLength={SOURCE_TEXT_MAX_LENS[mode]}
               onChange={(e) => setSourceText(e.target.value)}
-              className="border-2 border-alu-primary-purple/20 focus:border-alu-primary-purple rounded-xl p-3 outline-none w-full resize-none transition-all"
+              className="border-2 border-alu-primary-purple/20 focus:border-alu-primary-purple rounded-xl p-3 outline-none w-full resize-none transition-all mt-2"
               disabled={disabled}
             />
             <span className="absolute text-gray-500 bottom-3 right-3 pointer-events-none">

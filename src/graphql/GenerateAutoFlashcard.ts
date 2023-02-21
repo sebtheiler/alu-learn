@@ -3,13 +3,15 @@ import { gql } from "@apollo/client";
 const GenerateAutoFlashcard = gql`
   mutation GenerateAutoFlashcard(
     $sourceText: String!
-    $mode: AutoFlashcardsMode!
     $numFlashcards: Int
+    $language: LanguageSelectionType!
+    $mode: AutoFlashcardsMode!
   ) {
     generateAutoFlashcard(
       sourceText: $sourceText
-      mode: $mode
       numFlashcards: $numFlashcards
+      language: $language
+      mode: $mode
     )
   }
 `;

@@ -1,4 +1,5 @@
 import createEmailTemplate from "emails/createEmailTemplate";
+import formatName from "emails/formatName";
 import sendEmail from "emails/sendEmail";
 import prisma from "lib/prisma";
 
@@ -30,7 +31,7 @@ const reminderEmail = async () => {
   for (const user of users) {
     const html = template({
       title: "Daily Study Reminder",
-      name: user.name?.split(" ")[0],
+      name: formatName(user.name),
       streak: user.currentStreak,
       newStreak: user.currentStreak + 1,
     });

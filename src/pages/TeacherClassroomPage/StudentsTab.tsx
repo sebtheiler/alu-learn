@@ -105,7 +105,7 @@ export default function StudentsTab({
       <div className="text-center">
         <Button
           faIcon={faPlus}
-          className="mt-2"
+          className="my-2"
           onClick={() => setInviteModalOpen(true)}
         >
           Invite Students

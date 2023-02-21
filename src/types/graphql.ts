@@ -26,6 +26,13 @@ export type Scalars = {
   Upload: any;
 };
 
+export enum Algorithm {
+  Ebisu = "EBISU",
+  NotShownControl = "NOT_SHOWN_CONTROL",
+  Sm2 = "SM2",
+  SspMmc = "SSP_MMC",
+}
+
 export type Assignment = {
   __typename?: "Assignment";
   essentialOnly?: Maybe<Scalars["Boolean"]>;
@@ -114,11 +121,26 @@ export enum Grade {
 }
 
 export enum JoinReason {
+  Autoflashcards = "AUTOFLASHCARDS",
   Concept = "CONCEPT",
   Grades = "GRADES",
   Memory = "MEMORY",
   Students = "STUDENTS",
   Teacher = "TEACHER",
+}
+
+export enum LanguageSelectionType {
+  Dutch = "DUTCH",
+  English = "ENGLISH",
+  Esperanto = "ESPERANTO",
+  French = "FRENCH",
+  German = "GERMAN",
+  Indonesian = "INDONESIAN",
+  Japanese = "JAPANESE",
+  Mandarin = "MANDARIN",
+  Portuguese = "PORTUGUESE",
+  Russian = "RUSSIAN",
+  Spanish = "SPANISH",
 }
 
 export enum LearningStatus {
@@ -298,6 +320,7 @@ export type MutationDeleteSubSectionArgs = {
 };
 
 export type MutationGenerateAutoFlashcardArgs = {
+  language: LanguageSelectionType;
   mode: AutoFlashcardsMode;
   numFlashcards?: InputMaybe<Scalars["Int"]>;
   sourceText: Scalars["String"];
@@ -454,6 +477,8 @@ export enum PrivacySetting {
 
 export type Query = {
   __typename?: "Query";
+  /** Calculate a review instance's interval */
+  calculateReviewInstanceInterval?: Maybe<Scalars["JSONObject"]>;
   /** Calculates %-complete data for a list of sub sections */
   calculateSubSectionsPercentComplete?: Maybe<Scalars["JSONObject"]>;
   /** Find review instances sorted by difficulty */
@@ -480,6 +505,12 @@ export type Query = {
   searchUsers?: Maybe<Array<Maybe<User>>>;
   /** List all users */
   users?: Maybe<Array<Maybe<User>>>;
+};
+
+export type QueryCalculateReviewInstanceIntervalArgs = {
+  algorithm: Algorithm;
+  grade: Grade;
+  reviewInstance: Scalars["JSONObject"];
 };
 
 export type QueryCalculateSubSectionsPercentCompleteArgs = {
@@ -530,6 +561,8 @@ export enum Referrer {
 
 export type ReviewInstance = {
   __typename?: "ReviewInstance";
+  algorithmResearchGroup?: Maybe<Algorithm>;
+  customData?: Maybe<Scalars["JSONObject"]>;
   ease?: Maybe<Scalars["Int"]>;
   flashcard?: Maybe<Flashcard>;
   id?: Maybe<Scalars["String"]>;

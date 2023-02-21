@@ -17,7 +17,7 @@ html * {
   font-family: Courier, monospace;
 }
 
-/* Custon animations */
+/* Custom animations */
 .pop {
   animation: pop 0.3s linear 1;
 }

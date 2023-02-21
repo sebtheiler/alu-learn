@@ -4,9 +4,30 @@ path: "changelog"
 description: "Alu Learn changelog"
 ---
 
+## Auto-Flashcards in Other Languages - Feb 15 - 2.4.2
+
+Automatic flashcard creation now works in other languages. The display is also now cleaner and no longer includes its former "tabs" that allowed you to select different, rather useless modes.
+
+## Minor Fixes - Feb 13 - 2.4.1
+
+- Ordered students by their last names in teachers' views
+- Fixed ordering of sub-sections in the sidebar when creating and moving flashcards
+- Weekly summaries against your friends now hard-reset weekly, rather than having a rolling cut off of one week
+  - Fixed formatting for long names and flashcard amounts
+- Independent courses are no longer shown when you are also enrolled in a class for that course. This should ideally reduce confusion for students
+- Studying an assigned sub-section will now only show essential flashcards from that sub-section
+
+# Evaluating New Spaced Repetition Algorithms - Feb 2 - 2.4.0
+
+I'm working on a study to evaluate several new spaced repetition algorithms for Alu, including FSRS and Ebisu. The changes are mostly hidden for now, but will soon be available to everyone.
+
+# Auto Flashcards - Dec 15 - 2.3.0
+
+Alu now has the power to automatically transform your notes into flashcards! Navigate to Alu's auto-flashcards page in the navbar, then simply paste your notes into its generator.
+
 # Better Sharing, Friends, & Referrals - Nov 13 - 2.2.0
 
-Alu's more social now! It's easier to share courses, keep track of your friends, and invite new users.
+Alu is more social now! It's easier to share courses, keep track of your friends, and invite new users.
 
 - **Improved Sharing System:** Reworked the sharing system to be much simpler and allow for easier collaboration when working on courses. Click the "Share" icon on the left of a course that you own to start sharing it.
 - **Friends:** You may now add friends on Alu and compete against them in a weekly leaderboard. If you choose, you can also share your courses with only your friends.

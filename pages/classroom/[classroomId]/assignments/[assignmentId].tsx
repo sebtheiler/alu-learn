@@ -5,6 +5,7 @@ import type {
 } from "@/pages/AssignmentPage/AssignmentPage";
 import type { User } from "@/types";
 import getAuthServerSession from "helpers/getAuthServerSession";
+import getLastName from "helpers/getLastName";
 import getUserSSR from "helpers/getUserSSR";
 import prisma from "lib/prisma";
 import type { GetServerSideProps } from "next";
@@ -95,7 +96,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   });
 
-  const studentProgress: StudentProgress[] = await Promise.all(
+  const studentProgressUnsorted: StudentProgress[] = await Promise.all(
     students.map(async (student) => {
       const numReviewInstancesStudied = await prisma.reviewInstance.count({
         where: {
@@ -143,6 +144,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         timeTaken,
       };
     })
+  );
+
+  const studentProgress = studentProgressUnsorted.sort(
+    (a, b) =>
+      getLastName(a.student.name ?? "z")?.localeCompare(
+        getLastName(b.student.name ?? "z")
+      ) ?? 0
   );
 
   return {
