@@ -6,6 +6,7 @@ import {
   faStar,
   faInfoCircle,
   faRobot,
+  faCrown,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Session } from "next-auth";
@@ -35,6 +36,68 @@ export default function Navbar({
   streak,
 }: NavbarProps) {
   const [expandedMenu, setExpandedMenu] = useState(false);
+
+  const congratulationsMessage = (() => {
+    let text: string;
+    switch (streak?.currentStreak) {
+      case 7:
+        text = "A one-week streak! (hey, that rhymes)";
+        break;
+      case 10:
+        text = "Congratulations on a 10 day streak!";
+        break;
+      case 30:
+        text = "Congratulations on a month-long streak!";
+        break;
+      case 42:
+        text = "The answer to life, the universe, and everything";
+        break;
+      case 50:
+        text = "Half-way to 100 days!  Congratulations!";
+        break;
+      case 75:
+        text = "¾!";
+        break;
+      case 100:
+        text = "CONGRATULATIONS ON 100 DAYS OF ALU!!!";
+        break;
+      case 111:
+        text = "You are eleventy-one today! (or at least your streak is)";
+        break;
+      case 128:
+        text = "2^7";
+        break;
+      case 200:
+        text = "20 0(00) days under the flashcards";
+        break;
+      case 250:
+        text = "250 DAYS! YOU'RE AMAZING!";
+        break;
+      case 365:
+        text = "A WHOLE YEAR OF ALU!  AMAZING!";
+        break;
+      case 500:
+        text = "500 DAYS!  HALF-WAY TO FOUR DIGITS!  YOU'RE AMAZING!";
+        break;
+      case 666:
+        text = "I'd be careful about this streak number...";
+        break;
+      case 1000:
+        text = "1000 DAYS!  4 DIGITS!  THANK YOU FOR BEING A PART OF ALU!";
+        break;
+      default:
+        text = "";
+        break;
+    }
+    return (
+      text && (
+        <span className="text-white text-opacity-60 items-center justify-center inline-flex overflow-ellipsis">
+          <FontAwesomeIcon icon={faCrown} className="mr-1" />
+          {text}
+        </span>
+      )
+    );
+  })();
 
   return (
     <nav
@@ -100,6 +163,7 @@ export default function Navbar({
           <NavItem href="/auto-flashcards" icon={faRobot}>
             Auto Flashcards
           </NavItem>
+          {congratulationsMessage}
 
           {status === "authenticated" && session !== null && (
             <SignedIn session={session} streak={streak} />

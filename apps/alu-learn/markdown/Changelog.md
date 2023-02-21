@@ -12,6 +12,7 @@ Alu has undergone some major technical changes in this update in preparation for
 - **Fixed Assignment Sub-section Sorting Order:** Sub-sections in assignments are now sorted properly
 - **Improved Assignment Display on Mobile:** Assignments are now more responsive and display better on smaller screens
 - **Fixed Sub-sections with Essential-only Assignments:** If a teacher assigned a sub-section as not essential only, but you clicked on it through the course's skill tree, it would erroneously only have you study essential flashcards for that sub-section. This has now been fixed.
+- **Brought Back Streak Easter Eggs:** Want to know what they are? Better get a high enough streak
 
 ## Auto-Flashcards in Other Languages - Feb 15 - 2.4.2
 
