@@ -8,6 +8,7 @@ description: "Alu Learn changelog"
 
 Alu has undergone some major technical changes in this update in preparation for something _big_. This includes rewriting Alu to function as a monorepo, so that I can develop "sibling" applications that re-use Alu's UI components and other features, updating various outdated packages, and beginning to transition to Next.js 13.
 
+- **Added Student Preview for Teachers:** Teachers can now view their classroom as students do by clicking the "Student Preview" tab on their classroom homepage
 - **Fixed Assignment Sub-section Sorting Order:** Sub-sections in assignments are now sorted properly
 - **Improved Assignment Display on Mobile:** Assignments are now more responsive and display better on smaller screens
 - **Fixed Sub-sections with Essential-only Assignments:** If a teacher assigned a sub-section as not essential only, but you clicked on it through the course's skill tree, it would erroneously only have you study essential flashcards for that sub-section. This has now been fixed.

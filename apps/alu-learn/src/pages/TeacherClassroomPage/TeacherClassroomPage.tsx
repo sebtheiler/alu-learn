@@ -12,6 +12,7 @@ import type {
 } from "@/types";
 import {
   faClipboard,
+  faEye,
   faGear,
   faGraduationCap,
 } from "@fortawesome/free-solid-svg-icons";
@@ -110,6 +111,20 @@ export default function TeacherClassroomPage({
                   className="mr-2 text-gray-600"
                 />
                 Assignments
+              </li>
+              <li className="my-2 flex">
+                <a
+                  href={`/classroom/${classroom.id}?studentPreview=true`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:bg-gray-100 border-2 border-gray-100 rounded-xl hover:border-gray-200 hover:shadow-md px-4 py-3 w-full"
+                >
+                  <FontAwesomeIcon
+                    icon={faEye}
+                    className="mr-2 text-gray-600"
+                  />
+                  Student Preview
+                </a>
               </li>
               <li
                 className={classNames(

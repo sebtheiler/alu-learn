@@ -35,7 +35,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   if (data.props) return data;
   const { session } = data;
   const user = await getUserSSR(session, { id: true, userType: true });
-  const { classroomId } = context.query;
+  const { classroomId, studentPreview: studentPreviewRaw } = context.query;
+  const studentPreview = studentPreviewRaw === "true";
 
   const classroom =
     (await prisma.classroom.findFirst({
@@ -109,7 +110,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       })
     : [];
 
-  if (user?.userType === "TEACHER" || user?.userType === "MIXED") {
+  if (
+    (user?.userType === "TEACHER" || user?.userType === "MIXED") &&
+    !studentPreview
+  ) {
     const classrooms = await prisma.classroom.findMany({
       where: {
         teachers: {
