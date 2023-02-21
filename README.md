@@ -1,42 +1,23 @@
-# Alu Learn
+# Alu
 
-## Development-Build Setup instructions
+TODO: Add a description
 
-```
-sudo su - postgres
-psql
+## Development Instructions
 
-CREATE DATABASE alu;
-CREATE USER aluadmin WITH PASSWORD 'temppassword';
-ALTER ROLE aluadmin SET client_encoding TO 'utf8';
-ALTER ROLE aluadmin SET default_transaction_isolation TO 'read committed';
-ALTER ROLE aluadmin SET timezone TO 'UTC';
-ALTER USER aluadmin CREATEDB;
-GRANT ALL PRIVILEGES ON DATABASE alu TO aluadmin;
+Alu is managed as a monorepo using [Turborepo](https://turbo.build/), allowing it to share packages between apps. It uses [pnpm](https://pnpm.io) as a package manager. Install all packages with `pnpm i`, then `cd` into a app in the `apps` directory and follow the instructions there.
 
-\q
-exit
+### Apps and Packages
 
-yarn
-yarn prisma db push
-```
+- `alu-learn`: A Next.js web application Alu Learn for studying flashcards
+- `alu-read`: A Tauri/Next.js desktop application for incremental reading
+- `alu-ui`: A React component library that basic elements (e.g., Buttons, Dropdowns) for use in Alu apps
+- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `config`: Configuration files (e.g., `tsconfig`, Tailwind) used throughout the monorepo
 
-## Reset Database
+### Develop
+
+To develop all apps and packages, run the following command:
 
 ```
-sudo su - postgres
-psql
-
-REVOKE CONNECT ON DATABASE alu FROM public;
-SELECT pg_terminate_backend(pg_stat_activity.pid)
-FROM pg_stat_activity
-WHERE pg_stat_activity.datname = 'alu';
-DROP DATABASE alu;
-CREATE DATABASE alu;
-GRANT ALL PRIVILEGES ON DATABASE alu TO aluadmin;
-
-\q
-exit
-
-yarn prisma db push
+pnpm run dev
 ```

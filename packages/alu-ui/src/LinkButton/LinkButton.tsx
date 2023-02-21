@@ -1,0 +1,30 @@
+import Button from "../Button";
+import type { ButtonProps } from "../Button";
+import Link from "next/link";
+
+interface LinkButtonProps extends ButtonProps {
+  /**
+   * Href the button will link to
+   */
+  href: string;
+  /**
+   * Classname to affect the `a`, not the `button`
+   */
+  outerClassname?: string;
+}
+
+/**
+ * Creates a link wrapping a button
+ * Formerly created a link styled as a button, although this was dropped
+ * @note It is technically undefined behavior to have a button as a child of an anchor, but it works fine
+ */
+export default function LinkButton(props: LinkButtonProps) {
+  return (
+    <Link
+      href={props.disabled ? "#" : props.href}
+      className={props.outerClassname}
+    >
+      <Button {...props} />
+    </Link>
+  );
+}

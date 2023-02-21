@@ -1,0 +1,112 @@
+import CoursePageContext from "../RenderCourse/context";
+import SubSectionPopover from "./SubSectionPopover";
+import Popover from "alu-ui/src/Popover";
+import type { AssignedState, CourseSection, SubSection } from "@/types";
+import { faClipboard } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Image from "next/image";
+import { useContext } from "react";
+
+const currentlyStudiedColor = "#5ed149";
+const previouslyStudiedColor = "#FDCE29";
+
+interface RenderSubSectionProps {
+  /**
+   * Sub section to display
+   */
+  subSection: SubSection;
+  /**
+   * The parent course section
+   */
+  courseSection: CourseSection;
+  /**
+   * Additional styling
+   */
+  style?: React.CSSProperties;
+  /**
+   * Is the sub section assigned to the user?
+   */
+  assigned?: AssignedState;
+}
+
+/**
+ * Renders a sub section for use in displaying a course section
+ */
+export default function RenderSubSection({
+  subSection,
+  courseSection,
+  style,
+  assigned,
+}: RenderSubSectionProps) {
+  const { percentComplete } = useContext(CoursePageContext);
+  const { currentPercentComplete, totalPercentComplete } = percentComplete
+    ?.calculateSubSectionsPercentComplete?.[subSection.id as string] ?? {
+    currentPercentComplete: 0,
+    totalPercentComplete: 0,
+  };
+
+  return (
+    <div
+      className="mx-auto my-4 z-10"
+      title={
+        assigned !== "NOT_ASSIGNED"
+          ? "Your teacher has assigned this sub section"
+          : undefined
+      }
+    >
+      <div style={style}>
+        <p className="text-center rounded-lg max-w-xs mx-auto font-bold">
+          {assigned !== "NOT_ASSIGNED" && (
+            <FontAwesomeIcon
+              icon={faClipboard}
+              className="text-yellow-500 mr-1"
+            />
+          )}
+          {subSection?.title}
+        </p>
+        <div className="w-24 h-24 mx-auto sub-section-drag-handle">
+          <Popover
+            popover={
+              <SubSectionPopover
+                subSection={subSection}
+                courseSection={courseSection}
+                assigned={assigned}
+              />
+            }
+            trigger="click"
+            placement="bottom"
+            arrow
+          >
+            <div
+              className="w-full h-full rounded-full flex items-center text-center border-4 border-gray-200 hover:scale-110 hover:shadow-lg transition hover:cursor-pointer"
+              role="button"
+              style={{
+                background: `conic-gradient(${previouslyStudiedColor} ${
+                  (totalPercentComplete ?? 0) * 100
+                }%, transparent 0%)`,
+              }}
+            >
+              <div
+                className="w-full h-full flex items-center rounded-full p-2"
+                style={{
+                  background: `conic-gradient(${currentlyStudiedColor} ${
+                    (currentPercentComplete ?? 0) * 100
+                  }%, transparent 0%)`,
+                }}
+              >
+                <div className="flex items-center justify-center rounded-full h-full w-full bg-gray-100 border-4 border-gray-200">
+                  <Image
+                    src="/assets/flashcards-gray.png"
+                    width={40}
+                    height={40}
+                    alt=""
+                  />
+                </div>
+              </div>
+            </div>
+          </Popover>
+        </div>
+      </div>
+    </div>
+  );
+}

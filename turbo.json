@@ -1,0 +1,38 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "globalEnv": [
+    "SECRET",
+    "NEXT_PUBLIC_SERVER_URL",
+    "NEXT_PUBLIC_APP_ROOT_URL",
+    "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
+    "NEXT_PUBLIC_STRIPE_CUSTOMER_PORTAL_LINK",
+    "NEXT_PUBLIC_GOOGLE_ID",
+    "GOOGLE_SECRET",
+    "EMAIL_SERVER",
+    "EMAIL_FROM",
+    "CRON_SECRET_SIGNING_KEY",
+    "STRIPE_ENDPOINT_SECRET",
+    "STRIPE_SECRET_KEY",
+    "OPENAI_API_KEY",
+    "NODE_ENV",
+    "PARTNERED_DOMAINS",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+    "ALU_BOT_OAUTH_TOKEN",
+    "SLACK_SIGNING_SECRET",
+    "DO_SPACE_NAME"
+  ],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "dev": {
+      "cache": false
+    }
+  }
+}
