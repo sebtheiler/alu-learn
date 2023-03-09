@@ -1,3 +1,4 @@
+import { ApolloError } from "@apollo/client/errors";
 import type {
   Flashcard as PrismaFlashcard,
   FlashcardType as PrismaFlashcardType,
@@ -11,6 +12,7 @@ import isSubSectionOwner from "helpers/isSubSectionOwner";
 import moveObject from "helpers/moveObject";
 import {
   arg,
+  booleanArg,
   enumType,
   extendType,
   intArg,
@@ -93,20 +95,44 @@ export const FlashcardMutation = extendType({
         fields: nonNull(stringArg()),
         tags: stringArg(),
         flashcardType: arg({ type: FlashcardType }),
-        courseId: nonNull(stringArg()),
-        courseSectionSlug: nonNull(stringArg()),
-        subSectionSlug: nonNull(stringArg()),
+
+        // Only if called from Alu Learn
+        courseId: stringArg(),
+        courseSectionSlug: stringArg(),
+        subSectionSlug: stringArg(),
+
+        // Only if called from Alu Read
+        isForAluRead: booleanArg(),
+        extractId: stringArg(),
       },
       async resolve(_parent, args, ctx) {
-        const user = await getUserGQL(ctx, { id: true });
+        const user = await getUserGQL(ctx, {
+          id: true,
+          selectedAluReadCourseId: true,
+        });
         if (!user) return null;
+
+        if (args.isForAluRead && !user.selectedAluReadCourseId)
+          throw new ApolloError({
+            errorMessage:
+              "Must have `selectedAluReadCourseId` set if creating flashcard for Alu Read",
+          });
+        const subSectionSlug = args.isForAluRead
+          ? "default"
+          : (args.subSectionSlug as string);
+        const courseSectionSlug = args.isForAluRead
+          ? "default"
+          : (args.courseSectionSlug as string);
+        const courseId = args.isForAluRead
+          ? (user.selectedAluReadCourseId as string)
+          : (args.courseId as string);
 
         const subSection = await ctx.prisma.subSection.findFirstOrThrow({
           where: {
-            slug: args.subSectionSlug,
+            slug: subSectionSlug,
             courseSection: {
-              slug: args.courseSectionSlug,
-              courseId: args.courseId,
+              slug: courseSectionSlug,
+              courseId: courseId,
             },
           },
           select: {
@@ -131,6 +157,7 @@ export const FlashcardMutation = extendType({
             tags: args.tags ?? "",
             index: newIndex,
             type: args.flashcardType as PrismaFlashcardType,
+            extractId: args.extractId,
             subSection: {
               connect: {
                 id: subSection.id,
@@ -138,7 +165,7 @@ export const FlashcardMutation = extendType({
             },
             course: {
               connect: {
-                id: args.courseId,
+                id: courseId,
               },
             },
           },

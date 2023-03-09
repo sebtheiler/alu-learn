@@ -1,5 +1,4 @@
 import RenderCourseSection from ".";
-import withFullContext from "@/helpers/withFullContext";
 import { ComponentStory } from "@storybook/react";
 
 const courseSection = {
@@ -24,7 +23,6 @@ const courseSection = {
 export default {
   title: "Courses/RenderCourseSection",
   component: RenderCourseSection,
-  decorators: [withFullContext],
 };
 
 const Template: ComponentStory<typeof RenderCourseSection> = (args) => (

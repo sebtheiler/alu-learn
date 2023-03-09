@@ -204,6 +204,7 @@ export const UsersMutation = extendType({
         sendWeeklyReports: booleanArg(),
         sendMarketingResearch: booleanArg(),
         unsubscribeAll: booleanArg(),
+        selectedAluReadCourseId: stringArg(),
       },
       async resolve(_parent, args, ctx) {
         const user = await getUserGQL(ctx);
@@ -224,6 +225,8 @@ export const UsersMutation = extendType({
           data.sendMarketingResearch = args.sendMarketingResearch;
         if (args.unsubscribeAll != null)
           data.unsubscribeAll = args.unsubscribeAll;
+        if (args.selectedAluReadCourseId !== undefined)
+          data.selectedAluReadCourseId = args.selectedAluReadCourseId;
 
         return ctx.prisma.user.update({
           where: { id: user.id },

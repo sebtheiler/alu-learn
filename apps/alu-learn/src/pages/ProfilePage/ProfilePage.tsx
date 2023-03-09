@@ -3,8 +3,8 @@ import Button from "alu-ui/src/Button";
 import ButtonGroup from "alu-ui/src/ButtonGroup";
 import LinkButton from "alu-ui/src/LinkButton";
 import RenderSharedCourse from "@/courses/RenderSharedCourse";
-import AddFriend from "@/graphql/AddFriend";
-import RemoveFriend from "@/graphql/RemoveFriend";
+import AddFriend from "graphql-operations/operations/AddFriend";
+import RemoveFriend from "graphql-operations/operations/RemoveFriend";
 import SEO from "@/helpers/SEO";
 import englishList from "helpers-lib/src/englishList";
 import type {

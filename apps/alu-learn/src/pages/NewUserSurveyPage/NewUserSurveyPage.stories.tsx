@@ -1,12 +1,11 @@
 import NewUserSurveyPage from ".";
-import withFullContext from "@/helpers/withFullContext";
 import withNavbar from "@/helpers/withNavbar";
 import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Pages/NewUserSurveyPage",
   component: NewUserSurveyPage,
-  decorators: [withNavbar, withFullContext],
+  decorators: [withNavbar],
 };
 
 const Template: ComponentStory<typeof NewUserSurveyPage> = (props) => (

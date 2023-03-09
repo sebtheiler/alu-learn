@@ -1,12 +1,11 @@
 import ProUpgradePage from ".";
-import withFullContext from "@/helpers/withFullContext";
 import withNavbar from "@/helpers/withNavbar";
 import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Pages/ProUpgradePage",
   component: ProUpgradePage,
-  decorators: [withNavbar, withFullContext],
+  decorators: [withNavbar],
 };
 
 const Template: ComponentStory<typeof ProUpgradePage> = (args) => (

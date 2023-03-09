@@ -21,10 +21,12 @@ interface PopoverProps {
   className?: string;
   /**
    * Placement for the popover
+   * @default "bottom"
    */
   placement?: Placement;
   /**
    * What mouse action triggers the popover
+   * @default "hover"
    */
   trigger?: "hover" | "click";
   /**
@@ -44,6 +46,11 @@ interface PopoverProps {
    * specifying the `open` attribute.  Do not use unless absolutely required
    */
   open?: boolean;
+  /**
+   * Close when clicked on some other element
+   * @default true
+   */
+  closeOnOutsideClick?: boolean;
 }
 
 /**
@@ -60,6 +67,7 @@ export default function Popover({
   onOpenCallback,
   onCloseCallback,
   open,
+  closeOnOutsideClick = true,
 }: PopoverProps) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -113,7 +121,7 @@ export default function Popover({
   }, [trigger, onOpenCallback, onCloseCallback]);
 
   useOutsideClick(popEl as HTMLElement, () => {
-    if (trigger === "click") {
+    if (closeOnOutsideClick && trigger === "click") {
       setIsPopoverOpen(false);
       onCloseCallback && onCloseCallback();
     }

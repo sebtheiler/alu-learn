@@ -3,7 +3,7 @@ import Button from "alu-ui/src/Button";
 import ButtonGroup from "alu-ui/src/ButtonGroup";
 import Ad from "@/components/Ad";
 import ReviewsDoneSVG from "@/components/ReviewsDoneSVG";
-import StreakInfo from "@/graphql/StreakInfo";
+import StreakInfo from "graphql-operations/operations/StreakInfo";
 import classNames from "helpers-lib/src/classNames";
 import type { Query } from "@/types";
 import { useQuery } from "@apollo/client";
@@ -69,7 +69,8 @@ export default function FinishedStudying({
   const router = useRouter();
 
   const { data: streakData, loading } = useQuery<{ me: Query["me"] }>(
-    StreakInfo
+    StreakInfo,
+    { fetchPolicy: "no-cache" }
   );
   const me = streakData?.me;
   const newStreak = me?.currentStreak as number;

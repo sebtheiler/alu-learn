@@ -1,5 +1,5 @@
 import processCloze from "./processCloze";
-import { ClozeColor } from "@/editor/plugins/ClozeDeletionPlugin/colors";
+import type { ClozeColor } from "lexical-editor/src/plugins/ClozeDeletionPlugin/colors";
 import { clozeRegex } from "@/globals";
 import type { Intervals, SchedulerReviewInstance } from "@/types";
 import type {

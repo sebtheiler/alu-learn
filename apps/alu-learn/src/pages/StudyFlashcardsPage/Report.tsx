@@ -3,7 +3,7 @@ import Button from "alu-ui/src/Button";
 import Checkbox from "alu-ui/src/Checkbox";
 import Modal from "alu-ui/src/Modal";
 import Tooltip from "alu-ui/src/Tooltip";
-import CreateFlashcardReport from "@/graphql/CreateFlashcardReport";
+import CreateFlashcardReport from "graphql-operations/operations/CreateFlashcardReport";
 import type { Mutation, MutationCreateFlashcardReportArgs } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faFlag } from "@fortawesome/free-solid-svg-icons";

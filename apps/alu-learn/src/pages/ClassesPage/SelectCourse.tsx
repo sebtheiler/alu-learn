@@ -1,5 +1,5 @@
 import ComboBox from "alu-ui/src/ComboBox";
-import SearchCourses from "@/graphql/SearchCourses";
+import SearchCourses from "graphql-operations/operations/SearchCourses";
 import { useDebounce } from "helpers-lib/src/hooks/useDebounce";
 import type { Course, Option, Query, QuerySearchCoursesArgs } from "@/types";
 import { useLazyQuery } from "@apollo/client";

@@ -1,4 +1,4 @@
-import flattenLexical from "@/helpers/flattenLexical";
+import flattenLexical from "lexical-editor/src/helpers/flattenLexical";
 import { Flashcard } from "@/types";
 
 /**
@@ -7,15 +7,15 @@ import { Flashcard } from "@/types";
  * @returns `hasPart` data for the flashcards Education Q&A SEO attribute
  * @see https://developers.google.com/search/docs/appearance/structured-data/education-qa
  */
-const flashcardsSEO = async (flashcards: Flashcard[]) => {
+const flashcardsSEO = (flashcards: Flashcard[]) => {
   const fronts: string[] = [];
   const backs: string[] = [];
   for (const flashcard of flashcards) {
     try {
       const front = JSON.stringify(JSON.parse(flashcard.fields as string)[0]);
       const back = JSON.stringify(JSON.parse(flashcard.fields as string)[1]);
-      const flattenedFront = front && (await flattenLexical(front));
-      const flattenedBack = back && (await flattenLexical(back));
+      const flattenedFront = front && flattenLexical(front);
+      const flattenedBack = back && flattenLexical(back);
 
       if (flattenedFront && flattenedBack) {
         fronts.push(flattenedFront);

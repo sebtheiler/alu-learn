@@ -22,4 +22,14 @@ In the `package.json` for the app/package, add:
 
 For `*.cjs` configs, create the given `.cjs` file in the app/package, then write `module.exports = require("config/my-config.cjs");`. For `tsconfig.json`, use `"extends": "config/tsconfig.json" in the app/package's `tsconfig`.
 
+Example `tsconfig.json`:
+
+```json
+{
+  "extends": "config/tsconfig.json",
+  "include": ["*.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
+```
+
 N.B.: ESLint configs are handled in the `eslint-config-custom` package, not here.

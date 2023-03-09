@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Ubuntu", sans-serif;
+}
+
+@font-face {
+  font-family: "Ubuntu";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Ubuntu"), local("Ubuntu-Regular"),
+    url(https://fonts.gstatic.com/s/ubuntu/v15/4iCs6KVjbNBYlgo6eA.ttf)
+      format("truetype");
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* From react-complex-tree style.css */
+.rct-tree-drag-between-line {
+  position: absolute;
+  right: 0;
+  top: -2px;
+  height: 4px;
+  background-color: #0366d6;
+}
+
+/* Fonts are different for math elements */
+.katex * {
+  font-family: KaTeX_Main, "Times New Roman", serif;
+}

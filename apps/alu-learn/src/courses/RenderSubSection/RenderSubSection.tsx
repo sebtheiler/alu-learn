@@ -1,6 +1,5 @@
 import CoursePageContext from "../RenderCourse/context";
 import SubSectionPopover from "./SubSectionPopover";
-import Popover from "alu-ui/src/Popover";
 import type { AssignedState, CourseSection, SubSection } from "@/types";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -65,17 +64,10 @@ export default function RenderSubSection({
           {subSection?.title}
         </p>
         <div className="w-24 h-24 mx-auto sub-section-drag-handle">
-          <Popover
-            popover={
-              <SubSectionPopover
-                subSection={subSection}
-                courseSection={courseSection}
-                assigned={assigned}
-              />
-            }
-            trigger="click"
-            placement="bottom"
-            arrow
+          <SubSectionPopover
+            subSection={subSection}
+            courseSection={courseSection}
+            assigned={assigned}
           >
             <div
               className="w-full h-full rounded-full flex items-center text-center border-4 border-gray-200 hover:scale-110 hover:shadow-lg transition hover:cursor-pointer"
@@ -104,7 +96,7 @@ export default function RenderSubSection({
                 </div>
               </div>
             </div>
-          </Popover>
+          </SubSectionPopover>
         </div>
       </div>
     </div>

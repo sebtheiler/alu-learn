@@ -1,7 +1,7 @@
 import Checkbox from "alu-ui/src/Checkbox";
 import Select from "alu-ui/src/Select";
 import TextInput from "alu-ui/src/TextInput";
-import UpdateUser from "@/graphql/UpdateUser";
+import UpdateUser from "graphql-operations/operations/UpdateUser";
 import SEO from "@/helpers/SEO";
 import { useDebounce } from "helpers-lib/src/hooks/useDebounce";
 import { useMutation } from "@apollo/client";
@@ -9,6 +9,7 @@ import type { UserType } from "@prisma/client";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { useState } from "react";
+import SelectCourse from "../ClassesPage/SelectCourse";
 
 const userTypeOptions = [
   {
@@ -63,6 +64,7 @@ export interface SettingsPageProps {
   sendWeeklyReports?: boolean;
   sendGeneral?: boolean;
   unsubscribeAll?: boolean;
+  selectedAluReadCourseId?: string;
 }
 
 export default function SettingsPage({
@@ -75,6 +77,7 @@ export default function SettingsPage({
   sendWeeklyReports,
   sendGeneral,
   unsubscribeAll,
+  selectedAluReadCourseId,
 }: SettingsPageProps) {
   const [updateUser] = useMutation(UpdateUser);
   const router = useRouter();
@@ -86,7 +89,7 @@ export default function SettingsPage({
       updateUser({ variables: { name: debouncedName } });
   }, [debouncedName, name, updateUser]);
 
-  const [targetNumReviewsState, settargetNumReviewsState] =
+  const [targetNumReviewsState, setTargetNumReviewsState] =
     useState(targetNumReviews);
   const debouncedtargetNumReviews = useDebounce(targetNumReviewsState, 500);
   useEffect(() => {
@@ -98,6 +101,13 @@ export default function SettingsPage({
         variables: { targetNumReviews: debouncedtargetNumReviews },
       });
   }, [debouncedtargetNumReviews, targetNumReviews, updateUser]);
+
+  const [selectedAluReadCourseIdState, _setSelectedAluReadCourseIdState] =
+    useState<string | null>(selectedAluReadCourseId ?? null);
+  const setSelectedAluReadCourseIdState = (id: string) => {
+    _setSelectedAluReadCourseIdState(id);
+    updateUser({ variables: { selectedAluReadCourseId: id } });
+  };
 
   return (
     <>
@@ -125,7 +135,7 @@ export default function SettingsPage({
             type="number"
             className="mb-4"
             value={targetNumReviewsState}
-            onChange={(e) => settargetNumReviewsState(parseInt(e.target.value))}
+            onChange={(e) => setTargetNumReviewsState(parseInt(e.target.value))}
             required
           />
           <div className="mb-4">
@@ -213,6 +223,15 @@ export default function SettingsPage({
             }}
             defaultChecked={unsubscribeAll}
             id="unsubscribeAll"
+          />
+        </div>
+        <div className="mt-5">
+          <h3 className="text-xl font-bold">Alu Read (experimental)</h3>
+
+          <p className="text-bold">Created Flashcard Destination</p>
+          <SelectCourse
+            selectedCourseId={selectedAluReadCourseIdState}
+            setSelectedCourseId={setSelectedAluReadCourseIdState}
           />
         </div>
       </div>

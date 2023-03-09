@@ -1,5 +1,5 @@
 import Button from "alu-ui/src/Button";
-import LexicalEditor from "@/editor/LexicalEditor";
+import LexicalEditor from "lexical-editor/src/LexicalEditor";
 import SEO from "@/helpers/SEO";
 import classNames from "helpers-lib/src/classNames";
 import type { ReviewInstanceWithFlashcard } from "@/types";

@@ -8,8 +8,8 @@ import TextInput from "alu-ui/src/TextInput";
 import Tooltip from "alu-ui/src/Tooltip";
 import CoursePageContext from "@/courses/RenderCourse/context";
 import RenderSubSection from "@/courses/RenderSubSection";
-import CreateSubSection from "@/graphql/CreateSubSection";
-import MoveSubSection from "@/graphql/MoveSubSection";
+import CreateSubSection from "graphql-operations/operations/CreateSubSection";
+import MoveSubSection from "graphql-operations/operations/MoveSubSection";
 import classNames from "helpers-lib/src/classNames";
 import { getElementsVals } from "helpers-lib/src/getElementsVals";
 import type {
@@ -23,7 +23,7 @@ import type {
 import { useMutation } from "@apollo/client";
 import { faGripHorizontal, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 import type { SortableEvent } from "react-sortablejs";
 
@@ -64,6 +64,7 @@ export default function RenderCourseSection({
     MutationCreateSubSectionArgs
   >(CreateSubSection);
 
+  // This needs to be a separate state from the props because of `ReactSortable`
   const [subSections, setSubSections] = useState<SubSectionWithId[]>(
     courseSection.subSections as SubSectionWithId[]
   );
@@ -71,6 +72,11 @@ export default function RenderCourseSection({
     { moveSubSection: Mutation["moveSubSection"] },
     MutationMoveSubSectionArgs
   >(MoveSubSection);
+
+  // Update sub sections when props change
+  useEffect(() => {
+    setSubSections(courseSection.subSections as SubSectionWithId[]);
+  }, [courseSection.subSections]);
 
   const handleCreateSubSection = async (
     e: React.FormEvent<HTMLFormElement>

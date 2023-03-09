@@ -17,6 +17,7 @@ export const authOptions = {
     GoogleProvider({
       clientId: process.env.NEXT_PUBLIC_GOOGLE_ID as string,
       clientSecret: process.env.GOOGLE_SECRET as string,
+      allowDangerousEmailAccountLinking: true,
     }),
     EmailProvider({
       server: {
@@ -41,7 +42,7 @@ export const authOptions = {
           to: identifier,
           subject: `Sign in to Alu Learn (${new Date()
             .toISOString()
-            .slice(0, 16)})`,
+            .slice(0, 10)})`,
           html,
         });
         if (!result) return;

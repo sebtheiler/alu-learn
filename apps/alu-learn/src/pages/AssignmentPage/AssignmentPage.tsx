@@ -1,5 +1,5 @@
 import Checkbox from "alu-ui/src/Checkbox";
-import UpdateAssignment from "@/graphql/UpdateAssignment";
+import UpdateAssignment from "graphql-operations/operations/UpdateAssignment";
 import SEO from "@/helpers/SEO";
 import englishList from "helpers-lib/src/englishList";
 import formatTimeTaken from "helpers-lib/src/formatTimeTaken";

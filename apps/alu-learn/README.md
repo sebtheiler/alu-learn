@@ -1,4 +1,6 @@
-# Alu Learn
+# [Alu Learn](https://alulearn.com)
+
+Alu Learn is an online spaced repetition system that allows you to create and share courses of flashcards with a fun, gamified interface
 
 ## Development-Build Setup instructions
 
@@ -40,3 +42,7 @@ exit
 
 yarn prisma db push
 ```
+
+## Updating S3/Spaces CORS
+
+The CORS config is stored on `/home/aluadmin/s3cors.xml`. After changing the file, update the CORS configuration with `s3cmd setcors ./s3cors.xml "s3://alu-user-uploads"`.

@@ -7,7 +7,7 @@ import {
   SOURCE_TEXT_MAX_LENS,
   TWO_SIDED_FLASHCARDS,
 } from "@/globals";
-import { generateLexicalElement } from "@/helpers/blankLexicalElement";
+import { generateLexicalElement } from "lexical-editor/src/helpers/blankLexicalElement";
 import type {
   Course,
   CourseSection,

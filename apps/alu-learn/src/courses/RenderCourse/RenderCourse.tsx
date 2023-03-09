@@ -9,9 +9,9 @@ import LinkButton from "alu-ui/src/LinkButton";
 import Ad from "@/components/Ad";
 import SidebarComponents from "@/components/SidebarComponents";
 import RenderCourseSection from "@/courses/RenderCourseSection";
-import ArchiveCourse from "@/graphql/ArchiveCourse";
-import CalculateSubSectionsPercentComplete from "@/graphql/CalculateSubSectionsPercentComplete";
-import MoveCourseSection from "@/graphql/MoveCourseSection";
+import ArchiveCourse from "graphql-operations/operations/ArchiveCourse";
+import CalculateSubSectionsPercentComplete from "graphql-operations/operations/CalculateSubSectionsPercentComplete";
+import MoveCourseSection from "graphql-operations/operations/MoveCourseSection";
 import classNames from "helpers-lib/src/classNames";
 import type {
   Course,

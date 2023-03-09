@@ -1,11 +1,9 @@
 import Navbar from ".";
-import withFullContext from "@/helpers/withFullContext";
 import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Components/Navbar",
   component: Navbar,
-  decorators: [withFullContext],
 };
 
 const Template: ComponentStory<typeof Navbar> = (args) => <Navbar {...args} />;

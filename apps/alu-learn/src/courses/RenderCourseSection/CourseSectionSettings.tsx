@@ -5,15 +5,15 @@ import ButtonGroup from "alu-ui/src/ButtonGroup";
 import Modal from "alu-ui/src/Modal";
 import Select from "alu-ui/src/Select";
 import TextInput from "alu-ui/src/TextInput";
-import IconTooltip from "@/components/IconTooltip";
+import IconTooltip from "alu-ui/src/IconTooltip";
 import CoursePageContext from "@/courses/RenderCourse/context";
-import DeleteCourseSection from "@/graphql/DeleteCourseSection";
-import UpdateCourseSection from "@/graphql/UpdateCourseSection";
+import DeleteCourseSection from "graphql-operations/operations/DeleteCourseSection";
+import UpdateCourseSection from "graphql-operations/operations/UpdateCourseSection";
 import { getElementsVals } from "helpers-lib/src/getElementsVals";
 import type { CourseSection } from "@/types";
 import { useMutation } from "@apollo/client";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 
 const colorOptions = [
   { value: "BLUE", label: "Blue" },

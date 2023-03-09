@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+  binaryTargets = ["native", "darwin", "darwin-arm64"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Topic {
+  id String @default(cuid()) @id
+  title String
+  createdAt DateTime @default(now())
+
+  parentArticleId String?
+  parentArticle Article? @relation("ArticleParentTopicChild", fields: [parentArticleId], references: [id])
+  childArticles Article[] @relation("TopicParentArticleChild")
+
+  parentTopicId String?
+  parentTopic Topic? @relation("TopicParentTopicChild", fields: [parentTopicId], references: [id])
+  childTopics Topic[] @relation("TopicParentTopicChild")
+}
+
+model Article {
+  id String @default(cuid()) @id
+  type String
+  title String
+  byline String?
+  originUrl String?
+  createdAt DateTime @default(now())
+  
+  dataPath String // Can be a file or URL
+
+  readingPoint String? // Where the user left off reading
+  lastReview DateTime?
+  nextReview DateTime @default(now())
+  priority Int?
+  aFactor Float @default(2)
+
+  parentArticleId String?
+  parentArticle Article? @relation("ArticleParentArticleChild", fields: [parentArticleId], references: [id])
+  childArticles Article[] @relation("ArticleParentArticleChild")
+
+  parentTopicId String?
+  parentTopic Topic? @relation("TopicParentArticleChild", fields: [parentTopicId], references: [id])
+  childTopics Topic[] @relation("ArticleParentTopicChild")
+
+  extracts Extract[] @relation("ArticleParentExtractChild")
+  reviews Review[]
+}
+
+model Extract {
+  id String @default(cuid()) @id
+  type String
+  data String // any sort of data (e.g., Lexical state, text, timestamps, etc.)
+  identifier String? // any data to identify this Extract with where from its article it was extracted
+  createdAt DateTime @default(now())
+
+  lastReview DateTime?
+  nextReview DateTime @default(now())
+  priority Int?
+  aFactor Float @default(2)
+
+  // Extracts are children of articles or extracts
+  parentArticleId String?
+  parentArticle Article? @relation("ArticleParentExtractChild", fields: [parentArticleId], references: [id])
+
+  parentExtractId String?
+  parentExtract Extract? @relation("ExtractParentExtractChild", fields: [parentExtractId], references: [id])
+  childExtracts Extract[] @relation("ExtractParentExtractChild")
+
+  reviews Review[]
+}
+
+model Review {
+  id String @default(cuid()) @id
+  createdAt DateTime @default(now())
+
+  priority Int?
+  nextReview DateTime?
+
+  articleId String?
+  article Article? @relation(fields: [articleId], references: [id])
+
+  extractId String?
+  extract Extract? @relation(fields: [extractId], references: [id])
+}

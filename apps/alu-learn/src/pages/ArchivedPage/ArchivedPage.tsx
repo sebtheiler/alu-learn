@@ -1,5 +1,5 @@
-import IconTooltip from "@/components/IconTooltip";
-import ArchiveCourse from "@/graphql/ArchiveCourse";
+import IconTooltip from "alu-ui/src/IconTooltip";
+import ArchiveCourse from "graphql-operations/operations/ArchiveCourse";
 import SEO from "@/helpers/SEO";
 import type { Course, Mutation, MutationArchiveCourseArgs } from "@/types";
 import { useMutation } from "@apollo/client";

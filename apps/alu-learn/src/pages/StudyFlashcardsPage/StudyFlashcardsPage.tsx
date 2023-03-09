@@ -6,9 +6,9 @@ import prepareFields from "./prepareFields";
 import Button from "alu-ui/src/Button";
 import ButtonGroup from "alu-ui/src/ButtonGroup";
 import ProgressBar from "@/components/ProgressBar";
-import CalculateReviewInstanceIntervalQuery from "@/graphql/CalculateReviewInstanceIntervalQuery";
-import StudyReviewInstance from "@/graphql/StudyReviewInstance";
-import UpdateReviewInstance from "@/graphql/UpdateReviewInstance";
+import CalculateReviewInstanceIntervalQuery from "graphql-operations/operations/CalculateReviewInstanceIntervalQuery";
+import StudyReviewInstance from "graphql-operations/operations/StudyReviewInstance";
+import UpdateReviewInstance from "graphql-operations/operations/UpdateReviewInstance";
 import SEO from "@/helpers/SEO";
 import classNames from "helpers-lib/src/classNames";
 import useWindowDimensions from "helpers-lib/src/hooks/useWindowDimensions";
@@ -225,6 +225,12 @@ export default function StudyFlashcardsPage({
         grade: grade as GQLGrade,
       },
     });
+
+    // If the user clicked a button, make sure to blur it so that pressing "space"
+    // to flip the next flashcard doesn't automatically click the button again
+    if (document.activeElement instanceof HTMLButtonElement) {
+      document.activeElement.blur();
+    }
   };
 
   const studyAgain = () => {
@@ -244,16 +250,6 @@ export default function StudyFlashcardsPage({
     setFinishedStudying(false);
     setNumReviewsStudiedInSession(0);
   };
-
-  // When studying ahead or studying again, automatically update the internal
-  // review instances state and the active review instance when the review
-  // instances prop is changed (due to `router.replace`)
-  useEffect(() => {
-    if (_reviewInstances.length === 0 && finishedStudying) {
-      _setReviewInstances(reviewInstances);
-    }
-    setActiveReviewInstance(reviewInstances[0] as ReviewInstanceWithFlashcard);
-  }, [_reviewInstances.length, reviewInstances, finishedStudying]);
 
   useEffect(() => {
     const keyUp = (event: KeyboardEvent) => {

@@ -1,5 +1,4 @@
 import HomePage from ".";
-import withFullContext from "@/helpers/withFullContext";
 import withNavbar from "@/helpers/withNavbar";
 import { ComponentStory } from "@storybook/react";
 
@@ -25,7 +24,7 @@ const courses = [
 export default {
   title: "pages/HomePage",
   component: HomePage,
-  decorators: [withNavbar, withFullContext],
+  decorators: [withNavbar],
 };
 
 const Template: ComponentStory<typeof HomePage> = (args) => (

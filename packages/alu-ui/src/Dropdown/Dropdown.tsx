@@ -42,6 +42,14 @@ export type MenuOption =
        * If true, ignore other options and place a horizontal line in the dropdown
        */
       divider: true;
+
+      // If these aren't here, `tsc` throws annoyingly inaccurate errors
+      text: undefined;
+      href: undefined;
+      onClick: undefined;
+      faIcon: undefined;
+      active: undefined;
+      disabled: undefined;
     };
 
 interface DropdownProps {

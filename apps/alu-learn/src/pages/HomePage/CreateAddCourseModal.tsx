@@ -2,8 +2,8 @@ import SelectCourse from "../ClassesPage/SelectCourse";
 import AsyncForm from "alu-ui/src/AsyncForm";
 import Modal from "alu-ui/src/Modal";
 import TextInput from "alu-ui/src/TextInput";
-import CreateCourse from "@/graphql/CreateCourse";
-import JoinCourse from "@/graphql/JoinCourse";
+import CreateCourse from "graphql-operations/operations/CreateCourse";
+import JoinCourse from "graphql-operations/operations/JoinCourse";
 import { getElementsVals } from "helpers-lib/src/getElementsVals";
 import type {
   Mutation,

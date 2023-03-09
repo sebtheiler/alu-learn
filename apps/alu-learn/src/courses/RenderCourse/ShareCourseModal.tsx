@@ -5,11 +5,11 @@ import Modal from "alu-ui/src/Modal";
 import Select from "alu-ui/src/Select";
 import CopyLink from "@/components/CopyLink";
 import DisplayUserInline from "@/components/DisplayUserInline";
-import IconTooltip from "@/components/IconTooltip";
+import IconTooltip from "alu-ui/src/IconTooltip";
 import SearchUser from "@/components/SearchUser";
-import AddCourseOwner from "@/graphql/AddCourseOwner";
-import RemoveCourseOwner from "@/graphql/RemoveCourseOwner";
-import UpdateCourse from "@/graphql/UpdateCourse";
+import AddCourseOwner from "graphql-operations/operations/AddCourseOwner";
+import RemoveCourseOwner from "graphql-operations/operations/RemoveCourseOwner";
+import UpdateCourse from "graphql-operations/operations/UpdateCourse";
 import useMeStore from "@/stores/meStore";
 import type {
   Course,

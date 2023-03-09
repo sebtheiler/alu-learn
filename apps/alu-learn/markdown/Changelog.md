@@ -1,8 +1,24 @@
 ---
 title: "Changelog"
 path: "changelog"
-description: "Alu Learn changelog"
+description: "Alu Learn Changelog"
 ---
+
+## Bug Squashing Galore - Wed Mar 8 - 2.5.1
+
+As the title would suggest, this update cleans up a lot of bugs that have been plaguing Alu for quite some time.
+
+- **Insert Cloze Hotkey:** You may now press Ctrl + Shift + C to insert a cloze deletion
+- **Sign-in with Google:** Everyone can now use Google sign-in, even if you created your account before October, 2022, when the option was introduced.
+- Various flashcard fixes:
+  - Fixed an issue where autosave would cause the editor to lose focus when saving an edited flashcard
+  - Fixed an issue where changes when editing subsections would not show the changes until the page was reloaded and an issue where clicking on the subsection edit modal would cause it to close
+  - Fixed an issue where flashcards would not appear to be rearranged after moving them
+- Studying fixes
+  - Fixed a bug where the reviews done indicator would not properly increase after studying a batch of flashcards
+  - Fixed a bug where pressing one of the four buttons to self-rate your recall of a flashcard, rather than using the number keys 1-4, would not allow you to select flashcards for the rest of the study session
+  - Fixed a bug where the back of flashcards would temporarily display the very first flashcard studied in a session after a self-rated response was selected
+- Improved landing page on mobile devices
 
 # Technical Changes & Bug Fixes - Feb 21 - 2.5.0
 
@@ -12,7 +28,7 @@ Alu has undergone some major technical changes in this update in preparation for
 - **Fixed Assignment Sub-section Sorting Order:** Sub-sections in assignments are now sorted properly
 - **Improved Assignment Display on Mobile:** Assignments are now more responsive and display better on smaller screens
 - **Fixed Sub-sections with Essential-only Assignments:** If a teacher assigned a sub-section as not essential only, but you clicked on it through the course's skill tree, it would erroneously only have you study essential flashcards for that sub-section. This has now been fixed.
-- **Brought Back Streak Easter Eggs:** Want to know what they are? Better get a high enough streak
+- **Brought Back Streak Easter Eggs:** Want to know what they are? Better get a high enough streak :)
 
 ## Auto-Flashcards in Other Languages - Feb 15 - 2.4.2
 

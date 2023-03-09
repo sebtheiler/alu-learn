@@ -5,7 +5,7 @@ import UpgradeSuccess from "./UpgradeSuccess";
 import AsyncButton from "alu-ui/src/AsyncButton";
 import Button from "alu-ui/src/Button";
 import CopyLink from "@/components/CopyLink";
-import CreateStripeSession from "@/graphql/CreateStripeSession";
+import CreateStripeSession from "graphql-operations/operations/CreateStripeSession";
 import SEO from "@/helpers/SEO";
 import classNames from "helpers-lib/src/classNames";
 import generateReferralLink from "@/helpers/generateReferralLink";

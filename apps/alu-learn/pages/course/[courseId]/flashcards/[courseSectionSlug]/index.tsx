@@ -56,7 +56,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     session?.user?.email
   );
 
-  const flashcardsHasPart = await flashcardsSEO(flashcards as Flashcard[]);
+  const flashcardsHasPart = flashcardsSEO(flashcards as Flashcard[]);
 
   return {
     props: {

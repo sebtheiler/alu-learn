@@ -7,7 +7,7 @@ import {
   languageToPrompt,
   SOURCE_TEXT_MAX_LENS,
 } from "@/globals";
-import GenerateAutoFlashcard from "@/graphql/GenerateAutoFlashcard";
+import GenerateAutoFlashcard from "graphql-operations/operations/GenerateAutoFlashcard";
 import SEO from "@/helpers/SEO";
 import capitalize from "helpers-lib/src/capitalize";
 import useGlobalModalStore from "@/stores/globalModalStore";

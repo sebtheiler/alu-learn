@@ -54,13 +54,13 @@ export default function LandingPage() {
       <div>
         <div
           style={{ height: `${(height ?? 1080) - 100}px` }}
-          className="w-100 bg-alu-dark-purple"
+          className="w-100 bg-alu-dark-purple overflow-hidden"
         >
           <div className="grid h-full items-center text-center md:grid-cols-1 lg:grid-cols-2 lg:text-left">
             <div
               className={classNames(
                 "mx-6 rounded-2xl bg-white py-10 text-alu-dark-purple shadow-lg shadow-violet-400/40 md:mx-16",
-                height < 750 && "translate-y-16"
+                height < 770 && "translate-y-16"
               )}
             >
               <div className="sm:px-5 md:px-6 xl:px-9">
@@ -98,7 +98,7 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
-            {width > 1024 && <StudyingDemo />}
+            {width >= 1024 && <StudyingDemo />}
           </div>
         </div>
         <div

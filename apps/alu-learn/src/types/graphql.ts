@@ -1,5 +1,4 @@
 import { gql } from "@apollo/client";
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -272,11 +271,13 @@ export type MutationCreateCourseSectionArgs = {
 };
 
 export type MutationCreateFlashcardArgs = {
-  courseId: Scalars["String"];
-  courseSectionSlug: Scalars["String"];
+  courseId?: InputMaybe<Scalars["String"]>;
+  courseSectionSlug?: InputMaybe<Scalars["String"]>;
+  extractId?: InputMaybe<Scalars["String"]>;
   fields: Scalars["String"];
   flashcardType?: InputMaybe<FlashcardType>;
-  subSectionSlug: Scalars["String"];
+  isForAluRead?: InputMaybe<Scalars["Boolean"]>;
+  subSectionSlug?: InputMaybe<Scalars["String"]>;
   tags?: InputMaybe<Scalars["String"]>;
 };
 
@@ -432,6 +433,7 @@ export type MutationUpdateSubSectionArgs = {
 
 export type MutationUpdateUserArgs = {
   name?: InputMaybe<Scalars["String"]>;
+  selectedAluReadCourseId?: InputMaybe<Scalars["String"]>;
   sendGeneral?: InputMaybe<Scalars["Boolean"]>;
   sendMarketingResearch?: InputMaybe<Scalars["Boolean"]>;
   sendReminders?: InputMaybe<Scalars["Boolean"]>;

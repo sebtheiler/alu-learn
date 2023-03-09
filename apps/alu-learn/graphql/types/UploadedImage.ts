@@ -4,10 +4,12 @@ import cuid from "cuid";
 import fs from "fs";
 import checkImageMimeType from "helpers/checkImageMimeType";
 import enforceMaxStreamSize from "helpers/enforceMaxStreamSize";
+import getS3FilenamePrefix from "helpers/getS3FilenamePrefix";
 import getUserGQL from "helpers/getUserGQL";
 import uploadImageToS3 from "helpers/uploadImageToS3";
 import uploadStreamToS3 from "helpers/uploadStreamToS3";
 import sizeOf from "image-size";
+import s3 from "lib/s3";
 import { arg, extendType, nonNull, objectType, stringArg } from "nexus";
 
 const CHROME_USER_AGENT =
@@ -44,6 +46,8 @@ export const UploadedImagesMutation = extendType({
     t.field("uploadImage", {
       type: UploadedImage,
       description: "Upload an image",
+      deprecation:
+        "DEPRECATED: Please get a presigned PUT url using the `getPresignedPUTUrl` query and send a PUT request to that directly from the client",
       args: {
         image: nonNull(
           arg({
@@ -163,6 +167,85 @@ export const UploadedImagesMutation = extendType({
             errorMessage: `Upload failed: ${(error as any).message}`,
           });
         }
+      },
+    });
+    t.field("updateUploadedImage", {
+      type: UploadedImage,
+      description: "Update an uploaded image that the current user owns",
+      args: {
+        id: nonNull(stringArg()),
+        url: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        if (!user) return null;
+
+        const image = await ctx.prisma.uploadedImage.findUnique({
+          where: {
+            id: args.id,
+          },
+          select: {
+            uploadedById: true,
+          },
+        });
+        if (!image)
+          throw new ApolloError({
+            errorMessage: "Could not find image from the ID",
+          });
+        if (image.uploadedById !== user.id)
+          throw new ApolloError({
+            errorMessage: "Invalid permission to update image",
+          });
+
+        return ctx.prisma.uploadedImage.update({
+          where: { id: args.id },
+          data: {
+            url: args.url,
+          },
+        });
+      },
+    });
+  },
+});
+
+export const UploadedImagesQuery = extendType({
+  type: "Query",
+  definition(t) {
+    t.field("getPresignedPUTUrl", {
+      type: "String",
+      description: "Get a presigned PUT URL for uploading an image to S3",
+      args: {
+        contentType: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx);
+        if (!user) return null;
+
+        const filenamePrefix = getS3FilenamePrefix();
+        const uploadedImageId = cuid();
+        const filename = `uploadedImages/upload-${uploadedImageId}`;
+        const parsedFilename = `${filenamePrefix}/${filename}`;
+
+        const presignedUrl = await s3.getSignedUrlPromise("putObject", {
+          Bucket: process.env.DO_SPACE_NAME as string,
+          Key: parsedFilename,
+          ContentType: args.contentType,
+          ACL: "public-read",
+        });
+
+        ctx.prisma.uploadedImage.create({
+          data: {
+            id: uploadedImageId,
+            url: "https://example.com",
+            uploadedBy: {
+              connect: {
+                id: user.id,
+              },
+            },
+          },
+        });
+
+        return presignedUrl;
       },
     });
   },

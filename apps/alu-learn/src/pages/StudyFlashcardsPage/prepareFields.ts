@@ -1,4 +1,4 @@
-import { nodes } from "@/editor/LexicalEditor/LexicalEditor";
+import { nodes } from "lexical-editor/src/LexicalEditor/LexicalEditor";
 import { clozeRegex } from "@/globals";
 import type { ReviewInstance } from "@/types";
 import processCloze from "course/processCloze";

@@ -4,6 +4,7 @@ import ButtonGroup from "alu-ui/src/ButtonGroup";
 import classNames from "helpers-lib/src/classNames";
 import useGlobalModalStore from "@/stores/globalModalStore";
 import { useState } from "react";
+import useWindowDimensions from "helpers-lib/src/hooks/useWindowDimensions";
 
 const areYouReady = {
   id: "areYouReady",
@@ -57,6 +58,7 @@ export default function StudyingDemo() {
   const [activeReviewInstance, setActiveReviewInstance] = useState(
     exampleReviewInstances[0]
   );
+  const { height } = useWindowDimensions();
 
   const updateCard = (correct: boolean) => {
     return (e: React.MouseEvent) => {
@@ -88,7 +90,7 @@ export default function StudyingDemo() {
   };
 
   return (
-    <div className="overflow-hidden">
+    <div className={height >= 770 ? "translate-y-5" : "translate-y-20"}>
       {!hasClicked && (
         <div className="w-[20rem] mx-auto">
           <div className="absolute -translate-y-6 -translate-x-20 w-20 h-20 bg-red-500 rounded-full flex items-center justify-center">
@@ -130,7 +132,7 @@ export default function StudyingDemo() {
           overrideContent={
             activeReviewInstance.id === areYouReady.id ? (
               <Button
-                className="w-48"
+                className="w-48 h-16 translate-y-full mt-20"
                 onClick={(e) => {
                   e.stopPropagation();
                   setRegisterModalOpen(true);

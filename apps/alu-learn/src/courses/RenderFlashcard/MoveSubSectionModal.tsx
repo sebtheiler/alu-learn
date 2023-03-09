@@ -1,6 +1,6 @@
 import Modal from "alu-ui/src/Modal";
-import GetCourseSubSections from "@/graphql/GetCourseSubSections";
-import MoveFlashcardToSubSection from "@/graphql/MoveFlashcardToSubSection";
+import GetCourseSubSections from "graphql-operations/operations/GetCourseSubSections";
+import MoveFlashcardToSubSection from "graphql-operations/operations/MoveFlashcardToSubSection";
 import type {
   Mutation,
   MutationMoveFlashcardToSubSectionArgs,

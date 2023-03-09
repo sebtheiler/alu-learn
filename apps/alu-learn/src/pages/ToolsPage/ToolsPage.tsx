@@ -1,8 +1,8 @@
 import AsyncButton from "alu-ui/src/AsyncButton";
 import ButtonGroup from "alu-ui/src/ButtonGroup";
 import RenderFlashcard from "@/courses/RenderFlashcard";
-import FindHardestReviewInstances from "@/graphql/FindHardestReviewInstances";
-import FindHardestSubSection from "@/graphql/FindHardestSubSections";
+import FindHardestReviewInstances from "graphql-operations/operations/FindHardestReviewInstances";
+import FindHardestSubSection from "graphql-operations/operations/FindHardestSubSections";
 import SEO from "@/helpers/SEO";
 import useProStore from "@/stores/proStore";
 import type { Query } from "@/types";

@@ -2,7 +2,7 @@ import AsyncForm from "alu-ui/src/AsyncForm";
 import Button from "alu-ui/src/Button";
 import Modal from "alu-ui/src/Modal";
 import TextInput from "alu-ui/src/TextInput";
-import CreateCourseSection from "@/graphql/CreateCourseSection";
+import CreateCourseSection from "graphql-operations/operations/CreateCourseSection";
 import { getElementsVals } from "helpers-lib/src/getElementsVals";
 import type { Course } from "@/types";
 import { useMutation } from "@apollo/client";

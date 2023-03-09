@@ -3,12 +3,12 @@ import Select from "alu-ui/src/Select";
 import TextInput from "alu-ui/src/TextInput";
 import CopyLink from "@/components/CopyLink";
 import DisplayUserInline from "@/components/DisplayUserInline";
-import IconTooltip from "@/components/IconTooltip";
+import IconTooltip from "alu-ui/src/IconTooltip";
 import SearchUser from "@/components/SearchUser";
-import LexicalEditor from "@/editor/LexicalEditor";
-import AddCourseOwner from "@/graphql/AddCourseOwner";
-import RemoveCourseOwner from "@/graphql/RemoveCourseOwner";
-import UpdateCourse from "@/graphql/UpdateCourse";
+import LexicalEditor from "lexical-editor/src/LexicalEditor";
+import AddCourseOwner from "graphql-operations/operations/AddCourseOwner";
+import RemoveCourseOwner from "graphql-operations/operations/RemoveCourseOwner";
+import UpdateCourse from "graphql-operations/operations/UpdateCourse";
 import SEO from "@/helpers/SEO";
 import { getElementsVals } from "helpers-lib/src/getElementsVals";
 import {

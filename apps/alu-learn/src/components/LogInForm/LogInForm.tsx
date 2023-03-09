@@ -32,6 +32,7 @@ export default function LogInForm({ type }: { type: "REGISTER" | "SIGNIN" }) {
           alt="Google Logo"
           width={25}
           height={25}
+          className="my-0"
         />
         {type === "REGISTER" ? "Continue with Google" : "Sign-in with Google"}
       </Button>
@@ -83,10 +84,6 @@ export default function LogInForm({ type }: { type: "REGISTER" | "SIGNIN" }) {
           />
         </AsyncForm>
       )}
-      <p className="text-center text-orange-600 mt-3">
-        Note: If you created your Alu account prior to October 3, you{" "}
-        <span className="font-bold italic">must</span> sign-in with your email
-      </p>
     </>
   );
 }

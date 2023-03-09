@@ -1,7 +1,7 @@
 import { GRADES } from "../StudyFlashcardsPage/helpers";
 import styles from "./AluBotGamePage.module.scss";
-import LexicalEditor from "@/editor/LexicalEditor";
-import StudyReviewInstance from "@/graphql/StudyReviewInstance";
+import LexicalEditor from "lexical-editor/src/LexicalEditor";
+import StudyReviewInstance from "graphql-operations/operations/StudyReviewInstance";
 import SEO from "@/helpers/SEO";
 import classNames from "helpers-lib/src/classNames";
 import stringifyReviewInstanceField from "@/helpers/stringifyReviewInstanceField";

@@ -2,13 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  transpilePackages: ["alu-ui"],
+  transpilePackages: ["alu-ui", "lexical-editor"],
   images: {
     dangerouslyAllowSVG: true,
     domains: [
       "lh3.googleusercontent.com",
       "alu-user-uploads.nyc3.digitaloceanspaces.com",
       "alulearn.com",
+      "useruploads.alulearn.com",
     ],
   },
   webpack(config) {
@@ -19,27 +20,13 @@ const nextConfig = {
       use: ["@svgr/webpack"],
     });
 
-    // // Add support for importing TypeScript files
-    // config.module.rules.push({
-    //   test: /\.(ts|tsx)$/,
-    //   use: [
-    //     {
-    //       loader: 'babel-loader',
-    //       options: {
-    //         presets: ['next/babel'],
-    //       },
-    //     },
-    //     {
-    //       loader: 'ts-loader',
-    //       options: {
-    //         transpileOnly: true,
-    //       },
-    //     },
-    //   ],
-    // });
-
     return config;
   },
 };
 
-module.exports = nextConfig;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const withBundleAnalyzerConf = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE_BUNDLE_SIZE === "true",
+});
+
+module.exports = withBundleAnalyzerConf(nextConfig);

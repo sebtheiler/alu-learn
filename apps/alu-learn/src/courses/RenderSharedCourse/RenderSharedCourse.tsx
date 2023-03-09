@@ -1,5 +1,5 @@
 import DisplayUserInline from "@/components/DisplayUserInline";
-import LexicalEditor from "@/editor/LexicalEditor";
+import LexicalEditor from "lexical-editor/src/LexicalEditor";
 import type { Course } from "@/types";
 import Link from "next/link";
 import { Fragment } from "react";

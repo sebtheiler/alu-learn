@@ -4,7 +4,7 @@ import Checkbox from "alu-ui/src/Checkbox";
 import Modal from "alu-ui/src/Modal";
 import TextInput from "alu-ui/src/TextInput";
 import InfoBubble from "@/components/InfoBubble";
-import CreateAssignment from "@/graphql/CreateAssignment";
+import CreateAssignment from "graphql-operations/operations/CreateAssignment";
 import { getElementsVals } from "helpers-lib/src/getElementsVals";
 import {
   Assignment,

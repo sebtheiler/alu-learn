@@ -1,11 +1,9 @@
 import DisplayUserInline from ".";
-import withFullContext from "@/helpers/withFullContext";
 import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Components/DisplayUserInline",
   component: DisplayUserInline,
-  decorators: [withFullContext],
 };
 
 const Template: ComponentStory<typeof DisplayUserInline> = (args) => (

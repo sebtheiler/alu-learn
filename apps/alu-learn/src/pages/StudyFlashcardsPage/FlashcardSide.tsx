@@ -1,7 +1,7 @@
 import { TIME_BEFORE_SWAP } from "./helpers";
-import LexicalEditor from "@/editor/LexicalEditor";
+import LexicalEditor from "lexical-editor/src/LexicalEditor";
 import classNames from "helpers-lib/src/classNames";
-import flattenLexical from "@/helpers/flattenLexical";
+import flattenLexical from "lexical-editor/src/helpers/flattenLexical";
 import { faStar, faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
@@ -55,7 +55,7 @@ export default function FlashcardSide({
 
   const [playingTTS, setPlayingTTS] = useState(false);
 
-  const playTTS = async (e: React.MouseEvent<SVGElement>) => {
+  const playTTS = (e: React.MouseEvent<SVGElement>) => {
     e.stopPropagation();
     if (!("speechSynthesis" in window)) return;
     const synthesis = window.speechSynthesis;
@@ -63,7 +63,7 @@ export default function FlashcardSide({
     if (playingTTS) {
       synthesis.cancel();
     } else {
-      const text = await flattenLexical(field);
+      const text = flattenLexical(field);
       if (text) {
         setPlayingTTS(true);
         const utterance = new SpeechSynthesisUtterance();

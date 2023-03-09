@@ -114,6 +114,8 @@ model User {
   unsubscribeAll        Boolean   @default(false)
   sentReengagement      DateTime?
 
+  selectedAluReadCourseId  String?
+
   // For Algorithm Research
   dayChosenForAlgorithmResearch DateTime?
 }
@@ -306,17 +308,16 @@ model Flashcard {
 
   fields String // Stored as string over Json for simplicity in searching the value
   tags   String @default("")
+  type FlashcardType @default(NORMAL)
+  index Int
 
   subSection   SubSection @relation(fields: [subSectionId], references: [id], onDelete: Cascade)
   subSectionId String
 
-  type FlashcardType @default(NORMAL)
-
   reviewInstances ReviewInstance[]
-
-  index Int
-
   reports FlashcardReport[]
+
+  extractId String?
 
   // Although this is redundant, it often saves database operations
   // and is therefore useful

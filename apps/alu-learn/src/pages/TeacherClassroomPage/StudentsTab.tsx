@@ -1,8 +1,8 @@
 import Button from "alu-ui/src/Button";
 import Modal from "alu-ui/src/Modal";
 import CopyLink from "@/components/CopyLink";
-import IconTooltip from "@/components/IconTooltip";
-import RemoveStudentFromClassroom from "@/graphql/RemoveStudentFromClassroom";
+import IconTooltip from "alu-ui/src/IconTooltip";
+import RemoveStudentFromClassroom from "graphql-operations/operations/RemoveStudentFromClassroom";
 import formatPlural from "helpers-lib/src/formatPlural";
 import formatTimeTaken from "helpers-lib/src/formatTimeTaken";
 import type {

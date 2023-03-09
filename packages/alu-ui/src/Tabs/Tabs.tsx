@@ -17,26 +17,30 @@ interface TabsProps {
    * Called when a tab is selected
    */
   callback(selectedTab: string): void;
+  /**
+   * TODO: this isn't working
+   */
+  defaultValue?: string;
   className?: string;
 }
 
 /**
  * Tabs that you can select from
  */
-export default function Tabs({ tabs, callback, className }: TabsProps) {
+export default function Tabs({ tabs, callback, defaultValue, className }: TabsProps) {
   return (
-    <div className={classNames("w-full max-w-md px-2 sm:px-0", className)}>
+    <div className={classNames("w-full px-2 sm:px-0", className)}>
       <HeadlessTab.Group>
-        <HeadlessTab.List className="flex space-x-2 rounded-full border-alu-light-gray-darker border-2 bg-alu-light-gray p-1">
+        <HeadlessTab.List className="flex space-x-2 rounded-full border-alu-light-gray-darker border-2 bg-alu-light-gray p-1" defaultValue={defaultValue}>
           {tabs.map((tab) => (
             <HeadlessTab
               key={tab.value}
               className={({ selected }) =>
                 classNames(
-                  "w-full rounded-full py-2.5 text-sm font-medium leading-5 text-white focus:outline-none transition-all duration-300",
+                  "w-full rounded-full py-2.5 text-sm font-medium leading-5 focus:outline-none transition-all duration-300",
                   selected
-                    ? "bg-alu-primary-purple shadow"
-                    : "text-alu-primary-purple hover:bg-white/[0.12]"
+                    ? "bg-alu-primary-purple shadow text-white"
+                    : "text-alu-primary-purple hover:bg-alu-primary-purple/5"
                 )
               }
               onClick={() => callback(tab.value)}

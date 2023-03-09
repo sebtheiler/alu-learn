@@ -1,6 +1,6 @@
 import RenderFlashcard from "../RenderFlashcard";
 import Ad from "@/components/Ad";
-import MoveFlashcard from "@/graphql/MoveFlashcard";
+import MoveFlashcard from "graphql-operations/operations/MoveFlashcard";
 import type {
   FlashcardWithId,
   Mutation,
@@ -62,8 +62,8 @@ export default function FlashcardList({
 
   // When the flashcards prop changes, update the internal `_flashcards` state
   useEffect(() => {
-    if (flashcards !== _flashcards && flashcards) _setFlashcards(flashcards);
-  }, [flashcards, _flashcards]);
+    if (flashcards) _setFlashcards(flashcards);
+  }, [flashcards]);
 
   const renderedFlashcards = useMemo(() => {
     const deleteHandler = (flashcard: FlashcardWithId) => {

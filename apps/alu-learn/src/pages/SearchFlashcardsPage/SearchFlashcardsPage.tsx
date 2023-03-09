@@ -1,6 +1,6 @@
 import TextInput from "alu-ui/src/TextInput";
 import FlashcardList from "@/courses/FlashcardList";
-import SearchFlashcards from "@/graphql/SearchFlashcards";
+import SearchFlashcards from "graphql-operations/operations/SearchFlashcards";
 import SEO from "@/helpers/SEO";
 import { useDebounce } from "helpers-lib/src/hooks/useDebounce";
 import type {

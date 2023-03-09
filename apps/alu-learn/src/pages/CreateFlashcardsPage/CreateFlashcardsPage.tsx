@@ -1,13 +1,8 @@
-import styles from "./CreateFlashcardsPage.module.scss";
-import AsyncButton from "alu-ui/src/AsyncButton";
-import Select from "alu-ui/src/Select";
-import TextInput from "alu-ui/src/TextInput";
-import LexicalEditor from "@/editor/LexicalEditor";
 import { TWO_SIDED_FLASHCARDS } from "@/globals";
-import CreateFlashcard from "@/graphql/CreateFlashcard";
+import CreateFlashcard from "graphql-operations/operations/CreateFlashcard";
 import SEO from "@/helpers/SEO";
 import classNames from "helpers-lib/src/classNames";
-import flattenLexical from "@/helpers/flattenLexical";
+import flattenLexical from "lexical-editor/src/helpers/flattenLexical";
 import type {
   Course,
   FlashcardType,
@@ -19,7 +14,9 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { EditorState } from "lexical";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
+import useProStore from "@/stores/proStore";
+import FlashcardCreator from "./FlashcardCreator";
 
 interface FlashcardCreateHistory {
   previewText: string;
@@ -40,30 +37,31 @@ export default function CreateFlashcardsPage({
   courseSectionSlug,
   subSectionSlug,
 }: CreateFlashcardsPageProps) {
-  const [frontEditorState, setFrontEditorState] = useState<EditorState>();
-  const clearFrontEditorRef = useRef<HTMLButtonElement | null>(null);
-
-  const [backEditorState, setBackEditorState] = useState<EditorState>();
-  const clearBackEditorRef = useRef<HTMLButtonElement | null>(null);
-
   const [createFlashcard] = useMutation<
     { createFlashcard: Mutation["createFlashcard"] },
     MutationCreateFlashcardArgs
   >(CreateFlashcard);
-
-  const [flashcardType, setFlashcardType] = useState<FlashcardType>(
-    "NORMAL" as FlashcardType
-  );
-  const [tags, setTags] = useState("");
   const [error, setError] = useState("");
 
   const [history, setHistory] = useState<FlashcardCreateHistory[]>([]);
 
-  const createFlashcardHandler = async () => {
+  const isPro = useProStore((store) => store.isPro);
+
+  const createFlashcardHandler = async ({
+    frontEditorState,
+    backEditorState,
+    flashcardType,
+    tags,
+  }: {
+    frontEditorState: EditorState;
+    backEditorState: EditorState | undefined;
+    flashcardType: FlashcardType;
+    tags: string;
+  }) => {
     if (
-      (await flattenLexical(JSON.stringify(frontEditorState)))?.length === 0 ||
+      flattenLexical(JSON.stringify(frontEditorState))?.length === 0 ||
       (TWO_SIDED_FLASHCARDS.includes(flashcardType) &&
-        (await flattenLexical(JSON.stringify(backEditorState)))?.length === 0)
+        flattenLexical(JSON.stringify(backEditorState))?.length === 0)
     ) {
       setError("BLANK_SIDE");
       return;
@@ -106,9 +104,6 @@ export default function CreateFlashcardsPage({
         },
       ]);
     }
-
-    clearBackEditorRef.current?.click();
-    clearFrontEditorRef.current?.click();
   };
 
   return (
@@ -139,66 +134,15 @@ export default function CreateFlashcardsPage({
           </Link>
         </div>
         <div className="grid grid-cols-12">
-          <div className="md:col-start-4 col-span-12 md:col-span-6 mx-10 md:mx-5">
-            <div className="mt-2">
-              <Select
-                label="Flashcard Type"
-                options={[
-                  { value: "NORMAL", label: "Normal" },
-                  { value: "CLOZE", label: "Cloze (fill in the blanks)" },
-                ]}
-                onChange={(type) => setFlashcardType(type as FlashcardType)}
-                id="flashcardType"
-              />
-            </div>
-            <div className="mt-3">
-              <h3 className="font-bold text-xl">
-                {flashcardType === "NORMAL" && "Front"}
-                {flashcardType === "CLOZE" &&
-                  "Text (use the cloze deletion option to hide text)"}
-              </h3>
-              <LexicalEditor
-                namespace="frontEditor"
-                className={styles.editorMinHeight}
-                verticalOffset={112} // mt-28
-                clearEditorRef={clearFrontEditorRef}
-                onChange={(state) => setFrontEditorState(state)}
-                includeCloze={flashcardType === "CLOZE"}
-                overrideTab
-                autoFocus
-              />
-            </div>
-            {TWO_SIDED_FLASHCARDS.includes(flashcardType) && (
-              <div className="mt-5">
-                <h3 className="font-bold text-xl">Back</h3>
-                <LexicalEditor
-                  namespace="backEditor"
-                  className={styles.editorMinHeight}
-                  verticalOffset={112}
-                  clearEditorRef={clearBackEditorRef}
-                  onChange={(state) => setBackEditorState(state)}
-                  overrideTab
-                />
-              </div>
-            )}
-            <div className="mt-3">
-              {error === "BLANK_SIDE" && (
-                <p className="text-red-700 text-center mb-3">
-                  You cannot have a flashcard with blank sides
-                </p>
-              )}
-              <AsyncButton onClick={createFlashcardHandler} block>
-                Create
-              </AsyncButton>
-            </div>
-            <div className="my-3">
-              <TextInput
-                label="Tags (optional, separate with commas)"
-                onChange={(e) => setTags(e.target.value)}
-              />
-            </div>
+          <div className="lg:col-start-4 col-span-12 lg:col-span-6 mx-10 lg:mx-5">
+            <FlashcardCreator
+              createFlashcardCallback={createFlashcardHandler}
+              verticalOffset={112}
+              isPro={isPro}
+              error={error}
+            />
           </div>
-          <div className="md:col-start-10 col-span-12 md:col-span-3 mx-5 md:mx-3 mb-3">
+          <div className="lg:col-start-10 col-span-12 lg:col-span-3 mx-5 lg:mx-3 mb-3">
             <h3 className="font-bold text-xl">Select Sub-section</h3>
             {course.courseSections?.map((courseSection, i) => (
               <div key={i}>

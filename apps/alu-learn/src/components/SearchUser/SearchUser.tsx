@@ -1,5 +1,5 @@
 import ComboBox from "alu-ui/src/ComboBox";
-import SearchUsers from "@/graphql/SearchUsers";
+import SearchUsers from "graphql-operations/operations/SearchUsers";
 import { useDebounce } from "helpers-lib/src/hooks/useDebounce";
 import type { Option, Query, QuerySearchUsersArgs, User } from "@/types";
 import { useLazyQuery } from "@apollo/client";

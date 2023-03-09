@@ -3,6 +3,7 @@
   "globalDependencies": ["**/.env.*local"],
   "globalEnv": [
     "SECRET",
+    "DATABASE_URL",
     "NEXT_PUBLIC_SERVER_URL",
     "NEXT_PUBLIC_APP_ROOT_URL",
     "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
@@ -21,7 +22,8 @@
     "AWS_SECRET_ACCESS_KEY",
     "ALU_BOT_OAUTH_TOKEN",
     "SLACK_SIGNING_SECRET",
-    "DO_SPACE_NAME"
+    "DO_SPACE_NAME",
+    "ANALYZE_BUNDLE_SIZE"
   ],
   "pipeline": {
     "build": {

@@ -1,5 +1,6 @@
+"use client";
 import Navbar from "@/components/Navbar";
-import MeQuery from "@/graphql/MeQuery";
+import MeQuery from "graphql-operations/operations/MeQuery";
 import useMeStore from "@/stores/meStore";
 import useProStore from "@/stores/proStore";
 import type { Query, Streak } from "@/types";
@@ -8,6 +9,9 @@ import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import NextNProgress from "nextjs-progressbar";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
+
+const navbarDisabledOn = ["/alu-read/create-flashcards"];
 
 interface LayoutProps {
   session: Session;
@@ -22,6 +26,7 @@ export default function Layout({ children }: LayoutProps) {
   const { isPro, currentStreak, doneReviewsToday } = meData?.me ?? {};
   const { isPro: globalIsPro, setIsPro } = useProStore();
   const { setMe } = useMeStore();
+  const router = useRouter();
 
   useEffect(() => {
     if (
@@ -37,14 +42,16 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <>
       <NextNProgress color="#8166ee" options={{ showSpinner: false }} />
-      <Navbar
-        session={session}
-        status={status}
-        streak={
-          meData ? ({ currentStreak, doneReviewsToday } as Streak) : undefined
-        }
-        isPro={isPro ?? false}
-      />
+      {!navbarDisabledOn.includes(router.pathname) && (
+        <Navbar
+          session={session}
+          status={status}
+          streak={
+            meData ? ({ currentStreak, doneReviewsToday } as Streak) : undefined
+          }
+          isPro={isPro ?? false}
+        />
+      )}
       {children}
     </>
   );

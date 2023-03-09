@@ -4,9 +4,9 @@ import ButtonGroup from "alu-ui/src/ButtonGroup";
 import Modal from "alu-ui/src/Modal";
 import TextInput from "alu-ui/src/TextInput";
 import Tabs from "alu-ui/src/Tabs";
-import GetCourseSubSections from "@/graphql/GetCourseSubSections";
-import MyCourses from "@/graphql/MyCourses";
-import SaveGeneratedFlashcards from "@/graphql/SaveGeneratedFlashcards";
+import GetCourseSubSections from "graphql-operations/operations/GetCourseSubSections";
+import MyCourses from "graphql-operations/operations/MyCourses";
+import SaveGeneratedFlashcards from "graphql-operations/operations/SaveGeneratedFlashcards";
 import { getElementsVals } from "helpers-lib/src/getElementsVals";
 import type {
   Course,

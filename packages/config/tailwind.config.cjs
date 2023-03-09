@@ -3,7 +3,11 @@ module.exports = {
   content: [
     "./public/**/*.html",
     "./src/**/*.{ts,tsx}",
-    "../../packages/alu-ui/**/*.{ts,tsx}" // Defaults to including Tailwind from `alu-ui`
+    "./lib/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    // Defaults to including Tailwind from `alu-ui` and `lexical-editor`
+    "../../packages/alu-ui/**/*.{ts,tsx}",
+    "../../packages/lexical-editor/**/*.{ts,tsx}"
   ],
   theme: {
     extend: {

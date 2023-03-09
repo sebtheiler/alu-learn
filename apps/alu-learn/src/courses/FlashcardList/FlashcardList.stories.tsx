@@ -1,5 +1,4 @@
 import FlashcardList from ".";
-import withFullContext from "@/helpers/withFullContext";
 import { FlashcardType } from "@/types";
 import { ComponentStory } from "@storybook/react";
 
@@ -36,7 +35,6 @@ const flashcards = [
 export default {
   title: "Courses/FlashcardList",
   component: FlashcardList,
-  decorators: [withFullContext],
 };
 
 const Template: ComponentStory<typeof FlashcardList> = (args) => (

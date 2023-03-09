@@ -7,6 +7,7 @@ import { NextPage } from "types";
 const CreateFlashcards: NextPage<CreateFlashcardsPageProps> = (props) => (
   <CreateFlashcardsPage {...props} />
 );
+CreateFlashcards.authRequired = true;
 
 export default CreateFlashcards;
 

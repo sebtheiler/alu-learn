@@ -1,5 +1,4 @@
 import RenderFlashcard from ".";
-import withFullContext from "@/helpers/withFullContext";
 import type { FlashcardType } from "@/types";
 import { ComponentStory } from "@storybook/react";
 
@@ -16,7 +15,6 @@ const flashcard = {
 export default {
   title: "Courses/RenderFlashcard",
   component: RenderFlashcard,
-  decorators: [withFullContext],
 };
 
 const Template: ComponentStory<typeof RenderFlashcard> = (args) => (

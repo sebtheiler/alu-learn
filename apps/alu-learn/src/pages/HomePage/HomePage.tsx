@@ -6,7 +6,7 @@ import LinkButton from "alu-ui/src/LinkButton";
 import Modal from "alu-ui/src/Modal";
 import TextInput from "alu-ui/src/TextInput";
 import SidebarComponents from "@/components/SidebarComponents";
-import JoinClassroom from "@/graphql/JoinClassroom";
+import JoinClassroom from "graphql-operations/operations/JoinClassroom";
 import SEO from "@/helpers/SEO";
 import englishList from "helpers-lib/src/englishList";
 import { getElementsVals } from "helpers-lib/src/getElementsVals";

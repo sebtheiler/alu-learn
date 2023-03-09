@@ -1,5 +1,4 @@
 import CreateFlashcardsPage from ".";
-import withFullContext from "@/helpers/withFullContext";
 import withNavbar from "@/helpers/withNavbar";
 import { ComponentStory } from "@storybook/react";
 
@@ -42,7 +41,7 @@ const course = {
 export default {
   title: "pages/CreateFlashcardsPage",
   component: CreateFlashcardsPage,
-  decorators: [withNavbar, withFullContext],
+  decorators: [withNavbar],
 };
 
 const Template: ComponentStory<typeof CreateFlashcardsPage> = (args) => (

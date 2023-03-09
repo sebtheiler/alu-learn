@@ -1,8 +1,8 @@
 import MoveSubSectionModal from "./MoveSubSectionModal";
-import IconTooltip from "@/components/IconTooltip";
-import LexicalEditor from "@/editor/LexicalEditor";
-import DeleteFlashcard from "@/graphql/DeleteFlashcard";
-import UpdateFlashcard from "@/graphql/UpdateFlashcard";
+import IconTooltip from "alu-ui/src/IconTooltip";
+import LexicalEditor from "lexical-editor/src/LexicalEditor";
+import DeleteFlashcard from "graphql-operations/operations/DeleteFlashcard";
+import UpdateFlashcard from "graphql-operations/operations/UpdateFlashcard";
 import classNames from "helpers-lib/src/classNames";
 import { useDebounce } from "helpers-lib/src/hooks/useDebounce";
 import type {
@@ -23,6 +23,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useId, useMemo, useState } from "react";
+import useProStore from "@/stores/proStore";
 
 interface RenderFlashcardProps {
   /**
@@ -78,6 +79,8 @@ export default function RenderFlashcard({
   const [fields, setFields] = useState(JSON.parse(flashcard.fields as string));
   const [moveSubSectionModalOpen, setMoveSubSectionModalOpen] = useState(false);
 
+  const isPro = useProStore((store) => store.isPro);
+
   const [frontState, setFrontState] = useState(fields[0]);
   const [backState, setBackState] = useState(fields[1]);
   const states = useMemo(
@@ -104,7 +107,6 @@ export default function RenderFlashcard({
       JSON.stringify(fields) !== JSON.stringify(states) &&
       JSON.stringify(debouncedStates) === JSON.stringify(states)
     ) {
-      setFields(states);
       updateFlashcard({
         variables: {
           flashcardId: flashcard.id as string,
@@ -228,6 +230,7 @@ export default function RenderFlashcard({
                   editorState={JSON.stringify(field)}
                   onChange={(state) => setStates[i](state)}
                   editable={editMode}
+                  isPro={isPro ?? false}
                 />
               )}
             </div>

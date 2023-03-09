@@ -1,7 +1,7 @@
 import SelectCourse from "../ClassesPage/SelectCourse";
 import AsyncForm from "alu-ui/src/AsyncForm";
 import TextInput from "alu-ui/src/TextInput";
-import UpdateClassroom from "@/graphql/UpdateClassroom";
+import UpdateClassroom from "graphql-operations/operations/UpdateClassroom";
 import { getElementsVals } from "helpers-lib/src/getElementsVals";
 import type { Classroom, Mutation, MutationUpdateClassroomArgs } from "@/types";
 import { useMutation } from "@apollo/client";

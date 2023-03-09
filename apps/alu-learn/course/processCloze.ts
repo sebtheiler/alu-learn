@@ -1,8 +1,8 @@
-import { nodes } from "@/editor/LexicalEditor/LexicalEditor";
+import { nodes } from "lexical-editor/src/LexicalEditor/LexicalEditor";
 import {
   $isClozeDeletionNode,
   ClozeDeletionNode,
-} from "@/editor/plugins/ClozeDeletionPlugin/nodes";
+} from "lexical-editor/src/plugins/ClozeDeletionPlugin/nodes";
 import { createHeadlessEditor } from "@lexical/headless";
 import { ElementNode, LexicalNode, RootNode, TextNode } from "lexical";
 import type { LexicalEditor } from "lexical";

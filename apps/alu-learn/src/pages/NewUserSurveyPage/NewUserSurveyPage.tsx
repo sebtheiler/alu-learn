@@ -1,8 +1,8 @@
 import useSlides from "./slides";
 import type { Question } from "./types";
 import ProgressBar from "@/components/ProgressBar";
-import CreateNewUserSurveyResponse from "@/graphql/CreateNewUserSurveyResponse";
-import UpdateUser from "@/graphql/UpdateUser";
+import CreateNewUserSurveyResponse from "graphql-operations/operations/CreateNewUserSurveyResponse";
+import UpdateUser from "graphql-operations/operations/UpdateUser";
 import SEO from "@/helpers/SEO";
 import type { NewUserSurveyResponse, User } from "@/types";
 import { useMutation } from "@apollo/client";
