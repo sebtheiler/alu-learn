@@ -27,13 +27,27 @@
   ],
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "build/**",
+        "api/**",
+        "public/build/**"
+      ],
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "outputs": ["coverage/**"],
+      "dependsOn": []
     },
     "lint": {
-      "outputs": []
+      "dependsOn": ["^build"]
     },
     "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
       "cache": false
     }
   }

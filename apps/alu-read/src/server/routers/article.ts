@@ -27,6 +27,7 @@ export const articleRouter = t.router({
         lastReview: true,
         nextReview: true,
         aFactor: true,
+        finishedLearning: true,
       },
       orderBy: {
         title: "asc",

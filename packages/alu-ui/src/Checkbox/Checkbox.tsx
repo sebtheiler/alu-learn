@@ -35,6 +35,10 @@ interface CheckboxProps {
    */
   value?: string;
   /**
+   * Is the box checked?
+   */
+  checked?: boolean;
+  /**
    * Disable the checkbox
    */
   disabled?: boolean;
@@ -56,6 +60,7 @@ export default function Checkbox({
   onChange,
   defaultChecked,
   value,
+  checked,
   disabled,
   className = "",
 }: CheckboxProps) {
@@ -67,6 +72,7 @@ export default function Checkbox({
         <input
           id={id ?? componentId}
           value={value}
+          checked={checked}
           name={name}
           type="checkbox"
           className={classNames(

@@ -5,14 +5,26 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import calcNextObjectInterval from "../src/server/calcNextObjectInterval";
 import useGetObject from "../helpers/useGetObject";
 import { GlobalContext } from "../src/app/globalContext";
-import { trpcNonReact } from "../src/app/util";
+import { trpc, trpcNonReact } from "../src/app/util";
 import matchesShortcut from "../keyboardShortcuts";
+import Checkbox from "alu-ui/src/Checkbox";
+import Button from "alu-ui/src/Button";
+import Modal from "alu-ui/src/Modal";
+import getExtractTitle from "../helpers/getExtractTitle";
 
 const LearnSidebar: React.FC = () => {
   const { setSelectedObject } = useContext(GlobalContext);
   const object = useGetObject();
   const [nextReviewInDays, setNextReviewInDays] = useState(0);
   const [priority, setPriority] = useState<number | null>(1);
+  const [finishedLearning, setFinishedLearning] = useState(false);
+
+  const [showTopPriorityModalOpen, setShowTopPriorityModalOpen] =
+    useState(false);
+  const topPriorityItems = trpc.learn.getHighestPriority.useQuery(
+    { n: 50 },
+    { enabled: showTopPriorityModalOpen }
+  );
 
   const learnNext = useCallback(
     async (e?: React.FormEvent) => {
@@ -23,19 +35,26 @@ const LearnSidebar: React.FC = () => {
         currentObjectType: object?.objectType ?? null,
         nextReviewInDays,
         priority,
+        finishedLearning,
         // aFactor,
       });
       setSelectedObject(nextObject);
 
       setNextReviewInDays(calcNextObjectInterval(nextObject));
     },
-    [nextReviewInDays, priority, object, setSelectedObject]
+    [nextReviewInDays, priority, object, finishedLearning, setSelectedObject]
   );
 
   useEffect(() => {
     if (object) {
+      console.log(
+        calcNextObjectInterval(object),
+        object.priority,
+        object.finishedLearning
+      );
       setNextReviewInDays(calcNextObjectInterval(object));
       setPriority(object.priority);
+      setFinishedLearning(object.finishedLearning);
     }
   }, [object]);
 
@@ -55,7 +74,7 @@ const LearnSidebar: React.FC = () => {
   }, [learnNext]);
 
   return (
-    <div className="p-3 w-full h-full bg-stone-50 border-l-4 border-l-stone-200 sticky top-0">
+    <div className="p-3 w-full h-full bg-stone-50 border-l-4 border-l-stone-200 sticky top-0 overflow-x-hidden no-scrollbar">
       <br />
       {object?.objectType === "ARTICLE" ? (
         <div>
@@ -97,6 +116,7 @@ const LearnSidebar: React.FC = () => {
           </p>
           <p>Priority: {object.priority}</p>
           <p>A-Factor: {object.aFactor}</p>
+          <p>Finished Learning: {object.finishedLearning ? "Yes" : "No"}</p>
           <hr className="my-5" />
           <TextInput
             label="Review in (days)"
@@ -108,16 +128,43 @@ const LearnSidebar: React.FC = () => {
           <TextInput
             label="Priority"
             min={1}
-            className="my-1"
+            className="mt-1"
             type="number"
             value={priority ?? undefined}
             onChange={(e) => setPriority(parseInt(e.target.value))}
+          />
+          <Checkbox
+            label="Finished learning?"
+            className="my-1"
+            checked={finishedLearning}
+            onChange={(e) => setFinishedLearning(e.target.checked)}
           />
         </div>
       )}
       <AsyncButton onClick={learnNext} block>
         Learn Next
       </AsyncButton>
+      <div className="absolute bottom-4 text-center w-full">
+        <Button onClick={() => setShowTopPriorityModalOpen(true)}>
+          Show Top Priority
+        </Button>
+        <Modal
+          title="Top Priority Items"
+          open={showTopPriorityModalOpen}
+          close={() => setShowTopPriorityModalOpen(false)}
+        >
+          <ul>
+            {topPriorityItems.data?.map((item) => (
+              <li key={item.id}>
+                ({item.priority ?? "No priority set"}){" "}
+                {item.objectType === "ARTICLE"
+                  ? item.title
+                  : getExtractTitle(item)}
+              </li>
+            ))}
+          </ul>
+        </Modal>
+      </div>
     </div>
   );
 };

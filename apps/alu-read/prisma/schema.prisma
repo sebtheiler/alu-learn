@@ -38,6 +38,7 @@ model Article {
   nextReview DateTime @default(now())
   priority Int?
   aFactor Float @default(2)
+  finishedLearning Boolean @default(false)
 
   parentArticleId String?
   parentArticle Article? @relation("ArticleParentArticleChild", fields: [parentArticleId], references: [id])
@@ -62,6 +63,7 @@ model Extract {
   nextReview DateTime @default(now())
   priority Int?
   aFactor Float @default(2)
+  finishedLearning Boolean @default(false)
 
   // Extracts are children of articles or extracts
   parentArticleId String?

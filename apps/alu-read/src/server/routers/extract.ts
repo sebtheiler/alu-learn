@@ -30,6 +30,7 @@ export const extractRouter = t.router({
           lastReview: true,
           nextReview: true,
           aFactor: true,
+          finishedLearning: true,
           id: true,
         },
       })
@@ -50,6 +51,7 @@ export const extractRouter = t.router({
         lastReview: true,
         nextReview: true,
         aFactor: true,
+        finishedLearning: true,
         id: true,
       },
     })

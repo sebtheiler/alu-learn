@@ -26,8 +26,7 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import classNames from "helpers-lib/src/classNames";
-import flattenLexical from "lexical-editor/src/helpers/flattenLexical";
-import { formatStartDurationTime } from "../../helpers/formatSeconds";
+import getExtractTitle from "../../helpers/getExtractTitle";
 
 const getItemTitle = (item: TreeItem<TreeItemData>) => item.data.title;
 
@@ -131,12 +130,7 @@ function createKnowledgeTree({
       ...basicNode,
       index: extract.id,
       data: {
-        title:
-          extract.type === "LEXICAL"
-            ? flattenLexical(extract.data).slice(0, 32)
-            : extract.type === "VIDEO_TIMESTAMP"
-            ? `Timestamp: ${formatStartDurationTime(JSON.parse(extract.data))}`
-            : "Extract",
+        title: getExtractTitle(extract),
         type: "EXTRACT",
         extract,
       },

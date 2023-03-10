@@ -3,6 +3,25 @@ import calcNextObjectInterval from "../calcNextObjectInterval";
 import { t } from "../trpc";
 import { z } from "zod";
 
+const concatArticlesAndExtracts = (
+  articles: Article[],
+  extracts: Extract[]
+): MergedObject[] =>
+  articles
+    .map<MergedObject>((article) => ({
+      objectType: "ARTICLE",
+      ...article,
+    }))
+    .concat(
+      extracts.map<MergedObject>((extract) => ({
+        objectType: "EXTRACT",
+        ...extract,
+      }))
+    );
+
+const byPriority = (a: MergedObject, b: MergedObject) =>
+  (a.priority ?? Infinity) - (b.priority ?? Infinity);
+
 // TODO: change these types
 /**
  * Model Article
@@ -41,6 +60,7 @@ export type Extract = {
   aFactor: number;
   parentArticleId: string | null;
   parentExtractId: string | null;
+  finishedLearning: boolean;
 };
 
 export type MergedObject =
@@ -56,6 +76,7 @@ export const learnRouter = t.router({
         nextReviewInDays: z.optional(z.number()),
         priority: z.optional(z.number().nullable()),
         aFactor: z.optional(z.number()),
+        finishedLearning: z.optional(z.boolean()),
       })
     )
     .mutation(
@@ -66,6 +87,7 @@ export const learnRouter = t.router({
           nextReviewInDays,
           priority,
           aFactor,
+          finishedLearning,
         },
       }) => {
         const object = currentObjectId
@@ -142,6 +164,7 @@ export const learnRouter = t.router({
 
         // Update current object
         if (currentObjectId) {
+          const lastReview = new Date();
           const nextReview = new Date();
           nextReview.setDate(
             nextReview.getDate() +
@@ -158,8 +181,10 @@ export const learnRouter = t.router({
               },
               data: {
                 nextReview,
+                lastReview,
                 priority,
                 aFactor,
+                finishedLearning,
               },
             });
           else
@@ -169,8 +194,10 @@ export const learnRouter = t.router({
               },
               data: {
                 nextReview,
+                lastReview,
                 priority,
                 aFactor,
+                finishedLearning,
               },
             });
 
@@ -191,38 +218,67 @@ export const learnRouter = t.router({
         const now = new Date();
         const outstandingArticles = (
           await prisma.article.findMany({
-            // where: {
-            //   nextReview: {
-            //     lte: now,
-            //   },
-            // },
+            where: {
+              // nextReview: {
+              //   lte: now,
+              // },
+              finishedLearning: false,
+            },
           })
         ).filter((a) => a.nextReview.getTime() <= now.getTime());
         const outstandingExtracts = (
           await prisma.extract.findMany({
-            // where: {
-            //   nextReview: {
-            //     lte: now,
-            //   },
-            // },
+            where: {
+              // nextReview: {
+              //   lte: now,
+              // },
+              finishedLearning: false,
+            },
           })
         ).filter((e) => e.nextReview.getTime() <= now.getTime());
 
-        const outstanding: MergedObject[] = outstandingArticles
-          .map<MergedObject>((article) => ({
-            objectType: "ARTICLE",
-            ...article,
-          }))
-          .concat(
-            outstandingExtracts.map<MergedObject>((extract) => ({
-              objectType: "EXTRACT",
-              ...extract,
-            }))
-          )
+        const outstanding: MergedObject[] = concatArticlesAndExtracts(
+          outstandingArticles,
+          outstandingExtracts
+        )
           .sort(() => Math.random() - 0.5)
-          .sort((a, b) => (a.priority ?? Infinity) - (b.priority ?? Infinity));
+          .sort(byPriority);
 
         return outstanding[0];
       }
     ),
+  getHighestPriority: t.procedure
+    .input(
+      z.object({
+        n: z.optional(z.number()),
+      })
+    )
+    .query(async ({ input: { n = 50 } }) => {
+      const articles = await prisma.article.findMany({
+        orderBy: {
+          priority: "asc",
+        },
+        where: {
+          priority: {
+            not: null,
+          },
+        },
+        take: n,
+      });
+      const extracts = await prisma.extract.findMany({
+        orderBy: {
+          priority: "asc",
+        },
+        where: {
+          priority: {
+            not: null,
+          },
+        },
+        take: n,
+      });
+
+      return concatArticlesAndExtracts(articles, extracts)
+        .sort(byPriority)
+        .slice(0, n);
+    }),
 });
