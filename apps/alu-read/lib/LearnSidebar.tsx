@@ -38,9 +38,11 @@ const LearnSidebar: React.FC = () => {
         finishedLearning,
         // aFactor,
       });
-      setSelectedObject(nextObject);
 
-      setNextReviewInDays(calcNextObjectInterval(nextObject));
+      if (nextObject) {
+        setSelectedObject(nextObject);
+        setNextReviewInDays(calcNextObjectInterval(nextObject).toString());
+      }
     },
     [nextReviewInDays, priority, object, finishedLearning, setSelectedObject]
   );
@@ -155,7 +157,13 @@ const LearnSidebar: React.FC = () => {
         >
           <ul>
             {topPriorityItems.data?.map((item) => (
-              <li key={item.id}>
+              <li
+                key={item.id}
+                className={classNames(
+                  item.nextReview.getTime() > new Date().getTime() &&
+                    "text-gray-500"
+                )}
+              >
                 ({item.priority ?? "No priority set"}){" "}
                 {item.objectType === "ARTICLE"
                   ? item.title

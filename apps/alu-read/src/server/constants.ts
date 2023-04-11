@@ -25,6 +25,10 @@ export const platformToExecutables: any = {
       "node_modules/@prisma/engines/migration-engine-debian-openssl-1.1.x",
     queryEngine:
       "node_modules/@prisma/engines/libquery_engine-debian-openssl-1.1.x.so.node",
+    // migrationEngine:
+    //   "node_modules/@prisma/engines/migration-engine-debian-openssl-3.0.x",
+    // queryEngine:
+    //   "node_modules/@prisma/engines/libquery_engine-debian-openssl-3.0.x.so.node",
   },
   darwin: {
     migrationEngine: "node_modules/@prisma/engines/migration-engine-darwin",

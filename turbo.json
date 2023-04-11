@@ -27,12 +27,11 @@
   "pipeline": {
     "build": {
       "outputs": [
-        "dist/**",
         ".next/**",
         "build/**",
-        "api/**",
-        "public/build/**"
+        "!.next/cache/**"
       ],
+      "inputs": ["src/**/*.tsx", "src/**/*.ts", "pages/**/*.ts", "pages/**/*.tsx", "helpers/**/*.ts"],
       "dependsOn": ["^build"]
     },
     "test": {
@@ -40,6 +39,9 @@
       "dependsOn": []
     },
     "lint": {
+      "dependsOn": ["^build"]
+    },
+    "start": {
       "dependsOn": ["^build"]
     },
     "dev": {
