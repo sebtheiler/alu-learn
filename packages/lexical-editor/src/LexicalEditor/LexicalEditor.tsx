@@ -32,7 +32,7 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import type { EditorState, LexicalEditor as Editor } from "lexical";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import ExtractPlugin from "../plugins/ExtractPlugin/ExtractPlugin";
 import { ExtractNode } from "../plugins/ExtractPlugin/nodes";
 
@@ -42,11 +42,13 @@ interface BasicFeaturesPluginProps {
   autoFocus: boolean;
   editable: boolean;
   editorState: string | null;
+  editorRef: React.MutableRefObject<Editor | null> | undefined;
 }
 function BasicFeaturesPlugin({
   autoFocus,
   editable,
   editorState,
+  editorRef,
 }: BasicFeaturesPluginProps) {
   const [editor] = useLexicalComposerContext();
 
@@ -63,10 +65,18 @@ function BasicFeaturesPlugin({
     try {
       editor.setEditorState(editor.parseEditorState(editorState));
     } catch (e) {
-      console.error("Error updating Lexical editor state")
+      console.error("Error updating Lexical editor state");
       console.error(e);
     }
   }, [editor, editorState]);
+
+  useLayoutEffect(() => {
+    if (!editorRef) return;
+    editorRef.current = editor;
+    return () => {
+      editorRef.current = null;
+    };
+  }, [editor, editorRef]);
 
   return null;
 }
@@ -200,6 +210,10 @@ interface LexicalEditorProps {
    * Does the user have pro mode? (e.g., for inserting flashcard links)
    */
   isPro?: boolean;
+  /**
+   * Ref to access the editor
+   */
+  editorRef?: React.MutableRefObject<Editor | null>;
 }
 
 /**
@@ -215,6 +229,7 @@ export default function LexicalEditor({
   maxLength = 2000,
   verticalOffset = 0,
   clearEditorRef,
+  editorRef,
   onChange,
   disablePopovers,
   overrideTab = false,
@@ -264,6 +279,7 @@ export default function LexicalEditor({
           autoFocus={autoFocus ?? false}
           editable={editable}
           editorState={editorState}
+          editorRef={editorRef}
         />
         <ListPlugin />
         <LinkPlugin />
@@ -284,7 +300,11 @@ export default function LexicalEditor({
         )}
         <FlashcardLinkPlugin />
         <ClozeDeletionPlugin />
-        {!!createExtractCallback ? <ExtractPlugin createExtractCallback={createExtractCallback} /> : ""}
+        {!!createExtractCallback ? (
+          <ExtractPlugin createExtractCallback={createExtractCallback} />
+        ) : (
+          ""
+        )}
         <EquationPlugin />
         <ImagePlugin />
 

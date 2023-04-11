@@ -180,9 +180,14 @@ export const SubSectionQuery = extendType({
               courseId: args.courseId,
             },
           },
-          orderBy: {
-            index: "asc",
-          },
+          orderBy: [
+            {
+              courseSection: {
+                index: "asc",
+              },
+            },
+            { index: "asc" },
+          ],
         });
       },
     });

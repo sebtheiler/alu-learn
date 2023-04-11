@@ -1,6 +1,7 @@
 import SaveExportAutoFlashcards from "./SaveExport";
 import AsyncButton from "alu-ui/src/AsyncButton";
 import LinkButton from "alu-ui/src/LinkButton";
+import TextArea from "alu-ui/src/TextArea";
 import Select from "alu-ui/src/Select";
 import {
   AUTO_FLASHCARD_LIMITS,
@@ -30,11 +31,6 @@ export interface AutoFlashcardsPageProps {
   isPro: boolean | null;
 }
 
-// Used to be changeable by the user to be `NOTES`, `MULTI`, or `SINGLE`.
-// Now always `NOTES` to be simpler for the user, since the other options
-// were pretty much never used.
-const mode = "NOTES";
-
 /**
  * Page for automatically generating flashcards from notes
  */
@@ -62,7 +58,7 @@ export default function AutoFlashcardsPage({
     const { data } = await generateAutoFlashcard({
       variables: {
         sourceText,
-        mode: mode as AutoFlashcardsMode,
+        mode: "CHATGPT" as AutoFlashcardsMode,
         language: selectedLanguage as LanguageSelectionType,
       },
     });
@@ -129,18 +125,17 @@ export default function AutoFlashcardsPage({
                 other than English
               </p>
             )}
-            <textarea
+            <TextArea
               name="sourceText"
               placeholder="Copy and paste your notes here"
               rows={8}
               minLength={15}
-              maxLength={SOURCE_TEXT_MAX_LENS[mode]}
+              maxLength={SOURCE_TEXT_MAX_LENS["NOTES"]}
               onChange={(e) => setSourceText(e.target.value)}
-              className="border-2 border-alu-primary-purple/20 focus:border-alu-primary-purple rounded-xl p-3 outline-none w-full resize-none transition-all mt-2"
               disabled={disabled}
             />
             <span className="absolute text-gray-500 bottom-3 right-3 pointer-events-none">
-              {sourceText.length}/{SOURCE_TEXT_MAX_LENS[mode]}
+              {sourceText.length}/{SOURCE_TEXT_MAX_LENS["NOTES"]}
             </span>
           </div>
           <AsyncButton
@@ -154,7 +149,7 @@ export default function AutoFlashcardsPage({
           >
             Create Flashcards
           </AsyncButton>
-          {mode === "NOTES" && loading && (
+          {loading && (
             <p className="text-red-600 my-2 text-center">
               Warning: This may take up to several minutes depending on the
               length of your notes. Do <strong>not</strong> refresh the page
@@ -170,8 +165,13 @@ export default function AutoFlashcardsPage({
               {isPro ? (
                 <>
                   Contact{" "}
-                  <a href="mailto:support@alulearn.com">support@alulearn</a> if
-                  you would like to request a personal increase.
+                  <a
+                    href="mailto:support@alulearn.com"
+                    className="text-blue-500"
+                  >
+                    support@alulearn.com
+                  </a>{" "}
+                  if you would like to request a personal increase.
                 </>
               ) : (
                 <>

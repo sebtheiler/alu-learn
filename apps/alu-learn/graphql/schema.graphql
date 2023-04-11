@@ -15,10 +15,9 @@ type Assignment {
 }
 
 enum AutoFlashcardsMode {
+  CHATGPT
   CLOZE
-  MULTI
   NOTES
-  SINGLE
 }
 
 type Classroom {
@@ -155,6 +154,26 @@ type Mutation {
   Archives a course for the current user. Does not affect ownership
   """
   archiveCourse(archive: Boolean!, courseId: String!): Course
+
+  """
+  Uses AI to automatically provide feedback on an essay
+  """
+  autoEssayFeedback(
+    essay: String!
+    grades: String!
+    prompt: String!
+    rubric: String!
+  ): String
+
+  """
+  Uses AI to automatically grade an essay
+  """
+  autoGradeEssay(essay: String!, prompt: String!, rubric: String!): String
+
+  """
+  Automatically completes the back of a flashcard given its front
+  """
+  autocompleteFlashcard(front: String!): String
 
   """
   Cancels the Stripe subscription for the current user
@@ -713,6 +732,7 @@ type User {
   The user's response to the survey launched on sign-up
   """
   newUserSurveyResponse: NewUserSurveyResponse
+  numAutoFlashcardsGenerated: Int
   numReviewsDoneToday: Int
   role: Role
   sendMarketingResearch: Boolean

@@ -4,6 +4,15 @@ path: "changelog"
 description: "Alu Learn Changelog"
 ---
 
+# Auto-Everything - Tue Apr 11 - 2.6.0
+
+Behind all the hype, AI has legitimate potential to help students learn more effectively, and I wanted to exploit some of that in this update. In the future, I would like to create a completely personalized study assistant who has long term memory of your strengths and weaknesses and can provide targeted support to help you learn new content.
+
+- **Autocomplete Flashcard Back:** Automatically write the back of your flashcard with a single button press
+- Fixed subsection ordering when moving flashcard to different subsection
+- **Auto-Grader:** Get instant feedback on your essays with auto-grader. Input a rubric and your essay, and see how well your essay would score on that rubric
+- **Auto-Flashcards Improvements:** Auto-flashcards is now much quicker and creates higher quality flashcards
+
 ## Bug Squashing Galore - Wed Mar 8 - 2.5.1
 
 As the title would suggest, this update cleans up a lot of bugs that have been plaguing Alu for quite some time.

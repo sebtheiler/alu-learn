@@ -10,6 +10,7 @@ const MeQuery = gql`
       targetNumReviews
       isPro
       username
+      numAutoFlashcardsGenerated
     }
   }
 `;

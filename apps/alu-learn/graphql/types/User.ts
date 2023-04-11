@@ -41,6 +41,7 @@ const User = objectType({
     t.field("role", { type: Role });
     t.field("userType", { type: "UserType" });
     t.boolean("isPro");
+    t.int("numAutoFlashcardsGenerated");
 
     // Settings
     t.int("targetNumReviews");

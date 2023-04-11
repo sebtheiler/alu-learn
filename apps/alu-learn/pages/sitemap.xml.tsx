@@ -13,6 +13,7 @@ const priorities = new Map([
   ["about", 1.0],
   ["home", 1.0],
   ["auto-flashcards", 1.0],
+  ["auto-grader", 1.0],
   ["", 1.0],
   ["changelog", 0.7],
   ["archived", 0.1],

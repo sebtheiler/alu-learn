@@ -7,6 +7,7 @@ import {
   faInfoCircle,
   faRobot,
   faCrown,
+  faMarker,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Session } from "next-auth";
@@ -162,6 +163,9 @@ export default function Navbar({
           </NavItem>
           <NavItem href="/auto-flashcards" icon={faRobot}>
             Auto Flashcards
+          </NavItem>
+          <NavItem href="/auto-grader" icon={faMarker}>
+            Auto Grader
           </NavItem>
           {congratulationsMessage}
 

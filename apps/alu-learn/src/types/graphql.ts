@@ -40,10 +40,9 @@ export type Assignment = {
 };
 
 export enum AutoFlashcardsMode {
+  Chatgpt = "CHATGPT",
   Cloze = "CLOZE",
-  Multi = "MULTI",
   Notes = "NOTES",
-  Single = "SINGLE",
 }
 
 export type Classroom = {
@@ -157,6 +156,12 @@ export type Mutation = {
   addFriend?: Maybe<Scalars["Boolean"]>;
   /** Archives a course for the current user. Does not affect ownership */
   archiveCourse?: Maybe<Course>;
+  /** Uses AI to automatically grade an essay */
+  autoEssayFeedback?: Maybe<Scalars["String"]>;
+  /** Uses AI to automatically grade an essay */
+  autoGradeEssay?: Maybe<Scalars["String"]>;
+  /** Automatically completes the back of a flashcard given its front */
+  autocompleteFlashcard?: Maybe<Scalars["String"]>;
   /** Cancels the Stripe subscription for the current user */
   cancelStripeSubscription?: Maybe<Scalars["Boolean"]>;
   /** Creates an assignment */
@@ -225,11 +230,16 @@ export type Mutation = {
   updateReviewInstance?: Maybe<ReviewInstance>;
   /** Change a sub section's settings */
   updateSubSection?: Maybe<SubSection>;
+  /** Update an uploaded image that the current user owns */
+  updateUploadedImage?: Maybe<UploadedImage>;
   /** Change the user's settings */
   updateUser?: Maybe<User>;
   /** Upload a banner image for a course */
   uploadCourseBannerImage?: Maybe<Course>;
-  /** Upload an image */
+  /**
+   * Upload an image
+   * @deprecated DEPRECATED: Please get a presigned PUT url using the `getPresignedPUTUrl` query and send a PUT request to that directly from the client
+   */
   uploadImage?: Maybe<UploadedImage>;
   /** Upload an image from a URL */
   uploadImageFromUrl?: Maybe<UploadedImage>;
@@ -247,6 +257,23 @@ export type MutationAddFriendArgs = {
 export type MutationArchiveCourseArgs = {
   archive: Scalars["Boolean"];
   courseId: Scalars["String"];
+};
+
+export type MutationAutoEssayFeedbackArgs = {
+  essay: Scalars["String"];
+  grades: Scalars["String"];
+  prompt: Scalars["String"];
+  rubric: Scalars["String"];
+};
+
+export type MutationAutoGradeEssayArgs = {
+  essay: Scalars["String"];
+  prompt: Scalars["String"];
+  rubric: Scalars["String"];
+};
+
+export type MutationAutocompleteFlashcardArgs = {
+  front: Scalars["String"];
 };
 
 export type MutationCreateAssignmentArgs = {
@@ -431,6 +458,11 @@ export type MutationUpdateSubSectionArgs = {
   title?: InputMaybe<Scalars["String"]>;
 };
 
+export type MutationUpdateUploadedImageArgs = {
+  id: Scalars["String"];
+  url: Scalars["String"];
+};
+
 export type MutationUpdateUserArgs = {
   name?: InputMaybe<Scalars["String"]>;
   selectedAluReadCourseId?: InputMaybe<Scalars["String"]>;
@@ -491,6 +523,8 @@ export type Query = {
   getCourseSubSections?: Maybe<Array<Maybe<SubSection>>>;
   /** Gets a flashcard by its ID */
   getFlashcard?: Maybe<Flashcard>;
+  /** Get a presigned PUT URL for uploading an image to S3 */
+  getPresignedPUTUrl?: Maybe<Scalars["String"]>;
   /** Gets the Stripe subscription and product for the current user */
   getStripeSubscription?: Maybe<Scalars["JSONObject"]>;
   /** Get information on the current user */
@@ -535,6 +569,10 @@ export type QueryGetCourseSubSectionsArgs = {
 
 export type QueryGetFlashcardArgs = {
   flashcardId: Scalars["String"];
+};
+
+export type QueryGetPresignedPutUrlArgs = {
+  contentType: Scalars["String"];
 };
 
 export type QuerySearchCoursesArgs = {
@@ -616,6 +654,7 @@ export type User = {
   name?: Maybe<Scalars["String"]>;
   /** The user's response to the survey launched on sign-up */
   newUserSurveyResponse?: Maybe<NewUserSurveyResponse>;
+  numAutoFlashcardsGenerated?: Maybe<Scalars["Int"]>;
   numReviewsDoneToday?: Maybe<Scalars["Int"]>;
   role?: Maybe<Role>;
   sendMarketingResearch?: Maybe<Scalars["Boolean"]>;

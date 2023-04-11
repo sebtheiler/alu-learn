@@ -1,8 +1,9 @@
 import { createCourse } from "./Course";
+import formatPlural from "helpers-lib/src/formatPlural";
+import capitalize from "helpers-lib/src/capitalize";
 import { JSONData } from "./scalars";
 import {
   AUTO_FLASHCARD_LIMITS,
-  DOUBLE_RETURN,
   languageToPrompt,
   SOURCE_TEXT_MAX_LENS,
   TWO_SIDED_FLASHCARDS,
@@ -14,7 +15,7 @@ import type {
   GeneratedFlashcard,
   SubSection,
 } from "@/types";
-import type { Flashcard as PrismaFlashcard } from "@prisma/client";
+import type { Flashcard as PrismaFlashcard, User } from "@prisma/client";
 import { ApolloError } from "@apollo/client";
 import createCompletion from "helpers/createCompletion";
 import getUserGQL from "helpers/getUserGQL";
@@ -27,6 +28,14 @@ import {
   nonNull,
   stringArg,
 } from "nexus";
+import createChatGPTCompletion from "helpers/createChatGPTCompletion";
+import { Context } from "graphql/context";
+
+const aiTokenCostAmount = {
+  autocompleteFlashcard: 1,
+  autoGradeEssay: 10,
+  autoFeedbackEssay: 10,
+};
 
 export const AutoFlashcardsMutation = extendType({
   type: "Mutation",
@@ -47,56 +56,13 @@ export const AutoFlashcardsMutation = extendType({
           isPro: true,
           numAutoFlashcardsGenerated: true,
         });
-        if (!user) return null;
+        if (!user?.id) return null;
 
-        const MAX_NUM_FLASHCARDS = user.isPro
-          ? AUTO_FLASHCARD_LIMITS.pro
-          : AUTO_FLASHCARD_LIMITS.regular;
-        const numAutoFlashcardsGenerated = user.numAutoFlashcardsGenerated ?? 0;
-        if (numAutoFlashcardsGenerated >= MAX_NUM_FLASHCARDS)
-          throw new Error("Above flashcard generation quota");
+        checkAutoFlashcardsGeneratedQuota(user);
 
         let flashcards: GeneratedFlashcard[] = [];
 
         switch (args.mode) {
-          case "SINGLE": {
-            if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["SINGLE"])
-              throw new ApolloError({ errorMessage: "Source text too long" });
-
-            const { rawText } = await createCompletion(
-              `Text: If ecosystems had an infinite amount of resources, populations would grow exponentially however we do not see this occur because of carrying capacity. A carrying capacity is the maximum population size of the species that the environment can sustain, given the food, habitat, water, sunlight  and other necessities available in the environment.\nFront: Carrying Capacity\nBack: The maximum population size of the species that the environment can sustain, given the food, habitat, water, sunlight and other necessities available in the environment. \n\n---\n\nText:${args.sourceText.replace(
-                "\n",
-                " "
-              )}\nFront:`
-            );
-
-            const split = rawText?.split("\n");
-            if (split?.length !== 2)
-              throw new ApolloError({ errorMessage: "Failed to generate" });
-            const front = split[0].trim();
-            const back = split[1].replace("Back: ", "");
-
-            flashcards = [{ front, back, flashcardType: "NORMAL" }];
-            break;
-          }
-          case "MULTI": {
-            if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["MULTI"])
-              throw new ApolloError({ errorMessage: "Source text too long" });
-
-            // Remove single enter lines, but keep doubles
-            const processedSource = args.sourceText
-              .replaceAll("\n\n", DOUBLE_RETURN)
-              .replaceAll("\n", " ")
-              .replaceAll(DOUBLE_RETURN, "\n");
-
-            flashcards = await generateFlashcards(
-              processedSource,
-              args.numFlashcards ?? 3,
-              args.language
-            );
-
-            break;
-          }
           case "CLOZE": {
             if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["CLOZE"])
               throw new ApolloError({ errorMessage: "Source text too long" });
@@ -122,7 +88,6 @@ export const AutoFlashcardsMutation = extendType({
 
             const processedSource = args.sourceText.split("\n\n");
 
-            const MAX_NUM_FLASHCARDS_PER_NOTES = 100;
             const MAX_LEN_BUFFER = 1000;
             const TARGET_LEN = 800;
 
@@ -137,10 +102,7 @@ export const AutoFlashcardsMutation = extendType({
             };
 
             // Stop generating flashcards after the max has been exceeded
-            const shouldBreak = () =>
-              flashcards.length + numAutoFlashcardsGenerated >=
-                MAX_NUM_FLASHCARDS ||
-              flashcards.length >= MAX_NUM_FLASHCARDS_PER_NOTES;
+            const shouldBreak = () => false;
 
             for (const segment of processedSource) {
               if (shouldBreak()) break;
@@ -168,30 +130,37 @@ export const AutoFlashcardsMutation = extendType({
 
             break;
           }
+          case "CHATGPT": {
+            if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["NOTES"])
+              throw new ApolloError({ errorMessage: "Source text too long" });
+
+            const [completion] = await createChatGPTCompletion({
+              systemPrompt:
+                'You are a professional flashcard creator that creates flashcards from notes. I will give you my notes, and you will create high-quality flashcards on the essential vocabulary from the notes. Your flashcards are concise, and you prefer to create multiple short flashcards over one long flashcard; optionally include additional information in parentheses at the bottom. Create as many flashcards as necessary.\n\nCreate the flashcards in JSON format:\n[{"front": "What is...", "back": ""}, ...]',
+              prompt: args.sourceText,
+              maxTokens: 1024,
+              saveData: { ctx, userId: user.id },
+            });
+            const generatedFlashcards: { front: string; back: string }[] =
+              JSON.parse(completion);
+
+            flashcards = generatedFlashcards.map((f) => ({
+              front: f.front,
+              back: f.back.endsWith(".") ? f.back.slice(0, -1) : f.back,
+              flashcardType: "NORMAL",
+            }));
+
+            break;
+          }
           default:
             throw new ApolloError({ errorMessage: "Invalid `mode`" });
         }
 
-        // Increment the number of automatic flashcards the user has generated this month
-        await ctx.prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            numAutoFlashcardsGenerated: {
-              increment: Math.max(flashcards.length, 1),
-            },
-          },
-        });
-
-        // Save the generation in the database
-        await ctx.prisma.autoFlashcardsGeneration.create({
-          data: {
-            userId: user.id,
-            inputText: args.sourceText,
-            generatedOutput: JSON.stringify(flashcards),
-          },
-        });
+        incrementAutoFlashcardsGenerated(
+          ctx,
+          user.id,
+          Math.max(flashcards.length, 1)
+        );
 
         return flashcards;
       },
@@ -285,6 +254,142 @@ export const AutoFlashcardsMutation = extendType({
         return `/course/${course.id}/flashcards/${courseSection.slug}/${subSection.slug}`;
       },
     });
+    t.field("autocompleteFlashcard", {
+      type: "String",
+      description:
+        "Automatically completes the back of a flashcard given its front",
+      args: {
+        front: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, {
+          id: true,
+          isPro: true,
+          numAutoFlashcardsGenerated: true,
+        });
+        if (!user?.id) return null;
+
+        checkAutoFlashcardsGeneratedQuota(user);
+        incrementAutoFlashcardsGenerated(
+          ctx,
+          user.id,
+          aiTokenCostAmount.autocompleteFlashcard
+        );
+
+        const [completion] = await createChatGPTCompletion({
+          systemPrompt:
+            "You are a flashcard creator. I will give you the front of a flashcard and you will create its back. Be short and concise in your response; optionally include extra details in parentheses at the bottom. Return nothing but the back of the flashcard.",
+          prompt: args.front.trim(),
+          maxTokens: 256,
+          saveData: { ctx, userId: user.id },
+        });
+
+        return completion.trim();
+      },
+    });
+    t.field("autoGradeEssay", {
+      type: "String",
+      description: "Uses AI to automatically grade an essay",
+      args: {
+        prompt: nonNull(stringArg()),
+        rubric: nonNull(stringArg()),
+        essay: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, {
+          id: true,
+          isPro: true,
+          numAutoFlashcardsGenerated: true,
+        });
+        if (!user?.id) return null;
+
+        checkAutoFlashcardsGeneratedQuota(user);
+        incrementAutoFlashcardsGenerated(
+          ctx,
+          user.id,
+          aiTokenCostAmount.autoGradeEssay
+        );
+
+        const systemPrompt = `
+You are a high school teacher grading students' responses according to a rubric. Grade accurately, provide concise justification, and score the number of points the student should receive. Cite specific evidence from the student's response and the rubric in your justification. Address the student as "you".
+
+Prompt: ${args.prompt.trim()}
+
+Rubric:
+${getRubricInfoStr(args.rubric)}
+
+Respond in JSON format: [{"category": "${JSON.parse(args.rubric)
+          .rows[0].title.toLowerCase()
+          .trim()}", "justification": "...", "score": "..."}, {"category": "...", ...}, ...]
+
+`.trim();
+        const [completion] = await createChatGPTCompletion({
+          systemPrompt,
+          prompt: args.essay.trim(),
+          maxTokens: 1024,
+          saveData: { ctx, userId: user.id },
+        });
+
+        return completion.trim();
+      },
+    });
+    t.field("autoEssayFeedback", {
+      type: "String",
+      description: "Uses AI to automatically provide feedback on an essay",
+      args: {
+        prompt: nonNull(stringArg()),
+        rubric: nonNull(stringArg()),
+        essay: nonNull(stringArg()),
+        grades: nonNull(stringArg()),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, {
+          id: true,
+          isPro: true,
+          numAutoFlashcardsGenerated: true,
+        });
+        if (!user?.id) return null;
+
+        checkAutoFlashcardsGeneratedQuota(user);
+        incrementAutoFlashcardsGenerated(
+          ctx,
+          user.id,
+          aiTokenCostAmount.autoFeedbackEssay
+        );
+
+        const systemPrompt = `
+You are a high school tutor helping students improve their essays. Cite evidence from the rubric and the student's essay to help them improve. List specific points and concrete examples they can work on to improve their essay. Prioritize categories the student is struggling the most with. Address the student as "you" and be kind and positive; start the conversation with a greeting. Respond in detailed bullet points. Ask questions to push the student's thinking
+
+Prompt: ${args.prompt.trim()}
+
+Rubric:
+${getRubricInfoStr(args.rubric)}
+`.trim();
+        const gradedEssay = `
+${args.essay}
+
+Grade:
+${JSON.parse(args.grades)
+  .map(
+    (grade) =>
+      `${capitalize(grade.category.trim())} - ${grade.score}/${
+        JSON.parse(args.rubric).rows.find(
+          (r) => r.title.toLowerCase() === grade.category.toLowerCase().trim()
+        )?.cols.length
+      }`
+  )
+  .join("\n")}
+`.trim();
+        const [completion] = await createChatGPTCompletion({
+          systemPrompt,
+          prompt: gradedEssay,
+          maxTokens: 1024,
+          saveData: { ctx, userId: user.id },
+        });
+
+        return completion.trim();
+      },
+    });
   },
 });
 
@@ -337,6 +442,59 @@ const generateFlashcards = async (
   return flashcards;
 };
 
+/**
+ * @param rubric JSON stringified rubric
+ * Returns in this format:
+ * Thesis:
+ * 2 Points: ...
+ * 1 Point: ...
+ */
+const getRubricInfoStr = (rubric: string) =>
+  JSON.parse(rubric)
+    .rows.map((row) =>
+      `
+${row.title.trim()}:
+${row.cols
+  .map(
+    (col, i) =>
+      `${formatPlural(row.cols.length - i, "Point")}: ${col.description.trim()}`
+  )
+  .join("\n")}
+`.trim()
+    )
+    .join("\n\n");
+
+/**
+ * Check if a `user` is above the quota for AI credit use
+ */
+const checkAutoFlashcardsGeneratedQuota = (user: Partial<User>) => {
+  const MAX_NUM_FLASHCARDS = user.isPro
+    ? AUTO_FLASHCARD_LIMITS.pro
+    : AUTO_FLASHCARD_LIMITS.regular;
+  const numAutoFlashcardsGenerated = user.numAutoFlashcardsGenerated ?? 0;
+  if (numAutoFlashcardsGenerated >= MAX_NUM_FLASHCARDS)
+    throw new Error("Above flashcard generation quota");
+};
+/**
+ * Increment the number of AI credits that a user has used this month
+ */
+const incrementAutoFlashcardsGenerated = async (
+  ctx: Context,
+  userId: string,
+  by: number
+) => {
+  await ctx.prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      numAutoFlashcardsGenerated: {
+        increment: by,
+      },
+    },
+  });
+};
+
 export const LanguageSelectionType = enumType({
   name: "LanguageSelectionType",
   members: Object.keys(languageToPrompt),
@@ -344,5 +502,5 @@ export const LanguageSelectionType = enumType({
 
 export const AutoFlashcardsMode = enumType({
   name: "AutoFlashcardsMode",
-  members: ["SINGLE", "MULTI", "CLOZE", "NOTES"],
+  members: ["CLOZE", "NOTES", "CHATGPT"],
 });
