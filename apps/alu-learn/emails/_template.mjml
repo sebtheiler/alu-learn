@@ -13,6 +13,7 @@
         line-height="24px"
         font-family="Ubuntu, Helvetica, Arial, sans-serif"
       ></mj-text>
+      <mj-button font-family="Ubuntu, Helvetica, Arial, sans-serif"></mj-button>
     </mj-attributes>
     <mj-style inline="inline">
       .body-section { -webkit-box-shadow: 1px 4px 11px 0px rgba(0, 0, 0, 0.15);
@@ -20,7 +21,7 @@
       11px 0px rgba(0, 0, 0, 0.15); }
     </mj-style>
     <mj-style inline="inline">
-      .text-link { color: #5e6ebf } .text-paragraph { color: #637381; font-size:
+      .text-link { color: #3b82f6 } .text-paragraph { color: black/; font-size:
       16px; margin-bottom: 0; } .text-header { color: black; font-size: 24px }
     </mj-style>
     <mj-style inline="inline">
@@ -40,7 +41,7 @@
     >
       <mj-column width="100%">
         <mj-text color="white" font-size="30px" align="center">
-          <p style="margin-bottom: 20px">{{title}}</p>
+          <p style="margin-bottom: 20px; line-height: 32px">{{title}}</p>
         </mj-text>
       </mj-column>
     </mj-section>
@@ -79,21 +80,25 @@
             <mj-social-element
               href="https://instagram.com/alu_learn"
               src="https://alulearn.com/assets/logos/instagram.svg"
+              alt="Instagram"
             >
             </mj-social-element>
             <mj-social-element
               href="https://twitter.com/AluLearn"
               src="https://alulearn.com/assets/logos/twitter.svg"
+              alt="Twitter"
             >
             </mj-social-element>
             <mj-social-element
               href="https://tiktok.com/@alulearn"
               src="https://alulearn.com/assets/logos/tiktok.svg"
+              alt="TikTok"
             >
             </mj-social-element>
             <mj-social-element
               href="https://reddit.com/r/AluLearn"
               src="https://alulearn.com/assets/logos/reddit.svg"
+              alt="Reddit"
             >
             </mj-social-element>
           </mj-social>
@@ -114,7 +119,9 @@
                 href="https://alulearn.com/settings?utm_source=email&utm_medium=email&utm_campaign=unsubscribe"
                 >Unsubscribe</a
               >
-              <a class="footer-link" href="https://alulearn.com/legal/privacy"
+              <a
+                class="footer-link"
+                href="https://alulearn.com/legal/privacypolicy"
                 >Privacy Policy</a
               >
               <a class="footer-link" href="https://alulearn.com/legal/tos"

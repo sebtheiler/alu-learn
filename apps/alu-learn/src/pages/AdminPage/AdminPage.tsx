@@ -246,26 +246,37 @@ function DisplayAutoFlashcardsInfo({
         </p>
       )}
       {expanded &&
-        JSON.parse(autoFlashcards.generatedOutput).map(
-          (generatedFlashcard: GeneratedFlashcard, i: number) => (
-            <div key={i} className="relative">
-              <hr className="my-3" />
-              <p className="font-bold">Front</p>
-              <p>{generatedFlashcard.front}</p>
-              {generatedFlashcard.flashcardType === "NORMAL" && (
-                <>
-                  <br />
-                  <p className="font-bold">Back</p>
-                  <p>{generatedFlashcard.back}</p>
-                </>
-              )}
-            </div>
+        (isJsonString(autoFlashcards.generatedOutput) ? (
+          JSON.parse(autoFlashcards.generatedOutput).map(
+            (generatedFlashcard: GeneratedFlashcard, i: number) => (
+              <div key={i} className="relative">
+                <hr className="my-3" />
+                <p className="font-bold">Front</p>
+                <p>{generatedFlashcard.front}</p>
+                <br />
+                <p className="font-bold">Back</p>
+                <p>{generatedFlashcard.back}</p>
+              </div>
+            )
           )
-        )}
+        ) : (
+          <p className="mt-2">
+            <strong>Output:</strong> {autoFlashcards.generatedOutput}
+          </p>
+        ))}
       <Button className="my-2" onClick={() => setExpanded(!expanded)}>
         Expand
       </Button>
       <hr className="my-3" />
     </div>
   );
+}
+
+function isJsonString(str: string) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
 }

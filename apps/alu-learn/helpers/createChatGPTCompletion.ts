@@ -7,16 +7,16 @@ const createChatGPTCompletion = async ({
   systemPrompt,
   prompt,
   maxTokens = 128,
-  saveData: { ctx, userId },
+  saveData,
 }: {
   systemPrompt: string;
   prompt: string;
   maxTokens?: number;
-  saveData: {
+  saveData?: {
     ctx: Context;
     userId: string;
   };
-}): Promise<[string, AutoFlashcardsGeneration]> => {
+}): Promise<[string, AutoFlashcardsGeneration | undefined]> => {
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo-0301",
     messages: [
@@ -36,13 +36,16 @@ const createChatGPTCompletion = async ({
   if (!content) throw new ApolloError({ errorMessage: "Failed to generate" });
 
   // Save the generation in the DB
-  const generationLog = await ctx.prisma.autoFlashcardsGeneration.create({
-    data: {
-      userId,
-      inputText: `SYSTEM:\n${systemPrompt}\n\n---\n\nUSER:\n${prompt}`,
-      generatedOutput: content,
-    },
-  });
+  let generationLog: AutoFlashcardsGeneration | undefined;
+  if (saveData) {
+    generationLog = await saveData.ctx.prisma.autoFlashcardsGeneration.create({
+      data: {
+        userId: saveData.userId,
+        inputText: `SYSTEM:\n${systemPrompt}\n\n---\n\nUSER:\n${prompt}`,
+        generatedOutput: content,
+      },
+    });
+  }
 
   return [content, generationLog];
 };

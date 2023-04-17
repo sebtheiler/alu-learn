@@ -8,7 +8,7 @@ export const SOURCE_TEXT_MAX_LENS = {
   SINGLE: 250,
   MULTI: 1000,
   CLOZE: 200,
-  NOTES: 8000,
+  NOTES: 5000,
 };
 export const NUMBER_TO_WORD = {
   1: "one",

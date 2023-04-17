@@ -48,6 +48,12 @@ const sendEmail = async ({
       subject,
       text: text ?? "Please use an HTML-enabled client to view this email",
       html,
+      list: {
+        unsubscribe: {
+          url: "https://alulearn.com/settings",
+          comment: "Sorry to see you go :(",
+        },
+      },
     });
   } else {
     const tmpFile = `/tmp/email-${new Date().getTime()}`;

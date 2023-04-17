@@ -4,6 +4,10 @@ path: "changelog"
 description: "Alu Learn Changelog"
 ---
 
+## AI Improvements - Mon Apr 17 - 2.6.1
+
+Made some minor improvements to auto-flashcards and auto-grader to make them more accurate and consistent.
+
 # Auto-Everything - Tue Apr 11 - 2.6.0
 
 Behind all the hype, AI has legitimate potential to help students learn more effectively, and I wanted to exploit some of that in this update. In the future, I would like to create a completely personalized study assistant who has long term memory of your strengths and weaknesses and can provide targeted support to help you learn new content.

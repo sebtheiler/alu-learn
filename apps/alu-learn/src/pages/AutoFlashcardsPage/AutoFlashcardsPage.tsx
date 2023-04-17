@@ -117,7 +117,6 @@ export default function AutoFlashcardsPage({
               onChange={(val) =>
                 setSelectedLanguage(val as keyof typeof languageToPrompt)
               }
-              name="privacySetting"
             />
             {selectedLanguage !== "ENGLISH" && (
               <p className="text-center text-sm text-gray-500 mt-2">

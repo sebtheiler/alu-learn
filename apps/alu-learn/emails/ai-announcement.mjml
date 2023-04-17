@@ -1,0 +1,72 @@
+<mj-text>
+  <p class="text-paragraph">
+    Creating a lot of flashcards by hand sucks—trust me, I have plenty of
+    experience. You know what else sucks? That feeling of uncertainty before you
+    submit an essay when you have no idea if it&apos;s any good or not.
+  </p>
+  <p class="text-paragraph">
+    That&apos;s why I created auto-flashcards, auto-grader, and flashcard
+    auto-complete—three powerful features to improve your studying.
+  </p>
+  <ul>
+    <li style="padding-bottom: 10px">
+      <strong
+        >🧠
+        <a
+          href="https://alulearn.com/auto-flashcards"
+          target="_blank"
+          class="text-link"
+          >Auto-flashcards:</a
+        ></strong
+      >
+      Create flashcards from your notes (or any other text!) with just the press
+      of a button
+    </li>
+    <li style="padding-bottom: 10px">
+      <strong
+        >📝
+        <a
+          href="https://alulearn.com/auto-grader"
+          target="_blank"
+          class="text-link"
+          >Auto-grader:</a
+        ></strong
+      >
+      Want a preview of how well your essay will perform on a rubric?
+      Auto-grader can alleviate some of the stress of not knowing what your
+      teacher will think of your essay by giving you a second set of eyes on
+      your writing and suggesting points you can improve on
+    </li>
+    <li style="padding-bottom: 10px">
+      <strong>⚡ Flashcard auto-complete:</strong> Automatically generate the
+      back of a flashcard given its front (this has saved me
+      <em>so much time</em> in just the short period I&apos;ve been testing it)
+    </li>
+    <li style="padding-bottom: 10px">
+      More is coming soon! Stay tuned for updates, or better yet, reply to this
+      email with an idea of your own
+    </li>
+  </ul>
+</mj-text>
+<mj-group width="100%">
+  <mj-column>
+    <mj-button
+      background-color="#6A21BC"
+      align="center"
+      color="#ffffff"
+      font-size="17px"
+      href="https://alulearn.com?utm_source=email&utm_medium=email&utm_campaign=ai_announcement_1"
+      width="300px"
+      border-radius="999px"
+    >
+      Try It Out
+    </mj-button>
+  </mj-column>
+</mj-group>
+<mj-text>
+  <p class="text-paragraph">
+    Thank you again for your continued support,
+    <br />
+    Sebastian &amp; the Alu team
+  </p>
+</mj-text>

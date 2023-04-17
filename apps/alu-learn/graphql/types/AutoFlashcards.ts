@@ -30,6 +30,7 @@ import {
 } from "nexus";
 import createChatGPTCompletion from "helpers/createChatGPTCompletion";
 import { Context } from "graphql/context";
+import fixJson from "helpers/fixJson";
 
 const aiTokenCostAmount = {
   autocompleteFlashcard: 1,
@@ -134,15 +135,17 @@ export const AutoFlashcardsMutation = extendType({
             if (args.sourceText.length > SOURCE_TEXT_MAX_LENS["NOTES"])
               throw new ApolloError({ errorMessage: "Source text too long" });
 
+            const jsonFormat =
+              '[{"front": "What is (important vocabulary term)?", "back": "(definition of vocab)"}, ...]';
             const [completion] = await createChatGPTCompletion({
-              systemPrompt:
-                'You are a professional flashcard creator that creates flashcards from notes. I will give you my notes, and you will create high-quality flashcards on the essential vocabulary from the notes. Your flashcards are concise, and you prefer to create multiple short flashcards over one long flashcard; optionally include additional information in parentheses at the bottom. Create as many flashcards as necessary.\n\nCreate the flashcards in JSON format:\n[{"front": "What is...", "back": ""}, ...]',
+              systemPrompt: `You are a professional flashcard creator that creates flashcards from notes. I will give you my notes, and you will create high-quality flashcards on the essential vocabulary from the notes. Your flashcards are concise yet contain all necessary details and reasoning, and you prefer to create multiple short flashcards over one long flashcard; optionally include additional information in parentheses at the bottom. Create as many flashcards as necessary.\n\nCreate the flashcards in JSON format:\n${jsonFormat}`,
               prompt: args.sourceText,
               maxTokens: 1024,
               saveData: { ctx, userId: user.id },
             });
+
             const generatedFlashcards: { front: string; back: string }[] =
-              JSON.parse(completion);
+              await fixJson(completion, jsonFormat);
 
             flashcards = generatedFlashcards.map((f) => ({
               front: f.front,
@@ -310,17 +313,21 @@ export const AutoFlashcardsMutation = extendType({
           aiTokenCostAmount.autoGradeEssay
         );
 
+        const jsonFormat = `
+ [{"category": "${JSON.parse(args.rubric)
+   .rows[0].title.toLowerCase()
+   .trim()}", "justification": "...", "score": "..."}, {"category": "...", ...}, ...]
+`.trim();
+
         const systemPrompt = `
-You are a high school teacher grading students' responses according to a rubric. Grade accurately, provide concise justification, and score the number of points the student should receive. Cite specific evidence from the student's response and the rubric in your justification. Address the student as "you".
+You are a high school teacher grading students' responses according to a rubric. Grade accurately but be strict to the rubric; provide concise justification, and score the number of points the student should receive. Cite specific evidence from the student's response and the rubric in your justification. Address the student as "you".
 
 Prompt: ${args.prompt.trim()}
 
 Rubric:
 ${getRubricInfoStr(args.rubric)}
 
-Respond in JSON format: [{"category": "${JSON.parse(args.rubric)
-          .rows[0].title.toLowerCase()
-          .trim()}", "justification": "...", "score": "..."}, {"category": "...", ...}, ...]
+Respond in JSON format: ${jsonFormat}
 
 `.trim();
         const [completion] = await createChatGPTCompletion({
@@ -330,7 +337,9 @@ Respond in JSON format: [{"category": "${JSON.parse(args.rubric)
           saveData: { ctx, userId: user.id },
         });
 
-        return completion.trim();
+        const fixedCompletion = await fixJson(completion, jsonFormat);
+
+        return JSON.stringify(fixedCompletion).trim();
       },
     });
     t.field("autoEssayFeedback", {

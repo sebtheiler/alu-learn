@@ -10,8 +10,8 @@ import mjml2html from "mjml";
  * @returns A Handlebars template of the email
  * @example
  * ```js
- * const template = prepareEmail("emails/reminder");
- * const html = template({ title: "Example" })
+ * const template = createEmailTemplate("reminder");
+ * const html = template({ title: "This is your daily study reminder" })
  * ```
  */
 const createEmailTemplate = (fileName: string) => {
