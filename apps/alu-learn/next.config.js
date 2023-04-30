@@ -1,3 +1,8 @@
+const dotenv = require("dotenv");
+
+dotenv.config();
+const DEBUG = process.env.DEBUG.toLowerCase() === "true";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -21,6 +26,12 @@ const nextConfig = {
     });
 
     return config;
+  },
+  typescript: {
+    // Ignores build errors when building for production on the server
+    // Type validation takes a lot of RAM, leading to an OOM error when building in prod
+    // Still validates types locally
+    ignoreBuildErrors: DEBUG ? false : true,
   },
 };
 
