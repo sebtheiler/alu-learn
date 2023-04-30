@@ -4,13 +4,13 @@ import styles from "./ProUpgradePage.module.scss";
 import UpgradeSuccess from "./UpgradeSuccess";
 import AsyncButton from "alu-ui/src/AsyncButton";
 import Button from "alu-ui/src/Button";
-import CopyLink from "@/components/CopyLink";
+// import CopyLink from "@/components/CopyLink";
 import CreateStripeSession from "graphql-operations/operations/CreateStripeSession";
 import SEO from "@/helpers/SEO";
 import classNames from "helpers-lib/src/classNames";
-import generateReferralLink from "@/helpers/generateReferralLink";
+// import generateReferralLink from "@/helpers/generateReferralLink";
 import useGlobalModalStore from "@/stores/globalModalStore";
-import useMeStore from "@/stores/meStore";
+// import useMeStore from "@/stores/meStore";
 import type {
   Mutation,
   MutationCreateStripeSessionArgs,
@@ -27,6 +27,10 @@ export interface ProUpgradePageProps {
   isSignedIn: boolean;
 }
 
+const PRO_TRIAL_DAYS = parseInt(
+  process.env.NEXT_PUBLIC_ALU_PRO_TRIAL_DAYS ?? "7"
+);
+
 export default function ProUpgradePage({
   isProFromOrg,
   isPro,
@@ -39,7 +43,7 @@ export default function ProUpgradePage({
     MutationCreateStripeSessionArgs
   >(CreateStripeSession);
 
-  const username = useMeStore((state) => state.me?.username);
+  // const username = useMeStore((state) => state.me?.username);
 
   const purchase = (purchaseType: "MONTHLY" | "YEARLY") => {
     return async () => {
@@ -65,61 +69,85 @@ export default function ProUpgradePage({
         path="/pro"
         description="Upgrade to Alu Pro to gain access to Alu's next-level flashcard and studying features, including games, special tools, and more"
       />
-      <div className="container mx-auto mt-28 max-w-6xl px-20">
+      <div className="container mx-auto mt-28 max-w-6xl px-5">
         <div className="prose mx-auto text-center">
           <h1 className="mb-0">Take Studying to the Next Level</h1>
           <p className="mb-1">
             Gain access to Alu&apos;s most powerful features
           </p>
         </div>
-        <div className="mt-10 grid grid-cols-12">
-          <div className={classNames(styles.proCard, styles.proCardBasic)}>
-            <div className={styles.proCardHead}>
-              <h3>Basic</h3>
-              <h4>Free</h4>
-            </div>
-            <div className={styles.proCardBody}>
-              <ul>
-                <li className={styles.check}>
-                  <FontAwesomeIcon icon={faCheck} />
-                  Personalized spaced repetition flashcards
-                </li>
-                <li className={styles.check}>
-                  <FontAwesomeIcon icon={faCheck} />
-                  Rich text formatting
-                </li>
-                <li className={styles.check}>
-                  <FontAwesomeIcon icon={faCheck} />
-                  Upload custom images
-                </li>
-                <li className={styles.check}>
-                  <FontAwesomeIcon icon={faCheck} />
-                  50 automatically generated flashcards per month
-                </li>
-                <li className={styles.xmark}>
-                  <FontAwesomeIcon icon={faXmark} />
-                  No ads
-                </li>
-                <li className={styles.xmark}>
-                  <FontAwesomeIcon icon={faXmark} />
-                  Study with games
-                </li>
-                <li className={styles.xmark}>
-                  <FontAwesomeIcon icon={faXmark} />
-                  Identify difficult flashcards and topics
-                </li>
-                <li className={styles.xmark}>
-                  <FontAwesomeIcon icon={faXmark} />
-                  Create links between flashcards
-                </li>
-                <li className={styles.xmark}>
-                  <FontAwesomeIcon icon={faXmark} />
-                  Unlimited flashcards
-                </li>
-              </ul>
+        <div className="mt-10 flex flex-wrap">
+          <div className="w-full md:w-4/5 lg:w-2/5 mx-auto">
+            <div className={styles.proCard}>
+              <div
+                className={classNames(
+                  styles.proCardBorder,
+                  styles.proCardBorderBasic
+                )}
+              />
+              <div className={styles.proCardMiddle}>
+                <div className={styles.proCardInner}>
+                  <div className="bg-alu-dark-purple p-3">
+                    <h3 className="text-white text-xl font-bold">Basic</h3>
+                    <h4 className="text-white text-lg">Free</h4>
+                  </div>
+                  <div className="p-3">
+                    <ul>
+                      <li className={styles.check}>
+                        <FontAwesomeIcon icon={faCheck} />
+                        Personalized spaced repetition flashcards
+                      </li>
+                      <li className={styles.check}>
+                        <FontAwesomeIcon icon={faCheck} />
+                        Rich text formatting
+                      </li>
+                      <li className={styles.check}>
+                        <FontAwesomeIcon icon={faCheck} />
+                        Upload custom images
+                      </li>
+                      <li className={styles.check}>
+                        <FontAwesomeIcon icon={faCheck} />
+                        50 automatically generated flashcards per month
+                      </li>
+                      <li className={styles.check}>
+                        <FontAwesomeIcon icon={faCheck} />
+                        Automatically generate 50 flashcards per month using AI
+                      </li>
+                      <li className={styles.xmark}>
+                        <FontAwesomeIcon icon={faXmark} />
+                        Get automatic feedback and grades on your essays
+                      </li>
+                      <li className={styles.xmark}>
+                        <FontAwesomeIcon icon={faXmark} />
+                        No ads
+                      </li>
+                      <li className={styles.xmark}>
+                        <FontAwesomeIcon icon={faXmark} />
+                        Study with games
+                      </li>
+                      <li className={styles.xmark}>
+                        <FontAwesomeIcon icon={faXmark} />
+                        Identify difficult flashcards and topics
+                      </li>
+                      <li className={styles.xmark}>
+                        <FontAwesomeIcon icon={faXmark} />
+                        Create links between flashcards
+                      </li>
+                      <li className={styles.xmark}>
+                        <FontAwesomeIcon icon={faXmark} />
+                        Unlimited flashcards
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <ProFeaturesCard />
+          <div className="w-full xl:w-0 my-3 xl:my-0" />{" "}
+          {/* Stupid hack to get the cards on a different line */}
+          <div className="w-full md:w-4/5 lg:w-2/5 mx-auto">
+            <ProFeaturesCard />
+          </div>
         </div>
         <div className="mt-8 text-center">
           <div className="w-100 text-center">
@@ -143,8 +171,12 @@ export default function ProUpgradePage({
                 </AsyncButton>
               </>
             )}
-            <p className="font-bold my-3">7-day free trial. Cancel anytime.</p>
-            <hr className="my-3" />
+            {PRO_TRIAL_DAYS > 0 && (
+              <p className="font-bold my-3">
+                {PRO_TRIAL_DAYS}-day free trial. Cancel anytime.
+              </p>
+            )}
+            {/* <hr className="my-3" />
             <p className="mb-1">
               {proTrialExpires ? (
                 <>
@@ -162,7 +194,7 @@ export default function ProUpgradePage({
             <CopyLink
               link={generateReferralLink(username as string)}
               className="my-2 max-w-lg mx-auto"
-            />
+            /> */}
           </div>
         </div>
       </div>

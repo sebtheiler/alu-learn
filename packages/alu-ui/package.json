@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "dev": "start-storybook -p 6006 --disable-telemetry",
-    "build": "build-storybook",
+    "build-storybook": "build-storybook",
     "build-vite": "tsc && vite build",
     "chromatic": "npx chromatic --project-token=$(grep CHROMATIC_PROJECT_TOKEN .env | cut -d '=' -f2)"
   },

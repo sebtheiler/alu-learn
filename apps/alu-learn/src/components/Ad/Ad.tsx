@@ -15,7 +15,13 @@ interface AdProps {
     | "COURSE_BOTTOM"
     | "COURSE_SIDEBAR"
     | "FLASHCARD_LIST_MIDDLE"
-    | "FLASHCARD_LIST_BOTTOM";
+    | "FLASHCARD_LIST_BOTTOM"
+    | "AUTO_FLASHCARDS_SIDE_1"
+    | "AUTO_FLASHCARDS_SIDE_2"
+    | "AUTO_FLASHCARDS_BOTTOM"
+    | "AUTO_GRADER_SIDE_1"
+    | "AUTO_GRADER_SIDE_2"
+    | "AUTO_GRADER_BOTTOM";
   /**
    * Additional classnames to apply
    */
@@ -33,6 +39,12 @@ const adSlots = new Map<
   ["COURSE_SIDEBAR", { format: "display", slot: "2104655363" }],
   ["FLASHCARD_LIST_MIDDLE", { format: "feed", slot: "5305250964" }],
   ["FLASHCARD_LIST_BOTTOM", { format: "display", slot: "2850440020" }],
+  ["AUTO_FLASHCARDS_SIDE_1", { format: "display", slot: "9263909983" }],
+  ["AUTO_FLASHCARDS_SIDE_2", { format: "display", slot: "9340803749" }],
+  ["AUTO_FLASHCARDS_BOTTOM", { format: "display", slot: "4139575812" }],
+  ["AUTO_GRADER_SIDE_1", { format: "display", slot: "3896905375" }],
+  ["AUTO_GRADER_SIDE_2", { format: "display", slot: "5018415359" }],
+  ["AUTO_GRADER_BOTTOM", { format: "display", slot: "4443700282" }],
 ]);
 
 /**

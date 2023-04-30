@@ -2,15 +2,15 @@ import AsyncButton from "alu-ui/src/AsyncButton";
 import Button from "alu-ui/src/Button";
 import ComboBox from "alu-ui/src/ComboBox";
 import Modal from "alu-ui/src/Modal";
-import CopyLink from "@/components/CopyLink";
+// import CopyLink from "@/components/CopyLink";
 import DisplayUserInline from "@/components/DisplayUserInline";
 import AddFriend from "graphql-operations/operations/AddFriend";
 import MyFriends from "graphql-operations/operations/MyFriends";
 import SearchUsers from "graphql-operations/operations/SearchUsers";
 import formatPlural from "helpers-lib/src/formatPlural";
-import generateReferralLink from "@/helpers/generateReferralLink";
+// import generateReferralLink from "@/helpers/generateReferralLink";
 import { useDebounce } from "helpers-lib/src/hooks/useDebounce";
-import useMeStore from "@/stores/meStore";
+// import useMeStore from "@/stores/meStore";
 import type {
   Mutation,
   MutationAddFriendArgs,
@@ -20,7 +20,7 @@ import type {
 } from "@/types";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link";
+// import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 export default function FriendsList() {
@@ -28,7 +28,7 @@ export default function FriendsList() {
     myFriends: Query["myFriends"];
   }>(MyFriends);
 
-  const username = useMeStore((state) => state.me?.username);
+  // const username = useMeStore((state) => state.me?.username);
 
   const [friendModalOpen, setFriendModalOpen] = useState(false);
   const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
@@ -155,7 +155,7 @@ export default function FriendsList() {
                 Add {selectedUser.name} as a Friend
               </AsyncButton>
             )}
-            <hr className="my-5" />
+            {/* <hr className="my-5" />
             <p>
               Can&apos;t find your friends on Alu? Invite a new user with the
               link below and{" "}
@@ -182,7 +182,7 @@ export default function FriendsList() {
                 </Link>
                 .
               </small>
-            </p>
+            </p> */}
           </>
         )}
       </Modal>

@@ -27,6 +27,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (event.type) {
     case "checkout.session.completed": {
+      // Someone subscribed to Alu Pro
       if (
         !session.client_reference_id ||
         !session.customer ||
@@ -71,6 +72,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       break;
     }
     case "customer.subscription.deleted": {
+      // Subscription canceled
       const { id, userId } = await prisma.stripeCustomer.findUniqueOrThrow({
         where: {
           stripeCustomerId: session.customer as string,

@@ -3,19 +3,9 @@ import Button from "alu-ui/src/Button";
 import IconTooltip from "alu-ui/src/IconTooltip";
 import TextInput from "alu-ui/src/TextInput";
 import formatPlural from "helpers-lib/src/formatPlural";
-
-interface Col {
-  description: string;
-}
-
-interface Row {
-  title: string;
-  cols: Col[];
-}
-
-export interface RubricI {
-  rows: Row[];
-}
+import { RubricI, Col, Row, defaultRubric } from "./rubricPresets";
+import Select from "alu-ui/src/Select";
+import rubricPresets from "./rubricPresets";
 
 export default function Rubric({
   rubric,
@@ -119,6 +109,25 @@ export default function Rubric({
 
   return (
     <div>
+      <Select
+        label="Rubric preset"
+        defaultValue="none"
+        className="mb-4"
+        options={rubricPresets.map((preset) => ({
+          value: preset.name,
+          label: preset.name,
+        }))}
+        onChange={(selectedPreset) => {
+          if (selectedPreset === "none") {
+            setRubric(defaultRubric);
+            return;
+          }
+          const newRubric = rubricPresets.find(
+            (preset) => preset.name === selectedPreset
+          );
+          if (newRubric) setRubric(newRubric);
+        }}
+      />
       {rubric.rows.map((row, i) => (
         <RubricRow
           row={row}

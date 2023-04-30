@@ -4,6 +4,16 @@ path: "changelog"
 description: "Alu Learn Changelog"
 ---
 
+## Pro Mode Fixes & Auto Improvements - Sat Apr 22 - 2.6.2
+
+- Fixed an urgent issue with upgrading to Alu Pro
+- Temporarily disabled referral links until they can be tested more thoroughly
+- Fixed a bug that allowed the cloze editor popup to appear when not editing text
+- Added minimum length requirements to auto flashcards and auto grader
+- Added default example rubrics that can be used in Auto Grader, currently including rubrics for the written portions of AP World, APUSH, AP Euro, AP Lang, and AP Lit.
+- Removed the unused "Notifications" dropdown profile item
+- Improved pro-mode card display and responsiveness
+
 ## AI Improvements - Mon Apr 17 - 2.6.1
 
 Made some minor improvements to auto-flashcards and auto-grader to make them more accurate and consistent.

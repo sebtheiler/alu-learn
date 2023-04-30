@@ -56,6 +56,9 @@ export const StripeMutation = extendType({
         if (!itemPriceId)
           throw new ApolloError({ errorMessage: "Invalid item" });
 
+        const trialDays = parseInt(
+          process.env.NEXT_PUBLIC_ALU_PRO_TRIAL_DAYS ?? "7"
+        );
         const stripeSession = await stripe.checkout.sessions.create({
           client_reference_id: user.id,
           payment_method_types: ["card"],
@@ -67,7 +70,7 @@ export const StripeMutation = extendType({
             },
           ],
           subscription_data: {
-            trial_period_days: 7,
+            trial_period_days: trialDays > 0 ? trialDays : undefined,
           },
           success_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/pro`,
           cancel_url: `${process.env.NEXT_PUBLIC_SERVER_URL}/pro`,

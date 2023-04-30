@@ -9,7 +9,7 @@ import React, {
   memo,
 } from "react";
 
-interface TeXProps {
+export interface TeXProps {
   /**
    * LaTeX code to render
    */

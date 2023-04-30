@@ -2,7 +2,6 @@ import Dropdown from "alu-ui/src/Dropdown";
 import type { MenuOption } from "alu-ui/src/Dropdown/Dropdown";
 import type { Streak } from "@/types";
 import {
-  faBell,
   faBook,
   faCogs,
   faEnvelope,
@@ -18,7 +17,6 @@ import Image from "next/image";
 const profileDropdownOptions = [
   { text: "My Profile", href: "/me", faIcon: faUserCircle },
   { text: "Settings", href: "/settings", faIcon: faCogs },
-  { text: "Notifications", href: "/notifications", faIcon: faBell },
   { divider: true },
   { text: "Changelog", href: "/changelog", faIcon: faBook },
   {

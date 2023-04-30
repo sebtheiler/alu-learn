@@ -223,7 +223,7 @@ function useClozeDeletionEditorToolbar(
     );
   }, [editor, updateToolbar]);
 
-  return isClozeDeletion
+  return isClozeDeletion && editor.isEditable()
     ? createPortal(
         <FloatingClozeDeletionEditor
           editor={activeEditor}
