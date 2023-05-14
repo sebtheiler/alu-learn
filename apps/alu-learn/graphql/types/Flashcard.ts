@@ -21,6 +21,9 @@ import {
   objectType,
   stringArg,
 } from "nexus";
+import { createCourse } from "./Course";
+import type { Course, CourseSection, SubSection } from "@/types";
+import { generateLexicalElement } from "lexical-editor/src/helpers/blankLexicalElement";
 
 const Flashcard = objectType({
   name: "Flashcard",
@@ -371,6 +374,89 @@ export const FlashcardMutation = extendType({
 
         // Return the URL
         return `/course/${flashcard.courseId}/flashcards/${newSubSection.courseSection.slug}/${newSubSection.slug}`;
+      },
+    });
+    t.field("importFlashcards", {
+      type: "String",
+      description:
+        "Import flashcards from a tab-separated text file. Returns new URL",
+      args: {
+        importTxt: nonNull(stringArg()),
+        courseTitle: stringArg(),
+        subSectionId: stringArg(),
+      },
+      async resolve(_parent, args, ctx) {
+        const user = await getUserGQL(ctx, { id: true });
+        if (!user) return null;
+
+        let subSection: SubSection | undefined;
+        let courseSection: CourseSection | undefined;
+        let course: Course | undefined;
+
+        if (args.courseTitle) {
+          // Create new course with title
+          const {
+            course: newCourse,
+            courseSection: newCourseSection,
+            subSection: newSubSection,
+          } = await createCourse(
+            args.courseTitle,
+            user.id as string,
+            ctx.prisma
+          );
+          subSection = newSubSection;
+          courseSection = newCourseSection;
+          course = newCourse as Course;
+        } else if (args.subSectionId) {
+          // Add to existing sub section
+          subSection = await ctx.prisma.subSection.findUniqueOrThrow({
+            where: { id: args.subSectionId },
+            select: {
+              slug: true,
+              id: true,
+              courseSection: {
+                select: { slug: true, course: { select: { id: true } } },
+              },
+            },
+          });
+
+          // @ts-ignore
+          courseSection = subSection.courseSection;
+          // @ts-ignore
+          course = courseSection.course;
+        }
+
+        if (!(subSection && courseSection && course))
+          throw new ApolloError({
+            errorMessage:
+              "Couldn't find sub section, course section, and course",
+          });
+
+        const startingIndex = await ctx.prisma.flashcard.count({
+          where: { subSectionId: subSection.id as string },
+        });
+        const flashcards: Partial<PrismaFlashcard>[] = [];
+
+        const lines = args.importTxt.split("\n");
+        for (const [i, line] of lines.entries()) {
+          const [front, back] = line.split("\t");
+          flashcards.push({
+            fields: JSON.stringify([
+              generateLexicalElement(front.replaceAll("\\n", "\n")),
+              generateLexicalElement(back.replaceAll("\\n", "\n")),
+            ]),
+            tags: "",
+            index: startingIndex + i,
+            subSectionId: subSection.id as string,
+            courseId: course.id as string,
+          });
+        }
+
+        await ctx.prisma.flashcard.createMany({
+          data: flashcards as PrismaFlashcard[],
+        });
+
+        return `/course/${course.id}/flashcards/${courseSection.slug}/${subSection.slug}`;
       },
     });
   },

@@ -313,6 +313,15 @@ type Mutation {
   ): [JSONObject]
 
   """
+  Import flashcards from a tab-separated text file. Returns new URL
+  """
+  importFlashcards(
+    courseTitle: String
+    importTxt: String!
+    subSectionId: String
+  ): String
+
+  """
   Joins the current user as a student to a classroom
   """
   joinClassroom(joinCode: String!): Classroom

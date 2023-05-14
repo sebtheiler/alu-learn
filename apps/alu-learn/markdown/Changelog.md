@@ -4,6 +4,12 @@ path: "changelog"
 description: "Alu Learn Changelog"
 ---
 
+## Flashcard Imports - Sun May 14 - 2.6.3
+
+Rejoice, rejoice—AP Exams are over!
+
+- **Flashcard Imports:** You can now easily import flashcards from a tab-separated text file
+
 ## Pro Mode Fixes & Auto Improvements - Sat Apr 22 - 2.6.2
 
 - Fixed an urgent issue with upgrading to Alu Pro

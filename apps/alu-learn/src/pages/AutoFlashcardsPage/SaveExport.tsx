@@ -1,27 +1,16 @@
-import AsyncForm from "alu-ui/src/AsyncForm";
 import Button from "alu-ui/src/Button";
 import ButtonGroup from "alu-ui/src/ButtonGroup";
 import Modal from "alu-ui/src/Modal";
-import TextInput from "alu-ui/src/TextInput";
-import Tabs from "alu-ui/src/Tabs";
-import GetCourseSubSections from "graphql-operations/operations/GetCourseSubSections";
-import MyCourses from "graphql-operations/operations/MyCourses";
 import SaveGeneratedFlashcards from "graphql-operations/operations/SaveGeneratedFlashcards";
-import { getElementsVals } from "helpers-lib/src/getElementsVals";
 import type {
-  Course,
   GeneratedFlashcard,
   Mutation,
   MutationSaveGeneratedFlashcardsArgs,
-  Query,
-  QueryGetCourseSubSectionsArgs,
-  SubSection,
 } from "@/types";
-import { useMutation, useQuery } from "@apollo/client";
-import { faX } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import SaveLocation from "@/components/SaveLocation";
 
 export default function SaveExportAutoFlashcards({
   generatedFlashcards,
@@ -32,22 +21,6 @@ export default function SaveExportAutoFlashcards({
 
   const [saveAllModalOpen, setSaveAllModalOpen] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
-  const [saveAllOption, setSaveAllOption] = useState("NEW");
-  const [selectedCourse, setSelectedCourse] = useState<Course | undefined>(
-    undefined
-  );
-
-  const { data: coursesData, loading: coursesLoading } = useQuery<{
-    myCourses: Query["myCourses"];
-  }>(MyCourses, { skip: !(saveAllModalOpen && saveAllOption === "EXISTING") });
-  const { data: subSectionsData, loading: subSectionsLoading } = useQuery<
-    { getCourseSubSections: Query["getCourseSubSections"] },
-    QueryGetCourseSubSectionsArgs
-  >(GetCourseSubSections, {
-    variables: { courseId: selectedCourse?.id as string },
-    skip: !selectedCourse?.id,
-  });
-  console.log(subSectionsData);
 
   const [saveGeneratedFlashcards] = useMutation<
     { saveGeneratedFlashcards: Mutation["saveGeneratedFlashcards"] },
@@ -90,82 +63,7 @@ export default function SaveExportAutoFlashcards({
         close={() => setSaveAllModalOpen(false)}
         title="Save All Flashcards"
       >
-        <Tabs
-          tabs={[
-            { label: "Create New", value: "NEW" },
-            { label: "Add to Existing", value: "EXISTING" },
-          ]}
-          callback={setSaveAllOption}
-          className="mx-auto"
-        />
-        {saveAllOption === "NEW" && (
-          <AsyncForm
-            onSubmit={(e) =>
-              saveAll({
-                courseTitle: getElementsVals(e.target as HTMLFormElement, [
-                  "courseTitle",
-                ]).courseTitle,
-              })
-            }
-            buttonProps={{
-              block: true,
-              children: "Save All",
-              variant: "green",
-            }}
-          >
-            <TextInput
-              label="Course Title"
-              name="courseTitle"
-              className="my-3"
-              autoFocus
-              required
-            />
-          </AsyncForm>
-        )}
-        {saveAllOption === "EXISTING" && (
-          <div>
-            {selectedCourse && (
-              <p className="font-bold mt-2 text-center">
-                <FontAwesomeIcon
-                  icon={faX}
-                  onClick={() => setSelectedCourse(undefined)}
-                  className="hover:cursor-pointer"
-                />{" "}
-                {selectedCourse.title}
-              </p>
-            )}
-            {(coursesLoading || subSectionsLoading) && <p>Loading...</p>}
-            {!selectedCourse &&
-              ((coursesData?.myCourses?.length ?? 0) > 0 ? (
-                coursesData?.myCourses?.map((course: Course | null) => (
-                  <div
-                    key={course?.id}
-                    className="bg-gray-100 border-2 border-gray-200 rounded-lg my-2 px-3 py-2 text-center hover:scale-105 hover:cursor-pointer transition"
-                    role="button"
-                    onClick={() => setSelectedCourse(course as Course)}
-                  >
-                    {course?.title}
-                  </div>
-                ))
-              ) : (
-                <p className="text-center mt-2">You have no existing courses</p>
-              ))}
-            {subSectionsData?.getCourseSubSections?.map(
-              (subSection: SubSection | null) => (
-                <div
-                  key={subSection?.id}
-                  className="bg-gray-100 border-2 border-gray-200 rounded-lg my-2 px-3 py-2 text-center hover:scale-105 hover:cursor-pointer transition"
-                  role="button"
-                  onClick={() =>
-                    saveAll({ subSectionId: subSection?.id as string })
-                  }
-                >
-                  {subSection?.title}
-                </div>
-              )
-            )}
-          </div>
-        )}
+        <SaveLocation callback={saveAll} createTitle="Save All" />
       </Modal>
       <Modal
         open={exportModalOpen}

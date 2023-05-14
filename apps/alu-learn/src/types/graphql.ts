@@ -156,7 +156,7 @@ export type Mutation = {
   addFriend?: Maybe<Scalars["Boolean"]>;
   /** Archives a course for the current user. Does not affect ownership */
   archiveCourse?: Maybe<Course>;
-  /** Uses AI to automatically grade an essay */
+  /** Uses AI to automatically provide feedback on an essay */
   autoEssayFeedback?: Maybe<Scalars["String"]>;
   /** Uses AI to automatically grade an essay */
   autoGradeEssay?: Maybe<Scalars["String"]>;
@@ -192,6 +192,8 @@ export type Mutation = {
   deleteSubSection?: Maybe<SubSection>;
   /** Generates a flashcard automatically from some source text. Returns ["front", "back"] */
   generateAutoFlashcard?: Maybe<Array<Maybe<Scalars["JSONObject"]>>>;
+  /** Import flashcards from a tab-separated text file. Returns new URL */
+  importFlashcards?: Maybe<Scalars["String"]>;
   /** Joins the current user as a student to a classroom */
   joinClassroom?: Maybe<Classroom>;
   /** Joins the current user to a course */
@@ -352,6 +354,12 @@ export type MutationGenerateAutoFlashcardArgs = {
   mode: AutoFlashcardsMode;
   numFlashcards?: InputMaybe<Scalars["Int"]>;
   sourceText: Scalars["String"];
+};
+
+export type MutationImportFlashcardsArgs = {
+  courseTitle?: InputMaybe<Scalars["String"]>;
+  importTxt: Scalars["String"];
+  subSectionId?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationJoinClassroomArgs = {

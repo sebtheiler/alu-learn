@@ -13,6 +13,7 @@ import type {
 import { useMutation } from "@apollo/client";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function CreateAddCourseModal({ open, close }) {
   const [createCourse] = useMutation<
@@ -51,7 +52,7 @@ export default function CreateAddCourseModal({ open, close }) {
 
   return (
     <Modal open={open} close={close}>
-      <h1 className="text-center text-4xl font-bold">Create or Add Course</h1>
+      <h1 className="text-center text-4xl font-bold">Add or Create Course</h1>
       <hr className="mt-2 mb-5" />
       <h3 className="text-xl font-bold mb-1">Add Existing Course</h3>
       <SelectCourse
@@ -72,6 +73,12 @@ export default function CreateAddCourseModal({ open, close }) {
       >
         <TextInput label="Course Name" className="mb-3" name="courseName" />
       </AsyncForm>
+      <p className="text-center mt-2">
+        Alternatively,{" "}
+        <Link href="/import" className="text-blue-500">
+          import flashcards
+        </Link>
+      </p>
     </Modal>
   );
 }
