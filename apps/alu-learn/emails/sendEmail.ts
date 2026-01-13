@@ -1,4 +1,3 @@
-import key from "creds/gsuite.json";
 import fs from "fs";
 import { createTransport } from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
@@ -6,15 +5,19 @@ import type SMTPTransport from "nodemailer/lib/smtp-transport";
 const EMAIL_FROM = process.env.EMAIL_FROM;
 if (!EMAIL_FROM) throw new Error("`.env` must specify `EMAIL_FROM`");
 
+const emailHost = process.env.EMAIL_SERVER_HOST || 'localhost';
+const emailPort = Number(process.env.EMAIL_SERVER_PORT) || 465;
+
 const transporter = createTransport({
-  host: process.env.EMAIL_SERVER,
-  port: 465,
-  secure: true,
+  host: emailHost,
+  port: emailPort,
+
+  // Only use secure connection if we are on the standard SSL port (465)
+  // MailDev runs on 1025 which is NOT secure.
+  secure: emailPort === 465, 
   auth: {
-    type: "OAuth2",
-    user: EMAIL_FROM,
-    serviceClient: key.client_id,
-    privateKey: key.private_key,
+    user: process.env.EMAIL_SERVER_USER,
+    pass: process.env.EMAIL_SERVER_PASSWORD,
   },
 });
 

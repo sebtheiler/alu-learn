@@ -1,19 +1,19 @@
-import { App } from "@slack/bolt";
+// import { App } from "@slack/bolt";
 
-const ALU_BOT_OAUTH_TOKEN = process.env.ALU_BOT_OAUTH_TOKEN;
-const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
+// const ALU_BOT_OAUTH_TOKEN = process.env.ALU_BOT_OAUTH_TOKEN;
+// const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
 
-if (!ALU_BOT_OAUTH_TOKEN || !SLACK_SIGNING_SECRET)
-  console.warn(
-    "`ALU_BOT_OAUTH_TOKEN` and `SLACK_SIGNING_SECRET` must be set in `.env`"
-  );
+// if (!ALU_BOT_OAUTH_TOKEN || !SLACK_SIGNING_SECRET)
+//   console.warn(
+//     "`ALU_BOT_OAUTH_TOKEN` and `SLACK_SIGNING_SECRET` must be set in `.env`"
+//   );
 
-const slackApp =
-  ALU_BOT_OAUTH_TOKEN && SLACK_SIGNING_SECRET
-    ? new App({
-        token: ALU_BOT_OAUTH_TOKEN,
-        signingSecret: SLACK_SIGNING_SECRET,
-      })
-    : undefined;
+const slackApp = undefined;
+  // ALU_BOT_OAUTH_TOKEN && SLACK_SIGNING_SECRET
+  //   ? new App({
+  //       token: ALU_BOT_OAUTH_TOKEN,
+  //       signingSecret: SLACK_SIGNING_SECRET,
+  //     })
+  //   : undefined;
 
 export default slackApp;

@@ -1,3 +1,31 @@
+# Deprecation Notice
+
+Alu is a project I worked on in high school, which is quite some time ago now. I have not had the time to maintain it over the past few years. I have written instructions on self-hosting Alu Learn below. Other than the minimal changes required to sunset the project, all code is provided as-is from when I last worked on the project. I make no guarantee to fix issues going forward.
+
+With that said, the container still runs and provides--at least in my opinion--a quite powerful piece of spaced repetition software. You can feel free to fork this repo to revitalize the project if you'd like. It is GPLv3 licensed.
+
+## Setup Instructions
+Ensure you have Docker and Docker compose (or equivalently Podman). Then,
+
+```sh
+docker-compose build
+docker-compose up -d
+docker exec -it alu-learn npx prisma db push --schema=apps/alu-learn/prisma/schema.prisma
+```
+
+Alternatively, with Podman,
+```sh
+podman compose build
+podman compose up -d
+podman exec -it alu-learn npx prisma db push --schema=apps/alu-learn/prisma/schema.prisma
+```
+
+You can visit `http://localhost:3000`. Create an account using the register button and any email (no email will actually be sent). To view the magic sign-in link, go to `http://localhost:1080`.
+
+## Disclaimer
+
+Generative AI was used to assist creating the Dockerfile. No generative AI was used in the rest of the project, as the rest of the project was written before these tools were released.
+
 # Alu
 
 Alu is an education platform for the future. It seeks to combine the best of cutting edge and subversive pedagogical and technologic ideas into apps that are easily accessible by students, teachers, and life-long learners. Alu enables the creation of a collective _web_ of knowledge that anyone can contribute to and anyone can learn from.

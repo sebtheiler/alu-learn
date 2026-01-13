@@ -21,7 +21,7 @@ export default function LogInForm({ type }: { type: "REGISTER" | "SIGNIN" }) {
   const [continueWithEmail, setContinueWithEmail] = useState(false);
   return (
     <>
-      <Button
+      {/* <Button
         variant="white"
         className="flex items-center justify-center"
         onClick={() => signIn("google")}
@@ -35,7 +35,7 @@ export default function LogInForm({ type }: { type: "REGISTER" | "SIGNIN" }) {
           className="my-0"
         />
         {type === "REGISTER" ? "Continue with Google" : "Sign-in with Google"}
-      </Button>
+      </Button> */}
       <Button
         onClick={() => setContinueWithEmail(!continueWithEmail)}
         variant="primary-outline"

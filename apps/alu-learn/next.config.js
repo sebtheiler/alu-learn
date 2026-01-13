@@ -1,7 +1,7 @@
 const dotenv = require("dotenv");
 
 dotenv.config();
-const DEBUG = process.env.DEBUG.toLowerCase() === "true";
+const DEBUG = (process.env.DEBUG || "false").toLowerCase() === "true";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

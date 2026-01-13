@@ -1,5 +1,4 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import key from "creds/gsuite.json";
 import createEmailTemplate from "emails/createEmailTemplate";
 import sendEmail from "emails/sendEmail";
 import prisma from "lib/prisma";
@@ -19,40 +18,25 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_SECRET as string,
       allowDangerousEmailAccountLinking: true,
     }),
-    EmailProvider({
+	EmailProvider({
       server: {
-        host: process.env.EMAIL_SERVER,
-        port: 465,
-        secure: true,
+        host: process.env.EMAIL_SERVER_HOST,
+        port: Number(process.env.EMAIL_SERVER_PORT) || 465,
         auth: {
-          type: "OAuth2",
-          user: process.env.EMAIL_FROM,
-          serviceClient: key.client_id,
-          privateKey: key.private_key,
+          user: process.env.EMAIL_SERVER_USER,
+          pass: process.env.EMAIL_SERVER_PASSWORD,
         },
       },
       from: process.env.EMAIL_FROM,
       async sendVerificationRequest({ identifier, url }) {
         const template = createEmailTemplate("verificationRequest");
-        const html = template({
-          title: "Sign In",
-          url,
-        });
-        const result = await sendEmail({
+        const html = template({ title: "Sign In", url });
+        
+        await sendEmail({
           to: identifier,
-          subject: `Sign in to Alu Learn (${new Date()
-            .toISOString()
-            .slice(0, 10)})`,
+          subject: `Sign in to Alu Learn`,
           html,
         });
-        if (!result) return;
-
-        const failed = result
-          ? result.rejected.concat(result.pending).filter(Boolean)
-          : [];
-        if (failed.length) {
-          throw new Error(`Email(s) (${failed.join(", ")}) could not be sent`);
-        }
       },
     }),
   ],
