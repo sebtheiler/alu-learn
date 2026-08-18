@@ -4,6 +4,8 @@ Alu is a project I worked on in high school, which is quite some time ago now. I
 
 With that said, the container still runs and provides--at least in my opinion--a quite powerful piece of spaced repetition software. You can feel free to fork this repo to revitalize the project if you'd like. It is GPLv3 licensed.
 
+**If you previously had an Alu Learn account and would like to export your data, please fill out this [Google Form](https://forms.gle/Ggs8L2cWpx1xjJdz6).**
+
 ## Setup Instructions
 Ensure you have Docker and Docker compose (or equivalently Podman). Then,
 
