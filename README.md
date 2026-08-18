@@ -10,14 +10,14 @@ Ensure you have Docker and Docker compose (or equivalently Podman). Then,
 ```sh
 docker-compose build
 docker-compose up -d
-docker exec -it alu-learn npx prisma db push --schema=apps/alu-learn/prisma/schema.prisma
+docker exec -it alu-learn sh -c "cd apps/alu-learn && npx prisma db push"
 ```
 
 Alternatively, with Podman,
 ```sh
 podman compose build
 podman compose up -d
-podman exec -it alu-learn npx prisma db push --schema=apps/alu-learn/prisma/schema.prisma
+podman exec -it alu-learn sh -c "cd apps/alu-learn && npx prisma db push"
 ```
 
 You can visit `http://localhost:3000`. Create an account using the register button and any email (no email will actually be sent). To view the magic sign-in link, go to `http://localhost:1080`.
